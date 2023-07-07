@@ -2,7 +2,7 @@
 <div class="view-type">
   <span class="sr-only"><%= t('blacklight.search.view_title') %></span>
   <div class="view-type-group btn-group">
-    <% if has_uv_preview? && !(params[:view] == "gallery") %>
+    <% if has_uv_preview? %>
       <%= link_to url_for(request.params.merge(preview: (@hide_viewer ? nil : false))), 
         title: "Show or hide media display", 
         class: "#{@hide_viewer ? "" : "active"} btn btn-default" do

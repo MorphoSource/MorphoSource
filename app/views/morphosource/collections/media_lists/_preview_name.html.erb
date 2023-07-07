@@ -1,8 +1,8 @@
 <div class="name <%= @media_presenter ? "" : "hide" %>">
   <% if @media_presenter %>
-    <a class="preview-name-link" href="#">
+    <%= link_to @media_presenter, target: :_blank, class: "preview-name-link" do %>
       Media <%= @media_presenter&.id %>: <%= @media_presenter&.title&.first %>
-    </a>
+    <% end %>
     <div><%= @media_presenter.physical_object_title %></div>
     <div><i><%= @media_presenter.physical_object_taxonomy_title %></i></div>
 

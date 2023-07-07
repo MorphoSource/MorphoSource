@@ -102,6 +102,21 @@ div.collection-page {
   [class*='col-'] {
     padding: 0;
   }
+ 
+  .gallery-badge {
+    a {
+      display: inline-block;
+      width: 140px;
+    }
+    span {
+      display: inline-block;
+      font-weight: bold;
+      font-size: 8px !important;
+      width: 140px;
+      padding-top: 4px;
+      padding-bottom: 4px;
+    }
+  } 
 
   .collection.panel-body {
     div#documents.gallery {
@@ -111,6 +126,28 @@ div.collection-page {
       .document {
         margin-top: 15px;
         padding: 6px 6px 0 6px;
+        max-height: 350px;
+
+        dl {
+          width: 190px;
+          margin-bottom: 0;
+
+          dd.text-truncate {
+            max-width: 190px;
+          }
+
+          dd.text-truncate-lines {
+            max-width: 190px;
+            height: unset;
+            overflow-wrap: anywhere;
+          }
+        }
+
+        dl.document-metadata {
+          dd {
+            margin-bottom: 5px;
+          }
+        }
       }
     }
   }

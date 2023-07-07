@@ -1,0 +1,23 @@
+<%
+# Taken from https://github.com/projectblacklight/blacklight-gallery/tree/v0.12.0/app/views/catalog
+
+# container for all documents in index view -%>
+
+<div class="media-list-results">
+  <div class="collection-table gallery">
+    <div id="documents" class="row gallery">
+      <%= render_gallery_collection documents %>
+    </div>
+  </div>
+
+  <div class="collection-media-preview gallery <%= @hide_viewer ? "hide" : "" %>">
+      <div class="preview-title">
+        <div>Media Display</div>
+      </div>
+
+      <%= render 'preview_body' %>
+    </div>
+</div>
+
+
+

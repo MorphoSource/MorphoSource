@@ -69,14 +69,23 @@ class CartItem < ApplicationRecord
     date_approved? && !expired?
   end
 
+  def any_other_item_approved?
+    CartItem.where(work_id: work.id, user: user)
+      .where.not(date_approved: nil)
+      .where.not(date_expired: nil)
+      .where("date_expired >= ?", Date.today)
+      .present?
+  end
+
   def downloadable?
     begin
       case
-        when work.open_download? then true
-        when reviewer.include?(user) then true
-        when user.ms_id == work.user_with_ownership&.first then true
-        when approved? then true
-        when user.can?(:download, work) then true
+        when work.open_download? then true # if work is published open download
+        when reviewer.include?(user) then true # if user is download reviewer
+        when user.ms_id == work.user_with_ownership&.first then true # if user owns media
+        when approved? then true # if this cart item has been approved to download
+        when user.can?(:download, work) then true # if the user has download permissions on media
+        when any_other_item_approved? then true # if user has another approved unexpired cart item for this media
         else false
       end
     rescue

@@ -7,28 +7,74 @@ RSpec.describe Morphosource::Gbif do
   describe '.search' do
     let(:name)  { 'canis familiaris' }
 
-    it 'returns json search results' do
-      results = described_class.search(name, described_class.dataset_key)
-      expect(results.map{|r| r["vernacularName"]}).to include('dog')
+    context 'search is successful' do
+      it 'returns json search results' do
+        results = described_class.search(name, described_class.dataset_key)
+        expect(results[:status]).to eq(:success)
+        expect(results[:data].map{|r| r["vernacularName"]}).to include('dog')
+      end
+    end
+
+    context 'response code is not 200' do
+      let(:response)  { instance_double(RestClient::Response, code: 304) }
+      before do
+        allow(RestClient::Request).to receive(:execute).and_return(response)
+      end
+      it 'returns a fail status' do
+        results = described_class.search(name, described_class.dataset_key)
+        expect(results[:status]).to eq(:fail)
+        expect(results[:message]).to eq("Response status #{response.code}")
+      end
+    end
+
+    context 'response.body parsing fails' do
+      let(:response)  { instance_double(RestClient::Response, code: 200, body: nil) }
+      before do
+        allow(RestClient::Request).to receive(:execute).and_return(response)
+      end
+      it 'returns a fail status' do
+        results = described_class.search(name, described_class.dataset_key)
+        expect(results[:status]).to eq(:error)
+        expect(results[:message]).to eq('Response.body parsing failed.')
+      end
+    end
+
+    context 'not found error' do
+      let(:error) { RestClient::NotFound.new }
+      before do
+        allow(RestClient::Request).to receive(:execute).and_raise(error)
+      end
+      it 'returns json search results' do
+        expect(Rails.logger).to receive(:error).with("GBIF returned #{error.message} for #{described_class::API_ENDPOINT}/species")
+        results = described_class.search(name, described_class.dataset_key)
+        expect(results[:status]).to eq(:error)
+        expect(results[:message]).to eq(error.message)
+      end
     end
 
     context 'timeout error' do
+      let(:error) { RestClient::Exceptions::Timeout.new }
       before do
-        allow(RestClient::Request).to receive(:execute).and_raise(RestClient::Exceptions::Timeout)
+        allow(RestClient::Request).to receive(:execute).and_raise(error)
       end
       it 'returns json search results' do
-        expect(Rails.logger).to receive(:error).with("GBIF request timeout")
-        described_class.search(name, described_class.dataset_key)
+        expect(Rails.logger).to receive(:error).with("GBIF returned #{error.message} for #{described_class::API_ENDPOINT}/species")
+        results = described_class.search(name, described_class.dataset_key)
+        expect(results[:status]).to eq(:error)
+        expect(results[:message]).to eq(error.message)
       end
     end
 
     context 'some other error' do
+      let(:error) { RestClient::Exception.new }
       before do
-        allow(RestClient::Request).to receive(:execute).and_raise(RestClient::Exception)
+        allow(RestClient::Request).to receive(:execute).and_raise(error)
       end
       it 'returns json search results' do
-        expect(Rails.logger).to receive(:error).with("GBIF request error")
-        described_class.search(name, described_class.dataset_key)
+        expect(Rails.logger).to receive(:error).with("GBIF returned #{error.message} for #{described_class::API_ENDPOINT}/species")
+        results = described_class.search(name, described_class.dataset_key)
+        expect(results[:status]).to eq(:error)
+        expect(results[:message]).to eq(error.message)
       end
     end
   end
@@ -39,7 +85,8 @@ RSpec.describe Morphosource::Gbif do
     context 'viewing an occurrence' do
       it 'returns a json view result' do
         result = described_class.view(key, 'occurrence')
-        expect(result["vernacularName"]). to eq('Common Dog')
+        expect(result[:status]).to eq(:success)
+        expect(result[:data]["vernacularName"]). to eq('Common Dog')
       end
     end
 
@@ -48,37 +95,48 @@ RSpec.describe Morphosource::Gbif do
 
       it 'returns a json view result' do
         result = described_class.view(key)
-        expect(result["vernacularName"]). to eq('dog')
+        expect(result[:status]).to eq(:success)
+        expect(result[:data]["vernacularName"]). to eq('dog')
       end
     end
 
     context 'not found error' do
+      let(:error) { RestClient::NotFound.new  }
       before do
-        allow(RestClient::Request).to receive(:execute).and_raise(RestClient::NotFound)
+        allow(RestClient::Request).to receive(:execute).and_raise(error)
       end
       it 'rescues and returns an empty hash' do
-        expect(Rails.logger).to receive(:error).with("GBIF returned 404 for: #{described_class::API_ENDPOINT}/occurrence/#{key}")
-        expect(described_class.view(key, 'occurrence')).to eq({})
+        expect(Rails.logger).to receive(:error).with("GBIF returned #{error.message} for #{described_class::API_ENDPOINT}/species/#{key}")
+
+        result = described_class.view(key)
+        expect(result[:status]).to eq(:error)
+        expect(result[:message]).to eq(error.message)
       end
     end
 
     context 'timeout error' do
+      let(:error) { RestClient::Exceptions::Timeout.new }
       before do
-        allow(RestClient::Request).to receive(:execute).and_raise(RestClient::Exceptions::Timeout)
+        allow(RestClient::Request).to receive(:execute).and_raise(error)
       end
       it 'rescues and returns an empty hash' do
-        expect(Rails.logger).to receive(:error).with("GBIF request timeout")
-        expect(described_class.view(key, 'occurrence')).to eq({})
+        expect(Rails.logger).to receive(:error).with("GBIF returned Request Timeout for #{described_class::API_ENDPOINT}/species/#{key}")
+        result = described_class.view(key)
+        expect(result[:status]).to eq(:error)
+        expect(result[:message]).to eq(error.message)
       end
     end
 
     context 'a different error' do
+      let(:error) { RestClient::Exception.new }
       before do
-        allow(RestClient::Request).to receive(:execute).and_raise(RestClient::Exception)
+        allow(RestClient::Request).to receive(:execute).and_raise(error)
       end
       it 'rescues and returns an empty hash' do
-        expect(Rails.logger).to receive(:error).with("GBIF request error")
-        expect(described_class.view(key, 'occurrence')).to eq({})
+        expect(Rails.logger).to receive(:error).with("GBIF returned #{error} for #{described_class::API_ENDPOINT}/species/#{key}")
+        result = described_class.view(key)
+        expect(result[:status]).to eq(:error)
+        expect(result[:message]).to eq(error.message)
       end
     end
   end

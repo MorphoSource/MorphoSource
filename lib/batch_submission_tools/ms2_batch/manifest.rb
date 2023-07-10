@@ -166,7 +166,7 @@ module BatchSubmissionTools
           # when new parent media will be created,
           # Only the parent items of the media group is needed for ingest job for all media
           # otherwise duplicate media will be created
-          rows_to_remove.each { |k| @media_group_to_rows.delete [k]; puts "removed row #{k}" }
+          rows_to_remove.each { |k| @media_group_to_rows.delete [k] }
         end
 
         #byebug # check media_group_to_rows

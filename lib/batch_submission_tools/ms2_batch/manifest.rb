@@ -129,8 +129,6 @@ module BatchSubmissionTools
         end # /media_group_to_rows
         #byebug # check summary
 
-#byebug
-#puts "\n#{@media_group_to_rows.inspect}"
         # re-order rows to have parent > child ingestion order 
         hierarchy = []
         largest_hierarchy = []
@@ -143,8 +141,7 @@ module BatchSubmissionTools
           parent = value[:parents]
           while parent.present? && parent != key
             if @media_group_to_rows[parent].nil? || @media_group_to_rows[parent][:parents].nil?
-              # Parent not found, add to self_parent list, exit the loop
-  byebug
+              # Parent not found, exit the loop
               break
             end
             item_hierarchy.unshift(parent)  # Add the parent at the beginning of the hierarchy array
@@ -164,8 +161,6 @@ module BatchSubmissionTools
         ordered_list = ordered_list + remain_list
         sorted_media_group_to_rows = ordered_list.map { |index| [index, @media_group_to_rows[index]] }.to_h
         @media_group_to_rows = sorted_media_group_to_rows 
-#puts "#{@media_group_to_rows.inspect}"
-#byebug
 
         if rows_to_remove.present?
           # when new parent media will be created,
@@ -174,9 +169,7 @@ module BatchSubmissionTools
           rows_to_remove.each { |k| @media_group_to_rows.delete [k]; puts "removed row #{k}" }
         end
 
-puts "#{@media_group_to_rows.inspect}"
-
-byebug # check media_group_to_rows
+        #byebug # check media_group_to_rows
         Rails.logger.debug "iN Manifest: media_group_to_rows: #{media_group_to_rows}"
       end
 

@@ -502,8 +502,8 @@ html {
 
   .gallery {
     .batch_add_selector {
-      float: left;
-      margin: 0;
+      position: absolute;
+      left: 10px;
     }
     .file_listing_thumbnail {
       width: 100px;

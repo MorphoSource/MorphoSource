@@ -129,6 +129,39 @@ module BatchSubmissionTools
         end # /media_group_to_rows
         #byebug # check summary
 
+        # re-order rows to have parent > child ingestion order 
+        hierarchy = []
+        largest_hierarchy = []
+        # sort list by hierarchy
+        @media_group_to_rows.each do |key, value|
+          item_hierarchy = []
+          # Add the current item to the hierarchy array
+          item_hierarchy << key
+          # Traverse the parents of the current item until reaching the root parent
+          parent = value[:parents]
+          while parent.present? && parent != key
+            if @media_group_to_rows[parent].nil? || @media_group_to_rows[parent][:parents].nil?
+              # Parent not found, exit the loop
+              break
+            end
+            item_hierarchy.unshift(parent)  # Add the parent at the beginning of the hierarchy array
+            if @media_group_to_rows[parent][:parents] == parent
+              break # parent is itself, exit
+            end
+            parent = @media_group_to_rows[parent][:parents]
+          end
+          if item_hierarchy.length > largest_hierarchy.length
+            largest_hierarchy = item_hierarchy
+          end
+          hierarchy << item_hierarchy
+        end
+
+        ordered_list = largest_hierarchy
+        remain_list = @media_group_to_rows.keys - ordered_list
+        ordered_list = ordered_list + remain_list
+        sorted_media_group_to_rows = ordered_list.map { |index| [index, @media_group_to_rows[index]] }.to_h
+        @media_group_to_rows = sorted_media_group_to_rows 
+
         if rows_to_remove.present?
           # when new parent media will be created,
           # Only the parent items of the media group is needed for ingest job for all media
@@ -136,25 +169,6 @@ module BatchSubmissionTools
           rows_to_remove.each { |k| @media_group_to_rows.delete [k] }
         end
 
-        # re-order rows to have parent media first if needed
-        p_index = nil
-        p_row = nil
-        row_with_parent = nil
-        rows_with_parents = media_group_to_rows.select { |_, value| !value[:parents].empty? }.values
-        rows_with_parents.each do |row|
-          row_with_parent = row
-          p_index = row[:parents]
-          p_row = @media_group_to_rows[p_index]
-          break if p_row.present?
-        end
-        if !p_row.present?
-          # if parent row not found, put the row_with_parent on top
-          p_row = row_with_parent
-          p_index = @media_group_to_rows.key(row_with_parent)
-        end
-        if @media_group_to_rows.keys.first != p_index
-          @media_group_to_rows = { p_index => p_row }.merge(@media_group_to_rows.reject { |key| key == p_index })
-        end
         #byebug # check media_group_to_rows
         Rails.logger.debug "iN Manifest: media_group_to_rows: #{media_group_to_rows}"
       end

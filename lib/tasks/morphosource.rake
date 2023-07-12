@@ -697,6 +697,8 @@ namespace :morphosource do
 
   desc "Merge duplicate specimens"
   task :find_and_merge_duplicate_specimens, [:merge] => :environment do |task, args|
+    log_file = 'log/find_and_merge_duplicate_specimens_' + Time.now.strftime("%m-%d-%Y_%H-%M") + '.log'
+    log = Logger.new(log_file)
     if args[:merge].present?
       if args[:merge] == 'true'
         merge = true
@@ -716,24 +718,24 @@ namespace :morphosource do
     bso_list = ActiveFedora::SolrService.query(qry, rows: 999999)
     grouped = bso_list.group_by{|b| [ b["occurrence_id_tesim"], b["idigbio_uuid_tesim"] ]}
     filtered = grouped.values.select { |a| a.size > 1 }.flatten.group_by { |b| [ b["occurrence_id_tesim"], b["idigbio_uuid_tesim"] ] }
-    puts "\n#{filtered.count} duplicate groups found"
+    log.info "#{filtered.count} duplicate groups found"
     filtered.each do |key, dups|
       # To minimize the merging time, sort the specimen by the media count, and keep the first specimen (with the most media)
       sorted_dups = dups.sort_by { |dup| -(dup['related_media_ids_ssim']&.count || 0) }
-      puts "\nDuplicate group #{key} with specimens #{sorted_dups.map{|x| x['id'] }}"
+      log.info "Duplicate group #{key} with specimens #{sorted_dups.map{|x| x['id'] }}"
       if merge == true
         delete_dup = (report_only == false)
         merge_to = sorted_dups.first['id']
         sorted_dups.drop(1).each do |dup|
           merge_from = dup['id']
           media_list, ie_list = Morphosource::MergeBiologicalSpecimenService.call(merge_to, merge_from, delete_dup, report_only)
-          puts " moved media #{media_list} from specimen #{merge_from} to specimen #{merge_to}"
+          log.info " moved media #{media_list} from specimen #{merge_from} to specimen #{merge_to}"
           ie_total += ie_list.count
         end
-        puts " duplicate group #{key} merged -> remaining specimen #{merge_to}"
+        log.info " duplicate group #{key} merged -> remaining specimen #{merge_to}"
       end
     end
-    puts "\nTotal imaging event count: #{ie_total}" if report_only
+    log.info "Total imaging event count: #{ie_total}" if report_only
   end
 
   desc "Verify remote backed media files"

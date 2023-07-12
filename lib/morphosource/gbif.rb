@@ -28,6 +28,9 @@ module Morphosource
     def self.search_gbif(request_url, params = {})
       response = execute_request(request_url, params)
       process_response(response)
+    rescue RestClient::BadRequest => e
+      RestClient.log.error("GBIF returned #{e.message} for #{request_url}")
+      jsend_fail({ 'message' => e.message, 'request_url' => request_url, 'params' => params })
     rescue StandardError => e
       RestClient.log.error("GBIF returned #{e.message} for #{request_url}")
       jsend_error(e)
@@ -41,7 +44,7 @@ module Morphosource
     end
 
     def self.process_response(response)
-      return jsend_fail("Response status #{response.code}") unless response.code == 200
+      return jsend_success("Response status #{response.code}") unless response.code == 200
 
       data = parse_response(response)
       jsend_success(data)

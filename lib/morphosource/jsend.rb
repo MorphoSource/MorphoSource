@@ -8,6 +8,8 @@ module Morphosource
       klass.extend(ClassMethods)
     end
 
+    delegate :jsend_success, :jsend_error, :jsend_fail, to: :class
+
     module ClassMethods
       # type: :success, description: All went well, and (usually) some data was returned.
       # type: :error, description: An error occurred in processing the request, i.e. an exception was thrown.

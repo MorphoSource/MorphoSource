@@ -1,0 +1,22 @@
+- id: '000357979'
+  publishing_org_key: b4640710-8e03-11d8-b956-b8a03c50a862
+  label: 'MCZ Special Collections'
+  agreement_uri: ['https://mcz.harvard.edu/permissions-copyright']
+  default_device: 'TissueScope LE 120'
+  download_reviewer: '2956'
+  filter_slides: 'ac:BestQuality'
+  fileset_accessibility: ['restricted_download']
+  license: ['https://creativecommons.org/licenses/by-nc-nd/4.0/']
+  list_visibility: 'restricted'
+  manager: 'f95e50'
+  morphosource_use_agreement_type: ['Standard']
+  permits_3d_use: ['3DPrintingLimited']
+  permits_commercial_use: ['CommercialUseNotPermitted']
+  preview_mode: ['Interactive/Embeddable']
+  publication_status: 'restricted_download'
+  publisher: ['Museum of Comparative Zoology, Harvard University']
+  required_archival_of_published_derivatives: ['OnMorphoSource']
+  rights_holder: ['President and Fellows of Harvard College (Copyright and License)']
+  rights_statement: ['http://rightsstatements.org/vocab/InC/1.0/']
+  visibility: 'open'
+  slide_class: 'MczSlide'

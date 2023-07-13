@@ -17,13 +17,16 @@ module Morphosource
         @list_visibility = list_visibility
       end
 
+      # This will get refactored with providers yml PR
       def call
+        @json = fetch_json
+        return @json if @json.is_a? String # error message returned
+
         import_slide_series
         @collection
       end
 
       def import_slide_series
-        @json = fetch_json
         @specimen = find_or_create_specimen
         @taxonomy = @specimen.taxonomies.first
         @device = device

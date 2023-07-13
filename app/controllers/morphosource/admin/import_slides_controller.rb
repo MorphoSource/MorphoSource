@@ -15,7 +15,12 @@ module Morphosource
         list_visibility = params["list_visibility"]
         @collection = import_service_class.new(service: service, resource_id:resource_id, user_email: user_email).call
 
-        redirect_to sequential_section_list_path(@collection)
+        # this will be refactored w/ providers yml pr
+        if import_error?
+          redirect_to admin_import_slides_path, flash: { error: @error_message }
+        else
+          redirect_to sequential_section_list_path(@collection)
+        end
       end
 
       def import_service_class
@@ -29,6 +34,13 @@ module Morphosource
 
       def require_admin
         authorize! :read, :admin_dashboard
+      end
+
+      def import_error?
+        return false unless @collection.is_a? String
+
+        @error_message = @collection
+        true
       end
     end
   end

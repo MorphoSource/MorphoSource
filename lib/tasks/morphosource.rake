@@ -718,6 +718,7 @@ namespace :morphosource do
     bso_list = ActiveFedora::SolrService.query(qry, rows: 999999)
     grouped = bso_list.group_by{|b| [ b["occurrence_id_tesim"], b["idigbio_uuid_tesim"] ]}
     filtered = grouped.values.select { |a| a.size > 1 }.flatten.group_by { |b| [ b["occurrence_id_tesim"], b["idigbio_uuid_tesim"] ] }
+    log.info "report_only: #{report_only}"
     log.info "#{filtered.count} duplicate groups found"
     filtered.each do |key, dups|
       # To minimize the merging time, sort the specimen by the media count, and keep the first specimen (with the most media)
@@ -735,7 +736,7 @@ namespace :morphosource do
         log.info " duplicate group #{key} merged -> remaining specimen #{merge_to}"
       end
     end
-    log.info "Total imaging event count: #{ie_total}" if report_only
+    log.info "This is a report only. Total imaging event count: #{ie_total}" if report_only
   end
 
   desc "Verify remote backed media files"

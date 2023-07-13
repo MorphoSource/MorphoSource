@@ -7,17 +7,13 @@ module Morphosource
 
         self.default_processor_chain += [:apply_modalities_filter, :apply_physical_object_id_filter]
 
-        def modalities
-          ["SequentialSectionScan"]
-        end
-
         def apply_modalities_filter(solr_parameters)
           solr_parameters[:fq] ||= []
           solr_parameters[:fq] << modalities_filter
         end
 
         def modalities_filter
-          "(media_modality_ssim:(#{modalities.join(' OR ')}))"
+          "(media_modality_ssim:(/Sequential\ Section\ Scan/))"
         end
 
         # filter by physical object id of first media if collection is not empty

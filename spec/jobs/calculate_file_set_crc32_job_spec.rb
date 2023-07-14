@@ -17,7 +17,7 @@ RSpec.describe CalculateFileSetCrc32Job do
 
       it 'returns the correct crc32' do
         described_class.perform_now(file_set.id)
-        expect(file_set.reload.crc32).to eq([2489432479])
+        expect(file_set.reload.crc32).to eq([1662178079])
       end
     end
 

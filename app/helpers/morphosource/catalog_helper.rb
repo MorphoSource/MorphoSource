@@ -42,4 +42,8 @@ module Morphosource::CatalogHelper
 
     link_to user.name_or_email, Hyrax::Engine.routes.url_helpers.user_path(user)
   end
+
+  def modality_label_by_id(id)
+    Morphosource::ModalitiesService.label(id) || "Modality Not Found"
+  end
 end

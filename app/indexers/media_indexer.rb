@@ -34,10 +34,10 @@ class MediaIndexer < Morphosource::WorkIndexer
       mt = object.human_readable_media_type
       solr_doc['human_readable_media_type_tesim'] = mt
       solr_doc['human_readable_media_type_ssim'] = mt
+
       # add modality facet
-      modality = object.modality
-      solr_doc['media_modality_tesim'] = modality
-      solr_doc['media_modality_ssim'] = modality
+      solr_doc['modality_ssim'] = object.modality
+      solr_doc['human_readable_modality_tesim'] = object.modality_label
 
       solr_doc['media_parent_id_ssim'] = object.media_parent&.id
 

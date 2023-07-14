@@ -30,17 +30,17 @@ RSpec.describe Morphosource::Gbif do
         expect(results[:status]).to eq(:success)
         expect(results[:data].map { |r| r['vernacularName'] }).to include('dog')
       end
+    end
 
-      context 'response code is not 200' do
-        let(:response)  { instance_double(RestClient::Response, code: 304) }
-        before do
-          allow(RestClient::Request).to receive(:execute).and_return(response)
-        end
-        it 'returns a success status with response code' do
-          results = described_class.search(name, described_class.dataset_key)
-          expect(results[:status]).to eq(:success)
-          expect(results[:data]).to eq("Response status #{response.code}")
-        end
+    context 'response code is not 200' do
+      let(:response)  { instance_double(RestClient::Response, code: 304) }
+      before do
+        allow(RestClient::Request).to receive(:execute).and_return(response)
+      end
+      it 'returns a success status with response code' do
+        results = described_class.search(name, described_class.dataset_key)
+        expect(results[:status]).to eq(:fail)
+        expect(results[:data]).to eq("Response code: #{response.code}")
       end
     end
 

@@ -44,7 +44,7 @@ module Morphosource
     end
 
     def self.process_response(response)
-      return jsend_success("Response status #{response.code}") unless response.code == 200
+      return jsend_fail("Response code: #{response.code}") unless response.code == 200
 
       data = parse_response(response)
       jsend_success(data)

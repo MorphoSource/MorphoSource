@@ -139,7 +139,7 @@ module Morphosource
       # @param results [Array] OpenStructs conforming to Morphosource::Analytics::Pageview 
       # @return [Hash] Nested hash with structure media ID => date => [Pageview OpenStructs]
       def group_results_by_id_and_date(results)
-        results.group_by { |res| id_from_path(res.pagePath) }.transform_values do |val|
+        results.group_by { |res| id_from_path(res.page_path) }.transform_values do |val|
           val.group_by(&:date)
         end
       end

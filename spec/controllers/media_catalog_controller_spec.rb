@@ -16,8 +16,8 @@ RSpec.describe MediaCatalogController, :type => :controller do
     describe 'facet fields' do
       let(:facet_fields) { config.facet_fields }
 
-      it 'has 9 facet fields' do
-        expect(facet_fields.count).to eq(11)
+      it 'has 16 facet fields' do
+        expect(facet_fields.count).to eq(16)
       end
 
       describe 'generic type' do
@@ -88,7 +88,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
       describe 'user_with_ownership_name' do
         subject { facet_fields['user_with_ownership_name_ssim'] }
         it 'has the correct attributes' do
-          expect(subject.label).to eq("Data Managed By")
+          expect(subject.label).to eq("Data Manager")
           expect(subject.limit).to eq(10)
         end
       end
@@ -96,7 +96,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
       describe 'depositor_name' do
         subject { facet_fields['depositor_name_ssim'] }
         it 'has the correct attributes' do
-          expect(subject.label).to eq("Data Uploaded By")
+          expect(subject.label).to eq("Data Uploader")
           expect(subject.limit).to eq(10)
         end
       end
@@ -171,12 +171,12 @@ RSpec.describe MediaCatalogController, :type => :controller do
       end
 
       describe 'rights statement' do
-        subject { index_fields['rights_statement_tesim'] }
+        subject { index_fields['rights_statement_ssim'] }
 
         it 'has the correct attributes' do
-          expect(subject.label).to eq('Rights Statement Tesim')
+          expect(subject.label).to eq('Rights Statement')
           expect(subject.helper_method).to eq(:rights_statement_links)
-          expect(subject.field).to eq('rights_statement_tesim')
+          expect(subject.field).to eq('rights_statement_ssim')
         end
       end
     end

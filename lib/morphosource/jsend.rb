@@ -9,6 +9,10 @@ module Morphosource
     end
 
     module ClassMethods
+      # type: :success, description: All went well, and (usually) some data was returned.
+      # type: :error, description: An error occurred in processing the request, i.e. an exception was thrown.
+      # type: :fail, description: There was a problem with the data submitted, or some pre-condition of the API call wasn't satisfied.
+
       def jsend_success(data)
         {
           status: :success,
@@ -16,17 +20,20 @@ module Morphosource
         }
       end
 
-      def jsend_error(exception, message = nil)
-        {
+      def jsend_error(exception = nil, message = nil, code = nil, data = nil)
+        response = {
           status: :error,
           message: message || exception.message || exception.default_message || nil
         }
+        response.merge!({ code: code }) if code.present?
+        response.merge!({ data: data }) if data.present?
+        response
       end
 
-      def jsend_fail(message = nil)
+      def jsend_fail(data = nil)
         {
           status: :fail,
-          message: message
+          data: data
         }
       end
     end

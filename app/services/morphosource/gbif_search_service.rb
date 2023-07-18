@@ -25,7 +25,7 @@ module Morphosource
     # and create MorphoSource Taxonomy params
     # using the resulting mapped metadata
     def self.taxonomy_params_from_gbif(gbif_key, correct_synonym=false)
-      gbif = Morphosource::Gbif.view(gbif_key)
+      gbif = Morphosource::Gbif.view(gbif_key)[:data]
       if correct_synonym && gbif['taxonomicStatus'] == 'SYNONYM' && gbif.has_key?('acceptedKey')
         gbif = Morphosource::Gbif.view(gbif['acceptedKey'])
       end

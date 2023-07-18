@@ -33,6 +33,19 @@ module Morphosource
       end
     end
 
+    def api_show
+byebug    
+      prepare_all_files
+      if @files.present? && @all_files.present?
+        create_or_update_cart_items_for_download
+        create_interval_sequence
+        send_interval_response
+      else
+        flash[:error] = "There is an issue with one of the media you have attempted to download, and it is not available right now. Please try again later. If the issue persists, contact us (morphosource@duke.edu)."
+        redirect_to request.referer.present? ? request.referer : '/' and return
+      end
+    end
+
     def prepare_all_files
       @temp_files = []
       @all_files ||= files + standard_agreement_files + media_agreement_files + xlsx_manifest + csv_manifest

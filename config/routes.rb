@@ -609,6 +609,9 @@ Rails.application.routes.draw do
   get 'api/media', to: 'media_catalog#index', as: 'api_media_search', defaults: { format: 'json' }
   get 'api/media/:id', to: 'media_catalog#show', as: 'api_media_show', defaults: { format: 'json' }
 
+  # Download
+  get 'api/download/:id', to: 'morphosource/media_downloads#api_show', as: 'api_media_download', defaults: { format: 'json' }
+
   # Physical Objects
   get 'api/physical-objects', to: 'objects_catalog#index', as: 'api_physical_objects_search', defaults: { format: 'json' }
   get 'api/physical-objects/:id', to: 'objects_catalog#show', as: 'api_physical_object_show', defaults: { format: 'json' }

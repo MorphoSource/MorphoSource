@@ -79,8 +79,11 @@ module MorphosourceHelper
         ".m4v"
       when "video/x-ms-wmv"
         ".wmv"
+      when "application/x-tar"
+        ".tar"
       else
-        Rails.logger.debug("in file_extension_from_header: Unknown content_type ")
+        @message = "Unknown content_type #{content_type}"
+        Rails.logger.debug("in file_extension_from_header: Unknown content_type #{content_type}")
         ""
       end
     end

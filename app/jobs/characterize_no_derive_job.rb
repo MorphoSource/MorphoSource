@@ -2,7 +2,7 @@
 # Should only be called directly via console, not automatically used for any works
 
 require 'hydra/works/services/crc32_characterization_service.rb'
-require 'hydra/works/services/zip_contents_characterization_service.rb'
+require 'hydra/works/services/archive_contents_characterization_service.rb'
 
 class CharacterizeNoDeriveJob < Hyrax::ApplicationJob
   queue_as Hyrax.config.heavy_queue_name
@@ -38,10 +38,10 @@ class CharacterizeNoDeriveJob < Hyrax::ApplicationJob
         Rails.logger.debug "Running Blender characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
         Hydra::Works::CharacterizationService.run(file_set.characterization_proxy, filepath, blender_options)
         Rails.logger.debug "Ran Blender characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
-      elsif (ext =~ /\.(zip)$/)
-        Rails.logger.debug "Running zip contents characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
-        Hydra::Works::ZipContentsCharacterizationService.run(file_set.characterization_proxy, filepath)
-        Rails.logger.debug "Ran zip contents characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
+      elsif (ext =~ /\.(zip|tar)$/)
+        Rails.logger.debug "Running archive contents characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
+        Hydra::Works::ArchiveContentsCharacterizationService.run(file_set.characterization_proxy, filepath)
+        Rails.logger.debug "Ran archive contents characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
       end
     ensure
       file_set.characterization_proxy.save!

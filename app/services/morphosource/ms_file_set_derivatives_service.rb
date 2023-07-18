@@ -103,6 +103,7 @@ module Morphosource
       end
 
       def create_3d_ct_image_series_derivative(filename, unit, slice_thickness, x_spacing, y_spacing, z_spacing)
+
         begin
           # Create 3D derivative asset
           Morphosource::Derivatives::CTImageSeriesDerivatives.create(

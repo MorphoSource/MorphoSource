@@ -27,7 +27,7 @@ module Morphosource
 
       # Allowed formats for uploads based on selected Media type
       mattr_accessor :all_formats do
-        [".avi", ".bin", ".bmp", ".dcm", ".dicom", ".gif", ".glb", ".gltf", ".bin", ".jp2", ".jpeg", ".jpg", ".m4v", ".mov", ".mp4", ".mpg", ".mpeg", ".mtl", ".obj", ".pdf", ".ply", ".png", ".stl", ".svg", ".tif", ".tiff", ".wmv", ".wrl", ".x3d", ".zip"]
+        [".avi", ".bin", ".bmp", ".dcm", ".dicom", ".gif", ".glb", ".gltf", ".bin", ".jp2", ".jpeg", ".jpg", ".m4v", ".mov", ".mp4", ".mpg", ".mpeg", ".mtl", ".obj", ".pdf", ".ply", ".png", ".stl", ".svg", ".tif", ".tiff", ".wmv", ".wrl", ".x3d", ".zip", ".tar"]
       end
 
       mattr_accessor :image_formats do
@@ -39,15 +39,15 @@ module Morphosource
       end
 
       mattr_accessor :ct_formats do
-        [".zip"]
+        [".zip", ".tar"]
       end
 
       mattr_accessor :photogrammetry_formats do
-        [".zip", ".jp2", ".tif", ".dng", ".nef", ".crw", ".cr2", ".cr3", ".iiq", ".arw", ".raw", ".rw2"]
+        [".zip", ".tar", ".jp2", ".tif", ".dng", ".nef", ".crw", ".cr2", ".cr3", ".iiq", ".arw", ".raw", ".rw2"]
       end
 
       mattr_accessor :mesh_formats do
-        [".glb", ".gltf", ".obj", ".ply", ".stl",  ".wrl", ".x3d", ".zip"]
+        [".glb", ".gltf", ".obj", ".ply", ".stl",  ".wrl", ".x3d", ".zip", ".tar"]
       end
 
       # Allowed formats for attachments (default for documents)
@@ -61,7 +61,7 @@ module Morphosource
       end
 
       mattr_accessor :sequential_section_formats do
-        [".zip"]
+        [".zip", ".tar"]
       end
 
       # right now same as all formats

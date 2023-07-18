@@ -16,9 +16,10 @@ module Morphosource
   class MediaDownloadsController < ApplicationController
     include Morphosource::CartItems
 
-    before_action :validate_params, only: [:show]
-    before_action :validate_download_hash, only: [:show]
-    before_action :validate_user, only: [:show]
+    before_action :validate_params, only: [:show, :api_download]
+    before_action :validate_download_hash, only: [:show, :api_download]
+    before_action :set_user_for_api, only: [:api_download]
+    before_action :validate_user, only: [:show, :api_download]
     after_action :reset_recaptcha, only: [:show]
 
     def show
@@ -33,16 +34,14 @@ module Morphosource
       end
     end
 
-    def api_show
-byebug    
+    def api_download
       prepare_all_files
       if @files.present? && @all_files.present?
         create_or_update_cart_items_for_download
         create_interval_sequence
         send_interval_response
-      else
-        flash[:error] = "There is an issue with one of the media you have attempted to download, and it is not available right now. Please try again later. If the issue persists, contact us (morphosource@duke.edu)."
-        redirect_to request.referer.present? ? request.referer : '/' and return
+      else        
+        # return error in json format?
       end
     end
 
@@ -154,6 +153,10 @@ byebug
 
       def user_is_valid?
         user_from_token.present? && current_user == user_from_token && authorized_to_download?
+      end
+
+      def set_user_for_api
+        @current_user = user_from_token
       end
 
       def authorized_to_download?

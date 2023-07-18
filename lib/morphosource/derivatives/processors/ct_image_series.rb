@@ -42,7 +42,6 @@ module Morphosource::Derivatives::Processors
       Dir.mkdir output_path unless File.exist? output_path
       @output_file_path = File.join(output_path, 'derivative.dcm')
 
-
       @x_spacing = (directives.fetch(:x_spacing, 1).presence || 1).to_f
       @y_spacing = (directives.fetch(:y_spacing, 1).presence || 1).to_f
       @z_spacing = (directives.fetch(:z_spacing, 0).presence || 0).to_f
@@ -62,15 +61,11 @@ module Morphosource::Derivatives::Processors
       @unit = directives.fetch(:unit, 'Mm').presence || 'Mm'
       correct_spacing_scale if unit != 'Mm'
 
-
       begin
-
         @img_coll, @ext = locate_images
         return unless img_coll.present?
-
         # extract and process images
         extract_images
-        # byebug -- check files in input_path here
         uncompress_dcm if dicom_image_formats.include?(ext)
         extract_image_metadata
         scale_images

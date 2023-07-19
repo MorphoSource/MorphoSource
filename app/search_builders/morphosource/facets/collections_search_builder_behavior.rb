@@ -15,6 +15,8 @@ module Morphosource
           solr_parameters['f.member_of_collection_ids_ssim.facet.excludeTerms'] = filtered_ids
           solr_parameters['f.member_of_team_ids_ssim.facet.excludeTerms'] = filtered_ids
           solr_parameters['f.member_of_project_ids_ssim.facet.excludeTerms'] = filtered_ids
+          solr_parameters['f.member_of_media_list_ids_ssim.facet.excludeTerms'] = filtered_ids
+          solr_parameters['f.member_of_sequential_section_list_ids_ssim.facet.excludeTerms'] = filtered_ids
         elsif models.include?(BiologicalSpecimen) || models.include?(CulturalHeritageObject)
           solr_parameters['f.media_member_of_team_ids_ssim.facet.excludeTerms'] = filtered_ids
           solr_parameters['f.media_member_of_project_ids_ssim.facet.excludeTerms'] = filtered_ids
@@ -26,7 +28,7 @@ module Morphosource
       end
 
       def filtered_collection_ids
-        restricted_collection_ids = Morphosource::SolrService.new.get_docs('has_model_ssim:Collection AND visibility_ssi:restricted', fl: 'id').map{|c| c["id"]}
+        restricted_collection_ids = Morphosource::SolrService.new.get_docs('has_model_ssim:(Collection OR MediaList OR SequentialSectionList) AND visibility_ssi:restricted', fl: 'id').map{|c| c["id"]}
         user_collection_ids = user_viewable_collection_ids
         (restricted_collection_ids - user_viewable_collection_ids).join(',')
       end

@@ -43,6 +43,10 @@ module Morphosource::CatalogHelper
     link_to user.name_or_email, Hyrax::Engine.routes.url_helpers.user_path(user)
   end
 
+  def modality_label_by_id(id)
+    Morphosource::ModalitiesService.label(id) || "Modality Not Found"
+  end
+
   # media index metadata displays sequential section list titles with links
   def link_to_sequential_section_lists(args)
     return if !args[:value].present?

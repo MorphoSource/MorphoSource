@@ -70,8 +70,8 @@ module Morphosource
         self["proxy_depositor_ssim"]&.first
       end
 
-      def media_modality
-        self[Solrizer.solr_name('media_modality', :stored_searchable)]
+      def modality
+        self[Solrizer.solr_name('modality', :symbol)]
       end
 
       def media_organization

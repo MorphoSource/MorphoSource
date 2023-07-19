@@ -13,7 +13,7 @@ class MediaCatalogController < CatalogController
     # type
     config.add_facet_field solr_name("human_readable_media_type", :symbol), label: "Type", limit: 10
     # modality - inherited from imaging event modality
-    config.add_facet_field solr_name("media_modality", :symbol), label: "Modality", limit: 10
+    config.add_facet_field solr_name("modality", :symbol), label: "Modality", limit: 10, helper_method: :modality_label_by_id
     # object type - specimen or cho
     config.add_facet_field solr_name("media_physical_object_type", :symbol), label: "Object Type", limit: 10
     # organization that owns the object
@@ -44,22 +44,23 @@ class MediaCatalogController < CatalogController
     config.add_index_field solr_name("physical_object_id", :stored_searchable), label: "Object", helper_method: :link_to_object
     config.add_index_field solr_name("taxonomy", :stored_searchable), label: "Taxonomy"
     config.add_index_field solr_name("part", :stored_searchable), label: "Element or Part"
-    config.add_index_field solr_name("media_modality", :stored_searchable), label: "Modality"
+
+    config.add_index_field solr_name("human_readable_modality", :stored_searchable), label: "Modality"
     config.add_index_field solr_name("member_of_sequential_section_list_ids", :symbol), label: "Sequential Section List", helper_method: :link_to_sequential_section_lists
     config.add_index_field solr_name("user_with_ownership", :stored_sortable), label: "Data Manager", helper_method: :link_to_profile
     config.add_index_field solr_name("date_uploaded", :stored_sortable, type: :date), label: "Date Uploaded", helper_method: :human_readable_date
     config.add_index_field solr_name("publication_status", :stored_sortable), label: "Publication Status"
     config.add_index_field solr_name("rights_statement", :symbol), label: "Rights Statement", helper_method: :rights_statement_links
     config.add_index_field solr_name("license", :symbol), label: "CC License", helper_method: :license_links
-    
 
+    
     # solr fields to be displayed in the show (single result) view
     # these fields also determine what fields are indexed for searching
     config.add_show_field solr_name('agreement_uri', :stored_searchable)
     config.add_show_field solr_name('cite_as', :stored_searchable)
     config.add_show_field solr_name('funding', :stored_searchable)
     config.add_show_field solr_name('map_type', :stored_searchable)
-    config.add_show_field solr_name('media_modality', :stored_searchable)
+    config.add_show_field solr_name('human_readable_modality', :stored_searchable)
     config.add_show_field solr_name('media_organization', :stored_searchable)
     config.add_show_field solr_name('media_device_facility_organization', :stored_searchable)
     config.add_show_field solr_name('media_physical_object_type', :stored_searchable)

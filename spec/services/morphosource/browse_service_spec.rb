@@ -86,7 +86,7 @@ RSpec.describe Morphosource::BrowseService do
     it 'returns media_type_and_modality_facets, media count' do
       facets, total_media = subject.media_type_and_modality_facets
       expect(facets["media_type_sim"]["xyz"]).to eq(1)
-      expect(facets["media_modality_ssim"][device.modality.first]).to eq(1)
+      expect(facets["modality_ssim"][device.modality.first]).to eq(1)
       expect(total_media).to eq(1)
     end
   end

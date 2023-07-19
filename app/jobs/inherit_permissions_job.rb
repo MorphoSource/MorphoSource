@@ -8,25 +8,36 @@ class InheritPermissionsJob < Hyrax::ApplicationJob
   #
   # @param work [String, ActiveFedora::Base] work ID or work containing access level and filesets
   def perform(work)
-    if work.is_a? String
-      return unless Morphosource::Works::Base.exists?(work)
-      work = Morphosource::Works::Base.find(work)
-    end
+    begin
+      # Retry 3 times, sometimes this hits mysterious race(?) conditions
+      retries ||= 0
 
-    work.file_sets.each do |file|
-      attribute_map = work.permissions.map(&:to_hash)
-
-      # copy and removed access to the new access with the delete flag
-      file.permissions.map(&:to_hash).each do |perm|
-        unless attribute_map.include?(perm)
-          perm[:_destroy] = true
-          attribute_map << perm
-        end
+      if work.is_a? String
+        return unless Morphosource::Works::Base.exists?(work)
+        work = Morphosource::Works::Base.find(work)
       end
 
-      # apply the new and deleted attributes
-      file.permissions_attributes = attribute_map
-      file.save!
+      work.file_sets.each do |file|
+        attribute_map = work.permissions.map(&:to_hash)
+
+        # copy and removed access to the new access with the delete flag
+        file.permissions.map(&:to_hash).each do |perm|
+          unless attribute_map.include?(perm)
+            perm[:_destroy] = true
+            attribute_map << perm
+          end
+        end
+
+        # apply the new and deleted attributes
+        file.permissions_attributes = attribute_map
+        file.save!
+      end
+    rescue Exception => e
+      if (retries += 1) <= 3
+        retry
+      else
+        raise e
+      end
     end
   end
 end

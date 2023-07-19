@@ -50,6 +50,10 @@ module Morphosource::CatalogHelper
   def can_read_any(config, document)
     ( document[config[:key]] || [] ).any? { |id| can? :read, id }
   end
+  
+  def modality_label_by_id(id)
+    Morphosource::ModalitiesService.label(id) || "Modality Not Found"
+  end
 
   # media index metadata displays sequential section list titles with links
   def link_to_sequential_section_lists(args)

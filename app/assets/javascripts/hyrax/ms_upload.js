@@ -17,7 +17,7 @@ $( document ).ready(function() {
     var options = {
         maxNumberOfFiles:1,
         maxFileSize: 100000000000,
-        acceptFileTypes: /(\.|\/)(zip|ply|stl|obj|x3d|glb|gltf|bin|wrl|png|gif|bmp|dcm|dicom|jpe?g|jpeg2000|svg|tif?f|mtl|pdf|wmv|mov|avi|mpe?g|m4v|mp4|dng|nef|crw|cr2|cr3|iiq|arw|raw|rw2)$/i
+        acceptFileTypes: /(\.|\/)(zip|tar|ply|stl|obj|x3d|glb|gltf|bin|wrl|png|gif|bmp|dcm|dicom|jpe?g|jpeg2000|svg|tif?f|mtl|pdf|wmv|mov|avi|mpe?g|m4v|mp4|dng|nef|crw|cr2|cr3|iiq|arw|raw|rw2)$/i
     };
     $('#fileupload').hyraxUploader(options);
     $('#fileuploadlogo').hyraxUploader({downloadTemplateId: 'logo-template-download'});

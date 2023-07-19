@@ -17,7 +17,7 @@ module Morphosource
         end
 
         def modalities_filter
-          "(media_modality_ssim:(#{modalities.join(' OR ')}))"
+          "(modality_ssim:(#{modalities.join(' OR ')}))"
         end
 
         # filter by physical object id of first media if collection is not empty

@@ -18,11 +18,11 @@ module Morphosource
         end
 
         def archive_mime_types
-          ['application/zip']
+          ['application/zip', 'application/x-tar']
         end
 
         def volume_mime_types
-          ['application/zip']
+          ['application/zip', 'application/x-tar']
         end
       end
     end

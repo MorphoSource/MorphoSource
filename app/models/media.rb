@@ -121,6 +121,10 @@ class Media < Morphosource::Works::Base
   end
 
   def modality
+    imaging_event&.ie_modality&.first
+  end
+
+  def modality_label
     Morphosource::ModalitiesService.label(imaging_event&.ie_modality&.first) || ""
   end
 

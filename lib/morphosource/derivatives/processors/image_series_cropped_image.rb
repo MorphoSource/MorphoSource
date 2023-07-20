@@ -78,14 +78,10 @@ module Morphosource::Derivatives::Processors
     end
 
     def cleanup_tmp_files
-      if Dir.empty?(tmp_dir_path)
+      begin
         FileUtils.remove_dir tmp_dir_path
-      else
-        entries = Dir.entries(tmp_dir_path) - ['.', '..']
-        puts "in cleanup_tmp_files: Directory is not empty: #{tmp_dir_path} "
-        entries.each do |entry|
-          puts "in cleanup_tmp_files: - #{entry}"
-        end
+      rescue Exception => e
+        Logger.debug "Exception in cleanup_tmp_files: #{e.message}"
       end
     end
   end

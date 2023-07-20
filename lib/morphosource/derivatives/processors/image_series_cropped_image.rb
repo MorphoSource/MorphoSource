@@ -36,10 +36,10 @@ module Morphosource::Derivatives::Processors
         convert_dicom_image if dicom_image_formats.include?(ext)
         create_resized_image
       rescue StandardError => e
-        raise e
-      ensure
         cleanup_tmp_files
+        raise e
       end
+      cleanup_tmp_files
     end
 
     def extract_image_for_thumbnail
@@ -78,11 +78,7 @@ module Morphosource::Derivatives::Processors
     end
 
     def cleanup_tmp_files
-      begin
-        FileUtils.remove_dir tmp_dir_path
-      rescue Exception => e
-        Logger.debug "Exception in cleanup_tmp_files: #{e.message}"
-      end
+      FileUtils.rm_r tmp_dir_path
     end
   end
 end

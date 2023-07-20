@@ -52,10 +52,10 @@ module Morphosource::Derivatives::Processors
         create_tmp_draco_glb
         write_draco_glb
       rescue StandardError => e
-        raise e
-      ensure
         cleanup_tmp_files
+        raise e
       end
+      cleanup_tmp_files
     end
 
     def derivatives_tmp_path
@@ -107,11 +107,7 @@ module Morphosource::Derivatives::Processors
     end
 
     def cleanup_tmp_files
-      begin
-        FileUtils.remove_dir tmp_dir_path
-      rescue Exception => e
-        Logger.debug "Exception in cleanup_tmp_files: #{e.message}"
-      end
+      FileUtils.rm_r tmp_dir_path
     end
   end
 end

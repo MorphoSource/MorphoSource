@@ -74,10 +74,10 @@ module Morphosource::Derivatives::Processors
         # place files
         write_files
       rescue StandardError => e
-        raise e
-      ensure
         cleanup_tmp_files
+        raise e
       end
+      cleanup_tmp_files
     end
 
     def correct_spacing_scale
@@ -216,7 +216,7 @@ module Morphosource::Derivatives::Processors
     end
 
     def cleanup_tmp_files
-      FileUtils.remove_dir tmp_dir_path
+      FileUtils.rm_r tmp_dir_path
     end
   end
 end

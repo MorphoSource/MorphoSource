@@ -784,6 +784,8 @@ namespace :morphosource do
     end
   end
 
+  # Google Analytics-based media view statistics import
+
   desc "Import Media work view stats from Google Analytics, starting from 2021-01-1 or last saved statistic date"
   task :import_media_view_stats => :environment do
     Morphosource::Analytics::MediaViewStatImporter.new({
@@ -802,5 +804,31 @@ namespace :morphosource do
       logging: true, 
       retries: 3 
     }).import
+  end
+
+  # Set and clear sitewide announcement messages and time until maintenance
+
+  desc "Set sitewide flash-based announcement message"
+  task :set_announcement, [:msg] => :environment do |task, args|
+    if args[:msg].present? && Redis.current
+      Redis.current.set "morphosource:announcement", args[:msg]
+    end
+  end
+
+  desc "Clear sitewide flash-based announcement message"
+  task :clear_announcement => :environment do
+    Redis.current.del("morphosource:announcement") if Redis.current
+  end
+
+  desc "Set time until maintenance, which will be announced sitewide"
+  task :set_time_until_maintenance_in_minutes, [:minutes] => :environment do |task, args|
+    return unless Redis.current
+    minutes = args[:minutes].present? ? args[:minutes].to_i : 10
+    maintenance_time = Time.current + minutes.minutes
+    Redis.current.set "morphosource:maintenance_time", maintenance_time.utc.iso8601
+  end
+
+  task :clear_time_until_maintenance_in_minutes => :environment do
+    Redis.current.del("morphosource:maintenance_time") if Redis.current
   end
 end

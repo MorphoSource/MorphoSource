@@ -1,9 +1,11 @@
 variables:
   SKIP_TESTS: "false"
+  MINUTES_UNTIL_DEPLOY: 30
 
 stages:
   - build
   - test
+  - predeploy
   - deploy
 
 build_job:
@@ -82,6 +84,33 @@ accessibility_job:
   script:
     - bin/rake ci:wrapped_spec[accessibility]
 
+.predeploy:
+  stage: predeploy
+  variables:
+    RAKE_COMMAND: sudo -u $RAILS_USER -n -i $RAILS_ROOT/bin/rake -f $RAILS_ROOT/Rakefile
+  script:
+    - $RAKE_COMMAND morphosource:set_time_until_maintenance_in_minutes[$MINUTES_UNTIL_DEPLOY]
+
+predeploy_dev:
+  extends: .predeploy
+  environment:
+    name: development
+    url: https://morphosource-dev.oit.duke.edu/
+  only:
+    - dev
+  tags:
+    - development
+
+predeploy_prod:
+  extends: .predeploy
+  environment:
+    name: production
+    url: https://www.morphosource.org/
+  only:
+    - main
+  tags:
+    - production
+
 .deploy:
   stage: deploy
   variables:
@@ -93,7 +122,9 @@ accessibility_job:
     - $RAKE_COMMAND db:migrate
     - $RAKE_COMMAND tmp:cache:clear
     - $RAKE_COMMAND hyrax:workflow:load
+    - $RAKE_COMMAND morphosource:clear_time_until_maintenance_in_minutes
     - $RAKE_COMMAND maintenance:end
+  start_in: $MINUTES_UNTIL_DEPLOY minutes
   after_script:
     - sudo /usr/bin/systemctl restart $RAILS_SERVICE_UNIT
 

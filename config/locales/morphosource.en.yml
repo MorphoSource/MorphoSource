@@ -57,6 +57,7 @@ en:
     base:
       form_progress:
         required_format: 'File formats match selected media type'
+      maintenance_message: "MorphoSource will undergo maintenance and feature updates in approximately %{minutes} minutes at %{time}. The site may be briefly inaccessible during this time. Please finish any ongoing work beforehand."
     collection:
       actions:
         add_new_nested_collection:

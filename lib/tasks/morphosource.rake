@@ -53,6 +53,20 @@ namespace :morphosource do
     Rake::Task['morphosource:dev_cache_on'].invoke
   end
 
+  desc 'MorphoSource Docker Test Suite Setup'
+  task :docker_test_setup => :environment do
+    Rails.logger.info('Setup DB')
+    Rake::Task['db:create'].invoke
+    Rake::Task['morphosource:db_schema_load_if_needed'].invoke
+    Rake::Task['db:migrate'].invoke
+    Rails.logger.info('Clear cache')
+    Rake::Task['tmp:cache:clear'].invoke
+    Rails.logger.info('Load workflow')
+    Rake::Task['hyrax:workflow:load'].invoke
+    Rails.logger.info('Create collection types')
+    Rake::Task['morphosource:create_collection_types'].invoke
+  end
+
   # Runs rake task dev:cache to turn on caching only if it is off
   task dev_cache_on: :environment do
     Rake::Task['dev:cache'].invoke if !Rails.root.join('tmp', 'caching-dev.txt').exist?

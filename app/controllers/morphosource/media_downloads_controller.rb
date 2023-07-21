@@ -15,12 +15,13 @@ RemoteInclusion = Struct.new(:url, :bytesize)
 module Morphosource
   class MediaDownloadsController < ApplicationController
     include Morphosource::CartItems
+    include Morphosource::RestApiBehavior
 
-    before_action :validate_params, only: [:show, :api_download]
-    before_action :validate_download_hash, only: [:show, :api_download]
-    before_action :set_user_for_api, only: [:api_download]
-    before_action :validate_user, only: [:show, :api_download]
+    before_action :validate_params, only: [:show]
+    before_action :validate_download_hash, only: [:show]
+    before_action :validate_user, only: [:show]
     after_action :reset_recaptcha, only: [:show]
+    before_action :authenticate_api_key_required, only: [:api_download]
 
     def show
       prepare_all_files
@@ -35,13 +36,39 @@ module Morphosource
     end
 
     def api_download
-      prepare_all_files
-      if @files.present? && @all_files.present?
-        create_or_update_cart_items_for_download
-        create_interval_sequence
-        send_interval_response
-      else        
-        # return error in json format?
+      media_id = params[:id]
+
+      base_url = "http://localhost:3000/download"
+      query_params = {
+        key: '8f4de432-187b-440f-9a48-5309dadedf64',
+        token: 'N8fqcwTFYgWRJdafQhbTst96',
+        download: 'aaaaaaa1-39f4-440e-95c7-98beabea21a7',
+        usage: 'intended usage',
+        usage_list: 'intended usage categories'
+      }
+
+      query_string = query_params.map { |key, value| "#{key}=#{URI.encode(value)}" }.join('&')
+
+      download_url = "#{base_url}?#{query_string}"
+puts "download_url:\n#{download_url}"
+
+# url works only from a browser with logged in session
+
+      respond_to do |format|
+        format.json { render json: {
+          
+          "response": {
+            "media": {
+              "id": [
+                media_id
+              ],
+              "download_url": [
+                download_url
+              ]
+            }
+          }
+
+        }}
       end
     end
 
@@ -152,11 +179,9 @@ module Morphosource
       end
 
       def user_is_valid?
+@current_user = user_from_token
+byebug
         user_from_token.present? && current_user == user_from_token && authorized_to_download?
-      end
-
-      def set_user_for_api
-        @current_user = user_from_token
       end
 
       def authorized_to_download?

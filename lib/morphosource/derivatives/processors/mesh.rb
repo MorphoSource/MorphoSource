@@ -38,6 +38,7 @@ module Morphosource::Derivatives::Processors
       @draco_glb_name = File.basename(source_path, '.*') + '-draco.glb'
       @unit = directives.fetch(:unit, 'mm').to_s.downcase.presence || 'mm'
       @tmp_dir_path = Rails.root.join(derivatives_tmp_path, SecureRandom.uuid)
+tmp_dir_path = "/nas/morphosource_dev/morphosource_temp/tmp/1test"
       Dir.mkdir tmp_dir_path unless File.exist? tmp_dir_path
       @glb_path = File.join(tmp_dir_path, glb_name)
       @draco_glb_path = File.join(tmp_dir_path, draco_glb_name)
@@ -110,7 +111,7 @@ module Morphosource::Derivatives::Processors
       begin
         FileUtils.rm_r tmp_dir_path
       rescue Errno::ENOTEMPTY
-        puts "in cleanup_tmp_files: Directory '#{tmp_dir_path}' not empty."
+        Rails.logger.debug "in cleanup_tmp_files: Directory '#{tmp_dir_path}' not empty."
       end
     end
   end

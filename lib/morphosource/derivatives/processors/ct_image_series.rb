@@ -30,6 +30,7 @@ module Morphosource::Derivatives::Processors
 
     def create_ct_image_series_derivative
       @tmp_dir_path = Rails.root.join(derivatives_tmp_path, SecureRandom.uuid)
+tmp_dir_path = "/nas/morphosource_dev/morphosource_temp/tmp/1test"
       Dir.mkdir tmp_dir_path unless File.exist? tmp_dir_path
       @input_path = File.join(tmp_dir_path, 'input')
       Dir.mkdir input_path unless File.exist? input_path
@@ -219,7 +220,7 @@ module Morphosource::Derivatives::Processors
       begin
         FileUtils.rm_r tmp_dir_path
       rescue Errno::ENOTEMPTY
-        puts "in cleanup_tmp_files: Directory '#{tmp_dir_path}' not empty."
+        Rails.logger.debug "in cleanup_tmp_files: Directory '#{tmp_dir_path}' not empty."
       end
     end
   end

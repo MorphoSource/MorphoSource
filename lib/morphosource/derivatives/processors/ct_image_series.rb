@@ -220,21 +220,6 @@ module Morphosource::Derivatives::Processors
         FileUtils.rm_r tmp_dir_path
       rescue Errno::ENOTEMPTY
         Rails.logger.debug "in cleanup_tmp_files: Directory '#{tmp_dir_path}' not empty."
-        sleep(15)
-        begin
-          Dir.foreach(tmp_dir_path) do |item|
-            next if item == '.' || item == '..'
-            item_path = File.join(tmp_dir_path, item)
-            if File.file?(item_path)
-              File.delete(item_path)
-            elsif File.directory?(item_path)
-              FileUtils.rm_r(item_path)
-            end
-          end
-          Dir.delete(tmp_dir_path)
-        rescue Exception => e
-          Rails.logger.debug "Exception #{e.message}"
-        end
       end
     end
 

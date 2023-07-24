@@ -216,7 +216,11 @@ module Morphosource::Derivatives::Processors
     end
 
     def cleanup_tmp_files
-      FileUtils.rm_r tmp_dir_path
+      begin
+        FileUtils.rm_r tmp_dir_path
+      rescue Errno::ENOTEMPTY
+        puts "in cleanup_tmp_files: Directory '#{tmp_dir_path}' not empty."
+      end
     end
   end
 end

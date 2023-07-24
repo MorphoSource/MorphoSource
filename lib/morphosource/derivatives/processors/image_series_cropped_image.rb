@@ -28,7 +28,6 @@ module Morphosource::Derivatives::Processors
     
     def create_image_series_cropped_image_derivative
       @tmp_dir_path = Rails.root.join(derivatives_tmp_path, SecureRandom.uuid)
-tmp_dir_path = "/nas/morphosource_dev/morphosource_temp/tmp/1test"
       Dir.mkdir tmp_dir_path unless File.exist? tmp_dir_path
       begin
         @img_coll, @ext = locate_images
@@ -83,7 +82,23 @@ tmp_dir_path = "/nas/morphosource_dev/morphosource_temp/tmp/1test"
         FileUtils.rm_r tmp_dir_path
       rescue Errno::ENOTEMPTY
         Rails.logger.debug "in cleanup_tmp_files: Directory '#{tmp_dir_path}' not empty."
+        sleep(15)
+        begin
+          Dir.foreach(tmp_dir_path) do |item|
+            next if item == '.' || item == '..'
+            item_path = File.join(tmp_dir_path, item)
+            if File.file?(item_path)
+              File.delete(item_path)
+            elsif File.directory?(item_path)
+              FileUtils.rm_r(item_path)
+            end
+          end
+          Dir.delete(tmp_dir_path)
+        rescue Exception => e
+          Rails.logger.debug "Exception #{e.message}"
+        end
       end
     end
+  
   end
 end

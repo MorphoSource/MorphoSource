@@ -118,9 +118,6 @@ predeploy_prod:
   stage: deploy
   variables:
     RAKE_COMMAND: sudo -u $RAILS_USER -n -i $RAILS_ROOT/bin/rake -f $RAILS_ROOT/Rakefile
-  only: 
-    variables:
-      - $FAST_DEPLOY == "false"
   script:
     - rsync -rl --delete --exclude-from=EXCLUDE ./ $RAILS_ROOT/
     - $RAKE_COMMAND maintenance:start
@@ -141,7 +138,10 @@ deploy_dev:
     name: development
     url: https://morphosource-dev.oit.duke.edu/
   only:
-    - dev
+    refs:
+      - dev
+    variables: 
+      - $FAST_DEPLOY == "false"
   tags:
     - development
 
@@ -151,7 +151,10 @@ deploy_prod:
     name: production
     url: https://www.morphosource.org/
   only:
-    - main
+    refs:
+      - main
+    variables: 
+      - $FAST_DEPLOY == "false"
   tags:
     - production
 
@@ -159,9 +162,6 @@ deploy_prod:
   stage: deploy
   variables:
     RAKE_COMMAND: sudo -u $RAILS_USER -n -i $RAILS_ROOT/bin/rake -f $RAILS_ROOT/Rakefile
-  only: 
-    variables: 
-      - $FAST_DEPLOY == "true"
   script:
     - rsync -rl --delete --exclude-from=EXCLUDE ./ $RAILS_ROOT/
     - '$RAKE_COMMAND db:setup || true'
@@ -177,7 +177,10 @@ fast_deploy_dev:
     name: development
     url: https://morphosource-dev.oit.duke.edu/
   only:
-    - dev
+    refs:
+      - dev
+    variables: 
+      - $FAST_DEPLOY == "true"
   tags:
     - development
 
@@ -187,6 +190,9 @@ fast_deploy_prod:
     name: production
     url: https://www.morphosource.org/
   only:
-    - main
+    refs:
+      - main
+    variables: 
+      - $FAST_DEPLOY == "true"
   tags:
     - production

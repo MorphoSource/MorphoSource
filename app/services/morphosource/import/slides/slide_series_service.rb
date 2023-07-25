@@ -22,7 +22,7 @@ module Morphosource
           @occurrence_id = id
           @occurrence_json = json || occurrence_json
           raise StandardError.new "GBIF occurrence JSON is blank." if @occurrence_json.blank?
-          @collection = Collection.where(id: collection_id)&.first || create_series_collection
+          @collection = Collection.where(id: collection_id)&.first || collection
         end
 
         def occurrence_json
@@ -34,6 +34,7 @@ module Morphosource
           import_slide_series
         end
 
+        # these are located/created using GBIF occurrence metadata
         def find_or_create_series_works
           @taxonomy = taxonomy
           @specimen = find_or_create_specimen
@@ -136,6 +137,8 @@ module Morphosource
           update_work(imaging_event)
         end
 
+        # These are created using a combination of GBIF occurrence metadata, GBIF occurrence individual media metadata, IIIF metadata (including exif), and values from the provider profile.
+        # Except for the provider profile values, the rest are aggregated by the Slide class.
         def create_new_media
           media = Media.create(date_uploaded: Date.today,
                                media_type: ['Image'],

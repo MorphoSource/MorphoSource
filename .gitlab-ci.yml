@@ -91,6 +91,7 @@ accessibility_job:
   only: 
     variables:
       - $FAST_DEPLOY == "false"
+  allow_failure: true
   script:
     - $RAKE_COMMAND morphosource:set_time_until_maintenance_in_minutes[30]
 

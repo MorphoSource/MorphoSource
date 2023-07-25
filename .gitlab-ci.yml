@@ -1,6 +1,5 @@
 variables:
   FAST_DEPLOY: "false"
-  MINUTES_UNTIL_DEPLOY: 30
   SKIP_TESTS: "false"
 
 stages:
@@ -91,7 +90,7 @@ accessibility_job:
     RAKE_COMMAND: sudo -u $RAILS_USER -n -i $RAILS_ROOT/bin/rake -f $RAILS_ROOT/Rakefile
   only: $FAST_DEPLOY == "false"
   script:
-    - $RAKE_COMMAND morphosource:set_time_until_maintenance_in_minutes[$MINUTES_UNTIL_DEPLOY]
+    - $RAKE_COMMAND morphosource:set_time_until_maintenance_in_minutes[30]
 
 predeploy_dev:
   extends: .predeploy
@@ -127,7 +126,8 @@ predeploy_prod:
     - $RAKE_COMMAND hyrax:workflow:load
     - $RAKE_COMMAND morphosource:clear_time_until_maintenance_in_minutes
     - $RAKE_COMMAND maintenance:end
-  start_in: $MINUTES_UNTIL_DEPLOY minutes
+  when: delayed
+  start_in: 30 minutes
   after_script:
     - sudo /usr/bin/systemctl restart $RAILS_SERVICE_UNIT
 

@@ -72,6 +72,9 @@ gem 'dalli' # mem_cache_store support
 gem "sentry-ruby"
 gem "sentry-rails"
 
+# Maintenance mode
+gem 'turnout'
+
 group :development do
   # Access an IRB console on exception pages or by using <%= console %> anywhere in the code.
   gem 'web-console', '>= 3.3.0'

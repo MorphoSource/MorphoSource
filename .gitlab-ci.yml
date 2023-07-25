@@ -1,9 +1,12 @@
 variables:
+  FAST_DEPLOY: "false"
+  MINUTES_UNTIL_DEPLOY: 30
   SKIP_TESTS: "false"
 
 stages:
   - build
   - test
+  - predeploy
   - deploy
 
 build_job:
@@ -82,16 +85,49 @@ accessibility_job:
   script:
     - bin/rake ci:wrapped_spec[accessibility]
 
+.predeploy:
+  stage: predeploy
+  variables:
+    RAKE_COMMAND: sudo -u $RAILS_USER -n -i $RAILS_ROOT/bin/rake -f $RAILS_ROOT/Rakefile
+  only: $FAST_DEPLOY == "false"
+  script:
+    - $RAKE_COMMAND morphosource:set_time_until_maintenance_in_minutes[$MINUTES_UNTIL_DEPLOY]
+
+predeploy_dev:
+  extends: .predeploy
+  environment:
+    name: development
+    url: https://morphosource-dev.oit.duke.edu/
+  only:
+    - dev
+  tags:
+    - development
+
+predeploy_prod:
+  extends: .predeploy
+  environment:
+    name: production
+    url: https://www.morphosource.org/
+  only:
+    - main
+  tags:
+    - production
+
 .deploy:
   stage: deploy
   variables:
     RAKE_COMMAND: sudo -u $RAILS_USER -n -i $RAILS_ROOT/bin/rake -f $RAILS_ROOT/Rakefile
+  only: $FAST_DEPLOY == "false"
   script:
     - rsync -rl --delete --exclude-from=EXCLUDE ./ $RAILS_ROOT/
+    - $RAKE_COMMAND maintenance:start
     - '$RAKE_COMMAND db:setup || true'
     - $RAKE_COMMAND db:migrate
     - $RAKE_COMMAND tmp:cache:clear
     - $RAKE_COMMAND hyrax:workflow:load
+    - $RAKE_COMMAND morphosource:clear_time_until_maintenance_in_minutes
+    - $RAKE_COMMAND maintenance:end
+  start_in: $MINUTES_UNTIL_DEPLOY minutes
   after_script:
     - sudo /usr/bin/systemctl restart $RAILS_SERVICE_UNIT
 
@@ -106,6 +142,40 @@ deploy_dev:
     - development
 
 deploy_prod:
+  extends: .deploy
+  environment:
+    name: production
+    url: https://www.morphosource.org/
+  only:
+    - main
+  tags:
+    - production
+
+.fast_deploy:
+  stage: deploy
+  variables:
+    RAKE_COMMAND: sudo -u $RAILS_USER -n -i $RAILS_ROOT/bin/rake -f $RAILS_ROOT/Rakefile
+  only: $FAST_DEPLOY == "true"
+  script:
+    - rsync -rl --delete --exclude-from=EXCLUDE ./ $RAILS_ROOT/
+    - '$RAKE_COMMAND db:setup || true'
+    - $RAKE_COMMAND db:migrate
+    - $RAKE_COMMAND tmp:cache:clear
+    - $RAKE_COMMAND hyrax:workflow:load
+  after_script:
+    - sudo /usr/bin/systemctl restart $RAILS_SERVICE_UNIT
+
+fast_deploy_dev:
+  extends: .deploy
+  environment:
+    name: development
+    url: https://morphosource-dev.oit.duke.edu/
+  only:
+    - dev
+  tags:
+    - development
+
+fast_deploy_prod:
   extends: .deploy
   environment:
     name: production

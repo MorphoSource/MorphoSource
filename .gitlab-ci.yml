@@ -84,34 +84,21 @@ accessibility_job:
   script:
     - bin/rake ci:wrapped_spec[accessibility]
 
-.predeploy:
+predeploy_prod:
   stage: predeploy
+  environment:
+    name: production
+    url: https://www.morphosource.org/
   variables:
     RAKE_COMMAND: sudo -u $RAILS_USER -n -i $RAILS_ROOT/bin/rake -f $RAILS_ROOT/Rakefile
-  only: 
+  only:
+    refs:
+      - main
     variables:
       - $FAST_DEPLOY == "false"
   allow_failure: true
   script:
     - $RAKE_COMMAND morphosource:set_time_until_maintenance_in_minutes[30]
-
-predeploy_dev:
-  extends: .predeploy
-  environment:
-    name: development
-    url: https://morphosource-dev.oit.duke.edu/
-  only:
-    - dev
-  tags:
-    - development
-
-predeploy_prod:
-  extends: .predeploy
-  environment:
-    name: production
-    url: https://www.morphosource.org/
-  only:
-    - main
   tags:
     - production
 
@@ -128,8 +115,6 @@ predeploy_prod:
     - $RAKE_COMMAND hyrax:workflow:load
     - $RAKE_COMMAND morphosource:clear_time_until_maintenance_in_minutes
     - $RAKE_COMMAND maintenance:end
-  when: delayed
-  start_in: 30 minutes
   after_script:
     - sudo /usr/bin/systemctl restart $RAILS_SERVICE_UNIT
 
@@ -141,8 +126,6 @@ deploy_dev:
   only:
     refs:
       - dev
-    variables: 
-      - $FAST_DEPLOY == "false"
   tags:
     - development
 
@@ -156,13 +139,23 @@ deploy_prod:
       - main
     variables: 
       - $FAST_DEPLOY == "false"
+  when: delayed
+  start_in: 30 minutes
   tags:
     - production
 
-.fast_deploy:
+fast_deploy_prod:
   stage: deploy
+  environment:
+    name: production
+    url: https://www.morphosource.org/
   variables:
     RAKE_COMMAND: sudo -u $RAILS_USER -n -i $RAILS_ROOT/bin/rake -f $RAILS_ROOT/Rakefile
+  only:
+    refs:
+      - main
+    variables: 
+      - $FAST_DEPLOY == "true"
   script:
     - rsync -rl --delete --exclude-from=EXCLUDE ./ $RAILS_ROOT/
     - '$RAKE_COMMAND db:setup || true'
@@ -171,29 +164,5 @@ deploy_prod:
     - $RAKE_COMMAND hyrax:workflow:load
   after_script:
     - sudo /usr/bin/systemctl restart $RAILS_SERVICE_UNIT
-
-fast_deploy_dev:
-  extends: .deploy
-  environment:
-    name: development
-    url: https://morphosource-dev.oit.duke.edu/
-  only:
-    refs:
-      - dev
-    variables: 
-      - $FAST_DEPLOY == "true"
-  tags:
-    - development
-
-fast_deploy_prod:
-  extends: .deploy
-  environment:
-    name: production
-    url: https://www.morphosource.org/
-  only:
-    refs:
-      - main
-    variables: 
-      - $FAST_DEPLOY == "true"
   tags:
     - production

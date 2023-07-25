@@ -88,7 +88,9 @@ accessibility_job:
   stage: predeploy
   variables:
     RAKE_COMMAND: sudo -u $RAILS_USER -n -i $RAILS_ROOT/bin/rake -f $RAILS_ROOT/Rakefile
-  only: $FAST_DEPLOY == "false"
+  only: 
+    variables:
+      - $FAST_DEPLOY == "false"
   script:
     - $RAKE_COMMAND morphosource:set_time_until_maintenance_in_minutes[30]
 
@@ -116,7 +118,9 @@ predeploy_prod:
   stage: deploy
   variables:
     RAKE_COMMAND: sudo -u $RAILS_USER -n -i $RAILS_ROOT/bin/rake -f $RAILS_ROOT/Rakefile
-  only: $FAST_DEPLOY == "false"
+  only: 
+    variables:
+      - $FAST_DEPLOY == "false"
   script:
     - rsync -rl --delete --exclude-from=EXCLUDE ./ $RAILS_ROOT/
     - $RAKE_COMMAND maintenance:start
@@ -155,7 +159,9 @@ deploy_prod:
   stage: deploy
   variables:
     RAKE_COMMAND: sudo -u $RAILS_USER -n -i $RAILS_ROOT/bin/rake -f $RAILS_ROOT/Rakefile
-  only: $FAST_DEPLOY == "true"
+  only: 
+    variables: 
+      - $FAST_DEPLOY == "true"
   script:
     - rsync -rl --delete --exclude-from=EXCLUDE ./ $RAILS_ROOT/
     - '$RAKE_COMMAND db:setup || true'

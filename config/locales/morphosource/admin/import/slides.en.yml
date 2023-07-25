@@ -1,0 +1,6 @@
+en:
+  morphosource:
+    admin:
+      import:
+        slides:
+          job_submitted: Slides import job has been submitted for background processing. Please check back later.

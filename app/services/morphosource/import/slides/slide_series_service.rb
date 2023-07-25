@@ -348,7 +348,7 @@ module Morphosource
           end
 
           def slide_class
-            "Morphosource::Import::SlideSeries::Slides::#{provider['slide_class']}".constantize || Morphosource::Import::SlideSeries::Slides::Slide
+            "Morphosource::Import::SlideSeries::Slides::#{provider['slide_class'] || 'Slide'}".constantize
           end
 
           def slides

@@ -1,0 +1,7 @@
+<div class="text-muted">
+  <%= @media_count.to_s + ' Media' %>
+  <% if @presenter.creator.present? %>
+    · Creator: <%= @presenter.creator.join(', ') %>
+  <% end %>
+  · Managed by: <%= @presenter.collection_managers %>
+</div>

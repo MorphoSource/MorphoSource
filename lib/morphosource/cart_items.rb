@@ -121,6 +121,18 @@ module Morphosource
       end
     end
 
+    def create_cart_item_for_api(work, download_hash)
+byebug 
+# todo: test private and restricted media
+
+      if work.public? || (current_user.can? :download, work.id)
+        CartItem.create( { user_id: current_user.ms_id, work_id: work.id, reviewers: work.reviewer, download_hash: download_hash, download_attempts: 0, in_cart: false, download_method: "API" } )
+      else
+        nil
+      end
+    end
+
+
     def mark_as(action,items=@items,value: nil)
       items = Array(items)
       value = attribute_value(value)

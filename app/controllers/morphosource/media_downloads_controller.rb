@@ -38,14 +38,19 @@ module Morphosource
     end
 
     def api_download
-      base_url = "http://localhost:3000/download/from-api/#{media.id}"
       new_download_hash = SecureRandom.uuid
       usage = request.params[:use_statement]
       usage_list = request.params[:use_categories]
       if request.params[:use_category_other].present?
         usage_list << request.params[:use_category_other]
       end
-byebug
+      new_cart_item = create_cart_item_for_api(media_for_api, new_download_hash)
+      if new_cart_item.nil?
+        byebug
+        #todo: return error with message "User cannot download the media "
+
+      end
+
       query_params = {
         key: media.access_control_id,
         token: api_key,
@@ -53,9 +58,11 @@ byebug
         usage: usage,
         usage_list: usage_list.join(';')
       }
-byebug
       query_string = query_params.map { |key, value| "#{key}=#{URI.encode(value)}" }.join('&')
 
+byebug
+      #todo: set env host and download path 
+      base_url = "http://localhost:3000/download/from-api/#{media.id}"
       download_url = "#{base_url}?#{query_string}"
 puts "download_url:\n#{download_url}"
 

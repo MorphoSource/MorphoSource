@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_07_18_191727) do
+ActiveRecord::Schema.define(version: 2023_07_26_130247) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -64,6 +64,7 @@ ActiveRecord::Schema.define(version: 2023_07_18_191727) do
     t.string "download_usage_list"
     t.string "download_hash"
     t.integer "download_attempts"
+    t.string "download_method", default: "UI"
     t.index ["user_id"], name: "index_cart_items_on_user_id"
     t.index ["work_id"], name: "index_cart_items_on_work_id"
   end

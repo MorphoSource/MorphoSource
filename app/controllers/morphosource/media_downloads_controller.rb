@@ -43,7 +43,7 @@ byebug
       prepare_all_files
       if @files.present? && @all_files.present?
 
-        cart_item = update_cart_items_for_download_from_api
+#        cart_item = update_cart_items_for_download_from_api
 
         create_interval_sequence
         send_interval_response
@@ -52,12 +52,20 @@ byebug
       end
     end
 
-    def usage
-      @usage ||= request.params[:use_statement]
+    def use_statement
+      @use_statement ||= request.params[:use_statement]&.strip
     end
 
-    def usage_list
-      @usage_list ||= request.params[:use_categories] << request.params[:use_category_other].presence
+    def use_categories
+      @use_categories ||= request.params[:use_categories]
+    end
+
+    def use_categories_final
+      @use_categories_final ||= [use_categories, use_category_other].compact.flatten.reject(&:empty?)
+    end
+
+    def use_category_other
+      @use_category_other ||= request.params[:use_category_other]&.strip
     end
 
     def agreements_accepted?
@@ -78,8 +86,8 @@ byebug
         key: media.access_control_id,
         token: api_key,
         download: new_download_hash,
-        usage: usage,
-        usage_list: usage_list.join(';')
+        usage: use_statement,
+        usage_list: use_categories_final.join(';')
       }
       query_string = query_params.map { |key, value| "#{key}=#{URI.encode(value)}" }.join('&')
 
@@ -204,14 +212,31 @@ byebug
     private
 
       def validate_params_for_api
-        return head(:bad_request) unless params_valid_for_api?
-      end
-
-      def params_valid_for_api?
-        user_from_authorization_header.present? && media_for_api.present? &&
-          usage.present? && usage_list.present? && agreements_accepted?
+        errors = [] 
+        unless user_from_authorization_header.present? 
+          errors << "Authorization header required"
+        end
+        unless media_for_api.present? 
+          errors << "Media not available"
+        end
+        unless use_statement.present? && use_statement.length >= 50
+          errors << "use_statement with minimum 50 characters is required" 
+        end 
+        if use_categories.present? 
+          unless use_categories.all? { |c| intended_use = Morphosource::UserProfile::CheckboxValues::INTENT.include?(c) }
+              errors << "one or more values of use_categories are not valid"
+          end
+        elsif !use_categories_final.present?
+          errors << "use_categories or use_category_other is required"
+        end
+        unless agreements_accepted?
+          errors << "agreements_accepted is not set to true"
+        end
 byebug
-        # todo: check for usage character limit and valid categories here?
+
+        if errors.present?
+          render json: { error: errors.join("; ") }, status: :bad_request 
+        end
       end
 
       # Get user record from api key in header

@@ -32,6 +32,7 @@ module Morphosource
         def call
           find_or_create_series_works
           import_slide_series
+          @collection
         end
 
         # these are located/created using GBIF occurrence metadata
@@ -76,25 +77,32 @@ module Morphosource
           specimen_doc = search_for_specimen
           return BiologicalSpecimen.find(specimen_doc['id']) if specimen_doc.present?
 
-          specimen = BiologicalSpecimen.new(title: ['new specimen'],
-                                            depositor: admin.user_key,
-                                            date_uploaded: Date.today,
-                                            visibility: 'open',
-                                            organization_id: [organization.id],
-                                            taxonomy_id: [taxonomy.id])
+          specimen = BiologicalSpecimen.new
+          params = specimen_params_from_occurrence_id
+          attributes = { title: ['new specimen'],
+                         depositor: manager.user_key,
+                         date_uploaded: Date.today,
+                         visibility: 'open',
+                         organization_id: [organization.id],
+                         taxonomy_id: [taxonomy.id] }.merge(params)
 
-          update_specimen_with_idigbio_params(specimen)
+          Hyrax::CurationConcern.actor.create(Hyrax::Actors::Environment.new(specimen, ::Ability.new(manager), attributes))
+          specimen
         end
 
         def taxonomy
           taxonomy_doc = search_for_taxonomy
           return Taxonomy.find(taxonomy_doc['id']) if taxonomy_doc.present?
 
-          taxonomy = Taxonomy.new(title: ['new taxonomy'],
-                                  visibility: 'open',
-                                  depositor: admin.user_key, source: ['Imported by Morphosource::Import::SlideSeriesService'])
+          taxonomy = Taxonomy.new
+          params = taxonomy_params_from_gbif
+          attributes = { title: ['new taxonomy'],
+                         visibility: 'open',
+                         depositor: manager.user_key,
+                         source: ['Imported by Morphosource::Import::SlideSeriesService'] }.merge(params)
 
-          update_taxonomy_with_gbif_params(taxonomy)
+          Hyrax::CurationConcern.actor.create(Hyrax::Actors::Environment.new(taxonomy, ::Ability.new(manager), attributes))
+          taxonomy
         end
 
         def device
@@ -120,70 +128,74 @@ module Morphosource
         # create slide works
 
         def create_new_imaging_event
-          imaging_event = ImagingEvent.create(aperture_value: @slide.aperture_value,
-                                              creator: @slide.creator,
-                                              date_created: @slide.date_created,
-                                              depositor: manager.user_key,
-                                              device_id: [device.id],
-                                              focal_length: @slide.focal_length,
-                                              ie_modality: ['SequentialSectionScan'],
-                                              optical_magnification: @slide.magnification,
-                                              physical_object_id: [@specimen.id],
-                                              slide_type: ['Histological'],
-                                              software: @slide.scanning_software,
-                                              description: @slide.imaging_description,
-                                              title: ['new imaging event'])
+          imaging_event = ImagingEvent.new
+          attributes = { aperture_value: @slide.aperture_value,
+                         creator: @slide.creator,
+                         date_created: @slide.date_created,
+                         depositor: manager.user_key,
+                         device_id: [device.id],
+                         focal_length: @slide.focal_length,
+                         ie_modality: ['SequentialSectionScan'],
+                         optical_magnification: @slide.magnification,
+                         physical_object_id: [@specimen.id],
+                         slide_type: ['Histological'],
+                         software: @slide.scanning_software,
+                         description: @slide.imaging_description,
+                         title: ['new imaging event'] }
 
-          update_work(imaging_event)
+          Hyrax::CurationConcern.actor.create(Hyrax::Actors::Environment.new(imaging_event, ::Ability.new(manager), attributes))
+          imaging_event
         end
 
         # These are created using a combination of GBIF occurrence metadata, GBIF occurrence individual media metadata, IIIF metadata (including exif), and values from the provider profile.
         # Except for the provider profile values, the rest are aggregated by the Slide class.
         def create_new_media
-          media = Media.create(date_uploaded: Date.today,
-                               media_type: ['Image'],
-                               # values from providers.yml
-                               agreement_uri: agreement_uri,
-                               depositor: manager.user_key,
-                               download_reviewer: [download_reviewer.user_key],
-                               fileset_accessibility: fileset_accessibility,
-                               license: license,
-                               morphosource_use_agreement_type: morphosource_use_agreement_type,
-                               owner: manager.user_key,
-                               permits_3d_use: permits_3d_use,
-                               permits_commercial_use: permits_commercial_use,
-                               preview_mode: preview_mode,
-                               publisher: publisher,
-                               required_archival_of_published_derivatives: required_archival_of_published_derivatives,
-                               rights_holder: rights_holder,
-                               rights_statement: rights_statement,
-                               visibility: visibility,
-                               # values from slide metadata
-                               date_created: @slide.date_created,
-                               description: @slide.description,
-                               identifier: @slide.identifier,
-                               remote_origin_url: @slide.remote_origin_url,
-                               remote_manifest_url: @slide.remote_manifest_url,
-                               orientation: @slide.orientation,
-                               part: @slide.short_description,
-                               related_url: @slide.related_url,
-                               slice_thickness: @slide.slice_thickness,
-                               title: @slide.title,
-                               unit: @slide.unit,
-                               x_spacing: @slide.x_spacing,
-                               y_spacing: @slide.y_spacing,
-                               z_spacing: @slide.z_spacing)
+          media = Media.new
+          attributes = { date_uploaded: Date.today,
+                         media_type: ['Image'],
+                         # values from providers.yml
+                         agreement_uri: agreement_uri,
+                         depositor: manager.user_key,
+                         download_reviewer: [download_reviewer.user_key],
+                         fileset_accessibility: fileset_accessibility,
+                         license: license,
+                         morphosource_use_agreement_type: morphosource_use_agreement_type,
+                         owner: manager.user_key,
+                         permits_3d_use: permits_3d_use,
+                         permits_commercial_use: permits_commercial_use,
+                         preview_mode: preview_mode,
+                         publisher: publisher,
+                         required_archival_of_published_derivatives: required_archival_of_published_derivatives,
+                         rights_holder: rights_holder,
+                         rights_statement: rights_statement,
+                         visibility: visibility,
+                         # values from slide metadata
+                         date_created: @slide.date_created,
+                         description: @slide.description,
+                         identifier: @slide.identifier,
+                         remote_origin_url: @slide.remote_origin_url,
+                         remote_manifest_url: @slide.remote_manifest_url,
+                         orientation: @slide.orientation,
+                         part: @slide.short_description,
+                         related_url: @slide.related_url,
+                         slice_thickness: @slide.slice_thickness,
+                         title: @slide.title,
+                         unit: @slide.unit,
+                         x_spacing: @slide.x_spacing,
+                         y_spacing: @slide.y_spacing,
+                         z_spacing: @slide.z_spacing}
 
-          update_work(media)
+          Hyrax::CurationConcern.actor.create(Hyrax::Actors::Environment.new(media, ::Ability.new(manager), attributes))
+          media
         end
-
-        # associate slide works
 
         def update_file_set
           fs = @media.file_sets.first
           fs.update(title: [@slide.file_name], label: @slide.file_name, mime_type_of_remote: @slide.mime_type)
           fs.reload
         end
+
+         # associate slide works
 
         def add_media_to_imaging_event
           @imaging_event.ordered_members << @media
@@ -247,12 +259,6 @@ module Morphosource
 
           def admin
             @admin ||= User.find_by(ms_id: Hyrax.config.batch_user_key)
-          end
-
-          def attributes_from_params(params, object)
-            params.each do |key, value|
-              object.send("#{key}=", [value].flatten)
-            end
           end
 
           def collection_related_url
@@ -328,7 +334,8 @@ module Morphosource
           end
 
           def specimen_params_from_occurrence_id
-            Morphosource::IDigBioSearchService.biological_specimen_params_from_occurrence_id(@occurrence_json['occurrenceID'])
+            params = Morphosource::IDigBioSearchService.biological_specimen_params_from_occurrence_id(@occurrence_json['occurrenceID']).first
+            params.symbolize_keys.transform_values { |v| Array(v).flatten }
           end
 
           def specimen_uri
@@ -340,30 +347,15 @@ module Morphosource
           end
 
           def slides
-            @slides ||= gbif_slides
+            @slides ||= [gbif_slides.first]
           end
 
-          def update_specimen_with_idigbio_params(specimen)
-            params = specimen_params_from_occurrence_id
-            attributes_from_params(params.first, specimen)
-            specimen.save
-            Hyrax::CurationConcern.actor.update(Hyrax::Actors::Environment.new(BiologicalSpecimen.new, ::Ability.new(admin), specimen.attributes))
-            specimen.reload
-          end
-
-          def update_taxonomy_with_gbif_params(taxonomy)
+          def taxonomy_params_from_gbif
             gbif_key = occurrence_json["taxonKey"]
             params = Morphosource::GbifSearchService.taxonomy_params_from_gbif(gbif_key, correct_synonym = false)
-            attributes_from_params(params, taxonomy)
-            taxonomy.save
-            Hyrax::CurationConcern.actor.create(Hyrax::Actors::Environment.new(Taxonomy.new, ::Ability.new(admin), taxonomy.attributes))
-            taxonomy.reload
+            params.symbolize_keys.transform_values { |v| Array(v).flatten }
           end
 
-          def update_work(work)
-            Hyrax::CurationConcern.actor.update(Hyrax::Actors::Environment.new(work.class.new, ::Ability.new(admin), work.attributes))
-            work.reload
-          end
       end
     end
   end

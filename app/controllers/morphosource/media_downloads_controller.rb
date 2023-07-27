@@ -17,13 +17,14 @@ module Morphosource
     include Morphosource::CartItems
     include Morphosource::RestApiBehavior
 
-    before_action :validate_params, only: [:show]
-    before_action :validate_download_hash, only: [:show]
+    before_action :validate_params, only: [:show, :download_from_api]
+    before_action :validate_download_hash, only: [:show, :download_from_api]
+    before_action :validate_when_download_from_api, only: [:download_from_api]
     before_action :validate_user, only: [:show]
     after_action :reset_recaptcha, only: [:show]
 
-    before_action :authenticate_api_key_required, only: [:api_download]
-    before_action :validate_params_for_api, only: [:api_download]
+    before_action :authenticate_api_key_required, only: [:api_generate_download]
+    before_action :validate_params_for_api, only: [:api_generate_download]
 
     def show
       prepare_all_files
@@ -37,13 +38,35 @@ module Morphosource
       end
     end
 
-    def api_download
-      new_download_hash = SecureRandom.uuid
-      usage = request.params[:use_statement]
-      usage_list = request.params[:use_categories]
-      if request.params[:use_category_other].present?
-        usage_list << request.params[:use_category_other]
+    def download_from_api
+byebug
+      prepare_all_files
+      if @files.present? && @all_files.present?
+
+        cart_item = update_cart_items_for_download_from_api
+
+        create_interval_sequence
+        send_interval_response
+      else
+        #todo: return error
       end
+    end
+
+    def usage
+      @usage ||= request.params[:use_statement]
+    end
+
+    def usage_list
+      @usage_list ||= request.params[:use_categories] << request.params[:use_category_other].presence
+    end
+
+    def agreements_accepted?
+      request.params[:agreements_accepted] == true
+    end
+
+    def api_generate_download
+      new_download_hash = SecureRandom.uuid
+
       new_cart_item = create_cart_item_for_api(media_for_api, new_download_hash)
       if new_cart_item.nil?
         byebug
@@ -88,6 +111,32 @@ puts "download_url:\n#{download_url}"
     def prepare_all_files
       @temp_files = []
       @all_files ||= files + standard_agreement_files + media_agreement_files + xlsx_manifest + csv_manifest
+    end
+
+    def cart_item_for_download_from_api
+      @cart_item_for_download_from_api ||= find_item_for_download_from_api(media.first.id, download_hash, current_user.ms_id)
+    end
+    
+    def create_or_update_cart_items_for_download_from_api
+      m = media.first
+byebug
+      if (item = find_downloaded_downloadable_item(m.id, download_hash, "API")).present?
+        # CartItem for media with DL hash exists, can increment DL attempts and update DL date
+        add_subsequent_download(item)
+      elsif (item = find_undownloaded_approved_request_item(m.id, "API")).present?
+        # Undownloaded approved request exists, associate download with request
+        add_first_download(item, download_hash)
+      elsif (item = find_undownloaded_downloadable_item(m.id, "API")).present?
+        # Undownloaded downloadable item exists (e.g., in media cart), associated download
+        add_first_download(item, download_hash, "APi")
+      else
+        # Add new CartItem for download
+        create_downloaded_item(m.id, download_hash, "API")
+      end
+
+#      add_subsequent_download(cart_item_for_download_from_api)      
+byebug
+      #
     end
 
     def create_or_update_cart_items_for_download
@@ -159,9 +208,10 @@ puts "download_url:\n#{download_url}"
       end
 
       def params_valid_for_api?
+        user_from_authorization_header.present? && media_for_api.present? &&
+          usage.present? && usage_list.present? && agreements_accepted?
 byebug
-        user_from_authorization_header.present? && media_for_api.present? 
-#        && validate json payload here
+        # todo: check for usage character limit and valid categories here?
       end
 
       # Get user record from api key in header
@@ -210,12 +260,17 @@ byebug
         return head(:bad_request) unless uuid_regex.match?(download_hash.to_s.downcase)
       end
 
+      def validate_when_download_from_api
+        @current_user = user_from_token
+        return head(:unauthorized) unless user_is_valid?
+        return head(:bad_request) unless cart_item_for_download_from_api.present?
+      end
+
       def validate_user
         return head(:unauthorized) unless user_is_valid?
       end
 
       def user_is_valid?
-byebug
         user_from_token.present? && current_user == user_from_token && authorized_to_download?
       end
 

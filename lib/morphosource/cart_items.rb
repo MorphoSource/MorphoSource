@@ -61,6 +61,12 @@ module Morphosource
       end
     end
 
+    def find_item_for_download_from_api(work_id, download_hash, user_id)
+byebug
+      cart_items.where(work_id: work_id, download_hash: download_hash, user_id: user_id, download_method: 'API')
+        .find { |item| item.downloadable? }
+    end
+
     # Find a previously downloaded CartItem where user can still download the work
     def find_downloaded_downloadable_item(work_id, download_hash)
       cart_items.where(work_id: work_id, download_hash: download_hash)

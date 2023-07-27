@@ -121,24 +121,24 @@ RSpec.describe Media do
       let(:device)         { Device.create(title: ['device'], modality: ['Photogrammetry']) }
       let!(:imaging_event) { ImagingEvent.new(ie_modality: device.modality, device_id: [device.id]) }
       let(:modality_values) { {
-        "MicroNanoXRayComputedTomography": "X-Ray Computed Tomography (CT/microCT)",
-        "MagneticResonanceImaging": "Magnetic Resonance Imaging (MRI)",
-        "PositronEmissionTomography": "Positron Emission Tomography (PET)",
-        "SinglePhotonEmissionComputedTomography": "Single Photon Emission Computed Tomography (SPECT)",
-        "NeutronComputedTomography": "Neutron Computed Tomography (NCT)",
-        "SynchrotronImaging": "Synchrotron Imaging",
-        "Photogrammetry": "Photogrammetry",
-        "StructuredLight": "Structured Light",
-        "LaserScan": "Laser Scan",
-        "ConfocalImageStacking": "Confocal Image Stacking",
-        "Infrared": "Infrared",
-        "ReflectanceTransformationImaging": "Reflectance Transformation Imaging",
-        "Photography": "Photography",
-        "ScanningElectronMicroscopy": "Scanning Electron Microscopy",
-        "BornDigital": "Born Digital",
-        "XRay": "X-Ray",
-        "LaserAidedProfiling": "Laser Aided Profiling",
-        "Video": "Video"
+        "MicroNanoXRayComputedTomography" => "X-Ray Computed Tomography (CT/microCT)",
+        "MagneticResonanceImaging" => "Magnetic Resonance Imaging (MRI)",
+        "PositronEmissionTomography" => "Positron Emission Tomography (PET)",
+        "SinglePhotonEmissionComputedTomography" => "Single Photon Emission Computed Tomography (SPECT)",
+        "NeutronComputedTomography" => "Neutron Computed Tomography (NCT)",
+        "SynchrotronImaging" => "Synchrotron Imaging",
+        "Photogrammetry" => "Photogrammetry",
+        "StructuredLight" => "Structured Light",
+        "LaserScan" => "Laser Scan",
+        "ConfocalImageStacking" => "Confocal Image Stacking",
+        "Infrared" => "Infrared",
+        "ReflectanceTransformationImaging" => "Reflectance Transformation Imaging",
+        "Photography" => "Photography",
+        "ScanningElectronMicroscopy" => "Scanning Electron Microscopy",
+        "BornDigital" => "Born Digital",
+        "XRay" => "X-Ray",
+        "LaserAidedProfiling" => "Laser Aided Profiling",
+        "Video" => "Video"
         }
       }
       before do
@@ -147,8 +147,9 @@ RSpec.describe Media do
 
       it 'returns the imaging event modality' do
         modality_values.each do |k,v|
-          imaging_event.ie_modality = [k.to_s]
-          expect(subject.modality).to eq v
+          imaging_event.ie_modality = [k]
+          expect(subject.modality).to eq k
+          expect(subject.modality_label).to eq v
         end
       end
     end

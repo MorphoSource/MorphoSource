@@ -17,13 +17,16 @@ module Morphosource
         @list_visibility = list_visibility
       end
 
+      # This will get refactored with providers yml PR
       def call
+        @json = fetch_json
+        return @json if @json.is_a? String # error message returned
+
         import_slide_series
         @collection
       end
 
       def import_slide_series
-        @json = fetch_json
         @specimen = find_or_create_specimen
         @taxonomy = @specimen.taxonomies.first
         @device = device
@@ -118,6 +121,7 @@ module Morphosource
         end
         file.mime_type = "message/external-body; access-type=URL; URL=\"#{@file_set.import_url}\""
         file.save!
+        CalculateFileSetCrc32Job.perform_later(@file_set.id)
       end
 
       def add_to_collection_and_save

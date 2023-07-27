@@ -28,7 +28,6 @@ services:
       - .:/app/samvera/hyrax-webapp
       - hyrax-derivatives:/app/samvera/hyrax-webapp/derivatives
       - hyrax-uploads:/app/samvera/hyrax-webapp/uploads
-      - rails-public:/app/samvera/hyrax-webapp/public
       - rails-tmp:/app/samvera/hyrax-webapp/tmp
     networks:
       - morphosource
@@ -54,7 +53,6 @@ services:
       - .:/app/samvera/hyrax-webapp
       - hyrax-derivatives:/app/samvera/hyrax-webapp/derivatives
       - hyrax-uploads:/app/samvera/hyrax-webapp/uploads
-      - rails-public:/app/samvera/hyrax-webapp/public
       - rails-tmp:/app/samvera/hyrax-webapp/tmp
     networks:
       - morphosource
@@ -104,8 +102,31 @@ services:
       - solr
     volumes:
       - .:/app/samvera/hyrax-webapp
-      - rails-public:/app/samvera/hyrax-webapp/public
       - rails-tmp:/app/samvera/hyrax-webapp/tmp
+    networks:
+      - morphosource
+
+  db_migrate_test:
+    build:
+      context: .
+      target: morphosource
+      args:
+        - EXTRA_APK_PACKAGES=git less
+    container_name: db_migrate_test
+    user: app
+    env_file:
+      - ./vendor/docker/credentials.env
+      - ./vendor/docker/docker-compose.env
+      - ./vendor/docker/docker-compose-test.env
+    command: sh -c 'bundle && db-migrate-test.sh'
+    depends_on:
+      - postgres
+      - fcrepo
+      - solr
+      - app_test
+    volumes:
+      - .:/app/samvera/hyrax-webapp
+      - test-tmp:/app/samvera/hyrax-webapp/tmp
     networks:
       - morphosource
 
@@ -186,7 +207,6 @@ volumes:
   fcrepo:
   hyrax-derivatives:
   hyrax-uploads:
-  rails-public:
   rails-tmp:
   redis:
   solr_home:

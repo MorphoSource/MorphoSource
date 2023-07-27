@@ -16,8 +16,8 @@ RSpec.describe MediaCatalogController, :type => :controller do
     describe 'facet fields' do
       let(:facet_fields) { config.facet_fields }
 
-      it 'has 9 facet fields' do
-        expect(facet_fields.count).to eq(11)
+      it 'has 16 facet fields' do
+        expect(facet_fields.count).to eq(16)
       end
 
       describe 'generic type' do
@@ -36,7 +36,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
       end
 
       describe 'modality' do
-        subject { facet_fields['media_modality_ssim'] }
+        subject { facet_fields['modality_ssim'] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Modality")
           expect(subject.limit).to eq(10)
@@ -88,7 +88,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
       describe 'user_with_ownership_name' do
         subject { facet_fields['user_with_ownership_name_ssim'] }
         it 'has the correct attributes' do
-          expect(subject.label).to eq("Data Managed By")
+          expect(subject.label).to eq("Data Manager")
           expect(subject.limit).to eq(10)
         end
       end
@@ -96,7 +96,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
       describe 'depositor_name' do
         subject { facet_fields['depositor_name_ssim'] }
         it 'has the correct attributes' do
-          expect(subject.label).to eq("Data Uploaded By")
+          expect(subject.label).to eq("Data Uploader")
           expect(subject.limit).to eq(10)
         end
       end
@@ -143,11 +143,11 @@ RSpec.describe MediaCatalogController, :type => :controller do
       end
 
       describe 'modality' do
-        subject { index_fields['media_modality_tesim'] }
+        subject { index_fields['human_readable_modality_tesim'] }
 
         it 'has the correct attributes' do
           expect(subject.label).to eq('Modality')
-          expect(subject.field).to eq('media_modality_tesim')
+          expect(subject.field).to eq('human_readable_modality_tesim')
         end
       end
 
@@ -171,12 +171,12 @@ RSpec.describe MediaCatalogController, :type => :controller do
       end
 
       describe 'rights statement' do
-        subject { index_fields['rights_statement_tesim'] }
+        subject { index_fields['rights_statement_ssim'] }
 
         it 'has the correct attributes' do
-          expect(subject.label).to eq('Rights Statement Tesim')
+          expect(subject.label).to eq('Rights Statement')
           expect(subject.helper_method).to eq(:rights_statement_links)
-          expect(subject.field).to eq('rights_statement_tesim')
+          expect(subject.field).to eq('rights_statement_ssim')
         end
       end
     end
@@ -184,12 +184,12 @@ RSpec.describe MediaCatalogController, :type => :controller do
     describe 'show fields' do
       let(:show_fields) { config.show_fields }
       describe 'media' do
-        describe 'media_modality' do
-          subject { show_fields["media_modality_tesim"] }
+        describe 'human_readable_modality' do
+          subject { show_fields["human_readable_modality_tesim"] }
           it 'has the correct attributes' do
-            expect(subject.key).to eq("media_modality_tesim")
-            expect(subject.field).to eq("media_modality_tesim")
-            expect(subject.label).to eq("Media Modality Tesim")
+            expect(subject.key).to eq("human_readable_modality_tesim")
+            expect(subject.field).to eq("human_readable_modality_tesim")
+            expect(subject.label).to eq("Human Readable Modality Tesim")
           end
         end
       end
@@ -199,8 +199,8 @@ RSpec.describe MediaCatalogController, :type => :controller do
       let(:search_fields) { config.search_fields }
       describe 'all_fields' do
         subject { search_fields['all_fields'] }
-        it 'includes media modality' do
-          expect(subject.solr_parameters[:qf]).to include('media_modality_tesim')
+        it 'includes modality' do
+          expect(subject.solr_parameters[:qf]).to include('human_readable_modality_tesim')
         end
       end
     end

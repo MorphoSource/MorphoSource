@@ -34,10 +34,15 @@ class MediaIndexer < Morphosource::WorkIndexer
       mt = object.human_readable_media_type
       solr_doc['human_readable_media_type_tesim'] = mt
       solr_doc['human_readable_media_type_ssim'] = mt
+
       # add modality facet
-      modality = object.modality
-      solr_doc['media_modality_tesim'] = modality
-      solr_doc['media_modality_ssim'] = modality
+      solr_doc['modality_ssim'] = object.modality
+      solr_doc['human_readable_modality_tesim'] = object.modality_label
+
+      # add facetable fields for rights statement and license
+      # TODO: after all data indexed in _ssim fields, move from existing _tesim => new _ssim fields
+      solr_doc['license_ssim'] = object.license
+      solr_doc['rights_statement_ssim'] = object.rights_statement
 
       solr_doc['media_parent_id_ssim'] = object.media_parent&.id
 

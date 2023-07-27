@@ -42,7 +42,6 @@ module Morphosource::Derivatives::Processors
       Dir.mkdir output_path unless File.exist? output_path
       @output_file_path = File.join(output_path, 'derivative.dcm')
 
-
       @x_spacing = (directives.fetch(:x_spacing, 1).presence || 1).to_f
       @y_spacing = (directives.fetch(:y_spacing, 1).presence || 1).to_f
       @z_spacing = (directives.fetch(:z_spacing, 0).presence || 0).to_f
@@ -61,10 +60,10 @@ module Morphosource::Derivatives::Processors
       # If unit is not Mm, must convert spacing values to Mm
       @unit = directives.fetch(:unit, 'Mm').presence || 'Mm'
       correct_spacing_scale if unit != 'Mm'
+
       begin
         @img_coll, @ext = locate_images
         return unless img_coll.present?
-
         # extract and process images
         extract_images
         uncompress_dcm if dicom_image_formats.include?(ext)
@@ -72,14 +71,13 @@ module Morphosource::Derivatives::Processors
         scale_images
         tif_to_raw_dcm
         compress_dcm
-
         # place files
         write_files
       rescue StandardError => e
-        raise e
-      ensure
         cleanup_tmp_files
+        raise e
       end
+      cleanup_tmp_files
     end
 
     def correct_spacing_scale
@@ -93,11 +91,30 @@ module Morphosource::Derivatives::Processors
     end
 
     def extract_images
-      Zip::File.open(source_path) do |zip_file|
-        img_coll.each do |f|
-          f_path = File.join(input_path, File.basename(f))
-          zip_file.extract(f, f_path)
+      case File.extname(source_path).downcase
+      when '.zip'
+        Zip::File.open(source_path) do |zip_file|
+          img_coll.each do |f|
+            f_path = File.join(input_path, File.basename(f))
+            zip_file.extract(f, f_path)
+          end
         end
+      when '.tar'
+        File.open(source_path, 'rb') do |file|
+          Archive::Tar::Minitar::Reader.open(file) do |tar|
+            tar.each_entry do |entry|
+              if img_coll.include? entry.name
+                f_path = File.join(input_path, File.basename(entry.name))
+                File.new(f_path, 'wb')
+                File.open(f_path, 'wb') do |output_file|
+                  output_file.write(entry.read)
+                end
+              end
+            end
+          end
+        end
+      else
+        raise "Archive file extension not valid"
       end
     end
 
@@ -199,7 +216,12 @@ module Morphosource::Derivatives::Processors
     end
 
     def cleanup_tmp_files
-      FileUtils.remove_dir tmp_dir_path
+      begin
+        FileUtils.rm_r tmp_dir_path
+      rescue Errno::ENOTEMPTY
+        Rails.logger.debug "in cleanup_tmp_files: Directory '#{tmp_dir_path}' not empty."
+      end
     end
+
   end
 end

@@ -69,27 +69,31 @@ module Morphosource
       end
 
       def get_all_pageview_results(paths)
-        offset = 1
+        offset = 0
 
         # initial query
-        q, results = get_some_pageview_results(paths, offset)
+        query_count, results = get_some_pageview_results(paths, offset)
         
         # if additional pages, page through results
-        while q.count == @limit
+        while query_count == @limit
           offset += @limit
-          q, results = get_some_pageview_results(paths, offset, results)
+          query_count, results = get_some_pageview_results(paths, offset, results)
         end
 
         return results
       end
 
-      def get_some_pageview_results(paths, offset = 1, results = [])
-
+      def get_some_pageview_results(paths, offset = 0, results = [])
         # Set up API call with retries
         retry_n ||= 0
         begin
-          q = ga_pageview_query(paths, offset)
-          results.concat(q.to_a)
+          response = ga_pageview_query(paths, offset)
+          if response[:status] == :success
+            query_count = response[:data][:views].count
+            results.concat(response[:data][:views])
+          else
+            raise "Attempt to call GA4 API failed: #{response[:message]}"
+          end
         rescue Exception => e
           log_message(e)
           retry_n += 1
@@ -98,10 +102,21 @@ module Morphosource
         end
         
         delay
-        return q, results   
+        return query_count, results   
       end
 
-      def ga_pageview_query(paths, offset = 1)
+      def ga_pageview_query(paths, offset = 0)
+        Morphosource::ExternalApi::Ga4.page_views(
+          start_date: @start_date,
+          end_date: @end_date,
+          limit: @limit,
+          offset: offset,
+          paths: paths
+        )
+      end
+
+      # @deprecated Use ga_pageview_query instead, at least until Legato supports GA4
+      def ga_pageview_query_legato(paths, offset = 1)
         profile.morphosource__analytics__pageview(
           start_date: @start_date, 
           end_date: @end_date,
@@ -121,10 +136,10 @@ module Morphosource
 
       # Sort Google Analytics query results by media ID
       #
-      # @param results [Array] Legato OpenStructs conforming to Morphosource::Analytics::Pageview 
+      # @param results [Array] OpenStructs conforming to Morphosource::Analytics::Pageview 
       # @return [Hash] Nested hash with structure media ID => date => [Pageview OpenStructs]
       def group_results_by_id_and_date(results)
-        results.group_by { |res| id_from_path(res.pagePath) }.transform_values do |val|
+        results.group_by { |res| id_from_path(res.page_path) }.transform_values do |val|
           val.group_by(&:date)
         end
       end

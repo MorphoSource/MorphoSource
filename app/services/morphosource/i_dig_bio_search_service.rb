@@ -82,7 +82,7 @@ module Morphosource
         Rails.logger.error("Did not query iDigBio API, must provide an occurrence ID")
         return {}, []
       end
-      
+
       results = self.call({ 'occurrence_id' => occurrence_id })
       if results[:status] == :success && results[:data].present? && (results[:data]&.first&.dig('data', 'dwc:occurrenceID').downcase == occurrence_id.downcase)
         idb = results[:data].first
@@ -129,7 +129,7 @@ module Morphosource
         Rails.logger.error("An error occurred querying the iDigBio API: #{idb_result[:message]}")
         return taxonomy_param_sets
       end
-      
+
       # Construct provider params
       IDIGBIO_TAXONOMY_MAPPING.each do |key, value|
         if idb['data'].has_key?(key)
@@ -138,7 +138,7 @@ module Morphosource
       end
 
       # Get taxonomy params from GBIF by searching using lowest-level iDigBio taxonomic ranks
-      if taxonomy_param_sets[:provider].present? 
+      if taxonomy_param_sets[:provider].present?
         gbif = Morphosource::GbifSearchService.taxonomy_params_from_gbif_by_terms(taxonomy_param_sets[:provider])
         taxonomy_param_sets[:gbif] = gbif if gbif.present?
       end

@@ -3,6 +3,7 @@
 # catalog/all redirects here for non-admins
 class MediaCatalogController < CatalogController
   include CatalogControllerRestApiBehavior
+  include Morphosource::CatalogHelper
 
   configure_blacklight do |config|
     config.search_builder_class = Morphosource::Catalog::MediaCatalogSearchBuilder
@@ -13,7 +14,7 @@ class MediaCatalogController < CatalogController
     # type
     config.add_facet_field solr_name("human_readable_media_type", :symbol), label: "Type", limit: 10
     # modality - inherited from imaging event modality
-    config.add_facet_field solr_name("media_modality", :symbol), label: "Modality", limit: 10
+    config.add_facet_field solr_name("modality", :symbol), label: "Modality", limit: 10, helper_method: :modality_label_by_id
     # object type - specimen or cho
     config.add_facet_field solr_name("media_physical_object_type", :symbol), label: "Object Type", limit: 10
     # organization that owns the object
@@ -21,32 +22,45 @@ class MediaCatalogController < CatalogController
     # organization that manages the imaging device
     config.add_facet_field solr_name("media_device_facility_organization", :symbol), label: "Imaging Facility", limit: 10
 
+    # publication status and licensing
+    config.add_facet_field solr_name("publication_status", :stored_sortable), label: "Publication", limit: 10
+    config.add_facet_field solr_name("rights_statement", :symbol), label: "Rights Statement", limit: 10, helper_method: :rights_statement_title_by_id
+    config.add_facet_field solr_name("license", :symbol), label: "CC License", limit: 10, helper_method: :license_title_by_id
+
     # tags
     config.add_facet_field solr_name("keyword", :facetable), label: "Tag", limit: 10
+
     # collections
     config.add_facet_field solr_name('member_of_team_ids', :symbol), label: 'Team', limit: 10, helper_method: :collection_title_by_id
     config.add_facet_field solr_name('member_of_project_ids', :symbol), label: 'Project', limit: 10, helper_method: :collection_title_by_id
+    config.add_facet_field solr_name('member_of_media_list_ids', :symbol), label: 'Media List', limit: 10, helper_method: :collection_title_by_id
+    config.add_facet_field solr_name('member_of_sequential_section_list_ids', :symbol), label: 'Seq. Section List', limit: 10, helper_method: :collection_title_by_id
+
     # users
-    config.add_facet_field solr_name('user_with_ownership_name', :symbol), label: 'Data Managed By', limit: 10
-    config.add_facet_field solr_name('depositor_name', :symbol), label: 'Data Uploaded By', limit: 10
+    config.add_facet_field solr_name('user_with_ownership_name', :symbol), label: 'Data Manager', limit: 10
+    config.add_facet_field solr_name('depositor_name', :symbol), label: 'Data Uploader', limit: 10
 
     # Search Results Fields
     config.add_index_field solr_name("title", :stored_searchable), label: "Title", itemprop: 'name', if: false
     config.add_index_field solr_name("physical_object_id", :stored_searchable), label: "Object", helper_method: :link_to_object
     config.add_index_field solr_name("taxonomy", :stored_searchable), label: "Taxonomy"
     config.add_index_field solr_name("part", :stored_searchable), label: "Element or Part"
-    config.add_index_field solr_name("media_modality", :stored_searchable), label: "Modality"
-    config.add_index_field 'user_with_ownership_ssi', label: "Data Manager", helper_method: :link_to_profile
-    config.add_index_field solr_name("date_uploaded", :stored_sortable, type: :date), label: 'Date Uploaded', helper_method: :human_readable_date
-    config.add_index_field solr_name("rights_statement", :stored_searchable), helper_method: :rights_statement_links
+    config.add_index_field solr_name("human_readable_modality", :stored_searchable), label: "Modality"
+    config.add_index_field solr_name("member_of_sequential_section_list_ids", :symbol), label: "Sequential Section List", if: :can_read_any, helper_method: :link_to_sequential_section_lists
+    config.add_index_field solr_name("user_with_ownership", :stored_sortable), label: "Data Manager", helper_method: :link_to_profile
+    config.add_index_field solr_name("date_uploaded", :stored_sortable, type: :date), label: "Date Uploaded", helper_method: :human_readable_date
+    config.add_index_field solr_name("publication_status", :stored_sortable), label: "Publication Status"
+    config.add_index_field solr_name("rights_statement", :symbol), label: "Rights Statement", helper_method: :rights_statement_links
+    config.add_index_field solr_name("license", :symbol), label: "CC License", helper_method: :license_links
 
+    
     # solr fields to be displayed in the show (single result) view
     # these fields also determine what fields are indexed for searching
     config.add_show_field solr_name('agreement_uri', :stored_searchable)
     config.add_show_field solr_name('cite_as', :stored_searchable)
     config.add_show_field solr_name('funding', :stored_searchable)
     config.add_show_field solr_name('map_type', :stored_searchable)
-    config.add_show_field solr_name('media_modality', :stored_searchable)
+    config.add_show_field solr_name('human_readable_modality', :stored_searchable)
     config.add_show_field solr_name('media_organization', :stored_searchable)
     config.add_show_field solr_name('media_device_facility_organization', :stored_searchable)
     config.add_show_field solr_name('media_physical_object_type', :stored_searchable)

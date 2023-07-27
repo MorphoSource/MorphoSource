@@ -42,4 +42,42 @@ module Morphosource::CatalogHelper
 
     link_to user.name_or_email, Hyrax::Engine.routes.url_helpers.user_path(user)
   end
+
+  # Blacklight index field helper_method to determine field visibility based on permissions
+  # @param config [Blacklight::Configuration] BL config where config.key should map to solr field
+  # @param document [SolrDocument] Solr doc where field should map to array of document ID(s)
+  # @return [Boolean] whether any of the document IDs can be viewed
+  def can_read_any(config, document)
+    ( document[config[:key]] || [] ).any? { |id| can? :read, id }
+  end
+  
+  def modality_label_by_id(id)
+    Morphosource::ModalitiesService.label(id) || "Modality Not Found"
+  end
+
+  # media index metadata displays sequential section list titles with links
+  def link_to_sequential_section_lists(args)
+    return if !args[:value].present?
+    links = args[:value].map do |id|
+      if can? :read, id
+        link_to collection_title_by_id(id), sequential_section_list_path(id)
+      end
+    end.compact
+    return if !links.present?
+    links.join(", ").html_safe
+  end
+
+  # Blacklight facet field helper_method for license controlled vocabulary
+  # @param value [String] value that conforms to a license CV ID
+  # @return [String] license human-readable label
+  def license_title_by_id(value)
+    Hyrax.config.license_service_class.new.label(value)
+  end
+
+  # Blacklight facet field helper_method for rights statement controlled vocabulary
+  # @param value [String] value that conforms to a rights statement CV ID
+  # @return [String] license human-readable label
+  def rights_statement_title_by_id(value)
+    Hyrax.config.rights_statement_service_class.new.label(value)
+  end
 end

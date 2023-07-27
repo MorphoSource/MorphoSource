@@ -46,6 +46,7 @@ gem 'activejob-status'
 
 gem 'puma', '~> 5.5.0'
 
+gem 'minitar'
 gem 'rubyzip'
 gem 'zipline', '~> 1.0'
 gem 'zip_tricks'
@@ -70,6 +71,9 @@ gem 'dalli' # mem_cache_store support
 # Sentry.io error tracking
 gem "sentry-ruby"
 gem "sentry-rails"
+
+# Maintenance mode
+gem 'turnout'
 
 group :development do
   # Access an IRB console on exception pages or by using <%= console %> anywhere in the code.

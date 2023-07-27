@@ -53,6 +53,20 @@ namespace :morphosource do
     Rake::Task['morphosource:dev_cache_on'].invoke
   end
 
+  desc 'MorphoSource Docker Test Suite Setup'
+  task :docker_test_setup => :environment do
+    Rails.logger.info('Setup DB')
+    Rake::Task['db:create'].invoke
+    Rake::Task['morphosource:db_schema_load_if_needed'].invoke
+    Rake::Task['db:migrate'].invoke
+    Rails.logger.info('Clear cache')
+    Rake::Task['tmp:cache:clear'].invoke
+    Rails.logger.info('Load workflow')
+    Rake::Task['hyrax:workflow:load'].invoke
+    Rails.logger.info('Create collection types')
+    Rake::Task['morphosource:create_collection_types'].invoke
+  end
+
   # Runs rake task dev:cache to turn on caching only if it is off
   task dev_cache_on: :environment do
     Rake::Task['dev:cache'].invoke if !Rails.root.join('tmp', 'caching-dev.txt').exist?
@@ -697,6 +711,8 @@ namespace :morphosource do
 
   desc "Merge duplicate specimens"
   task :find_and_merge_duplicate_specimens, [:merge] => :environment do |task, args|
+    log_file = 'log/find_and_merge_duplicate_specimens_' + Time.now.strftime("%m-%d-%Y_%H-%M") + '.log'
+    log = Logger.new(log_file)
     if args[:merge].present?
       if args[:merge] == 'true'
         merge = true
@@ -716,24 +732,25 @@ namespace :morphosource do
     bso_list = ActiveFedora::SolrService.query(qry, rows: 999999)
     grouped = bso_list.group_by{|b| [ b["occurrence_id_tesim"], b["idigbio_uuid_tesim"] ]}
     filtered = grouped.values.select { |a| a.size > 1 }.flatten.group_by { |b| [ b["occurrence_id_tesim"], b["idigbio_uuid_tesim"] ] }
-    puts "\n#{filtered.count} duplicate groups found"
+    log.info "report_only: #{report_only}"
+    log.info "#{filtered.count} duplicate groups found"
     filtered.each do |key, dups|
       # To minimize the merging time, sort the specimen by the media count, and keep the first specimen (with the most media)
       sorted_dups = dups.sort_by { |dup| -(dup['related_media_ids_ssim']&.count || 0) }
-      puts "\nDuplicate group #{key} with specimens #{sorted_dups.map{|x| x['id'] }}"
+      log.info "Duplicate group #{key} with specimens #{sorted_dups.map{|x| x['id'] }}"
       if merge == true
         delete_dup = (report_only == false)
         merge_to = sorted_dups.first['id']
         sorted_dups.drop(1).each do |dup|
           merge_from = dup['id']
           media_list, ie_list = Morphosource::MergeBiologicalSpecimenService.call(merge_to, merge_from, delete_dup, report_only)
-          puts " moved media #{media_list} from specimen #{merge_from} to specimen #{merge_to}"
+          log.info " moved media #{media_list} from specimen #{merge_from} to specimen #{merge_to}"
           ie_total += ie_list.count
         end
-        puts " duplicate group #{key} merged -> remaining specimen #{merge_to}"
+        log.info " duplicate group #{key} merged -> remaining specimen #{merge_to}"
       end
     end
-    puts "\nTotal imaging event count: #{ie_total}" if report_only
+    log.info "This is a report only. Total imaging event count: #{ie_total}" if report_only
   end
 
   desc "Verify remote backed media files"
@@ -781,6 +798,8 @@ namespace :morphosource do
     end
   end
 
+  # Google Analytics-based media view statistics import
+
   desc "Import Media work view stats from Google Analytics, starting from 2021-01-1 or last saved statistic date"
   task :import_media_view_stats => :environment do
     Morphosource::Analytics::MediaViewStatImporter.new({
@@ -799,5 +818,31 @@ namespace :morphosource do
       logging: true, 
       retries: 3 
     }).import
+  end
+
+  # Set and clear sitewide announcement messages and time until maintenance
+
+  desc "Set sitewide flash-based announcement message"
+  task :set_announcement, [:msg] => :environment do |task, args|
+    if args[:msg].present? && Redis.current
+      Redis.current.set "morphosource:announcement", args[:msg]
+    end
+  end
+
+  desc "Clear sitewide flash-based announcement message"
+  task :clear_announcement => :environment do
+    Redis.current.del("morphosource:announcement") if Redis.current
+  end
+
+  desc "Set time until maintenance, which will be announced sitewide"
+  task :set_time_until_maintenance_in_minutes, [:minutes] => :environment do |task, args|
+    return unless Redis.current
+    minutes = args[:minutes].present? ? args[:minutes].to_i : 10
+    maintenance_time = Time.current + minutes.minutes
+    Redis.current.set "morphosource:maintenance_time", maintenance_time.utc.iso8601
+  end
+
+  task :clear_time_until_maintenance_in_minutes => :environment do
+    Redis.current.del("morphosource:maintenance_time") if Redis.current
   end
 end

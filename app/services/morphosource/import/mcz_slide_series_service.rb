@@ -64,8 +64,17 @@ module Morphosource
       private
 
         def gbif_json
-          response = RestClient.get gbif_occurrence_api
-          JSON.parse(response.body)
+          results = Morphosource::Gbif.view(@resource_id, 'occurrence')
+          if results_valid?(results)
+            results[:data]
+          else
+            Rails.logger.error("An error occurred querying the GBIF API: #{results[:message]}")
+            results[:message] || "Error querying GBIF API"
+          end
+        end
+
+        def results_valid?(results)
+          results[:status] == :success && results[:data].present?
         end
 
     end

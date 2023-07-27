@@ -16,7 +16,8 @@ RSpec.describe MediaIndexer do
       download_groups: ['download_group1', 'download_group2'],
       download_users: ['download_user1', 'download_user2'],
       human_readable_media_type: 'Image',
-      modality: "Scanning Electron Microscopy",
+      modality: 'ScanningElectronMicroscopy',
+      modality_label: "Scanning Electron Microscopy",
       physical_object_type: "Cultural Heritage Object",
       organization_titles: ["Organization 1", "Organization 2"],
       organization_id: ["org123"],
@@ -50,9 +51,9 @@ RSpec.describe MediaIndexer do
       expect(subject['human_readable_media_type_tesim']).to eq field_values[:human_readable_media_type]
       expect(subject['human_readable_media_type_ssim']).to eq field_values[:human_readable_media_type]
     end
-    it 'indexes media_modality' do
-      expect(subject['media_modality_tesim']).to eq field_values[:modality]
-      expect(subject['media_modality_ssim']).to eq field_values[:modality]
+    it 'indexes modality' do
+      expect(subject['modality_ssim']).to eq field_values[:modality]
+      expect(subject['human_readable_modality_tesim']).to eq field_values[:modality_label]
     end
     it 'indexes public collection membership' do
       expect(subject['member_of_public_collection_ids_ssim']).to eq field_values[:member_of_public_collection_ids]

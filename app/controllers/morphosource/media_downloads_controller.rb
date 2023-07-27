@@ -73,47 +73,54 @@ byebug
     end
 
     def api_generate_download
+      request_granted = false
       new_download_hash = SecureRandom.uuid
 
       new_cart_item = create_cart_item_for_api(media_for_api, new_download_hash)
       if new_cart_item.nil?
         byebug
-        #todo: return error with message "User cannot download the media "
+        render json: { error: "User is not allowed to download the media" }, status: :bad_request
 
+      else
+        request_granted = true
       end
-
-      query_params = {
-        key: media.access_control_id,
-        token: api_key,
-        download: new_download_hash,
-        usage: use_statement,
-        usage_list: use_categories_final.join(';')
-      }
-      query_string = query_params.map { |key, value| "#{key}=#{URI.encode(value)}" }.join('&')
-
 byebug
-      #todo: set env host and download path 
-      base_url = "http://localhost:3000/download/from-api/#{media.id}"
-      download_url = "#{base_url}?#{query_string}"
-puts "download_url:\n#{download_url}"
+      if request_granted
+
+        query_params = {
+          key: media.access_control_id,
+          token: api_key,
+          download: new_download_hash,
+          usage: use_statement,
+          usage_list: use_categories_final.join(';')
+        }
+        query_string = query_params.map { |k, v| "#{k}=#{URI.encode(v)}" }.join('&')
+
+  byebug
+        #todo: set env host and download path 
+        base_url = "http://localhost:3000/download/from-api/#{media.id}"
+        download_url = "#{base_url}?#{query_string}"
+  puts "download_url:\n#{download_url}"
 
 
-      respond_to do |format|
-        format.json { render json: {
-          
-          "response": {
-            "media": {
-              "id": [
-                media.id
-              ],
-              "download_url": [
-                download_url
-              ]
+        respond_to do |format|
+          format.json { render json: {
+            
+            "response": {
+              "media": {
+                "id": [
+                  media.id
+                ],
+                "download_url": [
+                  download_url
+                ]
+              }
             }
-          }
 
-        }}
+          }}
+        end
       end
+
     end
 
     def prepare_all_files
@@ -213,11 +220,14 @@ byebug
 
       def validate_params_for_api
         errors = [] 
+        status = :bad_request
         unless user_from_authorization_header.present? 
           errors << "Authorization header required"
+          status = :not_authorized
         end
         unless media_for_api.present? 
-          errors << "Media not available"
+          errors << "Media not found"
+          status = :not_found
         end
         unless use_statement.present? && use_statement.length >= 50
           errors << "use_statement with minimum 50 characters is required" 
@@ -232,10 +242,8 @@ byebug
         unless agreements_accepted?
           errors << "agreements_accepted is not set to true"
         end
-byebug
-
         if errors.present?
-          render json: { error: errors.join("; ") }, status: :bad_request 
+          render json: { error: errors.join("; ") }, status: status
         end
       end
 
@@ -245,6 +253,7 @@ byebug
       end
 
       def media_for_api
+        return nil unless Media.exists? (params[:id])
         @media ||= Media.find(params[:id])
       end
 

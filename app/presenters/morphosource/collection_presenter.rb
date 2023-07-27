@@ -76,5 +76,9 @@ module Morphosource
         ''
       end
     end
+
+    def total_viewable_media
+      ActiveFedora::Base.where("member_of_collection_ids_ssim:#{id} AND has_model_ssim:Media").accessible_by(current_ability).count
+    end
   end
 end

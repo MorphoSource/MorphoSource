@@ -39,7 +39,7 @@ module Morphosource
     end
 
     def download_from_api
-byebug
+#byebug
       prepare_all_files
       if @files.present? && @all_files.present?
 
@@ -78,13 +78,12 @@ byebug
 
       new_cart_item = create_cart_item_for_api(media_for_api, new_download_hash)
       if new_cart_item.nil?
-        byebug
         render json: { error: "User is not allowed to download the media" }, status: :bad_request
 
       else
         request_granted = true
       end
-byebug
+#byebug
       if request_granted
 
         query_params = {
@@ -94,12 +93,9 @@ byebug
           usage: use_statement,
           usage_list: use_categories_final.join(';')
         }
-        query_string = query_params.map { |k, v| "#{k}=#{URI.encode(v)}" }.join('&')
+        download_url = url_for(controller: 'media_downloads', action: 'download_from_api', id: media.id, protocol: request.protocol, host: request.host_with_port, params: query_params)
 
-  byebug
-        #todo: set env host and download path 
-        base_url = "http://localhost:3000/download/from-api/#{media.id}"
-        download_url = "#{base_url}?#{query_string}"
+
   puts "download_url:\n#{download_url}"
 
 

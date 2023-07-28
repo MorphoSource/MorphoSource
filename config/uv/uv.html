@@ -10,16 +10,10 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
     <link rel="icon" href="favicon.ico" />
-		<link rel="stylesheet" type="text/css" href="uv.css" />
-		<!-- 
-			resize observer is needed for model-viewer
-			https://github.com/google/model-viewer/issues/1088#issuecomment-599237719
-		-->
-		<script src="https://unpkg.com/resize-observer-polyfill@1.5.1/dist/ResizeObserver.js"></script>
-    <script type="text/javascript" src="uv-assets/js/bundle.js"></script>
+    <link rel="stylesheet" type="text/css" href="uv.css" />
     <script src="https://unpkg.com/@universalviewer/aleph@0.0.18/dist/collection/assets/aframe-1.0.3.min.js"></script>
     <script src="https://unpkg.com/@universalviewer/aleph@0.0.18/dist/collection/assets/ami.min.js"></script>
-    <script type="text/javascript" src="uv-dist-umd/UV.js"></script>
+    <script type="text/javascript" src="umd/UV.js"></script>
     <style>
       body {
         margin: 0;
@@ -47,59 +41,38 @@
   <body>
     <div id="uv" class="uv"></div>
 
-    <script type="text/javascript">
-
-      urlDataProvider = new UV.URLDataProvider(true);
-      var formattedLocales;
-      var locales = urlDataProvider.get("locales", "");
-
-      if (locales) {
-        var names = locales.split(",");
-        formattedLocales = [];
-
-        for (var i in names) {
-          var nameparts = String(names[i]).split(":");
-          formattedLocales[i] = { name: nameparts[0], label: nameparts[1] };
-        }
-      } else {
-        formattedLocales = [
-          {
-            name: "en-GB"
-          }
-        ];
-      }
-
-      uv = UV.init(
-        "uv",
-        {
-          manifestUri: urlDataProvider.get("manifest"),
-          configUri: urlDataProvider.get("config"),
-          collectionIndex: Number(urlDataProvider.get("c", 0)),
-          manifestIndex: Number(urlDataProvider.get("m", 0)),
-          canvasIndex: Number(urlDataProvider.get("cv", 0)),
-          rangeId: urlDataProvider.get("rid", 0),
-          rotation: Number(urlDataProvider.get("r", 0)),
-          xywh: urlDataProvider.get("xywh", ""),
-          embedded: true,
-          locales: formattedLocales,
-          target: urlDataProvider.get("target")
-        },
-        urlDataProvider
-      );
-    </script>
-
     <script>
-      $(function() {
-        var $UV = $("#uv");
+      document.addEventListener("DOMContentLoaded", function() {
+        var urlAdapter = new UV.IIIFURLAdapter(true);
+
+        const data = urlAdapter.getInitialData({
+          embedded: true,
+        });
+
+        uv = UV.init("uv", data);
+
+
+        const configUrl = urlAdapter.get('config');
+        if (configUrl) {
+          uv.on("configure", function({ config, cb }) {
+            cb(
+              new Promise(function (resolve) {
+                fetch(configUrl).then(function (response) {
+                  resolve(response.json());
+                });
+              })
+            );
+          })
+        }
+
+        var $UV = document.getElementById("uv");
 
         function resize() {
-          var windowWidth = window.innerWidth;
-          var windowHeight = window.innerHeight;
-          $UV.width(windowWidth);
-          $UV.height(windowHeight);
+          $UV.setAttribute("style", "width:" + window.innerWidth + "px");
+          $UV.setAttribute("style", "height:" + window.innerHeight + "px");
         }
 
-        $(window).on("resize", function() {
+        addEventListener("resize", function() {
           resize();
         });
 

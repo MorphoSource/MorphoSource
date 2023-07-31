@@ -223,27 +223,53 @@ RSpec.describe Collection, type: :model do
       Morphosource::Collections::PermissionsCreateService.create_default(collection: team)
     end
 
-    it 'adds works to the collection' do
-      team.add_member_objects(work_ids)
-      expect(team.member_objects).to match_array(works)
+    context 'parameter is array of work ids' do
+      it 'adds works to the collection' do
+        team.add_member_objects(work_ids)
+        expect(team.member_objects).to match_array(works)
+      end
+
+      it 'applies permissions to the works' do
+        team.add_member_objects(work_ids)
+        works.each do |work|
+          work.reload
+          expect(work.edit_groups).to match_array([team.managers_group.name, team.editors_group.name, 'admin'])
+          expect(work.download_groups).to match_array([team.downloaders_group.name])
+          expect(work.read_groups).to match_array([team.viewers_group.name])
+        end
+      end
+      it 'calls inherit permissions' do
+        works.each do |work|
+          expect(InheritPermissionsJob).to receive(:perform_later).with(work.id)
+        end
+        team.add_member_objects(work_ids)
+      end
     end
 
-    it 'applies permissions to the works' do
-      team.add_member_objects(work_ids)
-      works.each do |work|
-        work.reload
-        expect(work.edit_groups).to match_array([team.managers_group.name, team.editors_group.name, 'admin'])
-        expect(work.download_groups).to match_array([team.downloaders_group.name])
-        expect(work.read_groups).to match_array([team.viewers_group.name])
+    context 'parameter is array of works' do
+      it 'adds works to the collection' do
+        team.add_member_objects(works)
+        expect(team.member_objects).to match_array(works)
       end
-    end
-    it 'calls inherit permissions' do
-      works.each do |work|
-        expect(InheritPermissionsJob).to receive(:perform_later).with(work.id)
+
+      it 'applies permissions to the works' do
+        team.add_member_objects(works)
+        works.each do |work|
+          work.reload
+          expect(work.edit_groups).to match_array([team.managers_group.name, team.editors_group.name, 'admin'])
+          expect(work.download_groups).to match_array([team.downloaders_group.name])
+          expect(work.read_groups).to match_array([team.viewers_group.name])
+        end
       end
-      team.add_member_objects(work_ids)
+      it 'calls inherit permissions' do
+        works.each do |work|
+          expect(InheritPermissionsJob).to receive(:perform_later).with(work.id)
+        end
+        team.add_member_objects(works)
+      end
     end
   end
+
   describe '#remove_member_objects' do
     let(:works)     { [media, media2, media3] }
     let(:work_ids)  { [media.id, media2.id, media3.id] }

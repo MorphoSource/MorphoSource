@@ -46,26 +46,12 @@ module Morphosource
           Hyrax.config.index_related_works = false
           slides.each do |slide_json|
             @slide = slide_class.new(slide_json)
-            create_slide_works
+            @imaging_event = create_new_imaging_event
+            @media = create_new_media
             characterize_file
             create_thumbnail
             @collection.add_member_objects(@media)
           end
-          update_works_index
-        end
-
-        def create_slide_works
-          @imaging_event = create_new_imaging_event
-          @media = create_new_media
-          associate_slide_works
-        end
-
-        def associate_slide_works
-          @file_set = update_file_set
-          add_original_file
-        end
-
-        def update_works_index
           @specimen.update_index
           @collection.update_index
         end
@@ -184,22 +170,14 @@ module Morphosource
                          y_spacing: @slide.y_spacing,
                          z_spacing: @slide.z_spacing }
 
+          # add media to imaging event
           attributes.merge!(work_parents_attributes: { "0" => { "id" => @imaging_event.id, "_destroy" => "false" } } )
+
+          # provide file name
+          attributes.merge!("remote_manifest_info" => { "file_name" => @slide.file_name, "mime_type_of_remote" => @slide.mime_type } )
 
           Hyrax::CurationConcern.actor.create(Hyrax::Actors::Environment.new(media, ::Ability.new(manager), attributes))
           media
-        end
-
-        def update_file_set
-          fs = @media.file_sets.first
-          fs.update(title: [@slide.file_name], label: @slide.file_name, mime_type_of_remote: @slide.mime_type)
-          fs.reload
-        end
-
-         # associate slide works
-
-        def add_original_file
-          Hydra::Works::AddExternalFileToFileSet.call(@file_set, @file_set.import_url, :original_file, update_existing: true, versioning: false)
         end
 
         # characterize file

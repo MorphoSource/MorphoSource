@@ -17,9 +17,9 @@ module Morphosource
     include Morphosource::CartItems
     include Morphosource::RestApiBehavior
 
+    before_action :validate_when_download_from_api, only: [:download_from_api]
     before_action :validate_params, only: [:show, :download_from_api]
     before_action :validate_download_hash, only: [:show, :download_from_api]
-    before_action :validate_when_download_from_api, only: [:download_from_api]
     before_action :validate_user, only: [:show]
     after_action :reset_recaptcha, only: [:show]
 
@@ -78,7 +78,7 @@ module Morphosource
 
       new_cart_item = create_cart_item_for_api(media_for_api, new_download_hash)
       if new_cart_item.nil?
-        render json: { error: "User is not allowed to download the media" }, status: :bad_request
+        render json: { error: "User is not allowed to download the media" }, status: :not_found
 
       else
         request_granted = true
@@ -88,32 +88,21 @@ module Morphosource
 
         query_params = {
           key: media.access_control_id,
-          token: api_key,
           download: new_download_hash,
           usage: use_statement,
           usage_list: use_categories_final.join(';')
         }
         download_url = url_for(controller: 'media_downloads', action: 'download_from_api', id: media.id, protocol: request.protocol, host: request.host_with_port, params: query_params)
-
-
-  puts "download_url:\n#{download_url}"
-
-
-        respond_to do |format|
-          format.json { render json: {
-            
-            "response": {
-              "media": {
-                "id": [
-                  media.id
-                ],
-                "download_url": [
-                  download_url
-                ]
-              }
+        json_obj = {            
+          "response": {
+            "media": {
+              "id": [media.id],
+              "download_url": [URI.encode(download_url)]
             }
-
-          }}
+          }
+        }
+        respond_to do |format|
+          format.json { render json: JSON.generate(json_obj)}
         end
       end
 
@@ -245,7 +234,7 @@ byebug
 
       # Get user record from api key in header
       def user_from_authorization_header
-        @user ||= User.where(token: api_key).first if api_key.present?
+        User.where(token: api_key).first if api_key.present?
       end
 
       def media_for_api
@@ -268,7 +257,13 @@ byebug
 
       # Get user record from token param
       def user_from_token
-        @user ||= User.where(token: params[:token])&.first if params[:token].present?
+        @user ||= begin
+          if @download_from_api
+            user_from_authorization_header
+          else
+            User.where(token: params[:token])&.first if params[:token].present?
+          end
+        end
       end
 
       # Get Media from keys
@@ -291,6 +286,7 @@ byebug
       end
 
       def validate_when_download_from_api
+        @download_from_api = true
         @current_user = user_from_token
         return head(:unauthorized) unless user_is_valid?
         return head(:bad_request) unless cart_item_for_download_from_api.present?

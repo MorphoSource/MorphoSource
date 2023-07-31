@@ -62,7 +62,6 @@ module Morphosource
 
         def associate_slide_works
           @file_set = update_file_set
-          add_media_to_imaging_event
           add_original_file
         end
 
@@ -183,7 +182,9 @@ module Morphosource
                          unit: @slide.unit,
                          x_spacing: @slide.x_spacing,
                          y_spacing: @slide.y_spacing,
-                         z_spacing: @slide.z_spacing}
+                         z_spacing: @slide.z_spacing }
+
+          attributes.merge!(work_parents_attributes: { "0" => { "id" => @imaging_event.id, "_destroy" => "false" } } )
 
           Hyrax::CurationConcern.actor.create(Hyrax::Actors::Environment.new(media, ::Ability.new(manager), attributes))
           media
@@ -196,11 +197,6 @@ module Morphosource
         end
 
          # associate slide works
-
-        def add_media_to_imaging_event
-          @imaging_event.ordered_members << @media
-          @imaging_event.save!
-        end
 
         def add_original_file
           Hydra::Works::AddExternalFileToFileSet.call(@file_set, @file_set.import_url, :original_file, update_existing: true, versioning: false)

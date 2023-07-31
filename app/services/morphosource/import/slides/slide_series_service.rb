@@ -49,7 +49,7 @@ module Morphosource
             create_slide_works
             characterize_file
             create_thumbnail
-            add_to_collection_and_save
+            @collection.add_member_objects(@media)
           end
           update_works_index
         end
@@ -244,15 +244,6 @@ module Morphosource
             @tempfile.write(chunk)
           end
           @tempfile.rewind
-        end
-
-        # add media to collection
-
-        def add_to_collection_and_save
-          @media.member_of_collections += [@collection]
-          Hyrax::PermissionTemplateApplicator.apply(@collection.permission_template).to(model: @media)
-          @media.save!
-          InheritPermissionsJob.perform_later(@media)
         end
 
         private

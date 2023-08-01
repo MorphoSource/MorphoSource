@@ -60,7 +60,7 @@ export default class RelationshipsControl {
         let submission_object_id = $('#media_member_of_collection_ids').attr('data-selected-object')
         let edit_media_object_id = $('#physical-object-id-value').attr('value')
         let object_id = (submission_object_id || edit_media_object_id);
-        if (object_id != data.object_id) {
+        if (data.object_id && object_id != data.object_id) {
           this.errors = ["All media in a Sequential Section Scan List must be from object id: " + data.object_id]
           alert(this.errors);
         }

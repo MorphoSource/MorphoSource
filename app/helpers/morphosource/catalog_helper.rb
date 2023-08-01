@@ -21,11 +21,7 @@ module Morphosource::CatalogHelper
 
   # media index metadata displays title linked to physical object
   def link_to_object(args)
-    if args.is_a? String
-      id = args
-    else
-      id = args[:document]["physical_object_id_tesim"].first
-    end
+    id = args[:document]["physical_object_id_tesim"].first
     object = SolrDocument.find(id)
     title = object.title.first
     if object.specimen?
@@ -54,7 +50,7 @@ module Morphosource::CatalogHelper
   def can_read_any(config, document)
     ( document[config[:key]] || [] ).any? { |id| can? :read, id }
   end
-
+  
   def modality_label_by_id(id)
     Morphosource::ModalitiesService.label(id) || "Modality Not Found"
   end

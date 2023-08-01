@@ -78,8 +78,7 @@ module Morphosource
 
       new_cart_item = create_cart_item_for_api(media_for_api, new_download_hash)
       if new_cart_item.nil?
-        render json: { error: "User is not allowed to download the media" }, status: :not_found
-
+        render_json_by_http_code 404
       else
         request_granted = true
       end
@@ -204,22 +203,17 @@ byebug
     private
 
       def validate_params_for_api
+        return render_json_by_http_code 401 unless user_from_authorization_header.present? 
+        return render_json_by_http_code 404 unless media_for_api.present? 
+
+        # the rest are validation failure
         errors = [] 
-        status = :bad_request
-        unless user_from_authorization_header.present? 
-          errors << "Authorization header required"
-          status = :not_authorized
-        end
-        unless media_for_api.present? 
-          errors << "Media not found"
-          status = :not_found
-        end
         unless use_statement.present? && use_statement.length >= 50
           errors << "use_statement with minimum 50 characters is required" 
         end 
         if use_categories.present? 
           unless use_categories.all? { |c| intended_use = Morphosource::UserProfile::CheckboxValues::INTENT.include?(c) }
-              errors << "one or more values of use_categories are not valid"
+            errors << "one or more values of use_categories are not valid"
           end
         elsif !use_categories_final.present?
           errors << "use_categories or use_category_other is required"
@@ -228,7 +222,7 @@ byebug
           errors << "agreements_accepted is not set to true"
         end
         if errors.present?
-          render json: { error: errors.join("; ") }, status: status
+          return render_json_by_http_code 400, errors
         end
       end
 

@@ -12,21 +12,11 @@ div.collection-header {
     padding: 16px 0;
   }
 
-  @media (min-width: 768px) {
-    #list-specimen {
-      font-size: 20px;
-    }
-  }
-
   @media (max-width: 767px) {
     flex-wrap: wrap;
 
     .title-wrapper {
       width: 100%;
-    }
-
-    #list-specimen {
-      font-size: 3vw;
     }
 
     .btn-wrapper {
@@ -61,10 +51,6 @@ div.collection-header {
   .title-wrapper {
     min-width: 67%;
     flex-grow: 1;
-  }
-
-  #list-specimen {
-    margin-top: 5px;
   }
 
   .btn-wrapper {
@@ -116,7 +102,7 @@ div.collection-page {
   [class*='col-'] {
     padding: 0;
   }
-
+ 
   .gallery-badge {
     a {
       display: inline-block;
@@ -130,7 +116,7 @@ div.collection-page {
       padding-top: 4px;
       padding-bottom: 4px;
     }
-  }
+  } 
 
   .collection.panel-body {
     div#documents.gallery {

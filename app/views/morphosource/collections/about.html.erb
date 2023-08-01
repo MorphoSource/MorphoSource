@@ -41,9 +41,6 @@ provide :page_title, construct_page_title(@presenter.title)
                   <%= @presenter.id_badge %>
                   <%= @presenter.permission_badge %>
                 <% end %>
-                <% if @presenter.sequential_section_list? %>
-                  <%= render 'list_specimen_link' %>
-                <% end %>
               </div>
               <%= render 'collection_counts' %>
           </h1>

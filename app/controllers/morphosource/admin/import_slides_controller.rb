@@ -2,9 +2,9 @@ module Morphosource
   module Admin
     class ImportSlidesController < ApplicationController
       before_action :require_admin
-      with_themed_layout 'morphosource_dashboard'
-
       before_action :initialize_service, only: :import_slides
+
+      with_themed_layout 'morphosource_dashboard'
 
       def import_slides
         Morphosource::ImportSlideSeriesJob.perform_later(occurrence_id, @occurrence_json, @collection.id)

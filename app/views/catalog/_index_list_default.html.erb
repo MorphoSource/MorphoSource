@@ -1,7 +1,11 @@
-<div class="col-md-10">
+<% doc_presenter = index_presenter(document) %>
+<% collection_models = [ "Collection", "MediaList", "SequentialSectionList" ] %>
+<% collection_result = collection_models.include?(doc_presenter.field_value('has_model_ssim')) %>
+
+<div class="<%= collection_result ? "col-md-7" : "col-md-10" %>">
   <div class="metadata">
     <dl class="dl-horizontal">
-    <% doc_presenter = index_presenter(document) %>
+    
     <% index_fields(document).each do |field_name, field| -%>
       <% if should_render_index_field? document, field %>
         <div class="index-field-item">
@@ -53,18 +57,19 @@
     </dl>
   </div>
 </div>
-<% if(doc_presenter.field_value('has_model_ssim') == 'Collection') %>
-    <% collection_presenter = Hyrax::CollectionPresenter.new(document, current_ability) %>
-<div class="col-md-4">
-  <div class="collection-counts-wrapper">
-    <% if (doc_presenter.field_value('human_readable_type_tesim') == 'Team') %>
+
+<% if collection_result %>
+  <% collection_presenter = Morphosource::CollectionPresenter.new(document, current_ability) %>
+  <div class="col-md-3">
+    <div class="collection-counts-wrapper">
       <div class="collection-counts-item">
-        <span><%= collection_presenter.total_viewable_collections %></span>Projects
+        <span><%= collection_presenter.total_viewable_media %></span>Media
       </div>
-    <% end %>
-    <div class="collection-counts-item">
-      <span><%= collection_presenter.total_viewable_works %></span>Media
+      <% if (doc_presenter.field_value('human_readable_type_tesim') == 'Team') %>
+        <div class="collection-counts-item">
+          <span><%= collection_presenter.total_viewable_collections %></span>Projects
+        </div>
+      <% end %>
     </div>
   </div>
-</div>
 <% end %>

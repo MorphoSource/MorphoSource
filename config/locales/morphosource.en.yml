@@ -200,6 +200,9 @@ en:
           collections:
             label_long: "Teams & Projects"
             label_short: "Teams/Projects"
+          media_lists:
+            label_long: "Media Lists"
+            label_short: "Media Lists"
         q:
           media:
             placeholder: "Enter complete terms in title (part, media type, modality)"

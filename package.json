@@ -4,13 +4,12 @@
   "private": true,
   "repository": "git@github.com:MorphoSource/MorphoSource.git",
   "dependencies": {
-  "universalviewer": "MorphoSource/universalviewer#webpack-al-old_aleph-0.0.21_dist"
+    "universalviewer": "MorphoSource/universalviewer#uv4-4.0.22-aleph-0.0.21"
 },
 "scripts": {
-  "preinstall": "rm -rf ./public/uv/ & rm -rf ./public/uv-assets/ & rm -rf ./public/uv-dist-umd/",
-  "postinstall": "yarn run uv-install && yarn run uv-subdir-copy && yarn run uv-config",
+  "preinstall": "rm -rf ./public/uv/",
+  "postinstall": "yarn run uv-install && yarn run uv-config",
   "uv-install": "cp -r ./node_modules/universalviewer/dist ./public/uv",
-  "uv-subdir-copy": "cp -r ./node_modules/universalviewer/dist/uv-assets ./public/uv-assets & cp -r ./node_modules/universalviewer/dist/uv-dist-umd ./public/uv-dist-umd",
   "uv-config": "cp ./config/uv/uv.html ./public/uv/uv.html & cp ./config/uv/uv-config.json ./public/uv/uv-config.json & cp ./config/uv/uv-config-front-page.json ./public/uv/uv-config-front-page.json"
   },
   "devDependencies": {}

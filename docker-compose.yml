@@ -124,6 +124,8 @@ services:
       - fcrepo
       - solr
       - app_test
+    profiles:
+      - test
     volumes:
       - .:/app/samvera/hyrax-webapp
       - test-tmp:/app/samvera/hyrax-webapp/tmp

@@ -323,6 +323,9 @@ Rails.application.routes.draw do
   # teams/projects
   get 'catalog/teams_projects', to: 'collections_catalog#index', as: 'collection_search'
   get 'collections_catalog/facet/:id', to: 'collections_catalog#facet'
+  # media lists & sequential section lists
+  get 'catalog/lists', to: 'media_lists_catalog#index', as: 'media_list_search'
+  get 'lists_catalog/facet/:id', to: 'media_lists_catalog#facet'
   # all
   get 'catalog/all', to: 'all_catalog#index', as: 'all_search'
   get 'all_catalog/facet/:id', to: 'all_catalog#facet'

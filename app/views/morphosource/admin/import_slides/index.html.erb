@@ -2,24 +2,8 @@
 
 <%= form_with url: import_slides_path, method: :post, local: true do |form| %>
   <div>
-    <%= form.label :organization, "Organization" %>
-    <%= form.select_tag(:organization, options_for_select([['MCZ', 'MCZ']])) %>
-  </div>
-  <div>
-    <%= form.label :service, "Service" %>
-    <%= form.select_tag(:service, options_for_select([['GBIF', 'GBIF']])) %>
-  </div>
-  <div>
-    <%= form.label :resource_id, "Resource ID" %>
-    <%= form.text_field :resource_id %>
-  </div>
-  <div>
-    <%= form.label :user_email, "Manager Email" %>
-    <%= form.text_field :user_email %>
-  </div>
-  <div>
-    <%= form.label :list_visibility, "Publication Status" %>
-    <%= form.select_tag(:list_visibility, options_for_select([['open', 'open'], ['private', 'restricted']])) %>
+    <%= form.label :occurrence_id, 'GBIF Occurrence ID' %>
+    <%= form.text_field :occurrence_id %>
   </div>
   <div>
     <%= form.submit "Import Slides" %>

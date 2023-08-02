@@ -8,6 +8,7 @@ module Hyrax
     #
     # Browse everything may also return a local file. And although it's in the
     # url property, it may have spaces, and not be a valid URI.
+    # remote_manifest_info provides fileset metadata when the filename is different from the import url
     class CreateWithRemoteFilesActor < Hyrax::Actors::AbstractActor
       # @param [Hyrax::Actors::Environment] env
       # @return [Boolean] true if create was successful
@@ -15,7 +16,8 @@ module Hyrax
         remote_files = env.attributes.delete(:remote_files)
         # set file attributes for remote backed media
         if env.curation_concern.media? && env.attributes["remote_origin_url"]&.present?
-          remote_files = remote_files_from_remote_origin_url(env.attributes["remote_origin_url"])
+          remote_manifest_info = env.attributes.delete(:remote_manifest_info).to_h
+          remote_files = remote_files_from_remote_origin_url(env.attributes["remote_origin_url"], remote_manifest_info)
         end
         # next actor is CreateWithFilesActor.create
         next_actor.create(env) && attach_files(env, remote_files)
@@ -27,7 +29,8 @@ module Hyrax
         remote_files = env.attributes.delete(:remote_files)
         # set file attributes for remote backed media
         if env.curation_concern.media? && env.attributes["remote_origin_url"].present?
-          remote_files = remote_files_from_remote_origin_url(env.attributes["remote_origin_url"])
+          remote_manifest_info = env.attributes.delete(:remote_manifest_info).to_h
+          remote_files = remote_files_from_remote_origin_url(env.attributes["remote_origin_url"], remote_manifest_info)
         end
         # next actor is CreateWithFilesActor.update
         next_actor.update(env) && attach_files(env, remote_files)
@@ -35,9 +38,14 @@ module Hyrax
 
       private
 
-        def remote_files_from_remote_origin_url(u)
+        def remote_files_from_remote_origin_url(u, remote_manifest_info = nil)
           uri = URI.parse(u)
           remote_files = [{:url => u, :file_name => File.basename(uri.path)}]
+          if remote_manifest_info.present?
+            remote_files.first[:file_name] = remote_manifest_info["file_name"]
+            remote_files.first[:mime_type_of_remote] = remote_manifest_info["mime_type_of_remote"]
+          end
+          remote_files
         end
 
         def whitelisted_ingest_dirs
@@ -71,16 +79,18 @@ module Hyrax
               return false
             end
             auth_header = file_info.fetch(:auth_header, {})
-            create_file_from_url(env, uri, file_info[:file_name], auth_header)
+            file_name = file_info[:file_name]
+            mime_type_of_remote = file_info[:mime_type_of_remote]
+            create_file_from_url(env, uri, file_name, auth_header, mime_type_of_remote)
           end
           true
         end
 
         # Generic utility for creating FileSet from a URL
         # Used in to import files using URLs from a file picker like browse_everything
-        def create_file_from_url(env, uri, file_name, auth_header = {})
+        def create_file_from_url(env, uri, file_name, auth_header = {}, mime_type_of_remote = nil)
           import_url = URI.decode_www_form_component(uri.to_s)
-          ::FileSet.new(import_url: import_url, label: file_name) do |fs|
+          ::FileSet.new(import_url: import_url, label: file_name, mime_type_of_remote: mime_type_of_remote) do |fs|
             actor = Hyrax::Actors::FileSetActor.new(fs, env.user)
             actor.create_metadata(visibility: env.curation_concern.visibility)
             actor.attach_to_work(env.curation_concern)
@@ -90,9 +100,7 @@ module Hyrax
               file_path = CGI.unescape(uri.path)
               IngestLocalFileJob.perform_later(fs, file_path, env.user)
             else
-              unless env.curation_concern.has_remote_manifest?
-                ImportUrlJob.perform_later(fs, operation_for(user: actor.user), auth_header)
-              end
+              ImportUrlJob.perform_later(fs, operation_for(user: actor.user), auth_header)
             end
           end
         end

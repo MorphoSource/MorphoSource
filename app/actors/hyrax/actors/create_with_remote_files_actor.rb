@@ -44,8 +44,8 @@ module Hyrax
           if remote_manifest_info.present?
             remote_files.first[:file_name] = remote_manifest_info["file_name"]
             remote_files.first[:mime_type_of_remote] = remote_manifest_info["mime_type_of_remote"]
-            remote_files
           end
+          remote_files
         end
 
         def whitelisted_ingest_dirs

@@ -39,12 +39,11 @@ module Morphosource
     end
 
     def download_from_api
-#byebug
       prepare_all_files
       if @files.present? && @all_files.present?
 
-#        cart_item = update_cart_items_for_download_from_api
-
+byebug
+        add_subsequent_download(cart_item_for_download_from_api, "API")
         create_interval_sequence
         send_interval_response
       else
@@ -73,13 +72,17 @@ module Morphosource
     end
 
     def api_generate_download
+      @is_api_generate_download = true
       request_granted = false
-      new_download_hash = SecureRandom.uuid
 
-      new_cart_item = create_cart_item_for_api(media_for_api, new_download_hash)
-      if new_cart_item.nil?
+      cart_item = create_or_update_cart_item_for_link_generation
+
+byebug
+      if cart_item.nil?
         render_json_by_http_code 404
       else
+
+
         request_granted = true
       end
 #byebug
@@ -87,7 +90,7 @@ module Morphosource
 
         query_params = {
           key: media.access_control_id,
-          download: new_download_hash,
+          download: download_hash,
           usage: use_statement,
           usage_list: use_categories_final.join(';')
         }
@@ -115,27 +118,34 @@ module Morphosource
     def cart_item_for_download_from_api
       @cart_item_for_download_from_api ||= find_item_for_download_from_api(media.first.id, download_hash, current_user.ms_id)
     end
-    
-    def create_or_update_cart_items_for_download_from_api
-      m = media.first
-byebug
-      if (item = find_downloaded_downloadable_item(m.id, download_hash, "API")).present?
-        # CartItem for media with DL hash exists, can increment DL attempts and update DL date
-        add_subsequent_download(item)
-      elsif (item = find_undownloaded_approved_request_item(m.id, "API")).present?
-        # Undownloaded approved request exists, associate download with request
-        add_first_download(item, download_hash)
-      elsif (item = find_undownloaded_downloadable_item(m.id, "API")).present?
-        # Undownloaded downloadable item exists (e.g., in media cart), associated download
-        add_first_download(item, download_hash, "APi")
-      else
-        # Add new CartItem for download
-        create_downloaded_item(m.id, download_hash, "API")
-      end
 
-#      add_subsequent_download(cart_item_for_download_from_api)      
+    def update_cart_item_after_download_from_api
+      return nil unless (m = media_for_api).present?
+      
+
+    end
+
+    def create_or_update_cart_item_for_link_generation
+      return nil unless (m = media_for_api).present?
+
+      if (item = find_undownloaded_approved_request_item(m.id)).present?
+        # Undownloaded approved request exists, associate download with request
 byebug
-      #
+#check hash
+        add_link_generation(item, download_hash)
+      elsif (item = find_undownloaded_downloadable_item(m.id)).present?
+        # Undownloaded downloadable item exists (e.g., in media cart), associated download
+byebug
+        add_link_generation(item, download_hash)
+      elsif user_can_download?(current_user, m)
+byebug
+byebug
+        item = create_cart_item_for_api(m)
+      else
+        item = nil
+      end
+byebug
+      return item
     end
 
     def create_or_update_cart_items_for_download
@@ -240,7 +250,6 @@ byebug
         @api_key ||= request.headers['Authorization']
       end
 
-
       def validate_params
         return head(:bad_request) unless params_valid?
       end
@@ -252,7 +261,7 @@ byebug
       # Get user record from token param
       def user_from_token
         @user ||= begin
-          if @download_from_api
+          if @is_download_from_api
             user_from_authorization_header
           else
             User.where(token: params[:token])&.first if params[:token].present?
@@ -271,7 +280,13 @@ byebug
       end
 
       def download_hash
-        @download_hash ||= params[:download] if params[:download].present?
+        @download_hash ||= begin
+          if @is_api_generate_download
+            SecureRandom.uuid
+          else
+            params[:download] if params[:download].present?
+          end
+        end
       end
 
       def validate_download_hash
@@ -280,7 +295,7 @@ byebug
       end
 
       def validate_when_download_from_api
-        @download_from_api = true
+        @is_download_from_api = true
         @current_user = user_from_token
         return head(:unauthorized) unless user_is_valid?
         return head(:bad_request) unless cart_item_for_download_from_api.present?

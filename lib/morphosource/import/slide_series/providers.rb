@@ -20,6 +20,7 @@ module Morphosource
               license
               list_visibility
               morphosource_use_agreement_type
+              normalize_permissions
               permits_3d_use
               permits_commercial_use
               preview_mode

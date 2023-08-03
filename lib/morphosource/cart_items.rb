@@ -140,14 +140,7 @@ module Morphosource
     end
 
     def create_cart_item_for_api(work)
-# todo: test private and restricted media
-
-      # if media is public, it's still ok to create cart item for approval request
-      # but NOT ok to download
-      # **********
-byebug
-        CartItem.create( { user_id: current_user.ms_id, work_id: work.id, reviewers: work.reviewer, download_hash: download_hash, download_attempts: 0, in_cart: false, download_method: "API" } )
-
+      CartItem.create( { user_id: current_user.ms_id, work_id: work.id, reviewers: work.reviewer, download_hash: download_hash, download_attempts: 0, in_cart: false, download_method: "API" } )
     end
 
     # Add first or subsequent download event after download from API

@@ -17,6 +17,7 @@ module Morphosource
     include Morphosource::CartItems
     include Morphosource::RestApiBehavior
 
+    skip_before_action :verify_authenticity_token, only: [:api_generate_download, :download_from_api]
     before_action :validate_when_download_from_api, only: [:download_from_api]
     before_action :validate_params, only: [:show, :download_from_api]
     before_action :validate_download_hash, only: [:show, :download_from_api]
@@ -41,13 +42,11 @@ module Morphosource
     def download_from_api
       prepare_all_files
       if @files.present? && @all_files.present?
-
-byebug
         add_subsequent_download(cart_item_for_download_from_api, "API")
         create_interval_sequence
         send_interval_response
       else
-        #todo: return error
+        return render_json_by_http_code 400, ["There is an issue with one of the media you have attempted to download, and it is not available right now. Please try again later. If the issue persists, contact us (morphosource@duke.edu)."]
       end
     end
 
@@ -73,21 +72,10 @@ byebug
 
     def api_generate_download
       @is_api_generate_download = true
-      request_granted = false
-
       cart_item = create_or_update_cart_item_for_link_generation
-
-byebug
       if cart_item.nil?
         render_json_by_http_code 404
       else
-
-
-        request_granted = true
-      end
-#byebug
-      if request_granted
-
         query_params = {
           key: media.access_control_id,
           download: download_hash,
@@ -107,7 +95,6 @@ byebug
           format.json { render json: JSON.generate(json_obj)}
         end
       end
-
     end
 
     def prepare_all_files
@@ -119,32 +106,20 @@ byebug
       @cart_item_for_download_from_api ||= find_item_for_download_from_api(media.first.id, download_hash, current_user.ms_id)
     end
 
-    def update_cart_item_after_download_from_api
-      return nil unless (m = media_for_api).present?
-      
-
-    end
-
     def create_or_update_cart_item_for_link_generation
       return nil unless (m = media_for_api).present?
 
       if (item = find_undownloaded_approved_request_item(m.id)).present?
         # Undownloaded approved request exists, associate download with request
-byebug
-#check hash
         add_link_generation(item, download_hash)
       elsif (item = find_undownloaded_downloadable_item(m.id)).present?
         # Undownloaded downloadable item exists (e.g., in media cart), associated download
-byebug
         add_link_generation(item, download_hash)
       elsif user_can_download?(current_user, m)
-byebug
-byebug
         item = create_cart_item_for_api(m)
       else
         item = nil
       end
-byebug
       return item
     end
 

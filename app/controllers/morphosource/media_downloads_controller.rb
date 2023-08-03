@@ -127,7 +127,7 @@ module Morphosource
       media.each do |m|
         if (item = find_downloaded_downloadable_item(m.id, download_hash)).present?
           # CartItem for media with DL hash exists, can increment DL attempts and update DL date
-          add_subsequent_download(item)
+          add_subsequent_download(item, "UI")
         elsif (item = find_undownloaded_approved_request_item(m.id)).present?
           # Undownloaded approved request exists, associate download with request
           add_first_download(item, download_hash)

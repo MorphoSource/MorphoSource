@@ -62,7 +62,6 @@ module Morphosource
     end
 
     def find_item_for_download_from_api(work_id, download_hash, user_id)
-#byebug
       cart_items.where(work_id: work_id, download_hash: download_hash, user_id: user_id, download_method: 'API')
         .find { |item| item.downloadable? }
     end
@@ -93,7 +92,8 @@ module Morphosource
         download_attempts: 1,
         download_hash: download_hash,
         download_usage: usage,
-        download_usage_list: usage_list
+        download_usage_list: usage_list,
+        download_method: "UI"
       ) if item.present?
     end
 
@@ -127,6 +127,7 @@ module Morphosource
         download_hash: download_hash,
         download_usage: usage,
         download_usage_list: usage_list,
+        download_method: "UI"
       ) if item.present?
     end
 

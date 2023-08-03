@@ -53,6 +53,10 @@ module Morphosource
       content_tag(:span, "Team Managed", class: "label", style: "background-color: #FF861F;")
     end
 
+    def collection_type_badge_short
+      content_tag(:span, collection_type.title&.first || "C", class: "label label-info short-collection-badge", style: "background-color: " + collection_type.badge_color + ";", title: collection_type.title || "Unknown Collection Type")
+    end
+
     def collection_type_title
       collection_type.title
     end

@@ -1,0 +1,127 @@
+// New set of styles for work show and edit pages (media, physical objects)
+// Since showcase is used by many different pages across the site, forking specific styles to new showcase2
+
+body.showcase2 {
+  #showcase-title {
+    font-size: 24px;
+    margin-bottom: 0;
+
+    >div {
+      display: inline-block;
+    }
+
+    .label {
+      vertical-align: middle;
+    }
+  }
+
+  #showcase-title-wrapper {
+    background-color: unset;
+    margin-bottom: 20px;
+
+    .title-block {
+      display: flex;
+      align-items: center;
+    }
+  }
+
+  div.media-showcase.row {
+    padding: 0;
+  }
+
+  .media-showcase .btn {
+    width: 100px;
+    border-radius: 3px !important;
+    margin-left: 3px !important;
+    font-size: 14px;
+  }
+
+  .media-showcase .btn-group {
+    display: flex;
+    justify-content: end;
+  }
+
+  .media-showcase .btn-wrapper.col-xs-12 {
+    padding: 15px;
+  }
+
+  .content-block {
+    margin-bottom: 1em;
+
+    h2 {
+      text-transform: uppercase;
+    }
+
+    span.label.short-collection-badge {
+      border-radius: 0;
+      display: inline-block;
+      min-width: 26px;
+      vertical-align: text-top;
+    }
+  }
+
+  .content-wrapper.fixed-width {
+    border: 0;
+  }
+
+  .label-info,.label-success {
+    display: inline;
+    padding: .2em .6em .3em;
+    font-weight: 700;
+    font-size: 10px;
+    line-height: 1;
+    color: #fff;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    border-radius: 0;
+  }
+
+  .media-showcase div.preview {
+    border: 0; 
+
+    // .viewer-wrapper, .viewer-wrapper-2d {
+    //   .viewer {
+    //     padding: 0;
+    //   }
+    // }
+  }
+
+  .showcase-label, .showcase-value,
+  .content-block-lg .row > div,
+  .content-block .row > div {
+    font-size: 14px;
+  }
+
+  .showcase-value.italics {
+    font-style: italic;
+  }
+
+  .text-muted {
+    font-size: 14px;
+    margin-bottom: 5px;
+
+    .showcase-link {
+      overflow-wrap: normal;
+      word-break: normal;
+    }
+  }
+
+  .thumbnail-md img {
+    width: 100px;
+    height: 100px;
+    margin-right: 16px;
+  }
+
+  h2 {
+    font-size: 14px;
+    margin-top: 0;
+  }
+
+  h3 {
+    font-size: 14px;
+  }
+
+  
+
+}

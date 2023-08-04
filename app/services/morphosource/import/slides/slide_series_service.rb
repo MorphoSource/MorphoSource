@@ -13,20 +13,20 @@ module Morphosource
         # ex provider['filter_slides'] can be called as filter_slides
         define_provider_methods
 
-        def self.call(occurrence_id)
+        def self.call(occurrence_key)
           new(occurrence_id).call
         end
 
         # return SequentialSectionScanList
-        def initialize(id, json = nil, collection_id = nil)
-          @occurrence_id = id
-          @occurrence_json = json || occurrence_json
+        def initialize(occurrence_key, collection_id = nil)
+          @occurrence_key = occurrence_key
+          @occurrence_json = occurrence_json
           raise StandardError.new "GBIF occurrence JSON is blank." if @occurrence_json.blank?
-          @collection = Collection.where(id: collection_id)&.first || create_series_collection
+          @collection = collection_id.present? ? Collection.find(collection_id) : collection
         end
 
         def occurrence_json
-          @occurrence_json ||= Morphosource::GbifSearchService.occurrence_record_by_id(@occurrence_id)
+          @occurrence_json ||= Morphosource::GbifSearchService.occurrence_record_by_id(@occurrence_key)
         end
 
         def call
@@ -100,15 +100,18 @@ module Morphosource
         end
 
         def create_series_collection
+          Rails.logger.debug(caller)
           collection_type = Hyrax::CollectionType.find_by(Morphosource::CollectionTypes::SequentialSectionLists::SETTINGS)
-          collection = SequentialSectionList.create(title: collection_title,
+          list = SequentialSectionList.create(title: collection_title,
                                                     collection_type_gid: collection_type.gid,
                                                     depositor: manager.ms_id,
                                                     visibility: @list_visibility,
                                                     related_url: collection_related_url,
                                                     description: collection_description)
 
-          create_groups_and_permissions(collection)
+          Morphosource::Collections::PermissionsCreateService.create_default(collection: list)
+          list.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
+          list.reload
         end
 
         # create slide works
@@ -184,13 +187,14 @@ module Morphosource
         # characterize file
 
         def characterize_file
-          file = @file_set.original_file
+          file_set = @media.file_sets.first
+          file = file_set.original_file
           @slide.file_characterization_methods.each do |method|
             file.send("#{method}=", @slide.send(method))
           end
-          file.mime_type = "message/external-body; access-type=URL; URL=\"#{@file_set.import_url}\""
+          file.mime_type = "message/external-body; access-type=URL; URL=\"#{file_set.import_url}\""
           file.save!
-          CalculateFileSetCrc32Job.perform_later(@file_set.id)
+          CalculateFileSetCrc32Job.perform_later(file_set.id)
         end
 
         # create slide thumbnail
@@ -245,13 +249,6 @@ module Morphosource
             end
           end
 
-          def create_groups_and_permissions(collection)
-            collection.create_collection_groups
-            Morphosource::Collections::PermissionsCreateService.create_default(collection: collection)
-            collection.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
-            collection.reload
-          end
-
           def detect_device
             scanners.detect { |device| device.title == Array(device_name) }
           end
@@ -261,11 +258,13 @@ module Morphosource
           end
 
           def first_slide
-            slide_class.new(slides.first)
+            @first_slide ||= slide_class.new(slides.first)
           end
 
           def gbif_slides
             media = occurrence_json.dig('extensions', 'http://rs.tdwg.org/ac/terms/Multimedia')
+            # filter for iiif uri with full area and max size - variant is sometimes not applied correctly.
+            media.select! { |m| m['http://rs.tdwg.org/ac/terms/accessURI'].include?('full/max') }
             return media unless filter_slides.present?
 
             media.select { |m| m['http://rs.tdwg.org/ac/terms/variant'] == filter_slides }
@@ -279,7 +278,7 @@ module Morphosource
           end
 
           def occurrence_uri
-            "https://gbif.org/occurrence/#{@occurrence_id}"
+            "https://gbif.org/occurrence/#{@occurrence_key}"
           end
 
           def organization
@@ -324,7 +323,7 @@ module Morphosource
           end
 
           def slides
-            @slides ||= [gbif_slides.first]
+            @slides ||= gbif_slides
           end
 
           def taxonomy_params_from_gbif

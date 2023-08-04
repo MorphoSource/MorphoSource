@@ -773,7 +773,7 @@ namespace :morphosource do
   end
 
   desc "Verify remote backed media files"
-  task :verify_remote_backed_media => :environment do 
+  task :verify_remote_backed_media => :environment do
     RemoteFileHealth.delete_all
     qry = "has_model_ssim:Media AND remote_origin_url_tesim:* AND file_set_ids_ssim:*"
     media_solr = ActiveFedora::SolrService.query(qry, rows: 999999)
@@ -817,14 +817,24 @@ namespace :morphosource do
     end
   end
 
+  desc "Get new MCZ sequential section slides from GBIF"
+  task :get_new_slides => :environment do
+    occurrence_keys = Morphosource::Import::Slides::GetNewSlidesService.call
+    puts "#{occurrence_keys.count} job(s) queued to import records for GBIF occurrence keys: #{new_occurrence_keys}"
+    ApplicationMailer.send_email(
+      "jbo4@duke.edu",
+      "GetNewSlidesService called: #{occurrence_keys.count} job(s) queued",
+      "#{occurrence_keys.count} job(s) queued to import records for GBIF occurrence keys: #{new_occurrence_keys} at #{Time.now.strftime("%m-%d-%Y_%H-%M")}").deliver_now
+  end
+
   # Google Analytics-based media view statistics import
 
   desc "Import Media work view stats from Google Analytics, starting from 2021-01-1 or last saved statistic date"
   task :import_media_view_stats => :environment do
     Morphosource::Analytics::MediaViewStatImporter.new({
-      verbose: true, 
-      logging: true, 
-      retries: 3 
+      verbose: true,
+      logging: true,
+      retries: 3
     }).import
   end
 
@@ -833,9 +843,9 @@ namespace :morphosource do
     Morphosource::Analytics::MediaViewStatImporter.new({
       start_date: Date.current - 3.day,
       end_date: Date.current - 1.day,
-      verbose: true, 
-      logging: true, 
-      retries: 3 
+      verbose: true,
+      logging: true,
+      retries: 3
     }).import
   end
 

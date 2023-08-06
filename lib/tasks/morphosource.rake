@@ -710,7 +710,7 @@ namespace :morphosource do
   end
 
   desc "Merge duplicate specimens"
-  task :find_and_merge_duplicate_specimens, [:merge] => :environment do |task, args|
+  task :find_and_merge_duplicate_specimens, [:merge, :send_email] => :environment do |task, args|
     if args[:merge].present?
       if args[:merge] == 'true'
         merge = true
@@ -762,11 +762,14 @@ namespace :morphosource do
     else
       action = "(merge) "
     end
-    ApplicationMailer.send_email_with_attachment(
-      "simon.choy@duke.edu", 
-      'MS duplicate specimens report ' + action + Time.now.strftime("%m-%d-%Y_%H-%M"),
-      "Report attached.",
-       log_file).deliver_now
+
+    if args[:send_email] ==  "true" && Hyrax.config.system_report_recipients.present?
+      ApplicationMailer.send_email_with_attachment(
+        Hyrax.config.system_report_recipients, 
+        "MS duplicate specimens report #{action}" + Time.now.strftime("%m-%d-%Y_%H-%M"),
+        "Duplicate specimens report #{action} attached.",
+         log_file).deliver_now
+    end
   end
 
   desc "Verify remote backed media files"

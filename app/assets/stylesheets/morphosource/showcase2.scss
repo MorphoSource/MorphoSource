@@ -64,7 +64,7 @@ body.showcase2 {
     border: 0;
   }
 
-  .label-info,.label-success {
+  .label-info, .label-success, .label-warning {
     display: inline;
     padding: .2em .6em .3em;
     font-weight: 700;
@@ -77,14 +77,12 @@ body.showcase2 {
     border-radius: 0;
   }
 
+  .label-info:empty, .label-success:empty {
+    display: none;
+  }
+
   .media-showcase div.preview {
     border: 0; 
-
-    // .viewer-wrapper, .viewer-wrapper-2d {
-    //   .viewer {
-    //     padding: 0;
-    //   }
-    // }
   }
 
   .showcase-label, .showcase-value,
@@ -124,4 +122,31 @@ body.showcase2 {
 
   
 
+}
+
+body.showcase2-edit {
+  .btn.w-100 {
+    width: 100%;
+  }
+
+  .form-tab-content {
+    margin: 15px;
+  }
+
+  .nav-tabs {
+    background-color: unset;
+    margin: 0 15px;
+    padding: 0;
+  }
+
+  
+  .row {
+    padding: 0;
+  }
+
+  // Restore default Hyrax styling to masthead search bar
+  input#search-field-header.form-control {
+    height: 34px;
+    padding: 6px 12px;
+  }
 }

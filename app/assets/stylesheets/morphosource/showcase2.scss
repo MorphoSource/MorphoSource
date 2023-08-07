@@ -29,6 +29,11 @@ body.showcase2 {
     padding: 0;
   }
 
+  div.media-showcase.row.image-acq-detail .collapse-block>.row {
+    margin: 0;
+    padding: 4px 0;
+  }
+
   .media-showcase .btn {
     width: 100px;
     border-radius: 3px !important;
@@ -139,7 +144,6 @@ body.showcase2-edit {
     padding: 0;
   }
 
-  
   .row {
     padding: 0;
   }

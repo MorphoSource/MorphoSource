@@ -630,6 +630,14 @@ module Hyrax
       in_collection_badge_class.new(@vouchered).render
     end
 
+    def permission_badge
+      permission_badge_class.new(solr_document.publication_status).render
+    end
+
+    def permission_badge_class
+      Morphosource::PublicationBadge
+    end
+
     def supplied_record_badge
       # override the method in presents_attributes, passing the idigbio_uuid retrieved from get_showcase_data
       supplied_record_badge_class.new(@idigbio_uuid).render

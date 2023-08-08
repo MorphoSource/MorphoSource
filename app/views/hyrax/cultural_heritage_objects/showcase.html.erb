@@ -1,9 +1,9 @@
-<% content_for :body_css_classes do %>showcase<% end %>
+<% content_for :body_css_classes do %>showcase showcase2<% end %>
 <% content_for :content_css_classes do %>fixed-width<% end %>
 
 <%= render @presenter.showcase_work_title_partial, presenter: @presenter %>
 
-<div class="row">
+<div class="row showcase2-row">
   <div class="col-sm-6 col-sm-push-6">
     <div class="content-block">
       <%= render @presenter.showcase_media_items_partial, presenter: @presenter %>

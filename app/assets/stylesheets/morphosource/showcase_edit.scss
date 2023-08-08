@@ -388,15 +388,11 @@ input[type=checkbox].disabled {
   .tab-content > #physical-object-details {
 
     .form-group {
-      .control-label {
-
-      }
       .help-block {
         display:none;
       }
       .form-control {
         display: inline-block;
-        width: auto;
       }
     }
 

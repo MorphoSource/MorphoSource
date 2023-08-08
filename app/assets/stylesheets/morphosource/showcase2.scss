@@ -22,31 +22,32 @@ body.showcase2 {
     .title-block {
       display: flex;
       align-items: center;
+      height: 100px;
     }
   }
 
-  div.media-showcase.row {
+  div.row.showcase2-row {
     padding: 0;
   }
 
-  div.media-showcase.row.image-acq-detail .collapse-block>.row {
+  div.row.showcase2-row.image-acq-detail .collapse-block>.row {
     margin: 0;
     padding: 4px 0;
   }
 
-  .media-showcase .btn {
+  .showcase2-row .btn {
     width: 100px;
     border-radius: 3px !important;
     margin-left: 3px !important;
     font-size: 14px;
   }
 
-  .media-showcase .btn-group {
+  .showcase2-row .btn-group {
     display: flex;
     justify-content: end;
   }
 
-  .media-showcase .btn-wrapper.col-xs-12 {
+  .showcase2-row .btn-wrapper.col-xs-12 {
     padding: 15px;
   }
 
@@ -69,7 +70,7 @@ body.showcase2 {
     border: 0;
   }
 
-  .label-info, .label-success, .label-warning {
+  .label-info, .label-success, .label-danger {
     display: inline;
     padding: .2em .6em .3em;
     font-weight: 700;
@@ -82,8 +83,15 @@ body.showcase2 {
     border-radius: 0;
   }
 
-  .label-info:empty, .label-success:empty {
+  .label-info:empty, .label-success:empty, .label-danger:empty {
     display: none;
+  }
+
+  div.media-block.physical-object-media-items {
+    .row {
+      margin: 0;
+      padding: 0;
+    }
   }
 
   .media-showcase div.preview {
@@ -144,8 +152,26 @@ body.showcase2-edit {
     padding: 0;
   }
 
+  .panel {
+    margin-bottom: 0;
+    box-shadow: none;
+  }
+
   .row {
     padding: 0;
+  }
+
+  .row.collapse-button {
+    margin-bottom: 1em;
+  }
+
+  .row.media-block {
+    margin: 0;
+    margin-bottom: 1em;
+
+    .row {
+      margin: 0;
+    }
   }
 
   // Restore default Hyrax styling to masthead search bar

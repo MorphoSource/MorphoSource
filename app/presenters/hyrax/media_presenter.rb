@@ -91,10 +91,6 @@ module Hyrax
 
     self.collection_presenter_class = Morphosource::CollectionPresenter
 
-    def id_badge
-      content_tag(:span, "ID: #{id}", class: "label label-info")
-    end
-
     def media_permissions_string
       permissions_string = ''
       if media.morphosource_use_agreement_type == ['Permissive']

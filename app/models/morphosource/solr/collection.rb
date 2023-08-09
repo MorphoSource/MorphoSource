@@ -6,8 +6,8 @@ module Morphosource
         self["linked_organization_tesim"]
       end
 
-      def members
-        Morphosource::SolrService.new.get_docs("member_of_collection_ids_ssim:#{self['id']}")
+      def media
+        Morphosource::SolrService.new.get_docs("member_of_collection_ids_ssim:#{id} AND has_model_ssim:Media")
       end
 
       def team?

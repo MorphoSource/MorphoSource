@@ -822,7 +822,7 @@ namespace :morphosource do
     occurrence_keys = Morphosource::Import::Slides::GetNewSlidesService.call
     puts "#{occurrence_keys.count} job(s) queued to import records for GBIF occurrence keys: #{new_occurrence_keys}"
     ApplicationMailer.send_email(
-      "jbo4@duke.edu",
+      Hyrax.config.system_report_recipients,
       "GetNewSlidesService called: #{occurrence_keys.count} job(s) queued",
       "#{occurrence_keys.count} job(s) queued to import records for GBIF occurrence keys: #{new_occurrence_keys} at #{Time.now.strftime("%m-%d-%Y_%H-%M")}").deliver_now
   end

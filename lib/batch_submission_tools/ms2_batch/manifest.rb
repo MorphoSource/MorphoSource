@@ -37,6 +37,7 @@ module BatchSubmissionTools
           "organization_id" => @organization_id,
           "device_id" => @device_id,
           "collection_ids" => @collection_ids,
+          "manifest_tmp_file" => @input_path,
           "media_files" => []
         }
         call
@@ -127,27 +128,26 @@ module BatchSubmissionTools
 
           end # /mg[:raw_list]
         end # /media_group_to_rows
-        byebug # check summary
+        #byebug # check summary
 
-
-#        all_keys = @media_group_to_rows.keys
-        all_mg = @media_group_to_rows.clone
+        # sort media group by group until no more media 
+        remain_mg = @media_group_to_rows.clone
         full_ordered_list = []
         begin
-          ordered_list = group_with_hierarchy(all_mg)
-          full_ordered_list += ordered_list
-          
-          ordered_list.each do |key|
-            all_mg.delete(key)
+          ordered_list = group_with_hierarchy(remain_mg)
+          if !ordered_list.present?
+            raise "Something went wrong.  ordered_list return nothing"
           end
-        end until all_mg.empty?
+          full_ordered_list += ordered_list          
+          ordered_list.each do |key|
+            remain_mg.delete(key)
+          end
+          Rails.logger.debug "iN Manifest: ordered_list #{ordered_list} removed. Remaining: #{remain_mg.keys}"
+        end until remain_mg.empty?
 
-
-byebug
-#        ordered_list = ordered_list + remain_list
         sorted_media_group_to_rows = full_ordered_list.map { |index| [index, @media_group_to_rows[index]] }.to_h
         @media_group_to_rows = sorted_media_group_to_rows 
-        byebug # check after sorting
+        #byebug # check after sorting
 
         if rows_to_remove.present?
           # when new parent media will be created,
@@ -156,7 +156,7 @@ byebug
           rows_to_remove.each { |k| @media_group_to_rows.delete [k] }
         end
 
-        byebug # check media_group_to_rows
+        #byebug # check media_group_to_rows
         Rails.logger.debug "iN Manifest: media_group_to_rows: #{media_group_to_rows}"
       end
 
@@ -409,6 +409,7 @@ byebug
       def to_h
         {
           summary: summary,
+
           biological_specimen_ingests: biological_specimen_ingests.map(&:to_h),
           rows_to_bso: rows_to_bso.transform_keys(&:to_s),
           taxonomy_ingests: taxonomy_ingests.map(&:to_h),

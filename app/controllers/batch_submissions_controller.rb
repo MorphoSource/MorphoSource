@@ -147,40 +147,45 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def create_manifest_object
-      input_path = manifest.tempfile.path
-      media_path = user_share_full_path
-      admin_user = User.batch_user
-      depositor = current_user
-      organization_id = request.params["organization_id"]
-      device_id = request.params["batch_submission"]["device_id"]
-      if request.params["batch_submission"]["on_behalf_of"].present?
-        on_behalf_of = User.where(ms_id: request.params["batch_submission"]["on_behalf_of"]).first
-      end
-      collection_ids = []
-      if request.params["media"].present?
-        if request.params["media"]["member_of_collections_attributes"].present?
-          request.params["media"]["member_of_collections_attributes"].each do |k, v|
-            collection_ids << v["id"] if v["_destroy"] == "false"
-          end
+    input_path = manifest.tempfile.path
+    # copy manifest temp file to application tmp dir (for debugging if needed)
+    copied_manifest_path = Rails.root.join('tmp', 'manifest_' + File.basename(input_path)).to_s
+    FileUtils.copy(input_path, copied_manifest_path)
+    input_path = copied_manifest_path
+
+    media_path = user_share_full_path
+    admin_user = User.batch_user
+    depositor = current_user
+    organization_id = request.params["organization_id"]
+    device_id = request.params["batch_submission"]["device_id"]
+    if request.params["batch_submission"]["on_behalf_of"].present?
+      on_behalf_of = User.where(ms_id: request.params["batch_submission"]["on_behalf_of"]).first
+    end
+    collection_ids = []
+    if request.params["media"].present?
+      if request.params["media"]["member_of_collections_attributes"].present?
+        request.params["media"]["member_of_collections_attributes"].each do |k, v|
+          collection_ids << v["id"] if v["_destroy"] == "false"
         end
       end
-      fund_code_id = request.params["batch_submission"]["fund_code"]
-      modality = request.params["batch_submission"]["modality"]
-      media_ownership_fields = request.params["batch_submission"]["media"]
-      media_ownership_fields["organization_transfer_on_publish"] = true if ( organization_media_transfer == :publication )
-      @manifest_object = BatchSubmissionTools::Ms2Batch::Manifest.new(
-        input_path:input_path, 
-        media_path:media_path, 
-        admin_user:admin_user, 
-        depositor:depositor, 
-        on_behalf_of:on_behalf_of, 
-        collection_ids:collection_ids, 
-        fund_code_id:fund_code_id, 
-        organization_id:organization_id,
-        organization_transfer_immediately:( organization_media_transfer == :immediate ),
-        device_id:device_id, 
-        media_ownership_fields:media_ownership_fields,
-        modality:modality).to_h
+    end
+    fund_code_id = request.params["batch_submission"]["fund_code"]
+    modality = request.params["batch_submission"]["modality"]
+    media_ownership_fields = request.params["batch_submission"]["media"]
+    media_ownership_fields["organization_transfer_on_publish"] = true if ( organization_media_transfer == :publication )
+    @manifest_object = BatchSubmissionTools::Ms2Batch::Manifest.new(
+      input_path:input_path, 
+      media_path:media_path, 
+      admin_user:admin_user, 
+      depositor:depositor, 
+      on_behalf_of:on_behalf_of, 
+      collection_ids:collection_ids, 
+      fund_code_id:fund_code_id, 
+      organization_id:organization_id,
+      organization_transfer_immediately:( organization_media_transfer == :immediate ),
+      device_id:device_id, 
+      media_ownership_fields:media_ownership_fields,
+      modality:modality).to_h
   end
 
   def ingest
@@ -196,6 +201,8 @@ class BatchSubmissionsController < ApplicationController
     # basic validation: check field names, column count
     if @xlsx.last_column != 86
       return "The columns are invalid.  Please check the file or download the blank submission manifest again."
+    elsif @xlsx.last_row > 5007
+      return "The number of rows has exceeded the maximum."
     end
     field_names.each_with_index do |fname, idx|
       if fname != @xlsx.excelx_value(7, idx + 3) 

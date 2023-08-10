@@ -20,16 +20,6 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
     end
 
     begin
-      # rename the manifest tmp file with job id for locating easier 
-      if (manifest_tmp_file = @manifest["summary"]["manifest_tmp_file"]).present?
-        if File.exists?(manifest_tmp_file)
-          new_file = Rails.root.join('tmp', 'manifest_' + @main_job_id + File.extname(manifest_tmp_file)).to_s
-          File.rename(manifest_tmp_file, new_file)
-          @manifest["summary"]["manifest_tmp_file"] = new_file
-          status.update(manifest: @manifest)
-        end
-      end
-      
       update_main_job(status.status.to_s, nil)
       exception_caught = false
  

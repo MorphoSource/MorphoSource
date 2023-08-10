@@ -127,40 +127,27 @@ module BatchSubmissionTools
 
           end # /mg[:raw_list]
         end # /media_group_to_rows
-        #byebug # check summary
+        byebug # check summary
 
-        # re-order rows to have parent > child ingestion order 
-        hierarchy = []
-        largest_hierarchy = []
-        # sort list by hierarchy
-        @media_group_to_rows.each do |key, value|
-          item_hierarchy = []
-          # Add the current item to the hierarchy array
-          item_hierarchy << key
-          # Traverse the parents of the current item until reaching the root parent
-          parent = value[:parents]
-          while parent.present? && parent != key
-            if @media_group_to_rows[parent].nil? || @media_group_to_rows[parent][:parents].nil?
-              # Parent not found, exit the loop
-              break
-            end
-            item_hierarchy.unshift(parent)  # Add the parent at the beginning of the hierarchy array
-            if @media_group_to_rows[parent][:parents] == parent
-              break # parent is itself, exit
-            end
-            parent = @media_group_to_rows[parent][:parents]
-          end
-          if item_hierarchy.length > largest_hierarchy.length
-            largest_hierarchy = item_hierarchy
-          end
-          hierarchy << item_hierarchy
-        end
 
-        ordered_list = largest_hierarchy
-        remain_list = @media_group_to_rows.keys - ordered_list
-        ordered_list = ordered_list + remain_list
-        sorted_media_group_to_rows = ordered_list.map { |index| [index, @media_group_to_rows[index]] }.to_h
+#        all_keys = @media_group_to_rows.keys
+        all_mg = @media_group_to_rows.clone
+        full_ordered_list = []
+        begin
+          ordered_list = group_with_hierarchy(all_mg)
+          full_ordered_list += ordered_list
+          
+          ordered_list.each do |key|
+            all_mg.delete(key)
+          end
+        end until all_mg.empty?
+
+
+byebug
+#        ordered_list = ordered_list + remain_list
+        sorted_media_group_to_rows = full_ordered_list.map { |index| [index, @media_group_to_rows[index]] }.to_h
         @media_group_to_rows = sorted_media_group_to_rows 
+        byebug # check after sorting
 
         if rows_to_remove.present?
           # when new parent media will be created,
@@ -169,8 +156,38 @@ module BatchSubmissionTools
           rows_to_remove.each { |k| @media_group_to_rows.delete [k] }
         end
 
-        #byebug # check media_group_to_rows
+        byebug # check media_group_to_rows
         Rails.logger.debug "iN Manifest: media_group_to_rows: #{media_group_to_rows}"
+      end
+
+      def group_with_hierarchy(mg)
+        # re-order rows to have parent > child ingestion order 
+        hierarchy = []
+        largest_hierarchy = []
+        # sort list by hierarchy
+        mg.each do |key, value|
+          item_hierarchy = []
+          # Add the current item to the hierarchy array
+          item_hierarchy << key
+          # Traverse the parents of the current item until reaching the root parent
+          parent = value[:parents]
+          while parent.present? && parent != key
+            if mg[parent].nil? || mg[parent][:parents].nil?
+              # Parent not found, exit the loop
+              break
+            end
+            item_hierarchy.unshift(parent)  # Add the parent at the beginning of the hierarchy array
+            if mg[parent][:parents] == parent
+              break # parent is itself, exit
+            end
+            parent = mg[parent][:parents]
+          end
+          if item_hierarchy.length > largest_hierarchy.length
+            largest_hierarchy = item_hierarchy
+          end
+          hierarchy << item_hierarchy
+        end
+        return largest_hierarchy
       end
 
       def construct_biological_specimen_ingests

@@ -128,7 +128,7 @@ module BatchSubmissionTools
 
           end # /mg[:raw_list]
         end # /media_group_to_rows
-        #byebug # check summary
+        byebug # check summary
 
         # sort media group by group until no more media 
         remain_mg = @media_group_to_rows.clone
@@ -144,10 +144,10 @@ module BatchSubmissionTools
           end
           Rails.logger.debug "iN Manifest: ordered_list #{ordered_list} removed. Remaining: #{remain_mg.keys}"
         end until remain_mg.empty?
+byebug
 
-        sorted_media_group_to_rows = full_ordered_list.map { |index| [index, @media_group_to_rows[index]] }.to_h
-        @media_group_to_rows = sorted_media_group_to_rows 
-        #byebug # check after sorting
+        @media_group_to_rows = sort_by_order_list(@media_group_to_rows, full_ordered_list)
+        byebug # check after sorting
 
         if rows_to_remove.present?
           # when new parent media will be created,
@@ -156,8 +156,47 @@ module BatchSubmissionTools
           rows_to_remove.each { |k| @media_group_to_rows.delete [k] }
         end
 
-        #byebug # check media_group_to_rows
+        reorder = false
+        to_be_created = []
+        media_group_to_rows.each do |k, item|
+          to_be_created << k
+          to_be_created << item[:children] if item[:children].present?
+          to_be_created = to_be_created.flatten.uniq
+          puts "to_be_created: #{to_be_created}"
+          if item[:parents].present?
+            if !media_group_to_rows[item[:parents]].present?
+              if !to_be_created.include? item[:parents][0]
+                new_parent = media_group_to_rows.find { |_, v| v[:children].include?(item[:parents][0]) }
+                if new_parent
+                  puts "move #{new_parent[0]} before #{k} "
+                  move_item_in_front(full_ordered_list, new_parent[0], k)
+                  reorder = true
+                end
+              end
+            end
+          end
+        end
+
+        if reorder
+          rows_to_remove.each { |k| full_ordered_list.delete [k] }
+          puts full_ordered_list
+  byebug
+          @media_group_to_rows = sort_by_order_list(@media_group_to_rows, full_ordered_list)
+        end
+
+        byebug # check media_group_to_rows
         Rails.logger.debug "iN Manifest: media_group_to_rows: #{media_group_to_rows}"
+      end
+
+      def sort_by_order_list(mg, ordered_list)
+        ordered_list.map { |index| [index, mg[index]] }.to_h
+      end
+
+      def move_item_in_front(array, x, y)
+        array.delete(x)
+        y_index = array.index(y)
+        array.insert(y_index, x)
+        array
       end
 
       def group_with_hierarchy(mg)

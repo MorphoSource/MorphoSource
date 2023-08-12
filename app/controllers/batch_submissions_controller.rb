@@ -308,15 +308,29 @@ class BatchSubmissionsController < ApplicationController
           row_count: row_count
         }
       else
-        create_manifest_object
-        render 'validation_success', locals: { 
-          manifest_object: @manifest_object,
-          warn_rows: warn_rows, 
-          warn_messages: warn_messages, 
-          warn_cell_numbers: warn_cell_numbers, 
-          field_names: field_names, 
-          row_count: row_count
-        }
+        begin
+          create_manifest_object
+          render 'validation_success', locals: { 
+            manifest_object: @manifest_object,
+            warn_rows: warn_rows, 
+            warn_messages: warn_messages, 
+            warn_cell_numbers: warn_cell_numbers, 
+            field_names: field_names, 
+            row_count: row_count
+          }
+        rescue Exception => e
+          render 'validation_fail', locals: { 
+            general_error_msg: e.message, 
+            error_rows: error_rows, 
+            error_messages: error_messages, 
+            error_cell_numbers: error_cell_numbers, 
+            warn_rows: warn_rows, 
+            warn_messages: warn_messages, 
+            warn_cell_numbers: warn_cell_numbers, 
+            field_names: field_names, 
+            row_count: row_count
+          }
+        end
       end    
 
     end

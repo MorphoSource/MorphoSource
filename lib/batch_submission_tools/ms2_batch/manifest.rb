@@ -127,8 +127,7 @@ module BatchSubmissionTools
             summary["media_files"] << row[:media][:media_file]&.first
 
           end # /mg[:raw_list]
-        end # /media_group_to_rows
-        byebug # check summary
+        end # //media_group_to_rows
 
         # sort media group by group until no more media 
         remain_mg = @media_group_to_rows.clone
@@ -144,10 +143,8 @@ module BatchSubmissionTools
           end
           Rails.logger.debug "iN Manifest: ordered_list #{ordered_list} removed. Remaining: #{remain_mg.keys}"
         end until remain_mg.empty?
-byebug
 
         @media_group_to_rows = sort_by_order_list(@media_group_to_rows, full_ordered_list)
-        byebug # check after sorting
 
         if rows_to_remove.present?
           # when new parent media will be created,
@@ -156,36 +153,36 @@ byebug
           rows_to_remove.each { |k| @media_group_to_rows.delete [k] }
         end
 
-        reorder = false
+        new_parents_for.each do |new_parent, child|
+          move_item_in_front(full_ordered_list, new_parent, child)
+          rows_to_remove.each { |k| full_ordered_list.delete [k] }
+          @media_group_to_rows = sort_by_order_list(@media_group_to_rows, full_ordered_list)
+        end
+
+        unless new_parents_for.empty?
+          raise "Sorry, there is an issue with the order of the media. Please contact morphosource@duke.edu (#{input_path})"
+        end
+        # //media_group_to_rows
+        Rails.logger.debug "iN Manifest: media_group_to_rows: #{media_group_to_rows}"
+      end
+
+      def new_parents_for
+        # check if new parents assignment needed
+        new_parents_for = {}
         to_be_created = []
         media_group_to_rows.each do |k, item|
           to_be_created << k
           to_be_created << item[:children] if item[:children].present?
           to_be_created = to_be_created.flatten.uniq
           puts "to_be_created: #{to_be_created}"
-          if item[:parents].present?
-            if !media_group_to_rows[item[:parents]].present?
-              if !to_be_created.include? item[:parents][0]
-                new_parent = media_group_to_rows.find { |_, v| v[:children].include?(item[:parents][0]) }
-                if new_parent
-                  puts "move #{new_parent[0]} before #{k} "
-                  move_item_in_front(full_ordered_list, new_parent[0], k)
-                  reorder = true
-                end
-              end
+          if item[:parents].present? && !media_group_to_rows[item[:parents]].present? &&
+            !to_be_created.include?(item[:parents][0])
+            if (new_parent = media_group_to_rows.find { |_, v| v[:children].include?(item[:parents][0]) }).present?
+              new_parents_for[new_parent[0]] = k
             end
           end
         end
-
-        if reorder
-          rows_to_remove.each { |k| full_ordered_list.delete [k] }
-          puts full_ordered_list
-  byebug
-          @media_group_to_rows = sort_by_order_list(@media_group_to_rows, full_ordered_list)
-        end
-
-        byebug # check media_group_to_rows
-        Rails.logger.debug "iN Manifest: media_group_to_rows: #{media_group_to_rows}"
+        new_parents_for
       end
 
       def sort_by_order_list(mg, ordered_list)

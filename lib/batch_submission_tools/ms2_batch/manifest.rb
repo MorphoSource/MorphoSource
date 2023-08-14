@@ -153,6 +153,7 @@ module BatchSubmissionTools
           rows_to_remove.each { |k| @media_group_to_rows.delete [k] }
         end
 
+        # if there is a parent in a row removed, find the new parent and re-order if needed 
         new_parents_for.each do |new_parent, child|
           move_item_in_front(full_ordered_list, new_parent, child)
           rows_to_remove.each { |k| full_ordered_list.delete [k] }
@@ -167,14 +168,12 @@ module BatchSubmissionTools
       end
 
       def new_parents_for
-        # check if new parents assignment needed
         new_parents_for = {}
         to_be_created = []
         media_group_to_rows.each do |k, item|
           to_be_created << k
           to_be_created << item[:children] if item[:children].present?
           to_be_created = to_be_created.flatten.uniq
-          puts "to_be_created: #{to_be_created}"
           if item[:parents].present? && !media_group_to_rows[item[:parents]].present? &&
             !to_be_created.include?(item[:parents][0])
             if (new_parent = media_group_to_rows.find { |_, v| v[:children].include?(item[:parents][0]) }).present?

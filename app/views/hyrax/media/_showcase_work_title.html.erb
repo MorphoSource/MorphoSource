@@ -1,6 +1,9 @@
 <div class="row showcase2-row media-showcase" id="showcase-title-wrapper">
+  <div class="col-xs-12 flash-wrapper">
+    <%= render "flash_msg" %>
+  </div>
   <h1>
-    <div class="col-xs-12 col-sm-8 col-md-8 title-block">
+    <div class="col-xs-12 col-md-8 title-block">
       <div class="media-thumbnail thumbnail-md">
         <%= render_thumbnail_tag presenter, {}, { suppress_link: true } %>
       </div>
@@ -11,16 +14,20 @@
               <div><%= presenter.work_type_badge %> <%= presenter.id_badge %> <%= presenter.permission_badge %></div>
             </div>
             <div class="text-muted">
-              Type: <%= presenter.media_type&.first || "Unknown Type" %> · 
-              Modality: <%= presenter.imaging_event_modality %> ·
-              Managed by: <%= presenter.attribute_to_html(:data_managed_by, render_as: :showcase_user_link_simple, include_empty: true, html_dl: false) %>   
+              <div class="text-muted-item">Type: <%= presenter.media_type&.first || "Unknown Type" %></div> 
+              <div class="text-muted-item"> · Modality: <%= presenter.imaging_event_modality %></div> 
+              <div class="text-muted-item"> · Managed by: <%= presenter.attribute_to_html(:data_managed_by, render_as: :showcase_user_link_simple, include_empty: true, html_dl: false) %> </div> 
             </div>
             <% if presenter.physical_object_type.present? %>
               <div class="text-muted">
-                Media represents <%= presenter.physical_object_type.downcase %>: 
-                <%= link_to presenter.physical_object_link do  %>
-                  <%= presenter.physical_object_title %> <i><%= presenter.physical_object_taxonomy_title %></i>
-                <% end %>
+                <div class="text-muted-item">
+                  Media represents <%= presenter.physical_object_type.downcase %>:
+                </div>
+                <div class="text-muted-item"> 
+                  <%= link_to presenter.physical_object_link do  %>
+                    <%= presenter.physical_object_title %> <i><%= presenter.physical_object_taxonomy_title %></i>
+                  <% end %>
+                </div>
               </div>
             <% end %>
           </div>
@@ -28,10 +35,7 @@
       </div>
     </div>
   </h1>
-  <div class="col-xs-12 col-sm-4 col-md-4 btn-wrapper">
+  <div class="col-xs-12 col-md-4 btn-wrapper">
       <%= render @presenter.showcase_show_actions_partial, presenter: presenter %>
-  </div>
-  <div class="col-xs-12 flash-wrapper">
-    <%= render "flash_msg" %>
   </div>
 </div>

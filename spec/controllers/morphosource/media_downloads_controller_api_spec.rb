@@ -33,6 +33,38 @@ RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
     let(:file_set_2)   { FileSet.new(label: 'ms.jpg') }
     let(:file_set_dup) { FileSet.new(label: 'duke.png') }
 
+    before do
+      sign_in user
+      allow(subject).to receive(:current_user).and_return(user)
+      allow(subject).to receive(:user_from_token).and_return(user)
+      Hydra::Works::AddFileToFileSet.call(file_set_1, local_file1, :original_file, versioning: true)
+      Hydra::Works::AddFileToFileSet.call(file_set_2, local_file2, :original_file, versioning: true)
+      Hydra::Works::AddFileToFileSet.call(file_set_dup, local_file_dup, :original_file, versioning: true)
+
+      work1.ordered_members << file_set_1
+      work2.ordered_members << file_set_2
+      work_dup.ordered_members << file_set_dup
+
+      file_set_1.original_file.file_size = [100]
+      file_set_1.original_file.crc32 = [100]
+      file_set_1.original_file.save!
+      file_set_1.reload
+
+      file_set_2.original_file.file_size = [100]
+      file_set_2.original_file.crc32 = [100]
+      file_set_2.original_file.save!
+      file_set_2.reload
+
+      file_set_dup.original_file.file_size = [100]
+      file_set_dup.original_file.crc32 = [100]
+      file_set_dup.original_file.save!
+      file_set_dup.reload
+
+      allow(SolrDocument).to receive(:find).and_call_original
+      works.each do |work|
+        allow(SolrDocument).to receive(:find).with(work.id).and_return(SolrDocument.find(work.id))
+      end
+    end
 
     describe 'response' do
 
@@ -42,13 +74,27 @@ RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
           work1.fileset_accessibility = ['open']
           work1.save
           cartitem = CartItem.create( { user_id: user.ms_id, work_id: work1.id, download_hash: download_hash, download_attempts: 0, in_cart: false, download_method: "API" } )
-          allow(controller).to receive(:cart_item_for_download_from_api) { cartitem }
+#          allow(controller).to receive(:cart_item_for_download_from_api) { cartitem }
 
 
         end
+
+        it "returns status 400 for wrong hash" do
+          payload = {
+            id: work1.id,
+            key: work1.access_control_id, 
+            download: "wrong_hash"
+          }
+          post :download_from_api, params: payload
+          expect(response.status).to eq(400)
+        end
+
+
+
+
         it "returns a zip for multiple works" do
 
-          request.headers["Authorization"] = "#{user.token}"
+#          request.headers["Authorization"] = "#{user.token}"
           request.headers["Accept"] = "application/zip,text/html,application/json"
 
           payload = {
@@ -56,18 +102,12 @@ RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
             key: work1.access_control_id, 
             download: download_hash
           }
-
-          # Make the POST request
           post :download_from_api, params: payload
-       byebug   
-          expect(response).to have_http_status(:success)
 
-
-          #post :download_from_api, params: { key: [work1.access_control_id, work2.access_control_id], token: user.token, download: download_hash }
-          #expect(response.status).to eq(200)
-          #expect(response.headers["Content-Type"]).to eq("application/zip")
-          #expect(response.headers["Content-Disposition"]).to start_with('attachment; filename="morphosource_media-')
-          #expect(response.headers["Content-Disposition"]).to end_with('.zip"')
+          expect(response.status).to eq(200)
+          expect(response.headers["Content-Type"]).to eq("application/zip")
+          expect(response.headers["Content-Disposition"]).to start_with('attachment; filename="morphosource_media-')
+          expect(response.headers["Content-Disposition"]).to end_with('.zip"')
         end
 
       end

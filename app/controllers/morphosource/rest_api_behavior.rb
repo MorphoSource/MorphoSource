@@ -46,13 +46,13 @@ module Morphosource
             message: message,
             description: description,
             errors: errors
-          }, status: status
+          }, status: code
        else
         render json: {
             code: code, 
             message: message,
             description: description
-          }, status: status
+          }, status: code
        end
     end
 

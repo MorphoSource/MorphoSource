@@ -68,15 +68,74 @@ RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
 
     describe 'response' do
 
+      context 'media is restricted' do
+        before do
+          work1.visibility = 'open'
+          work1.fileset_accessibility = ["restricted_download"]
+          work1.save
+        end
+
+        context 'user has no download access' do
+          before do
+            allow(subject).to receive(:current_user).and_return(user)
+            allow(user).to receive(:can?).with(:download, work1.id).and_return(false)
+          end
+          it 'returns status 401' do
+            payload = {
+              id: work1.id,
+              key: work1.access_control_id, 
+              download: download_hash
+            }
+            post :download_from_api, params: payload
+            expect(response.status).to eq(401)
+          end
+        end
+
+        context 'user has download access of not approved item' do
+          before do
+            allow(subject).to receive(:current_user).and_return(user)
+            allow(user).to receive(:can?).with(:download, work1.id).and_return(true)
+            allow(user).to receive(:my_approved_requests_work_ids).and_return([work1.id])
+            cartitem = CartItem.create( { user_id: user.ms_id, work_id: work1.id, download_hash: download_hash, download_attempts: 0, in_cart: false, download_method: "API", date_approved: nil } )
+          end
+          it 'returns status 400' do
+            payload = {
+              id: work1.id,
+              key: work1.access_control_id, 
+              download: download_hash
+            }
+            post :download_from_api, params: payload
+            expect(response.status).to eq(400)
+          end
+        end
+
+        context 'user has download access of approved item' do
+          before do
+            allow(subject).to receive(:current_user).and_return(user)
+            allow(user).to receive(:can?).with(:download, work1.id).and_return(true)
+            allow(user).to receive(:my_approved_requests_work_ids).and_return([work1.id])
+            cartitem = CartItem.create( { user_id: user.ms_id, work_id: work1.id, download_hash: download_hash, download_attempts: 0, in_cart: false, download_method: "API", date_approved: Date.yesterday } )
+          end
+          it 'returns status 200' do
+            payload = {
+              id: work1.id,
+              key: work1.access_control_id, 
+              download: download_hash
+            }
+            post :download_from_api, params: payload
+            expect(response.status).to eq(200)
+          end
+        end
+
+      end # // media is restricted
+
       context 'media is open' do
         before do
           work1.visibility = 'open'
           work1.fileset_accessibility = ['open']
           work1.save
           cartitem = CartItem.create( { user_id: user.ms_id, work_id: work1.id, download_hash: download_hash, download_attempts: 0, in_cart: false, download_method: "API" } )
-#          allow(controller).to receive(:cart_item_for_download_from_api) { cartitem }
-
-
+          #allow(controller).to receive(:cart_item_for_download_from_api) { cartitem }
         end
 
         it "returns status 400 for wrong hash" do
@@ -89,14 +148,7 @@ RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
           expect(response.status).to eq(400)
         end
 
-
-
-
-        it "returns a zip for multiple works" do
-
-#          request.headers["Authorization"] = "#{user.token}"
-          request.headers["Accept"] = "application/zip,text/html,application/json"
-
+        it "returns a zip" do
           payload = {
             id: work1.id,
             key: work1.access_control_id, 
@@ -110,10 +162,8 @@ RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
           expect(response.headers["Content-Disposition"]).to end_with('.zip"')
         end
 
-      end
+      end # // media is open
 
-
-
-    end
+    end # // response
   end
 end

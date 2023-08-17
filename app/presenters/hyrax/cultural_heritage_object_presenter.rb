@@ -45,7 +45,7 @@ module Hyrax
 
     def related_media_ids
       @related_media_ids ||= begin
-        ids = solr_document.related_media_ids.present? ? solr_document.related_media_ids : []
+        solr_document.related_media_ids || []
       end
     end
 
@@ -53,13 +53,11 @@ module Hyrax
       return related_media_ids if current_ability.current_user.admin?
 
       @viewable_related_media_ids ||= begin
-        filtered_ids = []
-        related_media_ids.each do |id|
+        related_media_ids.each_with_object({}) do |id, filtered_ids|
           if current_ability.can?(:read, id)
             filtered_ids << id
           end
         end
-        filtered_ids
       end
     end
 

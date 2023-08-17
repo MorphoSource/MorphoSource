@@ -34,6 +34,13 @@ en:
       media:
         description:        "Media works"
         name:               "Media"
+  showcase:
+    sections:
+      collections: In Collections
+      preview: Media Display
+      related_media: Other Related Media ($%{media_number})
+      tags: Tags
+      
   simple_form:
     labels:
       media:

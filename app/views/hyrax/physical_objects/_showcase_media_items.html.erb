@@ -8,7 +8,7 @@ items_to_show_initially = 6
   <h2><%= media_count %> MEDIA REPRESENTING PHYSICAL OBJECT </h2>
   <%  members = presenter.member_presenters_for(array_of_ids) %>
   <% if members.present? %>
-    <div class="media-block">
+    <div class="media-block physical-object-media-items">
       <%= render partial: @presenter.showcase_media_items_member_partial, collection: members, as: :showcase_media_items_member, :locals => {:media_count => media_count, :items_per_row => items_per_row, :items_to_show_initially => items_to_show_initially} %>
 
       <% if media_count > items_to_show_initially %>

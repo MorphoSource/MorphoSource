@@ -1,11 +1,11 @@
-<% content_for :body_css_classes do %>showcase<% end %>
+<% content_for :body_css_classes do %>showcase showcase2<% end %>
 <% content_for :content_css_classes do %>fixed-width<% end %>
 
 <div class="object-showcase">
   <%= render @presenter.showcase_work_title_partial, presenter: @presenter %>
 
   <!-- .media-order-# determines flexbox column order when screen width is less than 768px -->
-  <div class="row object-content-blocks-wrapper">
+  <div class="row showcase2-row object-content-blocks-wrapper">
 
     <div class="media-order-2 content-block-wrapper">
       <div class="content-block">

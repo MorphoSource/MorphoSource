@@ -148,90 +148,161 @@ RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
         end
 
         context 'user has download access of approved item' do
+
           before do
             allow(subject).to receive(:current_user).and_return(user)
             allow(user).to receive(:can?).with(:download, work1.id).and_return(true)
             allow(user).to receive(:my_approved_requests_work_ids).and_return([work1.id])
-            cartitem = CartItem.create( { user_id: user.ms_id, work_id: work1.id, download_hash: download_hash, download_attempts: 0, in_cart: false, download_method: "API", date_approved: Date.yesterday } )
-            allow(controller).to receive(:cart_item_for_download_from_api) { cartitem }
           end
 
-          it 'api_generate_download returns status 200' do
-            payload = {
-              id: work1.id,
-              use_statement: use_statement,
-              use_categories: use_categories,
-              use_category_other: use_category_other,
-              agreements_accepted: true
-            }
-            request.headers['Authorization'] = user.token 
-            request.headers['Accept'] = "application/json"
-            request.headers['Content-Type'] = "application/json"
-            post :api_generate_download, params: payload
-            expect(response.status).to eq(200)
-
-            # test each params in the url generated
-            resp_media = JSON.parse(response.body)["response"]["media"]
-            expect(resp_media["id"]).to eq([work1.id])
-            uri = URI.parse(resp_media["download_url"].first)
-            params = URI.decode_www_form(uri.query)
-            expect(params.assoc("download")&.last).to eq(download_hash)
-            expect(params.assoc("key")&.last).to eq(work1.access_control_id)
-            expect(URI.decode_www_form_component(params.assoc("usage")&.last)).to eq(use_statement)
-            expect(URI.decode_www_form_component(params.assoc("usage_list")&.last)).to eq((use_categories << use_category_other).join(';'))
+          context 'User token check failure' do
+            it 'api_generate_download returns status 401' do
+              payload = {
+                id: work1.id,
+                use_statement: use_statement,
+                use_categories: use_categories,
+                use_category_other: use_category_other,
+                agreements_accepted: true
+              }
+              request.headers['Accept'] = "application/json"
+              request.headers['Content-Type'] = "application/json"
+              post :api_generate_download, params: payload
+              expect(response.status).to eq(401)
+              expect(JSON.parse(response.body)["errors"]).to eq(nil)
+            end
           end
 
+          context 'params validation failure' do
+            it 'api_generate_download returns status 400 with list of errors' do
+              payload = {
+                id: work1.id,
+                use_statement: "123456789 123456789 123456789 123456789 12345678",
+                use_categories: [ "Completing Class Assignment(s) (Grades K-6)", "invalid category" ],
+                use_category_other: use_category_other,
+                agreements_accepted: false
+              }
+              request.headers['Authorization'] = user.token 
+              request.headers['Accept'] = "application/json"
+              request.headers['Content-Type'] = "application/json"
+              post :api_generate_download, params: payload
+              expect(response.status).to eq(400)
+              expect(JSON.parse(response.body)["errors"]).to eq(["use_statement with minimum 50 characters is required", "one or more values of use_categories are not valid", "agreements_accepted is not set to true"])
+            end
+          end
 
-# test validation errors
+          context 'params validation successful' do
+            it 'api_generate_download returns status 200 and url with params, cart item created' do
+              payload = {
+                id: work1.id,
+                use_statement: use_statement,
+                use_categories: use_categories,
+                use_category_other: use_category_other,
+                agreements_accepted: true
+              }
+              request.headers['Authorization'] = user.token 
+              request.headers['Accept'] = "application/json"
+              request.headers['Content-Type'] = "application/json"
+              post :api_generate_download, params: payload
+              expect(response.status).to eq(200)
 
+              created_cart_item = CartItem.where(work_id: work1.id).first
+              expect(created_cart_item.download_hash).to eq(download_hash)
+              expect(created_cart_item.download_attempts).to eq(0)
+              expect(created_cart_item.in_cart).to eq(false)
+              expect(created_cart_item.user_id).to eq(user.ms_id)
+              expect(created_cart_item.download_method).to eq('API')
 
-#          it 'download_from_api returns status 200' do
-#            payload = {
-#              id: work1.id,
-#              key: work1.access_control_id, 
-#              download: download_hash
-#            }
-#            post :download_from_api, params: payload
-#            expect(response.status).to eq(200)
-#          end
-        end
+              # test each params in the url generated
+              resp_media = JSON.parse(response.body)["response"]["media"]
+              expect(resp_media["id"]).to eq([work1.id])
+              uri = URI.parse(resp_media["download_url"].first)
+              params = URI.decode_www_form(uri.query)
+              expect(params.assoc("download")&.last).to eq(download_hash)
+              expect(params.assoc("key")&.last).to eq(work1.access_control_id)
+              expect(URI.decode_www_form_component(params.assoc("usage")&.last)).to eq(use_statement)
+              expect(URI.decode_www_form_component(params.assoc("usage_list")&.last)).to eq((use_categories << use_category_other).join(';'))
+            end
+          end
 
+          context '#download_from_api' do
+            before do
+              cartitem = CartItem.create( { user_id: user.ms_id, work_id: work1.id, download_hash: download_hash, download_attempts: 0, in_cart: false, download_method: "API" } )
+              allow(controller).to receive(:cart_item_for_download_from_api) { cartitem }
+            end
+
+            it 'returns status 200' do
+              payload = {
+                id: work1.id,
+                key: work1.access_control_id, 
+                download: download_hash
+              }
+              request.headers['Authorization'] = user.token
+              post :download_from_api, params: payload
+              expect(response.status).to eq(200)
+              expect(response.headers["Content-Type"]).to eq("application/zip")
+              expect(response.headers["Content-Disposition"]).to start_with('attachment; filename="morphosource_media-')
+              expect(response.headers["Content-Disposition"]).to end_with('.zip"')
+            end
+          end
+
+        end # // user has download access of approved item
       end # // media is restricted
 
-#      context 'media is open' do
-#        before do
-#          work1.visibility = 'open'
-#          work1.fileset_accessibility = ['open']
-#          work1.save
-#          cartitem = CartItem.create( { user_id: user.ms_id, work_id: work1.id, download_hash: download_hash, download_attempts: 0, in_cart: false, download_method: "API" } )
-#          #allow(controller).to receive(:cart_item_for_download_from_api) { cartitem }
-#        end
-#
-#        it "returns status 400 for wrong hash" do
-#          payload = {
-#            id: work1.id,
-#            key: work1.access_control_id, 
-#            download: "wrong_hash"
-#          }
-#          post :download_from_api, params: payload
-#          expect(response.status).to eq(400)
-#        end
-#
-#        it "returns a zip" do
-#          payload = {
-#            id: work1.id,
-#            key: work1.access_control_id, 
-#            download: download_hash
-#          }
-#          post :download_from_api, params: payload
-#
-#          expect(response.status).to eq(200)
-#          expect(response.headers["Content-Type"]).to eq("application/zip")
-#          expect(response.headers["Content-Disposition"]).to start_with('attachment; filename="morphosource_media-')
-#          expect(response.headers["Content-Disposition"]).to end_with('.zip"')
-#        end
-#
-#      end # // media is open
+      context 'media is open' do
+        before do
+          work1.visibility = 'open'
+          work1.fileset_accessibility = ['open']
+          work1.save
+          cartitem = CartItem.create( { user_id: user.ms_id, work_id: work1.id, download_hash: download_hash, download_attempts: 0, in_cart: false, download_method: "API" } )
+        end
+
+        context '#api_generate_download' do
+          context 'params validation successful' do
+            it 'api_generate_download returns status 200 and url with params, cart item created' do
+              payload = {
+                id: work1.id,
+                use_statement: use_statement,
+                use_categories: use_categories,
+                use_category_other: use_category_other,
+                agreements_accepted: true
+              }
+              request.headers['Authorization'] = user.token 
+              request.headers['Accept'] = "application/json"
+              request.headers['Content-Type'] = "application/json"
+              post :api_generate_download, params: payload
+              expect(response.status).to eq(200)
+            end
+          end
+        end
+
+        context '#download_from_api' do
+          it "returns status 400 for wrong hash" do
+            payload = {
+              id: work1.id,
+              key: work1.access_control_id, 
+              download: "wrong_hash"
+            }
+            post :download_from_api, params: payload
+            expect(response.status).to eq(400)
+          end
+
+          it "returns a zip" do
+            payload = {
+              id: work1.id,
+              key: work1.access_control_id, 
+              download: download_hash
+            }
+            request.headers['Authorization'] = user.token 
+            post :download_from_api, params: payload
+
+            expect(response.status).to eq(200)
+            expect(response.headers["Content-Type"]).to eq("application/zip")
+            expect(response.headers["Content-Disposition"]).to start_with('attachment; filename="morphosource_media-')
+            expect(response.headers["Content-Disposition"]).to end_with('.zip"')
+          end
+        end
+
+      end # // media is open
 
     end # // response
   end

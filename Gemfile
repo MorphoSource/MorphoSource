@@ -45,6 +45,7 @@ gem 'resque-web', require: 'resque_web'
 gem 'activejob-status'
 
 gem 'puma', '~> 5.5.0'
+gem 'puma_worker_killer'
 
 gem 'minitar'
 gem 'rubyzip'

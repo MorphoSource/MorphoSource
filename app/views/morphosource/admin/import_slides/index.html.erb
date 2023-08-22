@@ -2,8 +2,8 @@
 
 <%= form_with url: import_slides_path, method: :post, local: true do |form| %>
   <div>
-    <%= form.label :occurrence_key, 'GBIF Occurrence Key' %>
-    <%= form.text_field :occurrence_key %>
+    <%= form.label :occurrence_id, 'GBIF Occurrence ID' %>
+    <%= form.text_field :occurrence_id %>
   </div>
   <div>
     <%= form.submit "Import Slides" %>

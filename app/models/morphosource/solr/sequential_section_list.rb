@@ -9,7 +9,7 @@ module Morphosource
       def list_specimen
         return unless sequential_section_list?
 
-        specimen_id = media&.first.to_h['physical_object_id_ssim']&.first
+        specimen_id = members&.first.to_h['physical_object_id_ssim']&.first
         return unless specimen_id.present?
 
         SolrDocument.find(specimen_id)

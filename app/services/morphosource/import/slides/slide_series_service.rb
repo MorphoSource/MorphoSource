@@ -50,7 +50,6 @@ module Morphosource
             @media = create_new_media
             characterize_file
             create_thumbnail
-            normalize_media if normalize_permissions
             @collection.add_member_objects(@media)
           end
           @specimen.update_index
@@ -271,23 +270,12 @@ module Morphosource
             media.select { |m| m['http://rs.tdwg.org/ac/terms/variant'] == filter_slides }
           end
 
-          # Adds media to organizational team
-          # Updates media according to team permissions template
-          # This will override settings in the providers profile.
-          def normalize_media
-            OrganizationNormalizationJob.perform_later(media_id: @media.id, organization_id: @organization.id, user_email: org_manager_email, remove_previous_reviewers: false, update_publication_status: true)
-          end
-
           def occurrence_uri
             "https://gbif.org/occurrence/#{@occurrence_id}"
           end
 
           def organization
             @organization ||= Organization.find(provider['id'])
-          end
-
-          def org_manager_email
-            @org_manager_email ||= User.find_by(ms_id: @organization.data_manager.first).email
           end
 
           def scanners

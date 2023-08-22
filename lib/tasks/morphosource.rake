@@ -710,7 +710,9 @@ namespace :morphosource do
   end
 
   desc "Merge duplicate specimens"
-  task :find_and_merge_duplicate_specimens, [:merge, :send_email] => :environment do |task, args|
+  task :find_and_merge_duplicate_specimens, [:merge] => :environment do |task, args|
+    log_file = 'log/find_and_merge_duplicate_specimens_' + Time.now.strftime("%m-%d-%Y_%H-%M") + '.log'
+    log = Logger.new(log_file)
     if args[:merge].present?
       if args[:merge] == 'true'
         merge = true
@@ -724,14 +726,6 @@ namespace :morphosource do
     else
       merge = false
     end
-
-    if report_only == true
-      log_file = 'log/duplicate_specimens_report_' + Time.now.strftime("%m-%d-%Y_%H-%M") + '.log'
-    else
-      log_file = 'log/duplicate_specimens_merge_' + Time.now.strftime("%m-%d-%Y_%H-%M") + '.log'
-    end
-    log = Logger.new(log_file)
-
     ie_total = 0
     bso_list = []
     qry = "has_model_ssim:BiologicalSpecimen AND occurrence_id_tesim:[* TO *] AND idigbio_uuid_tesim:[* TO *]"
@@ -756,20 +750,7 @@ namespace :morphosource do
         log.info " duplicate group #{key} merged -> remaining specimen #{merge_to}"
       end
     end
-    if report_only
-      log.info "This is a report only. Total imaging event count: #{ie_total}" 
-      action = "(report only) "
-    else
-      action = "(merge) "
-    end
-
-    if args[:send_email] ==  "true" && Hyrax.config.system_report_recipients.present?
-      ApplicationMailer.send_email_with_attachment(
-        Hyrax.config.system_report_recipients, 
-        "MS duplicate specimens report #{action}" + Time.now.strftime("%m-%d-%Y_%H-%M"),
-        "Duplicate specimens report #{action} attached.",
-         log_file).deliver_now
-    end
+    log.info "This is a report only. Total imaging event count: #{ie_total}" if report_only
   end
 
   desc "Verify remote backed media files"

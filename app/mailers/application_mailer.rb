@@ -7,8 +7,4 @@ class ApplicationMailer < ActionMailer::Base
     attachments[file_name] = File.read(attachment_path)
     mail(to: email_address, subject: subject, body: body)
   end
-
-  def send_email(email_address, subject, body)
-    mail(to: email_address, subject: subject, body: body)
-  end
 end

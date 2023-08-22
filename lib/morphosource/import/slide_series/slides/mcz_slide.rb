@@ -9,13 +9,11 @@ module Morphosource
           end
 
           def gather_technical_metadata
-            @iiif_json = iiif_json
-            @iiif_exif = iiif_exif
-            validate_technical_metadata([@iiif_json, @iiif_exif])
+            validate_technical_metadata([iiif_json, iiif_exif])
           end
 
           def iiif_base_uri
-            @slide_json["http://rs.tdwg.org/ac/terms/accessURI"].split('/full/').first
+            @slide_json["http://rs.tdwg.org/ac/terms/accessURI"]&.split('/full/')&.first
           end
 
           def iiif_json
@@ -32,14 +30,18 @@ module Morphosource
           end
 
           def iiif_exif
-            iiif_json["exif"] || {}
+            @iiif_exif ||= get_iiif_exif
+          end
+
+          def get_iiif_exif
+            iiif_json.to_h["exif"] || {}
           end
 
           # technical metadata values
 
           # bits_per_sample
           def bits_per_sample
-            @iiif_exif.dig("fields","BitsPerSample") || super
+            Array(@iiif_exif.dig("fields","BitsPerSample")) || super
           end
 
           # color_space
@@ -65,23 +67,23 @@ module Morphosource
 
           # file_name
           def file_name
-            @iiif_json["originalFilename"] || super
+            Array(@iiif_json["originalFilename"]) || super
           end
 
           # file_size
           def file_size
-            @iiif_json["fileSize"] || super
+            Array(@iiif_json["fileSize"]) || super
           end
 
           # height
           def height
-            @iiif_json["height"]&.to_s || super
+            Array(@iiif_json["height"]&.to_s) || super
           end
 
           # identifier
           #["5c454d3c70aaa9064404a300"]
           def identifier
-            Array(iiif_base_uri.split('/').last)
+            Array(iiif_base_uri&.split('/')&.last)
           end
 
           def imaging_description
@@ -99,14 +101,14 @@ module Morphosource
           end
 
           def remote_origin_url
-            return super unless file_name.present?
+            return super unless iiif_base_uri.present? && file_name.present?
 
-            iiif_base_uri.concat("/full/max/0/default#{File.extname(file_name)}")
+            iiif_base_uri.concat("/full/max/0/default#{File.extname(file_name.first.to_s)}")
           end
           alias import_url remote_origin_url
 
           def remote_manifest_url
-            iiif_base_uri.concat('/info.json')
+            iiif_base_uri&.concat('/info.json')
           end
 
           def scanning_software
@@ -115,20 +117,19 @@ module Morphosource
           end
 
           def slide_thumbnail_path
-            iiif_base_uri.concat('/full/400,/0/default.jpg')
+            iiif_base_uri&.concat('/full/400,/0/default.jpg')
           end
 
           # unit
           # See https://exiftool.org/TagNames/EXIF.html
           def unit
-            ru = @iiif_exif["ResolutionUnit"]
+            ru = @iiif_exif.dig('fields','ResolutionUnit')
             ru.present? ? Array(Morphosource::ExifData::ResolutionUnitService.new.label(ru)) : super
           end
 
           # width
           def width
-            w = @iiif_json["width"]&.to_s
-            w.present? ? w : super
+            Array(@iiif_json["width"]&.to_s) || super
           end
 
           # x_spacing

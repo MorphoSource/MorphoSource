@@ -18,11 +18,11 @@ module Morphosource
         end
 
         # return SequentialSectionScanList
-        def initialize(id, json = nil, collection_id = nil)
+        def initialize(id, json = nil, collection = nil)
           @occurrence_id = id
           @occurrence_json = json || occurrence_json
           raise StandardError.new "GBIF occurrence JSON is blank." if @occurrence_json.blank?
-          @collection = Collection.where(id: collection_id)&.first || create_series_collection
+          @collection = collection || create_series_collection
         end
 
         def occurrence_json

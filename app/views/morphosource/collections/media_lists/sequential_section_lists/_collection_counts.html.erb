@@ -6,7 +6,5 @@
   · Managed by: <%= @presenter.collection_managers %>
 </div>
 <div class="text-muted" style="margin-top: 5px;">
-  <% unless @object_ids.blank? %>
-    All media represent physical object: <%= link_to_specimen(@object_ids.first) %>
-  <% end %>
+  All media represent physical object: <%= link_to_specimen(@object_ids.first) %>
 </div>

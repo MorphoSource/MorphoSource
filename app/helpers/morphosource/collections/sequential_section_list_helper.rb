@@ -4,8 +4,6 @@ module Morphosource
       include Morphosource::CollectionHelper
 
       def link_to_specimen(id)
-        return unless id.present?
-
         specimen = SolrDocument.find(id)
         title = specimen.title.first
         taxonomy = specimen.taxonomies_titles&.first

@@ -95,7 +95,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
       return main_job.created_objects[parent_file]
     else 
       if duration > 3600 # 1 hr
-        raise "Timeout waiting for parent file #{parent_file} to be created in job #{main_job_id}"
+        raise "Timeout waiting for parent media to be created"
       else
         return nil
       end

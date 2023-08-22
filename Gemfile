@@ -73,6 +73,9 @@ gem 'dalli' # mem_cache_store support
 gem "sentry-ruby"
 gem "sentry-rails"
 
+# Scout APM
+gem "scout_apm"
+
 # Maintenance mode
 gem 'turnout'
 

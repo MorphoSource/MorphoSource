@@ -20,14 +20,6 @@ class SequentialSectionList < MediaList
     Morphosource::Users::EditMedia::EditSequentialSectionScansSearchBuilder
   end
 
-  def specimen
-    specimen_doc.present? ? BiologicalSpecimen.find(specimen_doc['id']) : nil
-  end
-
-  def specimen_doc
-    SolrDocument.find(media_docs&.first['physical_object_id_ssim']&.first)
-  end
-
   def human_readable_type
     "Sequential Section List"
   end

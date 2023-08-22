@@ -77,16 +77,6 @@ module Morphosource
         .transform_keys(&:to_s)
     end
 
-    def self.occurrence_record_by_id(id)
-      result = Morphosource::Gbif.view(id, 'occurrence')
-      if result[:status] == :success
-        result[:data]
-      else
-        Rails.logger.error("An error occurred querying the GBIF API: #{result[:message]}")
-        {}
-      end
-    end
-
     def initialize(params={})
       @params = params
     end

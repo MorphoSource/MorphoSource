@@ -1,33 +1,35 @@
-<div class="btn-group">
-  <% if presenter.editor? %>
-    <%= f.input Hyrax::Actors::OptimisticLockValidator.version_field, as: :hidden if f.object.persisted? %>
-    <%= f.submit class: 'btn btn-primary btn-save btn-save-media', onclick: "confirmation_needed = false\;", id: "with_files_submit", name: "save_with_files", value: "Save", data: { :disable_with => false } %>
-    <% unless @presenter.has_child_media? %>
-      <% if @presenter.has_DOI? %> 
-        <a class="btn btn-disabled tooltip-icon" data-original-title="" title="This media cannot be deleted because the media has a DOI.">Delete</a>
-      <% elsif @presenter.is_published? %>
-        <a class="btn btn-disabled tooltip-icon" data-original-title="" title="This media cannot be deleted because the media is published.">Delete</a>
+<div class="show-actions">
+  <div class="btn-group">
+    <% if presenter.editor? %>
+      <%= f.input Hyrax::Actors::OptimisticLockValidator.version_field, as: :hidden if f.object.persisted? %>
+      <%= f.submit class: 'btn btn-primary btn-save btn-save-media', onclick: "confirmation_needed = false\;", id: "with_files_submit", name: "save_with_files", value: "Save", data: { :disable_with => false } %>
+      <% unless @presenter.has_child_media? %>
+        <% if @presenter.has_DOI? %> 
+          <a class="btn btn-disabled tooltip-icon" data-original-title="" title="This media cannot be deleted because the media has a DOI.">Delete</a>
+        <% elsif @presenter.is_published? %>
+          <a class="btn btn-disabled tooltip-icon" data-original-title="" title="This media cannot be deleted because the media is published.">Delete</a>
+        <% else %> 
+          <%= link_to "Delete", [main_app, @presenter],
+            class: 'btn btn-danger', data: { confirm: "Delete this media?" },
+            method: :delete %>
+        <% end %>
       <% else %> 
-        <%= link_to "Delete", [main_app, @presenter],
-          class: 'btn btn-danger', data: { confirm: "Delete this media?" },
-          method: :delete %>
+        <a class="btn btn-disabled tooltip-icon" data-original-title="" title="This media cannot be deleted because the media has child media.">Delete</a>
       <% end %>
-    <% else %> 
-      <a class="btn btn-disabled tooltip-icon" data-original-title="" title="This media cannot be deleted because the media has child media.">Delete</a>
+
     <% end %>
+ 
+    <%# if signed_in? %>
+      <%# if presenter.editor? || @curation_concern.open? %>
+        <%#= download_button(presenter.id) %>
+        <%#= choose_cart_button(presenter) %>
+      <%# elsif @curation_concern.restricted? %>
+        <%#= choose_download_button(presenter.id) %>
+        <%#= choose_cart_button(presenter) %>
+      <%# else %>
+        <%#= unavailable_for_download_button %>
+      <%# end %>
 
-  <% end %>
-
-  <%# if signed_in? %>
-    <%# if presenter.editor? || @curation_concern.open? %>
-      <%#= download_button(presenter.id) %>
-      <%#= choose_cart_button(presenter) %>
-    <%# elsif @curation_concern.restricted? %>
-      <%#= choose_download_button(presenter.id) %>
-      <%#= choose_cart_button(presenter) %>
-    <%# else %>
-      <%#= unavailable_for_download_button %>
     <%# end %>
-
-  <%# end %>
+  </div>
 </div>

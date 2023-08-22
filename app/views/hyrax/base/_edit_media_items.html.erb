@@ -5,7 +5,8 @@ items_per_row = 3
 items_to_show_initially = 6
 %>
 	<h2 class="clearfix">
-		<%= media_count %> MEDIA REPRESENTING PHYSICAL OBJECT
+		<span class="col-sm-9"><%= media_count %> MEDIA REPRESENTING PHYSICAL OBJECT</span>
+		<span class="col-sm-3"><a href="/submissions/new" target="_blank" class="btn btn-sm btn-primary">Add new media</a></span>
 	</h2>
 	<%  members = presenter.member_presenters_for(array_of_ids) %>
 	<% if members.present? %>

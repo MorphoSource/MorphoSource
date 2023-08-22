@@ -139,7 +139,7 @@ input[type=checkbox].disabled {
   }
 
   .required-tag {
-    display: none !important; /* hide the hyrax required tag (use required-flag instead) */
+    display: none; /* hide the hyrax required tag (use required-flag instead) */
   }
 
   .required-flag, .recommended-flag, .optional-flag {
@@ -188,6 +188,10 @@ input[type=checkbox].disabled {
 
   .tooltip {
     pointer-events: none; /* fix the boostrap tooltip flickering issue */
+  }
+
+  .glyphicon {
+    margin-left: 3px;
   }
 
   .multi_value .btn.remove, .controlled_vocabulary .btn.remove, .multi_value .remove.facets-toggle, .controlled_vocabulary .remove.facets-toggle, .multi_value td.toggle input.remove[type=submit], td.toggle .multi_value input.remove[type=submit], .controlled_vocabulary td.toggle input.remove[type=submit], td.toggle .controlled_vocabulary input.remove[type=submit] {
@@ -388,11 +392,15 @@ input[type=checkbox].disabled {
   .tab-content > #physical-object-details {
 
     .form-group {
+      .control-label {
+
+      }
       .help-block {
         display:none;
       }
       .form-control {
         display: inline-block;
+        width: auto;
       }
     }
 

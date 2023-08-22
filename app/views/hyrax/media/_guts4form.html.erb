@@ -3,52 +3,6 @@
     <div class="panel panel-default tabs" role="main">
       <!-- Nav tabs -->
       <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" id="tab-media-details" class="active">
-          <a href="#media-details" aria-controls="media-details" role="tab" data-toggle="tab" aria-expanded="false">
-            <i class="fa fa-cube"></i> Media Details
-          </a>
-        </li>
-
-        <li role="presentation" id="tab-file-upload" class="">
-          <a href="#file-upload" aria-controls="file-upload" role="tab" data-toggle="tab" aria-expanded="false">
-            <i class="fa fa-upload"></i> File Upload
-          </a>
-        </li>
-
-        <li role="presentation" id="tab-share" class="">
-          <a href="#share" aria-controls="share" role="tab" data-toggle="tab" aria-expanded="false">
-            <i class="fa fa-share-alt"></i> Share
-          </a>
-        </li>
-
-        <% if @presenter.has_processing_events? %>
-          <li role="presentation" id="tab-processing-event" class="">
-            <a href="#processing-event" aria-controls="processing-event" role="tab" data-toggle="tab" aria-expanded="false">
-              <i class="fa fa-bolt"></i> Processing
-            </a>
-          </li>
-        <% end %>
-
-        <% if @presenter.has_imaging_events? %>
-          <li role="presentation" id="tab-imaging-event" class="">
-            <a href="#imaging-event" aria-controls="imaging-event" role="tab" data-toggle="tab" aria-expanded="false">
-              <i class="fa fa-camera"></i> Imaging
-            </a>
-          </li>
-        <% end %>
-
-        <li role="presentation" id="tab-device" class="">
-          <a href="#device" aria-controls="device" role="tab" data-toggle="tab" aria-expanded="false">
-            <i class="fas fa-microscope"></i> Device
-          </a>
-        </li>
-
-        <li role="presentation" id="tab-parent-media" class="">
-          <a href="#parent-media" aria-controls="parent-media" role="tab" data-toggle="tab" aria-expanded="false">
-            <i class="fa fa-code-branch"></i> Parent Media
-          </a>
-        </li>
-
         <li role="presentation" id="tab-physical-object-details" class="">
           <a href="#physical-object-details" aria-controls="physical-object-details" role="tab" data-toggle="tab" aria-expanded="false">
             <% if @presenter.physical_object_type == "Biological Specimen" %>
@@ -56,6 +10,45 @@
             <% elsif @presenter.physical_object_type == "Cultural Heritage Object" %>
               <i class="ms2-icon-bowl icon-bowl"></i> Physical Object
             <% end %>
+          </a>
+        </li>
+        <li role="presentation" id="tab-parent-media" class="">
+          <a href="#parent-media" aria-controls="parent-media" role="tab" data-toggle="tab" aria-expanded="false">
+            <i class="fa fa-code-branch"></i> Parent Media
+          </a>
+        </li>
+        <li role="presentation" id="tab-device" class="">
+          <a href="#device" aria-controls="device" role="tab" data-toggle="tab" aria-expanded="false">
+            <i class="fas fa-microscope"></i> Device
+          </a>
+        </li>
+        <% if @presenter.has_imaging_events? %>
+          <li role="presentation" id="tab-imaging-event" class="">
+            <a href="#imaging-event" aria-controls="imaging-event" role="tab" data-toggle="tab" aria-expanded="false">
+              <i class="fa fa-camera"></i> Imaging
+            </a>
+          </li>
+        <% end %>
+        <% if @presenter.has_processing_events? %>
+          <li role="presentation" id="tab-processing-event" class="">
+            <a href="#processing-event" aria-controls="processing-event" role="tab" data-toggle="tab" aria-expanded="false">
+              <i class="fa fa-bolt"></i> Processing
+            </a>
+          </li>
+        <% end %>
+        <li role="presentation" id="tab-share" class="">
+          <a href="#share" aria-controls="share" role="tab" data-toggle="tab" aria-expanded="false">
+            <i class="fa fa-share-alt"></i> Share
+          </a>
+        </li>
+        <li role="presentation" id="tab-file-upload" class="">
+          <a href="#file-upload" aria-controls="file-upload" role="tab" data-toggle="tab" aria-expanded="false">
+            <i class="fa fa-upload"></i> File Upload
+          </a>
+        </li>   
+        <li role="presentation" id="tab-media-details" class="active">
+          <a href="#media-details" aria-controls="media-details" role="tab" data-toggle="tab" aria-expanded="false">
+            <i class="fa fa-cube"></i> Media Details
           </a>
         </li>
       </ul>

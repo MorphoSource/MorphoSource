@@ -2,35 +2,46 @@ module Morphosource
   module Admin
     class ImportSlidesController < ApplicationController
       before_action :require_admin
-      before_action :initialize_service, only: :import_slides
-
       with_themed_layout 'morphosource_dashboard'
 
-      def import_slides
-        Morphosource::ImportSlideSeriesJob.perform_later(occurrence_id, @occurrence_json, @collection.id)
-        redirect_to sequential_section_list_path(@collection.id), flash: { notice: I18n.t('morphosource.admin.import.slides.job_submitted') }
-      rescue StandardError => e
-        redirect_to admin_import_slides_path, flash: { error: e.message }
+      def index
       end
 
-      private
+      def import_slides
+        organization_id = params["organization"]
+        service = params["service"]
+        resource_id = params["resource_id"]
+        user_email = params["user_email"]
+        list_visibility = params["list_visibility"]
+        @collection = import_service_class.new(service: service, resource_id:resource_id, user_email: user_email).call
 
-        # initializing the service allows for checking that that GBIF occurrence json is available and valid before proceeding with the rest of the import, and makes the collection id available for the redirect in import_slides.
-        def initialize_service
-          @service = Morphosource::Import::Slides::SlideSeriesService.new(occurrence_id)
-          @collection = @service.collection
-          @occurrence_json = @service.occurrence_json
-        rescue StandardError => e
-          redirect_to admin_import_slides_path, flash: { error: e.message }
+        # this will be refactored w/ providers yml pr
+        if import_error?
+          redirect_to admin_import_slides_path, flash: { error: @error_message }
+        else
+          redirect_to sequential_section_list_path(@collection)
         end
+      end
 
-        def occurrence_id
-          params["occurrence_id"]
+      def import_service_class
+        case params["organization"]
+        when "MCZ"
+          Morphosource::Import::MczSlideSeriesService
         end
+      end
 
-        def require_admin
-          authorize! :read, :admin_dashboard
-        end
+    private
+
+      def require_admin
+        authorize! :read, :admin_dashboard
+      end
+
+      def import_error?
+        return false unless @collection.is_a? String
+
+        @error_message = @collection
+        true
+      end
     end
   end
 end

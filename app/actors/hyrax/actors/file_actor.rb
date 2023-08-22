@@ -22,12 +22,15 @@ module Hyrax
       # @todo create a job to monitor the temp directory (or in a multi-worker system, directories!) to prune old files that have made it into the repo
       def ingest_file(io)
         # Skip versioning because versions will be minted by VersionCommitter as necessary during save_characterize_and_record_committer.
+
         if file_set.is_remote_backed?
-          Rails.logger.debug "in FileActor: media is_remote_backed, calling AddExternalFileToFileSet..."
+          Rails.logger.debug "in FileActor: media is_remote_backed, calling AddExternalFileToFileSet..."          
           Hydra::Works::AddExternalFileToFileSet.call(file_set,
                                             file_set.import_url,
                                             relation,
                                             versioning: false)
+
+
         else
           Hydra::Works::AddFileToFileSet.call(file_set,
                                             io,
@@ -38,10 +41,8 @@ module Hyrax
         return false unless file_set.save
         repository_file = related_file
         Hyrax::VersioningService.create(repository_file, user)
-        unless file_set.has_remote_manifest?
-          pathhint = io.uploaded_file.uploader.path if io.uploaded_file # in case next worker is on same filesystem
-          CharacterizeJob.perform_later(file_set, repository_file.id, pathhint || io.path)
-        end
+        pathhint = io.uploaded_file.uploader.path if io.uploaded_file # in case next worker is on same filesystem
+        CharacterizeJob.perform_later(file_set, repository_file.id, pathhint || io.path)
       end
 
       # Reverts file and spawns async job to characterize and create derivatives.

@@ -8,7 +8,7 @@ require 'browse_everything/retriever'
 # and CreateWithRemoteFilesActor when files are located in some other service.
 class ImportUrlJob < Hyrax::ApplicationJob
   include MorphosourceHelper
-
+  
   queue_as Hyrax.config.ingest_queue_name
   attr_reader :file_set, :operation
 
@@ -29,11 +29,6 @@ class ImportUrlJob < Hyrax::ApplicationJob
     @operation = operation
 
     if file_set.is_remote_backed?
-      if file_set.has_remote_manifest?
-        Rails.logger.debug("File Set has remote manifest, skipping copy_remote_file.")
-        log_import_status(uri, nil, user)
-        return false
-      end
       unless user.can_submit_remote_file?(file_set.import_url, file_set.parent.organization_id&.first)
         send_error('User is not allowed to submit the remote file')
         Rails.logger.debug("User is not allowed to submit the remote file")

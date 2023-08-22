@@ -19,7 +19,7 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
       return nil
     end
 
-    begin
+    begin      
       update_main_job(status.status.to_s, nil)
       exception_caught = false
  

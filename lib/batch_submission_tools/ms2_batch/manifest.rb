@@ -37,7 +37,6 @@ module BatchSubmissionTools
           "organization_id" => @organization_id,
           "device_id" => @device_id,
           "collection_ids" => @collection_ids,
-          "manifest_tmp_file" => @input_path,
           "media_files" => []
         }
         call
@@ -127,24 +126,41 @@ module BatchSubmissionTools
             summary["media_files"] << row[:media][:media_file]&.first
 
           end # /mg[:raw_list]
-        end # //media_group_to_rows
+        end # /media_group_to_rows
+        #byebug # check summary
 
-        # sort media group by group until no more media 
-        remain_mg = @media_group_to_rows.clone
-        full_ordered_list = []
-        begin
-          ordered_list = group_with_hierarchy(remain_mg)
-          if !ordered_list.present?
-            raise "Something went wrong.  ordered_list return nothing"
+        # re-order rows to have parent > child ingestion order 
+        hierarchy = []
+        largest_hierarchy = []
+        # sort list by hierarchy
+        @media_group_to_rows.each do |key, value|
+          item_hierarchy = []
+          # Add the current item to the hierarchy array
+          item_hierarchy << key
+          # Traverse the parents of the current item until reaching the root parent
+          parent = value[:parents]
+          while parent.present? && parent != key
+            if @media_group_to_rows[parent].nil? || @media_group_to_rows[parent][:parents].nil?
+              # Parent not found, exit the loop
+              break
+            end
+            item_hierarchy.unshift(parent)  # Add the parent at the beginning of the hierarchy array
+            if @media_group_to_rows[parent][:parents] == parent
+              break # parent is itself, exit
+            end
+            parent = @media_group_to_rows[parent][:parents]
           end
-          full_ordered_list += ordered_list          
-          ordered_list.each do |key|
-            remain_mg.delete(key)
+          if item_hierarchy.length > largest_hierarchy.length
+            largest_hierarchy = item_hierarchy
           end
-          Rails.logger.debug "iN Manifest: ordered_list #{ordered_list} removed. Remaining: #{remain_mg.keys}"
-        end until remain_mg.empty?
+          hierarchy << item_hierarchy
+        end
 
-        @media_group_to_rows = sort_by_order_list(@media_group_to_rows, full_ordered_list)
+        ordered_list = largest_hierarchy
+        remain_list = @media_group_to_rows.keys - ordered_list
+        ordered_list = ordered_list + remain_list
+        sorted_media_group_to_rows = ordered_list.map { |index| [index, @media_group_to_rows[index]] }.to_h
+        @media_group_to_rows = sorted_media_group_to_rows 
 
         if rows_to_remove.present?
           # when new parent media will be created,
@@ -153,76 +169,8 @@ module BatchSubmissionTools
           rows_to_remove.each { |k| @media_group_to_rows.delete [k] }
         end
 
-        # if there is a parent in a row removed, find the new parent and re-order if needed 
-        new_parents_for.each do |new_parent, child|
-          move_item_in_front(full_ordered_list, new_parent, child)
-          rows_to_remove.each { |k| full_ordered_list.delete [k] }
-          @media_group_to_rows = sort_by_order_list(@media_group_to_rows, full_ordered_list)
-        end
-
-        unless new_parents_for.empty?
-          raise "Sorry, there is an issue with the order of the media. Please contact morphosource@duke.edu (#{input_path})"
-        end
-        # //media_group_to_rows
+        #byebug # check media_group_to_rows
         Rails.logger.debug "iN Manifest: media_group_to_rows: #{media_group_to_rows}"
-      end
-
-      def new_parents_for
-        new_parents_for = {}
-        to_be_created = []
-        media_group_to_rows.each do |k, item|
-          to_be_created << k
-          to_be_created << item[:children] if item[:children].present?
-          to_be_created = to_be_created.flatten.uniq
-          if item[:parents].present? && !media_group_to_rows[item[:parents]].present? &&
-            !to_be_created.include?(item[:parents][0])
-            if (new_parent = media_group_to_rows.find { |_, v| v[:children].include?(item[:parents][0]) }).present?
-              new_parents_for[new_parent[0]] = k
-            end
-          end
-        end
-        new_parents_for
-      end
-
-      def sort_by_order_list(mg, ordered_list)
-        ordered_list.map { |index| [index, mg[index]] }.to_h
-      end
-
-      def move_item_in_front(array, x, y)
-        array.delete(x)
-        y_index = array.index(y)
-        array.insert(y_index, x)
-        array
-      end
-
-      def group_with_hierarchy(mg)
-        # re-order rows to have parent > child ingestion order 
-        hierarchy = []
-        largest_hierarchy = []
-        # sort list by hierarchy
-        mg.each do |key, value|
-          item_hierarchy = []
-          # Add the current item to the hierarchy array
-          item_hierarchy << key
-          # Traverse the parents of the current item until reaching the root parent
-          parent = value[:parents]
-          while parent.present? && parent != key
-            if mg[parent].nil? || mg[parent][:parents].nil?
-              # Parent not found, exit the loop
-              break
-            end
-            item_hierarchy.unshift(parent)  # Add the parent at the beginning of the hierarchy array
-            if mg[parent][:parents] == parent
-              break # parent is itself, exit
-            end
-            parent = mg[parent][:parents]
-          end
-          if item_hierarchy.length > largest_hierarchy.length
-            largest_hierarchy = item_hierarchy
-          end
-          hierarchy << item_hierarchy
-        end
-        return largest_hierarchy
       end
 
       def construct_biological_specimen_ingests
@@ -444,7 +392,6 @@ module BatchSubmissionTools
       def to_h
         {
           summary: summary,
-
           biological_specimen_ingests: biological_specimen_ingests.map(&:to_h),
           rows_to_bso: rows_to_bso.transform_keys(&:to_s),
           taxonomy_ingests: taxonomy_ingests.map(&:to_h),

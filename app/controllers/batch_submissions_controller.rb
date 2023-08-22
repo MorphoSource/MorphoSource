@@ -147,45 +147,40 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def create_manifest_object
-    input_path = manifest.tempfile.path
-    # copy manifest temp file to application tmp dir (for debugging if needed)
-    copied_manifest_path = Rails.root.join(Dir.tmpdir, 'manifest_' + File.basename(input_path)).to_s
-    FileUtils.copy(input_path, copied_manifest_path)
-    input_path = copied_manifest_path
-
-    media_path = user_share_full_path
-    admin_user = User.batch_user
-    depositor = current_user
-    organization_id = request.params["organization_id"]
-    device_id = request.params["batch_submission"]["device_id"]
-    if request.params["batch_submission"]["on_behalf_of"].present?
-      on_behalf_of = User.where(ms_id: request.params["batch_submission"]["on_behalf_of"]).first
-    end
-    collection_ids = []
-    if request.params["media"].present?
-      if request.params["media"]["member_of_collections_attributes"].present?
-        request.params["media"]["member_of_collections_attributes"].each do |k, v|
-          collection_ids << v["id"] if v["_destroy"] == "false"
+      input_path = manifest.tempfile.path
+      media_path = user_share_full_path
+      admin_user = User.batch_user
+      depositor = current_user
+      organization_id = request.params["organization_id"]
+      device_id = request.params["batch_submission"]["device_id"]
+      if request.params["batch_submission"]["on_behalf_of"].present?
+        on_behalf_of = User.where(ms_id: request.params["batch_submission"]["on_behalf_of"]).first
+      end
+      collection_ids = []
+      if request.params["media"].present?
+        if request.params["media"]["member_of_collections_attributes"].present?
+          request.params["media"]["member_of_collections_attributes"].each do |k, v|
+            collection_ids << v["id"] if v["_destroy"] == "false"
+          end
         end
       end
-    end
-    fund_code_id = request.params["batch_submission"]["fund_code"]
-    modality = request.params["batch_submission"]["modality"]
-    media_ownership_fields = request.params["batch_submission"]["media"]
-    media_ownership_fields["organization_transfer_on_publish"] = true if ( organization_media_transfer == :publication )
-    @manifest_object = BatchSubmissionTools::Ms2Batch::Manifest.new(
-      input_path:input_path, 
-      media_path:media_path, 
-      admin_user:admin_user, 
-      depositor:depositor, 
-      on_behalf_of:on_behalf_of, 
-      collection_ids:collection_ids, 
-      fund_code_id:fund_code_id, 
-      organization_id:organization_id,
-      organization_transfer_immediately:( organization_media_transfer == :immediate ),
-      device_id:device_id, 
-      media_ownership_fields:media_ownership_fields,
-      modality:modality).to_h
+      fund_code_id = request.params["batch_submission"]["fund_code"]
+      modality = request.params["batch_submission"]["modality"]
+      media_ownership_fields = request.params["batch_submission"]["media"]
+      media_ownership_fields["organization_transfer_on_publish"] = true if ( organization_media_transfer == :publication )
+      @manifest_object = BatchSubmissionTools::Ms2Batch::Manifest.new(
+        input_path:input_path, 
+        media_path:media_path, 
+        admin_user:admin_user, 
+        depositor:depositor, 
+        on_behalf_of:on_behalf_of, 
+        collection_ids:collection_ids, 
+        fund_code_id:fund_code_id, 
+        organization_id:organization_id,
+        organization_transfer_immediately:( organization_media_transfer == :immediate ),
+        device_id:device_id, 
+        media_ownership_fields:media_ownership_fields,
+        modality:modality).to_h
   end
 
   def ingest
@@ -195,21 +190,12 @@ class BatchSubmissionsController < ApplicationController
   def start_ingest_job
     job = ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_later(@request_manifest_object, current_user)
     main_job = BackgroundJob.create({ job_id: job.job_id, job_class: job.class.to_s, status: job.status.status.to_s, user_id: current_user.user_key, created_objects: {} })
-    # rename the manifest tmp file with job id for locating easier 
-    if (manifest_tmp_file = @request_manifest_object["summary"]["manifest_tmp_file"]).present?
-      if File.exists?(manifest_tmp_file)
-        new_file = Rails.root.join(Dir.tmpdir, 'manifest_' + job.job_id + File.extname(manifest_tmp_file)).to_s
-        File.rename(manifest_tmp_file, new_file)
-      end
-    end    
   end
 
   def initial_error_message
     # basic validation: check field names, column count
     if @xlsx.last_column != 86
       return "The columns are invalid.  Please check the file or download the blank submission manifest again."
-    elsif @xlsx.last_row > 5007
-      return "The number of rows has exceeded the maximum."
     end
     field_names.each_with_index do |fname, idx|
       if fname != @xlsx.excelx_value(7, idx + 3) 
@@ -308,29 +294,15 @@ class BatchSubmissionsController < ApplicationController
           row_count: row_count
         }
       else
-        begin
-          create_manifest_object
-          render 'validation_success', locals: { 
-            manifest_object: @manifest_object,
-            warn_rows: warn_rows, 
-            warn_messages: warn_messages, 
-            warn_cell_numbers: warn_cell_numbers, 
-            field_names: field_names, 
-            row_count: row_count
-          }
-        rescue Exception => e
-          render 'validation_fail', locals: { 
-            general_error_msg: e.message, 
-            error_rows: error_rows, 
-            error_messages: error_messages, 
-            error_cell_numbers: error_cell_numbers, 
-            warn_rows: warn_rows, 
-            warn_messages: warn_messages, 
-            warn_cell_numbers: warn_cell_numbers, 
-            field_names: field_names, 
-            row_count: row_count
-          }
-        end
+        create_manifest_object
+        render 'validation_success', locals: { 
+          manifest_object: @manifest_object,
+          warn_rows: warn_rows, 
+          warn_messages: warn_messages, 
+          warn_cell_numbers: warn_cell_numbers, 
+          field_names: field_names, 
+          row_count: row_count
+        }
       end    
 
     end

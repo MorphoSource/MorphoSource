@@ -163,7 +163,7 @@ class Collection < ActiveFedora::Base
   def add_member_objects(new_members)
     members = Array(new_members)
     if members.first.is_a? String
-      members = members.map { |m| ActiveFedora::Base.find(m) }
+      members.map! { |m| ActiveFedora::Base.find(m) }
     end
     members.collect do |member|
       message = Hyrax::MultipleMembershipChecker.new(item: member).check(collection_ids: id, include_current_members: true)

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_07_18_191727) do
+ActiveRecord::Schema.define(version: 2023_08_23_132151) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -64,6 +64,8 @@ ActiveRecord::Schema.define(version: 2023_07_18_191727) do
     t.string "download_usage_list"
     t.string "download_hash"
     t.integer "download_attempts"
+    t.string "download_method"
+    t.boolean "download_request_terms_agreement"
     t.index ["user_id"], name: "index_cart_items_on_user_id"
     t.index ["work_id"], name: "index_cart_items_on_work_id"
   end
@@ -745,6 +747,7 @@ ActiveRecord::Schema.define(version: 2023_07_18_191727) do
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
     t.string "unconfirmed_email"
+    t.text "allowed_remote_source"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["ms_id"], name: "index_users_on_ms_id"

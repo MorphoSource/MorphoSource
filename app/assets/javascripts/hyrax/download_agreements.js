@@ -35,6 +35,19 @@ function checkAndShowDownload() {
 
 }
 
+function checkAndShowRequestDownload() {
+  if ( $('#modal-request-download-agree').prop('checked') &&
+        $('#intended_use').val().length >= 50 )  {
+    $('#modal-request-download').removeAttr('disabled');
+  } else {
+    $('#modal-request-download').attr('disabled', 'disabled');
+  }  
+  if ($('#intended_use').val().length >= 50) 
+    $('#char-alert, #describe-intended-use').removeClass('text-alert');
+  else
+    $('#char-alert, #describe-intended-use').addClass('text-alert');
+}
+
 function usageList() {
   var usage_list_array = $('.profile-checkbox-list input[type=checkbox]:checked').map(function(_, el) {
     return $(el).val();
@@ -110,10 +123,20 @@ $( document ).ready(function() {
         set_agreements('CURRENT', $(this).attr('data-media-id'));
         showAgreementModal();
       });  
+      $('.btn-request-download-item').bind('click', function(e) { 
+        // media page request download button clicked
+        e.preventDefault();
+        set_agreements('CURRENT', $(this).attr('data-media-id'));
+        showRequestDownloadAgreementModal();
+      });  
     }
   
     $(document).on('click', '#modal-agree', function(){
       checkAndShowDownload();
+    });
+
+    $(document).on('click', '#modal-request-download-agree', function(){
+      checkAndShowRequestDownload();
     });
 
     $('.modal-body .checkbox-form-group input').change(function() {
@@ -128,6 +151,12 @@ $( document ).ready(function() {
       var textlen = $(this).val().length;
       $('#rchars').text(textlen);
       checkAndShowDownload();
+    });
+
+    $('#intended_use').keyup(function() {
+      var textlen = $(this).val().length;
+      $('#intended-use-rchars').text(textlen);
+      checkAndShowRequestDownload();
     });
 
     $('form#download-form').on('submit', function (e) {
@@ -185,6 +214,25 @@ function hideAgreementModal() {
 
 function showAgreementModal() {
   $('#downloadAgreementsModal').modal('show');
+  $('#modal-agree').prop('checked', false);
+  $('#modal-download').attr('disabled', 'disabled');  
+
+  // reset things on modal close
+  $("#downloadAgreementsModal").on("hidden.bs.modal", function () {
+    // remove selected items from modal
+    $('form#download-form .download-items-wrapper').html('');  
+    uncheckAllDownloadable();
+    $("#check_all_unrestricted").prop('checked', false);
+    $("input#download-selected").prop('disabled', true);
+  });
+}
+
+function hideRequestDownloadAgreementModal() {
+  $('#requestDownloadAgreementsModal').modal('hide');
+}
+
+function showRequestDownloadAgreementModal() {
+  $('#requestDownloadAgreementsModal').modal('show');
   $('#modal-agree').prop('checked', false);
   $('#modal-download').attr('disabled', 'disabled');  
 

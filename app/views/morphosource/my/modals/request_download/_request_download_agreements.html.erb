@@ -1,0 +1,14 @@
+<div class="modal fade" id="requestDownloadAgreementsModal" tabindex="-1" role="dialog" aria-labelledby="requestModalLabel" aria-hidden="true">
+
+  <div class="modal-dialog modal-wide">
+    <div class="modal-content">
+
+      <%= form_tag(main_app.request_work_path, method: :post, id: 'request-download-form', "data-behavior" => 'batch-select-all', :class => "form-horizontal") do %>
+
+        <%= render 'morphosource/my/modals/request_download/request_download_agreements_body' %>
+
+      <% end # /form %>
+
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->

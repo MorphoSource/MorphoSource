@@ -9,6 +9,7 @@ module Morphosource
       before_action :get_items_by_id, except: [:index]
       before_action :get_intended_use, only: [:request_item, :request_again, :request_work]
       before_action :check_blank_items, only: [:request_item, :request_again]
+      before_action :check_request_terms_agree, only: [:request_item, :request_again, :request_work]
 
       def index
         get_items('my_requests')
@@ -16,6 +17,7 @@ module Morphosource
       end
 
       def request_item
+byebug 
         @items = undownloadable(@items)
         re_request(inactive(@items)) unless inactive(@items).empty?
         make_request(unrequested(@items)) unless unrequested(@items).empty?
@@ -25,6 +27,7 @@ module Morphosource
       end
 
       def request_again
+byebug 
         re_request(@items)
         send_request_messages(@items)
         flash[:notice] = item_count_text.concat(' Requested')

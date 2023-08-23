@@ -416,7 +416,6 @@ namespace :morphosource do
     contributors = Role.find_or_create_by(name: 'contributor')
     contributors.users += [contributor]
     contributors.save
-
     # create email sender user
     Rake::Task['morphosource:create_email_sender_user'].invoke
   end
@@ -757,7 +756,7 @@ namespace :morphosource do
       end
     end
     if report_only
-      log.info "This is a report only. Total imaging event count: #{ie_total}" 
+      log.info "This is a report only. Total imaging event count: #{ie_total}"
       action = "(report only) "
     else
       action = "(merge) "
@@ -765,7 +764,7 @@ namespace :morphosource do
 
     if args[:send_email] ==  "true" && Hyrax.config.system_report_recipients.present?
       ApplicationMailer.send_email_with_attachment(
-        Hyrax.config.system_report_recipients, 
+        Hyrax.config.system_report_recipients,
         "MS duplicate specimens report #{action}" + Time.now.strftime("%m-%d-%Y_%H-%M"),
         "Duplicate specimens report #{action} attached.",
          log_file).deliver_now
@@ -817,6 +816,7 @@ namespace :morphosource do
     end
   end
 
+  # MCZ slide import
   desc "Get new MCZ sequential section slides from GBIF"
   task :get_new_slides => :environment do
     occurrence_keys = Morphosource::Import::Slides::GetNewSlidesService.call
@@ -825,6 +825,11 @@ namespace :morphosource do
       Hyrax.config.system_report_recipients,
       "GetNewSlidesService called: #{occurrence_keys.count} job(s) queued",
       "#{occurrence_keys.count} job(s) queued to import records for GBIF occurrence keys: #{new_occurrence_keys} at #{Time.now.strftime("%m-%d-%Y_%H-%M")}").deliver_now
+  end
+
+  desc "Create MCZ slide import records"
+  task :create_slide_records => :environment do
+    Morphosource::Import::SlideSeries::CreateSlideRecordsService.call
   end
 
   # Google Analytics-based media view statistics import

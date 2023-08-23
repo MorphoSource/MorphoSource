@@ -41,6 +41,11 @@
                 </div>
 
                 <div class="list-item">
+                  <%= link_to "New sequential section list", main_app.new_sequential_section_list_path %>
+                  <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.glossary.sequential_section_lists") %></p></i>
+                </div>
+
+                <div class="list-item">
                   <%= link_to "New media", main_app.new_submission_path %>
                   <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.dashboard.landing_page.hints.new_media") %></p></i>
                 </div>
@@ -58,6 +63,10 @@
                 <div class="list-item">
                   <%= link_to "My teams", main_app.my_teams_path %>
                   <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.dashboard.landing_page.hints.my_teams") %></p></i>
+                </div>
+                <div class="list-item">
+                  <%= link_to "My sequential section lists", main_app.my_sequential_section_lists_path %>
+                  <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.dashboard.landing_page.hints.my_sequential_section_lists") %></p></i>
                 </div>
                 <div class="list-item">
                   <%= link_to "My media and physical objects", main_app.my_media_index_path %>
@@ -134,7 +143,7 @@
             <div class="list-item"><%= link_to "View and search users", hyrax.users_path %></div>
             <div class="list-item">
               <%= link_to "Background job dashboard", "/queues", target: '_blank' %>
-              <i class="fas fa-external-link-alt" style="margin-left: 5px;"></i> 
+              <i class="fas fa-external-link-alt" style="margin-left: 5px;"></i>
             </div>
           </div>
         </div>

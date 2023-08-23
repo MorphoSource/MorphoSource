@@ -10,6 +10,9 @@ module Morphosource
           before_action :build_breadcrumbs, only: []
           before_action :load_collection
 
+          # temporary restriction so only admins can access media lists
+          before_action :authorize_admin, only: []
+
           self.presenter_class = Morphosource::Collections::MediaLists::SequentialSectionListPresenter
 
           self.form_class = Morphosource::Forms::Collections::MediaLists::SequentialSectionListForm

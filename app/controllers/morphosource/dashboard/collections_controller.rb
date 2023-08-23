@@ -12,6 +12,7 @@ module Morphosource
       before_action :build_breadcrumbs, only: []
       before_action :load_collection, except: [:create]
       before_action :redirect_to_collection_type, only: [:edit, :update, :new, :create]
+      before_action :authorize_contributor, only: [:new]
 
       self.presenter_class = presenter_class
 
@@ -35,10 +36,10 @@ module Morphosource
 
       def after_update
         respond_to do |format|
-          format.html { 
+          format.html {
             redirect_to team_organization_path(@collection), notice: "Remote file submission settings updated" and return if params[:update_remote_file_submission_settings]
 
-            redirect_to collection_media_path(@collection), notice: t('hyrax.dashboard.my.action.collection_update_success') 
+            redirect_to collection_media_path(@collection), notice: t('hyrax.dashboard.my.action.collection_update_success')
           }
           format.json { render json: @collection, status: :updated, location: collection_media_path(@collection) }
         end
@@ -115,6 +116,13 @@ module Morphosource
       end
 
       private
+
+      # only contributors can access the dashboard new collection page
+      def authorize_contributor
+        authorize! :create, ::Collection
+      rescue CanCan::AccessDenied
+        redirect_to root_url, alert: 'You are not authorized to access this page.'
+      end
 
       def update_referer
         return collection_media_path(@collection) if params[:showcase]

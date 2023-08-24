@@ -17,9 +17,9 @@ module Morphosource
 
     def user_name_by_id(id)
       begin
-        User.find_by(ms_id: id).name_or_email
+        User.find_by(ms_id: id).name
       rescue
-        "User #{id} Not Found"
+        "Unknown User #{id.to_s.upcase}"
       end
     end
 

@@ -17,15 +17,28 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['fileset_accessibility_ssim'] = object.fileset_accessibility
       solr_doc['download_access_group_ssim'] = object.download_groups
       solr_doc['download_access_person_ssim'] = object.download_users
+      solr_doc['download_reviewer_ssim'] = object.download_reviewer
       solr_doc['owner_ssim'] = object.owner
       solr_doc['user_with_ownership_ssi'] = object.user_with_ownership
-      user_with_ownership_name = User.find_by_user_key(object.user_with_ownership)&.name_and_email
+
+      # Data manager name and email
+      user_with_ownership_user = User.find_by_user_key(object.user_with_ownership)
+      user_with_ownership_name = user_with_ownership_user&.name || "Unknown User"
       solr_doc['user_with_ownership_name_tesim'] = user_with_ownership_name
       solr_doc['user_with_ownership_name_ssim'] = user_with_ownership_name
-      depositor_name = User.find_by_user_key(object.depositor)&.name_and_email
+      user_with_ownership_email = user_with_ownership_user&.email
+      solr_doc['user_with_ownership_email_tesim'] = user_with_ownership_email
+      solr_doc['user_with_ownership_email_ssim'] = user_with_ownership_email
+
+      # Depositor name and email
+      depositor_user = User.find_by_user_key(object.depositor)
+      depositor_name = depositor_user&.name || "Unknown User"
+      depositor_email = depositor_user&.email
       solr_doc['depositor_name_tesim'] = depositor_name
       solr_doc['depositor_name_ssim'] = depositor_name
-      solr_doc['download_reviewer_ssim'] = object.download_reviewer
+      solr_doc['depositor_email_tesim'] = depositor_email
+      solr_doc['depositor_email_ssim'] = depositor_email
+
       solr_doc['ark_ssim'] = object.ark
       solr_doc['doi_ssim'] = object.doi
       solr_doc['remote_manifest_url_ssi'] = object.remote_manifest_url

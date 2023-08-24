@@ -32,27 +32,10 @@ module Blacklight::Document::Morphosource
       value = Array.wrap(field_names).map { |field_name| self[field_name] }.flatten.compact
       # Make single and multi-values all arrays, so clients
       # don't have to know.
-      if field_has_helper?(key)
-        hash[key] = helper_value(key, value)
-      else
-        hash[key] = value
-      end
+      
+      hash[key] = value
     end
 
     @semantic_value_hash ||= {}
-  end
-
-  def field_has_helper?(key)
-    helper_fields = [:data_manager, :data_depositor]
-    helper_fields.include? (key)
-  end
-
-  def helper_value(key, value)
-    case key
-    when :data_manager
-      [user_name_by_id(value.first)]
-    when :data_depositor
-      [user_name_by_id(value.first)]
-    end
   end
 end

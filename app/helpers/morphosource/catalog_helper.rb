@@ -15,7 +15,7 @@ module Morphosource::CatalogHelper
   def link_to_user_with_ownership(args)
     return nil unless args[:value].present?
     
-    display_name = ( args[:document]["user_with_ownership_name_tesim"]&.first || "User Name Unknown" ).gsub(/[()]/, "").strip
+    display_name = ( args[:document]["user_with_ownership_name_tesim"]&.first || "User Name Unknown" ).gsub(/\s*\([^\)]+\)$/, "").strip
     link_to display_name, Hyrax::Engine.routes.url_helpers.user_path(args[:value]&.first)
   end
 

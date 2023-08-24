@@ -36,7 +36,7 @@ module Morphosource
           collection = Collection.find(coll[:id]&.first)
           addl_fields = {
             url: [collection_url(coll)],
-            managers: [collection.managers.map(&:name_or_email)],
+            managers: [collection.managers.map(&:name)],
             manager_emails: [collection.managers.map(&:email)],
             media_number: [media_number_in_collection(coll)]
           }

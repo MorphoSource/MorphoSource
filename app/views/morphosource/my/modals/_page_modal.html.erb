@@ -6,8 +6,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span id="close-modal" aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-<%# todo: remove later -- if (page == "cart" || page == "requests" || page == "showcase") %>
-        <% if (page == "cart" || page == "requests") %>
+        <% if (page == "cart" || page == "requests" || page == "showcase") %>
           <%= render 'morphosource/my/modals/request/title' %>
         <% elsif (@tab == 'new') %>
           <%= render 'morphosource/my/modals/approve/title' %>
@@ -17,8 +16,8 @@
       </div>
       <% if (page == "cart" || page == "requests") %>
         <%= render 'morphosource/my/modals/request/body' %>
-<%# todo: remove later -- elsif (page == "showcase") %>
-<%# = render 'morphosource/my/modals/request/showcase_body' %>
+      <% elsif (page == "showcase") %>
+        <%= render 'morphosource/my/modals/request/showcase_body' %>
       <% elsif (@tab == 'new') %>
         <%= render 'morphosource/my/modals/approve/body' %>
       <% elsif (@tab == 'previous') %>

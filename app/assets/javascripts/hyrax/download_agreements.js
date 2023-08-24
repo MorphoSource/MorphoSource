@@ -227,25 +227,6 @@ function showAgreementModal() {
   });
 }
 
-function hideRequestDownloadAgreementModal() {
-  $('#requestDownloadAgreementsModal').modal('hide');
-}
-
-function showRequestDownloadAgreementModal() {
-  $('#requestDownloadAgreementsModal').modal('show');
-  $('#modal-agree').prop('checked', false);
-  $('#modal-download').attr('disabled', 'disabled');  
-
-  // reset things on modal close
-  $("#downloadAgreementsModal").on("hidden.bs.modal", function () {
-    // remove selected items from modal
-    $('form#download-form .download-items-wrapper').html('');  
-    uncheckAllDownloadable();
-    $("#check_all_unrestricted").prop('checked', false);
-    $("input#download-selected").prop('disabled', true);
-  });
-}
-
 function set_agreements(itemId, singleMediaId) {
   // set the agreement content in the modal  
 

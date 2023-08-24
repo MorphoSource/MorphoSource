@@ -29,10 +29,10 @@ class MediaCatalogController < CatalogController
     config.add_facet_field solr_name("keyword", :facetable), label: "Tag", limit: 10
 
     # collections
-    config.add_facet_field solr_name('member_of_team_ids', :symbol), label: 'Team', limit: 10, helper_method: :title_by_id
-    config.add_facet_field solr_name('member_of_project_ids', :symbol), label: 'Project', limit: 10, helper_method: :title_by_id
-    config.add_facet_field solr_name('member_of_media_list_ids', :symbol), label: 'Media List', limit: 10, helper_method: :title_by_id
-    config.add_facet_field solr_name('member_of_sequential_section_list_ids', :symbol), label: 'Seq. Section List', limit: 10, helper_method: :title_by_id
+    config.add_facet_field solr_name('member_of_team_ids', :symbol), label: 'Team', limit: 10, helper_method: :collection_title_by_id
+    config.add_facet_field solr_name('member_of_project_ids', :symbol), label: 'Project', limit: 10, helper_method: :collection_title_by_id
+    config.add_facet_field solr_name('member_of_media_list_ids', :symbol), label: 'Media List', limit: 10, helper_method: :collection_title_by_id
+    config.add_facet_field solr_name('member_of_sequential_section_list_ids', :symbol), label: 'Seq. Section List', limit: 10, helper_method: :collection_title_by_id
 
     # users
     config.add_facet_field solr_name('user_with_ownership_name', :symbol), label: 'Data Manager', limit: 10

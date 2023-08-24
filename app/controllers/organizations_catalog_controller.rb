@@ -7,8 +7,6 @@ class OrganizationsCatalogController < CatalogController
     # disable thumbnails
     config.index.thumbnail_field = ''
 
-    config.max_per_page = 1000000
-
     # facets
     # type of organization
     config.add_facet_field "organization_type_ssim", label: "Type", limit: 5

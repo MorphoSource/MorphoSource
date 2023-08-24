@@ -54,6 +54,9 @@ class CatalogController < ApplicationController
     # turn on csv response
     config.index.respond_to.csv = true
 
+    # standard maximum results per page limit (does not apply to CSV export)
+    config.max_per_page = 1000
+
     # solr fields that will be treated as facets by the blacklight application
     # The ordering of the field names is the order of the display
 
@@ -281,6 +284,9 @@ class CatalogController < ApplicationController
 
   # get search results from the solr index
   def index
+    if request.format == "csv"
+      blacklight_config.max_per_page = 1_000_000
+    end
     (@response, @document_list) = search_results(params)
     @document_type = document_type
     respond_to do |format|

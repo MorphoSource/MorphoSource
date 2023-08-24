@@ -7,8 +7,6 @@ class ObjectsCatalogController < CatalogController
     # disable thumbnails
     config.index.thumbnail_field = ''
 
-    config.max_per_page = 1000000
-
     # facets
     # type facet (specimen or cho)
     config.add_facet_field solr_name("human_readable_type", :facetable), label: "Type", limit: 10

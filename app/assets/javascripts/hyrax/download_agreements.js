@@ -70,6 +70,11 @@ $( document ).ready(function() {
     $('form#download-form .download-items-wrapper').html(selectedItems);
   }
 
+  function sendSelectedRestrictedItemsToModal() {
+    var selectedItems = $('.batch_document_selector.restricted_items:checked').clone();    
+    $('form#request-download-form .download-items-wrapper').html(selectedItems);
+  }
+
   if ( isCartPage ) {
     
     $(downloadForm).find('input[type="submit"]').bind('click', function(e) { 
@@ -89,15 +94,18 @@ $( document ).ready(function() {
       showAgreementModal();
     });
 
-    $('#unrestricted_documents input[type="checkbox"]').bind('click', function(e) {
+    $('.unrestricted_documents input[type="checkbox"]').bind('click', function(e) {
       set_agreements();
     });
 
+    $('.restricted_documents input[type="checkbox"]').bind('click', function(e) {
+      set_agreements_for_restricted();
+    });
   }
 
   if ( isCartPage || isRequestPage ) {
     $('.btn-download-item').bind('click', function(e) { 
-      // download item clicked
+      // download individual item clicked
       e.preventDefault();
       var itemId = $(this).attr('data-item-id');
       uncheckAllDownloadable();
@@ -105,6 +113,23 @@ $( document ).ready(function() {
       sendSelectedItemsToModal();
       showAgreementModal();
     });
+    $('.btn-request-download-item').bind('click', function(e) { 
+      // request download individual item button clicked
+      e.preventDefault();
+      var itemId = $(this).attr('data-item-id');
+      uncheckAllRestricted();
+      $("input[id='batch_document_" + itemId + "']").trigger('click');
+      sendSelectedItemsToModal();
+
+      // reset things on modal close
+      $("#pageModal").on("hidden.bs.modal", function () {
+        // remove selected items from modal
+        $('form#request-download-form .download-items-wrapper').html('');  
+        uncheckAllRestricted();
+        $("#check_all_restricted").prop('checked', false);
+        $("#request-selected, #delete-selected-restricted").prop('disabled', true);
+      });
+    });  
   }
 
   if ( isMediaPage || isCartPage || isRequestPage ) {
@@ -123,12 +148,12 @@ $( document ).ready(function() {
         set_agreements('CURRENT', $(this).attr('data-media-id'));
         showAgreementModal();
       });  
-      $('.btn-request-download-item').bind('click', function(e) { 
-        // media page request download button clicked
-        e.preventDefault();
-        set_agreements('CURRENT', $(this).attr('data-media-id'));
-        showRequestDownloadAgreementModal();
-      });  
+//      $('.btn-request-download-item').bind('click', function(e) { 
+//        // media page request download button clicked
+//        e.preventDefault();
+//        set_agreements('CURRENT', $(this).attr('data-media-id'));
+//        showRequestDownloadAgreementModal();
+//      });  
     }
   
     $(document).on('click', '#modal-agree', function(){
@@ -208,6 +233,12 @@ function uncheckAllDownloadable() {
   });
 }
 
+function uncheckAllRestricted() {
+  $("input[type='checkbox'].restricted_items").each(function(index, value) {
+     value['checked'] = false;
+  });
+}
+
 function hideAgreementModal() {
   $('#downloadAgreementsModal').modal('hide');
 }
@@ -228,10 +259,9 @@ function showAgreementModal() {
 }
 
 function set_agreements(itemId, singleMediaId) {
-  // set the agreement content in the modal  
-
+  // set the agreement content in the download modal  
   if (itemId) {
-    // set the item id in the button for download one item
+    // set the item id in the button for download one item in the cart
     $('input[name="ids[]"]').val(singleMediaId);
     $('input#modal-download').attr('data-download-item-id', itemId);
     var agreementWrapper = '[data-item-id="' + itemId + '"] ';
@@ -239,9 +269,8 @@ function set_agreements(itemId, singleMediaId) {
     var customLink = $(agreementWrapper + '[data-field="agreement_uri"] .showcase-link').html();
     var display = buildSingleAgreement(agreementLink, customLink);
     $('.agreement-items-wrapper').empty().append(display);
-
   } else {
-
+    // set agreements for each checkbox checked
     var agreements = new Array();
     var customLinks = new Array();
     $('input[name="ids[]"]').val('SELECTED');
@@ -262,7 +291,42 @@ function set_agreements(itemId, singleMediaId) {
     var display = buildAgreements(agreementGroup, customLinks.sort());
     $('.agreement-items-wrapper').empty().append(display);
   }
+}
 
+function set_agreements_for_restricted(itemId, singleMediaId) {
+  // set the agreement content in the request download modal  
+  if (itemId) {
+    // set the item id in the button for download one item in the cart
+    $('input[name="ids[]"]').val(singleMediaId);
+    $('input#modal-download').attr('data-download-item-id', itemId);
+    var agreementWrapper = '[data-item-id="' + itemId + '"] ';
+    var agreementLink = $(agreementWrapper + '[data-field="agreement_description"]').html();
+    var customLink = $(agreementWrapper + '[data-field="agreement_uri"] .showcase-link').html();
+    var display = buildSingleAgreement(agreementLink, customLink);
+    $('.agreement-items-wrapper').empty().append(display);
+  } else {
+    // set agreements for each checkbox checked
+    var agreements = new Array();
+    var customLinks = new Array();
+// todo: remove later
+//    $('input[name="ids[]"]').val('SELECTED');
+//    $('input#modal-download').attr('data-download-item-id', 'SELECTED');
+    var selectedCount = $("input[type='checkbox'].restricted_items:checked").length;
+    $("input[type='checkbox'].restricted_items:checked").each(function() {
+      var itemId = $(this).val();
+      var agreementWrapper = '[data-item-id="' + itemId + '"] ';
+      var mediaId = $(agreementWrapper + '[data-field="media_doc_id"]').attr('data-value');
+      var agreementLink = $(agreementWrapper + '[data-field="agreement_description"]').html();
+      agreements.push(agreementLink);
+      var customLink = $(agreementWrapper + '[data-field="agreement_uri"] .showcase-link').html();
+      if (customLink) {
+        customLinks.push('Media ' + mediaId + ': ' + customLink);
+      }
+    });
+    var agreementGroup = groupCounts(agreements);
+    var display = buildAgreements(agreementGroup, customLinks.sort());
+    $('.agreement-items-wrapper').empty().append(display);
+  }
 }
 
 function buildSingleAgreement(agreement, customLink) {

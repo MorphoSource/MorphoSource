@@ -214,13 +214,7 @@ module Hyrax
       @required_archival_of_published_derivatives = Morphosource::RequiredArchivalOfPublishedDerivativesTypesService.new.label(media.required_archival_of_published_derivatives.first) if media.required_archival_of_published_derivatives.present?
       @morphosource_use_agreement_type = Morphosource::MorphosourceUseAgreementTypesService.new.label(media.morphosource_use_agreement_type.first) if media.morphosource_use_agreement_type.present?
       @download_reviewer = media.download_reviewer.to_a
-      if media.attachment('agreement').present?
-        @attachment_url = Rails.application.routes.url_helpers.attachment_path(
-          id: media.id,
-          field: 'agreement'
-        )
-      end
-
+      @attachment_url = attachment_url
       @ark = media.ark
       @doi = media.doi
 
@@ -645,6 +639,17 @@ module Hyrax
 
     def agreement_attachment
       return media.attachment('agreement') || ""
+    end
+
+    def attachment_url
+      if agreement_attachment.present?
+        Rails.application.routes.url_helpers.attachment_path(
+          id: media.id,
+          field: 'agreement'
+        )
+      else
+        nil
+      end
     end
 
     def agreement_description

@@ -17,6 +17,7 @@
       <% if (page == "cart" || page == "requests") %>
         <%= render 'morphosource/my/modals/request/body' %>
       <% elsif (page == "showcase") %>
+        <%# request download modal on media show page %>
         <%= render 'morphosource/my/modals/request/showcase_body' %>
       <% elsif (@tab == 'new') %>
         <%= render 'morphosource/my/modals/approve/body' %>

@@ -1,3 +1,4 @@
+<%# modal partial for media show page %>
 <div class="modal-body">
   <%= form_tag(main_app.request_work_path, method: :post, id: 'request-download-form', "data-behavior" => 'batch-select-all', :class => "form-horizontal") do %>
   <%= hidden_field :work_id, params[:work_id], value: @curation_concern.id %>

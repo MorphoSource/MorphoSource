@@ -101,9 +101,8 @@ $( document ).ready(function() {
   }
 
   if ( isCartPage || isRequestPage ) {
-console.log('in cart or request page');
+
     $('.restricted_documents input[type="checkbox"]').bind('click', function(e) {
-console.log('click');
       set_agreements_for_restricted();
     });
 
@@ -309,9 +308,6 @@ function set_agreements_for_restricted(itemId, singleMediaId) {
     // set agreements for each checkbox checked
     var agreements = new Array();
     var customLinks = new Array();
-// todo: remove later
-//    $('input[name="ids[]"]').val('SELECTED');
-//    $('input#modal-download').attr('data-download-item-id', 'SELECTED');
     var selectedCount = $("input[type='checkbox'].restricted_items:checked").length;
     $("input[type='checkbox'].restricted_items:checked").each(function() {
       var itemId = $(this).val();

@@ -95,7 +95,7 @@ class User < ApplicationRecord
 
   # display ms_id if display name does not exist
   def name
-    display_name.blank? ? ms_id : display_name
+    display_name.blank? ? "User #{ms_id.to_s.upcase}" : display_name
   end
 
   # display email if display name does not exist

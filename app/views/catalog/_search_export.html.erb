@@ -5,9 +5,12 @@
   <div style="padding-bottom: 10px; padding-left: 15px;">
   	<div style="margin-bottom: 10px;">
 	    <%= link_to "As CSV", request.parameters.merge({:format => :csv, :per_page => 1000000})%>
+		</div>
+		<div style="margin-bottom: 10px;">
+			<%= link_to "As JSON", request.parameters.merge({:format => :json, :per_page => 1000000}), target: :_blank %>
+		</div>
+		<div>
+			Interested in JSON export? See <%= link_to "API Documentation", "https://morphosource.stoplight.io/docs/morphosource-api", target: :_blank %>.
+		</div>
 	</div>
-	<div>
-	    <%= link_to "As JSON", request.parameters.merge({:format => :json, :per_page => 1000000}), target: :_blank %>
-	</div>
-  </div>
 </div>

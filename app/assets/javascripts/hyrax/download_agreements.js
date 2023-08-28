@@ -98,12 +98,15 @@ $( document ).ready(function() {
       set_agreements();
     });
 
-    $('.restricted_documents input[type="checkbox"]').bind('click', function(e) {
-      set_agreements_for_restricted();
-    });
   }
 
   if ( isCartPage || isRequestPage ) {
+console.log('in cart or request page');
+    $('.restricted_documents input[type="checkbox"]').bind('click', function(e) {
+console.log('click');
+      set_agreements_for_restricted();
+    });
+
     $('.btn-download-item').bind('click', function(e) { 
       // download individual item clicked
       e.preventDefault();
@@ -119,7 +122,7 @@ $( document ).ready(function() {
       var itemId = $(this).attr('data-item-id');
       uncheckAllRestricted();
       $("input[id='batch_document_" + itemId + "']").trigger('click');
-      sendSelectedItemsToModal();
+      sendSelectedRestrictedItemsToModal();
     });  
     // reset things on request download modal close
     $("#pageModal").on("hidden.bs.modal", function () {
@@ -151,10 +154,6 @@ $( document ).ready(function() {
         e.preventDefault();
         set_agreements('CURRENT', $(this).attr('data-media-id'));
         showAgreementModal();
-      });  
-      $('.btn-request-download-item').bind('click', function(e) { 
-        // media page request download button clicked
-        set_agreements('CURRENT', $(this).attr('data-media-id'));
       });  
     }
   

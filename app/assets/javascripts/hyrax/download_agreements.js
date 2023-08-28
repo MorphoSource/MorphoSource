@@ -120,16 +120,15 @@ $( document ).ready(function() {
       uncheckAllRestricted();
       $("input[id='batch_document_" + itemId + "']").trigger('click');
       sendSelectedItemsToModal();
-
-      // reset things on modal close
-      $("#pageModal").on("hidden.bs.modal", function () {
-        // remove selected items from modal
-        $('form#request-download-form .download-items-wrapper').html('');  
-        uncheckAllRestricted();
-        $("#check_all_restricted").prop('checked', false);
-        $("#request-selected, #delete-selected-restricted").prop('disabled', true);
-      });
     });  
+    // reset things on request download modal close
+    $("#pageModal").on("hidden.bs.modal", function () {
+      // remove selected items from modal
+      $('form#request-download-form .download-items-wrapper').html('');  
+      uncheckAllRestricted();
+      $("#check_all_restricted").prop('checked', false);
+      $("#request-selected, #delete-selected-restricted").prop('disabled', true);
+    });
   }
 
   if ( isMediaPage || isCartPage || isRequestPage ) {
@@ -140,6 +139,11 @@ $( document ).ready(function() {
       $('.profile-checkbox-list input[type=checkbox]').prop("checked", false);
       $('.profile-checkbox-list input[type=text][name="user[intent][]"]').val('');
     }
+
+    $("#pageModal").on("show.bs.modal", function () {
+      // clear agreement checkbox whenever request download modal is shown
+      $('#modal-request-download-agree').prop('checked', false);
+    });
        
     if ( isMediaPage ) {
       $('.btn-download-item').bind('click', function(e) { 
@@ -148,12 +152,10 @@ $( document ).ready(function() {
         set_agreements('CURRENT', $(this).attr('data-media-id'));
         showAgreementModal();
       });  
-//      $('.btn-request-download-item').bind('click', function(e) { 
-//        // media page request download button clicked
-//        e.preventDefault();
-//        set_agreements('CURRENT', $(this).attr('data-media-id'));
-//        showRequestDownloadAgreementModal();
-//      });  
+      $('.btn-request-download-item').bind('click', function(e) { 
+        // media page request download button clicked
+        set_agreements('CURRENT', $(this).attr('data-media-id'));
+      });  
     }
   
     $(document).on('click', '#modal-agree', function(){

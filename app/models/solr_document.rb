@@ -13,6 +13,7 @@ class SolrDocument
   include Morphosource::Solr::BiologicalSpecimen
   include Morphosource::Solr::Collection
   include Morphosource::Solr::CulturalHeritageObject
+  include Morphosource::Solr::Device
   include Morphosource::Solr::FileSet
   include Morphosource::Solr::ImagingEvent
   include Morphosource::Solr::Location

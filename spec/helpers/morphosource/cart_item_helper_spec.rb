@@ -14,7 +14,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
         %(<span class=\"label label-danger\" style=\"background-color: gray;\">Canceled</span>)
       end
       let(:button_content) do
-        %(<button name=\"button\" type=\"submit\" id=\"request-button\" class=\"btn btn-info\" data-toggle=\"modal\" data-target=\"#pageModal\" data-item-id=\"0\">Request Download</button>)
+        %(<button name=\"button\" type=\"submit\" id=\"request-button\" class=\"btn btn-info btn-request-download-item\" data-toggle=\"modal\" data-target=\"#pageModal\" data-item-id=\"0\">Request Download</button>)
       end
       before do
         item.date_requested = Date.yesterday
@@ -26,7 +26,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
       end
 
       it 'creates a "Request Download" button' do
-        expect(item_action_button(item)).to eq(button_content)
+       expect(item_action_button(item)).to eq(button_content)
       end
 
     end
@@ -129,7 +129,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
         %(<span class=\"label label-info\" style=\"background-color: teal;\">Not Requested</span>)
       end
       let(:button_content) do
-        %(<button name=\"button\" type=\"submit\" id=\"request-button\" class=\"btn btn-info\" data-toggle=\"modal\" data-target=\"#pageModal\" data-item-id=\"0\">Request Download</button>)
+        %(<button name=\"button\" type=\"submit\" id=\"request-button\" class=\"btn btn-info btn-request-download-item\" data-toggle=\"modal\" data-target=\"#pageModal\" data-item-id=\"0\" data-media-id=\"#{work.id}\">Request Download</button>)
       end
 
       it 'creates a "Not Requested" label' do
@@ -193,7 +193,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
         end
 
         it 'displays the request download button' do
-          expect(helper.choose_download_button).to eq("<button name=\"button\" type=\"submit\" id=\"request-button\" class=\"btn btn-default\" data-toggle=\"modal\" data-target=\"#pageModal\" data-work-id=\"#{restricted_media.id}\">Request Download</button>")
+          expect(helper.choose_download_button).to eq("<button name=\"button\" type=\"submit\" id=\"btn-request-download-item\" class=\"btn btn-default btn-request-download-item\" data-toggle=\"modal\" data-target=\"#pageModal\" data-work-id=\"#{restricted_media.id}\" data-media-id=\"#{restricted_media.id}\">Request Download</button>")
         end
 
         context 'user has an approved cart item' do

@@ -7,7 +7,7 @@ module Morphosource
       with_themed_layout 'morphosource_dashboard'
 
       def import_slides
-        Morphosource::ImportSlideSeriesJob.perform_later(occurrence_id, @occurrence_json, @collection.id)
+        Morphosource::ImportSlideSeriesJob.perform_later(occurrence_key, @collection.id)
         redirect_to sequential_section_list_path(@collection.id), flash: { notice: I18n.t('morphosource.admin.import.slides.job_submitted') }
       rescue StandardError => e
         redirect_to admin_import_slides_path, flash: { error: e.message }
@@ -17,15 +17,14 @@ module Morphosource
 
         # initializing the service allows for checking that that GBIF occurrence json is available and valid before proceeding with the rest of the import, and makes the collection id available for the redirect in import_slides.
         def initialize_service
-          @service = Morphosource::Import::Slides::SlideSeriesService.new(occurrence_id)
+          @service = Morphosource::Import::Slides::SlideSeriesService.new(occurrence_key)
           @collection = @service.collection
-          @occurrence_json = @service.occurrence_json
         rescue StandardError => e
           redirect_to admin_import_slides_path, flash: { error: e.message }
         end
 
-        def occurrence_id
-          params["occurrence_id"]
+        def occurrence_key
+          params["occurrence_key"]
         end
 
         def require_admin

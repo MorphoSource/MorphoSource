@@ -210,6 +210,7 @@ module Morphosource::CartItemHelper
 
   def get_requester_items(items,requester)
     @requester_items = items.select{|item| item.user_id == requester.ms_id}
+    @requester_agreed_to_terms = @requester_items.all? { |item| item['download_request_terms_agreement'] == true }
   end
 
   def requester_uses

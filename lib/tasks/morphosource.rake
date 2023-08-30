@@ -785,7 +785,7 @@ namespace :morphosource do
   end
 
   desc "Update specimens from IDigbio"
-  task :update_bso_from_idigbio, [:update, :project_id] => :environment do |task, args|
+  task :update_bso_from_idigbio, [:update, :send_email, :project_id] => :environment do |task, args|
     log_file = 'log/idigbio_update_' + Time.now.strftime("%m-%d-%Y_%H-%M") + '.log'
     log = Logger.new(log_file)
     if args[:update].present? && args[:update] == 'true'
@@ -802,7 +802,6 @@ namespace :morphosource do
       result.each do |hit|
         o = BiologicalSpecimen.find(hit.id)
         if o.present?
-          log.debug "Updating specimen #{o.id} of project #{project_id} from IDigbio"
           UpdateBsoFromIdigbioJob.perform_later(o, update, true, log_file)
         else
           log.debug "Specimen #{o.id} not found"
@@ -811,9 +810,16 @@ namespace :morphosource do
     else
       # update all bso
       BiologicalSpecimen.find_each do |o|
-        log.debug "Updating specimen #{o.id} from IDigbio"
         UpdateBsoFromIdigbioJob.perform_later(o, update, true, log_file)
       end
+    end
+    if args[:send_email] ==  "true" && Hyrax.config.system_report_recipients.present?
+      ApplicationMailer.send_email_with_attachment(
+        Hyrax.config.system_report_recipients, 
+        "MS IDigbio Update Report " + (update == false ? "(report only) " : "") +
+        Time.now.strftime("%m-%d-%Y_%H-%M"),
+        "Please see IDigbio Update Report in " + log_file,
+         nil).deliver_now
     end
   end
 

@@ -5,6 +5,9 @@ module Morphosource
     module SlideSeries
       class CreateSlideRecordsService
 
+      # This service creates necessary works for slide import, since that service depends on specific organization, user, and device records being present.
+      # It may be necessary to manually add device records if providers are using devices beyond their default device.
+
         def self.call
           new.call
         end

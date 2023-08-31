@@ -2,15 +2,14 @@ module Morphosource
   class MediaAPIDownloadsController < MediaDownloadsController
     include Morphosource::RestApiBehavior
 
-    skip_before_action :verify_authenticity_token, only: [:api_generate_download, :download_from_api]
-    before_action :validate_when_download_from_api, only: [:download_from_api]
-    before_action :validate_params, only: [:download_from_api]
-    before_action :validate_download_hash, only: [:download_from_api]
+    skip_before_action :verify_authenticity_token, only: [:api_generate_download, :download]
+    before_action :validate_when_download_from_api, only: [:download]
+    before_action :validate_download_hash, only: [:download]
 
     before_action :authenticate_api_key_required, only: [:api_generate_download]
-    before_action :validate_params_for_api, only: [:api_generate_download]
+    before_action :validate_params_for_api_generate_download, only: [:api_generate_download]
 
-    def download_from_api
+    def download
       prepare_all_files
       if @files.present? && @all_files.present?
         add_subsequent_download(cart_item_for_download_from_api, "API")
@@ -43,8 +42,7 @@ module Morphosource
 
     def api_generate_download
       @is_api_generate_download = true
-      cart_item = create_or_update_cart_item_for_link_generation
-      if cart_item.nil?
+      if create_or_update_cart_item_for_link_generation.nil?
         render_json_by_http_code 404
       else
         query_params = {
@@ -53,7 +51,7 @@ module Morphosource
           usage: use_statement,
           usage_list: use_categories_final.join(';')
         }
-        download_url = url_for(controller: 'media_api_downloads', action: 'download_from_api', id: media.id, protocol: request.protocol, host: request.host_with_port, params: query_params)
+        download_url = url_for(controller: 'media_api_downloads', action: 'download', id: media.id, protocol: request.protocol, host: request.host_with_port, params: query_params)
         json_obj = {            
           "response": {
             "media": {
@@ -69,7 +67,7 @@ module Morphosource
     end
 
     def cart_item_for_download_from_api
-      @cart_item_for_download_from_api ||= find_item_for_download_from_api(media.first.id, download_hash, current_user.ms_id)
+      @cart_item_for_download_from_api ||= find_item_for_download_from_api(media.id, download_hash, current_user.ms_id)
     end
 
     def create_or_update_cart_item_for_link_generation
@@ -92,7 +90,7 @@ module Morphosource
 
     private
 
-      def validate_params_for_api
+      def validate_params_for_api_generate_download
         return render_json_by_http_code 401 unless user_from_authorization_header.present? 
         return render_json_by_http_code 404 unless media_for_api.present? 
 
@@ -121,6 +119,10 @@ module Morphosource
         User.where(token: api_key).first if api_key.present?
       end
 
+      def user_from_token
+        @user ||= user_from_authorization_header
+      end
+
       def media_for_api
         return nil unless Media.exists? (params[:id])
         @media ||= Media.find(params[:id])
@@ -128,10 +130,6 @@ module Morphosource
 
       def api_key
         @api_key ||= request.headers['Authorization']
-      end
-
-      def user_from_token
-        @user ||= user_from_authorization_header
       end
 
       def download_hash
@@ -146,8 +144,10 @@ module Morphosource
 
       def validate_when_download_from_api
         @is_download_from_api = true
+        return render_json_by_http_code 401 unless user_from_authorization_header.present? 
+        return render_json_by_http_code 404 unless media_for_api.present? 
+        return render_json_by_http_code 404 unless download_hash.present? 
         @current_user = user_from_token
-        return head(:unauthorized) unless user_is_valid?
         return head(:bad_request) unless cart_item_for_download_from_api.present?
       end
       

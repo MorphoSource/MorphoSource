@@ -34,6 +34,10 @@ module Morphosource
     end
 
     def prepare_all_files
+      if @is_download_from_api
+        # there is only one media to prepare if download from api
+        @media = [@media]
+      end
       @temp_files = []
       @all_files ||= files + standard_agreement_files + media_agreement_files + xlsx_manifest + csv_manifest
     end

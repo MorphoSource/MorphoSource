@@ -3,7 +3,7 @@ require 'iiif_manifest'
 include ActionDispatch::TestProcess
 include Warden::Test::Helpers
 
-RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
+RSpec.describe Morphosource::MediaAPIDownloadsController, type: :controller do
 
   describe "POST #api_generate_download" do
     let(:user)        { User.create(email: 'user@email.com', password: 'password') }

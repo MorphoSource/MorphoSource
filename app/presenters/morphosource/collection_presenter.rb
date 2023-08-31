@@ -25,7 +25,7 @@ module Morphosource
     end
 
     def sequential_section_list?
-      self.class == Morphosource::Collections::SequentialSectionListPresenter
+      self.class == Morphosource::Collections::MediaLists::SequentialSectionListPresenter
     end
 
     def list?

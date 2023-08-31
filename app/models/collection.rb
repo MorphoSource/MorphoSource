@@ -160,9 +160,12 @@ class Collection < ActiveFedora::Base
   end
 
   # override the method from models/concerns/hyrax/collection_behavior.rb to apply collection permissions to works added to teams or projects
-  def add_member_objects(new_member_ids)
-    Array(new_member_ids).collect do |member_id|
-      member = ActiveFedora::Base.find(member_id)
+  def add_member_objects(new_members)
+    members = Array(new_members)
+    if members.first.is_a? String
+      members = members.map { |m| ActiveFedora::Base.find(m) }
+    end
+    members.collect do |member|
       message = Hyrax::MultipleMembershipChecker.new(item: member).check(collection_ids: id, include_current_members: true)
       if message
         member.errors.add(:collections, message)

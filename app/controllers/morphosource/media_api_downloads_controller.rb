@@ -148,7 +148,7 @@ module Morphosource
         return render_json_by_http_code 404 unless media_for_api.present? 
         return render_json_by_http_code 404 unless download_hash.present? 
         @current_user = user_from_token
-        return head(:bad_request) unless cart_item_for_download_from_api.present?
+        return render_json_by_http_code 404 unless cart_item_for_download_from_api.present?
       end
       
   end

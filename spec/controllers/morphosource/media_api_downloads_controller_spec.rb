@@ -101,15 +101,15 @@ RSpec.describe Morphosource::MediaAPIDownloadsController, type: :controller do
             expect(response.status).to eq(404)
           end
 
-          it 'download_from_api returns status 401' do
+          it 'download returns status 404' do
             payload = {
               id: work1.id,
               key: work1.access_control_id, 
               download: download_hash
             }
             request.headers['Authorization'] = user.token 
-            post :download_from_api, params: payload
-            expect(response.status).to eq(401)
+            post :download, params: payload
+            expect(response.status).to eq(404)
           end
         end
 
@@ -117,7 +117,6 @@ RSpec.describe Morphosource::MediaAPIDownloadsController, type: :controller do
           before do
             allow(subject).to receive(:current_user).and_return(user)
             cartitem = CartItem.create( { user_id: user.ms_id, work_id: work1.id, download_hash: download_hash, download_attempts: 0, in_cart: false, download_method: "API", date_approved: nil } )
-            allow(controller).to receive(:cart_item_for_download_from_api) { cartitem }
           end
 
           it 'api_generate_download returns status 404' do
@@ -135,15 +134,15 @@ RSpec.describe Morphosource::MediaAPIDownloadsController, type: :controller do
             expect(response.status).to eq(404)
           end
 
-          it 'download_from_api returns status 401' do
+          it 'download returns status 404' do
             payload = {
               id: work1.id,
               key: work1.access_control_id, 
               download: download_hash
             }
             request.headers['Authorization'] = user.token 
-            post :download_from_api, params: payload
-            expect(response.status).to eq(401)
+            post :download, params: payload
+            expect(response.status).to eq(404)
           end
         end
 
@@ -224,7 +223,7 @@ RSpec.describe Morphosource::MediaAPIDownloadsController, type: :controller do
             end
           end
 
-          context '#download_from_api' do
+          context '#download' do
             before do
               cartitem = CartItem.create( { user_id: user.ms_id, work_id: work1.id, download_hash: download_hash, download_attempts: 0, in_cart: false, download_method: "API" } )
               allow(controller).to receive(:cart_item_for_download_from_api) { cartitem }
@@ -237,7 +236,7 @@ RSpec.describe Morphosource::MediaAPIDownloadsController, type: :controller do
                 download: download_hash
               }
               request.headers['Authorization'] = user.token
-              post :download_from_api, params: payload
+              post :download, params: payload
               expect(response.status).to eq(200)
               expect(response.headers["Content-Type"]).to eq("application/zip")
               expect(response.headers["Content-Disposition"]).to start_with('attachment; filename="morphosource_media-')
@@ -275,15 +274,27 @@ RSpec.describe Morphosource::MediaAPIDownloadsController, type: :controller do
           end
         end
 
-        context '#download_from_api' do
-          it "returns status 400 for wrong hash" do
+        context '#download' do
+
+          it "returns status 401 for User token check failure" do
+            payload = {
+              id: work1.id,
+              key: work1.access_control_id, 
+              download: download_hash
+            }
+            post :download, params: payload
+            expect(response.status).to eq(401)
+          end
+
+          it "returns status 404 for wrong hash" do
             payload = {
               id: work1.id,
               key: work1.access_control_id, 
               download: "wrong_hash"
             }
-            post :download_from_api, params: payload
-            expect(response.status).to eq(400)
+            request.headers['Authorization'] = user.token 
+            post :download, params: payload
+            expect(response.status).to eq(404)
           end
 
           it "returns a zip" do
@@ -293,7 +304,7 @@ RSpec.describe Morphosource::MediaAPIDownloadsController, type: :controller do
               download: download_hash
             }
             request.headers['Authorization'] = user.token 
-            post :download_from_api, params: payload
+            post :download, params: payload
 
             expect(response.status).to eq(200)
             expect(response.headers["Content-Type"]).to eq("application/zip")

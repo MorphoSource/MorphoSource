@@ -5,7 +5,6 @@ class SequentialSectionListIndexer < MediaListIndexer
     def generate_solr_document
       super.tap do |solr_doc|
         specimen_doc = object&.specimen_doc.to_h
-
         solr_doc['physical_object_type_ssim'] = specimen_doc["human_readable_type_tesim"]
         solr_doc['physical_object_id_ssi'] = specimen_doc['id']
         solr_doc['record_source_ssim'] = specimen_doc['record_source_ssim']
@@ -14,6 +13,16 @@ class SequentialSectionListIndexer < MediaListIndexer
         solr_doc['gbif_taxonomy_id_ssim'] = specimen_doc['gbif_taxonomy_id_ssim']
         solr_doc['idigbio_uuid_tesim'] = specimen_doc['idigbio_uuid_tesim']
         solr_doc['occurrence_id_tesim'] = specimen_doc['occurrence_id_tesim']
+        solr_doc['title_si'] = object.title&.first&.downcase
+        solr_doc['publication_status_si'] = publication_status
+      end
+    end
+
+    def publication_status
+      if object.visibility == 'restricted'
+        'private'
+      else
+        object.visibility
       end
     end
 end

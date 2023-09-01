@@ -23,6 +23,7 @@ module Morphosource
         @create_work_presenter = create_work_presenter_class.new(current_user)
         @user = current_user
         (@response, @document_list) = query_solr
+        byebug
         prepare_instance_variables_for_batch_control_display
         respond_to do |format|
           format.html {

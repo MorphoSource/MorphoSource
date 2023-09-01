@@ -1,0 +1,15 @@
+<tr id="document_<%= document.id %>">
+  <td>
+    <%= link_to main_app.sequential_section_list_path(document.id), target: :_blank, class: "media-left" do %>
+      <%= render_thumbnail_tag document, { class: "file_listing_thumbnail" }, { suppress_link: true } %>
+    <% end %>
+  </td>
+  <td><%= link_to document.title_or_label, main_app.sequential_section_list_path(document.id) %>
+  <td><%= document.media.count %></td>
+  <td><%= document.date_uploaded %></td>
+  <td class='long-badge'>
+    <%= permission_badge_by_value(document['visibility_ssi']) %>
+  </td>
+  <td><%= document.part&.first %></td>
+</tr>
+

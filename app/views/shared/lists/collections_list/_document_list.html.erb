@@ -1,0 +1,20 @@
+<table id="datatable-collections-list" class="table table-striped teams-projects">
+  <caption class="sr-only">List of items in this team</caption>
+  <thead>
+    <tr>
+      <th></th>
+      <th><%= sortable_table_header('Title', 'title_si') %></th>
+      <th>Media Count</th>
+      <th><%= sortable_table_header('Last Modified', 'date_modified_dtsi') %></th>
+      <th><%= sortable_table_header('Publication Status', 'publication_status_si') %></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if @can_edit %>
+      <%= render partial: 'shared/lists/collections_list/document_list_row', collection: @document_list, as: :document %>
+    <% else %>
+      <%= render partial: 'shared/lists/collections_list/document_list_row', collection: @document_list, as: :document %>
+    <% end %>
+  </tbody>
+</table>

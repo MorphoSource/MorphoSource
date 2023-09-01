@@ -33,6 +33,10 @@ RSpec.describe SequentialSectionListIndexer do
           expect(subject['gbif_taxonomy_id_ssim']).to match_array([taxonomy.id])
           expect(subject['idigbio_uuid_tesim']).to match_array(object.idigbio_uuid)
           expect(subject['occurrence_id_tesim']).to match_array(object.occurrence_id)
+          # sorting fields
+          expect(subject['title_si']).to eq(list.title.first.downcase)
+          expect(subject["date_modified_dtsi"]).to eq(list.date_modified || list.date_created)
+          expect(subject["publication_status_si"]).to eq("private")
         end
       end
 

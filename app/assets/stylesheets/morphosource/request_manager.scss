@@ -57,9 +57,9 @@ body.dl-request {
 
   .user-title,
   .intended-use-wrapper {
-    * {
-      margin: 0;
-      padding: 0;
+    div {
+      margin-left: 42px;
+      font-style: normal; 
     }
     h4 {
       font-size: 18px !important;

@@ -23,12 +23,6 @@
           <%= requester_title(requester) %> 
           <span class="glyphicon glyphicon-triangle-bottom collapse-block"></span>
         </a>
-        <% if @requester_agreed_to_terms %>
-          <div class="float-right badge badge-pill">
-            <i class="fa fa-check"></i>
-            User Agreed To Usage Terms
-          </div>
-        <% end %>
       </h4>
 
       <div id="collapse-block-<%= requester.id %>" class="panel-collapse collapse-block glyphicon-only table collapse" aria-expanded="false">
@@ -55,7 +49,7 @@
 
     <% requester_uses.each_with_index do |use, counter| %>
       <% if @tab == 'new' %>
-        <%= render 'morphosource/my/request_manager/new/list_requests', requester: requester, counter: counter, use: use, items: @requester_items %>
+        <%= render 'morphosource/my/request_manager/new/list_requests', requester: requester, counter: counter, use: use, items: @requester_items, agreed: @requester_agreed_to_terms %>
       <% elsif @tab == 'previous' %>
         <%= render 'morphosource/my/request_manager/previous/list_requests', requester: requester, counter: counter, use: use, items: @requester_items %>
       <% end %>

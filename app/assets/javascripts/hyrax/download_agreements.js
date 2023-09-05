@@ -154,6 +154,11 @@ $( document ).ready(function() {
         set_agreements('CURRENT', $(this).attr('data-media-id'));
         showAgreementModal();
       });  
+      $('.btn-request-download-item').bind('click', function(e) { 
+        // media page request download button clicked
+        e.preventDefault();
+        set_agreements_for_restricted('CURRENT', $(this).attr('data-media-id'));
+      });  
     }
   
     $(document).on('click', '#modal-agree', function(){

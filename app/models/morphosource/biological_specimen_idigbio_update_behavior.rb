@@ -17,7 +17,7 @@ module Morphosource
     
           if force_update || idigbio_record_different_from_specimen?
             apply_idigbio_update
-            log.debug "IDigBio sync: Specimen #{id} udpated as a result of force_update or idigbio_record_different_from_specimen"
+            log.debug "IDigBio sync: Specimen #{id} updated as a result of " + (force_update ? "force_update" : "idigbio_record_different_from_specimen")
           end
         end
       elsif idigbio_match_found > 1

@@ -1,15 +1,14 @@
 <% 
-array_of_ids = presenter.viewable_related_media_ids 
-media_count = array_of_ids.count
+related_media = presenter.viewable_related_media
+media_count = related_media.count
 items_per_row = 3
 items_to_show_initially = 6
 @row_div_opened = false
 %>
 	<h2><%= media_count %> ADDITIONAL MEDIA RELATED TO ACQUISITION EVENT </h2>
-	<%  members = presenter.member_presenters_for(array_of_ids) %>
-	<% if members.present? %>
+	<% if related_media.present? %>
 		<div class="media-block">
-			<%= render partial: @presenter.showcase_media_items_member_partial, collection: members, as: :showcase_media_items_member, :locals => {:media_count => media_count, :items_per_row => items_per_row, :items_to_show_initially => items_to_show_initially} %>
+			<%= render partial: @presenter.showcase_media_items_member_partial, collection: related_media, as: :showcase_media_items_member, :locals => {:media_count => media_count, :items_per_row => items_per_row, :items_to_show_initially => items_to_show_initially} %>
 			
 			<% if media_count > items_to_show_initially %>
 				</div><!-- closing the collapse-block-media-items-member div -->

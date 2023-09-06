@@ -22,14 +22,14 @@
             <i class="fas fa-microscope"></i> Device
           </a>
         </li>
-        <% if @presenter.has_imaging_events? %>
+        <% if @presenter.imaging_event.present? %>
           <li role="presentation" id="tab-imaging-event" class="">
             <a href="#imaging-event" aria-controls="imaging-event" role="tab" data-toggle="tab" aria-expanded="false">
               <i class="fa fa-camera"></i> Imaging
             </a>
           </li>
         <% end %>
-        <% if @presenter.has_processing_events? %>
+        <% if @presenter.processing_events_data.present? %>
           <li role="presentation" id="tab-processing-event" class="">
             <a href="#processing-event" aria-controls="processing-event" role="tab" data-toggle="tab" aria-expanded="false">
               <i class="fa fa-bolt"></i> Processing
@@ -80,7 +80,7 @@
           </div>
         </div>
 
-        <% if @presenter.has_imaging_events? %>
+        <% if @presenter.imaging_event.present? %>
           <div role="tabpanel" class="tab-pane" id="imaging-event">
             <div class="form-tab-content">
 
@@ -90,7 +90,7 @@
           </div>
         <% end %>
 
-        <% if @presenter.has_processing_events? %>
+        <% if @presenter.processing_events_data.present? %>
           <div role="tabpanel" class="tab-pane" id="processing-event">
             <div class="form-tab-content">
 

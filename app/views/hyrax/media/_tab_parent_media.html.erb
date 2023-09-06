@@ -1,5 +1,5 @@
 <%
-if @presenter.parent_media_members.length == 0
+if @presenter.parent_media.count == 0
   added_class = 'one-circle-only'
 else
   added_class = ''
@@ -7,8 +7,8 @@ end
 %>
 <div class="col-sm-6 indicators-wrapper">
   <h2>PARENT MEDIA HIERARCHY</h2>
-  <% if @presenter.parent_media_members[0...-1].present? %>
-    <%= render partial: 'edit_parent_media_list', collection: @presenter.parent_media_members[0...-1], as: :member %>
+  <% if @presenter.parent_media.present? %>
+    <%= render partial: 'edit_parent_media_list', collection: @presenter.parent_media, as: :member %>
   <% else %>
     <div class="row p-0">
       <div class="indicators line solid table-cell">

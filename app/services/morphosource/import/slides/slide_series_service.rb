@@ -13,20 +13,20 @@ module Morphosource
         # ex provider['filter_slides'] can be called as filter_slides
         define_provider_methods
 
-        def self.call(occurrence_id)
-          new(occurrence_id).call
+        def self.call(occurrence_key)
+          new(occurrence_key).call
         end
 
         # return SequentialSectionScanList
-        def initialize(id, json = nil, collection_id = nil)
-          @occurrence_id = id
-          @occurrence_json = json || occurrence_json
-          raise StandardError.new "GBIF occurrence JSON is blank." if @occurrence_json.blank?
-          @collection = Collection.where(id: collection_id)&.first || create_series_collection
+        def initialize(occurrence_key, collection_id = nil)
+          @occurrence_key = occurrence_key
+          @occurrence_json = occurrence_json
+          raise StandardError.new 'GBIF occurrence JSON is blank.' if @occurrence_json.blank?
+          @collection = collection_id.present? ? Collection.find(collection_id) : collection
         end
 
         def occurrence_json
-          @occurrence_json ||= Morphosource::GbifSearchService.occurrence_record_by_id(@occurrence_id)
+          @occurrence_json ||= Morphosource::GbifSearchService.occurrence_record_by_id(@occurrence_key)
         end
 
         def call
@@ -78,6 +78,7 @@ module Morphosource
 
         def taxonomy
           taxonomy_doc = search_for_taxonomy
+
           return Taxonomy.find(taxonomy_doc['id']) if taxonomy_doc.present?
 
           taxonomy = Taxonomy.new
@@ -101,14 +102,15 @@ module Morphosource
 
         def create_series_collection
           collection_type = Hyrax::CollectionType.find_by(Morphosource::CollectionTypes::SequentialSectionLists::SETTINGS)
-          collection = SequentialSectionList.create(title: collection_title,
+          list = SequentialSectionList.create(title: collection_title,
                                                     collection_type_gid: collection_type.gid,
                                                     depositor: manager.ms_id,
-                                                    visibility: @list_visibility,
+                                                    visibility: list_visibility,
                                                     related_url: collection_related_url,
                                                     description: collection_description)
-
-          create_groups_and_permissions(collection)
+          Morphosource::Collections::PermissionsCreateService.create_default(collection: list)
+          list.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
+          list.reload
         end
 
         # create slide works
@@ -172,10 +174,10 @@ module Morphosource
                          z_spacing: @slide.z_spacing }
 
           # add media to imaging event
-          attributes.merge!(work_parents_attributes: { "0" => { "id" => @imaging_event.id, "_destroy" => "false" } } )
+          attributes.merge!(work_parents_attributes: { '0' => { 'id' => @imaging_event.id, '_destroy' => 'false' } } )
 
           # provide file name
-          attributes.merge!("remote_manifest_info" => { "file_name" => @slide.file_name, "mime_type_of_remote" => @slide.mime_type } )
+          attributes.merge!('remote_manifest_info' => { 'file_name' => @slide.file_name.first, 'mime_type_of_remote' => @slide.mime_type } )
 
           Hyrax::CurationConcern.actor.create(Hyrax::Actors::Environment.new(media, ::Ability.new(manager), attributes))
           media
@@ -184,13 +186,14 @@ module Morphosource
         # characterize file
 
         def characterize_file
-          file = @file_set.original_file
+          file_set = @media.file_sets.first
+          file = file_set.original_file
           @slide.file_characterization_methods.each do |method|
             file.send("#{method}=", @slide.send(method))
           end
-          file.mime_type = "message/external-body; access-type=URL; URL=\"#{@file_set.import_url}\""
+          file.mime_type = "message/external-body; access-type=URL; URL=\"#{file_set.import_url}\""
           file.save!
-          CalculateFileSetCrc32Job.perform_later(@file_set.id)
+          CalculateFileSetCrc32Job.perform_later(file_set.id)
         end
 
         # create slide thumbnail
@@ -228,7 +231,7 @@ module Morphosource
           end
 
           def collection_related_url
-            [occurrence_uri, specimen_uri]
+            [occurrence_uri, specimen_uri].compact
           end
 
           def collection_description
@@ -241,15 +244,9 @@ module Morphosource
             elsif occurrence_json['identifier'].present? && @specimen.present?
               Array([occurrence_json['identifier'], @specimen.title.first, @specimen.taxonomies.first.title.first].join(' '))
             else
-              []
+              # Collection must have a title to be valid.
+              ['Sequential Section Slide Series']
             end
-          end
-
-          def create_groups_and_permissions(collection)
-            collection.create_collection_groups
-            Morphosource::Collections::PermissionsCreateService.create_default(collection: collection)
-            collection.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
-            collection.reload
           end
 
           def detect_device
@@ -261,11 +258,13 @@ module Morphosource
           end
 
           def first_slide
-            slide_class.new(slides.first)
+            @first_slide ||= slide_class.new(slides.first)
           end
 
           def gbif_slides
             media = occurrence_json.dig('extensions', 'http://rs.tdwg.org/ac/terms/Multimedia')
+            # filter for iiif uri with full area and max size - variant is sometimes not applied correctly.
+            media = media.select { |m| m['http://rs.tdwg.org/ac/terms/accessURI'].include?('full/max') }
             return media unless filter_slides.present?
 
             media.select { |m| m['http://rs.tdwg.org/ac/terms/variant'] == filter_slides }
@@ -279,7 +278,7 @@ module Morphosource
           end
 
           def occurrence_uri
-            "https://gbif.org/occurrence/#{@occurrence_id}"
+            "https://gbif.org/occurrence/#{@occurrence_key}"
           end
 
           def organization
@@ -298,16 +297,12 @@ module Morphosource
             occurrence_json['publishingOrgKey']
           end
 
-          def provider
-            @provider ||= detect_provider(publishing_key)
-          end
-
           def search_for_specimen
             Morphosource::SolrService.new.get_docs("occurrence_id_tesim:#{@occurrence_json['occurrenceID']} AND has_model_ssim:BiologicalSpecimen")&.first
           end
 
           def search_for_taxonomy
-            Morphosource::SolrService.new.get_docs("has_model_ssim:Taxonomy AND gbif_key_tesim:#{@occurrence_json['taxonKey']}")&.first
+            Morphosource::SolrService.new.get_docs("has_model_ssim:Taxonomy AND gbif_key_isim:#{@occurrence_json['taxonKey']}")&.first
           end
 
           def specimen_params_from_occurrence_id
@@ -328,7 +323,7 @@ module Morphosource
           end
 
           def taxonomy_params_from_gbif
-            gbif_key = occurrence_json["taxonKey"]
+            gbif_key = occurrence_json['taxonKey']
             params = Morphosource::GbifSearchService.taxonomy_params_from_gbif(gbif_key, correct_synonym = false)
             params.symbolize_keys.transform_values { |v| Array(v).flatten }
           end

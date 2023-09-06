@@ -36,7 +36,7 @@ module Morphosource
           collection = Collection.find(coll[:id]&.first)
           addl_fields = {
             url: [collection_url(coll)],
-            managers: [collection.managers.map(&:name_or_email)],
+            managers: [collection.managers.map(&:name)],
             manager_emails: [collection.managers.map(&:email)],
             media_number: [media_number_in_collection(coll)]
           }
@@ -46,7 +46,10 @@ module Morphosource
           else
             base_fields = { id: coll[:id], title: coll[:title], collection: coll}
           end
-
+          # change display of collection visibility
+          if base_fields[:visibility] == ['restricted']
+            base_fields[:visibility] = ['private']
+          end
           base_fields.merge(addl_fields)
         end
         @render_only_document_list = true
@@ -102,13 +105,9 @@ module Morphosource
             main_app.team_url(coll_hash[:id])
         end
 
-        # get number of media in collection hash, based on facets
+        # get number of media in collection hash
         def media_number_in_collection(coll_hash)
-          facet_type = coll_hash[:project_or_team] == ['Project'] ?
-            'member_of_project_ids_ssim' :
-            'member_of_team_ids_ssim'
-          facet_counts = @response['facet_counts']['facet_fields'][facet_type].each_slice(2).to_a.to_h
-          facet_counts[coll_hash[:id]&.first] || 0
+          Morphosource::SolrService.new.get_docs("has_model_ssim:Media AND member_of_collection_ids_ssim:#{coll_hash[:id].first} AND media_organization_id_ssim:#{@organization.id}").count
         end
 
     end

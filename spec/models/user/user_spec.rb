@@ -66,8 +66,8 @@ RSpec.describe User, type: :model do
         user.display_name = nil
         user.save
       end
-      it 'returns the ms_id' do
-        expect(user.name).to eq(user.ms_id)
+      it 'returns the ms_id boilerplate' do
+        expect(user.name).to eq("User #{user.ms_id.to_s.upcase}")
       end
     end
 

@@ -48,8 +48,17 @@ module Morphosource
           @manager ||= User.find_by(ms_id: provider['manager'])
         end
 
-        def detect_provider(publishing_org_key)
-          providers.detect { |provider| provider['publishing_org_key'] == publishing_org_key }
+        def provider
+          @provider ||= detect_provider(publishing_key)
+        end
+
+        def detect_provider(publishing_key)
+          providers.detect { |provider| provider['publishing_org_key'] == publishing_key }
+        end
+
+        # override in class
+        def publishing_key
+          nil
         end
 
       end

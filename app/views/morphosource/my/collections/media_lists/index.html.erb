@@ -14,6 +14,9 @@
       <%= link_to(t("morphosource.dashboard.my.#{@collections_type}.action.new"), new_collection_url(@collections_type), class: 'btn btn-primary') %>
     <% end %>
   </div>
+  <div class="collection-description">
+      <%= t("morphosource.glossary.sequential_section_lists") %>
+  </div>
   <% @collection_counts.each do |membership, count| %>
     <%= render 'membership_count', membership: membership, count: count %>
   <% end %>

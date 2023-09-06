@@ -45,6 +45,7 @@ gem 'resque-web', require: 'resque_web'
 gem 'activejob-status'
 
 gem 'puma', '~> 5.5.0'
+gem 'puma_worker_killer'
 
 gem 'minitar'
 gem 'rubyzip'
@@ -71,6 +72,9 @@ gem 'dalli' # mem_cache_store support
 # Sentry.io error tracking
 gem "sentry-ruby"
 gem "sentry-rails"
+
+# Scout APM
+gem "scout_apm"
 
 # Maintenance mode
 gem 'turnout'

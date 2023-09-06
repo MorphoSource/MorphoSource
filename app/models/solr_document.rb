@@ -24,6 +24,12 @@ class SolrDocument
   include Morphosource::Solr::ProcessingEvent
   include Morphosource::Solr::Taxonomy
 
+
+  def self.where(params = {})
+    doc_params = { q: params.map { |k, v| "#{k}:#{v}" }.join(" AND ") }
+    repository.search(doc_params).documents
+  end
+
   # self.unique_key = 'id'
 
   # Email uses the semantic field mappings below to generate the body of an email.
@@ -71,6 +77,10 @@ class SolrDocument
 
   def title
     self['title_tesim']
+  end
+
+  def creator
+    self['creator_tesim']
   end
 
   # Add custom metadata fields to show view

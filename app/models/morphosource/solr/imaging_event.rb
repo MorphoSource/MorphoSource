@@ -33,6 +33,7 @@ module Morphosource
                                     rotation_number
                                     shading_correction
                                     shutter_speed
+                                    slide_type
                                     source_detector_distance
                                     source_object_distance
                                     surrounding_material

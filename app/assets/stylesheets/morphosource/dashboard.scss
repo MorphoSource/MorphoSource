@@ -144,6 +144,11 @@
   flex-wrap: wrap;
 }
 
+.collection-description {
+  padding: 10px 0 15px 10px;
+  max-width: 85%;
+}
+
 // Have to re-introduce some default hyrax modal styling for dashboard, because .showcase removes it
 div.modal#apiKeyModal {
   .modal-header {

@@ -1,0 +1,45 @@
+// Styles for top bar masthead content
+nav#masthead {
+  min-height: 55px;
+
+  // Masthead for most pages
+  .container {
+    width: unset;
+    max-width: 1200px;
+    
+    // First masthead content group
+    .navbar-header {
+      padding-left: 0;
+      padding-right: 0;
+    }
+  
+    
+  }
+
+  // Styles for catalog page masthead
+  .container-fluid {
+    width: unset;
+    max-width: 1200px;
+  
+    .navbar-header {
+      padding-left: 15px;
+      padding-right: 15px;
+    }
+  }
+}
+
+// On front page, tools pane below top bar
+nav.navbar .container {
+  width: unset;
+  max-width: 1200px;
+
+  .controls .container-fluid {
+    padding-left: 0;
+    padding-right: 0;
+  }
+}
+
+// Special exception for dashboard masthead, which has full page width
+body.dashboard nav#masthead .container-fluid {
+  max-width: unset;
+}

@@ -11,9 +11,7 @@
 
 	 	<div class="thumbnail col-xs-4">
 	    <%= render_thumbnail_tag member %><br>
-	    <%= link_to(member.link_name, contextual_path(member, @presenter)) %><br>
-	    <%= member.part %><br>
-			<%# todo: need to display "Child of XXXXXX" %>  
+	    <%= link_to(member.link_name, contextual_path(member, @presenter)) %>
 	  </div>
 
 	<% if showcase_media_items_member_counter % items_per_row == items_per_row-1 or showcase_media_items_member_counter == media_count-1

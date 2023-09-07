@@ -63,6 +63,8 @@ module Hyrax
       :imaging_event_modality, :child_media_id_list,
       :download_permission
 
+    self.collection_presenter_class = Morphosource::CollectionPresenter
+
     # @param [SolrDocument] solr_document
     # @param [Ability] current_ability
     # @param [ActionDispatch::Request] request the http request context. Used so
@@ -787,6 +789,14 @@ module Hyrax
     def in_collection_badge
       # override the method in presents_attributes
       in_collection_badge_class.new(vouchered).render
+    end
+
+    def permission_badge
+      permission_badge_class.new(solr_document.publication_status).render
+    end
+
+    def permission_badge_class
+      Morphosource::PublicationBadge
     end
 
     #

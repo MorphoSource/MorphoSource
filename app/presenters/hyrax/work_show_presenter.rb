@@ -125,6 +125,14 @@ module Hyrax
       "#{model.model_name.to_s} #{solr_document.id}: #{to_s}"
     end
 
+    def id_badge
+      content_tag(:span, "ID: #{id}", class: "label label-info")
+    end
+
+    def work_type_badge
+      content_tag(:span, model.model_name.to_s.titleize, class: "label label-info")
+    end
+
     def export_as_nt
       graph.dump(:ntriples)
     end

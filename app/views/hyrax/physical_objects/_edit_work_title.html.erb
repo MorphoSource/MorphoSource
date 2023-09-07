@@ -1,0 +1,48 @@
+<div class="row showcase2-row" id="showcase-title-wrapper">
+  <div class="col-xs-12 flash-wrapper">
+    <%= render "flash_msg" %>
+  </div>
+  <h1>
+    <div class="col-xs-12 col-md-8 title-block">
+      <div class="physical-object-title">
+          <div>
+            <div id="showcase-title">
+              <div>
+                <%= presenter.title&.first || "Missing Title" %>
+                <i><%= presenter.class.method_defined?(:taxonomies_titles) ? presenter.taxonomies_titles&.first : "" %></i>
+              </div>
+              <div><%= presenter.work_type_badge %> <%= presenter.id_badge %>
+            </div>
+          </div>
+          <div class="text-muted">
+            <div class="text-muted-item">
+              Object Type: <%= presenter.model.model_name.to_s.titleize %>
+            </div>
+            <div class="text-muted-item">
+               · <%= presenter.viewable_related_media_ids.count || 0 %> Media
+            </div>
+            <% if presenter.parent_organization_title.present? %>
+              <div class="text-muted-item">
+                · Organization: <%= presenter.attribute_to_html(
+                  :parent_organization_title,
+                  link: Rails.application.routes.url_helpers.hyrax_organization_path(presenter.parent_organization.id),
+                  render_as: :showcase_simple_link,
+                  html_dl: false)
+              
+                %>
+              </div>
+            <% end %>
+          </div>
+          <% if presenter.class.method_defined?(:idigbio_uuid) && presenter.idigbio_uuid.present? %>
+            <div class="text-muted">
+              Record imported from external source: <span class="showcase-link"><a target="_blank" href="https://www.idigbio.org/portal/records/<%= presenter.idigbio_uuid&.first %>">iDigBio</a></span>
+            </div>
+          <% end %>
+        
+      </div>
+    </div>
+  </h1>
+  <div class="col-xs-12 col-md-4 btn-wrapper">
+      <%= render "hyrax/physical_objects/edit_show_actions", presenter: presenter, f: f %>
+  </div>
+</div>

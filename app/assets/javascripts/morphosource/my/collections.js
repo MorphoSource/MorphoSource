@@ -2,8 +2,6 @@
 
   $(document).ready(function() {
 
-    var collectionsTable = createCollectionsTable('#datatable-collections-list');
-
     // the following are taken from and overridden for lists
     // https://raw.githubusercontent.com/samvera/hyrax/v2.7.0/app/assets/javascripts/hyrax/collections.js
     $('.delete-collection-button').on('click', handleDeleteCollection);
@@ -29,5 +27,26 @@
         $(modalId).removeAttr('data-' + attribute).attr('data-' + attribute, $dataEl.data(attribute));
       });
     }
+
+
+    if ($('body.dashboard.collections-list').length) { // check if the page is dashboard collections
+
+      var collectionsTable = createCollectionsTable('#datatable-collections-list');
+
+      // Toggle the visibility of table column
+      $('.choose-columns-collections .toggle-vis').on( 'click', function (e) {
+        //e.preventDefault();
+        var column = collectionsTable.column( $(this).attr('data-column') );
+        column.visible( ! column.visible() );
+      });
+
+      // keep dropdown menu open
+      $(document).on('click', '.choose-columns .dropdown-menu', function (e) {
+        e.stopPropagation();
+      });
+
+    } // / end if dashboard collections
+
+
 
   })

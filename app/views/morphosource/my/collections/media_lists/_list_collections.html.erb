@@ -31,7 +31,7 @@ todo: data-colls-hash takes additional time and might not be needed.  Can be rem
   <td class="date"><%= collection_presenter.modified_date.try(:to_formatted_s, :standard) %> </td>
   <td><%= collection_presenter.membership(current_user) %></td>
   <td><%= collection_presenter.permission_badge %></td>
-  <% if (current_user.manager_groups || collection_presenter.edit_groups).present? %>
+  <% if current_user.can? :edit, document %>
     <td><%= render 'collection_action_menu', collection_presenter: collection_presenter %></td>
   <% else %>
     <td></td>

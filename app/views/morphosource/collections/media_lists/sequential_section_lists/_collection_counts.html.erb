@@ -1,0 +1,12 @@
+<div class="text-muted">
+  <%= @media_count.to_s + ' Media' %>
+  <% if @presenter.creator.present? %>
+    · Creator: <%= @presenter.creator.join(', ') %>
+  <% end %>
+  · Managed by: <%= @presenter.collection_managers %>
+</div>
+<div class="text-muted" style="margin-top: 5px;">
+  <% unless @object_ids.blank? %>
+    All media represent physical object: <%= link_to_specimen(@object_ids.first) %>
+  <% end %>
+</div>

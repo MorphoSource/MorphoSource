@@ -4,6 +4,9 @@ module Morphosource
       module MediaLists
         class SequentialSectionListsController < Morphosource::My::Collections::MediaListsController
 
+          # temporary restriction so only admins can access media lists
+          before_action :authorize_admin, only: []
+
           def collections_type
             "sequential_section_lists"
           end

@@ -21,7 +21,7 @@ module Hyrax
       # @param [Symbol, #to_s] relation
       # @return [IngestJob, FalseClass] false on failure, otherwise the queued job
       def create_content(file, relation = :original_file, from_url: false)
-        if (@is_remote_backed || file_set.is_remote_backed?) && file.path.present?
+        if (@is_remote_backed || file_set.is_remote_backed?) && file&.path&.present?
           file_set.digest = Digest::SHA1.file(file.path).to_s
           # get the actual file name set previously in import_url_job (to avoid no/wrong file ext)
           file_set.label = File.basename(file.path)
@@ -29,8 +29,7 @@ module Hyrax
         end
         # If the file set doesn't have a title or label assigned, set a default.
         file_set.label ||= label_for(file)
-        file_set.title = [file_set.label] if file_set.title.blank?        
-
+        file_set.title = [file_set.label] if file_set.title.blank?
         return false unless file_set.save # Need to save to get an id
 
         if from_url
@@ -38,7 +37,11 @@ module Hyrax
           # reach into the FileActor and run the ingest with the file instance in
           # hand. Do this because we don't have the underlying UploadedFile instance
           file_actor = build_file_actor(relation)
-          file_actor.ingest_file(wrapper!(file: file, relation: relation))
+          if file.present?
+            file_actor.ingest_file(wrapper!(file: file, relation: relation))
+          else
+            file_actor.ingest_file(file: nil, relation: relation)
+          end
           # Copy visibility and permissions from parent (work) to
           # FileSets even if they come in from BrowseEverything
           VisibilityCopyJob.perform_later(file_set.parent)
@@ -94,7 +97,7 @@ module Hyrax
           end
           # update fileset_accessibility
           file_set.accessibility = work.fileset_accessibility
-          
+
           work.ordered_members << file_set
           work.representative = file_set if work.representative_id.blank?
           work.thumbnail = file_set if work.thumbnail_id.blank?
@@ -180,7 +183,7 @@ module Hyrax
         def unlink_from_work
           work = file_set.parent
           return unless work && (work.thumbnail_id == file_set.id || work.representative_id == file_set.id || work.rendering_ids.include?(file_set.id))
-          
+
           new_fileset = other_fileset(work) # is nil if no other fileset
           work.thumbnail = new_fileset if work.thumbnail_id == file_set.id
           work.representative = new_fileset if work.representative_id == file_set.id

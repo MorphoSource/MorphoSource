@@ -1,6 +1,9 @@
 <% provide :page_title, construct_page_title( t('hyrax.dashboard.collections.new.header', type_title: @collection.collection_type.title) ) %>
 <% provide :page_header do %>
   <h1><span class="fa fa-edit" aria-hidden="true"></span> <%= t('hyrax.dashboard.collections.new.header', type_title: @collection.collection_type.title) %> </h1>
+  <div class="collection-description">
+  <%= t("morphosource.glossary.sequential_section_lists") %>
+</div>
 <% end %>
 
 <div class="row">

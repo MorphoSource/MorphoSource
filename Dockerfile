@@ -76,12 +76,12 @@ RUN mkdir -p /opt/firefox && \
 
 USER app
 
-ENV FITS_VERSION='1.3.0'
+ENV FITS_VERSION='1.5.5'
 
 # Install FITS characterization tool
 RUN mkdir -p /app/fits && \
   cd /app/fits && \
-  wget https://projects.iq.harvard.edu/files/fits/files/fits-$FITS_VERSION.zip -O fits.zip && \
+  wget https://github.com/harvard-lts/fits/releases/download/$FITS_VERSION/fits-$FITS_VERSION.zip -O fits.zip && \
   unzip fits.zip && \
   rm fits.zip && \
   chmod a+x /app/fits/fits.sh

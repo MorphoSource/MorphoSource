@@ -28,7 +28,6 @@
       });
     }
 
-
     if ($('body.dashboard.collections-list').length) { // check if the page is dashboard collections
 
       var collectionsTable = createCollectionsTable('#datatable-collections-list');
@@ -46,7 +45,5 @@
       });
 
     } // / end if dashboard collections
-
-
 
   })

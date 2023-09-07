@@ -7,12 +7,12 @@ var createCollectionsTable = function(selector) {
     }
   },
   columnDefs: [
-    { orderable: false, targets: 0 }, // disable sorting
-    { orderable: false, targets: 1 },
-    { orderable: false, targets: 2 }, // disable sorting
+    { orderable: false, targets: 0 },
+    { orderable: false, responsivePriority: 1, targets: 1 },
+    { orderable: false, targets: 2 },
     { orderable: false, targets: 3 },
     { orderable: false, targets: 4 },
-    { orderable: false, targets: -1 } // disable sorting
+    { orderable: false, targets: -1 }
   ],
   pageLength: 10,
   bPaginate: false,

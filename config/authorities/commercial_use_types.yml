@@ -1,5 +1,7 @@
 terms:
   - id: CommercialUseNotPermitted
     term: Commercial Use Not Permitted
+    short: comm_no
   - id: CommercialUsePermitted
     term: Commercial Use Permitted
+    short: comm_yes

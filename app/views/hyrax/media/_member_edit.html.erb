@@ -1,8 +1,4 @@
-<%
-member = member_edit
-file_set = member_edit
-%>
-<tr class="<%= dom_class(member) %> attributes">
+<tr class="<%= dom_class(file_set) %> attributes">
   <td class="w-30 thumbnail">
     <%= render_thumbnail_tag(@presenter, {}, {suppress_link:true}) %>
   </td>
@@ -15,7 +11,7 @@ file_set = member_edit
 
         <% if @presenter.file_origin == "Remote" && !current_user.remote_file_submitter? && !current_user.admin? %>
           <p class="text-disabled small">(File cannot be deleted without access)</p>
-        <% elsif @presenter.has_DOI? %>
+        <% elsif @presenter.doi.present? %>
           <% if current_user.admin? %>
             <% unless @presenter.has_child_media? %>
               <%= link_to t('.delete'), polymorphic_path([main_app, file_set]),

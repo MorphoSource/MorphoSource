@@ -1,7 +1,7 @@
 
 <%
   if (
-    presenter&.has_remote_manifest? ||
+    presenter&.remote_manifest_url.present? ||
     (
       presenter&.is_file_uploaded? &&
       presenter.preview_in_3D? &&

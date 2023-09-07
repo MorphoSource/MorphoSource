@@ -1,5 +1,5 @@
 <div>
-  <% if presenter.file_set_list.present? && presenter.file_set_original_file_ready %>
+  <% if presenter.representative_presenter.present? && presenter.file_set_original_file_ready %>
     <div class="btn-group">
       <%= choose_download_button %>
       <%= choose_cart_button %>

@@ -145,4 +145,8 @@ class FileSet < ActiveFedora::Base
   def remote_manifest_url
     self.parent&.remote_manifest_url
   end
+
+  def remote_origin_url
+    self.parent&.remote_origin_url
+  end
 end

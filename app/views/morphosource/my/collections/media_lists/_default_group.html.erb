@@ -1,14 +1,15 @@
-<table id="datatable-collections-list" class="table table-striped collections-list-table">
+<table id="collections-list-table" class="table table-striped collections-list-table">
   <caption class="sr-only"><%= t("hyrax.dashboard.my.sr.listing") %> <%= application_name %></caption>
   <thead>
   <tr>
-    <th class="no-sort">&nbsp;<!-- thumbnail column --></th>
-    <th><%= sortable_table_header(t("hyrax.dashboard.my.heading.title"), 'title_si')  %></th>
-    <th><%= t("hyrax.dashboard.my.heading.media") %></th>
-    <th><%= sortable_table_header(t("hyrax.dashboard.my.heading.last_modified"), 'date_modified_dtsi') %></th>
-    <th><%= t("hyrax.dashboard.my.heading.membership") %></th>
-    <th><%= sortable_table_header(t("hyrax.dashboard.my.heading.visibility"), 'publication_status_si') %></th>
-    <th class="no-sort">&nbsp;<!-- actions --></th>
+    <!-- data-orderable='false' prevents jquery ordering of dataTable -->
+    <th class="no-sort" data-orderable="false">&nbsp;<!-- thumbnail column --></th>
+    <th data-orderable="false"><%= sortable_table_header(t("hyrax.dashboard.my.heading.title"), 'title_si')  %></th>
+    <th data-orderable="false"><%= t("hyrax.dashboard.my.heading.media") %></th>
+    <th data-orderable="false"><%= sortable_table_header(t("hyrax.dashboard.my.heading.last_modified"), 'date_modified_dtsi') %></th>
+    <th data-orderable="false"><%= t("hyrax.dashboard.my.heading.membership") %></th>
+    <th data-orderable="false"><%= sortable_table_header(t("hyrax.dashboard.my.heading.visibility"), 'publication_status_si') %></th>
+    <th data-orderable="false">&nbsp;<!-- actions --></th>
   </tr>
   </thead>
   <tbody>

@@ -89,6 +89,8 @@ module Hyrax
       # Sequential Section fields
       :slide_type
 
+    self.collection_presenter_class = Morphosource::CollectionPresenter
+
     def media_permissions_string
       permissions_string = ''
       if media.morphosource_use_agreement_type == ['Permissive']
@@ -626,6 +628,14 @@ module Hyrax
     def in_collection_badge
       # override the method in presents_attributes, passing the vouchered retrieved from get_showcase_data
       in_collection_badge_class.new(@vouchered).render
+    end
+
+    def permission_badge
+      permission_badge_class.new(solr_document.publication_status).render
+    end
+
+    def permission_badge_class
+      Morphosource::PublicationBadge
     end
 
     def supplied_record_badge

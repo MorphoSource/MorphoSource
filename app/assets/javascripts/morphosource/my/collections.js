@@ -1,4 +1,8 @@
+  //= require morphosource/data_tables/collections_table
+
   $(document).ready(function() {
+
+    var collectionsTable = createCollectionsTable('#datatable-collections-list');
 
     // the following are taken from and overridden for lists
     // https://raw.githubusercontent.com/samvera/hyrax/v2.7.0/app/assets/javascripts/hyrax/collections.js

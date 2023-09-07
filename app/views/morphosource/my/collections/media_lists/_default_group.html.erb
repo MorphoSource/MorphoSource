@@ -1,13 +1,13 @@
-<table id="collections-list-table" class="table table-striped collections-list-table">
+<table id="datatable-collections-list" class="table table-striped collections-list-table">
   <caption class="sr-only"><%= t("hyrax.dashboard.my.sr.listing") %> <%= application_name %></caption>
   <thead>
   <tr>
     <th class="no-sort">&nbsp;<!-- thumbnail column --></th>
-    <th><%= t("hyrax.dashboard.my.heading.title") %></th>
+    <th><%= sortable_table_header(t("hyrax.dashboard.my.heading.title"), 'title_si')  %></th>
     <th><%= t("hyrax.dashboard.my.heading.media") %></th>
-    <th><%= t("hyrax.dashboard.my.heading.last_modified") %></th>
+    <th><%= sortable_table_header(t("hyrax.dashboard.my.heading.last_modified"), 'date_modified_dtsi') %></th>
     <th><%= t("hyrax.dashboard.my.heading.membership") %></th>
-    <th><%= t("hyrax.dashboard.my.heading.Visibility") %></th>
+    <th><%= sortable_table_header(t("hyrax.dashboard.my.heading.visibility"), 'publication_status_si') %></th>
     <th class="no-sort">&nbsp;<!-- actions --></th>
   </tr>
   </thead>

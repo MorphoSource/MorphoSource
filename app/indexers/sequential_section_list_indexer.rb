@@ -1,0 +1,2 @@
+class SequentialSectionListIndexer < MediaListIndexer
+end

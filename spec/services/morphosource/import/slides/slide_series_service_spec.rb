@@ -138,13 +138,12 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
       allow_any_instance_of(described_class).to receive(:collection).and_return(collection)
     end
     context 'specimen exists' do
-      let!(:specimen)  { BiologicalSpecimen.create(title: ['specimen'], occurrence_id: [occurrence_id]) }
+      let!(:specimen)  { BiologicalSpecimen.create(title: ['specimen'], occurrence_id: [occurrence_id], organization_id: [organization.id]) }
       it 'returns the created specimen' do
         expect(subject.find_or_create_specimen).to eq(specimen)
       end
     end
     context 'specimen does not exist' do
-      let!(:organization)  { Organization.create(id: provider['id'], title: ['organization']) }
       it 'creates a new specimen' do
         specimen = subject.find_or_create_specimen
         expect(specimen.occurrence_id).to eq([occurrence_id])
@@ -214,7 +213,7 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
     subject { described_class.new(occurrence_key) }
     let!(:reviewer)       { FactoryBot.create(:user, ms_id: provider['download_reviewer']) }
     let!(:imaging_event)  { FactoryBot.create(:imaging_event, device_id: [device.id], ie_modality: device.modality, physical_object_id: [specimen.id]) }
-    let!(:specimen)       { FactoryBot.create(:biological_specimen) }
+    let!(:specimen)       { FactoryBot.create(:biological_specimen, organization_id: [organization.id]) }
 
     before do
       subject.instance_variable_set(:@slide, slide)

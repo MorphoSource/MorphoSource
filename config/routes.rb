@@ -71,6 +71,7 @@ Rails.application.routes.draw do
         get '/media/:collection_id/facet/:id', to: 'add_media#facet', as: 'dashboard_add_media_facet'
         get '/specimens/facet/:id', to: 'biological_specimens#facet', as: 'dashboard_specimens_facet'
         get '/cultural_heritage_objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'dashboard_chos_facet'
+        get '/sequential_section_lists/facet/:id', to: 'collections/media_lists/sequential_section_lists#facet', as: 'dashboard_sequential_section_lists_facet'
       end
     end
   end

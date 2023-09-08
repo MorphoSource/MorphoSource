@@ -79,6 +79,9 @@ Hyrax.config do |config|
   # Rake task create_production_users will create a user account corresponding to this email
   config.contact_email = ENV['CONTACT_EMAIL'] || "do.not.reply@morphosource.org"
 
+  # Email address(es) for receiving system reports (e.g duplicate specimens)
+  config.system_report_recipients = ENV['SYSTEM_REPORT_RECIPIENTS'] || ""
+
   # Email address for overriding all mail recipients when sending emails from actionmailer 
   # (for receiving emails in dev / local test environments)
   config.override_mail_recipient = ENV['OVERRIDE_MAIL_RECIPIENT'] || ""

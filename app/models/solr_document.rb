@@ -17,10 +17,12 @@ class SolrDocument
   include Morphosource::Solr::ImagingEvent
   include Morphosource::Solr::Location
   include Morphosource::Solr::Media
+  include Morphosource::Solr::MediaList
   include Morphosource::Solr::Organization
   include Morphosource::Solr::Permissions
   include Morphosource::Solr::PhysicalObject
   include Morphosource::Solr::ProcessingEvent
+  include Morphosource::Solr::SequentialSectionList
   include Morphosource::Solr::Taxonomy
 
   # self.unique_key = 'id'

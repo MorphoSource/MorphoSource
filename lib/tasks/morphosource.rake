@@ -416,7 +416,6 @@ namespace :morphosource do
     contributors = Role.find_or_create_by(name: 'contributor')
     contributors.users += [contributor]
     contributors.save
-
     # create email sender user
     Rake::Task['morphosource:create_email_sender_user'].invoke
   end
@@ -710,9 +709,7 @@ namespace :morphosource do
   end
 
   desc "Merge duplicate specimens"
-  task :find_and_merge_duplicate_specimens, [:merge] => :environment do |task, args|
-    log_file = 'log/find_and_merge_duplicate_specimens_' + Time.now.strftime("%m-%d-%Y_%H-%M") + '.log'
-    log = Logger.new(log_file)
+  task :find_and_merge_duplicate_specimens, [:merge, :send_email] => :environment do |task, args|
     if args[:merge].present?
       if args[:merge] == 'true'
         merge = true
@@ -726,6 +723,14 @@ namespace :morphosource do
     else
       merge = false
     end
+
+    if report_only == true
+      log_file = 'log/duplicate_specimens_report_' + Time.now.strftime("%m-%d-%Y_%H-%M") + '.log'
+    else
+      log_file = 'log/duplicate_specimens_merge_' + Time.now.strftime("%m-%d-%Y_%H-%M") + '.log'
+    end
+    log = Logger.new(log_file)
+
     ie_total = 0
     bso_list = []
     qry = "has_model_ssim:BiologicalSpecimen AND occurrence_id_tesim:[* TO *] AND idigbio_uuid_tesim:[* TO *]"
@@ -750,11 +755,24 @@ namespace :morphosource do
         log.info " duplicate group #{key} merged -> remaining specimen #{merge_to}"
       end
     end
-    log.info "This is a report only. Total imaging event count: #{ie_total}" if report_only
+    if report_only
+      log.info "This is a report only. Total imaging event count: #{ie_total}"
+      action = "(report only) "
+    else
+      action = "(merge) "
+    end
+
+    if args[:send_email] ==  "true" && Hyrax.config.system_report_recipients.present?
+      ApplicationMailer.send_email_with_attachment(
+        Hyrax.config.system_report_recipients,
+        "MS duplicate specimens report #{action}" + Time.now.strftime("%m-%d-%Y_%H-%M"),
+        "Duplicate specimens report #{action} attached.",
+         log_file).deliver_now
+    end
   end
 
   desc "Verify remote backed media files"
-  task :verify_remote_backed_media => :environment do 
+  task :verify_remote_backed_media => :environment do
     RemoteFileHealth.delete_all
     qry = "has_model_ssim:Media AND remote_origin_url_tesim:* AND file_set_ids_ssim:*"
     media_solr = ActiveFedora::SolrService.query(qry, rows: 999999)
@@ -766,7 +784,7 @@ namespace :morphosource do
   end
 
   desc "Update specimens from IDigbio"
-  task :update_bso_from_idigbio, [:update, :project_id] => :environment do |task, args|
+  task :update_bso_from_idigbio, [:update, :send_email, :project_id] => :environment do |task, args|
     log_file = 'log/idigbio_update_' + Time.now.strftime("%m-%d-%Y_%H-%M") + '.log'
     log = Logger.new(log_file)
     if args[:update].present? && args[:update] == 'true'
@@ -783,7 +801,6 @@ namespace :morphosource do
       result.each do |hit|
         o = BiologicalSpecimen.find(hit.id)
         if o.present?
-          log.debug "Updating specimen #{o.id} of project #{project_id} from IDigbio"
           UpdateBsoFromIdigbioJob.perform_later(o, update, true, log_file)
         else
           log.debug "Specimen #{o.id} not found"
@@ -792,10 +809,33 @@ namespace :morphosource do
     else
       # update all bso
       BiologicalSpecimen.find_each do |o|
-        log.debug "Updating specimen #{o.id} from IDigbio"
         UpdateBsoFromIdigbioJob.perform_later(o, update, true, log_file)
       end
     end
+    if args[:send_email] ==  "true" && Hyrax.config.system_report_recipients.present?
+      ApplicationMailer.send_email_with_attachment(
+        Hyrax.config.system_report_recipients, 
+        "MS IDigbio Update Report " + (update == false ? "(report only) " : "") +
+        Time.now.strftime("%m-%d-%Y_%H-%M"),
+        "Please see IDigbio Update Report in " + log_file,
+         nil).deliver_now
+    end
+  end
+
+  # MCZ slide import
+  desc "Get new MCZ sequential section slides from GBIF"
+  task :get_new_slides => :environment do
+    occurrence_keys = Morphosource::Import::Slides::GetNewSlidesService.call
+    puts "#{occurrence_keys.count} job(s) queued to import records for GBIF occurrence keys: #{new_occurrence_keys}"
+    ApplicationMailer.send_email(
+      Hyrax.config.system_report_recipients,
+      "GetNewSlidesService called: #{occurrence_keys.count} job(s) queued",
+      "#{occurrence_keys.count} job(s) queued to import records for GBIF occurrence keys: #{new_occurrence_keys} at #{Time.now.strftime("%m-%d-%Y_%H-%M")}").deliver_now
+  end
+
+  desc "Create MCZ slide import records"
+  task :create_slide_records => :environment do
+    Morphosource::Import::SlideSeries::CreateSlideRecordsService.call
   end
 
   # Google Analytics-based media view statistics import
@@ -803,9 +843,9 @@ namespace :morphosource do
   desc "Import Media work view stats from Google Analytics, starting from 2021-01-1 or last saved statistic date"
   task :import_media_view_stats => :environment do
     Morphosource::Analytics::MediaViewStatImporter.new({
-      verbose: true, 
-      logging: true, 
-      retries: 3 
+      verbose: true,
+      logging: true,
+      retries: 3
     }).import
   end
 
@@ -814,9 +854,9 @@ namespace :morphosource do
     Morphosource::Analytics::MediaViewStatImporter.new({
       start_date: Date.current - 3.day,
       end_date: Date.current - 1.day,
-      verbose: true, 
-      logging: true, 
-      retries: 3 
+      verbose: true,
+      logging: true,
+      retries: 3
     }).import
   end
 

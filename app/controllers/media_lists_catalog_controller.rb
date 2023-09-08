@@ -5,8 +5,6 @@ class MediaListsCatalogController < CatalogController
   configure_blacklight do |config|
     config.search_builder_class = Morphosource::Catalog::MediaListsCatalogSearchBuilder
 
-    config.max_per_page = 1000000
-
     # facets
     # type facet (media list or sequential section list)
     config.add_facet_field solr_name("human_readable_type", :facetable), label: "Type", limit: 5

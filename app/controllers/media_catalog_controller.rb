@@ -8,8 +8,6 @@ class MediaCatalogController < CatalogController
   configure_blacklight do |config|
     config.search_builder_class = Morphosource::Catalog::MediaCatalogSearchBuilder
 
-    config.max_per_page = 1000000
-
     # facet fields
     # type
     config.add_facet_field solr_name("human_readable_media_type", :symbol), label: "Type", limit: 10
@@ -47,7 +45,7 @@ class MediaCatalogController < CatalogController
     config.add_index_field solr_name("part", :stored_searchable), label: "Element or Part"
     config.add_index_field solr_name("human_readable_modality", :stored_searchable), label: "Modality"
     config.add_index_field solr_name("member_of_sequential_section_list_ids", :symbol), label: "Sequential Section List", if: :can_read_any, helper_method: :link_to_sequential_section_lists
-    config.add_index_field solr_name("user_with_ownership", :stored_sortable), label: "Data Manager", helper_method: :link_to_profile
+    config.add_index_field solr_name("user_with_ownership", :stored_sortable), label: "Data Manager", helper_method: :link_to_user_with_ownership
     config.add_index_field solr_name("date_uploaded", :stored_sortable, type: :date), label: "Date Uploaded", helper_method: :human_readable_date
     config.add_index_field solr_name("publication_status", :stored_sortable), label: "Publication Status"
     config.add_index_field solr_name("rights_statement", :symbol), label: "Rights Statement", helper_method: :rights_statement_links

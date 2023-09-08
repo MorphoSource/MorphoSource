@@ -671,6 +671,11 @@ module Hyrax
       @contact_email ||= "repo-admin@example.org"
     end
 
+    attr_writer :system_report_recipients
+    def system_report_recipients
+      @system_report_recipients ||= ""
+    end
+
     attr_writer :override_mail_recipient
     def override_mail_recipient
       @override_mail_recipient ||= ""

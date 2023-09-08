@@ -70,7 +70,7 @@ class ProxyDepositRequest < ActiveRecord::Base
   validate :transfer_to_should_be_a_contributor
   validate :sending_user_should_not_be_receiving_user
   validate :should_not_be_already_part_of_a_transfer
-  validate :should_not_cancel_if_organization_transfer
+  validate :should_not_cancel_if_organization_transfer, unless: :force_cancel
 
   after_save :send_request_transfer_message
 
@@ -174,6 +174,11 @@ class ProxyDepositRequest < ActiveRecord::Base
   end
 
   def cancel!
+    fulfill!(status: CANCELED)
+  end
+
+  def force_cancel!
+byebug 
     fulfill!(status: CANCELED)
   end
 

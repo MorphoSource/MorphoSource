@@ -564,10 +564,15 @@ class Media < Morphosource::Works::Base
     end
   end
 
-  def create_new_organization_transfer_request(org_data_manager)
+  def create_new_organization_transfer_request(org_data_manager, force_update=false)
     # Cancel existing pending proxy deposit requests
     if (existing_transfers = ProxyDepositRequest.where(work_id: id, status: 'pending')).present?
-      existing_transfers.each { |t| t.cancel! }
+      if force_update
+byebug 
+        existing_transfers.each { |t| t.force_cancel! }
+      else
+        existing_transfers.each { |t| t.cancel! }
+      end
     end
     # Create new proxy deposit request from user with ownership to organization
     message = I18n.t('morphosource.media.organization_transfer.transfer_message').html_safe

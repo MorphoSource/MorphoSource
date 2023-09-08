@@ -107,10 +107,15 @@ byebug
         return unless @params["data_manager"].present?
         return if @params["data_manager"].first == @organization.data_manager.first
         old_manager = User.find_by_user_key(@organization.data_manager.first)
+        new_manager = User.find_by_user_key(@params["data_manager"].first)
         if (requests_to_handle = ProxyDepositRequest.where(organization_transfer: true, receiving_user_id: old_manager.id, status: 'pending')).present?
+          requests_to_handle.each do |req|
 byebug
-          requests_to_handle.each do |r|
-            puts "updating..."
+            if Media.exists?(req.work_id)
+byebug
+              media = Media.find(req.work_id)
+              media.create_new_organization_transfer_request(new_manager, true)
+            end
           end
         end
       end

@@ -34,6 +34,10 @@ module Morphosource
     end
 
     def prepare_all_files
+      if @is_download_from_api
+        # there is only one media to prepare if download from api
+        @media = [@media]
+      end
       @temp_files = []
       @all_files ||= files + standard_agreement_files + media_agreement_files + xlsx_manifest + csv_manifest
     end
@@ -42,7 +46,7 @@ module Morphosource
       media.each do |m|
         if (item = find_downloaded_downloadable_item(m.id, download_hash)).present?
           # CartItem for media with DL hash exists, can increment DL attempts and update DL date
-          add_subsequent_download(item)
+          add_subsequent_download(item, "UI")
         elsif (item = find_undownloaded_approved_request_item(m.id)).present?
           # Undownloaded approved request exists, associate download with request
           add_first_download(item, download_hash)
@@ -111,8 +115,8 @@ module Morphosource
         user_from_token.present? && media.present? && download_hash.present?
       end
 
-       # Get user record from token param
-       def user_from_token
+      # Get user record from token param
+      def user_from_token
         @user ||= User.where(token: params[:token])&.first if params[:token].present?
       end
 

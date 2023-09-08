@@ -64,6 +64,7 @@ ActiveRecord::Schema.define(version: 2023_08_24_170251) do
     t.string "download_usage_list"
     t.string "download_hash"
     t.integer "download_attempts"
+    t.string "download_method"
     t.index ["user_id"], name: "index_cart_items_on_user_id"
     t.index ["work_id"], name: "index_cart_items_on_work_id"
   end

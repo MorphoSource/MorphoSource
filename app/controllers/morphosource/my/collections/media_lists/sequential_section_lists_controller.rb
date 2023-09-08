@@ -3,7 +3,11 @@ module Morphosource
     module Collections
       module MediaLists
         class SequentialSectionListsController < Morphosource::My::Collections::MediaListsController
+          
+        # temporary restriction so only admins can access media lists
+        before_action :authorize_admin, only: []
 
+        add-object-facet
           def self.configure_facets
             super.tap do |config|
               config.add_facet_field "physical_object_id_ssi", label: "Object", limit: 10, helper_method: :title_by_id
@@ -13,7 +17,7 @@ module Morphosource
 
           end
           configure_facets
-
+          
           def collections_type
             "sequential_section_lists"
           end

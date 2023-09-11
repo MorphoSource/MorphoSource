@@ -98,7 +98,6 @@ module Morphosource
         format_update_params
         correct_empty_str_arrays
         check_proxy_deposit_requests
-byebug
         @params.permit!
         @organization.update(@params)
       end
@@ -110,9 +109,7 @@ byebug
         new_manager = User.find_by_user_key(@params["data_manager"].first)
         if (requests_to_handle = ProxyDepositRequest.where(organization_transfer: true, receiving_user_id: old_manager.id, status: 'pending')).present?
           requests_to_handle.each do |req|
-byebug
             if Media.exists?(req.work_id)
-byebug
               media = Media.find(req.work_id)
               media.create_new_organization_transfer_request(new_manager, true)
             end

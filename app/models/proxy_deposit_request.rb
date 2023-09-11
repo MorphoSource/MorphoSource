@@ -108,7 +108,6 @@ class ProxyDepositRequest < ActiveRecord::Base
     end
 
     def should_not_cancel_if_organization_transfer
-byebug
       errors.add(:organization_transfer, 'sending user can not cancel an organization transfer') if status == CANCELED && organization_transfer && !force_update
     end
 

@@ -8,6 +8,7 @@ class ProxyDepositRequest < ActiveRecord::Base
 
   class_attribute :work_query_service_class
   self.work_query_service_class = Hyrax::WorkQueryService
+  attr_accessor :force_update
 
   delegate :deleted_work?, :work, :to_s, to: :work_query_service
 
@@ -70,7 +71,7 @@ class ProxyDepositRequest < ActiveRecord::Base
   validate :transfer_to_should_be_a_contributor
   validate :sending_user_should_not_be_receiving_user
   validate :should_not_be_already_part_of_a_transfer
-  validate :should_not_cancel_if_organization_transfer, unless: :force_cancel
+  validate :should_not_cancel_if_organization_transfer
 
   after_save :send_request_transfer_message
 
@@ -107,7 +108,8 @@ class ProxyDepositRequest < ActiveRecord::Base
     end
 
     def should_not_cancel_if_organization_transfer
-      errors.add(:organization_transfer, 'sending user can not cancel an organization transfer') if status == CANCELED && organization_transfer
+byebug
+      errors.add(:organization_transfer, 'sending user can not cancel an organization transfer') if status == CANCELED && organization_transfer && !force_update
     end
 
   public
@@ -178,7 +180,7 @@ class ProxyDepositRequest < ActiveRecord::Base
   end
 
   def force_cancel!
-byebug 
+    @force_update = true
     fulfill!(status: CANCELED)
   end
 

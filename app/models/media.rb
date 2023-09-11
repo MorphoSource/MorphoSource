@@ -566,9 +566,10 @@ class Media < Morphosource::Works::Base
 
   def create_new_organization_transfer_request(org_data_manager, force_update=false)
     # Cancel existing pending proxy deposit requests
-    if (existing_transfers = ProxyDepositRequest.where(work_id: id, status: 'pending')).present?
-      if force_update
 byebug 
+    if (existing_transfers = ProxyDepositRequest.where(work_id: id, status: 'pending')).present?
+byebug 
+      if force_update
         existing_transfers.each { |t| t.force_cancel! }
       else
         existing_transfers.each { |t| t.cancel! }

@@ -36,4 +36,8 @@ module TestHelpers
     Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::SequentialSectionLists::SETTINGS)
   end
 
+  def organization_collection_type
+    Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::Organizations::SETTINGS)
+  end
+
 end

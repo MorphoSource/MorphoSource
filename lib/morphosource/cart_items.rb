@@ -61,6 +61,11 @@ module Morphosource
       end
     end
 
+    def find_item_for_download_from_api(work_id, download_hash, user_id)
+      cart_items.where(work_id: work_id, download_hash: download_hash, user_id: user_id, download_method: 'API')
+        .find { |item| item.downloadable? }
+    end
+
     # Find a previously downloaded CartItem where user can still download the work
     def find_downloaded_downloadable_item(work_id, download_hash)
       cart_items.where(work_id: work_id, download_hash: download_hash)
@@ -88,14 +93,27 @@ module Morphosource
         download_hash: download_hash,
         download_usage: usage,
         download_usage_list: usage_list,
+        download_method: "UI"
       ) if item.present?
     end
 
-    # Add a subsequent (non-first) download event to a CartItem
-    def add_subsequent_download(item)
+    # Add download link generation event with download hash to a CartItem
+    def add_link_generation(item, download_hash)
+      item.update_attributes(
+        download_attempts: 0,
+        download_hash: download_hash,
+        download_method: "API"
+      ) if item.present?
+    end
+
+    # Add a subsequent download event to a CartItem
+    def add_subsequent_download(item, download_method = nil)
       item.update_attributes(
         date_downloaded: Time.now,
         download_attempts: (item.download_attempts || 0) + 1,
+        download_usage: usage,
+        download_usage_list: usage_list,
+        download_method: download_method
       ) if item.present?
     end
 
@@ -109,6 +127,7 @@ module Morphosource
         download_hash: download_hash,
         download_usage: usage,
         download_usage_list: usage_list,
+        download_method: "UI"
       ) if item.present?
     end
 
@@ -119,6 +138,18 @@ module Morphosource
       else
         nil
       end
+    end
+
+    def create_cart_item_for_api(work)
+      CartItem.create( { user_id: current_user.ms_id, work_id: work.id, reviewers: work.reviewer, download_hash: download_hash, download_attempts: 0, in_cart: false, download_method: "API" } )
+    end
+
+    # Add first or subsequent download event after download from API
+    def update_cart_item_after_download_from_api(item)
+      item.update_attributes(
+        date_downloaded: Time.now,
+        download_attempts: (item.download_attempts || 0) + 1,
+      ) if item.present?
     end
 
     def mark_as(action,items=@items,value: nil)

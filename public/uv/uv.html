@@ -49,25 +49,33 @@
           embedded: true,
         });
 
-        uv = UV.init("uv", data);
+        if (!(parent.hasNonMediaTab)) {
+          // on media edit page with non-media tab, call UV.init before resize instead of here
+          uv = UV.init("uv", data);
 
-
-        const configUrl = urlAdapter.get('config');
-        if (configUrl) {
-          uv.on("configure", function({ config, cb }) {
-            cb(
-              new Promise(function (resolve) {
-                fetch(configUrl).then(function (response) {
-                  resolve(response.json());
-                });
-              })
-            );
-          })
+          const configUrl = urlAdapter.get('config');
+          if (configUrl) {
+            uv.on("configure", function({ config, cb }) {
+              cb(
+                new Promise(function (resolve) {
+                  fetch(configUrl).then(function (response) {
+                    resolve(response.json());
+                  });
+                })
+              );
+            })
+          }
         }
 
         var $UV = document.getElementById("uv");
 
         function resize() {
+
+          if (parent.hasNonMediaTab) {
+            // on media edit page with non-media tab, call UV.init before resize
+            uv = UV.init("uv", data);
+          }
+
           $UV.setAttribute("style", "width:" + window.innerWidth + "px");
           $UV.setAttribute("style", "height:" + window.innerHeight + "px");
         }

@@ -15,7 +15,10 @@ module Morphosource
           get_idigbio_taxonomy
           get_idigbio_metadata
     
-          apply_idigbio_update if force_update || idigbio_record_different_from_specimen?
+          if force_update || idigbio_record_different_from_specimen?
+            apply_idigbio_update
+            log.debug "IDigBio sync: Specimen #{id} updated as a result of " + (force_update ? "force_update" : "idigbio_record_different_from_specimen")
+          end
         end
       elsif idigbio_match_found > 1
         if system_update

@@ -292,14 +292,26 @@ class CatalogController < ApplicationController
     respond_to do |format|
       format.html { store_preferred_view }
       format.rss  { render :layout => false }
-      format.csv  do
-        @new_document_list = @document_list.map { |d| d.to_semantic_values }
-      end
       format.json do
         @presenter = Blacklight::JsonPresenter.new(@response,
                                                    @document_list.map { |d| d.to_semantic_values },
                                                    facets_from_request,
                                                    blacklight_config)
+      end
+      format.csv do
+        # Stream CSV since it might be very large
+        
+        headers.delete("Content-Length")
+        headers["Cache-Control"] = "no-cache"
+        headers["Content-Type"] = "text/csv"
+        headers["Content-Disposition"] = "attachment; filename=\"catalog_export.csv\""
+        headers["X-Accel-Buffering"] = "no"
+
+        response.status = 200
+
+        self.response_body = csv_enumerator
+
+        return
       end
       additional_response_formats(format)
       document_export_formats(format)
@@ -326,5 +338,16 @@ class CatalogController < ApplicationController
   # this method is not called in that context.
   def render_bookmarks_control?
     false
+  end
+
+  private
+
+  def csv_enumerator
+    @csv_enumerator ||= Enumerator.new do |yielder|
+      yielder << (@document_list&.first&.to_semantic_values || {}).keys.to_csv
+      (@document_list || []).each do |d|
+        yielder << d.to_semantic_values.values.map { |v| v.kind_of?(Array) ? v.join('; ') : v }.to_csv
+      end
+    end
   end
 end

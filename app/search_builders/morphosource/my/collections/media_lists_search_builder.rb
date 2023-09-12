@@ -3,6 +3,9 @@ module Morphosource
     module Collections
       class MediaListsSearchBuilder < Morphosource::My::CollectionsSearchBuilder
 
+        self.solr_access_filters_logic -= [:apply_collection_download_permissions]
+        self.default_processor_chain -= [:show_only_managed_collections_for_non_admins]
+
         def models
           [::Collection, MediaList]
         end

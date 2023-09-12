@@ -1,2 +1,2 @@
-class MediaListIndexer < Hyrax::CollectionIndexer
+class MediaListIndexer < Hyrax::CollectionWithBasicMetadataIndexer
 end

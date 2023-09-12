@@ -1,3 +1,4 @@
+<%# member is a SolrDocument, not a Presenter member %>
 <% member = showcase_media_items_member %>
 
 <% if showcase_media_items_member_counter == items_to_show_initially %>
@@ -13,13 +14,12 @@
 	 	<div class="thumbnail col-xs-4">
 			<%  # todo: need to display "Parent / Child / Sibling Media" %>
       <% if member.id == @presenter.id %>
-        <%= render_thumbnail_tag member, {}, { suppress_link: true } %><br>
-        <%= member.link_name_long %> (this media)<br>
+        <%= render_thumbnail_tag @presenter, {}, { suppress_link: true } %><br>
+        <%= @presenter.link_name_long %> (this media)<br>
       <% else %>
   	    <%= render_thumbnail_tag member %><br>
-  	    <%= link_to(member.link_name_long, contextual_path(member, @presenter)) %><br>
+  	    <%= link_to(@presenter.link_name_long_from_object(member), main_app.media_showcase_path(member)) %>
       <% end %>
-	    <%= member.file_format %><br>
 	  </div>
 
 	<% if showcase_media_items_member_counter % items_per_row == items_per_row-1 or showcase_media_items_member_counter == media_count-1 

@@ -78,6 +78,17 @@ module Morphosource
                              MESH_PROPERTIES,
                              ZIP_PROPERTIES].flatten
 
+      def file_size
+        self["file_size_lts"]
+      end
+
+      def height
+        self["height_is"]
+      end
+
+      def width
+        self["width_is"]
+      end
     end
   end
 end

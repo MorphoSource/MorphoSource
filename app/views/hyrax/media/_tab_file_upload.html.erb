@@ -4,7 +4,7 @@
   <div class="col-sm-6">
     <div class="content-block">
       <h2 class="required-flag">UPLOAD FILE<span class="label label-info"></span></h2>
-      <% unless @presenter.file_set_list.present? %>
+      <% unless @presenter.representative_presenter.present? %>
 
         <ul class="nav nav-tabs sub-nav upload-file" role="tablist">
           <li role="presentation" id="tab-local-file-section" class="active">
@@ -13,7 +13,7 @@
             </a>
           </li>
           <li role="presentation" id="tab-remote-file-section" 
-            class="<%= current_user.can_submit_remote_file?(nil, @presenter.team_linked_organization_id) ? "" : "hide" %>">
+            class="<%= current_user.can_submit_remote_file?(nil, @presenter.media_organization_id&.first) ? "" : "hide" %>">
             <a href="#remote-file-section" aria-controls="remote-file-section" role="tab" data-toggle="tab" aria-expanded="false">
               Remote File Location
             </a>
@@ -28,7 +28,7 @@
             </div>
           </div>
           <div role="tabpanel" id="remote-file-section"  
-          class="tab-pane <%= current_user.can_submit_remote_file?(nil, @presenter.team_linked_organization_id) ? "" : "hide" %>">
+          class="tab-pane <%= current_user.can_submit_remote_file?(nil, @presenter.media_organization_id&.first) ? "" : "hide" %>">
             <div class="form-tab-content">
               <%= render 'form_files_remote', f: f %>
             </div>
@@ -50,7 +50,7 @@
     <div class="content-block">
       <h2>FILE IN THIS MEDIA</h2>
       <%= render 'items_edit', presenter: @presenter %>
-      <% if @presenter.file_set_list.present? && !@presenter.file_set_original_file_ready %>
+      <% if @presenter.representative_presenter.present? && !@presenter.file_set_original_file_ready %>
         <div>
           <span style='color:  red;'>Uploaded file has not yet successfully finished processing.</span> If the file was uploaded recently, it may still be processing in the background, especially if the file is very large (3+ GB) and was uploaded from the cloud. If this message persists, either delete and reupload the file or <a href='mailto:morphosource@duke.edu'>contact us</a>.
         </div>

@@ -9,10 +9,16 @@ class DeviceIndexer < Morphosource::WorkIndexer
   # this behavior
   include Hyrax::IndexesLinkedMetadata
 
-  # Uncomment this block if you want to add custom indexing behavior:
-  # def generate_solr_document
-  #  super.tap do |solr_doc|
-  #    solr_doc['my_custom_field_ssim'] = object.my_custom_property
-  #  end
-  # end
+  def generate_solr_document
+   super.tap do |solr_doc|
+     if (device_organization = object.organization).present?
+      solr_doc["device_organization_id_tesim"] = device_organization.id
+      solr_doc["device_organization_id_ssim"] = device_organization.id
+      solr_doc["device_organization_title_tesim"] = device_organization.title
+      solr_doc["device_organization_title_ssi"] = device_organization.title
+      solr_doc["device_organization_institution_name_tesim"] = device_organization.institution_name
+      solr_doc["device_organization_institution_name_ssim"] = device_organization.institution_name
+     end
+   end
+  end
 end

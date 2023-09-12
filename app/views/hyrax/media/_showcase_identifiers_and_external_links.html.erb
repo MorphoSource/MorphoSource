@@ -2,7 +2,7 @@
 
 <%= presenter.attribute_to_html(:ark, render_as: :showcase_ark_link, include_empty: true, text_if_empty: 'Not assigned', html_dl: false) %>
 <%= presenter.attribute_to_html(:doi, render_as: :showcase_doi_link, include_empty: true, text_if_empty: 'Not assigned', html_dl: false) %>
-<% if @current_user && @current_user.admin? && @presenter.doi.empty? %>
+<% if @current_user && @current_user.admin? && !@presenter.doi.present? %>
   <div class="col-xs-6"></div>
   <div class="col-xs-6"><%= button_to "Mint DOI", main_app.media_mint_doi_path(id: @presenter.work_id), method: :put %></div>
 <% end %>

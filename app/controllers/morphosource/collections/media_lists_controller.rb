@@ -72,7 +72,6 @@ module Morphosource
           doc = SolrDocument.find(params[:media_id])
         )
           @media_presenter = Hyrax::MediaPresenter.new(doc, current_ability)
-          @media_presenter.get_showcase_data
         end
 
         respond_to do |format|
@@ -94,7 +93,6 @@ module Morphosource
             (doc = SolrDocument.find(@document_list&.first&.id))
           )
             @media_presenter = Hyrax::MediaPresenter.new(doc, current_ability)
-            @media_presenter.get_showcase_data
           end
         end
 

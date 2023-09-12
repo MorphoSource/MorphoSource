@@ -1,11 +1,7 @@
-<%  
-# only need to show images in the file set of the current media
-members = presenter.member_presenters_for(@presenter.file_set_list) 
-%>
-<% if members.present? %>
+<% if presenter.file_set_presenters.present? %>
   <table class="table table-striped related-files">
     <tbody>
-      <%= render partial: 'member_edit', collection: members %>
+      <%= render partial: 'member_edit', collection: presenter.file_set_presenters, as: :file_set %>
     </tbody>
   </table>
 <% elsif can? :edit, presenter.id %>

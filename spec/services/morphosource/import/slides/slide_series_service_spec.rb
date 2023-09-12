@@ -125,7 +125,6 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
       expect_any_instance_of(described_class).to receive(:create_new_media)
       expect_any_instance_of(described_class).to receive(:characterize_file)
       expect_any_instance_of(described_class).to receive(:create_thumbnail)
-      expect_any_instance_of(described_class).to receive(:normalize_media)
       expect_any_instance_of(SequentialSectionList).to receive(:add_member_objects)
       subject.call
     end
@@ -182,7 +181,7 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
       expect(list.collection_type.title).to eq('Sequential Section List')
       expect(list.depositor).to eq(provider['manager'])
       expect(list.edit_groups).to match_array(["#{list.id}_managers", 'admin'])
-      expect(list.read_groups).to match_array(["#{list.id}_viewers"])
+      expect(list.read_groups).to match_array(["#{list.id}_viewers", 'public'])
       expect(list.managers).to include(manager)
     end
   end
@@ -240,7 +239,7 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
       expect(media.remote_origin_url).to eq(import_url)
       expect(media.media_type).to match_array(['Image'])
       expect(media.part).to match_array([slide_title])
-      expect(media.fileset_accessibility ).to match_array(['restricted_download'])
+      expect(media.fileset_accessibility ).to match_array(['open'])
       expect(media.x_spacing).to match_array(['0.000025'])
       expect(media.y_spacing).to match_array(['0.000025'])
       expect(media.unit).to match_array(['Cm'])

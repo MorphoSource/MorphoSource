@@ -35,6 +35,19 @@ function checkAndShowDownload() {
 
 }
 
+function checkAndShowRequestDownload() {
+  if ( $('#modal-request-download-agree').prop('checked') &&
+        $('#intended_use').val().length >= 50 )  {
+    $('#modal-request-download').removeAttr('disabled');
+  } else {
+    $('#modal-request-download').attr('disabled', 'disabled');
+  }  
+  if ($('#intended_use').val().length >= 50) 
+    $('#char-alert, #describe-intended-use').removeClass('text-alert');
+  else
+    $('#char-alert, #describe-intended-use').addClass('text-alert');
+}
+
 function usageList() {
   var usage_list_array = $('.profile-checkbox-list input[type=checkbox]:checked').map(function(_, el) {
     return $(el).val();
@@ -57,6 +70,11 @@ $( document ).ready(function() {
     $('form#download-form .download-items-wrapper').html(selectedItems);
   }
 
+  function sendSelectedRestrictedItemsToModal() {
+    var selectedItems = $('.batch_document_selector.restricted_items:checked').clone();    
+    $('form#request-download-form .download-items-wrapper').html(selectedItems);
+  }
+
   if ( isCartPage ) {
     
     $(downloadForm).find('input[type="submit"]').bind('click', function(e) { 
@@ -76,21 +94,42 @@ $( document ).ready(function() {
       showAgreementModal();
     });
 
-    $('#unrestricted_documents input[type="checkbox"]').bind('click', function(e) {
+    $('.unrestricted_documents input[type="checkbox"]').bind('click', function(e) {
       set_agreements();
     });
 
   }
 
   if ( isCartPage || isRequestPage ) {
+
+    $('.restricted_documents input[type="checkbox"]').bind('click', function(e) {
+      set_agreements_for_restricted();
+    });
+
     $('.btn-download-item').bind('click', function(e) { 
-      // download item clicked
+      // download individual item clicked
       e.preventDefault();
       var itemId = $(this).attr('data-item-id');
       uncheckAllDownloadable();
       $("input[id='batch_download_" + itemId + "']").trigger('click');
       sendSelectedItemsToModal();
       showAgreementModal();
+    });
+    $('.btn-request-download-item').bind('click', function(e) { 
+      // request download individual item button clicked
+      e.preventDefault();
+      var itemId = $(this).attr('data-item-id');
+      uncheckAllRestricted();
+      $("input[id='batch_document_" + itemId + "']").trigger('click');
+      sendSelectedRestrictedItemsToModal();
+    });  
+    // reset things on request download modal close
+    $("#pageModal").on("hidden.bs.modal", function () {
+      // remove selected items from modal
+      $('form#request-download-form .download-items-wrapper').html('');  
+      uncheckAllRestricted();
+      $("#check_all_restricted").prop('checked', false);
+      $("#request-selected, #delete-selected-restricted").prop('disabled', true);
     });
   }
 
@@ -102,6 +141,11 @@ $( document ).ready(function() {
       $('.profile-checkbox-list input[type=checkbox]').prop("checked", false);
       $('.profile-checkbox-list input[type=text][name="user[intent][]"]').val('');
     }
+
+    $("#pageModal").on("show.bs.modal", function () {
+      // clear agreement checkbox whenever request download modal is shown
+      $('#modal-request-download-agree').prop('checked', false);
+    });
        
     if ( isMediaPage ) {
       $('.btn-download-item').bind('click', function(e) { 
@@ -110,10 +154,19 @@ $( document ).ready(function() {
         set_agreements('CURRENT', $(this).attr('data-media-id'));
         showAgreementModal();
       });  
+      $('.btn-request-download-item').bind('click', function(e) { 
+        // media page request download button clicked
+        e.preventDefault();
+        set_agreements_for_restricted('CURRENT', $(this).attr('data-media-id'));
+      });  
     }
   
     $(document).on('click', '#modal-agree', function(){
       checkAndShowDownload();
+    });
+
+    $(document).on('click', '#modal-request-download-agree', function(){
+      checkAndShowRequestDownload();
     });
 
     $('.modal-body .checkbox-form-group input').change(function() {
@@ -128,6 +181,12 @@ $( document ).ready(function() {
       var textlen = $(this).val().length;
       $('#rchars').text(textlen);
       checkAndShowDownload();
+    });
+
+    $('#intended_use').keyup(function() {
+      var textlen = $(this).val().length;
+      $('#intended-use-rchars').text(textlen);
+      checkAndShowRequestDownload();
     });
 
     $('form#download-form').on('submit', function (e) {
@@ -179,6 +238,12 @@ function uncheckAllDownloadable() {
   });
 }
 
+function uncheckAllRestricted() {
+  $("input[type='checkbox'].restricted_items").each(function(index, value) {
+     value['checked'] = false;
+  });
+}
+
 function hideAgreementModal() {
   $('#downloadAgreementsModal').modal('hide');
 }
@@ -199,10 +264,9 @@ function showAgreementModal() {
 }
 
 function set_agreements(itemId, singleMediaId) {
-  // set the agreement content in the modal  
-
+  // set the agreement content in the download modal  
   if (itemId) {
-    // set the item id in the button for download one item
+    // set the item id in the button for download one item in the cart
     $('input[name="ids[]"]').val(singleMediaId);
     $('input#modal-download').attr('data-download-item-id', itemId);
     var agreementWrapper = '[data-item-id="' + itemId + '"] ';
@@ -210,9 +274,8 @@ function set_agreements(itemId, singleMediaId) {
     var customLink = $(agreementWrapper + '[data-field="agreement_uri"] .showcase-link').html();
     var display = buildSingleAgreement(agreementLink, customLink);
     $('.agreement-items-wrapper').empty().append(display);
-
   } else {
-
+    // set agreements for each checkbox checked
     var agreements = new Array();
     var customLinks = new Array();
     $('input[name="ids[]"]').val('SELECTED');
@@ -233,7 +296,39 @@ function set_agreements(itemId, singleMediaId) {
     var display = buildAgreements(agreementGroup, customLinks.sort());
     $('.agreement-items-wrapper').empty().append(display);
   }
+}
 
+function set_agreements_for_restricted(itemId, singleMediaId) {
+  // set the agreement content in the request download modal  
+  if (itemId) {
+    // set the item id in the button for download one item in the cart
+    $('input[name="ids[]"]').val(singleMediaId);
+    $('input#modal-download').attr('data-download-item-id', itemId);
+    var agreementWrapper = '[data-item-id="' + itemId + '"] ';
+    var agreementLink = $(agreementWrapper + '[data-field="agreement_description"]').html();
+    var customLink = $(agreementWrapper + '[data-field="agreement_uri"] .showcase-link').html();
+    var display = buildSingleAgreement(agreementLink, customLink);
+    $('.agreement-items-wrapper').empty().append(display);
+  } else {
+    // set agreements for each checkbox checked
+    var agreements = new Array();
+    var customLinks = new Array();
+    var selectedCount = $("input[type='checkbox'].restricted_items:checked").length;
+    $("input[type='checkbox'].restricted_items:checked").each(function() {
+      var itemId = $(this).val();
+      var agreementWrapper = '[data-item-id="' + itemId + '"] ';
+      var mediaId = $(agreementWrapper + '[data-field="media_doc_id"]').attr('data-value');
+      var agreementLink = $(agreementWrapper + '[data-field="agreement_description"]').html();
+      agreements.push(agreementLink);
+      var customLink = $(agreementWrapper + '[data-field="agreement_uri"] .showcase-link').html();
+      if (customLink) {
+        customLinks.push('Media ' + mediaId + ': ' + customLink);
+      }
+    });
+    var agreementGroup = groupCounts(agreements);
+    var display = buildAgreements(agreementGroup, customLinks.sort());
+    $('.agreement-items-wrapper').empty().append(display);
+  }
 }
 
 function buildSingleAgreement(agreement, customLink) {

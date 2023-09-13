@@ -421,7 +421,10 @@ html {
     .btn {
       margin-bottom: 1px;
       padding: 5px 10px;
-      font-size: 12px;
+      font-size: 8px;
+      @media (min-width: 767px) {
+        font-size: 12px;
+      }
       line-height: 1.5;
     }
     .btn:hover {

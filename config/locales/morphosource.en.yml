@@ -170,7 +170,7 @@ en:
       expiration:
         title: "Edit Expiration Date"
       request:
-        title: "Intended Use"
+        title: "Request Download"
         subtitle: "Please let the data owner know how you intend to use their data"
     publication_status:
       open:

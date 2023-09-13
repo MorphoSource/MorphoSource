@@ -5,7 +5,11 @@
     <span>Select All Media for This Intended Use</span>
   </div>
   <div class="intended-use-wrapper">
-    <h4><%= use %></h4>
+    <div><label>Intended Use:</label> <%= use %></div>
+    <% if agreed %>    
+    <div><label>User Agreed To Usage Terms:</label> Yes <i class="fa fa-check" aria-hidden="true"></i></div>
+    <% end %>
+
   </div>
 
   <div class="requested-items-wrapper">

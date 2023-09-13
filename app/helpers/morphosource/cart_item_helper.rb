@@ -76,7 +76,8 @@ module Morphosource::CartItemHelper
   end
 
   def request_download_button
-    button_tag("Request Download", id:'request-button', class: 'btn btn-default', data: {toggle: 'modal', target: '#pageModal', work_id: media.id})
+    mediaId = media&.id || ''
+    button_tag("Request Download", id:'request-button', class: 'btn btn-default btn-request-download-item', id: 'btn-request-download-item', data: {toggle: 'modal', target: '#pageModal', work_id: mediaId, media_id: mediaId})
   end
 
   def disabled_request_download_button
@@ -154,7 +155,7 @@ module Morphosource::CartItemHelper
           content_tag(:button, 'Item in Cart', class: "btn btn-success", disabled: true)
         end
       when 'Canceled'
-        button_tag("Request Download", id:'request-button', class: 'btn btn-info', data: {toggle: 'modal', target: '#pageModal', item_id: item.id})
+        button_tag("Request Download", id:'request-button', class: 'btn btn-info btn-request-download-item', data: {toggle: 'modal', target: '#pageModal', item_id: item.id})
       when 'Denied'
         if item.in_cart
           make_button(item,"Remove from Cart",:remove_items_path,"btn btn-danger",:delete,'')
@@ -164,11 +165,11 @@ module Morphosource::CartItemHelper
       when 'Expired'
         make_button(item,"Request Again",:request_again_path,"btn btn-primary",:get,'')
       when 'Cleared'
-       button_tag("Request Download", id:'request-button', class: 'btn btn-info', data: {toggle: 'modal', target: '#pageModal', item_id: item.id})
+       button_tag("Request Download", id:'request-button', class: 'btn btn-info btn-request-download-item', data: {toggle: 'modal', target: '#pageModal', item_id: item.id})
       when 'Requested'
         make_button(item,"Cancel",:cancel_request_path,"btn btn-danger",:put,"background-color: gray;")
       else
-        button_tag("Request Download", id:'request-button', class: 'btn btn-info', data: {toggle: 'modal', target: '#pageModal', item_id: item.id})
+        button_tag("Request Download", id:'request-button', class: 'btn btn-info btn-request-download-item', data: {toggle: 'modal', target: '#pageModal', item_id: item.id, media_id: item.work_id})
       end
     end
   end
@@ -209,6 +210,7 @@ module Morphosource::CartItemHelper
 
   def get_requester_items(items,requester)
     @requester_items = items.select{|item| item.user_id == requester.ms_id}
+    @requester_agreed_to_terms = @requester_items.all? { |item| item['download_request_terms_agreement'] == true }
   end
 
   def requester_uses

@@ -9,7 +9,7 @@
 
             <div>
               <%= link_to presenter.physical_object_link do  %>
-                <%= presenter.physical_object_title %> <i><%= presenter.physical_object_taxonomy_title %></i>
+                <%= presenter.physical_object_title&.first %> <i><%= presenter.taxonomies_titles&.first || "" %></i>
               <% end %>
             </div>
           </small>

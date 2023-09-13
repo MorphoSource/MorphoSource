@@ -15,7 +15,7 @@
           </div>
 
           <div class="row">
-            <%= render partial: "showcase_direct_parents_physical_objects", collection: @presenter.direct_parent_members, as: :member %>
+            <%= render partial: "showcase_image_acquisition_details_physical_object" %>
           </div>
 
           <div class="row" style="margin-bottom: 30px;">
@@ -65,26 +65,24 @@
             </div>
 
             <div class="col-sm-6">
-              <% if @presenter.direct_parent_members_raw_or_derived == "Derived" %>
+              <%# Does a raw media exist at the top of the media hierarchy? It could also be this media! %>
+              <% if presenter.has_absentee_parent %>
                 <%# Leave blank if no raw media parent %>
-              <% elsif @presenter.is_absentee_parent == false %>
+              <% else %>
+                <%# Raw media exists, it's either the top parent or this media %>
+                <% raw_media = presenter.top_parent_media || presenter %>
                 <div class="content-block">
                   <h2>Media produced by this event on MorphoSource</h2>
-                  <%
-                  members = presenter.direct_parent_members
-                  parent_member =  members.first
-                  %>
-                  <% if parent_member.present? %>
+                  <% if raw_media.present? %>
                     <div class="row media-block">
                       <div class="thumbnail col-xs-4">
-                        <% if parent_member.id == @presenter.id %>
-                          <%= render_thumbnail_tag parent_member, {}, { suppress_link: true } %><br>
-                          <%= parent_member.link_name_long %> (this media)<br>
+                        <% if raw_media == presenter %>
+                          <%= render_thumbnail_tag presenter, {}, { suppress_link: true } %>
+                          <%= presenter.link_name_long %> (this media)
                         <% else %>
-                          <%= render_thumbnail_tag parent_member %><br>
-                          <%= link_to(parent_member.link_name_long, contextual_path(parent_member, @presenter)) %><br>
+                          <%= render_thumbnail_tag raw_media %>
+                          <%= link_to(presenter.link_name_long_from_object(raw_media), main_app.media_showcase_path(raw_media)) %>
                         <% end %>
-                        <%= parent_member.file_format %><br>
                       </div>
                     </div>
                   <% end %>
@@ -96,14 +94,14 @@
         </div><!-- /content-block-lg -->
 
       </div><!-- /row -->
-
+      
       <% if @presenter.raw_or_derived == "Derived" %>
         <% @presenter.processing_events_data.each_with_index.map do |pe, i| %>
           <%= render @presenter.showcase_image_acquisition_details_processing_partial,
             presenter: @presenter,
             processing_activity_items: pe[:processing_activity_items],
-            processing_member: pe[:child_members].first,
-            parent_member: pe[:parent_members].first,
+            child: pe[:child],
+            parent: pe[:parent_is_media] ? pe[:parent] : nil,
             creator: pe[:creator]&.join(', '),
             date_created: pe[:date_created]&.first,
             software: pe[:software]&.first,

@@ -1,4 +1,4 @@
-class MediaListIndexer < Hyrax::CollectionIndexer
+class MediaListIndexer < Hyrax::CollectionWithBasicMetadataIndexer
 
   def generate_solr_document
     super.tap do |solr_doc|

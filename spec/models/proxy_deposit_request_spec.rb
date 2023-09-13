@@ -1,8 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe ProxyDepositRequest do
-  let!(:user5)          { User.create(id: '5', email: "purple@email.com", password: "password", display_name: "Mickey Mouse") }
-  let!(:user6)          { User.create(id: '6', email: "blue@email.com", password: "password", display_name: "Donald Duck") }
+
+  let!(:user5)          { FactoryBot.create(:user, id: '5', email: "purple@email.com", password: "password", display_name: "Mickey Mouse") }
+  let!(:user6)          { FactoryBot.create(:user, id: '6', email: "blue@email.com", password: "password", display_name: "Donald Duck") }
 
   describe "instance" do
     subject { described_class.new }

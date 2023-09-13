@@ -7,8 +7,8 @@
 <%# this org id field is being used when making validate_remote_file_ajax call
   For new submission, the org id will be set if user selects an org in a previous step 
   For edit page, the org id will be returned: 
-    - from presenter (only if org is linked to a team)
+    - from presenter (whether or not org is linked to team)
     - when user selects a different PO (whether or not org is linked to a team)
   %>
 <input type="hidden" id="associated_organization_id" name="associated_organization_id" 
-  value="<%= @presenter.present? ? @presenter.team_linked_organization_id : '' %>" />
+  value="<%= @presenter&.media_organization_id&.first || "" %>" />

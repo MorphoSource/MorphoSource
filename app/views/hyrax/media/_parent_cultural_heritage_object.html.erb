@@ -1,6 +1,6 @@
 <div class="col-sm-12 not-editable">
-    <p>Physical object settings can not be edited here. These fields are associated with the parent media
-<%= link_to(@presenter.direct_parent_first_member.link_name, contextual_path(@presenter.direct_parent_first_member, @presenter)) %>. <br />
+    <p>Physical object settings can not be edited here. These fields are associated with the parent 
+<%= link_to(@presenter.link_name_long_from_object(@presenter.top_parent_media), main_app.media_showcase_path(@presenter.top_parent_media)) %>. <br />
 To change these settings, edit the parent media.</p>
 </div>
 

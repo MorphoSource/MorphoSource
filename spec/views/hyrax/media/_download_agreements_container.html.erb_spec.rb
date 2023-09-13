@@ -41,7 +41,6 @@ RSpec.describe 'hyrax/media/_download_agreements_container.html.erb', type: :vie
       expect(page).to have_selector('div[class="agreements"][data-item-id="CURRENT"]')
       expect(page).to have_selector('div[data-field="media_doc_id"][data-value="999"]')
       expect(page).to have_selector('div[data-field="agreement_uri"]')
-			#expect(page).to have_content "Abc (Def, Ghi, Jkl)"
 		end
 
     it 'contains the agreement description and link' do

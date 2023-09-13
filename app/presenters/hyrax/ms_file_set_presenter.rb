@@ -134,9 +134,10 @@ module Hyrax
               to: :solr_document
 
     # zip archive contents
-    delegate  :contents_mime_type,
+    delegate  :contents_accepted_file_count,
               :contents_file_name,
               :contents_file_size,
+              :contents_mime_type,
               to: :solr_document
   end
 end

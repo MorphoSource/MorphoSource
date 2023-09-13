@@ -61,7 +61,6 @@ module Hyrax
       raise CanCan::AccessDenied.new(nil, :show) unless (curation_concern && current_ability.can?(:read, curation_concern))
 
       @presenter = show_presenter.new(curation_concern_solr_doc, current_ability, request)
-      @presenter.get_showcase_data
       set_flash
       render '/hyrax/media/showcase', presenter: @presenter
     end
@@ -70,15 +69,21 @@ module Hyrax
     def edit
       build_form
       @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
-      @presenter.get_showcase_data
-      if @presenter.has_imaging_events?
-        ie_work = @presenter.imaging_event
+
+      if (
+        @presenter.imaging_event.present? && 
+        (ie_work = ImagingEvent.find_by(id: @presenter.imaging_event.id)).present?
+      )
         @imaging_event_form = Hyrax::WorkFormService.build(ie_work, current_ability, self)
       end
-      if @presenter.has_processing_events?
-        pe_work = @presenter.this_media_processing_event
+
+      if (
+        @presenter.this_media_processing_event.present? && 
+        (pe_work = ProcessingEvent.find_by(id: @presenter.this_media_processing_event[:id])).present?
+      )
         @processing_event_form = Hyrax::WorkFormService.build(pe_work, current_ability, self)
       end
+
       @countries_service = Morphosource::CountriesService.new
       @new_processing_event_submit_submissions_url = '/submissions/new_processing_event_submit'
       @new_processing_event_form = Hyrax::WorkFormService.build(::ProcessingEvent.new, current_ability, self)
@@ -103,9 +108,6 @@ module Hyrax
         flash[:notice] = ""
       end
       @presenter.file_status = file_status
-      #added_flash << " ... universal_viewer : " + @presenter.universal_viewer?.to_s
-      #added_flash << " ... universal_viewable_ready : " + @presenter.universal_viewable_ready?.to_s
-      #added_flash << " ... is_file_uploaded : " + @presenter.is_file_uploaded?.to_s
       flash[:notice] << added_flash
       flash[:error] ||= [] << get_remote_file_issues if get_remote_file_issues.present?
     end
@@ -172,15 +174,21 @@ module Hyrax
             #render 'edit', status: :unprocessable_entity
             # todo: make sure to handle error when changing media type
             @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
-            @presenter.get_showcase_data
-            if @presenter.has_imaging_events?
-              ie_work = @presenter.imaging_event
+            
+            if (
+              @presenter.imaging_event.present? && 
+              (ie_work = ImagingEvent.find_by(id: @presenter.imaging_event.id)).present?
+            )
               @imaging_event_form = Hyrax::WorkFormService.build(ie_work, current_ability, self)
             end
-            if @presenter.has_processing_events?
-              pe_work = @presenter.this_media_processing_event
+      
+            if (
+              @presenter.this_media_processing_event.present? && 
+              (pe_work = ProcessingEvent.find_by(id: @presenter.this_media_processing_event[:id])).present?
+            )
               @processing_event_form = Hyrax::WorkFormService.build(pe_work, current_ability, self)
             end
+
             @countries_service = Morphosource::CountriesService.new
             @new_processing_event_submit_submissions_url = '/submissions/new_processing_event_submit'
             @new_processing_event_form = Hyrax::WorkFormService.build(::ProcessingEvent.new, current_ability, self)
@@ -345,7 +353,7 @@ module Hyrax
             files << file_set.original_file.original_name
           # if a recent upload hasn't been processed yet, use the title instead.
           else
-            files << file_set.title.first
+            files << ( file_set.title.first || file_set.label )
           end
         end
 

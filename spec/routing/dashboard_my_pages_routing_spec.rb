@@ -54,7 +54,7 @@ RSpec.describe 'dashboard my pages routing', type: :routing do
     expect(:get => '/dashboard/my/sequential_section_lists').to route_to(route)
     # facet
     route = { controller: 'morphosource/my/collections/media_lists/sequential_section_lists', action: 'facet', id: 'foobar' }
-    expect(:get => '/dashboard/my/sequential_section_listsc/facet/foobar').to route_to(route)
+    expect(:get => '/dashboard/my/sequential_section_lists/facet/foobar').to route_to(route)
   end
 
 end

@@ -1,7 +1,10 @@
 terms:
   - id: 3DPrintingLimited
     term: 3D Printing Limited
+    short: 3d_limited
   - id: 3DPrintingPermitted
     term: 3D Printing Permitted
+    short: 3d_yes
   - id: 3DPrintingProhibited
     term: 3D Printing Prohibited
+    short: 3d_no

@@ -218,6 +218,10 @@ en:
             placeholder: "Enter complete words in project title"
           organization:
             placeholder: "Enter complete words in organization name"
+          media_list:
+            placeholder: "Enter complete words in list name"
+          sequential_section_list:
+            placeholder: "Enter complete words in list name"
     taxonomy:
       labels:
         canonical: "Organizational"

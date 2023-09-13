@@ -7,9 +7,7 @@
         current_search_parameters,
         class: "q form-control",
         id: "search-field-header",
-        placeholder: ( @collection_list_type == 'project' ) ?
-          t("morphosource.search.form.q.project.placeholder") :
-          t("morphosource.search.form.q.team.placeholder")
+        placeholder: t("morphosource.search.form.q.#{@collections_type.singularize}.placeholder")
       %>
 
       <div class="input-group-btn">

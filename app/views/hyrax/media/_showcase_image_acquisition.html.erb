@@ -12,11 +12,11 @@
 		</div>
 </div>
 
-<% if @presenter.parent_media_count.to_i > 0 %>
+<% if presenter.parent_media_count.to_i > 0 %>
   <div class="row">
   	<div class="col-xs-6 showcase-label">Derived directly from</div>
   	<div class="col-xs-6 showcase-value">
-  		<%= render partial: @presenter.showcase_direct_parents_member_partial, collection: @presenter.direct_parent_members, as: :member %>
+			<%= link_to(presenter.link_name_long_from_object(presenter.direct_parent), main_app.media_showcase_path(presenter.direct_parent)) %>
   	</div>
   </div>
 <% end %>

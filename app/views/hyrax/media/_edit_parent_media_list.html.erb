@@ -1,6 +1,6 @@
 <%
 if member_counter == 0
-  raw_or_derived = @presenter.direct_parent_members_raw_or_derived
+  raw_or_derived = @presenter.top_parent_media_raw_or_derived
   class_name = 'circle first'
 else
   raw_or_derived = 'Derived'
@@ -14,7 +14,7 @@ end
   <div class="table-cell">
     <p>
      <%= raw_or_derived %> parent
-    <%= link_to(member.link_name_long, contextual_path(member, @presenter)) %>
+    <%= link_to(@presenter.link_name_long_from_object(member), main_app.media_showcase_path(member)) %>
     </p>
   </div>
 </div>

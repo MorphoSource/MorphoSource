@@ -38,7 +38,23 @@ en:
     sections:
       collections: In Collections
       preview: Media Display
-      related_media: Other Related Media ($%{media_number})
+      related_media: 
+        content:
+          none: No related media found.
+        hints:
+          base: Media produced from the same original imaging that created Media %{id} (this media). Includes all media associated with this media through an imaging and processing workflow.
+          top_parent: The first media in the imaging and processing workflow that produced Media %{id} (this media). The media closest to what was produced from original imaging or the media with the least amount of derived processing.
+          direct_parent: The media that was processed to create Media %{id} (this media). The media immediately preceding this media in the imaging and processing workflow. 
+          top_direct_parent: The media that was processed to create Media %{id} (this media). The media immediately preceding this media in the imaging and processing workflow. Also the media closest to what was produced from original imaging or the media with the least amount of derived processing.
+          child: Derived media that were created from processing Media %{id} (this media). The media immediately below this media in the imaging and processing workflow.
+          other: Other media associated with the original imaging that produced Media %{id} (this media) excluding those listed above. For example, could include derived media produced from children of this media (grandchildren) or other derived media produced from the top parent of this media (sibling or cousin). 
+        labels:
+          base: Related Media (%{num})
+          top_parent: Parent Media (Top)
+          direct_parent: Parent Media (Direct)
+          top_direct_parent: Parent Media (Top and Direct)
+          child: Child Media
+          other: Other Related Media
       tags: Tags
       
   simple_form:

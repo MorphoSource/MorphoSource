@@ -14,6 +14,20 @@ $(document).ready(function() {
       $("a."+thisId).html('<span class="glyphicon glyphicon-triangle-top"></span> Show less <span class="glyphicon glyphicon-triangle-top"></span>');
     });
 
+    // switching icons and button label for simple expand / collapse
+    $(".collapse-simple").on("hide.bs.collapse show.bs.collapse", function(event) { 
+      let newHtml = '';
+      if (event.type == "hide") {
+        newHtml = 'Show more <span class="glyphicon glyphicon-triangle-bottom"></span>';
+      } else if (event.type == "show") {
+        newHtml = 'Show less <span class="glyphicon glyphicon-triangle-top"></span>';
+      }
+
+      if (newHtml) {
+        $(this).parent(".media-block").children(".collapse-button").children("a").html(newHtml);
+      }
+    });
+
     // switching icons only for expand / collapse
     $(".collapse-accordion, .glyphicon-only").on("hide.bs.collapse", function(){
       var thisId = $(this).attr('id');

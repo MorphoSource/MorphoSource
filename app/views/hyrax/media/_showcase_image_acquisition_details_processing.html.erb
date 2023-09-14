@@ -15,7 +15,11 @@
           <% else %>
             Raw
           <% end %>
-          <%= link_to(presenter.link_name_long_from_object(parent), main_app.media_showcase_path(parent)) %>
+          <% if can? :read, parent %>
+            <%= link_to(presenter.link_name_long_from_object(parent), main_app.media_showcase_path(parent)) %>
+          <% else %>
+            <b>private media</b>
+          <% end %>
         <% end %>
         was processed
         <% if processing_activity_items.present?  %>
@@ -24,11 +28,13 @@
         to create
         <%= presenter.raw_or_derived.downcase %>
         <% if child == presenter %>
-          <b><%= presenter.link_name_long %></b>
-          (this media).
+          <b><%= presenter.link_name_long %></b> (this media).
         <% else %>
-          <%= link_to(presenter.link_name_long_from_object(child), main_app.media_showcase_path(child)) %>
-          .
+          <% if can? :read, child %>
+            <%= link_to(presenter.link_name_long_from_object(child), main_app.media_showcase_path(child)) %>.
+          <% else %>
+            <b>private media</b> that exists on MorphoSource but is inaccessible with current user permissions.
+          <% end %>
         <% end %>
       </div>
     </div>
@@ -91,11 +97,14 @@
             <div class="row media-block">
                 <div class="thumbnail col-xs-4">
                   <% if child == presenter %>
-                    <%= render_thumbnail_tag presenter, {}, { suppress_link: true } %><br>
-                    <%= presenter.link_name_long %> (this media)<br>
+                    <%= render_thumbnail_tag presenter, {}, { suppress_link: true } %>
+                    <%= presenter.link_name_long %> (this media)
+                  <% elsif can? :read, child %>
+                    <%= render_thumbnail_tag child %>
+                    <%= link_to(presenter.link_name_long_from_object(child), main_app.media_showcase_path(child)) %>
                   <% else %>
-                    <%= render_thumbnail_tag child %><br>
-                    <%= link_to(presenter.link_name_long_from_object(child), main_app.media_showcase_path(child)) %><br>
+                    <%= render_default_thumbnail %>
+                    <span class="no-access-media-label">Private media inaccessible with current permissions<span>
                   <% end %>
                 </div>
             </div>              

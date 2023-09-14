@@ -5,13 +5,18 @@ body.showcase2 {
   #showcase-title {
     font-size: 24px;
     margin-bottom: 0;
+    padding-bottom: 0;
+
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
 
     >div {
-      display: inline-block;
+      margin-right: 10px;
     }
 
-    .label {
-      vertical-align: middle;
+    >div,>.label {
+      margin-bottom: 8px;
     }
   }
 
@@ -82,10 +87,47 @@ body.showcase2 {
       min-width: 26px;
       vertical-align: text-top;
     }
+
+    .related-media {
+      .media-block {
+        padding-left: 10px;
+        padding-right: 10px;
+
+        .collapse-button  {
+          margin-top: 5px;
+          
+          a {
+            font-weight: 500;
+          }
+
+          a:hover {
+            cursor: pointer;
+            text-decoration: none;
+          }
+        }
+
+        h3 {
+          font-weight: 500;
+          padding-left: 0;
+          text-transform: uppercase;
+        }
+
+        .media-item {
+          align-items: center;
+          display: flex;
+        }
+      }
+    }
   }
 
   .content-wrapper.fixed-width {
     border: 0;
+  }
+
+  // For div, h2, h3, etc. tags with text and hint icon
+  .has-hint {
+    display: flex;
+    align-items: center;
   }
 
   .label-info, .label-success, .label-danger {
@@ -105,10 +147,20 @@ body.showcase2 {
     display: none;
   }
 
-  div.media-block.physical-object-media-items {
-    .row {
-      margin: 0;
-      padding: 0;
+  .material-icons.tooltip-icon {
+    font-size: 14px;
+  }
+
+  div.media-block {
+    .thumbnail, span.no-access-media-label {
+      font-size: 14px !important;
+    }
+  
+    .physical-object-media-items {
+      .row {
+        margin: 0;
+        padding: 0;
+      }
     }
   }
 
@@ -145,6 +197,12 @@ body.showcase2 {
     width: 100px;
     height: 100px;
     margin-right: 16px;
+  }
+
+  .thumbnail-sm img {
+    width: 64px;
+    height: 64px;
+    margin-right: 8px;
   }
 
   h2 {

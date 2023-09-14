@@ -59,9 +59,7 @@ module Hyrax
       :user_with_ownership, :x_spacing, :y_spacing, :z_spacing,
       to: :solr_document
 
-    attr_accessor :file_status,
-      :imaging_event_modality, :child_media_id_list,
-      :download_permission
+    attr_accessor :file_status
 
     self.collection_presenter_class = Morphosource::CollectionPresenter
 
@@ -613,12 +611,40 @@ module Hyrax
     end
 
     #
+    # Array of top and direct parent media. May include nothing, 2 media, or 1 media (if top==direct).
+    #
+    # @return [Array<SolrDocument>] Array of top and direct parent media.
+    #
+    def top_and_direct_parents
+      [ top_parent_media, direct_parent ].compact.uniq(&:id)
+    end
+
+    #
+    # Find direct next-generation "child" Media works downstream from Media in hierarchy. 
+    #
+    # @return [Array<SolrDocument>] Array of SolrDocuments of child Media works
+    #
+    def child_media
+      @child_media ||= direct_child_media_works(solr_document)
+    end
+
+    #
+    # Find direct next-generation "child" Media works downstream from Media in hierarchy, filtered
+    # to Media current user can view. 
+    #
+    # @return [Array<SolrDocument>] Array of SolrDocuments of child Media works
+    #
+    def viewable_child_media
+      @viewable_child_media ||= child_media.select { |m| viewable_related_media.map(&:id).include?(m.id) }
+    end
+
+    #
     # IDs of child Media works downstream from this Media. Only the first immediate child generation.
     #
     # @return [Array<String>] Array of child Media IDs
     #
     def child_media_id_list
-      @child_media_id_list ||= direct_child_media_ids(solr_document)
+      @child_media_id_list ||= child_media.map { |w| w.id }
     end
 
     #
@@ -642,7 +668,29 @@ module Hyrax
     # @return [Array<SolrDocument>] Array of other related Media that current user can view
     #
     def viewable_related_media
-      related_media.select { |m| current_ability.can?(:read, m) }
+      @viewable_related_media ||= related_media.select { |m| current_ability.can?(:read, m) }
+    end
+
+    #
+    # All viewable related media except those in parent_media and child_media
+    #
+    # @return [Array<SolrDocument>] Array of non-parent non-child related Media that current user can view
+    #
+    def other_viewable_related_media
+      @other_viewable_related_media ||= begin
+        excludeable_media_ids = parent_media_id_list + child_media_id_list
+        viewable_related_media.reject { |m| excludeable_media_ids.include?(m.id) }
+      end
+    end
+
+    #
+    # Count number of viewable non-parent media plus parent media (regardless if user can view).
+    # User-facing pages provide private media placeholders for unviewable parents, so must count them.
+    #
+    # @return Integer Number of viewable non-parent media plus parent media (regardless of view status)
+    #
+    def user_facing_related_media_count
+      top_and_direct_parents.count + viewable_child_media.count + other_viewable_related_media.count
     end
 
     ### WORK HIERARCHY STATE METHODS ###
@@ -670,7 +718,7 @@ module Hyrax
     # @return [Boolean] Whether or not Media has any immediate child Media works
     #
     def has_child_media?
-      child_media_id_list.present?
+      child_media.present?
     end
 
     #

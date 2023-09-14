@@ -49,13 +49,15 @@ module Hyrax
       to: :representative_presenter, allow_nil: true
 
     # Attributes from Media solr document
-    delegate :access_control_id, :agreement_uri, :ark, :cite_as, :depositor, :description, :doi, :download_reviewer, :fileset_accessibility, 
-      :fileset_visibility, :funding, :identifier, :imaging_event_id, :is_remote_backed, :map_type, :media_organization_id, :media_type, 
-      :morphosource_use_agreement_type, :number_of_images_in_set, :organization_transfer_on_publish, 
-      :orientation, :part, 
-      :permits_3d_use, :permits_commercial_use, :physical_object_id, :physical_object_type, :preview_mode, :publication_status_label, 
-      :related_url, :remote_manifest_url, :remote_origin_url, :required_archival_of_published_derivatives, 
-      :rights_holder, :scale_bar, :series_type, :short_description, :side, :slice_thickness, :taxonomies_titles, :unit, 
+    delegate :access_control_id, :agreement_uri, :ark, :cite_as, :depositor, :description, :doi, 
+      :download_reviewer, :fileset_accessibility, :fileset_visibility, :funding, 
+      :human_readable_media_type, :identifier, :imaging_event_id, :is_remote_backed, :map_type, 
+      :media_organization_id, :media_type, :morphosource_use_agreement_type, 
+      :number_of_images_in_set, :organization_transfer_on_publish, :orientation, :part, 
+      :permits_3d_use, :permits_commercial_use, :physical_object_id, :physical_object_type, 
+      :preview_mode, :publication_status_label, :related_url, :remote_manifest_url, 
+      :remote_origin_url, :required_archival_of_published_derivatives, :rights_holder, :scale_bar, 
+      :series_type, :short_description, :side, :slice_thickness, :taxonomies_titles, :unit, 
       :user_with_ownership, :x_spacing, :y_spacing, :z_spacing,
       to: :solr_document
 

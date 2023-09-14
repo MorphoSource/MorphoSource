@@ -36,7 +36,11 @@ en:
         name:               "Media"
   showcase:
     sections:
-      collections: In Collections
+      collections: 
+        content:
+          none: No collections found.
+        labels:
+          base: In Collections
       preview: Media Display
       related_media: 
         content:
@@ -55,7 +59,11 @@ en:
           top_direct_parent: Parent Media (Top and Direct)
           child: Child Media
           other: Other Related Media
-      tags: Tags
+      tags:
+        content:
+          none: No tags found.
+        labels:
+          base: Tags
       
   simple_form:
     labels:

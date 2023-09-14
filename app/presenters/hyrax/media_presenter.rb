@@ -52,7 +52,7 @@ module Hyrax
     delegate :access_control_id, :agreement_uri, :ark, :cite_as, :depositor, :description, :doi, 
       :download_reviewer, :fileset_accessibility, :fileset_visibility, :funding, 
       :human_readable_media_type, :identifier, :imaging_event_id, :is_remote_backed, :map_type, 
-      :media_organization_id, :media_type, :morphosource_use_agreement_type, 
+      :media_organization_id, :media_organization, :media_type, :morphosource_use_agreement_type, 
       :number_of_images_in_set, :organization_transfer_on_publish, :orientation, :part, 
       :permits_3d_use, :permits_commercial_use, :physical_object_id, :physical_object_type, 
       :preview_mode, :publication_status_label, :related_url, :remote_manifest_url, 
@@ -140,6 +140,14 @@ module Hyrax
     #
     def preview_in_3D?
       !preview_mode.present? || preview_mode&.first == "" || preview_mode&.first == "Interactive/Embeddable"
+    end
+
+    #
+    # First taxonomy title
+    #
+    # @return [String] First taxonomy title
+    def taxonomy_title
+      taxonomies_titles&.first || ""
     end
 
     # Media fund code data
@@ -831,32 +839,12 @@ module Hyrax
       end
     end
 
-    #
-    # HTML snippet for In Collection badge based on physical object vouchered status
-    #
-    # @return [String] HTML snippet for In Collection badge
-    #
-    def in_collection_badge
-      # override the method in presents_attributes
-      in_collection_badge_class.new(vouchered).render
-    end
-
     def permission_badge
       permission_badge_class.new(solr_document.publication_status).render
     end
 
     def permission_badge_class
       Morphosource::PublicationBadge
-    end
-
-    #
-    # HTML snippet for Supplied Record badge based on physical object iDigBio UUID state
-    #
-    # @return [String] HTML snippet for Supplied Record badge
-    #
-    def supplied_record_badge
-      # override the method in presents_attributes
-      supplied_record_badge_class.new(idigbio_uuid).render
     end
 
     #

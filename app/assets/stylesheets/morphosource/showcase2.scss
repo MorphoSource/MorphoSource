@@ -180,6 +180,7 @@ body.showcase2 {
 
   .text-muted {
     font-size: 14px;
+    font-weight: normal;
     margin-bottom: 5px;
 
     .showcase-link {
@@ -190,6 +191,11 @@ body.showcase2 {
     .text-muted-item {
       display: inline-block;
       margin-bottom: 3px;
+    }
+
+    .text-muted-value {
+      color: #333;
+      margin-left: 3px;
     }
   }
 

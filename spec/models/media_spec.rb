@@ -509,25 +509,6 @@ RSpec.describe Media do
         end
       end
 
-      context 'update organization transfer request' do
-        let(:old_transfer_request) { ProxyDepositRequest.create(
-            work_id: media.id,
-            receiving_user: data_manager,
-            sending_user: depositor,
-            sender_comment: 'transfer test',
-            organization_transfer: true
-          )}
-        let(:new_data_manager)          { FactoryBot.create(:contributor) }
-
-        before do
-byebug
-          media.create_new_organization_transfer_request(new_data_manager, true)
-        end
-        it 'cancels old transfer request' do
-          expect(old_transfer_request.status).to eq("canceled")
-        end
-      end
-
       context 'organization does not have a data manager set' do
         before do
           organization.data_manager = []

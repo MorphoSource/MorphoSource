@@ -351,7 +351,7 @@ input[type=checkbox].disabled {
       margin-right: -10px;
     }
 
-    div:not(.row, .select2-container) {
+    div:not(.row, .select2-container, .media-item-title) {
       margin-top: 5px;
       margin-bottom: 5px;
     }

@@ -15,6 +15,14 @@ module Morphosource
           [Hyrax::CollectionType.find_by(title: "Media List")]
         end
 
+        # Sort results by title if no query was supplied.
+        # This overrides the default 'relevance' sort.
+        def add_sorting_to_solr(solr_parameters)
+          return if solr_parameters[:q]
+          solr_parameters[:sort] ||= sort
+          solr_parameters[:sort] ||= "#{sort_field} asc"
+        end
+
       end
     end
   end

@@ -246,7 +246,7 @@ en:
           edit_sequential section_list: Edit sequential section list
           delete_sequential section_list: Delete sequential section list
         heading:
-          visibility: visibility
+          visibility: Visibility
           collection_type: collection type
       collections:
         actions:

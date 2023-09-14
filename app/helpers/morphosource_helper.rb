@@ -1,7 +1,6 @@
 module MorphosourceHelper
 
   include ActionView::Helpers::UrlHelper
-  include MediaFinderHelper
   include Hyrax::Renderers
 
   class RemoteFileInfo
@@ -149,9 +148,8 @@ module MorphosourceHelper
   end
 
   def generated_thumbnail(presenter)
-    file_set = presenter.member_presenters_for(presenter.file_set_list).first
-    return '' unless file_set
-    render_thumbnail_tag(file_set, {}, {suppress_link:true})
+    return '' unless presenter.representative_presenter.present?
+    render_thumbnail_tag(presenter.representative_presenter, {}, {suppress_link:true})
   end
 
   def find_works_autocomplete_url(curation_concern, relation)

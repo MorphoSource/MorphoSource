@@ -23,14 +23,7 @@ module Hyrax
 
     def viewable_related_media_ids
       return related_media_ids if current_ability.current_user.admin?
-
-      @viewable_related_media_ids ||= begin
-        related_media_ids.each_with_object({}) do |id, filtered_ids|
-          if current_ability.can?(:read, id)
-            filtered_ids << id
-          end
-        end
-      end
+      @viewable_related_media_ids ||= related_media_ids.select { |id| current_ability.can?(:read, id) }
     end
 
     def date_created_label

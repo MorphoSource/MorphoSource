@@ -1,5 +1,7 @@
 class SequentialSectionList < MediaList
 
+  self.indexer = SequentialSectionListIndexer
+
   def self.collection_type
     Hyrax::CollectionType.find_by(Morphosource::CollectionTypes::SequentialSectionLists::SETTINGS)
   end
@@ -25,7 +27,10 @@ class SequentialSectionList < MediaList
   end
 
   def specimen_doc
-    SolrDocument.find(media_docs&.first['physical_object_id_ssim']&.first)
+    return if media_docs.empty?
+
+    id = media_docs.first['physical_object_id_ssim']&.first
+    id.present? ? SolrDocument.find(id) : nil
   end
 
   def human_readable_type

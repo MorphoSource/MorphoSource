@@ -10,6 +10,13 @@ module Morphosource
         end
       end
 
+      def check_request_terms_agree
+        unless params[:request_download_terms_agreed] == "on"
+          flash[:error] = "You must agree to all download agreements."
+          redirect_back(fallback_location: my_requests_path)
+        end
+      end
+
       def create_new_requested_item(work_id)
         item = create_cart_item(work_id)
         make_request(item)
@@ -19,7 +26,7 @@ module Morphosource
       def make_request(items)
         items = Array(items)
         items.each do |item|
-          item.update_attributes(date_cleared: nil, date_requested: Time.now, use: @intended_use)
+          item.update_attributes(date_cleared: nil, date_requested: Time.now, use: @intended_use, download_request_terms_agreement: true)
         end
       end
 

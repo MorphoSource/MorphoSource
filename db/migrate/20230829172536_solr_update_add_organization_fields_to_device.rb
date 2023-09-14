@@ -3,15 +3,15 @@ class SolrUpdateAddOrganizationFieldsToDevice < ActiveRecord::Migration[5.2]
     # Get organization solr docs and create mapping to devices
     organization_docs = ActiveFedora::SolrService.query("has_model_ssim:Organization", rows: 999_999)
     device_id_to_organizations = {}
-    organization_docs.each do |org_doc|
-      org_doc["member_ids_ssim"].each do |device_id|
+    ( organization_docs || [] ).each do |org_doc|
+      ( org_doc["member_ids_ssim"] || [] ).each do |device_id|
         device_id_to_organizations[device_id] = org_doc
       end
     end
 
     # Update device docs if possible
     device_docs = ActiveFedora::SolrService.query("has_model_ssim:Device", rows: 999_999)
-    device_docs.each do |doc|
+    ( device_docs || [] ).each do |doc|
       new_doc = doc.to_h
 
       if (device_org = device_id_to_organizations[doc["id"]]).present?
@@ -30,7 +30,7 @@ class SolrUpdateAddOrganizationFieldsToDevice < ActiveRecord::Migration[5.2]
 
   def down
     device_docs = ActiveFedora::SolrService.query("has_model_ssim:Device", rows: 999_999)
-    device_docs.each do |doc|
+    ( device_docs || [] ).each do |doc|
       new_doc = doc.to_h
 
       new_doc["device_organization_id_tesim"] = nil

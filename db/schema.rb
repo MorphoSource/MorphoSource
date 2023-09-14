@@ -65,6 +65,7 @@ ActiveRecord::Schema.define(version: 2023_08_29_172536) do
     t.string "download_hash"
     t.integer "download_attempts"
     t.string "download_method"
+    t.boolean "download_request_terms_agreement"
     t.index ["user_id"], name: "index_cart_items_on_user_id"
     t.index ["work_id"], name: "index_cart_items_on_work_id"
   end

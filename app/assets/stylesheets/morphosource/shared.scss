@@ -21,6 +21,7 @@ $block-background-color: #efefef;
 $block-border-color: #d4d4d4;
 $ms-blue: #003880;
 $ms-dark-blue: #002c64;
+$success-color: #387f38;
 
 ::placeholder {
   color: #ccc !important;
@@ -29,6 +30,10 @@ $ms-dark-blue: #002c64;
 #content-wrapper.container {
   width: unset;
   max-width: 1200px;
+}
+
+.badge-pill {
+  padding: 10px !important;
 }
 
 .toggle-btn button {

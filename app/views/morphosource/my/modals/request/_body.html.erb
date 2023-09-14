@@ -1,10 +1,15 @@
+<%# modal partial for cart / request page %>
 <div class="modal-body">
-  <%= form_tag(main_app.request_item_path, method: :put, id: 'modal-form', "data-behavior" => 'batch-select-all', :class => "form-horizontal") do %>
-    <%= label_tag 'intended use', 'Intended Use', :class => 'control-label' %>
-    <%= text_field :intended_use, params[:use], :class => "form-control", required: true, minlength: 50 %>
+  <%= form_tag(main_app.request_item_path, method: :put, id: 'request-download-form', "data-behavior" => 'batch-select-all', :class => "form-horizontal") do %>
+
+  <div class="download-items-wrapper hide">
+    <%# this div is a container for storing the user selected download items 
+        (see sendSelectedRestrictedItemsToModal js method) %>
+  </div>
+
+  <%= render 'morphosource/my/modals/request/form_fields' %>
 </div>
 <div class="modal-footer">
-  <button type="button" id="modal-cancel" class="btn btn-danger" data-dismiss="modal">Cancel</button>
-    <%= submit_tag "Submit", name: nil, class: "btn btn-success" %>
+  <input type="submit" name="request-download" value="Request Download" class="btn btn-lg btn-info" id="modal-request-download" disabled="disabled" />
   <% end %>
 </div>

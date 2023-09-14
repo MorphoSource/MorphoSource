@@ -319,7 +319,7 @@ module Morphosource
           end
 
           def slides
-            @slides ||= [gbif_slides.first]
+            @slides ||= gbif_slides
           end
 
           def taxonomy_params_from_gbif

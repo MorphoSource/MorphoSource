@@ -5,19 +5,19 @@
   default_device: 'TissueScope LE 120'
   download_reviewer: '2956'
   filter_slides: 'ac:BestQuality'
-  fileset_accessibility: ['restricted_download']
+  fileset_accessibility: ['open']
   license: ['https://creativecommons.org/licenses/by-nc-nd/4.0/']
-  list_visibility: 'restricted'
+  list_visibility: 'open'
   manager: 'f95e50'
   morphosource_use_agreement_type: ['Standard']
   permits_3d_use: ['3DPrintingLimited']
   permits_commercial_use: ['CommercialUseNotPermitted']
   preview_mode: ['Interactive/Embeddable']
-  publication_status: 'restricted_download'
+  publication_status: 'open'
   publisher: ['Museum of Comparative Zoology, Harvard University']
   required_archival_of_published_derivatives: ['OnMorphoSource']
   rights_holder: ['President and Fellows of Harvard College (Copyright and License)']
   rights_statement: ['http://rightsstatements.org/vocab/InC/1.0/']
   visibility: 'open'
   slide_class: 'MczSlide'
-  normalize_permissions: true
+  normalize_permissions: false

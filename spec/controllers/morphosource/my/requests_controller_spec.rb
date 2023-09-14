@@ -26,17 +26,27 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
       context 'item ids are blank' do
         before do
           request.env["HTTP_REFERER"] = "original_page"
-          put :request_item, params: { item_id: '', intended_use: ["Intended Use"] }
+          put :request_item, params: { item_id: '', intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
         end
         it "adds a flash error message and reloads the page" do
           expect(response.flash[:error]).to eq(I18n.t('morphosource.dashboard.my.requests.request_item.alert'))
           expect(response).to redirect_to("original_page")
         end
       end
-      context 'the item has not been requested before' do
+      context 'request_download_terms_agreed not in the params' do
         before do
           request.env["HTTP_REFERER"] = "original_page"
           put :request_item, params: { item_id: cartItem3.id, intended_use: ["Intended Use"] }
+        end
+        it "adds flash error message about download agreements and reloads the page" do
+          expect(response.flash[:error]).to eq("You must agree to all download agreements.")
+          expect(response).to redirect_to("original_page")
+        end
+      end
+      context 'the item has not been requested before' do
+        before do
+          request.env["HTTP_REFERER"] = "original_page"
+          put :request_item, params: { item_id: cartItem3.id, intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
         end
 
         it "marks the item's date_requested as today" do
@@ -45,6 +55,10 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
 
         it "adds the intended use to the request" do
           expect(cartItem3.reload.use).to eq("Intended Use")
+        end
+
+        it "sets the request_download_terms_agreed to true" do
+          expect(cartItem3.reload.download_request_terms_agreement).to eq(true)
         end
 
         it "creates a flash notice with the number of items requested" do
@@ -61,7 +75,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
           cartItem3.date_cleared = Date.yesterday
           cartItem3.save
           request.env["HTTP_REFERER"] = "original_page"
-          put :request_item, params: { item_id: cartItem3.id, intended_use: ["Intended Use"] }
+          put :request_item, params: { item_id: cartItem3.id, intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
         end
 
         it "marks the item's date_requested as today" do
@@ -93,7 +107,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
 
         let!(:requested_item)  { CartItem.create(user_id: current_user.ms_id, work_id: requested_work.id, in_cart: true, date_requested: Date.yesterday, date_approved: Date.yesterday, date_expired: Date.yesterday)}
 
-        let(:put_params)      { {item_id: requested_item.id, intended_use: ["Intended Use"]} }
+        let(:put_params)      { {item_id: requested_item.id, intended_use: ["Intended Use"], request_download_terms_agreed: 'on'} }
         let(:items_in_cart)   { current_user.items_in_cart }
 
         before do
@@ -110,7 +124,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
 
         it 'creates a new cart item' do
           expect{
-            process :request_item, method: :put, params: { item_id: requested_item.id, intended_use: ["Intended Use"] }
+            process :request_item, method: :put, params: { item_id: requested_item.id, intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
           }.to change{CartItem.count}.by(1)
         end
 
@@ -138,7 +152,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
       context 'item ids are blank' do
         before do
           request.env["HTTP_REFERER"] = "original_page"
-          put :request_item, params: { batch_document_ids: [], intended_use: ["Intended Use"] }
+          put :request_item, params: { batch_document_ids: [], intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
         end
         it "adds a flash error message and reloads the page" do
           expect(response.flash[:error]).to eq(I18n.t('morphosource.dashboard.my.requests.request_item.alert'))
@@ -148,7 +162,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
       context 'none of the items has been requested before' do
         before do
           request.env["HTTP_REFERER"] = "original_page"
-          put :request_item, params: { batch_document_ids: [cartItem3.id,cartItem7.id], intended_use: ["Intended Use"] }
+          put :request_item, params: { batch_document_ids: [cartItem3.id,cartItem7.id], intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
         end
 
         it "marks the items' date_requested as today" do
@@ -177,7 +191,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
           cartItem1.date_expired = Date.yesterday
           cartItem1.save
           request.env["HTTP_REFERER"] = "original_page"
-          put :request_item, params: { batch_document_ids: [cartItem3.id,cartItem7.id,cartItem1.id], intended_use: ["Intended Use"] }
+          put :request_item, params: { batch_document_ids: [cartItem3.id,cartItem7.id,cartItem1.id], intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
         end
 
         it "marks the previously unrequested items' date_requested as today" do
@@ -225,7 +239,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
         end
         it 'creates a new cart item' do
           expect{
-            process :request_item, method: :put, params: { batch_document_ids: [cartItem3.id,cartItem7.id,cartItem1.id], intended_use: ["Intended Use"] }
+            process :request_item, method: :put, params: { batch_document_ids: [cartItem3.id,cartItem7.id,cartItem1.id], intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
           }.to change{CartItem.count}.by(1)
         end
       end
@@ -235,7 +249,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
       before do
         request.env["HTTP_REFERER"] = "original_page"
         allow(subject).to receive(:send_request_message_to_reviewer).with(any_args).and_raise(NoMethodError)
-        put :request_item, params: { item_id: cartItem3.id, intended_use: ["Intended Use"] }
+        put :request_item, params: { item_id: cartItem3.id, intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
       end
       it 'produces a flash error' do
         expect(response.flash[:error]).to eq(I18n.t('morphosource.dashboard.my.requests.request_item.messages.error'))
@@ -250,7 +264,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
       context 'item ids are blank' do
         before do
           request.env["HTTP_REFERER"] = "original_page"
-          put :request_again, params: { item_id: '', intended_use: ["Intended Use"] }
+          put :request_again, params: { item_id: '', intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
         end
         it "adds a flash error message and reloads the page" do
           expect(response.flash[:error]).to eq(I18n.t('morphosource.dashboard.my.requests.request_item.alert'))
@@ -263,7 +277,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
           cartItem1.date_expired = Date.yesterday
           cartItem1.save
           request.env["HTTP_REFERER"] = "original_page"
-          get :request_again, params: { item_id: cartItem1.id, intended_use: ["Intended Use"] }
+          get :request_again, params: { item_id: cartItem1.id, intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
         end
 
         it "removes the item from the cart" do
@@ -273,7 +287,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
 
         it 'creates a new cart item' do
           expect{
-            process :request_again, method: :get, params: { item_id: cartItem1.id, intended_use: ["Intended Use"] }
+            process :request_again, method: :get, params: { item_id: cartItem1.id, intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
           }.to change{CartItem.count}.by(1)
         end
 
@@ -299,7 +313,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
           cartItem1.date_expired = Date.yesterday
           cartItem1.save
           request.env["HTTP_REFERER"] = "original_page"
-          get :request_again, params: { item_id: cartItem1.id, intended_use: ["Intended Use"] }
+          get :request_again, params: { item_id: cartItem1.id, intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
         end
         it 'produces a flash error' do
           expect(response.flash[:error]).to eq(I18n.t('morphosource.dashboard.my.requests.request_item.messages.error'))
@@ -311,7 +325,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
       context 'item ids are blank' do
         before do
           request.env["HTTP_REFERER"] = "original_page"
-          put :request_again, params: { batch_document_ids: [], intended_use: ["Intended Use"] }
+          put :request_again, params: { batch_document_ids: [], intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
         end
         it "adds a flash error message and reloads the page" do
           expect(response.flash[:error]).to eq(I18n.t('morphosource.dashboard.my.requests.request_item.alert'))
@@ -328,7 +342,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
         end
 
         it "removes any items in the cart" do
-          get :request_again, params: { batch_document_ids: [cartItem1.id,cartItem5.id], intended_use: ["Intended Use"] }
+          get :request_again, params: { batch_document_ids: [cartItem1.id,cartItem5.id], intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
           [cartItem1,cartItem5].each(&:reload)
           expect(cartItem1.in_cart).to be(false)
           expect(cartItem5.in_cart).to be(false)
@@ -336,12 +350,12 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
 
         it 'creates new cart items' do
           expect{
-            process :request_again, method: :get, params: { batch_document_ids: [cartItem1.id,cartItem5.id], intended_use: ["Intended Use"] }
+            process :request_again, method: :get, params: { batch_document_ids: [cartItem1.id,cartItem5.id], intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
           }.to change{CartItem.count}.by(2)
         end
 
         it 'assigns the correct attribute values to the new cart items' do
-          get :request_again, params: { batch_document_ids: [cartItem1.id,cartItem5.id], intended_use: ["Intended Use"] }
+          get :request_again, params: { batch_document_ids: [cartItem1.id,cartItem5.id], intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
           items = CartItem.limit(2).order('id desc')
           item1 = items[0]
           work1 = Media.find(item1.work_id)
@@ -366,7 +380,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
         end
 
         it "reloads the page" do
-          get :request_again, params: { batch_document_ids: [cartItem1.id,cartItem5.id], intended_use: ["Intended Use"] }
+          get :request_again, params: { batch_document_ids: [cartItem1.id,cartItem5.id], intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
           expect(response).to redirect_to("original_page")
         end
 
@@ -375,7 +389,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
             allow(subject).to receive(:send_request_message_to_reviewer).with(any_args).and_raise(NoMethodError)
           end
           it 'produces a flash error' do
-            get :request_again, params: { batch_document_ids: [cartItem1.id,cartItem5.id], intended_use: ["Intended Use"] }
+            get :request_again, params: { batch_document_ids: [cartItem1.id,cartItem5.id], intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
             expect(response.flash[:error]).to eq(I18n.t('morphosource.dashboard.my.requests.request_item.messages.error'))
           end
         end
@@ -433,7 +447,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
   describe "POST #request_work" do
     let(:depositor)   { User.create(email: "test@test.com", password: "password")}
     let(:new_work)    { Media.create(id: 'zzz', title: ['new work'], visibility: 'open', fileset_accessibility: ["restricted_download"], depositor: depositor.ms_id)}
-    let(:post_params) { { work_id: [new_work.id], intended_use: ["Intended Use"] } }
+    let(:post_params) { { work_id: [new_work.id], intended_use: ["Intended Use"], request_download_terms_agreed: 'on' } }
 
     before do
       request.env["HTTP_REFERER"] = "original_page"
@@ -471,7 +485,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
       end
     end
     context "work is in the cart and hasn't been requested" do
-      let(:post_params) { {work_id: [work3.id], intended_use: ["Intended Use"]} }
+      let(:post_params) { {work_id: [work3.id], intended_use: ["Intended Use"], request_download_terms_agreed: 'on'} }
       before do
         request.env["HTTP_REFERER"] = "original_page"
         post :request_work, params: post_params
@@ -487,7 +501,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
       end
     end
     context "work is in the cart, but is an inactive request (expired,denied,cleared,canceled)" do
-      let(:post_params) {{work_id: [cartItem1.work_id], intended_use: ["Intended Use"]}}
+      let(:post_params) {{work_id: [cartItem1.work_id], intended_use: ["Intended Use"], request_download_terms_agreed: 'on'}}
       before do
         request.env["HTTP_REFERER"] = "original_page"
         cartItem1.date_expired = Date.yesterday
@@ -522,4 +536,5 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
       end
     end
   end
+
 end

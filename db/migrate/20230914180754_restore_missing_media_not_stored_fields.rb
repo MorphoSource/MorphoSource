@@ -12,9 +12,9 @@ class RestoreMissingMediaNotStoredFields < ActiveRecord::Migration[5.2]
       media_type_sim = doc['media_type_tesim']
       part_si = doc['part_tesim']&.first
       physical_object_title_si = doc['physical_object_title_tesim']&.first
-      publication_satus_si = publication_status(doc)
+      publication_status_si = publication_status(doc)
       publisher_sim = doc['publisher_tesim']
-      taxonomy_si = doc['taxonomy_tesim']
+      taxonomy_si = doc['taxonomy_tesim']&.first
       unit_sim = doc['unit_tesim']
 
       ActiveFedora::SolrService.add( { 'id' => doc['id'],
@@ -32,6 +32,7 @@ class RestoreMissingMediaNotStoredFields < ActiveRecord::Migration[5.2]
                                        'taxonomy_si': { 'set' => taxonomy_si },
                                        'unit_sim': { 'set' => unit_sim }
                                       }, softCommit: true )
+    end
   end
 
   def down
@@ -39,19 +40,19 @@ class RestoreMissingMediaNotStoredFields < ActiveRecord::Migration[5.2]
 
     media_docs.each do |doc|
       ActiveFedora::SolrService.add( { 'id': doc['id'],
-                                        'admin_set_sim': { 'set' : nil },
-                                        'creator_sim': { 'set': nil },
-                                        'generic_type_sim': { 'set': nil },
-                                        'human_readable_media_type_si': { 'set': nil },
-                                        'human_readable_type_sim': { 'set': nil },
-                                        'keyword_sim': { 'set': nil },
-                                        'media_type_sim': { 'set': nil },
-                                        'part_si': { 'set': nil },
-                                        'physical_object_title_si': { 'set': nil },
-                                        'publication_status_si': { 'set': nil },
-                                        'publisher_sim': { 'set': nil },
-                                        'taxonomy_si': { 'set': nil },
-                                        'unit_sim': { 'set': nil }
+                                        'admin_set_sim': { 'set' => nil },
+                                        'creator_sim': { 'set'=> nil },
+                                        'generic_type_sim': { 'set'=> nil },
+                                        'human_readable_media_type_si': { 'set'=> nil },
+                                        'human_readable_type_sim': { 'set'=> nil },
+                                        'keyword_sim': { 'set'=> nil },
+                                        'media_type_sim': { 'set'=> nil },
+                                        'part_si': { 'set'=> nil },
+                                        'physical_object_title_si': { 'set'=> nil },
+                                        'publication_status_si': { 'set'=> nil },
+                                        'publisher_sim': { 'set'=> nil },
+                                        'taxonomy_si': { 'set'=> nil },
+                                        'unit_sim': { 'set'=> nil }
                                         }, softCommit: true )
     end
   end

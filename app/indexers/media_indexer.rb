@@ -178,8 +178,7 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['publication_status_si'] = pub_status&.downcase
 
       # fund code data sponsor
-      fund_code_title = object.active_fund_code_title
-      solr_doc['active_fund_code_title_ssim'] = fund_code_title
+      solr_doc['active_fund_code_title_ssim'] = object.active_fund_code_title
 
       # organization transfer fields
       solr_doc['organization_transfer_on_publish_bsi'] = object.organization_transfer_on_publish

@@ -17,8 +17,8 @@ RSpec.describe ObjectsCatalogController, type: :controller do
     describe 'facet fields' do
       let(:facet_fields) { config.facet_fields }
 
-      it 'has 9 facet fields' do
-        expect(facet_fields.count).to eq(9)
+      it 'has 11 facet fields' do
+        expect(facet_fields.count).to eq(11)
       end
 
       describe 'human readable type' do
@@ -65,6 +65,22 @@ RSpec.describe ObjectsCatalogController, type: :controller do
         subject { facet_fields['media_member_of_project_ids_ssim'] }
         it 'has the correct attributes' do
           expect(subject.label).to eq('Project')
+          expect(subject.limit).to eq(10)
+        end
+      end
+
+      describe 'media lists' do
+        subject { facet_fields['media_member_of_media_list_ids_ssim'] }
+        it 'has the correct attributes' do
+          expect(subject.label).to eq('Media List')
+          expect(subject.limit).to eq(10)
+        end
+      end
+
+      describe 'media sequential section lists' do
+        subject { facet_fields['media_member_of_sequential_section_list_ids_ssim'] }
+        it 'has the correct attributes' do
+          expect(subject.label).to eq('Seq. Section List')
           expect(subject.limit).to eq(10)
         end
       end

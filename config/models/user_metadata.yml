@@ -1,0 +1,16 @@
+# config/models/user_metadata.yml
+user_metadata:
+  first_name: string
+  middle_name: string
+  last_name: string
+  city: string
+  social_media_handles: string
+  typical_usage: text
+  profile_types: string
+  academic_institution_or_school: string
+  department: string
+  academic_field: string
+  academic_subfield: string
+  mentor_or_advisor: string
+  instructor: string
+  organization: string

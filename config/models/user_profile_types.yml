@@ -1,0 +1,30 @@
+# config/models/user_profile_types.yml
+profile_types:
+  universal:
+    metadata_fields: email, first_name, middle_name, last_name, country, state_or_province, city, orcid, social_media_handles, website, typical_usage
+  educator:
+    metadata_fields: department, instructor
+    required_metadata_fields: academic_institution_or_school, department, academic_field, academic_subfield, mentor_or_advisor, organization
+  artist:
+    metadata_fields: organization
+  professional:
+    required_metadata_fields: organization
+
+#
+#  academic_institution_or_school
+#  department
+#  academic_field
+#  academic_subfield
+#  mentor_or_advisor
+#  instructor
+#  organization
+
+#Faculty or Staff (University, Museum, and/or Library)
+#Faculty or Staff (K-12)
+#Educator (Other)
+#Student (Post-Graduate)
+#Student (Undergraduate)
+#Student (K-12)
+#Private Industry or Government Professional
+#Artist
+#Private Individual or Other

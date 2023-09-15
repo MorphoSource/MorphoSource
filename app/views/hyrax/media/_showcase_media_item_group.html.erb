@@ -1,0 +1,18 @@
+<div class="media-block">
+  <h3 class="has-hint">
+    <%= t("showcase.sections.related_media.labels.#{name}").titleize %>
+    <%= local_assigns[:title_count] ? "(#{group.count.to_s})" : "" %>
+    <%= render_hint_tag(t("showcase.sections.related_media.hints.#{name}", id: @presenter.id)) %>
+  </h3>
+  <%= render partial: @presenter.showcase_media_items_member_partial, 
+    collection: group, 
+    as: :media, 
+    locals: { 
+      media_count: group.count, 
+      items_above_fold: items_above_fold
+    } 
+  %>
+  <% if group.count > items_above_fold %>
+    <%= collapse_expand_panel_simple %>
+  <% end %>
+</div>

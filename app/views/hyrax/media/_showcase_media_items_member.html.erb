@@ -1,29 +1,25 @@
-<%# member is a SolrDocument, not a Presenter member %>
-<% member = showcase_media_items_member %>
+<%# media is a SolrDocument, not a media %>
 
-<% if showcase_media_items_member_counter == items_to_show_initially %>
-	<div id="collapse-block-media-items-member" class="panel-collapse collapse collapse-block row">
-<% end %>
-
-	<% if showcase_media_items_member_counter % items_per_row == 0 
-		@row_div_opened = true 
-		%>
-		<div class="row"><!-- starting a row div -->
-	<% end %>
-
-	 	<div class="thumbnail col-xs-4">
-			<%  # todo: need to display "Parent / Child / Sibling Media" %>
-      <% if member.id == @presenter.id %>
-        <%= render_thumbnail_tag @presenter, {}, { suppress_link: true } %><br>
-        <%= @presenter.link_name_long %> (this media)<br>
-      <% else %>
-  	    <%= render_thumbnail_tag member %><br>
-  	    <%= link_to(@presenter.link_name_long_from_object(member), main_app.media_showcase_path(member)) %>
-      <% end %>
-	  </div>
-
-	<% if showcase_media_items_member_counter % items_per_row == items_per_row-1 or showcase_media_items_member_counter == media_count-1 
-		@row_div_opened = false
-		%>
-		</div><!-- closing a row div, since this is either the last item of each row, or the last item on the list -->
-	<% end %>
+<div class="<%= media_counter >= (local_assigns[:items_above_fold] || 3) ? "collapse collapse-simple" : "" %>">
+	<div class="media-item">
+		<% if can? :read, media %>
+			<div class="media-thumbnail thumbnail-sm">
+				<%= render_thumbnail_tag media %>
+			</div>
+			<div>
+				<div>
+					<div class="media-item-title">
+						<div><%= link_to "Media #{media.id}: #{media.part&.first || "Element Unspecified"}", main_app.media_showcase_path(media) %></div>
+					</div>
+					<div class="text-muted">
+						<div class="text-muted-item"><%= media.media_type&.first || "Unknown Type" %></div> 
+						<div class="text-muted-item"> · <%= media.publication_status_label %></div> 
+					</div>
+				</div>
+			</div>
+		<% else %>
+			<div class="media-thumbnail thumbnail-sm"><%= render_default_thumbnail %></div>
+			<div><span class="no-access-media-label">Private media inaccessible with current permissions<span></div>
+		<% end %>
+	</div>
+</div>

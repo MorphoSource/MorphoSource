@@ -45,26 +45,26 @@ module MediaFinderHelper
   end
 
   #
-  # IDs of immediate direct next-generation "child" downstream Media works/
+  # Find SolrDocuments of immediate direct next-generation "child" downstream Media works
   # Assumes a Media membership hierarchy of ... -> Media -> PE -> Media.
   #
   # @param [SolrDocument] solr_document SolrDocument for Media to find children for
   #
   # @return [Array<String>] Array of child downstream Media works
   #
-  def direct_child_media_ids(solr_document)
-    return [] unless solr_document.member_ids.present?
+  def direct_child_media_works(solr_document)
+    return [] unless solr_document.present?
 
     processing_events = solr.get_docs(
       "#{assemble_or_query("id", solr_document.member_ids)} AND has_model_ssim:ProcessingEvent",
-      { fl: ["id", "has_model_ssim", "member_ids_ssim"] }
+      { fl: ["member_ids_ssim"] }
     )
-    processing_event_member_ids = processing_events.map { |pe| pe["member_ids_ssim"] }.flatten.uniq
+    processing_event_member_ids = processing_events.map { |pe| pe["member_ids_ssim"] }.flatten.uniq.compact
     return [] unless processing_event_member_ids.present?
 
-    solr.get_docs(
-      "#{assemble_or_query("id", processing_event_member_ids)} AND has_model_ssim:Media",
-      { fl: ["id"] }
-    ).map { |doc| doc["id"] }
+    ::SolrDocument.where(
+      "has_model_ssim" => "Media",
+      "id" => "(#{processing_event_member_ids.join(" OR ")})"
+    )
   end
 end

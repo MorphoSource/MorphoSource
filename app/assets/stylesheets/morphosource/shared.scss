@@ -27,6 +27,11 @@ $success-color: #387f38;
   color: #ccc !important;
 }
 
+#content-wrapper.container {
+  width: unset;
+  max-width: 1200px;
+}
+
 .badge-pill {
   padding: 10px !important;
 }

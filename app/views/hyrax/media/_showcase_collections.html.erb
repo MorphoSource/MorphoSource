@@ -1,12 +1,20 @@
-<h2>COLLECTIONS MEDIA BELONGS TO</h2>
+<h2><%= t("showcase.sections.collections.labels.base") %></h2>
 <div class="row">
 	<div class="col-xs-12">
-	  <% presenter.member_of_collection_presenters.each do |collection| %>
-      <ul>
-        <li class='attribute attribute-title'>
-          <%= link_to collection.title.first, main_app.url_for(collection) %>
-        </li>
-      </ul>
-	  <% end %>
+    <% if presenter.member_of_collection_presenters.present? %>
+      <% presenter.member_of_collection_presenters.each do |collection| %>
+        <div>
+          <div><%= link_to collection.title&.first || "Unknown Title", main_app.url_for(collection) %></div>
+          <div class="text-muted">
+            <div class="text-muted-item"><%= collection.human_readable_type || "Unknown Collection Type" %></div>
+            <div class="text-muted-item"> · <%= t("hyrax.visibility.#{collection.visibility}.text") %></div>
+          </div>
+        </div>
+
+        
+      <% end %>
+    <% else %>
+      <%= t("showcase.sections.collections.content.none") %>
+    <% end %>
 	</div>
 </div>

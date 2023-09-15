@@ -152,6 +152,10 @@ module MorphosourceHelper
     render_thumbnail_tag(presenter.representative_presenter, {}, {suppress_link:true})
   end
 
+  def render_default_thumbnail
+    image_tag(asset_path("work_gray.png"))
+  end
+
   def find_works_autocomplete_url(curation_concern, relation)
     valid_concerns = curation_concern.send("valid_#{relation}_concerns").map(&:to_s)
     type_params = valid_concerns.sort.map { |type| "type[]=#{type}" }
@@ -241,7 +245,7 @@ module MorphosourceHelper
     Rails.application.routes.url_helpers.qa_path + '/search/find_cultural_heritage_objects?type[]=CulturalHeritageObject&id=NA&q='
   end
 
-  def collapse_expand_panel(block, state:"COLLAPSE", expand_button_text:"Show more", collapse_button_text:"Show less")
+  def collapse_expand_panel(block)
     content_tag :div, :class => "row collapse-button" do
       content_tag :div, :class => "panel-title" do
         content_tag :a, :data => {:toggle => "collapse"}, :href => %(##{block}), :class => "btn #{block}", :aria => {:label => "collapse/expand"} do
@@ -249,6 +253,15 @@ module MorphosourceHelper
           concat "Show more"
           concat content_tag(:span, "", class: "glyphicon glyphicon-triangle-bottom")
         end
+      end
+    end
+  end
+
+  def collapse_expand_panel_simple()
+    content_tag :div, class: "collapse-button" do
+      content_tag :a, class: "collapse-a", data: { toggle: "collapse", target: ".collapse-simple" }, aria: { label: "collapse/expand" } do
+        concat "Show more "
+        concat content_tag(:span, "", class: "glyphicon glyphicon-triangle-bottom")
       end
     end
   end
@@ -268,8 +281,12 @@ module MorphosourceHelper
     end
   end
 
-  def publication_badge(value)
-    Morphosource::PublicationBadge.new(value).render
+  def render_hint_tag(text)
+    content_tag :i, class: ["material-icons", "tooltip-icon"] do
+      content_tag :p, class: ["hint", "hide"] do
+        text
+      end
+    end
   end
 
   def render_publication_status_badge(document)
@@ -285,8 +302,16 @@ module MorphosourceHelper
     link_to(badge, polymorphic_path([main_app, document]), id:"permission_#{document.id}", class: 'visibility-link')
   end
 
+  def publication_badge(value)
+    Morphosource::PublicationBadge.new(value).render
+  end
+
   def permission_badge_by_value(value)
     Hyrax::PermissionBadge.new(value).render
+  end
+
+  def permission_badge_from_media_document(solr_document)
+    Morphosource::PublicationBadge.new(solr_document.publication_status).render
   end
 
   def organization_institution(id)

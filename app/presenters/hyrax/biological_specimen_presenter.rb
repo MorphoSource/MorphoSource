@@ -16,19 +16,14 @@ module Hyrax
       to: :work
 
     def related_media_ids
-      ids = solr_document.related_media_ids.present? ? solr_document.related_media_ids : []
-      return ids
+      @related_media_ids ||= begin
+        solr_document.related_media_ids || []
+      end
     end
 
     def viewable_related_media_ids
       return related_media_ids if current_ability.current_user.admin?
-      filtered_ids = []
-      related_media_ids.each do |id|
-        if current_ability.can?(:read, id)
-          filtered_ids << id
-        end
-      end
-      return filtered_ids
+      @viewable_related_media_ids ||= related_media_ids.select { |id| current_ability.can?(:read, id) }
     end
 
     def date_created_label
@@ -58,7 +53,7 @@ module Hyrax
 
     # methods for showcase partials
     def showcase_work_title_partial
-      'showcase_work_title'
+      '/hyrax/physical_objects/showcase_work_title'
     end
 
     def showcase_show_actions_partial

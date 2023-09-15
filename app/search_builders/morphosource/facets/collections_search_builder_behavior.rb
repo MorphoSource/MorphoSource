@@ -20,6 +20,8 @@ module Morphosource
         elsif models.include?(BiologicalSpecimen) || models.include?(CulturalHeritageObject)
           solr_parameters['f.media_member_of_team_ids_ssim.facet.excludeTerms'] = filtered_ids
           solr_parameters['f.media_member_of_project_ids_ssim.facet.excludeTerms'] = filtered_ids
+          solr_parameters['f.media_member_of_media_list_ids_ssim.facet.excludeTerms'] = filtered_ids
+          solr_parameters['f.media_member_of_sequential_section_list_ids_ssim.facet.excludeTerms'] = filtered_ids
         end
       end
 

@@ -7,8 +7,12 @@
   <% if @presenter.has_absentee_parent %>
     undeposited raw media.
   <% elsif @presenter.top_parent_media.present? %>
-    <%= @presenter.top_parent_media_raw_or_derived.downcase %> media 
-    <%= link_to(@presenter.link_name_long_from_object(@presenter.top_parent_media), main_app.media_showcase_path(@presenter.top_parent_media)) %>.
+    <%= @presenter.top_parent_media_raw_or_derived.downcase %>
+    <% if can? :read, @presenter.top_parent_media %>
+      <%= link_to(@presenter.link_name_long_from_object(@presenter.top_parent_media), main_app.media_showcase_path(@presenter.top_parent_media)) %>.
+    <% else %>
+      <b>private media</b> that exists on MorphoSource but is inaccessible with current user permissions.
+    <% end %>
   <% else %>
     this media.
   <% end %>

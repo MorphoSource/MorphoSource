@@ -23,6 +23,8 @@ class ObjectsCatalogController < CatalogController
     # media collection
     config.add_facet_field solr_name('media_member_of_team_ids', :symbol), label: 'Team', limit: 10, helper_method: :collection_title_by_id
     config.add_facet_field solr_name('media_member_of_project_ids', :symbol), label: 'Project', limit: 10, helper_method: :collection_title_by_id
+    config.add_facet_field solr_name('media_member_of_media_list_ids', :symbol), label: 'Media List', limit: 10, helper_method: :collection_title_by_id
+    config.add_facet_field solr_name('media_member_of_sequential_section_list_ids', :symbol), label: 'Seq. Section List', limit: 10, helper_method: :collection_title_by_id
 
     # search results display fields
     config.add_index_field solr_name("title", :stored_searchable), label: "Title", itemprop: 'name', if: false

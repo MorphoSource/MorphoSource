@@ -77,7 +77,7 @@ module Morphosource::CartItemHelper
 
   def request_download_button
     mediaId = media&.id || ''
-    button_tag("Request Download", id:'request-button', class: 'btn btn-default btn-request-download-item', id: 'btn-request-download-item', data: {toggle: 'modal', target: '#pageModal', work_id: mediaId, media_id: mediaId})
+    button_tag("Request Download", class: 'btn btn-default btn-request-download-item', id: 'btn-request-download-item', data: {toggle: 'modal', target: '#pageModal', work_id: mediaId, media_id: mediaId})
   end
 
   def disabled_request_download_button

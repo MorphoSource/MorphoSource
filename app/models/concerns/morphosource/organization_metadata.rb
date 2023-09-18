@@ -6,11 +6,11 @@ module Morphosource
 
     included do
       property :organization_type, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/organizationType") do |index|
-        index.as :stored_searchable, :facetable
+        index.as :stored_searchable, :facetable, :symbol
       end
 
       property :institution_code, predicate: ::RDF::Vocab::DWC.organizationID do |index|
-        index.as :stored_searchable
+        index.as :stored_searchable, :symbol
       end
 
       property :postal_code, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/postalCode") do |index|
@@ -18,11 +18,11 @@ module Morphosource
       end
 
       property :contact_person, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/contactUser") do |index|
-        index.as :stored_searchable, :facetable
+        index.as :stored_searchable, :facetable, :symbol
       end
 
       property :institution_name, predicate: ::RDF::Vocab::DWC.institutionName do |index|
-        index.as :stored_searchable, :facetable
+        index.as :stored_searchable, :facetable, :symbol
       end
 
       property :collection_code, predicate: ::RDF::Vocab::DWC.collectionCode do |index|
@@ -48,7 +48,7 @@ module Morphosource
 
       # preferred data manager for published media
       property :data_manager, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/dataManager") do |index|
-        index.as :stored_searchable
+        index.as :stored_searchable, :symbol
       end
 
       # default publication settings

@@ -7,7 +7,7 @@ FactoryBot.define do
 
     after(:build) do |organization|
       organization_collection_type = Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::Organizations::SETTINGS)
-      morganization.collection_type_gid = organization_collection_type.gid
+      organization.collection_type_gid = organization_collection_type.gid
     end
 
     after(:create) do |organization|

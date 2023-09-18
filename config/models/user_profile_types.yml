@@ -10,7 +10,9 @@ profile_types:
   professional:
     required_metadata_fields: organization
 
-#
+
+# fields
+
 #  academic_institution_or_school
 #  department
 #  academic_field
@@ -18,6 +20,8 @@ profile_types:
 #  mentor_or_advisor
 #  instructor
 #  organization
+
+# profile type values
 
 #Faculty or Staff (University, Museum, and/or Library)
 #Faculty or Staff (K-12)

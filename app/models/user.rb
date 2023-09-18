@@ -1,6 +1,7 @@
 class User < ApplicationRecord
   # used for creating ms_id
   require 'securerandom'
+  include Morphosource::UserProfileBehavior
 
   has_many :cart_items, primary_key: :ms_id, foreign_key: :user_id
   has_many :owned_fund_codes, class_name: 'FundCode', foreign_key: :user_id
@@ -18,6 +19,8 @@ class User < ApplicationRecord
   # increment based on highest current id
   before_create :reset_id_incrementer
 
+  validate :check_profile_type
+
   # Connects this user object to Hydra behaviors.
   include Hydra::User
   # Connects this user object to Role-management behaviors.
@@ -32,8 +35,6 @@ class User < ApplicationRecord
   # Connects this user object to Hyrax behaviors.
   include Hyrax::User
   include Hyrax::UserUsageStats
-
-  include Morphosource::UserProfileBehavior
 
   if Blacklight::Utils.needs_attr_accessible?
     attr_accessible :email, :password, :password_confirmation

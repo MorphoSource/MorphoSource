@@ -58,7 +58,7 @@ module Morphosource
         end
 
         def user_params
-          params.require(:user).permit(:address, :affiliation, :sftp_share, :avatar, :country, :department, :display_name, :email, :facebook_handle, :linkedin_handle, :orcid, :postal_code, :remove_avatar, :state, :telephone, :terms_read, :twitter_handle, :website, demographics: [], software: [], intent: [], mesh_file_type: [], volume_file_type: [], printer_file: [], printer_model: [] )
+          params.require(:user).permit(:profile_type, :address, :affiliation, :sftp_share, :avatar, :country, :department, :display_name, :email, :facebook_handle, :linkedin_handle, :orcid, :postal_code, :remove_avatar, :state, :telephone, :terms_read, :twitter_handle, :website, demographics: [], software: [], intent: [], mesh_file_type: [], volume_file_type: [], printer_file: [], printer_model: [] )
         end
 
         def update_password_params

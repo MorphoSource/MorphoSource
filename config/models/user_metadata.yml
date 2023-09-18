@@ -6,7 +6,7 @@ user_metadata:
   city: string
   social_media_handles: string
   typical_usage: text
-  profile_types: string
+  profile_type: string
   academic_institution_or_school: string
   department: string
   academic_field: string

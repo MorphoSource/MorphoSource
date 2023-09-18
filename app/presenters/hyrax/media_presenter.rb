@@ -161,19 +161,10 @@ module Hyrax
       @fund_code_associations ||= begin
         FundCodeMediaAssociation
           .joins(:fund_code)
-          .select('fund_code_media_associations.*, fund_codes.title, fund_codes.description')
+          .select('fund_code_media_associations.*, fund_codes.title, fund_codes.description, fund_codes.can_add_media')
           .where(media: id)
           .to_a
       end
-    end
-
-    #
-    # Current active association between Media and Fund Code
-    #
-    # @return [FundCodeMediaAssociation, nil] Association between Media and Fund Code or nil if none
-    #
-    def active_fund_code_association
-      fund_code_associations.find { |assoc| assoc.active == true }
     end
 
     #

@@ -193,7 +193,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
         end
 
         it 'displays the request download button' do
-          expect(helper.choose_download_button).to eq("<button name=\"button\" type=\"submit\" id=\"btn-request-download-item\" class=\"btn btn-default btn-request-download-item\" data-toggle=\"modal\" data-target=\"#pageModal\" data-work-id=\"#{restricted_media.id}\" data-media-id=\"#{restricted_media.id}\">Request Download</button>")
+          expect(helper.choose_download_button).to eq("<button name=\"button\" type=\"submit\" class=\"btn btn-default btn-request-download-item\" id=\"btn-request-download-item\" data-toggle=\"modal\" data-target=\"#pageModal\" data-work-id=\"#{restricted_media.id}\" data-media-id=\"#{restricted_media.id}\">Request Download</button>")
         end
 
         context 'user has an approved cart item' do

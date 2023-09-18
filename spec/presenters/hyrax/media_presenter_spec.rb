@@ -708,21 +708,34 @@ RSpec.describe Hyrax::MediaPresenter do
   end
 
   describe "child work hierarchy methods" do
-    let(:child1_pe) { SolrDocument.new({ id: "pe1", has_model_ssim: ["ProcessingEvent"] }) }
     let(:child1_media) { SolrDocument.new({ id: "1", has_model_ssim: ["Media"] }) }
-    let(:child2_pe) { SolrDocument.new({ id: "pe2", has_model_ssim: ["ProcessingEvent"] }) }
     let(:child2_media) { SolrDocument.new({ id: "2", has_model_ssim: ["Media"] }) }
   
     context "media has children" do
-      let(:child_ids) { [child1_media.id, child2_media.id] }
+      let(:child_media) { [child1_media, child2_media] }
       
       before do
-        allow(subject).to receive(:direct_child_media_ids).and_return(child_ids)
+        allow(subject).to receive(:direct_child_media_works).and_return(child_media)
+        allow(subject).to receive(:related_media).and_return(child_media)
+        allow(ability).to receive(:can?).with(:read, child1_media).and_return(true)
+        allow(ability).to receive(:can?).with(:read, child2_media).and_return(false)
+      end
+
+      context "#child_media" do
+        it "returns child media" do
+          expect(subject.child_media).to eq(child_media)
+        end
+      end
+
+      context "#viewable_child_media" do
+        it "returns only readable child media" do
+          expect(subject.viewable_child_media).to eq([child1_media])
+        end
       end
 
       context "#child_media_id_list" do
         it "returns list of child media ids" do
-          expect(subject.child_media_id_list).to eq(child_ids)
+          expect(subject.child_media_id_list).to eq(child_media.map(&:id))
         end
       end
 
@@ -734,8 +747,16 @@ RSpec.describe Hyrax::MediaPresenter do
     end
 
     context "media has no children" do   
-      before do
-        allow(subject).to receive(:direct_child_media_ids).and_return([])
+      context "#child_media" do
+        it "returns empty array" do
+          expect(subject.child_media).to eq([])
+        end
+      end
+
+      context "#viewable_child_media" do
+        it "returns empty array" do
+          expect(subject.viewable_child_media).to eq([])
+        end
       end
 
       context "#child_media_id_list" do
@@ -745,7 +766,7 @@ RSpec.describe Hyrax::MediaPresenter do
       end
 
       context "#has_child_media?" do
-        it "returns true" do
+        it "returns false" do
           expect(subject.has_child_media?).to eq(false)
         end
       end
@@ -753,29 +774,59 @@ RSpec.describe Hyrax::MediaPresenter do
   end
 
   describe "related media work methods" do
+    
     let(:media1) { SolrDocument.new({ id: "1", has_model_ssim: ["Media"] }) }
     let(:media2) { SolrDocument.new({ id: "2", has_model_ssim: ["Media"] }) }
-    let(:media3) { SolrDocument.new({ id: "1", has_model_ssim: ["Media"] }) }
+    let(:media3) { SolrDocument.new({ id: "3", has_model_ssim: ["Media"] }) }
+    let(:parent_media) { SolrDocument.new({ id: "4", has_model_ssim: ["Media"] }) }
+    let(:child_media) { SolrDocument.new({ id: "5", has_model_ssim: ["Media"] }) }
 
     before do
-      allow(::SolrDocument).to receive(:where).and_return([media1, media2, media3])
+      allow(::SolrDocument).to receive(:where).and_return([media1, media2, media3, parent_media, child_media])
+      allow(subject).to receive(:parent_works).and_return([parent_media])
+      allow(subject).to receive(:direct_child_media_works).and_return([child_media])
     end
 
     context "#related_media" do
       it "returns all related media" do
-        expect(subject.related_media).to eq([media1, media2, media3])
+        expect(subject.related_media).to eq([media1, media2, media3, parent_media, child_media])
       end
     end
 
     context "#viewable_related_media" do
       before do
+        allow(ability).to receive(:can?).and_return(false)
         allow(ability).to receive(:can?).with(:read, media1).and_return(true)
-        allow(ability).to receive(:can?).with(:read, media2).and_return(false)
         allow(ability).to receive(:can?).with(:read, media3).and_return(true)
       end
 
       it "returns only viewable related media" do
         expect(subject.viewable_related_media).to eq([media1, media3])
+      end
+    end
+
+    context "#other_viewable_related_media" do
+      before do
+        allow(ability).to receive(:can?).and_return(true)
+        allow(ability).to receive(:can?).with(:read, media3).and_return(false)
+      end
+
+      it "returns viewable non-parent non-child media" do
+        expect(subject.other_viewable_related_media).to eq([media1, media2])
+      end
+    end
+
+    context "#user_facing_related_media_count" do
+      before do
+        allow(ability).to receive(:can?).with(:read, media1).and_return(true)
+        allow(ability).to receive(:can?).with(:read, media2).and_return(false)
+        allow(ability).to receive(:can?).with(:read, media3).and_return(true)
+        allow(ability).to receive(:can?).with(:read, parent_media).and_return(false)
+        allow(ability).to receive(:can?).with(:read, child_media).and_return(true)
+      end
+
+      it "returns count of viewable non-parent media plus count of parent media regardless of viewability" do
+        expect(subject.user_facing_related_media_count).to eq(4)
       end
     end
   end

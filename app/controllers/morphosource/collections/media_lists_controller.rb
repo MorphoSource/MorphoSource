@@ -86,10 +86,6 @@ module Morphosource
 
       private
 
-        def authorize_admin
-          redirect_to root_path and return unless current_user&.admin?
-        end
-
         def load_media_preview_presenter(id)
           if (
             has_uv_preview? &&

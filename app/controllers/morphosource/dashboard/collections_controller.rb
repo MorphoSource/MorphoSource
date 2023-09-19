@@ -20,6 +20,27 @@ module Morphosource
 
       helper_method :search_action_for_dashboard
 
+      # override to create new MediaList/Sequential Section List/Organization etc. instead of Collection
+      def create
+        # Manual load and authorize necessary because Cancan will pass in all
+        # form attributes. When `permissions_attributes` are present the
+        # collection is saved without a value for `has_model.`
+        @collection = collection_class.new
+        authorize! :create, @collection
+        # Coming from the UI, a collection type gid should always be present.  Coming from the API, if a collection type gid is not specified,
+        # use the default collection type (provides backward compatibility with versions < Hyrax 2.1.0)
+        @collection.collection_type_gid = params[:collection_type_gid].presence || default_collection_type.gid
+        @collection.attributes = collection_params.except(:members, :parent_id, :collection_type_gid)
+        @collection.depositor = current_user.user_key
+        add_members_to_collection unless batch.empty?
+        @collection.visibility = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE unless @collection.discoverable?
+        if @collection.save
+          after_create
+        else
+          after_create_error
+        end
+      end
+
       def edit
         @tab = :details
         presenter
@@ -117,6 +138,10 @@ module Morphosource
 
       private
 
+      def authorize_admin
+        redirect_to root_path and return unless current_user.admin?
+      end
+
       # only contributors can access the dashboard new collection page
       def authorize_contributor
         authorize! :create, ::Collection
@@ -162,19 +187,6 @@ module Morphosource
         media = Media.where(id: thumbnail_params).first
         @collection.thumbnail_id = media.try(:thumbnail_id)
       end
-
-      def collection_params
-        form_class.model_attributes(params[:collection])
-      end
-
-      def thumbnail_params
-        params[:collection][:representative_id]
-      end
-
-      def member_params
-        params[:collection][:members]
-      end
-
     end
   end
 end

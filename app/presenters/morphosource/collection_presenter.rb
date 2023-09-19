@@ -28,6 +28,10 @@ module Morphosource
       self.class == Morphosource::Collections::MediaLists::SequentialSectionListPresenter
     end
 
+    def organization?
+      self.class == Morphosource::Collections::OrganizationPresenter
+    end
+
     def list?
       media_list? || sequential_section_list?
     end

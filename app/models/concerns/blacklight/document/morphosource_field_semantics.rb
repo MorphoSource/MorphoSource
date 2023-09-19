@@ -81,6 +81,7 @@ module Blacklight
           number_of_images_in_set: "number_of_images_in_set_tesim",
           data_manager: "user_with_ownership_name_tesim",
           data_depositor: "depositor_name_tesim",
+          data_sponsor: "active_fund_code_title_ssim"
         }
       end
 

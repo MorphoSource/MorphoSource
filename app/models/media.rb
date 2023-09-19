@@ -496,6 +496,10 @@ class Media < Morphosource::Works::Base
     fund_code_associations.where(active: true)&.first
   end
 
+  def active_fund_code_title
+    active_fund_code_association&.title || "MorphoSource"
+  end
+
   def update_cartitem_reviewer
     if self.download_reviewer_changed?
       UpdateCartItemReviewersJob.perform_later(self)

@@ -97,7 +97,13 @@
                 <td data-sort="<%= number_with_precision(fc.remaining, precision: 2) %>"><%= number_with_precision(fc.remaining, precision: 2) %></td>
                 <td data-sort="<%= fc.chargeable %>"><%= fc.chargeable ? "Yes" : "No" %></td>
                 <% media_ids_count = fc.media_ids.count %>
-                <td data-sort="<%= media_ids_count %>"><%= media_ids_count %></td>
+                <td data-sort="<%= media_ids_count %>">
+                  <% if fc.title.present? && (media_ids_count > 0) %>
+                    <%= link_to media_ids_count, main_app.media_search_path(params: { "f[active_fund_code_title_ssim][]" => fc.title}), target: "_blank" %>
+                  <% else %>
+                    <%= media_ids_count %>
+                  <% end %>
+                </td>
                 <td>
                   <% if @managed_fund_codes.include?(fc) %>
                     <%= link_to 'Edit Members', main_app.my_fund_codes_path(:id => fc.id), class: 'btn btn-sm btn-primary' %>

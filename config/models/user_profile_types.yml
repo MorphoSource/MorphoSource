@@ -2,27 +2,36 @@
 profile_types:
   universal:
     metadata_fields: email, first_name, middle_name, last_name, country, state_or_province, city, orcid, social_media_handles, website, typical_usage
+    required_metadata_fields: email
   educator:
+    label: "Educator (Other)"
     metadata_fields: department, instructor
     required_metadata_fields: academic_institution_or_school, department, academic_field, academic_subfield, mentor_or_advisor, organization
   artist:
+    label: "artist"
     metadata_fields: organization
   professional:
+    label: "Private Industry or Government Professional"
     required_metadata_fields: organization
+  faculty: 
+    label: "Faculty or Staff (University, Museum, and/or Library)"
+    required_metadata_fields: academic_institution_or_school
+  faculty_k12: 
+    label: "Faculty or Staff (K-12)"
+    required_metadata_fields: academic_institution_or_school
+  individual:
+    label: "Private Individual or Other"
+  student_postgrad:
+    label: "Student (Post-Graduate)"
+  student_undergrad: 
+    label: "Student (Undergraduate)"
+    metadata_fields: instructor
+  student_k12:
+    label: "Student (K-12)"
+    metadata_fields: instructor
 
 
-# fields
-
-#  academic_institution_or_school
-#  department
-#  academic_field
-#  academic_subfield
-#  mentor_or_advisor
-#  instructor
-#  organization
-
-# profile type values
-
+# --- profile type values
 #Faculty or Staff (University, Museum, and/or Library)
 #Faculty or Staff (K-12)
 #Educator (Other)
@@ -32,3 +41,13 @@ profile_types:
 #Private Industry or Government Professional
 #Artist
 #Private Individual or Other
+
+
+# --- fields
+#  academic_institution_or_school
+#  department
+#  academic_field
+#  academic_subfield
+#  mentor_or_advisor
+#  instructor
+#  organization

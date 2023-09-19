@@ -264,10 +264,6 @@ $( document ).ready(function() {
 
   if ($('form[id*="edit_media"]').length) { // if edit media form page
 
-    if (!((location.href.indexOf("#") == -1) || (location.href.indexOf("#media-details") != -1))) {
-      hasNonMediaTab = true;
-    }
-
     function updateMediaTitle() {
       var parts = $('[name="media[part][]"]').map(function(){
         if ($(this).val() != '')

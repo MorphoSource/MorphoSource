@@ -17,7 +17,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
       let(:facet_fields) { config.facet_fields }
 
       it 'has 16 facet fields' do
-        expect(facet_fields.count).to eq(16)
+        expect(facet_fields.count).to eq(17)
       end
 
       describe 'generic type' do
@@ -97,6 +97,14 @@ RSpec.describe MediaCatalogController, :type => :controller do
         subject { facet_fields['depositor_name_ssim'] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Data Uploader")
+          expect(subject.limit).to eq(10)
+        end
+      end
+
+      describe 'data sponsor' do
+        subject { facet_fields['active_fund_code_title_ssim'] }
+        it 'has the correct attributes' do
+          expect(subject.label).to eq("Data Sponsor")
           expect(subject.limit).to eq(10)
         end
       end

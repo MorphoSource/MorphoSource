@@ -38,6 +38,9 @@ class MediaCatalogController < CatalogController
     config.add_facet_field solr_name('user_with_ownership_name', :symbol), label: 'Data Manager', limit: 10
     config.add_facet_field solr_name('depositor_name', :symbol), label: 'Data Uploader', limit: 10
 
+    # fund code
+    config.add_facet_field solr_name('active_fund_code_title', :symbol), label: 'Data Sponsor', limit: 10
+
     # Search Results Fields
     config.add_index_field solr_name("title", :stored_searchable), label: "Title", itemprop: 'name', if: false
     config.add_index_field solr_name("physical_object_id", :stored_searchable), label: "Object", helper_method: :link_to_object

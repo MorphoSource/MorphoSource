@@ -129,7 +129,13 @@
                 <td data-sort="<%= fc.chargeable %>"><%= fc.chargeable ? "Yes" : "No" %></td>
                 <td data-sort="<%= fc.can_add_media %>"><%= fc.can_add_media ? "Yes" : "No" %></td>
                 <% media_ids_count = fc.media_ids.count %>
-                <td data-sort="<%= media_ids_count %>"><%= media_ids_count %></td> 
+                <td data-sort="<%= media_ids_count %>">
+                  <% if fc.title.present? && (media_ids_count > 0) %>
+                    <%= link_to media_ids_count, main_app.media_search_path(params: { "f[active_fund_code_title_ssim][]" => fc.title}), target: "_blank" %>
+                  <% else %>
+                    <%= media_ids_count %>
+                  <% end %>
+                </td>
                 <td>
                   <%= link_to 'Edit', main_app.admin_fund_codes_path(:id => fc.id), class: 'btn btn-sm btn-primary' %>
                   <%= link_to 'Delete', main_app.admin_fund_codes_delete_path(:id => fc.id), class: "btn btn-sm btn-danger #{fc.fund_code_media_associations.present? ? 'disabled' : ''}", method: :delete, :data => {:confirm => 'Are you sure you want to delete this fund code?'} %>

@@ -52,6 +52,7 @@
               <th><%= t('simple_form.abbreviated_labels.fund_code.total') %></th>
               <th><%= t('simple_form.abbreviated_labels.fund_code.remaining') %></th>
               <th><%= t('simple_form.abbreviated_labels.fund_code.chargeable') %></th>
+              <th><%= t('simple_form.abbreviated_labels.fund_code.can_add_media') %></th>
               <th><%= t('simple_form.abbreviated_labels.fund_code.media') %></th>
               <th><%= t('.header.actions') %></th>
             </thead>
@@ -96,6 +97,7 @@
                 <td data-sort="<%= number_with_precision(fc.total, precision: 2) %>"><%= number_with_precision(fc.total, precision: 2) %></td>
                 <td data-sort="<%= number_with_precision(fc.remaining, precision: 2) %>"><%= number_with_precision(fc.remaining, precision: 2) %></td>
                 <td data-sort="<%= fc.chargeable %>"><%= fc.chargeable ? "Yes" : "No" %></td>
+                <td data-sort="<%= fc.can_add_media %>"><%= fc.can_add_media ? "Yes" : "No" %></td>
                 <% media_ids_count = fc.media_ids.count %>
                 <td data-sort="<%= media_ids_count %>">
                   <% if fc.title.present? && (media_ids_count > 0) %>

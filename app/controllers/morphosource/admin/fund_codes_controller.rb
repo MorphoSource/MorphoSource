@@ -122,6 +122,7 @@ module Morphosource
           :external_user, 
           :external_user_additional_rate_percent, 
           :chargeable,
+          :can_add_media,
           { attachments: [] }
         )
       end

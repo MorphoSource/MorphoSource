@@ -4,13 +4,13 @@ require 'spec_helper'
 RSpec.describe Morphosource::Collections::OrderedMediaBehavior, type: :controller do
 
   let(:user)                        { FactoryBot.create(:contributor) }
-  let(:media_list)                  { MediaList.create(title: ['media list'], collection_type_gid: media_list_collection_type.gid, depositor: user.ms_id) }
+  let(:media_list)                  { FactoryBot.create(:media_list, depositor: user.ms_id) }
 
-  let(:media1)                      { FactoryBot.create(:public_media) }
-  let(:media2)                      { FactoryBot.create(:public_media) }
-  let(:media3)                      { FactoryBot.create(:public_media) }
-  let(:media4)                      { FactoryBot.create(:public_media) }
-  let(:media5)                      { FactoryBot.create(:public_media) }
+  let(:media1)                      { FactoryBot.create(:public_media_document) }
+  let(:media2)                      { FactoryBot.create(:public_media_document) }
+  let(:media3)                      { FactoryBot.create(:public_media_document) }
+  let(:media4)                      { FactoryBot.create(:public_media_document) }
+  let(:media5)                      { FactoryBot.create(:public_media_document) }
 
   let(:media)                       { [media1, media2, media3, media4, media5] }
 
@@ -20,8 +20,7 @@ RSpec.describe Morphosource::Collections::OrderedMediaBehavior, type: :controlle
 
   before do
     media.each do |m|
-      m.member_of_collections += [media_list]
-      m.save!
+      ActiveFedora::SolrService.add( m.to_h.merge( { "member_of_collection_ids_ssim": [media_list.id] } ), softCommit: true )
     end
     subject.instance_variable_set(:@collection, media_list)
     allow(subject).to receive(:params).and_return(params)
@@ -53,17 +52,29 @@ RSpec.describe Morphosource::Collections::OrderedMediaBehavior, type: :controlle
   end
 
   describe 'sort_document_list' do
-     let(:document_list)  { media_list.media_docs }
-     before do
-      media_list.ordered_media = [media.map(&:id).join(',')]
-      subject.instance_variable_set(:@blacklight_config, subject.blacklight_config)
-     end
-     it 'returns a paginated array of the media in the same order as media_list.ordered_media' do
+    let(:document_list)  { media_list.media_docs }
+    before do
+    media_list.ordered_media = [media.map(&:id).join(',')]
+    subject.instance_variable_set(:@blacklight_config, subject.blacklight_config)
+    end
+    it 'returns a paginated array of the media in the same order as media_list.ordered_media' do
       media_list.ordered_media = [media.map(&:id).join(',')]
       expect([subject.sort_document_list(document_list).map{|doc| doc["id"]}.join(',')]).to match_array(media_list.ordered_media)
 
       media_list.ordered_media = [media.map(&:id).reverse.join(',')]
       expect([subject.sort_document_list(document_list).map{|doc| doc["id"]}.join(',')]).to match_array(media_list.ordered_media)
-     end
+    end
+    context 'sorting by media_list.ordered_media desc' do
+      before do
+        subject.instance_variable_set(:@ordered_sort, "order desc")
+      end
+      it 'returns a paginated array of the media in the reverse order as media_list.ordered_media' do
+        media_list.ordered_media = [media.map(&:id).join(',')]
+        expect([subject.sort_document_list(document_list).map{|doc| doc["id"]}.join(',')]).to match_array([media_list.ordered_media.first.split(',').reverse.join(',')])
+
+        media_list.ordered_media = [media.map(&:id).reverse.join(',')]
+        expect([subject.sort_document_list(document_list).map{|doc| doc["id"]}.join(',')]).to match_array([media_list.ordered_media.first.split(',').reverse.join(',')])
+      end
+    end
   end
 end

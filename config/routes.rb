@@ -64,6 +64,7 @@ Rails.application.routes.draw do
         resources :media, path: "media/:collection_id", only: [:index], controller: 'add_media', as: 'add_media'
         resources :specimens, only: [:index], controller: 'biological_specimens'
         resources :cultural_heritage_objects, only: [:index], controller: 'cultural_heritage_objects'
+        resources :organization_collections, only: [:index, :create], controller: 'collections/organization_collections'
         resources :media_lists, only: [:index, :create], controller: 'collections/media_lists'
         resources :sequential_section_lists, only: [:index, :create], controller: 'collections/media_lists/sequential_section_lists'
 
@@ -136,6 +137,15 @@ Rails.application.routes.draw do
       get 'teams/:id/cultural_heritage_objects/objects_export', to: 'cultural_heritage_objects#objects_export', as: 'team_chos_export'
       get 'teams/:id/media_projects', to: 'teams#media_projects', as: 'team_media_projects'
       get 'teams/:id/media_organization_transfer_status', to: 'teams#media_organization_transfer_status', as: 'team_media_organization_transfer_status'
+
+      # organization_collections
+      get 'organization_collections/:id', to: 'organization_collections#show', as: 'organization_collection'
+      get 'organization_collections/:id/biological_specimens', to: 'biological_specimens#show', as: 'organization_collection_specimens'
+      get 'organization_collections/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show', as: 'organization_collection_chos'
+      get 'organization_collections/:id/about', to: 'organization_collections#about', as: 'media_list_about'
+      get 'organization_collections/:collection_id/facet/:id', to: 'organization_collections#facet', as: 'organization_collection_media_facet'
+      get 'organization_collections/:collection_id/biological_specimens/facet/:id', to: 'biological_specimens#facet', as: 'organization_collections_specimens_facet'
+      get 'organization_collections/:collection_id/cultural_heritage_objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'organization_collections_chos_facet'
 
       # media_lists
       get 'media_lists/:id', to: 'media_lists#show', as: 'media_list'
@@ -211,6 +221,16 @@ Rails.application.routes.draw do
         put 'projects/:id', to: 'projects#update', as: 'update_project'
         patch 'projects/:id', to: 'projects#update'
         get 'projects/:id/members', to: 'projects#members', as: 'project_members'
+
+        get 'organization_collections/new', to: 'organization_collections#new', as: 'new_media_list'
+        post 'organization_collections', to: 'organization_collections#create'
+        get 'organization_collections/:id', to: 'organization_collections#edit', as: 'media_list_edit'
+        get 'organization_collections/:id/edit', to: redirect('dashboard/organization_collections/%{id}')
+        get 'organization_collections/:id/files', to: 'organization_collections#files'
+        put 'organization_collections', to: 'organization_collections#update'
+        put 'organization_collections/:id', to: 'organization_collections#update', as: 'update_media_list'
+        patch 'organization_collections/:id', to: 'organization_collections#update'
+        get 'organization_collections/:id/members', to: 'organization_collections#members', as: 'media_liorganization_collections'
 
         get 'media_lists/new', to: 'media_lists#new', as: 'new_media_list'
         post 'media_lists', to: 'media_lists#create'

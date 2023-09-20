@@ -64,7 +64,11 @@ module Morphosource
           docs_hash = document_list.compact.map { |doc| [doc["id"], doc] }.to_h
           sortable = docs_hash.extract! *uniq_ordered_media
           sorted = sortable.sort_by { |id, doc| uniq_ordered_media.index(id) }.to_h
-          document_list = sorted.values + docs_hash.values
+          if @ordered_sort&.include? "desc"
+            document_list = docs_hash.values + sorted.values.reverse
+          else
+            document_list = sorted.values + docs_hash.values
+          end
         end
 
         page = params["page"].present? ? params["page"].to_i : 1

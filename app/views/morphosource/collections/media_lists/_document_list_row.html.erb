@@ -1,32 +1,36 @@
-<tr 
-  id="document_<%= document.id %>" 
+<tr
+  id="document_<%= document.id %>"
   class="
-    <%= @hide_viewer ? "" : "previewable" %> 
+    <%= @hide_viewer ? "" : "previewable" %>
     <%= (@preview_document_id && @preview_document_id == document.id) ? "view-active" : "" %>
-  " 
-  data-document-id="<%= document.id %>" 
+  "
+  data-document-id="<%= document.id %>"
   data-collection-id="<%= @collection.id %>"
 >
   <td>
     <div class="document-row-interact-panel">
-      <span class="interact-item"><%= document_counter + 1 + (@response&.offset_value || 0) %>.</span>
+      <% if @collection.ordered_media&.first&.split(',')&.include? document.id %>
+        <span class="interact-item"><%= @collection.ordered_media.first.split(',').index(document.id) + 1 %>.</span>
+      <% else %>
+        <span class="interact-item"></span>
+      <% end %>
       <div class="checkbox" data-behavior="batch-add-button">
         <%= check_box_tag "batch_work_ids[]", document.id, false, class: "batch_add_selector interact-item", id: "batch_work_#{document.id}" %>
         <%= check_box_tag "batch_document_ids[]", document.id, false, class: "batch_document_selector hidden", id: "batch_document_#{document.id}" %>
       </div>
       <% if @can_edit %>
-        <i 
+        <i
           class="fa fa-solid fa-bars sort-handle interact-item"
           title="<%= t("morphosource.collection.actions.order_member.handle.title") %>"
         ></i>
-        <%= 
-          link_to main_app.collection_remove_member_path(@collection, member_id: document.id), 
+        <%=
+          link_to main_app.collection_remove_member_path(@collection, member_id: document.id),
           method: :post,
           class: "interact-item media-list-remove-member",
           title: t("morphosource.collection.actions.remove_member.title", collection_type: "media list"),
           data: {
             confirm_text: t("morphosource.collection.actions.remove_member.confirm", collection_type: "media list")
-          } do 
+          } do
         %>
           <i class="fa fa-solid fa-trash"></i>
         <% end %>
@@ -56,8 +60,8 @@
   <td class="view-column">
     <div class="view-label">
       <% if @hide_viewer %>
-        <%= 
-          link_to "View", 
+        <%=
+          link_to "View",
             url_for(request.params.merge(preview: document.id)),
             class: "view-media btn btn-sm btn-default"
         %>

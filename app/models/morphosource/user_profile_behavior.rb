@@ -8,10 +8,8 @@ module Morphosource
 
     private
 
-    # todo: move to auto load in application.rb 
     def profile_type_config
-      yaml_data = YAML.load_file(Rails.root.join('config', 'models', 'user_profile_types.yml'))
-      yaml_data['profile_types']
+      @profile_type_config ||= Hyrax.config.user_profile_type_config
     end
 
     def check_profile_type

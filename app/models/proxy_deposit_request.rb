@@ -8,7 +8,6 @@ class ProxyDepositRequest < ActiveRecord::Base
 
   class_attribute :work_query_service_class
   self.work_query_service_class = Hyrax::WorkQueryService
-  attr_accessor :force_update
 
   delegate :deleted_work?, :work, :to_s, to: :work_query_service
 

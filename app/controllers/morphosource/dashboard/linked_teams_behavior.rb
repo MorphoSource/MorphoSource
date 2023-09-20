@@ -108,7 +108,6 @@ module Morphosource
         old_manager = User.find_by_user_key(@organization.data_manager.first)
         new_manager = User.find_by_user_key(@params["data_manager"].first)
         if (requests_to_handle = ProxyDepositRequest.where(organization_transfer: true, receiving_user_id: old_manager.id, status: 'pending')).present?
-byebug
           UpdateOrganizationTransferRequestsJob.perform_later(requests_to_handle.to_ary, new_manager)
         end
       end

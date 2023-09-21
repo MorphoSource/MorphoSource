@@ -7,15 +7,19 @@
 
     <div class="row">
       <div style="padding-left: 15px; padding-right: 15px;">       
-        <% if !parent_member.present? %>
+        <% if !parent.present? %>
           Raw media (undeposited)
         <% else %>
-          <% if step_number > 2 || presenter.is_absentee_parent %>
+          <% if step_number > 2 || presenter.has_absentee_parent %>
             Derived
           <% else %>
             Raw
           <% end %>
-          <%= link_to(parent_member.link_name_long, contextual_path(parent_member, @presenter)) %>
+          <% if can? :read, parent %>
+            <%= link_to(presenter.link_name_long_from_object(parent), main_app.media_showcase_path(parent)) %>
+          <% else %>
+            <b>private media</b>
+          <% end %>
         <% end %>
         was processed
         <% if processing_activity_items.present?  %>
@@ -23,12 +27,14 @@
         <% end %>
         to create
         <%= presenter.raw_or_derived.downcase %>
-        <% if processing_member.id == @presenter.id %>
-          <b><%= processing_member.link_name_long %></b>
-          (this media).
+        <% if child == presenter %>
+          <b><%= presenter.link_name_long %></b> (this media).
         <% else %>
-          <%= link_to(processing_member.link_name_long, contextual_path(processing_member, @presenter)) %>
-          .
+          <% if can? :read, child %>
+            <%= link_to(presenter.link_name_long_from_object(child), main_app.media_showcase_path(child)) %>.
+          <% else %>
+            <b>private media</b> that exists on MorphoSource but is inaccessible with current user permissions.
+          <% end %>
         <% end %>
       </div>
     </div>
@@ -87,19 +93,20 @@
       <div class="col-sm-6">
         <div class="content-block">
           <h2>Media produced by this event on MorphoSource</h2>
-          <% if processing_member.present? %>
+          <% if child.present? %>
             <div class="row media-block">
                 <div class="thumbnail col-xs-4">
-                  <% if processing_member.id == @presenter.id %>
-                    <%= render_thumbnail_tag processing_member, {}, { suppress_link: true } %><br>
-                    <%= processing_member.link_name_long %> (this media)<br>
+                  <% if child == presenter %>
+                    <%= render_thumbnail_tag presenter, {}, { suppress_link: true } %>
+                    <%= presenter.link_name_long %> (this media)
+                  <% elsif can? :read, child %>
+                    <%= render_thumbnail_tag child %>
+                    <%= link_to(presenter.link_name_long_from_object(child), main_app.media_showcase_path(child)) %>
                   <% else %>
-                    <%= render_thumbnail_tag processing_member %><br>
-                    <%= link_to(processing_member.link_name_long, contextual_path(processing_member, @presenter)) %><br>
+                    <%= render_default_thumbnail %>
+                    <span class="no-access-media-label">Private media inaccessible with current permissions<span>
                   <% end %>
-                  <%= processing_member.file_format %><br>
                 </div>
-
             </div>              
           <% end %>
         </div>

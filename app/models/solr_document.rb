@@ -13,6 +13,7 @@ class SolrDocument
   include Morphosource::Solr::BiologicalSpecimen
   include Morphosource::Solr::Collection
   include Morphosource::Solr::CulturalHeritageObject
+  include Morphosource::Solr::Device
   include Morphosource::Solr::FileSet
   include Morphosource::Solr::ImagingEvent
   include Morphosource::Solr::Location
@@ -24,6 +25,12 @@ class SolrDocument
   include Morphosource::Solr::ProcessingEvent
   include Morphosource::Solr::SequentialSectionList
   include Morphosource::Solr::Taxonomy
+
+
+  def self.where(params = {})
+    doc_params = { q: params.map { |k, v| "#{k}:#{v}" }.join(" AND ") }
+    repository.search(doc_params).documents
+  end
 
   # self.unique_key = 'id'
 
@@ -72,6 +79,10 @@ class SolrDocument
 
   def title
     self['title_tesim']
+  end
+
+  def creator
+    self['creator_tesim']
   end
 
   # Add custom metadata fields to show view

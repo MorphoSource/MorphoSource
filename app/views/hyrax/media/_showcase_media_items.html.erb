@@ -1,28 +1,62 @@
-<% 
-array_of_ids = presenter.viewable_related_media_ids 
-media_count = array_of_ids.count
-items_per_row = 3
-items_to_show_initially = 6
-@row_div_opened = false
-%>
-	<h2><%= media_count %> ADDITIONAL MEDIA RELATED TO ACQUISITION EVENT </h2>
-	<%  members = presenter.member_presenters_for(array_of_ids) %>
-	<% if members.present? %>
-		<div class="media-block">
-			<%= render partial: @presenter.showcase_media_items_member_partial, collection: members, as: :showcase_media_items_member, :locals => {:media_count => media_count, :items_per_row => items_per_row, :items_to_show_initially => items_to_show_initially} %>
-			
-			<% if media_count > items_to_show_initially %>
-				</div><!-- closing the collapse-block-media-items-member div -->
-			<% end %>
+<% items_above_fold = 3 %>
 
-		</div>
-		
-		<% if media_count > items_to_show_initially %>
-			<%= collapse_expand_panel("collapse-block-media-items-member") %>
+<div class="related-media">
+	<h2 class="has-hint">
+		<%= t("showcase.sections.related_media.labels.base", num: @presenter.user_facing_related_media_count).titleize %>
+		<%= render_hint_tag(t("showcase.sections.related_media.hints.base", id: @presenter.id)) %>
+	</h2>
+
+	<% if @presenter.user_facing_related_media_count > 0 %>
+		<% if @presenter.parent_media.present? %>
+			<%# check how many parents - are there different top and direct parents? %>
+			<% if @presenter.top_parent_media == @presenter.direct_parent %>
+				<%= render partial: "showcase_media_item_group",
+					locals: {
+						name: "top_direct_parent",
+						group: [ @presenter.top_parent_media ],
+						items_above_fold: items_above_fold
+					}
+				%>
+			<% else %>
+				<%= render partial: "showcase_media_item_group",
+					locals: {
+						name: "top_parent",
+						group: [ @presenter.top_parent_media ],
+						items_above_fold: items_above_fold
+					}
+				%>
+				<%= render partial: "showcase_media_item_group",
+					locals: {
+						name: "direct_parent",
+						group: [ @presenter.direct_parent ],
+						items_above_fold: items_above_fold
+					}
+				%>
+			<% end %>
 		<% end %>
 
-	<% end %>
+		<% if @presenter.viewable_child_media.present? %>
+			<%= render partial: "showcase_media_item_group",
+				locals: {
+					name: "child",
+					group: @presenter.viewable_child_media,
+					title_count: true,
+					items_above_fold: items_above_fold
+				}
+			%>
+		<% end %>
 
-	<% if @row_div_opened # most likely media is missing and div is never closed %>
-		</div>
+		<% if @presenter.other_viewable_related_media.present? %>
+			<%= render partial: "showcase_media_item_group",
+				locals: {
+					name: "other",
+					group: @presenter.other_viewable_related_media,
+					title_count: true,
+					items_above_fold: items_above_fold
+				}
+			%>
+		<% end %>
+	<% else %>
+		<div class="media-block"><%= t("showcase.sections.related_media.content.none") %></div>
 	<% end %>
+</div>

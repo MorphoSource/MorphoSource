@@ -7,12 +7,11 @@
     <div class="row">
       <ul>
         <% @presenter.fund_code_associations.each do |fc| %>
-          <% if fc != @presenter.active_fund_code_association  %>
-            <li><%= fc.title %></li>
-          <% end %>
-        <% end %>
-        <% if @presenter.active_fund_code_association.present? %>
-          <li><%= @presenter.active_fund_code_association.title %> <span class="label label-info">Active</span></li>
+          <li>
+            <%= fc.title %>
+            <% if fc.active %><span class="label label-info">Active</span><% end %>
+            <% if !fc.can_add_media %><span class="label label-warning">Can't Add New Media To Fund Code</span><% end %>
+          </li>
         <% end %>
       </ul>
     </div>

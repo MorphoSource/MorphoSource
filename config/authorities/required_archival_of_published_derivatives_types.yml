@@ -1,7 +1,10 @@
 terms:
   - id: OnMorphoSource
     term: On MorphoSource
+    short: rearc_ms
   - id: OnAnyRepository
     term: On Any Repository
+    short: rearc_any
   - id: EncouragedButNotRequired
     term: Encouraged But Not Required
+    short: rearc_no

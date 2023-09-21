@@ -18,7 +18,7 @@ module Hyrax
           else
             link_label = 'Agreement File'
           end
-          markup << %(<span class='showcase-link'>#{link_to(link_label, options[:attachment_file_url], target: :_blank)}</span>)
+          markup << %(<span class='showcase-link'>#{link_to(link_label, options[:attachment_file_url]&.first, target: :_blank)}</span>)
         elsif values.blank?
           if options[:text_if_empty].present?
             markup << options[:text_if_empty]

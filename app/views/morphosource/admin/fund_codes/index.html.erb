@@ -34,6 +34,7 @@
             <%= f.input :external_user, as: :select, include_blank: false %>
             <%= f.input :external_user_additional_rate_percent %>
             <%= f.input :chargeable, as: :select, include_blank: false %>
+            <%= f.input :can_add_media, as: :select, include_blank: false %>
 
             <div class="form-group">
               <label>Fund Code File Attachments</label>
@@ -81,6 +82,7 @@
               <th><%= t('simple_form.abbreviated_labels.fund_code.external_user') %></th>
               <th><%= t('simple_form.abbreviated_labels.fund_code.external_user_additional_rate_percent') %></th>
               <th><%= t('simple_form.abbreviated_labels.fund_code.chargeable') %></th>
+              <th><%= t('simple_form.abbreviated_labels.fund_code.can_add_media') %></th>
               <th><%= t('simple_form.abbreviated_labels.fund_code.media') %></th>
               <th><%= t('.header.actions') %></th>
             </thead>
@@ -125,8 +127,15 @@
                 <td data-sort="<%= fc.external_user %>"><%= fc.external_user ? "Yes" : "No" %></td>
                 <td data-sort="<%= fc.external_user_additional_rate_percent %>"><%= fc.external_user_additional_rate_percent %></td> 
                 <td data-sort="<%= fc.chargeable %>"><%= fc.chargeable ? "Yes" : "No" %></td>
+                <td data-sort="<%= fc.can_add_media %>"><%= fc.can_add_media ? "Yes" : "No" %></td>
                 <% media_ids_count = fc.media_ids.count %>
-                <td data-sort="<%= media_ids_count %>"><%= media_ids_count %></td> 
+                <td data-sort="<%= media_ids_count %>">
+                  <% if fc.title.present? && (media_ids_count > 0) %>
+                    <%= link_to media_ids_count, main_app.media_search_path(params: { "f[active_fund_code_title_ssim][]" => fc.title}), target: "_blank" %>
+                  <% else %>
+                    <%= media_ids_count %>
+                  <% end %>
+                </td>
                 <td>
                   <%= link_to 'Edit', main_app.admin_fund_codes_path(:id => fc.id), class: 'btn btn-sm btn-primary' %>
                   <%= link_to 'Delete', main_app.admin_fund_codes_delete_path(:id => fc.id), class: "btn btn-sm btn-danger #{fc.fund_code_media_associations.present? ? 'disabled' : ''}", method: :delete, :data => {:confirm => 'Are you sure you want to delete this fund code?'} %>

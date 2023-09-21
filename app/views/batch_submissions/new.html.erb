@@ -58,7 +58,7 @@
       <div class="row mt-2">
         <label class="required-flag"><span class="label"></span> Select the appropriate fund code for the media in this batch submission. If you are not the final manager of these date, select the manager on whose behalf you are acting as a proxy.</label>
         <%= f.input :fund_code, label: 'What fund code supports this deposit?', 
-          collection: current_user.fund_codes, prompt: "None (Data Supported By MorphoSource)" %>
+          collection: current_user.fund_codes.where(can_add_media: true), prompt: "None (Data Supported By MorphoSource)" %>
       </div>        
     <% end %>
 

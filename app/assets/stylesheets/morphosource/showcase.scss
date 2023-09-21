@@ -339,7 +339,7 @@ html {
     }
   }
 
-  table.teams-projects, table.media-works {
+  table.teams-projects, table.media-works, table.collections-list-table {
     th, td {
       text-align: center;
     }
@@ -421,7 +421,10 @@ html {
     .btn {
       margin-bottom: 1px;
       padding: 5px 10px;
-      font-size: 12px;
+      font-size: 8px;
+      @media (min-width: 767px) {
+        font-size: 12px;
+      }
       line-height: 1.5;
     }
     .btn:hover {
@@ -839,7 +842,7 @@ html {
       vertical-align: text-top;
       @media (min-width: 1200px) {
         vertical-align: baseline;
-      }  
+      }
       color: $font-color;
       border: 1px solid $font-color;
       border-radius: .75em;
@@ -1223,6 +1226,10 @@ html {
         height: 100px;
       }
     }
+    .no-access-media-label {
+      color: #777777;
+      // font-weight: 500;
+    }
   }
 
   .row.indent {padding-left: 32px}
@@ -1287,7 +1294,7 @@ html {
             height: 100%;
             justify-content: center;
 
-            .image-wrapper {              
+            .image-wrapper {
               img {
                 max-height: 125px; // mobile view default
               }
@@ -1378,7 +1385,7 @@ html {
 }
 
 /* Works list data table specific */
-.showcase table#datatable-media-list,table#datatable-bso-list,table#datatable-cho-list {
+.showcase table#datatable-media-list,table#datatable-bso-list,table#datatable-cho-list, table#collections-list-table {
   a.table-sort-header {
     color: inherit;
     text-decoration: none;

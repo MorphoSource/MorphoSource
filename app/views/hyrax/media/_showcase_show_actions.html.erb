@@ -1,6 +1,6 @@
-<div class="show-actions">
-  <% if presenter.file_set_list.present? && presenter.file_set_original_file_ready %>
-    <div class="btn-group" style="display: flex; justify-content: center; flex-wrap: wrap;">
+<div>
+  <% if presenter.representative_presenter.present? && presenter.file_set_original_file_ready %>
+    <div class="btn-group">
       <%= choose_download_button %>
       <%= choose_cart_button %>
       <% if presenter.editor? %>
@@ -16,7 +16,7 @@
   <% end %>
 
   <% unless signed_in? %>
-    <div style="display: flex; justify-content: center;">
+    <div class="btn-group">
       <p style="text-align: center;"><%= login_message %></p>
     </div>
   <% end %>

@@ -1,10 +1,34 @@
 <h2>GENERAL DETAILS</h2>
 
 <%= presenter.attribute_to_html(:work_id, label: "Media ID", render_as: :showcase_default, include_empty: true, html_dl: false) %>
-
-<%= presenter.attribute_to_html(:media_type, render_as: :showcase_default, include_empty: true, html_dl: false) %>
-
+<%= presenter.attribute_to_html(:human_readable_media_type, label: "Media type", render_as: :showcase_default, include_empty: true, html_dl: false) %>
 <%= presenter.attribute_to_html(:part, render_as: :showcase_default, include_empty: true, html_dl: false) %>
+
+<%= presenter.attribute_to_html(
+  :physical_object_title, 
+  label: "Object represented", 
+  value: "#{presenter.physical_object_title} #{presenter.physical_object_link}",
+  link: presenter.physical_object_link, 
+  render_as: :showcase_organization_title, include_empty: true, html_dl: false
+) %>
+<%= presenter.attribute_to_html(
+  :taxonomy_title, 
+  label: "Object taxonomy", 
+  values: presenter.taxonomies_titles&.first,
+  css_classes: "italics",
+  render_as: :showcase_default, include_empty: false, html_dl: false
+) %>
+
+<% if presenter.media_organization.present? && presenter.media_organization_id.present? %>
+  <%= presenter.attribute_to_html(
+    :media_organization, 
+    label: "Object organization", 
+    link: main_app.show_organization_path(presenter.media_organization_id), 
+    render_as: :showcase_organization_title, include_empty: true, html_dl: false
+  ) %>
+<% end %>
+
+
 <%= presenter.attribute_to_html(:side, render_as: :showcase_default, include_empty: true, html_dl: false) %>
 <%= presenter.attribute_to_html(:orientation, render_as: :showcase_default, include_empty: true, html_dl: false) %>
 <%= presenter.attribute_to_html(:short_description, render_as: :showcase_default, include_empty: true, html_dl: false) %>

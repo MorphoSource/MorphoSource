@@ -4,24 +4,26 @@ module Hyrax
   class BiologicalSpecimenPresenter < Hyrax::WorkShowPresenter
     include Morphosource::PresenterMethods
 
-    delegate :address, :bibliographic_citation, :catalog_number, :city, :collection_code, :context, :country, :dating_method, :dimensions, :formation, :institution_code, :numeric_time, :original_location, :periodic_time, :provenance_details, :provenance_name, :state_province, :tgn_label, :vouchered, :idigbio_recordset_id, :idigbio_uuid, :is_type_specimen, :occurrence_id, :sex, :geographic_coordinates, to: :solr_document
+    delegate :address, :bibliographic_citation, :catalog_number, :city, :collection_code, :context, 
+      :country, :dating_method, :dimensions, :formation, :institution_code, :numeric_time, 
+      :original_location, :periodic_time, :provenance_details, :provenance_name, :state_province, 
+      :tgn_label, :vouchered, :idigbio_recordset_id, :idigbio_uuid, :is_type_specimen, 
+      :occurrence_id, :sex, :geographic_coordinates, 
+      to: :solr_document
 
-    delegate :taxonomies, :taxonomies_titles, :canonical_taxonomy_object, :trusted_taxonomies, :gbif_taxonomies, :user_taxonomies, to: :work
+    delegate :taxonomies, :taxonomies_titles, :canonical_taxonomy_object, :trusted_taxonomies, 
+      :gbif_taxonomies, :user_taxonomies, 
+      to: :work
 
     def related_media_ids
-      ids = solr_document.related_media_ids.present? ? solr_document.related_media_ids : []
-      return ids
+      @related_media_ids ||= begin
+        solr_document.related_media_ids || []
+      end
     end
 
     def viewable_related_media_ids
       return related_media_ids if current_ability.current_user.admin?
-      filtered_ids = []
-      related_media_ids.each do |id|
-        if current_ability.can?(:read, id)
-          filtered_ids << id
-        end
-      end
-      return filtered_ids
+      @viewable_related_media_ids ||= related_media_ids.select { |id| current_ability.can?(:read, id) }
     end
 
     def date_created_label
@@ -51,7 +53,7 @@ module Hyrax
 
     # methods for showcase partials
     def showcase_work_title_partial
-      'showcase_work_title'
+      '/hyrax/physical_objects/showcase_work_title'
     end
 
     def showcase_show_actions_partial

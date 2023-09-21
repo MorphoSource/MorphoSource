@@ -1,6 +1,10 @@
-<h2>MEDIA TAGS</h2>
+<h2><%= t("showcase.sections.tags.labels.base").upcase %></h2>
 <div class="row tags">
-  <div id="tags-list">
-    <%= safe_join(@presenter.keyword.map { |tag| link_to(tag, main_app.tag_path(tag)) }, " |  ".html_safe) %>
-  </div>
+    <div id="tags-list">
+      <% if @presenter.keyword.present? %>
+        <%= safe_join(@presenter.keyword.map { |tag| link_to(tag, main_app.tag_path(tag)) }, " |  ".html_safe) %>
+      <% else %>
+        <%= t("showcase.sections.tags.content.none") %>
+      <% end %>
+    </div>
 </div>

@@ -12,10 +12,12 @@ module Morphosource
                             fileset_accessibility
                             fileset_visibility
                             funding
+                            imaging_event_id
                             legacy_media_file_id
                             legacy_media_group_id
                             license
                             map_type
+                            media_organization_id
                             media_type
                             number_of_images_in_set
                             orientation
@@ -31,7 +33,8 @@ module Morphosource
                             x_spacing
                             y_spacing
                             z_spacing
-                            remote_origin_url].freeze
+                            remote_origin_url
+                            remote_manifest_url].freeze
 
       def download_reviewer
         self['download_reviewer_ssim']
@@ -47,6 +50,10 @@ module Morphosource
 
       def human_readable_media_type
         self[Solrizer.solr_name('human_readable_media_type', :stored_searchable)].first
+      end
+
+      def is_remote_backed
+        self["is_remote_backed_bsi"]
       end
 
       def objects
@@ -84,6 +91,14 @@ module Morphosource
 
       def media_physical_object_type
         self[Solrizer.solr_name('media_physical_object_type', :stored_searchable)]
+      end
+
+      def organization_transfer_on_publish
+        self["organization_transfer_on_publish_bsi"]
+      end
+
+      def publication_status_label
+        self["publication_status_ssi"]
       end
 
       # Add custom column to dashboard works list

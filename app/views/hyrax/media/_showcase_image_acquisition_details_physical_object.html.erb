@@ -1,0 +1,19 @@
+<div style='padding-left: 15px; padding-right: 15px;'>
+  Physical object
+  <% if @presenter.physical_object_link.present? %>
+    <%= link_to(@presenter.physical_object_title&.first, @presenter.physical_object_link) %>
+  <% end %>
+  was imaged to create
+  <% if @presenter.has_absentee_parent %>
+    undeposited raw media.
+  <% elsif @presenter.top_parent_media.present? %>
+    <%= @presenter.top_parent_media_raw_or_derived.downcase %>
+    <% if can? :read, @presenter.top_parent_media %>
+      <%= link_to(@presenter.link_name_long_from_object(@presenter.top_parent_media), main_app.media_showcase_path(@presenter.top_parent_media)) %>.
+    <% else %>
+      <b>private media</b> that exists on MorphoSource but is inaccessible with current user permissions.
+    <% end %>
+  <% else %>
+    this media.
+  <% end %>
+</div>

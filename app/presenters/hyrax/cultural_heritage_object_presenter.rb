@@ -4,59 +4,25 @@ module Hyrax
   class CulturalHeritageObjectPresenter < Hyrax::WorkShowPresenter
     include Morphosource::PresenterMethods
 
-    delegate :aat_attribute,
-             :aat_attribute_label,
-             :aat_material,
-             :aat_material_label,
-             :aat_period,
-             :aat_period_label,
-             :aat_type,
-             :aat_type_label,
-             :address,
-             :bibliographic_citation,
-             :catalog_number,
-             :cho_attribute,
-             :cho_type,
-             :city,
-             :collection_code,
-             :context,
-             :country,
-             :current_location,
-             :dating_method,
-             :dimensions,
-             :formation,
-             :geographic_coordinates,
-             :institution_code,
-             :material,
-             :numeric_time,
-             :original_location,
-             :periodic_time,
-             :periodic_time_label,
-             :provenance_date,
-             :provenance_details,
-             :provenance_location,
-             :provenance_name,
-             :short_title,
-             :state_province,
-             :tgn,
-             :tgn_label,
-             :vouchered,
-             :public_media_ids, to: :solr_document
+    delegate :aat_attribute, :aat_attribute_label, :aat_material, :aat_material_label, :aat_period,
+      :aat_period_label, :aat_type, :aat_type_label, :address, :bibliographic_citation,
+      :catalog_number, :cho_attribute, :cho_type, :city, :collection_code, :context, :country,
+      :current_location, :dating_method, :dimensions, :formation, :geographic_coordinates, 
+      :institution_code, :material, :numeric_time, :original_location, :periodic_time, 
+      :periodic_time_label, :provenance_date, :provenance_details, :provenance_location,
+      :provenance_name, :short_title, :state_province, :tgn, :tgn_label, :vouchered, 
+      :public_media_ids, 
+      to: :solr_document
 
     def related_media_ids
-      ids = solr_document.related_media_ids.present? ? solr_document.related_media_ids : []
-      return ids
+      @related_media_ids ||= begin
+        solr_document.related_media_ids || []
+      end
     end
 
     def viewable_related_media_ids
       return related_media_ids if current_ability.current_user.admin?
-      filtered_ids = []
-      related_media_ids.each do |id|
-        if current_ability.can?(:read, id)
-          filtered_ids << id
-        end
-      end
-      return filtered_ids
+      @viewable_related_media_ids ||= related_media_ids.select { |id| current_ability.can?(:read, id) }
     end
 
     def date_created_label
@@ -69,7 +35,7 @@ module Hyrax
 
     # methods for showcase partials
     def showcase_work_title_partial
-      'showcase_work_title'
+      '/hyrax/physical_objects/showcase_work_title'
     end
 
     def showcase_show_actions_partial

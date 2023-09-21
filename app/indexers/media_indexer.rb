@@ -13,6 +13,8 @@ class MediaIndexer < Morphosource::WorkIndexer
 
   def generate_solr_document
     super.tap do |solr_doc|
+      solr_doc['is_remote_backed_bsi'] = object.is_remote_backed?
+      
       solr_doc['file_set_visibilities_ssim'] = object.file_set_visibilities
       solr_doc['fileset_accessibility_ssim'] = object.fileset_accessibility
       solr_doc['download_access_group_ssim'] = object.download_groups
@@ -174,6 +176,9 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['taxonomy_si'] = taxonomy_titles&.first&.downcase
       solr_doc['human_readable_media_type_si'] = mt&.first&.downcase
       solr_doc['publication_status_si'] = pub_status&.downcase
+
+      # fund code data sponsor
+      solr_doc['active_fund_code_title_ssim'] = object.active_fund_code_title
 
       # organization transfer fields
       solr_doc['organization_transfer_on_publish_bsi'] = object.organization_transfer_on_publish

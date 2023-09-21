@@ -9,11 +9,7 @@
 >
   <td>
     <div class="document-row-interact-panel">
-      <% if @collection.ordered_media&.first&.split(',')&.include? document.id %>
-        <span class="interact-item"><%= @collection.ordered_media.first.split(',').index(document.id) + 1 %>.</span>
-      <% else %>
-        <span class="interact-item"></span>
-      <% end %>
+      <span class="interact-item"><%= ( i = ordered_media&.index(document.id) ).nil? ? "" : "#{i + 1}." %></span>
       <div class="checkbox" data-behavior="batch-add-button">
         <%= check_box_tag "batch_work_ids[]", document.id, false, class: "batch_add_selector interact-item", id: "batch_work_#{document.id}" %>
         <%= check_box_tag "batch_document_ids[]", document.id, false, class: "batch_document_selector hidden", id: "batch_document_#{document.id}" %>

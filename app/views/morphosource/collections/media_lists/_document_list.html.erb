@@ -33,7 +33,7 @@
               data-per-page=<%= order_media_per_page(params["per_page"]) %>
             <% end %>
           >
-            <%= render partial: 'document_list_row', collection: @document_list, as: :document %>
+            <%= render partial: 'document_list_row', collection: @document_list, as: :document, locals: { ordered_media: @collection.ordered_media&.first&.split(',') } %>
           </tbody>
         </table>
 

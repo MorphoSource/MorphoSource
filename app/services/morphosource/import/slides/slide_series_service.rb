@@ -302,7 +302,7 @@ module Morphosource
           end
 
           def search_for_taxonomy
-            Morphosource::SolrService.new.get_docs("has_model_ssim:Taxonomy AND gbif_key_isim:#{@occurrence_json['taxonKey']}")&.first
+            Morphosource::SolrService.new.get_docs("has_model_ssim:Taxonomy AND gbif_key_tesim:#{@occurrence_json['taxonKey']}")&.first
           end
 
           def specimen_params_from_occurrence_id

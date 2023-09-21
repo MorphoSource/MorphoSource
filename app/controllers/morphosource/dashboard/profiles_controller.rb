@@ -4,11 +4,13 @@ module Morphosource
 
       with_themed_layout 'morphosource_dashboard'
       helper Morphosource::UserProfile::UserProfileHelper
+      include Morphosource::Dashboard::ProfilesControllerBehavior
 
       before_action :find_user
       before_action :authenticate_user!
       before_action :authorize_edit, only: [:show]
       before_action :strip_empty_values, only: [:update]
+      before_action :check_profile_type, only: [:update]
       authorize_resource class: '::User', instance_name: :user
 
       def edit_password
@@ -47,9 +49,6 @@ module Morphosource
         redirect_to main_app.profile_show_path, notice: "New API key has been generated."
       end
 
-      def is_valid_domain?(path)
-        path.match? /^[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,63}$/i 
-      end
 
       private
 

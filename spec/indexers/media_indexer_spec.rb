@@ -6,172 +6,268 @@ RSpec.describe MediaIndexer do
     expect(described_class.thumbnail_path_service).to be(Morphosource::MediaThumbnailPathService)
   end
 
-  subject(:solr_document) { MediaIndexer.new(media).generate_solr_document }
-  let(:media)             { Media.create(title: ['New Media'], fileset_accessibility: ['restricted_download']) }
+  context 'Solr Document Values' do
 
-  describe 'custom fields' do
-    let(:field_values) { {
-      fileset_accessibility: media.fileset_accessibility,
-      file_set_visibilities: ['restricted'],
-      download_groups: ['download_group1', 'download_group2'],
-      download_users: ['download_user1', 'download_user2'],
-      human_readable_media_type: 'Image',
-      modality: 'ScanningElectronMicroscopy',
-      modality_label: "Scanning Electron Microscopy",
-      physical_object_type: "Cultural Heritage Object",
-      organization_titles: ["Organization 1", "Organization 2"],
-      organization_id: ["org123"],
-      member_of_public_collection_ids: ['id1','id2','id3'],
-      member_of_team_ids: ['id1','id2','id3'],
-      member_of_project_ids: ['id1','id2','id3'],
-      member_of_media_list_ids: ['id1','id2','id3'],
-      member_of_sequential_section_list_ids: ['id1','id2','id3'],
-      taxonomies_titles: ['taxonomy1', 'taxonomy2'],
-    } }
+    let(:admin_set_id)            { AdminSet.find_or_create_default_admin_set_id }
+    let(:permission_template)     { Hyrax::PermissionTemplate.find_or_create_by!(source_id: admin_set_id) }
+
+    let(:depositor)               { FactoryBot.create(:contributor) }
+    let(:registered_user)         { FactoryBot.create(:registered_user) }
+    let(:owner)                   { FactoryBot.create(:contributor) }
+
+    let(:device)                  { FactoryBot.create(:device, creator: ['Device Make'], title: ['Device Model'], modality: ['Photogrammetry']) }
+    let(:device_organization)     { FactoryBot.create(:organization, title: ['Device Organization']) }
+    let(:specimen_organization)   { FactoryBot.create(:organization, title: ['Specimen Organization'])}
+    let(:file_set)                { FactoryBot.create(:file_set, visibility: 'open') }
+    let(:imaging_event)           { FactoryBot.create(:imaging_event, device_id: [device.id], ie_modality: device.modality, physical_object_id: [specimen.id])}
+    let(:parent_media)            { FactoryBot.create(:media) }
+    let(:processing_event1)       { FactoryBot.create(:processing_event) }
+    let(:processing_event2)       { FactoryBot.create(:processing_event) }
+    let(:specimen)                { FactoryBot.create(:biological_specimen,
+                                                       catalog_number: ['1234'],
+                                                       collection_code: ['ABC'],
+                                                       institution_code: ['XYZ'],
+                                                       organization_id: [specimen_organization.id],
+                                                       occurrence_id: ['ABC:1234'],
+                                                       taxonomy_id: [taxonomy.id]) }
+    let(:taxonomy)                { FactoryBot.create(:taxonomy, title: ['genus species']) }
+
+    let(:project)                 { FactoryBot.create(:project, visibility: 'open', depositor: depositor.ms_id) }
+    let(:team)                    { FactoryBot.create(:team, visibility: 'open', depositor: depositor.ms_id) }
+    let(:media_list)              { FactoryBot.create(:media_list, visibility: 'open', depositor: depositor.ms_id) }
+    let(:sequential_section_list) { FactoryBot.create(:sequential_section_list, visibility: 'open', depositor: depositor.ms_id) }
+    let(:collections)             { [project, team, media_list, sequential_section_list]}
+
+    let(:media_attributes)        { { admin_set_id: admin_set_id,
+                                      agreement_uri: ["https://mcz.harvard.edu/permissions-copyright"],
+                                      ark: ["ark:/12345/m4/678910"],
+                                      available: ['yes'],
+                                      cite_as: ['cite as'],
+                                      creator: [depositor.display_name],
+                                      date_created: ["2023-01-01"],
+                                      date_modified: "2023-05-05 12:03:17",
+                                      depositor: depositor.ms_id,
+                                      description: ['description'],
+                                      doi: ['doi'],
+                                      download_reviewer: ['1234'],
+                                      fileset_visibility: ['open'],
+                                      fileset_accessibility: ['restricted_download'],
+                                      funding: ['funding'],
+                                      identifier: ['identifier'],
+                                      keyword: ['red', 'yellow', 'blue'],
+                                      legacy_media_file_id: ['oldfileid'],
+                                      legacy_media_group_id: ['oldgroupid'],
+                                      license: ["https://creativecommons.org/licenses/by-nc-nd/4.0/"],
+                                      map_type: ['map type'],
+                                      media_type: ["Mesh"],
+                                      morphosource_use_agreement_type: ["Standard"],
+                                      number_of_images_in_set: '5',
+                                      organization_transfer_on_publish: false,
+                                      orientation: ['Left'],
+                                      owner: owner.ms_id,
+                                      part: ['Toe'],
+                                      permits_3d_use: ["3DPrintingLimited"],
+                                      permits_commercial_use: ["CommercialUseNotPermitted"],
+                                      preview_mode: ["Interactive/Embeddable"],
+                                      publisher: ["Museum of Comparative Zoology"],
+                                      related_url: ['www.apple.com'],
+                                      remote_manifest_url: 'https://github.com/',
+                                      remote_origin_url: 'https://www.google.com',
+                                      required_archival_of_published_derivatives: ["OnMorphoSource"],
+                                      rights_holder: ["President and Fellows (Copyright and License)"],
+                                      rights_statement: ["http://rightsstatements.org/vocab/InC/1.0/"],
+                                      scale_bar: ['scale bar'],
+                                      series_type: ['series type'],
+                                      short_description: ['short description'],
+                                      side: ["Left"],
+                                      slice_thickness: ['slice thickness'],
+                                      title: ['New Media'],
+                                      unit: ["Cm"],
+                                      uuid: ['uuid'],
+                                      visibility: 'open',
+                                      x_spacing: ['x spacing'],
+                                      y_spacing: ['y spacing'],
+                                      z_spacing: ['z spacing'] } }
+
+    let(:media)                   { Media.new(media_attributes) }
+
+    subject                       { SolrDocument.find(media.id) }
+
+    # specimen
+    # imaging_event
+    #  - processing_event1
+    #    - parent_media
+    #      - processing_event2
+    #        - media
 
     before do
-      field_values.each do |k,v|
-        allow(media).to receive(k).and_return(v)
+      Hyrax::CurationConcern.actor.create(Hyrax::Actors::Environment.new(media, ::Ability.new(depositor), {}))
+      media.keyword = ['red', 'yellow', 'blue'] # TODO: keyword is disappearing from media if added before Hyrax::CurationConcern.actor.create
+      media.download_users += [registered_user]
+      add_ordered_members(device_organization, device)
+      add_ordered_members(imaging_event, processing_event1)
+      add_ordered_members(processing_event1, parent_media)
+      add_ordered_members(parent_media, processing_event2)
+      add_ordered_members(processing_event2, media)
+      collections.each do |c|
+        c.create_collection_groups
+        Morphosource::Collections::PermissionsCreateService.create_default(collection: c)
+        c.add_member_objects(media)
       end
+      add_ordered_members(media, file_set)
     end
 
-    it 'indexes file_set_visibilities' do
-      expect(subject['file_set_visibilities_ssim']).to eq field_values[:file_set_visibilities]
-    end
-    it 'indexes fileset_accessibility' do
-      expect(subject['fileset_accessibility_ssim']).to eq field_values[:fileset_accessibility]
-    end
-    it 'indexes download_access_group' do
-      expect(subject['download_access_group_ssim']).to match_array field_values[:download_groups]
-    end
-    it 'indexes download_access_person' do
-      expect(subject['download_access_person_ssim']).to match_array field_values[:download_users]
-    end
-    it 'indexes human_readable_media_type' do
-      expect(subject['human_readable_media_type_tesim']).to eq field_values[:human_readable_media_type]
-      expect(subject['human_readable_media_type_ssim']).to eq field_values[:human_readable_media_type]
-    end
-    it 'indexes modality' do
-      expect(subject['modality_ssim']).to eq field_values[:modality]
-      expect(subject['human_readable_modality_tesim']).to eq field_values[:modality_label]
-    end
-    it 'indexes public collection membership' do
-      expect(subject['member_of_public_collection_ids_ssim']).to eq field_values[:member_of_public_collection_ids]
-    end
-    it 'indexes team ids' do
-      expect(subject['member_of_team_ids_ssim']).to eq(field_values[:member_of_team_ids])
-    end
-    it 'indexes project ids' do
-      expect(subject['member_of_project_ids_ssim']).to eq(field_values[:member_of_project_ids])
-    end
-    it 'indexes media_list ids' do
-      expect(subject['member_of_media_list_ids_ssim']).to eq(field_values[:member_of_media_list_ids])
-    end
-    it 'indexes sequential_section_list ids' do
-      expect(subject['member_of_sequential_section_list_ids_ssim']).to eq(field_values[:member_of_sequential_section_list_ids])
-    end
-    it 'indexes publication status' do
-      expect(subject['publication_status_ssi']).to eq('Restricted Download')
-    end
-  end
-
-  describe 'imaging_event_id' do
-    #- Specimen1
-    #
-    #  - IE1
-    #
-    #    - PE1
-    #      - Media1
-    #
-    #    - PE2
-    #      - Media2
-    let(:specimen)                { BiologicalSpecimen.create(title: ['Specimen'], vouchered: ['Yes']) }
-    let(:media1)                   { Media.create(title: ['title'], media_type: ['Image'], keyword: ['red', 'blue', 'yellow'], visibility: 'open') }
-    let(:device)                  { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-    let(:imaging_event)           { ImagingEvent.create(title: ['title'], device_id: [device.id], physical_object_id: [specimen.id], ie_modality: device.modality) }
-    let!(:processing_event1)       { ProcessingEvent.create(title: ['processing_event']) }
-    let!(:works)                  { [ imaging_event, processing_event1 ] }
-
-    subject(:solr_document)       { described_class.new(media1).generate_solr_document }
-
-    before do
-      imaging_event.ordered_members << processing_event1
-      processing_event1.ordered_members << media1
-      works.each(&:save)
-      works.each(&:reload)
-    end
-
-    it 'indexes related_media_ids' do
-      expect(subject['imaging_event_id_tesim']).to include(imaging_event.id)
-    end
-  end
-
-  describe 'physical object fields' do
-    let(:organization)  { Organization.create(title: ['Organization']) }
-    let(:taxonomy)      { Taxonomy.create(title: ['taxonomy title']) }
-    let(:specimen)      {
-      BiologicalSpecimen.create(
-        title: ['Specimen'], vouchered: ['Yes'], organization_id: [organization.id], taxonomy_id: [taxonomy.id],
-        institution_code: ["123"],
-        collection_code:  ["456"],
-        catalog_number:   ["789"],
-        occurrence_id:    ["xyz"]
-        )
-    }
-    let(:device)        { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-    let(:imaging_event) { ImagingEvent.create(title: ['Imaging Event'], device_id: [device.id], physical_object_id: [specimen.id], ie_modality: device.modality) }
-    let(:works)         { [specimen, media, imaging_event] }
-
-    before do
-      imaging_event.ordered_members << media
-      works.each(&:save)
-      works.each(&:reload)
-    end
-
-    it 'indexes institution_code' do
-      expect(subject['institution_code_ssim']).to  eq(["123"])
-      expect(subject['institution_code_tesim']).to eq(["123"])
-    end
-
-    it 'indexes collection_code' do
-      expect(subject['collection_code_ssim']).to  eq(["456"])
-      expect(subject['collection_code_tesim']).to eq(["456"])
-    end
-
-    it 'indexes catalog_number' do
-      expect(subject['catalog_number_ssim']).to  eq(["789"])
-      expect(subject['catalog_number_tesim']).to eq(["789"])
-    end
-
-    it 'indexes occurrence_id' do
-      expect(subject['occurrence_id_ssim']).to  eq(["xyz"])
-      expect(subject['occurrence_id_tesim']).to eq(["xyz"])
-    end
-
-    it 'indexes physical object id' do
+    it 'indexes expected values' do
+      expect(subject['accessControl_ssim']).to match_array([media.access_control.id])
+      expect(subject['actionable_workflow_roles_ssim']).to match_array(['admin_set/default-default-managing', 'admin_set/default-default-approving', 'admin_set/default-default-depositing'])
+      expect(subject['active_fund_code_title_ssim']).to match_array(["MorphoSource"])
+      expect(subject['admin_set_ssim']).to match_array(media.admin_set.title)
+      expect(subject['admin_set_tesim']).to match_array(media.admin_set.title)
+      expect(subject['agreement_uri_tesim']).to match_array(media.agreement_uri)
+      expect(subject['ark_ssim']).to match_array(media.ark)
+      expect(subject['ark_tesim']).to match_array(media.ark)
+      expect(subject['available_tesim']).to match_array(media.available)
+      expect(subject['catalog_number_ssim']).to match_array(specimen.catalog_number)
+      expect(subject['catalog_number_tesim']).to match_array(specimen.catalog_number)
+      expect(subject['cite_as_tesim']).to match_array(media.cite_as)
+      expect(subject['collection_code_ssim']).to match_array(specimen.collection_code)
+      expect(subject['collection_code_tesim']).to match_array(specimen.collection_code)
+      expect(subject['creator_ssim']).to match_array(media.creator)
+      expect(subject['creator_tesim']).to match_array(media.creator)
+      expect(subject['date_created_tesim']).to match_array(media.date_created)
+      expect(subject['date_modified_dtsi']).to eq(media.date_modified.strftime("%FT%R:%SZ"))
+      expect(subject['date_uploaded_dtsi']).to be_a_kind_of(String)
+      expect(subject['depositor_email_ssim']).to match_array([depositor.email])
+      expect(subject['depositor_email_tesim']).to match_array([depositor.email])
+      expect(subject['depositor_name_ssim']).to match_array([depositor.display_name])
+      expect(subject['depositor_name_tesim']).to match_array([depositor.display_name])
+      expect(subject['depositor_ssim']).to match_array([media.depositor])
+      expect(subject['depositor_tesim']).to match_array([media.depositor])
+      expect(subject['description_tesim']).to match_array(media.description)
+      expect(subject['download_access_group_ssim']).to match_array ([project.downloaders_group.name, team.downloaders_group.name])
+      expect(subject['download_access_person_ssim']).to match_array([registered_user.ms_id])
+      expect(subject['doi_ssim']).to match_array(media.doi)
+      expect(subject['download_reviewer_ssim']).to match_array(media.download_reviewer)
+      expect(subject['download_reviewer_tesim']).to match_array(media.download_reviewer)
+      expect(subject['edit_access_group_ssim']).to match_array(['admin', team.managers_group.name, team.editors_group.name, project.managers_group.name, project.editors_group.name])
+      expect(subject['edit_access_person_ssim']).to match_array([media.depositor])
+      expect(subject['file_set_visibilities_ssim']).to match_array([media.visibility])
+      expect(subject['fileset_accessibility_ssim']).to match_array(media.fileset_accessibility)
+      expect(subject['fileset_accessibility_tesim']).to match_array(media.fileset_accessibility)
+      expect(subject['fileset_visibility_tesim']).to match_array(media.fileset_visibility)
+      expect(subject['funding_tesim']).to match_array(media.funding)
+      expect(subject['generic_type_ssim']).to match_array(['Work'])
+      expect(subject['has_model_ssim']).to match_array(['Media'])
+      expect(subject['human_readable_media_type_ssi']).to eq(media.human_readable_media_type&.first&.downcase)
+      expect(subject['human_readable_media_type_ssim']).to match_array(media.media_type)
+      expect(subject['human_readable_media_type_tesim']).to match_array(media.media_type)
+      expect(subject['human_readable_modality_tesim']).to match_array([media.modality_label])
+      expect(subject['human_readable_type_ssi']).to eq(media.human_readable_type)
+      expect(subject['human_readable_type_tesim']).to match_array([media.human_readable_type])
+      expect(subject['id']).to eq(media.id)
+      expect(subject['identifier_tesim']).to match_array(media.identifier)
+      expect(subject['imaging_event_id_tesim']).to match_array([imaging_event.id])
+      expect(subject['institution_code_ssim']).to match_array(specimen.institution_code)
+      expect(subject['institution_code_tesim']).to match_array(specimen.institution_code)
+      expect(subject['isPartOf_ssim']).to match_array([admin_set_id])
+      expect(subject['is_remote_backed_bsi']).to eq(true)
+      expect(subject['keyword_ssim']).to match_array(media.keyword)
+      expect(subject['keyword_tesim']).to match_array(media.keyword)
+      expect(subject['legacy_media_file_id_tesim']).to match_array(media.legacy_media_file_id)
+      expect(subject['legacy_media_group_id_tesim']).to match_array(media.legacy_media_group_id)
+      expect(subject['license_ssim']).to match_array(media.license)
+      expect(subject['license_tesim']).to match_array(media.license)
+      expect(subject['map_type_ssim']).to match_array(media.map_type)
+      expect(subject['map_type_tesim']).to match_array(media.map_type)
+      expect(subject['media_device_facility_organization_id_ssim']).to match_array([device_organization.id])
+      expect(subject['media_device_facility_organization_id_tesim']).to match_array([device_organization.id])
+      expect(subject['media_device_facility_organization_ssim']).to match_array(device_organization.title)
+      expect(subject['media_device_facility_organization_tesim']).to match_array(device_organization.title)
+      expect(subject['media_device_id_ssim']).to match_array([device.id])
+      expect(subject['media_device_id_tesim']).to match_array([device.id])
+      expect(subject['media_device_ssim']).to match_array(["#{device.creator.first} #{device.title.first}"])
+      expect(subject['media_device_tesim']).to match_array(["#{device.creator.first} #{device.title.first}"])
+      expect(subject['media_organization_id_ssim']).to match_array(specimen.organization_id)
+      expect(subject['media_organization_id_tesim']).to match_array(specimen.organization_id)
+      expect(subject['media_organization_ssim']).to match_array(specimen_organization.title)
+      expect(subject['media_organization_tesim']).to match_array(specimen_organization.title)
+      expect(subject['media_parent_id_ssim']).to match_array([parent_media.id])
+      expect(subject['media_physical_object_type_ssim']).to match_array(['Biological Specimen'])
+      expect(subject['media_physical_object_type_tesim']).to match_array(['Biological Specimen'])
+      expect(subject['media_type_ssim']).to match_array(media.media_type)
+      expect(subject['media_type_tesim']).to match_array(media.media_type)
+      expect(subject['member_of_public_collection_ids_ssim']).to match_array(collections.map(&:id))
+      expect(subject['member_of_team_ids_ssim']).to match_array([team.id])
+      expect(subject['member_of_project_ids_ssim']).to match_array([project.id])
+      expect(subject['member_of_media_list_ids_ssim']).to match_array([media_list.id])
+      expect(subject['member_of_sequential_section_list_ids_ssim']).to match_array([sequential_section_list.id])
+      expect(subject['modality_ssim']).to match_array(imaging_event.ie_modality)
+      expect(subject['morphosource_use_agreement_type_tesim']).to match_array(media.morphosource_use_agreement_type)
+      expect(subject['nesting_collection__deepest_nested_depth_isi']).to eq(2)
+      expect(subject['nesting_collection__pathnames_ssim']).to match_array(collections.map{|c| "#{c.id}/#{media.id}"})
+      expect(subject['number_of_images_in_set_tesim']).to match_array(media.number_of_images_in_set)
+      expect(subject['occurrence_id_ssim']).to match_array(specimen.occurrence_id)
+      expect(subject['occurrence_id_tesim']).to match_array(specimen.occurrence_id)
+      expect(subject['organization_transfer_on_publish_bsi']).to eq(media.organization_transfer_on_publish)
+      expect(subject['orientation_tesim']).to match_array(media.orientation)
+      expect(subject['owner_ssim']).to match_array([media.owner])
+      expect(subject['part_ssi']).to eq(media.part&.first&.downcase)
+      expect(subject['part_tesim']).to match_array(media.part)
+      expect(subject['permits_3d_use_tesim']).to match_array(media.permits_3d_use)
+      expect(subject['permits_commercial_use_tesim']).to match_array(media.permits_commercial_use)
       expect(subject['physical_object_id_ssim']).to match_array([specimen.id])
-      expect(subject['physical_object_id_tesim']).to match_array([specimen.id])
-    end
-
-    it 'indexes physical object type' do
-      expect(subject['media_physical_object_type_ssim']).to eq("Biological Specimen")
-      expect(subject['media_physical_object_type_tesim']).to eq("Biological Specimen")
-    end
-
-    it 'indexes taxonomies' do
-      expect(subject['taxonomy_tesim']).to match_array(taxonomy.title)
+      expect(subject['physical_object_id_tesim']).to match_array(specimen.id)
+      expect(subject['physical_object_title_ssi']).to eq(specimen.title&.first&.downcase)
+      expect(subject['physical_object_title_ssim']).to match_array(specimen.title)
+      expect(subject['physical_object_title_tesim']).to match_array(specimen.title)
+      expect(subject['preview_mode_tesim']).to match_array(media.preview_mode)
+      expect(subject['publication_status_ssi']).to eq('Restricted Download')
+      expect(subject['publisher_ssim']).to match_array(media.publisher)
+      expect(subject['publisher_tesim']).to match_array(media.publisher)
+      expect(subject['read_access_group_ssim']).to match_array(['public', team.viewers_group.name, project.viewers_group.name])
+      expect(subject['related_url_tesim']).to match_array(media.related_url)
+      expect(subject['remote_manifest_url_ssi']).to eq(media.remote_manifest_url)
+      expect(subject['required_archival_of_published_derivatives_tesim']).to match_array(media.required_archival_of_published_derivatives)
+      expect(subject['rights_holder_tesim']).to match_array(media.rights_holder)
+      expect(subject['rights_statement_ssim']).to match_array(media.rights_statement)
+      expect(subject['rights_statement_tesim']).to match_array(media.rights_statement)
+      expect(subject['scale_bar_tesim']).to match_array(media.scale_bar)
+      expect(subject['series_type_ssim']).to match_array(media.series_type)
+      expect(subject['series_type_tesim']).to match_array(media.series_type)
+      expect(subject['short_description_ssim']).to match_array(media.short_description)
+      expect(subject['short_description_tesim']).to match_array(media.short_description)
+      expect(subject['side_ssim']).to match_array(media.side)
+      expect(subject['side_tesim']).to match_array(media.side)
+      expect(subject['slice_thickness_tesim']).to match_array(media.slice_thickness)
+      expect(subject['suppressed_bsi']).to be(false)
+      expect(subject['system_create_dtsi']).to be_a_kind_of(String)
+      expect(subject['system_modified_dtsi']).to be_a_kind_of(String)
+      expect(subject['taxonomy_ssi']).to eq(taxonomy.title&.first&.downcase)
       expect(subject['taxonomy_ssim']).to match_array(taxonomy.title)
-    end
+      expect(subject['taxonomy_tesim']).to match_array(taxonomy.title)
+      expect(subject['thumbnail_path_ss']).to eq(Morphosource::MediaThumbnailPathService.call(media))
+      expect(subject['timestamp']).to be_a_kind_of(String)
+      expect(subject['title_ssi']).to eq(media.title.first)
+      expect(subject['title_tesim']).to match_array(media.title)
+      expect(subject['unit_ssim']).to match_array(media.unit)
+      expect(subject['uuid_tesim']).to match_array(media.uuid)
+      expect(subject['user_with_ownership_email_ssim']).to match_array([owner.email])
+      expect(subject['user_with_ownership_email_tesim']).to match_array([owner.email])
+      expect(subject['user_with_ownership_name_ssim']).to match_array(owner.display_name)
+      expect(subject['user_with_ownership_name_tesim']).to match_array(owner.display_name)
+      expect(subject['user_with_ownership_ssi']).to eq(owner.ms_id)
+      expect(subject['visibility_ssi']).to eq(media.visibility)
+      expect(subject['workflow_state_name_ssim']).to match_array(['deposited'])
+      expect(subject['x_spacing_tesim']).to match_array(media.x_spacing)
+      expect(subject['y_spacing_tesim']).to match_array(media.y_spacing)
+      expect(subject['z_spacing_tesim']).to match_array(media.z_spacing)
 
-    it 'indexes organizations' do
-      expect(subject['media_organization_tesim']).to match_array([organization.title.first])
-      expect(subject['media_organization_ssim']).to match_array([organization.title.first])
-      expect(subject['media_organization_id_ssim']).to match_array([organization.id])
-      expect(subject['media_organization_id_tesim']).to match_array([organization.id])
     end
   end
 
   describe 'publication status' do
+    let(:media) { FactoryBot.create(:media) }
+    subject     { described_class.new(media).generate_solr_document }
     context 'media is open' do
       before do
         media.fileset_accessibility = ['open']
@@ -181,6 +277,9 @@ RSpec.describe MediaIndexer do
       end
     end
     context 'media is resticted download' do
+      before do
+        media.fileset_accessibility = ['restricted_download']
+      end
       it 'is Restricted Download' do
         expect(subject['publication_status_ssi']).to eq('Restricted Download')
       end
@@ -195,46 +294,11 @@ RSpec.describe MediaIndexer do
     end
   end
 
-  describe 'organizations' do
-    let(:org1)            { Organization.create(title: ['Organization1']) }
-    let(:org2)            { Organization.create(title: ['Organization2']) }
-    let(:specimen)        { BiologicalSpecimen.create(title: ['Specimen'], vouchered: ['Yes'], organization_id: [org1.id]) }
-    let(:cho)             { CulturalHeritageObject.create(title: ['CulturalHeritageObject'], vouchered: ['Yes'], organization_id: [org2.id]) }
-    let(:device)          { Device.create(title: ['Device'], modality: ['Photogrammetry']) }
-    let(:imaging_event1)  { ImagingEvent.create(title: ['Imaging Event'], ie_modality: device.modality, device_id: [device.id], physical_object_id: [specimen.id]) }
-    let(:imaging_event2)  { ImagingEvent.create(title: ['Imaging Event'], ie_modality: device.modality, device_id: [device.id], physical_object_id: [cho.id]) }
-    let(:media)           { Media.create(title: ['Media']) }
-
-    before do
-      imaging_event1.ordered_members << media
-      imaging_event2.ordered_members << media
-      [imaging_event1, imaging_event2].each(&:save)
-      media.reload
-    end
-
-    it 'returns all media organizations' do
-      expect(MediaIndexer.new(media).organizations).to match_array([org1, org2])
-    end
+  # helper method
+  def add_ordered_members(parent, child)
+    parent.ordered_members << child
+    parent.save!
   end
+end
 
-  describe 'user_with_ownership' do
-    let(:depositor) { User.create(email: 'depositor@email.com', password: 'password') }
-    let(:owner)     { User.create(email: 'owner@email.com', password: 'password') }
 
-    context 'media has an owner' do
-      before do
-        media.depositor = depositor.ms_id
-        media.owner = owner.ms_id
-        media.save
-      end
-      it { expect(subject['user_with_ownership_ssi']).to eq(owner.ms_id) }
-    end
-    context 'media does not have an owner' do
-      before do
-        media.depositor = depositor.ms_id
-        media.save
-      end
-      it { expect(subject['user_with_ownership_ssi']).to eq(depositor.ms_id) }
-    end
-  end
- end

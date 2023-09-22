@@ -1,7 +1,7 @@
 # config/models/user_profile_types.yml
 profile_types:
   universal:
-    required_metadata_fields: email, first_name, last_name, country, state_or_province
+    required_metadata_fields: email, first_name, last_name, country, state
     metadata_fields: middle_name, city, orcid, social_media_handles, website, typical_usage
   faculty: 
     label: "Faculty or Staff (University, Museum, and/or Library)"

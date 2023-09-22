@@ -19,7 +19,6 @@ module Morphosource
       end
 
       def check_profile_type
-byebug 
         unless profile_type_valid?
           add_error("Profile type not valid")
           return false

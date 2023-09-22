@@ -288,6 +288,7 @@ class CatalogController < ApplicationController
       blacklight_config.max_per_page = 1_000_000
     end
     (@response, @document_list) = search_results(params)
+
     @document_type = document_type
     respond_to do |format|
       format.html { store_preferred_view }
@@ -300,7 +301,7 @@ class CatalogController < ApplicationController
       end
       format.csv do
         # Stream CSV since it might be very large
-        
+
         headers.delete("Content-Length")
         headers["Cache-Control"] = "no-cache"
         headers["Content-Type"] = "text/csv"

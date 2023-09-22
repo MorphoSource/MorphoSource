@@ -97,8 +97,19 @@ module Morphosource
         create_attachment_if_needed
         format_update_params
         correct_empty_str_arrays
+        check_proxy_deposit_requests
         @params.permit!
         @organization.update(@params)
+      end
+
+      def check_proxy_deposit_requests
+        return unless @params["data_manager"].present?
+        return if @params["data_manager"].first == @organization.data_manager.first
+        old_manager = User.find_by_user_key(@organization.data_manager.first)
+        new_manager = User.find_by_user_key(@params["data_manager"].first)
+        if (requests_to_handle = ProxyDepositRequest.where(organization_transfer: true, receiving_user_id: old_manager.id, status: 'pending')).present?
+          UpdateOrganizationTransferRequestsJob.perform_later(requests_to_handle.to_ary, new_manager)
+        end
       end
 
       def ensure_blank_values

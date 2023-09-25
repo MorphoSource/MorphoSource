@@ -22,6 +22,7 @@ module Morphosource
 
       # Process changes from profile form
       def update
+byebug 
         if conditionally_update
           handle_successful_update
           if @user.unconfirmed_email

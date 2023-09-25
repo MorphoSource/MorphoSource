@@ -3,53 +3,44 @@
 
 <% is_core_site = Hyrax.config.site_title == Hyrax.config.default_site_title %>
 
-<% if is_core_site %>
-  <%= render(partial: 'front_banner') %>
-<% else %>
-  <div id="front-banner" class="row" style='text-align: center; background-color: unset; border: none; padding: 20px;'>
-    <div class="col-xs-12 col-md-3 col-align no-padding">
-      <%= link_to Rails.application.routes.url_helpers.browse_categories_path, class: 'btn' do %>
-        <div class="row" style='text-align: left;'>
-          <div class="col-xs-3 col-align col-align--center">
-            <div class="row"><i class="fas fa-book-open fa-2x"></i></div>
+<div class="front">
+  <% if is_core_site %>
+    <%= render(partial: 'front_banner') %>
+  <% else %>
+    <div id="front-banner" class="row" style='text-align: center; background-color: unset; border: none; padding: 20px;'>
+      <div class="col-xs-12 col-md-3 col-align no-padding">
+        <%= link_to Rails.application.routes.url_helpers.browse_categories_path, class: 'btn' do %>
+          <div class="row" style='text-align: left;'>
+            <div class="col-xs-3 col-align col-align--center">
+              <div class="row"><i class="fas fa-book-open fa-2x"></i></div>
+            </div>
+            <div class="col-xs-9 col-align col-align--center">
+              <div class="row">Want to find data?</div>
+              <div class="row">Browse categories</div>
+            </div>
           </div>
-          <div class="col-xs-9 col-align col-align--center">
-            <div class="row">Want to find data?</div>
-            <div class="row">Browse categories</div>
+        <% end %>
+      </div>
+      <div class="col-xs-12 col-md-3 col-align no-padding">
+        <%= link_to 'https://wiki.duke.edu/display/MD/Contributor+User+Docs', target: :_blank, class: 'btn' do %>
+          <div class="row" style='text-align: left;'>
+            <div class="col-xs-3 col-align col-align--center">
+              <div class="row"><i class="fas fa-feather-alt fa-2x"></i></div>
+            </div>
+            <div class="col-xs-9 col-align col-align--center">
+              <div class="row">Want to contribute</div>
+              <div class="row">or manage data?</div>
+            </div>
           </div>
-        </div>
-      <% end %>
+        <% end %>
+      </div>
     </div>
-    <div class="col-xs-12 col-md-3 col-align no-padding">
-      <%= link_to 'https://wiki.duke.edu/display/MD/Contributor+User+Docs', target: :_blank, class: 'btn' do %>
-        <div class="row" style='text-align: left;'>
-          <div class="col-xs-3 col-align col-align--center">
-            <div class="row"><i class="fas fa-feather-alt fa-2x"></i></div>
-          </div>
-          <div class="col-xs-9 col-align col-align--center">
-            <div class="row">Want to contribute</div>
-            <div class="row">or manage data?</div>
-          </div>
-        </div>
-      <% end %>
-    </div>
-  </div>
-<% end %>
+  <% end %>
 
-<% if Hyrax.config.wordpress_blog_url.present? %>
   <div class="row showcase">
-    <%= render(partial: 'news_updates') %>
+    <%= render(partial: 'announcements') if Hyrax.config.site_announcements %>
     <%= render(partial: 'featured_projects') %>
-  </div>
-
-  <div class="row showcase">
     <%= render(partial: 'repository_statistics') %>
     <%= render(partial: 'for_educators') if is_core_site %>
   </div>
-<% else %>
-  <div class="row showcase">
-    <%= render(partial: 'featured_projects') %>
-    <%= render(partial: 'repository_statistics') %>
-    <%= render(partial: 'for_educators') if is_core_site %> 
-  </div>
-<% end %>
+</div>

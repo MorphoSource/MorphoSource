@@ -8,7 +8,12 @@
         <table id="datatable-media-list" class="table teams-projects media-list-show">
           <thead>
             <tr>
-              <th class="checkbox no-sort"><input type="checkbox" id="select-all-for-download" /></th>
+              <th class="checkbox no-sort">
+                <input type="checkbox" id="select-all-for-download" />
+                <% if @collection.ordered_media.present? %>
+                  <%= sortable_table_header('','order') %>
+                <% end %>
+              </th>
               <th><%= sortable_table_header('Media', 'id') %></th>
               <th><%= sortable_table_header('Part', 'part_si') %></th>
               <th><%= sortable_table_header('Object', 'physical_object_title_si') %></th>
@@ -19,16 +24,16 @@
               <th class="view-column">View</th>
             </tr>
           </thead>
-          <tbody 
+          <tbody
             <% if @can_edit %>
-              id="sortable-media-list" 
-              data-url=<%= order_media_path(@collection) %> 
-              data-sort=<%= order_media_sort(params["sort"]) %> 
-              data-page=<%= order_media_page(params["page"]) %> 
-              data-per-page=<%= order_media_per_page(params["per_page"]) %> 
+              id="sortable-media-list"
+              data-url=<%= order_media_path(@collection) %>
+              data-sort=<%= order_media_sort(params["sort"]) %>
+              data-page=<%= order_media_page(params["page"]) %>
+              data-per-page=<%= order_media_per_page(params["per_page"]) %>
             <% end %>
           >
-            <%= render partial: 'document_list_row', collection: @document_list, as: :document %>
+            <%= render partial: 'document_list_row', collection: @document_list, as: :document, locals: { ordered_media: @collection.ordered_media&.first&.split(',') } %>
           </tbody>
         </table>
 

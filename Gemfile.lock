@@ -779,6 +779,7 @@ GEM
       rdf (~> 3.1)
     recaptcha (5.6.0)
       json
+    redcarpet (3.6.0)
     redic (1.5.3)
       hiredis
     redis (4.2.2)
@@ -1059,6 +1060,7 @@ DEPENDENCIES
   rails-controller-testing
   rdf-vocab (= 3.1.4)
   recaptcha
+  redcarpet
   redis
   render_async
   resque

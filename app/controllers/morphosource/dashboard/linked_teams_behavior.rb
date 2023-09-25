@@ -103,7 +103,7 @@ module Morphosource
       end
 
       def check_proxy_deposit_requests
-        return unless @params["data_manager"].present?
+        return unless (@params["data_manager"].present? && @organization.data_manager.present?)
         return if @params["data_manager"].first == @organization.data_manager.first
         old_manager = User.find_by_user_key(@organization.data_manager.first)
         new_manager = User.find_by_user_key(@params["data_manager"].first)

@@ -32,7 +32,12 @@ RSpec.describe Morphosource::Dashboard::ProfilesController, :type => :controller
   }
 
   let!(:user2) { 
-    FactoryBot.create(:user, email: "user2@test.com", password: 'password', display_name: "Test User 2", ms_id: "msid22") 
+    FactoryBot.create(:user, 
+      email: "user2@test.com", 
+      password: 'password', 
+      display_name: "Test User 2",
+      profile_type: nil, 
+      ms_id: "msid22") 
   }
 
   let(:admin_user) { FactoryBot.create(:admin) }
@@ -60,51 +65,113 @@ RSpec.describe Morphosource::Dashboard::ProfilesController, :type => :controller
         facebook_handle: "new facebook",
         website: "new website",
         terms_read: true,
-        sftp_share: 'testshare'
-      },
+        sftp_share: 'testshare',
+        profile_type: 'artist'},
       id: user.ms_id
     }
   }
 
+  let(:update_params_2) {
+    { 
+      user: {
+        display_name: "New Display Name",
+        affiliation: "New Affiliation",
+        department: "New Department",
+        address: "New Address",
+        country: "CA",
+        state: "MB",
+        postal_code: "New Code",
+        telephone: "New Phone",
+        demographics: ["newdemo1", "newdemo2", ""],
+        intent: ["new intent1", "new intent2", ""],
+        software: ["new software1", "new software2", ""],
+        mesh_file_type: ["new type1", "new type2", ""],
+        volume_file_type: ["new type3", "new type4", ""],
+        printer_model: ["new model1", "new model2", ""],
+        printer_file: ["new type5", "new type6", ""],
+        orcid: "https://orcid.org/1111-1111-1111-1111",
+        twitter_handle: "new twitter",
+        facebook_handle: "new facebook",
+        website: "new website",
+        terms_read: true,
+        sftp_share: 'testshare',
+        profile_type: nil},
+      id: user2.ms_id
+    }
+  }
 
   let(:update_params_invalid_domain) { {user: {display_name: "New Display Name", affiliation: "New Affiliation", department: "New Department", address: "New Address", country: "CA", state: "MB", postal_code: "New Code", telephone: "New Phone", demographics: ["newdemo1", "newdemo2", ""], intent: ["new intent1", "new intent2", ""], software: ["new software1", "new software2", ""], mesh_file_type: ["new type1", "new type2", ""], volume_file_type: ["new type3", "new type4", ""], printer_model: ["new model1", "new model2", ""], printer_file: ["new type5", "new type6", ""], orcid: "https://orcid.org/1111-1111-1111-1111", twitter_handle: "new twitter", facebook_handle: "new facebook", website: "new website", terms_read: true, sftp_share: 'testshare'}, id: user.ms_id} }
 
 
   describe '#update' do
 
-    before do
-      sign_in user
-      #allow(User).to receive(:from_url_component).with(update_params[:id]).and_return(user)
-      #allow(User).to receive(:find).and_return(user)
+    context 'profile_type not valid' do
+      before do
+        sign_in user2
+      end
+      
+      it 'redirects and returns profile_type not valid' do
+        patch :update, params: update_params_2
+        expect(response.status).to eq(302)
+        expect(response.flash[:notice]).to eq("Profile type not valid")
+      end
     end
 
-    it 'updates the user with MorphoSource attributes, and removes empty strings from multi-value attributes' do
-      patch :update, params: update_params
-byebug 
-      user.reload
-      expect(user.display_name).to eq("New Display Name")
-      expect(user.affiliation).to eq ("New Affiliation")
-      expect(user.department).to eq("New Department")
-      expect(user.address).to eq("New Address")
-      expect(user.country).to eq("CA")
-      expect(user.state).to eq("MB")
-      expect(user.postal_code).to eq("New Code")
-      expect(user.telephone).to eq("New Phone")
-      expect(user.demographics).to match_array(["newdemo1", "newdemo2"])
-      expect(user.intent).to match_array(["new intent1", "new intent2"])
-      expect(user.software).to match_array(["new software1", "new software2"])
-      expect(user.mesh_file_type).to match_array(["new type1", "new type2"])
-      expect(user.volume_file_type).to match_array(["new type3", "new type4"])
-      expect(user.printer_model).to match_array(["new model1", "new model2"])
-      expect(user.printer_file).to match_array(["new type5", "new type6"])
-      expect(user.orcid).to eq("https://orcid.org/1111-1111-1111-1111")
-      expect(user.twitter_handle).to eq("new twitter")
-      expect(user.facebook_handle).to eq("new facebook")
-      expect(user.website).to eq("new website")
-      expect(user.ms_id).to eq("msid678")
-      expect(user.sftp_share).to eq("testshare")
+    context 'validate_field_values fails' do 
+
+      in controller, we need to check both param and user attribute
+
     end
 
+#     context 'profile_type not matched metadata' do
+#       before do
+#         sign_in user2
+#         update_params_2[:user][:profile_type] = "Faculty or Staff (K-12)"
+# #        update_params_2[:user][:instructor] = "should have no value"
+#       end
+#       
+#       it 'redirects and returns profile_type not valid' do
+#         patch :update, params: update_params_2
+#         expect(response.status).to eq(302)
+#         expect(response.flash[:notice]).to eq("Metadata does not match profile typesss")
+#       end
+#     end
+
+    context 'successful update' do
+
+      before do
+        sign_in user
+        #allow(User).to receive(:from_url_component).with(update_params[:id]).and_return(user)
+        #allow(User).to receive(:find).and_return(user)
+      end
+
+      it 'updates the user with MorphoSource attributes, and removes empty strings from multi-value attributes' do
+        patch :update, params: update_params
+        user.reload
+        expect(user.display_name).to eq("New Display Name")
+        expect(user.affiliation).to eq ("New Affiliation")
+        expect(user.department).to eq("New Department")
+        expect(user.address).to eq("New Address")
+        expect(user.country).to eq("CA")
+        expect(user.state).to eq("MB")
+        expect(user.postal_code).to eq("New Code")
+        expect(user.telephone).to eq("New Phone")
+        expect(user.demographics).to match_array(["newdemo1", "newdemo2"])
+        expect(user.intent).to match_array(["new intent1", "new intent2"])
+        expect(user.software).to match_array(["new software1", "new software2"])
+        expect(user.mesh_file_type).to match_array(["new type1", "new type2"])
+        expect(user.volume_file_type).to match_array(["new type3", "new type4"])
+        expect(user.printer_model).to match_array(["new model1", "new model2"])
+        expect(user.printer_file).to match_array(["new type5", "new type6"])
+        expect(user.orcid).to eq("https://orcid.org/1111-1111-1111-1111")
+        expect(user.twitter_handle).to eq("new twitter")
+        expect(user.facebook_handle).to eq("new facebook")
+        expect(user.website).to eq("new website")
+        expect(user.ms_id).to eq("msid678")
+        expect(user.sftp_share).to eq("testshare")
+        expect(user.profile_type).to eq('artist')
+      end
+    end
   end
 
   describe 'edit' do

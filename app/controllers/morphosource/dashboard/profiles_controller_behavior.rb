@@ -9,8 +9,12 @@ module Morphosource
 
       private
 
+      def user_params
+        @user_params ||= params[:user]
+      end
+
       def profile_type
-        @profile_type ||= params[:user][:profile_type]
+        @profile_type ||= user_params[:profile_type]
         # @user.profile_type
       end
 
@@ -18,23 +22,24 @@ module Morphosource
         @profile_type_config ||= Hyrax.config.user_profile_type_config
       end
 
+      def profile_metadata_fields
+        @profile_metadata_fields ||= Hyrax.config.user_profile_metadata_fields
+      end
+
       def check_profile_type
-   byebug 
-
-#profile_type_valid is ???
-
         unless profile_type_valid?
-          add_error("Profile type not valid")
+          redirect_with_error("Profile type not valid")
           return false
         end
         unless metadata_match_profile_type?
-          add_error("Metadata does not match profile type")
+          redirect_with_error("Metadata does not match profile type")
           return false
         end
         validate_field_values
       end
 
       def profile_type_by_label(value)
+        return nil unless value.present?
         profile_type_config.each do |profile_type, data|
           if data['label'] == value
             return profile_type
@@ -45,17 +50,19 @@ module Morphosource
 
       def validate_field_values
         # check required_metadata_fields for both universal and the user profile type
+        errors = []
         required_fields = profile_type_config["universal"]['required_metadata_fields'].split(', ')
         if (prof_type_required_fields = profile_type_config[user_mapped_profile_type]['required_metadata_fields']).present?
           required_fields += prof_type_required_fields.split(', ')
         end
         required_fields.each do |field|
-          if self.respond_to?(field)
-            unless self.send(field).present?
-              add_error("#{field} must be present")
+          if user_params.has_key?(field)
+            unless user_params[field].present?
+              errors << "#{field} is required"
             end
           end
         end
+        redirect_with_error(errors) if errors.present?
       end
 
       def user_mapped_profile_type
@@ -74,7 +81,7 @@ module Morphosource
         unaccepted_fields.each do |field|
           if self.respond_to?(field)
             if self.send(field).present?
-              add_error("#{field} cannot be present for profile type #{profile_type}")
+              redirect_with_error("#{field} cannot be present for profile type #{profile_type}")
             end
           end
         end
@@ -100,8 +107,8 @@ module Morphosource
         user_mapped_profile_type.present?
       end
 
-      def add_error(msg)
-        redirect_to hyrax.dashboard_profile_path(@user.to_param), notice: msg
+      def redirect_with_error(messages)
+        redirect_to hyrax.dashboard_profile_path(@user.to_param), notice: messages
       end
 
     end

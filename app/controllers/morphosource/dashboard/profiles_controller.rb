@@ -22,7 +22,6 @@ module Morphosource
 
       # Process changes from profile form
       def update
-byebug 
         if conditionally_update
           handle_successful_update
           if @user.unconfirmed_email
@@ -58,7 +57,48 @@ byebug
         end
 
         def user_params
-          params.require(:user).permit(:profile_type, :address, :affiliation, :sftp_share, :avatar, :country, :department, :display_name, :email, :facebook_handle, :linkedin_handle, :orcid, :postal_code, :remove_avatar, :state, :telephone, :terms_read, :twitter_handle, :website, demographics: [], software: [], intent: [], mesh_file_type: [], volume_file_type: [], printer_file: [], printer_model: [] )
+          # todo: remove the following fields, and clean up later
+          # Postal Code
+          # Telephone
+          # Software to view 3D
+          # File Type for 3D Mesh
+          # File Type for 3D Volume
+          # 3D Printer Machine Type
+          # 3D Printer File Type
+          @user_params ||= begin
+            existing_permit_list = [
+              :address,
+              :affiliation,
+              :sftp_share,
+              :avatar,
+              :country,
+              :department,
+              :display_name,
+              :email,
+              :facebook_handle,
+              :linkedin_handle,
+              :orcid,
+              :postal_code,
+              :remove_avatar,
+              :state,
+              :telephone,
+              :terms_read,
+              :twitter_handle,
+              :website,
+              demographics: [],
+              software: [],
+              intent: [],
+              mesh_file_type: [],
+              volume_file_type: [],
+              printer_file: [],
+              printer_model: []
+            ]
+            # add new user profile fields from yaml
+            profile_metadata_fields.each do |field, _type|
+              existing_permit_list << field.to_sym
+            end
+            params.require(:user).permit(existing_permit_list)
+          end
         end
 
         def update_password_params

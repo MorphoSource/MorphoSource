@@ -1,15 +1,12 @@
 class DocsController < ApplicationController
-  with_themed_layout 'morphosource_1_column_docs'
+  layout 'homepage'
 
   def about
-    outdated_flash
+    @renderer = Redcarpet::Markdown.new(Redcarpet::Render::HTML)
+    @markdown_path = Rails.root.join("app", "assets", "markdown", "about.md")
   end
 
   def contributor_terms
-  end
-
-  def rss
-    outdated_flash
   end
 
   def terms

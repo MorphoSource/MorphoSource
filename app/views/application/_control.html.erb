@@ -1,0 +1,16 @@
+<% if links_yml.present? %>
+  <li class="dropdown">
+    <%= link_to hyrax.root_path, role: 'button', data: { toggle: 'dropdown' }, aria: { haspopup: true, expanded: false, controls: "#{label}-links" } do %>
+      <span><%= t("hyrax.controls.links.#{label}.title")%></span>
+      <span class="caret"></span>
+    <% end %>
+    <ul id="<%= label %>-links" class="dropdown-menu dropdown-menu-right" role="menu">
+      <% links_yml.each_with_index do |link_yml, idx| %>
+        <% if idx != 0 %>
+          <li class="divider"></li>
+        <% end %>
+        <li><%= link_to t(link_yml["label"]), link_yml["url"], target: :_blank %></li>
+      <% end %>
+    </ul> 
+  </li>
+<% end %>

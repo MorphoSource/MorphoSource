@@ -1,4 +1,4 @@
-<div class="col-xs-12 col-sm-6 col-left blog">
+<div class="col-xs-12 col-sm-6 blog">
   <h2>Announcements</h2>
   <% posts = Morphosource::ExternalApi::GithubDiscussions.get_announcements %>
   <% if posts[:status] == :success && posts[:data].present? %>

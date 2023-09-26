@@ -1,21 +1,25 @@
 # List of external document URLs for front page docs menu
-- label: hyrax.controls.docs.all_docs
+- label: hyrax.controls.links.docs.about
+  url: /docs/about
+  header: false
+  footer: true
+- label: hyrax.controls.links.docs.all_docs
   url: https://wiki.duke.edu/display/MD/MorphoSource+Documentation+Home
   header: true
   footer: true
-- label: hyrax.controls.docs.guide
+- label: hyrax.controls.links.docs.guide
   url: https://wiki.duke.edu/display/MD/Standard+User+Docs
   header: true
   footer: true
-- label: hyrax.controls.docs.contributors
+- label: hyrax.controls.links.docs.contributors
   url: https://wiki.duke.edu/display/MD/Contributor+User+Docs
   header: true
   footer: true
-- label: hyrax.controls.docs.citation
+- label: hyrax.controls.links.docs.citation
   url: https://wiki.duke.edu/display/MD/Reference+and+Citation+of+Media+and+Projects
   header: true
   footer: false
-- label: hyrax.controls.docs.faq
+- label: hyrax.controls.links.docs.faq
   url: https://wiki.duke.edu/display/MD/Frequently+Asked+Questions
   header: true
-  footer: true  
+  footer: false  

@@ -1,5 +1,6 @@
-<% provide :page_title, t("morphosource.docs.about.title") %>
+<% content_for :body_css_classes do %>showcase<% end %>
+<% provide :page_title, t(".title") %>
 
-<h1>About MorphoSource</h1>
-
-<p>The information previously on this page was outdated, and will be updated soon.</p>
+<div>
+  <%= @renderer.render(IO.read(@markdown_path)).html_safe %>
+</div>

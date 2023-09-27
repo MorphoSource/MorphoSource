@@ -33,7 +33,6 @@ module Morphosource
         end
         @errors = []
         check_metadata_match_profile_type
-#byebug
         validate_field_values
         redirect_with_error(@errors) if @errors.present?        
       end
@@ -56,12 +55,8 @@ module Morphosource
         end
         required_fields.each do |field|
           if user_params.has_key?(field)
-#if field == 'academic_institution_or_school'
-#  byebug
-#end
             unless user_params[field].present?
-              @errors << t("morphosource.dashboard.profiles.edit_primary.#{field}").html_safe + " is required"
-#byebug 
+              @errors << "#{translated(field)} is required"
             end
           end
         end
@@ -74,20 +69,26 @@ module Morphosource
       def check_metadata_match_profile_type
         accepted_fields = []
         if profile_type_config[user_mapped_profile_type]['metadata_fields'].present?
-          accepted_fields += [ profile_type_config[user_mapped_profile_type]['metadata_fields'] ]
+          accepted_fields << profile_type_config[user_mapped_profile_type]['metadata_fields'].split(', ')
         end
         if profile_type_config[user_mapped_profile_type]['required_metadata_fields'].present?
-          accepted_fields += [ profile_type_config[user_mapped_profile_type]['required_metadata_fields'] ]
+          accepted_fields << profile_type_config[user_mapped_profile_type]['required_metadata_fields'].split(', ')
         end
-        unaccepted_fields = non_universal_metadata_fields.uniq - accepted_fields
+        unaccepted_fields = non_universal_metadata_fields.uniq - accepted_fields.flatten
         unaccepted_fields.each do |field|
           if user_params.has_key?(field)
             if user_params[field].present?
-#byebug 
-              @errors << t("morphosource.dashboard.profiles.edit_primary.#{field}").html_safe + 
-                " cannot be present for profile type #{profile_type}"
+              @errors << "#{translated(field)} cannot be present for profile type #{profile_type}"
             end
           end
+        end
+      end
+
+      def translated(field)
+        if I18n.exists?("morphosource.dashboard.profiles.edit_primary.#{field}")
+          t("morphosource.dashboard.profiles.edit_primary.#{field}").html_safe
+        else
+          field
         end
       end
 
@@ -106,9 +107,9 @@ module Morphosource
         return fields
       end
 
-
       def redirect_with_error(messages)
-        redirect_to hyrax.dashboard_profile_path(@user.to_param), notice: messages
+        flash[:error] = messages
+        redirect_to hyrax.dashboard_profile_path(@user.to_param)
       end
 
     end

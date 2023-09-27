@@ -10,7 +10,7 @@ RSpec.describe Morphosource::Dashboard::ProfilesController, :type => :controller
       password: 'password',
       display_name: "Test User",
       affiliation: "Test Affiliation",
-      department: "Test Department",
+      department: "",
       address: "Test Address",
       country: "US",
       state: "NC",
@@ -47,7 +47,7 @@ RSpec.describe Morphosource::Dashboard::ProfilesController, :type => :controller
       user: {
         display_name: "New Display Name",
         affiliation: "New Affiliation",
-        department: "New Department",
+        department: "",
         address: "New Address",
         country: "CA",
         state: "MB",
@@ -71,15 +71,29 @@ RSpec.describe Morphosource::Dashboard::ProfilesController, :type => :controller
     }
   }
 
-  let(:update_params_2) {
+  # params specifically for testing new user profile
+  let(:update_params_new) {
     { 
       user: {
+        first_name: "",
+        middle_name: "",
+        last_name: "",
+        city: "",
+        social_media_handles: "",
+        typical_usage: "",
+        profile_type: "",
+        academic_institution_or_school: "",
+        department: "",
+        academic_field: "",
+        academic_subfield: "",
+        mentor_or_advisor: "",
+        instructor: "",
         display_name: "New Display Name",
         affiliation: "New Affiliation",
         department: "New Department",
         address: "New Address",
-        country: "CA",
-        state: "MB",
+        country: "",
+        state: "",
         postal_code: "New Code",
         telephone: "New Phone",
         demographics: ["newdemo1", "newdemo2", ""],
@@ -111,31 +125,39 @@ RSpec.describe Morphosource::Dashboard::ProfilesController, :type => :controller
       end
       
       it 'redirects and returns profile_type not valid' do
-        patch :update, params: update_params_2
+        patch :update, params: update_params_new
         expect(response.status).to eq(302)
-        expect(response.flash[:notice]).to eq("Profile type not valid")
+        expect(response.flash[:error]).to eq("Profile type not valid")
       end
     end
 
-    context 'validate_field_values fails' do 
+    context 'required universal fields not present' do
+      before do
+        sign_in user2
+        update_params_new[:user][:profile_type] = "artist"
+        update_params_new[:user][:department] = ""
+      end
 
-      in controller, we need to check both param and user attribute
-
+      it 'redirects and returns fields not present' do
+        patch :update, params: update_params_new
+        expect(response.status).to eq(302)
+        expect(response.flash[:error]).to include("first_name is required", 
+          "last_name is required", "Country is required", "State or Province is required")
+      end
     end
 
-#     context 'profile_type not matched metadata' do
-#       before do
-#         sign_in user2
-#         update_params_2[:user][:profile_type] = "Faculty or Staff (K-12)"
-# #        update_params_2[:user][:instructor] = "should have no value"
-#       end
-#       
-#       it 'redirects and returns profile_type not valid' do
-#         patch :update, params: update_params_2
-#         expect(response.status).to eq(302)
-#         expect(response.flash[:notice]).to eq("Metadata does not match profile typesss")
-#       end
-#     end
+    context 'profile_type not matched metadata' do
+      before do
+        sign_in user2
+        update_params_new[:user][:profile_type] = "Faculty or Staff (K-12)"
+      end
+
+      it 'redirects and returns fields not matched with profile_type' do
+        patch :update, params: update_params_new
+        expect(response.status).to eq(302)
+        expect(response.flash[:error]).to include("Organization cannot be present for profile type Faculty or Staff (K-12)", "first_name is required", "last_name is required", "Country is required", "State or Province is required", "academic_institution_or_school is required", "academic_field is required")
+      end
+    end
 
     context 'successful update' do
 
@@ -148,9 +170,10 @@ RSpec.describe Morphosource::Dashboard::ProfilesController, :type => :controller
       it 'updates the user with MorphoSource attributes, and removes empty strings from multi-value attributes' do
         patch :update, params: update_params
         user.reload
+        # check response.flash[:error] if fails here
         expect(user.display_name).to eq("New Display Name")
         expect(user.affiliation).to eq ("New Affiliation")
-        expect(user.department).to eq("New Department")
+        expect(user.department).to eq("")
         expect(user.address).to eq("New Address")
         expect(user.country).to eq("CA")
         expect(user.state).to eq("MB")

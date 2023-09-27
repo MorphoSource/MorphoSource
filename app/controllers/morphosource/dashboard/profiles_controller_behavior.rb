@@ -27,15 +27,15 @@ module Morphosource
       end
 
       def check_profile_type
-        unless profile_type_valid?
+        unless user_mapped_profile_type.present?
           redirect_with_error("Profile type not valid")
           return false
         end
-        unless metadata_match_profile_type?
-          redirect_with_error("Metadata does not match profile type")
-          return false
-        end
+        @errors = []
+        check_metadata_match_profile_type
+byebug
         validate_field_values
+        redirect_with_error(@errors) if @errors.present?        
       end
 
       def profile_type_by_label(value)
@@ -50,26 +50,28 @@ module Morphosource
 
       def validate_field_values
         # check required_metadata_fields for both universal and the user profile type
-        errors = []
         required_fields = profile_type_config["universal"]['required_metadata_fields'].split(', ')
         if (prof_type_required_fields = profile_type_config[user_mapped_profile_type]['required_metadata_fields']).present?
           required_fields += prof_type_required_fields.split(', ')
         end
         required_fields.each do |field|
           if user_params.has_key?(field)
+#if field == 'academic_institution_or_school'
+#  byebug
+#end
             unless user_params[field].present?
-              errors << "#{field} is required"
+byebug 
+              @errors << "#{field} is required"
             end
           end
         end
-        redirect_with_error(errors) if errors.present?
       end
 
       def user_mapped_profile_type
         @user_mapped_profile_type ||= profile_type_by_label(profile_type)
       end
 
-      def metadata_match_profile_type?
+      def check_metadata_match_profile_type
         accepted_fields = []
         if profile_type_config[user_mapped_profile_type]['metadata_fields'].present?
           accepted_fields += [ profile_type_config[user_mapped_profile_type]['metadata_fields'] ]
@@ -79,9 +81,10 @@ module Morphosource
         end
         unaccepted_fields = non_universal_metadata_fields.uniq - accepted_fields
         unaccepted_fields.each do |field|
-          if self.respond_to?(field)
-            if self.send(field).present?
-              redirect_with_error("#{field} cannot be present for profile type #{profile_type}")
+          if user_params.has_key?(field)
+            if user_params[field].present?
+byebug 
+              @errors << "#{field} cannot be present for profile type #{profile_type}"
             end
           end
         end
@@ -102,10 +105,6 @@ module Morphosource
         return fields
       end
 
-      def profile_type_valid?
-        #valid_profile_types.include?(profile_type)
-        user_mapped_profile_type.present?
-      end
 
       def redirect_with_error(messages)
         redirect_to hyrax.dashboard_profile_path(@user.to_param), notice: messages

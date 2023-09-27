@@ -1,6 +1,7 @@
 # config/models/user_profile_types.yml
 profile_types:
   universal:
+    label: ""
     required_metadata_fields: email, first_name, last_name, country, state
     metadata_fields: middle_name, city, orcid, social_media_handles, website, typical_usage
   faculty: 
@@ -29,9 +30,9 @@ profile_types:
     metadata_fields: instructor
   professional:
     label: "Private Industry or Government Professional"
-    required_metadata_fields: organization
+    required_metadata_fields: affiliation
   artist:
     label: "artist"
-    metadata_fields: organization
+    metadata_fields: affiliation
   individual:
     label: "Private Individual or Other"

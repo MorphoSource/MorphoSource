@@ -33,7 +33,7 @@ module Morphosource
         end
         @errors = []
         check_metadata_match_profile_type
-byebug
+#byebug
         validate_field_values
         redirect_with_error(@errors) if @errors.present?        
       end
@@ -60,8 +60,8 @@ byebug
 #  byebug
 #end
             unless user_params[field].present?
-byebug 
-              @errors << "#{field} is required"
+              @errors << t("morphosource.dashboard.profiles.edit_primary.#{field}").html_safe + " is required"
+#byebug 
             end
           end
         end
@@ -83,8 +83,9 @@ byebug
         unaccepted_fields.each do |field|
           if user_params.has_key?(field)
             if user_params[field].present?
-byebug 
-              @errors << "#{field} cannot be present for profile type #{profile_type}"
+#byebug 
+              @errors << t("morphosource.dashboard.profiles.edit_primary.#{field}").html_safe + 
+                " cannot be present for profile type #{profile_type}"
             end
           end
         end

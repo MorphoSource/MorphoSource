@@ -32,7 +32,7 @@ profile_types:
     label: "Private Industry or Government Professional"
     required_metadata_fields: affiliation
   artist:
-    label: "artist"
+    label: "Artist"
     metadata_fields: affiliation
   individual:
     label: "Private Individual or Other"

@@ -2,7 +2,7 @@
 <div class="form-group">
   <%= f.label :profile_type, t("morphosource.dashboard.profiles.edit_primary.profile_type").html_safe, class: 'col-sm-4 control-label' %>
   <div class="col-sm-8">
-     <%= f.text_field :profile_type, class: "form-control", required: false %>
+    <%= f.select_tag 'user[profile_type]', options_for_select(Morphosource::UserProfile::ProfileTypesHelper::PROFILE_TYPES, @user.profile_type), class: "form-control", include_blank: true %>
   </div>
 </div>
 <div class="form-group">

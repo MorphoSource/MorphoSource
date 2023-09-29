@@ -728,6 +728,12 @@ module Hyrax
       @default_site_title ||= 'MorphoSource'
     end
 
+    # Try to display site announcements? Required github_access_token for GH discussions board
+    attr_writer :site_announcements
+    def site_announcements
+      @site_announcements ||= false
+    end
+
     # Packrat API fields (if not using Duke Packrat Storage, these fields are unnecessary)
     attr_writer :packrat_api_endpoint_client_id
     def packrat_api_endpoint_client_id
@@ -759,6 +765,12 @@ module Hyrax
       @packrat_api_volume_id ||= nil
     end
 
+    # Github GraphQL API credentials
+    attr_writer :github_access_token
+    def github_access_token
+      @github_access_token ||= nil
+    end
+
     # Fund code reporting fields (if not using fund code reporting features, these fields are unnecessary)
     attr_writer :subsidizing_fund_code_id
     def subsidizing_fund_code_id
@@ -768,12 +780,6 @@ module Hyrax
     attr_writer :unused_storage_fund_code_id
     def unused_storage_fund_code_id
       @unused_storage_fund_code_id ||= nil
-    end
-
-    # Wordpress blog for news updates (optional)
-    attr_writer :wordpress_blog_url
-    def wordpress_blog_url
-      @wordpress_blog_url ||= nil
     end
 
     attr_accessor :nested_relationship_reindexer

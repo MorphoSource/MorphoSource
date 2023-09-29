@@ -1,6 +1,7 @@
 class RegistrationsController < Devise::RegistrationsController
+  include Morphosource::UserProfile::ProfilesBehavior
 
-  before_action :strip_empty_values, only: [:create]
+  before_action :strip_empty_values, :check_profile_type, only: [:create]
 
   protected
 
@@ -13,6 +14,11 @@ class RegistrationsController < Devise::RegistrationsController
     User::MULTI_VALUE_FIELDS.keys.each do |field|
       params[:user][field].delete_if(&:empty?)
     end
+  end
+
+  def redirect_with_error(messages)
+    flash[:error] = messages
+    redirect_to main_app.new_user_registration_path 
   end
 
 end

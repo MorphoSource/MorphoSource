@@ -1,11 +1,12 @@
+# this module is shared by ProfilesController and RegistrationsController
+# mainly for validating and handling user profile type and related fields
 module Morphosource
-  module Dashboard
-    module ProfilesControllerBehavior
+  module UserProfile
+    module ProfilesBehavior
 
       def valid_profile_types
         @valid_profile_types ||= profile_type_config.values.map { |profile| profile['label'] }.compact
       end
-
 
       private
 
@@ -15,7 +16,6 @@ module Morphosource
 
       def profile_type
         @profile_type ||= user_params[:profile_type]
-        # @user.profile_type
       end
 
       def profile_type_config
@@ -50,13 +50,19 @@ module Morphosource
       def validate_field_values
         # check required_metadata_fields for both universal and the user profile type
         required_fields = profile_type_config["universal"]['required_metadata_fields'].split(', ')
-        if (prof_type_required_fields = profile_type_config[user_mapped_profile_type]['required_metadata_fields']).present?
-          required_fields += prof_type_required_fields.split(', ')
-        end
         required_fields.each do |field|
           if user_params.has_key?(field)
             unless user_params[field].present?
               @errors << "#{translated(field)} is required"
+            end
+          end
+        end
+        if (prof_type_required_fields = profile_type_config[user_mapped_profile_type]['required_metadata_fields']).present?
+          prof_type_required_fields.split(', ').each do |field|
+            if user_params.has_key?(field)
+              unless user_params[field].present?
+                @errors << "#{translated(field)} is required for profile type #{profile_type}"
+              end
             end
           end
         end
@@ -105,11 +111,6 @@ module Morphosource
           end
         end
         return fields
-      end
-
-      def redirect_with_error(messages)
-        flash[:error] = messages
-        redirect_to hyrax.dashboard_profile_path(@user.to_param)
       end
 
     end

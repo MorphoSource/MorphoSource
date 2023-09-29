@@ -4,7 +4,7 @@ module Morphosource
 
       with_themed_layout 'morphosource_dashboard'
       helper Morphosource::UserProfile::UserProfileHelper
-      include Morphosource::Dashboard::ProfilesControllerBehavior
+      include Morphosource::UserProfile::ProfilesBehavior
 
       before_action :find_user
       before_action :authenticate_user!
@@ -110,6 +110,11 @@ module Morphosource
           User::MULTI_VALUE_FIELDS.keys.each do |field|
             params[:user][field].delete_if(&:empty?)
           end
+        end
+
+        def redirect_with_error(messages)
+          flash[:error] = messages
+          redirect_to hyrax.dashboard_profile_path(@user.to_param)
         end
 
     end

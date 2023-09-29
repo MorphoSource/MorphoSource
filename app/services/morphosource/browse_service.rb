@@ -117,7 +117,7 @@ module Morphosource
 
     def media_type_and_modality_facets
       facet_fields = [
-        Solrizer.solr_name("media_type", :facetable),
+        Solrizer.solr_name("media_type", :symbol),
         "modality_ssim"
       ]
       params = {

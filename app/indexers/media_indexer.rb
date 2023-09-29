@@ -14,7 +14,7 @@ class MediaIndexer < Morphosource::WorkIndexer
   def generate_solr_document
     super.tap do |solr_doc|
       solr_doc['is_remote_backed_bsi'] = object.is_remote_backed?
-      
+
       solr_doc['file_set_visibilities_ssim'] = object.file_set_visibilities
       solr_doc['fileset_accessibility_ssim'] = object.fileset_accessibility
       solr_doc['download_access_group_ssim'] = object.download_groups
@@ -128,6 +128,9 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['taxonomy_tesim'] = taxonomy_titles
       solr_doc['taxonomy_ssim'] = taxonomy_titles
 
+      # add tags
+      solr_doc['keyword_ssim'] = object.keyword
+
       # add organization facet
       solr_doc['media_organization_tesim'] = organization_titles
       solr_doc['media_organization_ssim'] = organization_titles
@@ -171,17 +174,23 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['media_device_facility_organization_id_ssim'] = facility_org&.id
 
       # sorting fields
-      solr_doc['part_si'] = object.part&.first&.downcase
-      solr_doc['physical_object_title_si'] = physical_object_title&.first&.downcase
-      solr_doc['taxonomy_si'] = taxonomy_titles&.first&.downcase
-      solr_doc['human_readable_media_type_si'] = mt&.first&.downcase
-      solr_doc['publication_status_si'] = pub_status&.downcase
+      solr_doc['part_ssi'] = object.part&.first&.downcase
+      solr_doc['physical_object_title_ssi'] = physical_object_title&.first&.downcase
+      solr_doc['taxonomy_ssi'] = taxonomy_titles&.first&.downcase
+      solr_doc['human_readable_media_type_ssi'] = mt&.first&.downcase
 
       # fund code data sponsor
       solr_doc['active_fund_code_title_ssim'] = object.active_fund_code_title
 
       # organization transfer fields
       solr_doc['organization_transfer_on_publish_bsi'] = object.organization_transfer_on_publish
+
+      # store unstored fields
+      solr_doc['admin_set_ssim'] = object.admin_set.to_s
+      solr_doc['creator_ssim'] = object.creator
+      solr_doc['generic_type_ssim'] = ['Work']
+      solr_doc['human_readable_type_ssi'] = object.human_readable_type
+      solr_doc['publisher_ssim'] = object.publisher
    end
   end
 

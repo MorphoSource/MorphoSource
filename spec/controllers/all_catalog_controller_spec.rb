@@ -12,12 +12,12 @@ RSpec.describe AllCatalogController, :type => :controller do
     describe 'facet fields' do
       let(:facet_fields) { config.facet_fields }
 
-      it 'has 14 facet fields' do
-        expect(facet_fields.count).to eq(14)
+      it 'has 15 facet fields' do
+        expect(facet_fields.count).to eq(15)
       end
 
       describe 'human readable type' do
-        subject { facet_fields['human_readable_type_sim'] }
+        subject { facet_fields['human_readable_type_ssim'] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Work Type")
           expect(subject.limit).to eq(5)
@@ -57,15 +57,23 @@ RSpec.describe AllCatalogController, :type => :controller do
       end
 
       describe 'media keyword' do
-        subject { facet_fields['keyword_sim'] }
+        subject { facet_fields['keyword_ssim'] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Media Tag")
           expect(subject.limit).to eq(5)
         end
       end
 
+      describe 'media taxonomy' do
+        subject { facet_fields['taxonomy_ssim'] }
+        it 'has the correct attributes' do
+          expect(subject.label).to eq("Media Taxonomy")
+          expect(subject.limit).to eq(5)
+        end
+      end
+
       describe 'object creator' do
-        subject { facet_fields['creator_sim'] }
+        subject { facet_fields['creator_ssim'] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Object Creator")
           expect(subject.limit).to eq(5)

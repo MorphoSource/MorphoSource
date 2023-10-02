@@ -3,9 +3,8 @@
 </div>
 
 <div class="list-group-item">
-<% byebug %>
   <span class="badge"><%= @presenter.managed_collection_count %></span>
-  <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span> <%= link_to_field('depositor', user.to_s, t("hyrax.dashboard.stats.collections"), generic_type: "Collection") %>
+  <span class="glyphicon glyphicon-folder-open" aria-hidden="true"></span> <%= link_to('Collections Managed', main_app.managed_collections_search_path(user.ms_id)) %>
 </div>
 
 <div class="list-group-item">

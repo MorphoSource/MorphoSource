@@ -1,20 +1,30 @@
 module Morphosource
   class UserProfilePresenter < Hyrax::UserProfilePresenter
 
+    # returns the number of collections managed by @user viewable by @current_user
     def managed_collection_count
-      catalog_controller = CollectionsCatalogController.new
-      catalog_controller.instance_variable_set(:@current_ability, @ability)
-      repository = catalog_controller.repository
-      search_builder = Morphosource::Users::ManagedCollectionsSearchBuilder.new(catalog_controller)
-      byebug
-      search_builder.instance_variable_set(:@user, @user)
+      search_builder = Morphosource::Users::ManagedCollectionsSearchBuilder.new(self)
       repository.search(search_builder.query).response["numFound"]
     end
 
-    def deposited_work_count
+    def deposited_media_count
     end
 
-    def managed_work_count
+    def managed_media_count
     end
+
+    def user
+      @user
+    end
+
+    alias current_ability ability
+
+    private
+
+      def repository
+        catalog_controller = CollectionsCatalogController.new
+        catalog_controller.instance_variable_set(:@current_ability, @ability)
+        catalog_controller.repository
+      end
   end
 end

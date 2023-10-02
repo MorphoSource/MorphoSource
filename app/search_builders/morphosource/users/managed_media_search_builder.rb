@@ -1,7 +1,7 @@
 module Morphosource
   module Users
-    class ManagedCollectionsSearchBuilder < Morphosource::Catalog::CollectionsCatalogSearchBuilder
-      # returns the collections (Projects and Teams) managed by @user viewable by @current_user
+    class ManagedMediaSearchBuilder < Morphosource::Catalog::MediaCatalogSearchBuilder
+      # returns media managed by @user viewable by @current_user
 
       self.default_processor_chain += [:filter_by_managing_user]
 
@@ -17,17 +17,17 @@ module Morphosource
 
       def filter_by_managing_user(solr_parameters)
         solr_parameters[:fq] ||= []
-        solr_parameters[:fq] << "{!terms f=edit_access_group_ssim}#{@user.manager_groups.join(',')}"
+        solr_parameters[:fq] << "{!terms f=user_with_ownership_ssi}#{@user.ms_id}"
       end
 
       def blacklight_config
-        CollectionsCatalogController.blacklight_config
+        MediaCatalogController.blacklight_config
       end
 
       private
 
         def models
-          [::Collection]
+          [::Media]
         end
     end
   end

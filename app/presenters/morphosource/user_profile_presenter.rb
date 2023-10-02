@@ -7,10 +7,16 @@ module Morphosource
       repository.search(search_builder.query).response["numFound"]
     end
 
+    # returns the number of media deposited by @user viewable by @current_user
     def deposited_media_count
+      search_builder = Morphosource::Users::DepositedMediaSearchBuilder.new(self)
+      repository.search(search_builder.query).response["numFound"]
     end
 
+    # returns the number of media managed by @user viewable by @current_user
     def managed_media_count
+      search_builder = Morphosource::Users::ManagedMediaSearchBuilder.new(self)
+      repository.search(search_builder.query).response["numFound"]
     end
 
     def user
@@ -22,7 +28,7 @@ module Morphosource
     private
 
       def repository
-        catalog_controller = CollectionsCatalogController.new
+        catalog_controller = CatalogController.new
         catalog_controller.instance_variable_set(:@current_ability, @ability)
         catalog_controller.repository
       end

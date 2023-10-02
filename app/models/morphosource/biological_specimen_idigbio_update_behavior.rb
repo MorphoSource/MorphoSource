@@ -68,6 +68,7 @@ module Morphosource
           @taxonomy_params_array << ActionController::Parameters.new(gbif_params)
         end
       end
+      @taxonomy_id_array = @taxonomy_id_array.uniq
     end
   
     def get_idigbio_metadata
@@ -81,11 +82,14 @@ module Morphosource
     end
   
     def idigbio_record_different_from_specimen?
+      # Note: self.taxonomy_id can contain more IDs than taxonomy_id_array since 
+      # new taxonomies are added when apply_idigbio_update was called in a previous update
       @canonical_taxonomy_id != self.canonical_taxonomy_ids&.first ||
-      @taxonomy_id_array != self.taxonomy_id ||
+      (@taxonomy_id_array - self.taxonomy_id.to_a).present? || 
       @taxonomy_params_array.present? ||
       @biospec_model_params.any? do |key, value|
-        Array(value) != self.send(key)
+        # case-insensitive comparison for cases like "male" vs. "Male"
+        Array(value).map(&:downcase).sort != self.send(key).map(&:downcase).sort
       end
     end
   
@@ -138,8 +142,6 @@ module Morphosource
         self.idigbio_link_origin = @system_update ? ["system_generated"] : ["user"]
       end
       self.title = [generated_title]
-      # normally saving work is done separately (e.g. in a background job, form submit)
-      # set save_work flag if needed for debugging in the console
       self.save if @save_work
     end
 

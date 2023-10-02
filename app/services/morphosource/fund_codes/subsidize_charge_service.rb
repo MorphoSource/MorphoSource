@@ -2,16 +2,17 @@ module Morphosource
   module FundCodes
     class SubsidizeChargeService < FundCodeChargeService
 
-      def self.call(billing_rate:, billing_unit:, custom_start_date: nil, custom_end_date: nil)
+      def self.call(billing_rate:, billing_unit:, custom_start_date: nil, custom_end_date: nil, save_charge: false)
         new( 
           billing_rate: billing_rate, 
           billing_unit: billing_unit, 
           custom_start_date: custom_start_date, 
-          custom_end_date: custom_end_date
+          custom_end_date: custom_end_date,
+          save_charge: save_charge
         ).call
       end
 
-      def initialize(billing_rate:, billing_unit:, custom_start_date: nil, custom_end_date: nil)
+      def initialize(billing_rate:, billing_unit:, custom_start_date: nil, custom_end_date: nil, save_charge: false)
         if Hyrax.config.subsidizing_fund_code_id.present? && FundCode.exists?(Hyrax.config.subsidizing_fund_code_id)
           @fund_code = FundCode.find(Hyrax.config.subsidizing_fund_code_id)
         else
@@ -22,6 +23,7 @@ module Morphosource
         @billing_unit = billing_unit
         @start_date = custom_start_date
         @end_date = custom_end_date
+        @save_charge = save_charge
         @solr = solr_service.new
       end
 

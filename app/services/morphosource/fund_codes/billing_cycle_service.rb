@@ -32,7 +32,7 @@ module Morphosource
           Hyrax.config.unused_storage_fund_code_id
         ].compact
 
-        # Generate standard and external markup charges
+        # Generate standard and external markup charges (but they aren't saved yet)
         fund_code_responses = []
         FundCode.where.not(id: special_fund_code_ids).where(chargeable: true).each do |fc|
           fund_code_responses << FundCodeChargeService.call(
@@ -44,50 +44,72 @@ module Morphosource
           )
         end
 
-        statuses = fund_code_responses.pluck(:status)
-        if statuses.all? { |x| x == 'success' }
-          status = 'success'
-          message = 'One or more charges successfully generated.'
-        elsif statuses.all? { |x| x == 'failure' }
-          status = 'failure'
-          message = 'Failure to process any charges. See individual fund code responses.'
+        # Responses are in JSend format, need to assess status success
+        if fund_code_responses.pluck(:status).all? { |x| x == :success } 
+          additional_charges = [subsidize_charge, gap_fill_charge(fund_code_responses)]
+          if additional_charges.pluck(:status).all? { |x| x == :success } 
+            all_charges = fund_code_responses + additional_charges
+            save_all_charges(all_charges)
+            report_success(all_charges)
+          else
+            raise_errors(additional_charges)
+          end
         else
-          status = 'mixed'
-          message = 'One or more charges were successfully generated, but one or more charges also failed to process. See individual fund code responses.'
+          raise_errors(fund_code_responses)
         end
+      end
 
-        if status != 'failure'
-          # generate charge for all subsidized data
-          subsidize_charge = SubsidizeChargeService.call(
+      def subsidize_charge
+        @subsidize_charge ||= begin
+          SubsidizeChargeService.call(
             billing_rate: billing_rate,
             billing_unit: billing_unit,
             custom_start_date: start_date,
             custom_end_date: end_date
           )
-
-          fund_code_responses << subsidize_charge
-
-          # generate gap-fill charge to account for all other storage
-          if subsidize_charge[:status] == 'success'
-            fund_code_responses << GapFillChargeService.call(
-              total_units_consumed_gb: sum_storage_units_consumed(fund_code_responses),
-              total_units_allocated_gb: packrat_data[:total_storage].to_d,
-              billing_rate: billing_rate,
-              billing_unit: billing_unit,
-              start_date: start_date,
-              end_date: end_date
-            )
-          end
         end
+      end
 
-        return {
-          status: status,
-          message: message,
-          fund_code_responses: fund_code_responses
-        }
+      def gap_fill_charge(fund_code_responses)
+        @gap_fill_charge ||= begin
+          total_units_consumed_gb = sum_storage_units_consumed(fund_code_responses + [subsidize_charge])
+          GapFillChargeService.call(
+            total_units_consumed_gb: total_units_consumed_gb,
+            total_units_allocated_gb: packrat_data[:total_storage].to_d,
+            billing_rate: billing_rate,
+            billing_unit: billing_unit,
+            start_date: start_date,
+            end_date: end_date
+          )
+        end
       end
 
       private
+
+      def save_all_charges(responses)
+        responses.each do |response|
+          (response.dig(:data, :charges) || []).each do |charge|
+            charge.save if charge.is_a?(FundCodeCharge)
+          end
+        end
+      end
+
+      def report_success(responses)
+        {
+          status: "success",
+          message: "Billing cycle successfully run.",
+          fund_code_responses: responses
+        }
+      end
+
+      def raise_errors(responses)
+        failed_responses = responses.select { |response| response[:status] == :fail }
+        message = "#{failed_responses.count} attempt(s) to generate fund code charges failed. Individual failure messages: "
+        failed_responses.each_with_index do |response, idx|
+          message << "#{idx+1}. #{response.dig(:data, :message)} (#{ (response.dig(:data, :errors)&.values || ["No specific errors found."]).join("; ") }) "
+        end
+        raise message
+      end
 
       def sum_storage_units_consumed(responses)
         responses.inject(0) do |sum, response|

@@ -330,6 +330,8 @@ Rails.application.routes.draw do
   # all
   get 'catalog/all', to: 'all_catalog#index', as: 'all_search'
   get 'all_catalog/facet/:id', to: 'all_catalog#facet'
+  # user managed collections
+  get 'catalog/teams_projects/managed_by/:user', to: 'user_managed_collections_catalog#index', as: 'managed_collections_search'
 
   devise_for :users, :controllers => { registrations: 'registrations', sessions: 'sessions' }
   mount Hydra::RoleManagement::Engine => '/'

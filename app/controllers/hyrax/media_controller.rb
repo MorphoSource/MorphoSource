@@ -28,7 +28,7 @@ module Hyrax
     before_action :save_fileset_visibility, only: [:update]
     before_action :set_fileset_visibility, only: [:create, :update]
     before_action :authorize_media_with_temporary_link, only: [:showcase]
-    after_action :set_fund_code, only: [:update]
+    before_action :set_fund_code, only: [:update]
     after_action :update_thumbnail, only: [:update]
     after_action :deliver_individual_access_messages, only: [:update]
 

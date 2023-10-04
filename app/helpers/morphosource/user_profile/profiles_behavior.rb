@@ -8,6 +8,28 @@ module Morphosource
         @valid_profile_types ||= profile_type_config.values.map { |profile| profile['label'] }.compact
       end
 
+      def required_fields_mappings
+        # hash of mapped profile type => required metadata fields
+        required_fields = {}
+        profile_type_config.each do |key, config|
+          required_metadata_fields = config["required_metadata_fields"]
+          required_fields[key] = required_metadata_fields if required_metadata_fields
+        end
+        return required_fields
+      end
+
+      def field_to_profile_type_requiring
+        # a hash of: field => mapped profile types which require this field
+
+
+
+      end
+
+#      def required_fields_by_profile_type(prof_type)
+#        profile_type_config[prof_type]['required_metadata_fields']
+#      end
+      
+
       private
 
       def user_params

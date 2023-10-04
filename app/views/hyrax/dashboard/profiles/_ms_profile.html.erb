@@ -6,10 +6,30 @@
   </div>
 </div>
 
-<div class="form-group" data-target="faculty,faculty_k12,educator_other">
-  <%= f.label :academic_institution_or_school, t("morphosource.dashboard.profiles.edit_primary.academic_institution_or_school").html_safe, class: 'col-sm-4 control-label' %>
-  <div class="col-sm-8">
-     <%= f.text_field :academic_institution_or_school, class: "form-control", required: false %>
+<%
+test = @required_fields
+byebug
+#Morphosource::UserProfile::ProfilesBehavior
+%>
+
+<div class="block mb-2">
+  <div class="form-group" data-group="profile_type" data-target="">
+    <%= f.label :academic_institution_or_school, t("morphosource.dashboard.profiles.edit_primary.academic_institution_or_school").html_safe, class: 'col-sm-4 control-label' %>
+    <div class="col-sm-8">
+       <%= f.text_field :academic_institution_or_school, class: "form-control", required: false %>
+    </div>
+  </div>
+  <div class="form-group" data-group="profile_type" data-target="artist,professional">
+    <%= f.label :affiliation, t("morphosource.dashboard.profiles.edit_primary.affiliation").html_safe, class: 'col-sm-4 control-label' %>
+    <div class="col-sm-8">
+       <%= f.text_field :affiliation, class: "form-control" %>
+    </div>
+  </div>
+  <div class="form-group" data-group="profile_type" data-target="faculty,faculty_k12,educator_other,student_postgrad,student_undergrad">
+    <%= f.label :department, t("morphosource.dashboard.profiles.edit_primary.department").html_safe, class: 'col-sm-4 control-label' %>
+    <div class="col-sm-8">
+       <%= f.text_field :department, class: "form-control" %>
+    </div>
   </div>
 </div>
 
@@ -33,19 +53,6 @@
 </div>
 
 
-<div class="form-group">
-  <%= f.label :affiliation, t("morphosource.dashboard.profiles.edit_primary.affiliation").html_safe, class: 'col-sm-4 control-label' %>
-  <div class="col-sm-8">
-     <%= f.text_field :affiliation, class: "form-control" %>
-  </div>
-</div>
-
-<div class="form-group">
-  <%= f.label :department, t("morphosource.dashboard.profiles.edit_primary.department").html_safe, class: 'col-sm-4 control-label' %>
-  <div class="col-sm-8">
-     <%= f.text_field :department, class: "form-control" %>
-  </div>
-</div>
 
 <div class="form-group">
   <%= f.label :address, t("morphosource.dashboard.profiles.edit_primary.address").html_safe, class: 'col-sm-4 control-label' %>

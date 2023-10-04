@@ -20,6 +20,11 @@ module Morphosource
         render 'edit_password'
       end
 
+      def edit 
+        @required_fields = required_fields_mappings
+        super
+      end
+
       # Process changes from profile form
       def update
         if conditionally_update

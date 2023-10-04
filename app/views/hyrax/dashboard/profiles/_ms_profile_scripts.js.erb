@@ -1,3 +1,39 @@
+if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
+
+  const profile_type_config = <%= Hyrax.config.user_profile_type_config.to_json.html_safe %>;
+
+  function mapped_profile_type(label) {
+    for (var key in profile_type_config) {
+      if (profile_type_config.hasOwnProperty(key) && profile_type_config[key].hasOwnProperty("label")) {
+        if (profile_type_config[key]["label"] === label) {
+          return key;
+        }
+      }
+    }
+    return null; 
+  }
+
+  function handleProfileTypeChange() {
+    const selectedValue = $("#user_profile_type").val();
+    const mappedValue = mapped_profile_type(selectedValue);
+    const profileTypeElements = $('[data-group="profile_type"]');
+
+    profileTypeElements.each(function() {
+      const dataTargets = $(this).data("target").split(",");
+      if (dataTargets.includes(mappedValue)) {
+        $(this).show();
+      } else {
+        $(this).hide();
+      }
+    });
+  }
+
+  $("#user_profile_type").on("change", handleProfileTypeChange);
+
+  handleProfileTypeChange();
+
+}
+
 // Change state select options based on country
 function updateStates() {
   let country = $('#user_country').val();

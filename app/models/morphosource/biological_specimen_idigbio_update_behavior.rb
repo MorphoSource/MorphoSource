@@ -84,9 +84,11 @@ module Morphosource
     def idigbio_record_different_from_specimen?
       @log = Logger.new(STDOUT) unless @log.present?
       is_diff = false
-      if !self.canonical_taxonomy_ids.include? @canonical_taxonomy_id  
-        is_diff = true
-        @log.debug "is_diff Specimen #{self.id}: canonical_taxonomy_ids #{self.canonical_taxonomy_ids} does not include #{@canonical_taxonomy_id}"
+      if @canonical_taxonomy_id.present? 
+        if !self.canonical_taxonomy_ids.include? @canonical_taxonomy_id  
+          is_diff = true
+          @log.debug "is_diff Specimen #{self.id}: canonical_taxonomy_ids #{self.canonical_taxonomy_ids} does not include #{@canonical_taxonomy_id}"
+        end
       end
       # Note: self.taxonomy_id can contain more IDs than taxonomy_id_array since 
       # new taxonomies are added when apply_idigbio_update was called in a previous update

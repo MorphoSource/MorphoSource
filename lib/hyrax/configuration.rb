@@ -516,11 +516,35 @@ module Hyrax
       @cache_path ||= ->() { Rails.root + 'tmp' + 'uploads' + 'cache' }
     end
 
-    # YAML file application configuration
+    ### YAML file application configuration ###
+
+    # community
+
+    attr_writer :community_yml_path
+    def community_yml_path
+      @community_yml_path ||= "config/links/community.yml"
+    end
+
+    def community
+      return {} unless ( community_yml_path && File.exist?(community_yml_path) )
+      YAML.load_file(community_yml_path) || {}
+    end
+
+    attr_reader :header_community
+    def header_community
+      @header_community ||= community.select { |doc| doc["header"] }
+    end
+
+    attr_reader :footer_community
+    def footer_community
+      @footer_community ||= community.select { |doc| doc["footer"] }
+    end
+
+    # docs
 
     attr_writer :docs_yml_path
     def docs_yml_path
-      @docs_yml_path ||= "config/docs.yml"
+      @docs_yml_path ||= "config/links/docs.yml"
     end
 
     def docs
@@ -536,6 +560,28 @@ module Hyrax
     attr_reader :footer_docs
     def footer_docs
       @footer_docs ||= docs.select { |doc| doc["footer"] }
+    end
+
+    # resources
+
+    attr_writer :resources_yml_path
+    def resources_yml_path
+      @resources_yml_path ||= "config/links/resources.yml"
+    end
+
+    def resources
+      return {} unless ( resources_yml_path && File.exist?(resources_yml_path) )
+      YAML.load_file(resources_yml_path) || {}
+    end
+
+    attr_reader :header_resources
+    def header_resources
+      @header_resources ||= resources.select { |doc| doc["header"] }
+    end
+
+    attr_reader :footer_resources
+    def footer_resources
+      @footer_resources ||= resources.select { |doc| doc["footer"] }
     end
 
     # Enable IIIF image service. This is required to use the

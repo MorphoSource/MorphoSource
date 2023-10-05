@@ -409,7 +409,7 @@ Rails.application.routes.draw do
   resources :docs do
     collection do
       get 'about'
-      get 'rss'
+      get 'mission'
     end
   end
 
@@ -550,7 +550,7 @@ Rails.application.routes.draw do
   get '/About/terms', to: redirect('/docs/about', status: 301)
   get '/About/howToCite', to: redirect('/', status: 301)
   get '/About/API', to: redirect('/', status: 301)
-  get '/About/report', to: redirect('/docs/rss', status: 301)
+  get '/About/report', to: redirect('/', status: 301)
   get '/About/termsAndConditions', to: redirect('/terms', status: 301)
 
   # MS1 Core Redirects

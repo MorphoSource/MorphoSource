@@ -1,15 +1,6 @@
 en:
-  morphosource:
-    docs:
-      about:
-        title: "About MorphoSource"
-      api:
-        title: "MorphoSource API"
-      beta_guide:
-        title: "MorphoSource 2 Beta Guide"
-      citation:
-        title: "Citing MorphoSource"
-      rss:
-        title: "RSS Data Reporting"
-      user_guide:
-        title: "User Guide"
+  docs:
+    about:
+      title: About MorphoSource
+    mission:
+      title: Our Mission

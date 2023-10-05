@@ -8,21 +8,52 @@ module Morphosource
         @valid_profile_types ||= profile_type_config.values.map { |profile| profile['label'] }.compact
       end
 
-      def required_fields_mappings
-        # hash of mapped profile type => required metadata fields
-        required_fields = {}
-        profile_type_config.each do |key, config|
-          required_metadata_fields = config["required_metadata_fields"]
-          required_fields[key] = required_metadata_fields if required_metadata_fields
+      def find_keys_containing_field(field, type = :all)
+        matching_keys = []
+        profile_type_config.each do |prof_type, data|
+          next if prof_type == 'universal'
+
+          metadata_fields = data['metadata_fields'].to_s.split(', ')
+          required_metadata_fields = data['required_metadata_fields'].to_s.split(', ')
+
+          case type
+          when :required
+            if required_metadata_fields.include?(field)
+              matching_keys << prof_type
+            end
+          when :optional
+            if metadata_fields.include?(field)
+              matching_keys << prof_type
+            end
+          else
+            if metadata_fields.include?(field) || required_metadata_fields.include?(field)
+              matching_keys << prof_type
+            end
+          end
         end
-        return required_fields
+        matching_keys
       end
 
-      def field_to_profile_type_requiring
-        # a hash of: field => mapped profile types which require this field
+      def optional_metadata_fields_hash
+        # retruns a hash of: field => mapped profile types which has this field (optional)
+        optional_fields = non_universal_metadata_fields(:optional)
+        result_hash = {}
+        optional_fields.each do |field|
+          matching_keys = find_keys_containing_field(field, :optional)
+          result_hash[field] = matching_keys unless matching_keys.empty?
+        end
+        return result_hash
+      end
 
-
-
+      def required_metadata_fields_hash
+        # retruns a hash of: field => mapped profile types which this field (required)
+        required_fields = non_universal_metadata_fields(:required)
+        result_hash = {}
+        required_fields.each do |field|
+          matching_keys = find_keys_containing_field(field, :required)
+          result_hash[field] = matching_keys unless matching_keys.empty?
+        end
+        return result_hash
       end
 
 #      def required_fields_by_profile_type(prof_type)
@@ -106,6 +137,7 @@ module Morphosource
         unaccepted_fields.each do |field|
           if user_params.has_key?(field)
             if user_params[field].present?
+byebug
               @errors << "#{translated(field)} cannot be present for profile type #{profile_type}"
             end
           end
@@ -120,15 +152,19 @@ module Morphosource
         end
       end
 
-      def non_universal_metadata_fields
+      def non_universal_metadata_fields(type = :all)
         fields = []
         profile_type_config.each do |prof_type, data|
           if prof_type != 'universal'
-            if data['metadata_fields']
-              fields += data['metadata_fields'].split(', ')
+            unless type == :required
+              if data['metadata_fields']
+                fields += data['metadata_fields'].split(', ')
+              end
             end
-            if data['required_metadata_fields']
-              fields += data['required_metadata_fields'].split(', ')
+            unless type == :optional
+              if data['required_metadata_fields']
+                fields += data['required_metadata_fields'].split(', ')
+              end
             end
           end
         end

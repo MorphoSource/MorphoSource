@@ -1,0 +1,6 @@
+  <div class="form-group" data-group="rofile_type" data-target="<%= @required_fields[member].join(',') %>">
+    <%= f.label member, t("morphosource.dashboard.profiles.edit_primary."+member).html_safe, class: 'col-sm-4 control-label' %>
+    <div class="col-sm-8">
+     <%= f.text_field member, class: "form-control", required: false %>
+    </div>
+  </div>

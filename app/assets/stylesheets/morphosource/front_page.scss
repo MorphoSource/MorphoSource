@@ -135,6 +135,11 @@ div#front-banner iframe {
 	min-height: 300px;
 }
 
+.dropdown-menu-left {
+  left: 0 !important;
+  right: auto !important;
+}
+
 .col-align {
   float: none;
   display: inline-block;

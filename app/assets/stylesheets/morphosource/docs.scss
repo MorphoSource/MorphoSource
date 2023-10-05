@@ -44,3 +44,16 @@ body.docs {
   position: relative;
   left: 40px;
 }
+
+.docs-markdown {
+	max-width: 1000px;
+	margin: 0 auto;
+
+	h1:first-child {
+		margin-top: 20px;
+	}
+
+	h1:not(:first-child) {
+		margin-top: 40px;
+	}
+}

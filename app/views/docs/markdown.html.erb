@@ -1,6 +1,6 @@
 <% content_for :body_css_classes do %>showcase<% end %>
-<% provide :page_title, t(".title") %>
+<% provide :page_title, @title %>
 
-<div>
+<div class="docs-markdown">
   <%= @renderer.render(IO.read(@markdown_path)).html_safe %>
 </div>

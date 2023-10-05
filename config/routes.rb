@@ -407,6 +407,7 @@ Rails.application.routes.draw do
   resources :docs do
     collection do
       get 'about'
+      get 'mission'
     end
   end
 

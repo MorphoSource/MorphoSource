@@ -85,9 +85,9 @@ module Morphosource
       @log = Logger.new(STDOUT) unless @log.present?
       is_diff = false
       if @canonical_taxonomy_id.present? 
-        if !self.canonical_taxonomy_ids.include? @canonical_taxonomy_id  
+        if !self.canonical_taxonomy_ids.to_a.include? @canonical_taxonomy_id  
           is_diff = true
-          @log.debug "is_diff Specimen #{self.id}: canonical_taxonomy_ids #{self.canonical_taxonomy_ids} does not include #{@canonical_taxonomy_id}"
+          @log.debug "is_diff Specimen #{self.id}: canonical_taxonomy_ids #{self.canonical_taxonomy_ids.to_a} does not include #{@canonical_taxonomy_id}"
         end
       end
       # Note: self.taxonomy_id can contain more IDs than taxonomy_id_array since 

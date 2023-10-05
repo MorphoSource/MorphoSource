@@ -42,20 +42,31 @@ module Hyrax::Browse::BrowseHelper
   def media_types
     media_types_service = Morphosource::MediaTypesService.new
     media_types_service.select_all_options.map do |label, value|
-      value
+      { human_readable: human_readable_media_type(value), value: value }
+    end
+  end
+
+  def human_readable_media_type(media_type)
+    case media_type
+    when "CTImageSeries"
+      "CT Image Series"
+    when "PhotogrammetryImageSeries"
+      "Photogrammetry Image Series"
+    else
+      media_type
     end
   end
 
   def modalities
     modalities_service = Morphosource::ModalitiesService.new
     modalities_service.select_all_options.map do |label, value|
-      label
+      { label: label, value: value }
     end
   end
 
   def get_media_type_and_modality_info
     facets, @total_media = browse_service.media_type_and_modality_facets
-    @media_type_facets = facets[Solrizer.solr_name('media_type', :facetable)]
+    @media_type_facets = facets["human_readable_media_type_ssim"]
     @modality_facets = facets['modality_ssim']
   end
 

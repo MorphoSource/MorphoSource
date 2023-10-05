@@ -1,7 +1,7 @@
 <h2>
-	<%= link_to t("hyrax.browse.title."+media_type), main_app.media_search_path("f[media_type_sim][]" => media_type) %><br/>
+	<%= link_to t("hyrax.browse.title.#{media_type[:value]}"), main_app.media_search_path("f[human_readable_media_type_ssim][]" => media_type[:human_readable]) %><br/>
   <span class="counts">
-  	<%= "#{media_count_by_media_type(media_type)} Media".pluralize(media_count_by_media_type(media_type)) %>
+  	<%= "#{media_count_by_media_type(media_type[:human_readable])} Media" %>
 	</span>
 </h2>
-<p><%= t("hyrax.browse.page_description."+media_type) %></p>
+<p><%= t("hyrax.browse.page_description.#{media_type[:value]}") %></p>

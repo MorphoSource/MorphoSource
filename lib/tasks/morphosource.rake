@@ -784,7 +784,7 @@ namespace :morphosource do
   end
 
   desc "Update specimens from IDigbio"
-  task :update_bso_from_idigbio, [:update, :send_email, :project_id] => :environment do |task, args|
+  task :update_bso_from_idigbio, [:update, :send_email, :bso_id] => :environment do |task, args|
     log_file = 'log/idigbio_update_' + Time.now.strftime("%m-%d-%Y_%H-%M") + '.log'
     log = Logger.new(log_file)
     log.debug "update_bso_from_idigbio started."
@@ -794,10 +794,9 @@ namespace :morphosource do
       update = false
     end
     qry = "has_model_ssim:BiologicalSpecimen"
-    if args[:project_id].present?
-      # update bso associated with the project
-      project_id = args[:project_id]
-      qry += " AND media_member_of_project_ids_ssim:#{project_id}"
+    if args[:bso_id].present?
+      bso_id = args[:bso_id]
+      qry += " AND id:#{bso_id}"
     end
     result = ActiveFedora::SolrService.query(qry, rows: 999999)
     log.debug "#{result.count} specimens found"
@@ -812,7 +811,7 @@ namespace :morphosource do
         "Please see IDigbio Update Report in " + log_file,
          nil).deliver_now
     end
-    log.debug "update_bso_from_idigbio completed."
+    log.debug "update_bso_from_idigbio completed. #{result.count} specimens found"
   end
 
   # MCZ slide import

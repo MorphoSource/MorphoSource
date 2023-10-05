@@ -1,24 +1,24 @@
 /* used for pages with the morphosource_1_column_docs template */
 body.docs {
-	.container {	
-	  padding-right: 25px;
-	  padding-left: 25px;
-	  font-size: 3vw;
-	  h1 {
-	  	font-size: 4vw;
-			margin-bottom: 12px;
-	  }
-	  ol {
-	  	padding-left: 18px;
-	  }
+  .container {	
+    padding-right: 25px;
+    padding-left: 25px;
+    font-size: 3vw;
+    h1 {
+      font-size: 4vw;
+      margin-bottom: 12px;
+    }
+    ol {
+      padding-left: 18px;
+    }
     @media (min-width: 768px) {
-			font-size: 12px;
-			h1 {
-				font-size: 18px;
-				margin-bottom: 13px;
-			}
-		}
-	}
+      font-size: 12px;
+      h1 {
+        font-size: 18px;
+        margin-bottom: 13px;
+      }
+    }
+  }
 }
 
 // used for documentation pages
@@ -46,14 +46,14 @@ body.docs {
 }
 
 .docs-markdown {
-	max-width: 1000px;
-	margin: 0 auto;
+  max-width: 1000px;
+  margin: 0 auto;
 
-	h1:first-child {
-		margin-top: 20px;
-	}
+  h1:first-child {
+    margin-top: 20px;
+  }
 
-	h1:not(:first-child) {
-		margin-top: 40px;
-	}
+  h1:not(:first-child) {
+    margin-top: 40px;
+  }
 }

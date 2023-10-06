@@ -113,7 +113,7 @@ module Morphosource
 
       def sum_storage_units_consumed(responses)
         responses.inject(0) do |sum, response|
-          charge_storage_units_consumed_gb = ( response[:charges] || [] )
+          charge_storage_units_consumed_gb = ( response.dig(:data, :charges) || [] )
             .select { |c| c.service_type != 'external_markup'}
             .pluck(:units_consumed)
             .sum

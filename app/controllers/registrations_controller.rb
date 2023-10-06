@@ -3,6 +3,12 @@ class RegistrationsController < Devise::RegistrationsController
 
   before_action :strip_empty_values, :check_profile_type, only: [:create]
 
+  def new 
+    @all_metadata_fields = all_metadata_fields_hash
+    @required_metadata_fields = required_metadata_fields_hash
+    super
+  end
+
   protected
 
   def sign_up_params

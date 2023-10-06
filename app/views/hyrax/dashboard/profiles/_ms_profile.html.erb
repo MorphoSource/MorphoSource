@@ -1,21 +1,16 @@
 
-<div class="form-group">
-  <%= f.label :profile_type, t("morphosource.dashboard.profiles.edit_primary.profile_type").html_safe, class: 'col-sm-4 control-label' %>
-  <div class="col-sm-8">
-    <%= f.select_tag 'user[profile_type]', options_for_select(Morphosource::UserProfile::ProfileTypesHelper::PROFILE_TYPES, @user.profile_type), class: "form-control", include_blank: true, required: true %>
+<div class="block block-fill mb-2">
+
+  <div class="form-group">
+    <%= f.label :profile_type, t("morphosource.dashboard.profiles.edit_primary.profile_type").html_safe, class: 'col-sm-4 control-label' %>
+    <div class="col-sm-8">
+      <%= f.select_tag 'user[profile_type]', options_for_select(Morphosource::UserProfile::ProfileTypesHelper::PROFILE_TYPES, @user.profile_type), class: "form-control", include_blank: true, required: true %>
+    </div>
   </div>
+
+  <%= render partial: 'ms_profile_metadata', collection: @all_metadata_fields.keys, as: :member, :locals => { f: f } %>
+
 </div>
-
-<%
-#byebug
-%>
-<div class="block mb-2">
-  <%= render partial: 'ms_profile_metadata_required', collection: @required_fields.keys, as: :member, :locals => { f: f } %>
-
-  <%= render partial: 'ms_profile_metadata_optional', collection: @optional_fields.keys, as: :member, :locals => { f: f } %>
-</div>
-
-  <%#= render partial: 'ms_profile_metadata_test', :locals => { f: f } %>
 
 
 

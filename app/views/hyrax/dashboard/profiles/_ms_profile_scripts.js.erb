@@ -19,11 +19,18 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
     const profileTypeElements = $('[data-group="profile_type"]');
 
     profileTypeElements.each(function() {
-      const dataTargets = $(this).data("target").split(",");
-      if (dataTargets.includes(mappedValue)) {
+      const dataTarget = $(this).data("target").split(",");
+      const dataTargetRequire = $(this).data("target-require").split(",");
+      if (dataTarget.includes(mappedValue)) {
         $(this).show();
       } else {
         $(this).hide();
+      }
+      if (dataTargetRequire.includes(mappedValue)) {
+        // make field required
+        $(this).addClass("text-alert");
+      } else {
+        $(this).removeClass("text-alert");
       }
     });
   }

@@ -34,12 +34,12 @@ module Morphosource
         matching_keys
       end
 
-      def optional_metadata_fields_hash
-        # retruns a hash of: field => mapped profile types which has this field (optional)
-        optional_fields = non_universal_metadata_fields(:optional)
+      def all_metadata_fields_hash
+        # retruns a hash of: field => mapped profile types which has this field 
+        all_fields = non_universal_metadata_fields(:all)
         result_hash = {}
-        optional_fields.each do |field|
-          matching_keys = find_keys_containing_field(field, :optional)
+        all_fields.each do |field|
+          matching_keys = find_keys_containing_field(field, :all)
           result_hash[field] = matching_keys unless matching_keys.empty?
         end
         return result_hash
@@ -55,12 +55,7 @@ module Morphosource
         end
         return result_hash
       end
-
-#      def required_fields_by_profile_type(prof_type)
-#        profile_type_config[prof_type]['required_metadata_fields']
-#      end
       
-
       private
 
       def user_params

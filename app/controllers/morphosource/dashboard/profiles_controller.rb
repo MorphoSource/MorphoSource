@@ -21,8 +21,8 @@ module Morphosource
       end
 
       def edit 
-        @required_fields = required_metadata_fields_hash
-        @optional_fields = optional_metadata_fields_hash
+        @all_metadata_fields = all_metadata_fields_hash
+        @required_metadata_fields = required_metadata_fields_hash
         super
       end
 

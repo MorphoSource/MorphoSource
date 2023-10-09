@@ -38,10 +38,10 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
       }
       if (dataTargetRequire.includes(selectedProfType)) {
         // make field required
-        $(this).addClass("text-alert");
+        $(this).find('label').addClass('required');
         $(this).find('input').prop('required', true);
       } else {
-        $(this).removeClass("text-alert");
+        $(this).find('label').removeClass('required');
         $(this).find('input').prop('required', false);
       }
     });

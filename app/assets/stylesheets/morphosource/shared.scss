@@ -48,6 +48,10 @@ $success-color: #387f38;
   }
 }
 
+label.required::after {
+  content: " *";
+}
+
 /* override jquery-confirm styles */
 .jconfirm.jconfirm-white .jconfirm-box .jconfirm-buttons button.btn-default, 
 .jconfirm.jconfirm-white .jconfirm-box .jconfirm-buttons button.btn-default:hover, 

@@ -1,11 +1,16 @@
 if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
 
-  const profile_type_config = <%= Hyrax.config.user_profile_type_config.to_json.html_safe %>;
+  const profileTypeConfig = <%= Hyrax.config.user_profile_type_config.to_json.html_safe %>;
+  const currProfType = mappedProfType($("#user_profile_type").val());
+  let selectedProfType;
+  let fieldsShown = [];
+  let fieldsToClear = [];
+  currMetadataFields = [];
 
-  function mapped_profile_type(label) {
-    for (var key in profile_type_config) {
-      if (profile_type_config.hasOwnProperty(key) && profile_type_config[key].hasOwnProperty("label")) {
-        if (profile_type_config[key]["label"] === label) {
+  function mappedProfType(label) {
+    for (var key in profileTypeConfig) {
+      if (profileTypeConfig.hasOwnProperty(key) && profileTypeConfig[key].hasOwnProperty("label")) {
+        if (profileTypeConfig[key]["label"] === label) {
           return key;
         }
       }
@@ -14,26 +19,47 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
   }
 
   function handleProfileTypeChange() {
-    const selectedValue = $("#user_profile_type").val();
-    const mappedValue = mapped_profile_type(selectedValue);
     const profileTypeElements = $('[data-group="profile_type"]');
+    selectedProfType = mappedProfType($("#user_profile_type").val());
+    fieldsShown = [];
+    fieldsToClear = [];
 
     profileTypeElements.each(function() {
+      /* data-target contains profile types that use this metadata field (as required and optional field)
+         data-target-require contains profile types that require this metadata field */
       const dataTarget = $(this).data("target").split(",");
       const dataTargetRequire = $(this).data("target-require").split(",");
-      if (dataTarget.includes(mappedValue)) {
-        $(this).show();
+
+      if (dataTarget.includes(selectedProfType)) {
+        $(this).addClass('show').removeClass('hide');
+        fieldsShown.push($(this).find('input').attr('id'));
       } else {
-        $(this).hide();
+        $(this).addClass('hide').removeClass('show');
       }
-      if (dataTargetRequire.includes(mappedValue)) {
+      if (dataTargetRequire.includes(selectedProfType)) {
         // make field required
         $(this).addClass("text-alert");
+        $(this).find('input').prop('required', true);
       } else {
         $(this).removeClass("text-alert");
+        $(this).find('input').prop('required', false);
       }
     });
+
+    fieldsToClear = currMetadataFields.filter(item => !fieldsShown.includes(item));
+    if (fieldsToClear.length > 0) {
+      $.alert('You have changed the profile type.  When you click Save Profile, any existing value in these fields that are no longer associated with the selected profile type will be removed: ' + fieldsToClear.join(', ').replace('user_', ''));
+    }
   }
+
+  $('form[id^="edit_user"]').submit(function(event) {
+    if (selectedProfType != currProfType) {
+      $.each(fieldsToClear, function(idx, id) {
+        $("#"+id).val("");
+      });
+    }
+  });
+
 
   $("#user_profile_type").on("change", handleProfileTypeChange);
 
@@ -76,6 +102,11 @@ function updateStates() {
 }
 
 $(document).ready(function() {
+  // get the current metadata fields for removal later if user profile type is changed
+  $("div.form-group.show[data-group='profile_type'] input").each(function() {
+    currMetadataFields.push($(this).attr('id')); 
+  });
+
   updateStates();
   // TBD: consider this more carefully - Devise wraps fields with a special class when validation fails, which so far is only messing up the layout of the elements. Below removes for now. 
   $(".field_with_errors").contents().unwrap();

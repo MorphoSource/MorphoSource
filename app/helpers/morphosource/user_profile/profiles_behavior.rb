@@ -132,7 +132,6 @@ module Morphosource
         unaccepted_fields.each do |field|
           if user_params.has_key?(field)
             if user_params[field].present?
-byebug
               @errors << "#{translated(field)} cannot be present for profile type #{profile_type}"
             end
           end

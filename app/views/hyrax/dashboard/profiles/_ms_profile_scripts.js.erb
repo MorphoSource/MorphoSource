@@ -46,25 +46,28 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
       }
     });
 
-    fieldsToClear = currMetadataFields.filter(item => !fieldsShown.includes(item));
-    if (fieldsToClear.length > 0) {
-      $.alert('You have changed the profile type.  When you click Save Profile, any existing value in these fields that are no longer associated with the selected profile type will be removed: ' + fieldsToClear.join(', ').replace('user_', ''));
+    if ( $('form[id*="edit_user"]').length ) {    
+      fieldsToClear = currMetadataFields.filter(item => !fieldsShown.includes(item));
+      if (fieldsToClear.length > 0) {
+        $.alert('You have changed the profile type.  When you click Save Profile, any existing value in these fields that are no longer associated with the selected profile type will be removed: ' + fieldsToClear.join(', ').replace('user_', ''));
+      }
     }
   }
 
   $('form[id^="edit_user"]').submit(function(event) {
     if (selectedProfType != currProfType) {
+      // remove any existing value in fields that are no longer associated with the selected profile type 
       $.each(fieldsToClear, function(idx, id) {
         $("#"+id).val("");
       });
     }
   });
 
+  if ( $('form[id*="edit_user"]').length ) {    
+    handleProfileTypeChange();
+  }
 
   $("#user_profile_type").on("change", handleProfileTypeChange);
-
-  handleProfileTypeChange();
-
 }
 
 // Change state select options based on country
@@ -102,10 +105,13 @@ function updateStates() {
 }
 
 $(document).ready(function() {
-  // get the current metadata fields for removal later if user profile type is changed
-  $("div.form-group.show[data-group='profile_type'] input").each(function() {
-    currMetadataFields.push($(this).attr('id')); 
-  });
+
+  if ( $('form[id*="edit_user"]').length ) {    
+    // get the current metadata fields for removal later if user profile type is changed
+    $("div.form-group.show[data-group='profile_type'] input").each(function() {
+      currMetadataFields.push($(this).attr('id')); 
+    });
+  }
 
   updateStates();
   // TBD: consider this more carefully - Devise wraps fields with a special class when validation fails, which so far is only messing up the layout of the elements. Below removes for now. 

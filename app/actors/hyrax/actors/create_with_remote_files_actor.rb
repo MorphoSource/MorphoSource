@@ -97,7 +97,8 @@ module Hyrax
             fs.save!
             if uri.scheme == 'file'
               # Turn any %20 into spaces.
-              file_path = CGI.unescape(uri.path)
+              # Turn + signs to %2B first, otherwise unescape will convert + signs to spaces
+              file_path = CGI.unescape(uri.path.gsub('+', '%2B'))
               IngestLocalFileJob.perform_later(fs, file_path, env.user)
             elsif env.curation_concern.has_remote_manifest?
               ImportUrlJob.perform_now(fs, operation_for(user: actor.user), auth_header)

@@ -48,9 +48,7 @@ module Hyrax::Browse::BrowseHelper
 
   def modalities
     modalities_service = Morphosource::ModalitiesService.new
-    modalities_service.select_all_options.map do |label, value|
-      label
-    end
+    modalities_service.select_all_options.map
   end
 
   def get_media_type_and_modality_info

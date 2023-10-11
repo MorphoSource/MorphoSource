@@ -7,7 +7,18 @@
   </div>
 
   <%= render partial: 'hyrax/dashboard/profiles/ms_profile_metadata', collection: @all_metadata_fields.keys, as: :member, :locals => { f: f } %>
+
+  <hr/>
+
+  <div class="checkbox-form-group">
+    <%= f.label :demographics, t("morphosource.dashboard.profiles.edit_primary.demographics").html_safe, class: 'col-sm-4 control-label' %>
+    <div class="col-sm-8">
+      <%= render partial: 'hyrax/dashboard/profiles/ms_profile_demographics', locals: {field: 'demographics', values: @all_demographics_values, f: f} %>
+    </div>
+  </div>
 </div>
+
+
 
 <div class="form-group">
   <%= f.label :first_name, t("morphosource.dashboard.profiles.edit_primary.first_name").html_safe, class: 'col-sm-4 control-label required' %>
@@ -60,12 +71,6 @@
 </div>
 
 
-<div class="checkbox-form-group"> demographics 
-  <%= f.label :demographics, t("morphosource.dashboard.profiles.edit_primary.demographics").html_safe, class: 'col-sm-4 control-label' %>
-  <div class="col-sm-8">
-    <%= render partial: 'hyrax/dashboard/profiles/checkbox_columns', locals: {field: 'demographics', values: Morphosource::UserProfile::CheckboxValues::DEMOGRAPHICS, f: f} %>
-  </div>
-</div>
 
 <div class="checkbox-form-group"> intent
   <%= f.label :intent, t("morphosource.dashboard.profiles.edit_primary.intent").html_safe, class: 'col-sm-4 control-label' %>

@@ -13,8 +13,8 @@ module Morphosource
         profile_type_config.each do |prof_type, data|
           next if prof_type == 'universal'
 
-          metadata_fields = data['metadata_fields'].to_s.split(', ')
-          required_metadata_fields = data['required_metadata_fields'].to_s.split(', ')
+          metadata_fields = data['metadata_fields']
+          required_metadata_fields = data['required_metadata_fields']
 
           case type
           when :required
@@ -29,6 +29,18 @@ module Morphosource
             if metadata_fields.include?(field) || required_metadata_fields.include?(field)
               matching_keys << prof_type
             end
+          end
+        end
+        matching_keys
+      end
+
+      def find_keys_containing_demographic(field)
+        matching_keys = []
+        profile_type_config.each do |prof_type, data|
+          next if prof_type == 'universal'
+          demographic_fields = data['demographics']
+          if demographic_fields.include?(field)
+            matching_keys << prof_type
           end
         end
         matching_keys
@@ -55,6 +67,21 @@ module Morphosource
         end
         return result_hash
       end
+
+      def all_demographics
+        @all_demographics ||= profile_type_config.values.map { |profile| profile['demographics'] }.flatten.compact.uniq
+      end
+
+      def all_demographics_values_hash
+        # retruns a hash of: demographic => mapped profile types associated with the demographic 
+        result_hash = {}
+        all_demographics.each do |field|
+          matching_keys = find_keys_containing_demographic(field)
+          result_hash[field] = matching_keys unless matching_keys.empty?
+        end
+        return result_hash
+      end
+
       
       private
 
@@ -97,7 +124,7 @@ module Morphosource
 
       def validate_field_values
         # check required_metadata_fields for both universal and the user profile type
-        required_fields = profile_type_config["universal"]['required_metadata_fields'].split(', ')
+        required_fields = profile_type_config["universal"]['required_metadata_fields']
         required_fields.each do |field|
           if user_params.has_key?(field)
             unless user_params[field].present?
@@ -123,10 +150,10 @@ module Morphosource
       def check_metadata_match_profile_type
         accepted_fields = []
         if profile_type_config[user_mapped_profile_type]['metadata_fields'].present?
-          accepted_fields << profile_type_config[user_mapped_profile_type]['metadata_fields'].split(', ')
+          accepted_fields << profile_type_config[user_mapped_profile_type]['metadata_fields']
         end
         if profile_type_config[user_mapped_profile_type]['required_metadata_fields'].present?
-          accepted_fields << profile_type_config[user_mapped_profile_type]['required_metadata_fields'].split(', ')
+          accepted_fields << profile_type_config[user_mapped_profile_type]['required_metadata_fields']
         end
         unaccepted_fields = non_universal_metadata_fields.uniq - accepted_fields.flatten
         unaccepted_fields.each do |field|
@@ -152,12 +179,12 @@ module Morphosource
           if prof_type != 'universal'
             unless type == :required
               if data['metadata_fields']
-                fields += data['metadata_fields'].split(', ')
+                fields += data['metadata_fields']
               end
             end
             unless type == :optional
               if data['required_metadata_fields']
-                fields += data['required_metadata_fields'].split(', ')
+                fields += data['required_metadata_fields']
               end
             end
           end

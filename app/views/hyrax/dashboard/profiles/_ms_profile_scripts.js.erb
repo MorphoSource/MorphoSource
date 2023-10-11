@@ -19,25 +19,25 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
   }
 
   function handleProfileTypeChange() {
-    const profileTypeElements = $('[data-group="profile_type"]');
+    const metadataElements = $('.form-group[data-group="profile_type"]');
     selectedProfType = mappedProfType($("#user_profile_type").val());
     fieldsShown = [];
     fieldsToClear = [];
 
-    profileTypeElements.each(function() {
+    metadataElements.each(function() {
       /* data-target contains profile types that use this metadata field (as required and optional field)
          data-target-require contains profile types that require this metadata field */
-      const dataTarget = $(this).data("target").split(",");
-      const dataTargetRequire = $(this).data("target-require").split(",");
-
+      let dataTarget = $(this).data("target").split(",");
+      let dataTargetRequire = $(this).data("target-require").split(",");
+      // show/hide metadata field
       if (dataTarget.includes(selectedProfType)) {
         $(this).addClass('show').removeClass('hide');
         fieldsShown.push($(this).find('input').attr('id'));
       } else {
         $(this).addClass('hide').removeClass('show');
       }
+      // enable/disable required metadata fields
       if (dataTargetRequire.includes(selectedProfType)) {
-        // make field required
         $(this).find('label').addClass('required');
         $(this).find('input').prop('required', true);
       } else {
@@ -46,10 +46,23 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
       }
     });
 
+    const demographicsElements = $('.checkbox-wrapper[data-group="profile_type"]');
+
+    demographicsElements.each(function() {
+      // data-target contains profile types associated with the demographic value 
+      let dataTarget = $(this).data("target").split(",");
+      // show/hide demographic checkbox
+      if (dataTarget.includes(selectedProfType)) {
+        $(this).addClass('show').removeClass('hide');
+      } else {
+        $(this).addClass('hide').removeClass('show');
+      }
+    });
+
     if ( $('form[id*="edit_user"]').length ) {    
       fieldsToClear = currMetadataFields.filter(item => !fieldsShown.includes(item));
       if (fieldsToClear.length > 0) {
-        $.alert('You have changed the profile type.  When you click Save Profile, any existing value in these fields that are no longer associated with the selected profile type will be removed: ' + fieldsToClear.join(', ').replace('user_', ''));
+        $.alert('You have changed the profile type.  When you click Save Profile, any existing value in the fields (below) that are no longer associated with the selected profile type will be removed: <br/>' + fieldsToClear.join(', ').replace('user_', ''));
       }
     }
   }

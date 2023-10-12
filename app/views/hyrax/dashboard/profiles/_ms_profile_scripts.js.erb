@@ -4,7 +4,9 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
   const currProfType = mappedProfType($("#user_profile_type").val());
   let selectedProfType;
   let fieldsShown = [];
+  let fieldsToWarn = [];
   let fieldsToClear = [];
+  let demogToWarn = [];
   let demogToClear = [];
   isPageLoaded = false;
   currMetadataFields = [];
@@ -25,7 +27,9 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
     const demogElements = $('.checkbox-wrapper[data-group="profile_type"]');
     selectedProfType = mappedProfType($("#user_profile_type").val());
     fieldsShown = [];
+    fieldsToWarn = [];
     fieldsToClear = [];
+    demogToWarn = [];
     demogToClear = [];
 
     metadataElements.each(function() {
@@ -39,6 +43,7 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
         fieldsShown.push($(this).find('input').attr('id'));
       } else {
         $(this).addClass('hide').removeClass('show');
+        fieldsToClear.push($(this).find('input').attr('id'));
       }
       // enable/disable required metadata fields
       if (dataTargetRequire.includes(selectedProfType)) {
@@ -60,37 +65,36 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
         $(this).addClass('hide').removeClass('show');
         let demogCheckbox = $(this).find('input[type="checkbox"]');
         if (demogCheckbox.is(':checked') && demogCheckbox.val() != "") {
-          demogToClear.push(demogCheckbox.val());
+          demogToWarn.push(demogCheckbox.val());
         }
+        demogToClear.push(demogCheckbox.val());
       }
     });
 
     if ( $('form[id*="edit_user"]').length && isPageLoaded) {
       msg = '';
-      fieldsToClear = currMetadataFields.filter(item => !fieldsShown.includes(item));
-      if (fieldsToClear.length > 0) {
-        msg += '<li>Existing value in the fields (below) that are no longer associated with the selected profile type will be removed: <br/>' + fieldsToClear.join(', ').replace('user_', '') + '</li>';
+      fieldsToWarn = currMetadataFields.filter(item => !fieldsShown.includes(item));
+      if (fieldsToWarn.length > 0) {
+        msg += '<li>Existing value in the fields (below) that are no longer associated with the selected profile type will be removed: <br/>' + fieldsToWarn.join(', ').replace('user_', '') + '</li>';
       }
-      if (demogToClear.length > 0) {
-        msg += '<li>The following demographic categories not related to the profile type will be removed: <br/>' + demogToClear.join(', ') + '</li>';
+      if (demogToWarn.length > 0) {
+        msg += '<li>The following demographic categories not related to the profile type will be removed: <br/>' + demogToWarn.join(', ') + '</li>';
       }
       if (msg != '') {
         $.alert('You have changed the profile type. When you click Save:<br/>' + msg);
       }
     }
-  }
+  } // handleProfileTypeChange
 
-  $('form[id^="edit_user"]').submit(function(event) {
-    if (selectedProfType != currProfType) {
-      // remove any existing value in fields that are no longer associated with the selected profile type 
-      $.each(fieldsToClear, function(idx, id) {
-        $("#"+id).val("");
-      });
-      // uncheck any demographic categories that are no longer associated with the selected profile type 
-      $.each(demogToClear, function(idx, value) {
-        $('[type="checkbox"][value="' + value + '"]').prop("checked", false);;
-      });      
-    }
+  $('form[id*="_user"]').submit(function(event) {
+    // clear all fields that are not associated with the selected profile type 
+    $.each(fieldsToClear, function(idx, id) {
+      $("#"+id).val("");
+    });
+    // uncheck all demographic categories that are not associated with the selected profile type 
+    $.each(demogToClear, function(idx, value) {
+      $('[type="checkbox"][value="' + value + '"]').prop("checked", false);;
+    });      
 
     if ($('[name="user[demographics][]"]').filter(':checked').length == 0) {
       $.alert('Please choose one or more demographic categories');
@@ -98,9 +102,7 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
     }
   });
 
-  if ( $('form[id*="edit_user"]').length ) {    
-    handleProfileTypeChange();
-  }
+  handleProfileTypeChange();
 
   $('#user_profile_type').change(function() {
     handleProfileTypeChange();

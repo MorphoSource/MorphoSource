@@ -1,9 +1,6 @@
 class OrganizationCollection < Collection
 
-  def initialize(params=nil)
-    super
-    self.collection_type_gid = collection_type.gid
-  end
+  after_initialize :assign_collection_type
 
   def self.collection_type
     Hyrax::CollectionType.find_by(Morphosource::CollectionTypes::Organizations::SETTINGS)

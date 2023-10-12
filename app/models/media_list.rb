@@ -1,14 +1,10 @@
 class MediaList < Collection
   include Morphosource::MediaListMetadata
 
+  after_initialize :assign_collection_type
   after_create :create_collection_groups
 
   DEFAULT_GROUP_ROLES = %w[managers viewers].freeze
-
-  def initialize(params=nil)
-    super
-    self.collection_type_gid = collection_type.gid
-  end
 
   def self.collection_type
     Hyrax::CollectionType.find_by(Morphosource::CollectionTypes::MediaLists::SETTINGS)

@@ -266,6 +266,10 @@ class Collection < ActiveFedora::Base
 
   private
 
+    def assign_collection_type
+      self.collection_type_gid = collection_type.gid
+    end
+
     def add_depositor_to_managers
       user = User.find_by(ms_id: depositor)
       unless managers_group.users.include? user

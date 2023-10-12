@@ -5,6 +5,8 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
   let selectedProfType;
   let fieldsShown = [];
   let fieldsToClear = [];
+  let demogToClear = [];
+  isPageLoaded = false;
   currMetadataFields = [];
 
   function mappedProfType(label) {
@@ -20,9 +22,11 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
 
   function handleProfileTypeChange() {
     const metadataElements = $('.form-group[data-group="profile_type"]');
+    const demogElements = $('.checkbox-wrapper[data-group="profile_type"]');
     selectedProfType = mappedProfType($("#user_profile_type").val());
     fieldsShown = [];
     fieldsToClear = [];
+    demogToClear = [];
 
     metadataElements.each(function() {
       /* data-target contains profile types that use this metadata field (as required and optional field)
@@ -46,9 +50,7 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
       }
     });
 
-    const demographicsElements = $('.checkbox-wrapper[data-group="profile_type"]');
-
-    demographicsElements.each(function() {
+    demogElements.each(function() {
       // data-target contains profile types associated with the demographic value 
       let dataTarget = $(this).data("target").split(",");
       // show/hide demographic checkbox
@@ -56,13 +58,24 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
         $(this).addClass('show').removeClass('hide');
       } else {
         $(this).addClass('hide').removeClass('show');
+        let demogCheckbox = $(this).find('input[type="checkbox"]');
+        if (demogCheckbox.is(':checked') && demogCheckbox.val() != "") {
+          demogToClear.push(demogCheckbox.val());
+        }
       }
     });
 
-    if ( $('form[id*="edit_user"]').length ) {    
+    if ( $('form[id*="edit_user"]').length && isPageLoaded) {
+      msg = '';
       fieldsToClear = currMetadataFields.filter(item => !fieldsShown.includes(item));
       if (fieldsToClear.length > 0) {
-        $.alert('You have changed the profile type.  When you click Save Profile, any existing value in the fields (below) that are no longer associated with the selected profile type will be removed: <br/>' + fieldsToClear.join(', ').replace('user_', ''));
+        msg += '<li>Existing value in the fields (below) that are no longer associated with the selected profile type will be removed: <br/>' + fieldsToClear.join(', ').replace('user_', '') + '</li>';
+      }
+      if (demogToClear.length > 0) {
+        msg += '<li>The following demographic categories not related to the profile type will be removed: <br/>' + demogToClear.join(', ') + '</li>';
+      }
+      if (msg != '') {
+        $.alert('You have changed the profile type. When you click Save:<br/>' + msg);
       }
     }
   }
@@ -73,6 +86,15 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
       $.each(fieldsToClear, function(idx, id) {
         $("#"+id).val("");
       });
+      // uncheck any demographic categories that are no longer associated with the selected profile type 
+      $.each(demogToClear, function(idx, value) {
+        $('[type="checkbox"][value="' + value + '"]').prop("checked", false);;
+      });      
+    }
+
+    if ($('[name="user[demographics][]"]').filter(':checked').length == 0) {
+      $.alert('Please choose one or more demographic categories');
+      return false;
     }
   });
 
@@ -80,7 +102,10 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
     handleProfileTypeChange();
   }
 
-  $("#user_profile_type").on("change", handleProfileTypeChange);
+  $('#user_profile_type').change(function() {
+    handleProfileTypeChange();
+  });
+
 }
 
 // Change state select options based on country
@@ -125,6 +150,7 @@ $(document).ready(function() {
       currMetadataFields.push($(this).attr('id')); 
     });
   }
+  isPageLoaded = true;
 
   updateStates();
   // TBD: consider this more carefully - Devise wraps fields with a special class when validation fails, which so far is only messing up the layout of the elements. Below removes for now. 

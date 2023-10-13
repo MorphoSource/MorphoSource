@@ -46,11 +46,18 @@ module Morphosource
         matching_keys
       end
 
+      def sorted_metadata_fields
+        @sorted_metadata_fields ||=  begin 
+          all_fields = non_universal_metadata_fields(:all)
+          # sort all_fields based on the metadata fields yaml
+          all_fields.sort_by { |field| profile_metadata_fields.keys.index(field) || profile_metadata_fields.keys.length }
+        end
+      end
+
       def all_metadata_fields_hash
         # retruns a hash of: field => mapped profile types which has this field 
-        all_fields = non_universal_metadata_fields(:all)
         result_hash = {}
-        all_fields.each do |field|
+        sorted_metadata_fields.each do |field|
           matching_keys = find_keys_containing_field(field, :all)
           result_hash[field] = matching_keys unless matching_keys.empty?
         end
@@ -68,14 +75,10 @@ module Morphosource
         return result_hash
       end
 
-      def all_demographics
-        @all_demographics ||= profile_type_config.values.map { |profile| profile['demographics'] }.flatten.compact.uniq
-      end
-
       def all_demographics_values_hash
         # retruns a hash of: demographic => mapped profile types associated with the demographic 
         result_hash = {}
-        all_demographics.each do |field|
+        user_demographics.each do |field|
           matching_keys = find_keys_containing_demographic(field)
           result_hash[field] = matching_keys unless matching_keys.empty?
         end
@@ -99,6 +102,10 @@ module Morphosource
 
       def profile_metadata_fields
         @profile_metadata_fields ||= Hyrax.config.user_profile_metadata_fields
+      end
+
+      def user_demographics
+        @user_demographics ||= Hyrax.config.user_demographics
       end
 
       def check_profile_type
@@ -189,7 +196,7 @@ module Morphosource
             end
           end
         end
-        return fields
+        return fields.uniq
       end
 
     end

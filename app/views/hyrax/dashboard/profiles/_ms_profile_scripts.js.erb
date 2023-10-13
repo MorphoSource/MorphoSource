@@ -22,6 +22,14 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
     return null; 
   }
 
+  function fieldLabel(f) {
+    if ($('label[for='+ f + ']').length) {
+      return $('label[for='+ f + ']').html();
+    } else {
+      return f;
+    }
+  }
+
   function handleProfileTypeChange() {
     const metadataElements = $('.form-group[data-group="profile_type"]');
     const demogElements = $('.checkbox-wrapper[data-group="profile_type"]');
@@ -75,13 +83,18 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
       msg = '';
       fieldsToWarn = currMetadataFields.filter(item => !fieldsShown.includes(item));
       if (fieldsToWarn.length > 0) {
-        msg += '<li>Existing value in the fields (below) that are no longer associated with the selected profile type will be removed: <br/>' + fieldsToWarn.join(', ').replace('user_', '') + '</li>';
+        let labels = fieldsToWarn.map(f => fieldLabel(f)).join(', ');
+        msg += '<li>Any existing values of the following fields not associated with the selected profile type will be cleared: <b>' + labels + '</b></li>';
       }
       if (demogToWarn.length > 0) {
-        msg += '<li>The following demographic categories not related to the profile type will be removed: <br/>' + demogToWarn.join(', ') + '</li>';
+        msg += '<li>The following professions not associated with the selected profile type will be removed: <b>' + demogToWarn.join(', ') + '</b></li>';
       }
       if (msg != '') {
-        $.alert('You have changed the profile type. When you click Save:<br/>' + msg);
+        $.alert({
+          title: 'You have changed the profile type',
+          content: 'When you click Save:<ul class="align-li">' + msg + '</ul>',
+          columnClass: 'medium'
+        });
       }
     }
   } // handleProfileTypeChange
@@ -97,7 +110,7 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
     });      
 
     if ($('[name="user[demographics][]"]').filter(':checked').length == 0) {
-      $.alert('Please choose one or more demographic categories');
+      $.alert('Please choose one or more professions');
       return false;
     }
   });

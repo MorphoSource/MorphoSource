@@ -125,7 +125,7 @@ en:
           delete_picture: "Delete picture"
           delete_picture_data_content: "If you would like to remove your picture entirely, check the box and save your profile."
           delete_picture_data_original_title: "Delete Picture"
-          demographics: "Please Describe Your Profession<br>(You May Choose More Than One)"
+          demographics: "Please Describe Your Profession<br>(Choose One or More)"
           department: "Department"
           display_name: "Display Name"
           email: "Email Address"

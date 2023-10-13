@@ -2,7 +2,7 @@
   <div class="col-xs-3 no-horizontal-padding">
     <div class="row" style='padding-top: 0;'><span class='footer-label'><%= t("hyrax.controls.links.#{label}.title_footer") %></span></div>
     <% links_yml.each do |link_yml| %>
-      <div class="row footer-sublink"><%= link_to t(link_yml["label"]), link_yml["url"], target: :_blank %></div>
+      <div class="row footer-sublink"><%= link_to t(link_yml["label"]), link_yml["url"] %></div>
     <% end %>
   </div>
 <% end %>

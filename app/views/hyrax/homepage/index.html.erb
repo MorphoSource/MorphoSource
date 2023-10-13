@@ -37,10 +37,21 @@
     </div>
   <% end %>
 
-  <div class="row showcase">
-    <%= render(partial: 'announcements') if Hyrax.config.site_announcements %>
-    <%= render(partial: 'featured_projects') %>
-    <%= render(partial: 'repository_statistics') %>
-    <%= render(partial: 'for_educators') if is_core_site %>
-  </div>
+  <% if Hyrax.config.site_announcements %>
+    <div class="row showcase">
+      <%= render(partial: 'announcements') %>
+      <%= render(partial: 'featured_projects') %>
+    </div>
+
+    <div class="row showcase">
+      <%= render(partial: 'repository_statistics') %>
+      <%= render(partial: 'for_educators') if is_core_site %>
+    </div>
+  <% else %>
+    <div class="row showcase">
+      <%= render(partial: 'featured_projects') %>
+      <%= render(partial: 'repository_statistics') %>
+      <%= render(partial: 'for_educators') if is_core_site %> 
+    </div>
+  <% end %>
 </div>

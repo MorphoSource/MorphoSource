@@ -133,7 +133,7 @@ module Morphosource
           end
         end
         if (prof_type_required_fields = profile_type_config[user_mapped_profile_type]['required_metadata_fields']).present?
-          prof_type_required_fields.split(', ').each do |field|
+          prof_type_required_fields.each do |field|
             if user_params.has_key?(field)
               unless user_params[field].present?
                 @errors << "#{translated(field)} is required for profile type #{profile_type}"

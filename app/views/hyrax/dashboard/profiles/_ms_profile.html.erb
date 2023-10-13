@@ -8,11 +8,9 @@
 
   <%= render partial: 'hyrax/dashboard/profiles/ms_profile_metadata', collection: @all_metadata_fields.keys, as: :member, :locals => { f: f } %>
 
-  <hr/>
-
   <div class="checkbox-form-group">
-    <%= f.label :demographics, t("morphosource.dashboard.profiles.edit_primary.demographics").html_safe, class: 'col-sm-4 control-label' %>
-    <div class="col-sm-8">
+    <%= f.label :demographics, t("morphosource.dashboard.profiles.edit_primary.demographics").html_safe, class: 'col-sm-4 control-label dg-group' %>
+    <div class="col-sm-8 dg-group">
       <%= render partial: 'hyrax/dashboard/profiles/ms_profile_demographics', locals: {field: 'demographics', values: @all_demographics_values, f: f} %>
     </div>
   </div>

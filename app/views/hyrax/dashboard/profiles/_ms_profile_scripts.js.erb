@@ -12,6 +12,9 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
   currMetadataFields = [];
 
   function mappedProfType(label) {
+    if (label == '') { // e.g. "universal"
+      return '';
+    } 
     for (var key in profileTypeConfig) {
       if (profileTypeConfig.hasOwnProperty(key) && profileTypeConfig[key].hasOwnProperty("label")) {
         if (profileTypeConfig[key]["label"] === label) {
@@ -39,6 +42,12 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
     fieldsToClear = [];
     demogToWarn = [];
     demogToClear = [];
+
+    if (selectedProfType != '') {
+      $('.dg-group').addClass('show').removeClass('hide');
+    } else {
+      $('.dg-group').addClass('hide').removeClass('show');
+    }
 
     metadataElements.each(function() {
       /* data-target contains profile types that use this metadata field (as required and optional field)

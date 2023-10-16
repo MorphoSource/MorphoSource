@@ -1,0 +1,26 @@
+<div class="checkbox-form-group">
+  <div class="col-lg-2 co-md-4">
+    <%= f.label :intent, t("morphosource.dashboard.profiles.edit_primary.intent").html_safe, class: 'control-label' %>
+  </div>
+  <div class="col-lg-10 col-md-8">  
+    <div class="checkbox-list intent">
+      <% intended_use = Morphosource::UserProfile::CheckboxValues::INTENT %>
+      <% intended_use.each do |use| %>
+        <%= f.check_box 'intent', { multiple: true, checked: (@user.intent.include? use) }, use, false %>
+        <%= f.label :intent, use %>
+        <br/>
+      <% end %>
+      <%= f.label 'Other: ' %>
+      <%= f.text_field 'intent', { multiple: true, value: @user.other_intent } %>
+    </div>
+  </div>
+</div>
+
+<div class="form-group">
+  <%= f.label :terms_read, t("morphosource.dashboard.profiles.edit_primary.terms_read").html_safe, class: 'col-lg-2 co-md-4 control-label required' %>
+  <div class="col-lg-10 col-md-8">
+    <%= f.check_box :terms_read, {checked: false, required: true}, true %>
+    <!-- TODO: update with new terms and conditions -->
+    <%= t("devise.passwords.edit.terms").html_safe %>
+  </div>
+</div>

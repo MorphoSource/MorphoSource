@@ -119,6 +119,12 @@ html {
     vertical-align: bottom;
   }
 
+  .checkbox-list.intent {
+    label {
+      font-weight: normal !important;
+    }
+  }
+
   .profile-checkbox-list {
     [type="checkbox"] {
       width: 11px;
@@ -1459,4 +1465,10 @@ html {
       margin-right: unset;
     }
   }
+}
+
+.showcase.profile {
+  .form-group {
+    min-height: 26px;
+  }  
 }

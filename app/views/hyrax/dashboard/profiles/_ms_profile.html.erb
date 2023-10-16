@@ -1,40 +1,3 @@
-<div class="block block-fill mb-2">
-  <div class="form-group">
-    <%= f.label :profile_type, t("morphosource.dashboard.profiles.edit_primary.profile_type").html_safe, class: 'col-sm-4 control-label' %>
-    <div class="col-sm-8">
-      <%= f.select_tag 'user[profile_type]', options_for_select(Morphosource::UserProfile::ProfileTypesHelper::PROFILE_TYPES, @user.profile_type), class: "form-control", include_blank: true, required: true %>
-    </div>
-  </div>
-
-  <%= render partial: 'hyrax/dashboard/profiles/ms_profile_metadata', collection: @all_metadata_fields.keys, as: :member, :locals => { f: f } %>
-
-  <div class="checkbox-form-group">
-    <%= f.label :demographics, t("morphosource.dashboard.profiles.edit_primary.demographics").html_safe, class: 'col-sm-4 control-label dg-group' %>
-    <div class="col-sm-8 dg-group">
-      <%= render partial: 'hyrax/dashboard/profiles/ms_profile_demographics', locals: {field: 'demographics', values: @all_demographics_values, f: f} %>
-    </div>
-  </div>
-</div>
-
-<div class="form-group">
-  <%= f.label :first_name, t("morphosource.dashboard.profiles.edit_primary.first_name").html_safe, class: 'col-sm-4 control-label required' %>
-  <div class="col-sm-8">
-     <%= f.text_field :first_name, class: "form-control", required: true %>
-  </div>
-</div>
-<div class="form-group">
-  <%= f.label :middle_name, t("morphosource.dashboard.profiles.edit_primary.middle_name").html_safe, class: 'col-sm-4 control-label' %>
-  <div class="col-sm-8">
-     <%= f.text_field :middle_name, class: "form-control", required: false %>
-  </div>
-</div>
-<div class="form-group">
-  <%= f.label :last_name, t("morphosource.dashboard.profiles.edit_primary.last_name").html_safe, class: 'col-sm-4 control-label required' %>
-  <div class="col-sm-8">
-     <%= f.text_field :last_name, class: "form-control", required: true %>
-  </div>
-</div>
-
 <div class="form-group">
   <%= f.label :address, t("morphosource.dashboard.profiles.edit_primary.address").html_safe, class: 'col-sm-4 control-label' %>
   <div class="col-sm-8">
@@ -63,22 +26,6 @@
   </div>
   <div id='province-select' class="col-sm-8">
     <%= f.select_tag 'user[state]', options_for_select(Morphosource::UserProfile::LocationHelper::STATE['CA'], @user.state), class: "form-control", include_blank: true, required: true %>
-  </div>
-</div>
-
-<div class="checkbox-form-group">
-  <%= f.label :intent, t("morphosource.dashboard.profiles.edit_primary.intent").html_safe, class: 'col-sm-4 control-label' %>
-  <div class="col-sm-8">
-    <div class="checkbox-list">
-      <% intended_use = Morphosource::UserProfile::CheckboxValues::INTENT %>
-      <% intended_use.each do |use| %>
-        <%= f.check_box 'intent', { multiple: true, checked: (@user.intent.include? use) }, use, false %>
-        <%= f.label :intent, use %>
-        <br/>
-      <% end %>
-      <%= f.label 'Other: ' %>
-      <%= f.text_field 'intent', { multiple: true, value: @user.other_intent } %>
-    </div>
   </div>
 </div>
 
@@ -116,14 +63,5 @@
   <%= f.label :website, t("morphosource.dashboard.profiles.edit_primary.website").html_safe, class: 'col-sm-4 control-label' %>
   <div class="col-sm-8">
      <%= f.text_field :website, class: "form-control" %>
-  </div>
-</div>
-
-<div class="form-group">
-  <%= f.label :terms_read, t("morphosource.dashboard.profiles.edit_primary.terms_read").html_safe, class: 'col-sm-4 control-label required' %>
-  <div class="col-sm-8">
-    <%= f.check_box :terms_read, {checked: false, required: true}, true %>
-    <!-- TODO: update with new terms and conditions -->
-    <%= t("devise.passwords.edit.terms").html_safe %>
   </div>
 </div>

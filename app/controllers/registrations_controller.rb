@@ -1,12 +1,18 @@
 class RegistrationsController < Devise::RegistrationsController
   include Morphosource::UserProfile::ProfilesBehavior
 
+  with_themed_layout 'morphosource_1_column'
   before_action :strip_empty_values, :check_profile_type, only: [:create]
 
   def new 
     @all_metadata_fields = all_metadata_fields_hash
     @required_metadata_fields = required_metadata_fields_hash
     @all_demographics_values = all_demographics_values_hash
+    super
+  end
+
+  def create
+    @all_metadata_fields = all_metadata_fields_hash
     super
   end
 

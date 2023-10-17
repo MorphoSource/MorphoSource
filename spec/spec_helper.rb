@@ -38,3 +38,5 @@ RSpec.configure do |config|
 end
 
 RSpec::Mocks.configuration.allow_message_expectations_on_nil = true
+
+RSpec::Matchers.define_negated_matcher :not_change, :change

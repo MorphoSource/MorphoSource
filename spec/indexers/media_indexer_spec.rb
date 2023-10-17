@@ -252,4 +252,48 @@ RSpec.describe MediaIndexer do
       it { expect(subject['user_with_ownership_ssi']).to eq(depositor.ms_id) }
     end
   end
+
+  describe 'device organization fields' do
+    let(:device)          { Device.create(title: ['device'], modality: ['Photogrammetry']) }
+    let(:specimen)        { FactoryBot.create(:biological_specimen) }
+    let(:imaging_event)   { FactoryBot.create(:imaging_event, title: ['imaging event'], ie_modality: device.modality, physical_object_id: [specimen.id], device_id: [device.id]) }
+
+    before do
+      imaging_event.ordered_members << media
+      imaging_event.save!
+    end
+
+    context 'organization is a work' do
+      let(:organization)  { FactoryBot.create(:organization, title: ['organization work'], institution_name: ['institution name']) }
+
+      before do
+        organization.ordered_members << device
+        organization.save!
+      end
+
+      it 'indexes organization fields' do
+        expect(subject['media_device_facility_organization_tesim']).to eq(organization.title.first)
+        expect(subject['media_device_facility_organization_ssim']).to eq(organization.title.first)
+        expect(subject['media_device_facility_organization_id_tesim']).to eq(organization.id)
+        expect(subject['media_device_facility_organization_id_ssim']).to eq(organization.id)
+      end
+    end
+
+    context 'organization is a collection' do
+      let(:user)          { FactoryBot.create(:contributor) }
+      let(:organization)  { FactoryBot.create(:organization_collection, title: ['organization work'], institution_name: ['institution name'], depositor: user.ms_id) }
+
+      before do
+        device.organization_id = [organization.id]
+        device.save!
+      end
+
+      it 'indexes organization fields' do
+        expect(subject['media_device_facility_organization_tesim']).to eq(organization.title.first)
+        expect(subject['media_device_facility_organization_ssim']).to eq(organization.title.first)
+        expect(subject['media_device_facility_organization_id_tesim']).to eq(organization.id)
+        expect(subject['media_device_facility_organization_id_ssim']).to eq(organization.id)
+      end
+    end
+  end
  end

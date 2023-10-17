@@ -263,6 +263,13 @@ $( document ).ready(function() {
   });
 
   if ($('form[id*="edit_media"]').length) { // if edit media form page
+    
+    $('#tab-media-details[class!="active"] a').on('click', function(){
+      var uvIframe = document.getElementById("uv-iframe");
+      if (this.ariaExpanded == "false" && uvIframe) {        
+        uvIframe.contentDocument.location.reload(true);        
+      }
+    })
 
     function updateMediaTitle() {
       var parts = $('[name="media[part][]"]').map(function(){

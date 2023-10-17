@@ -330,6 +330,8 @@ Rails.application.routes.draw do
   # all
   get 'catalog/all', to: 'all_catalog#index', as: 'all_search'
   get 'all_catalog/facet/:id', to: 'all_catalog#facet'
+  # user managed collections
+  get 'catalog/teams_projects/managed_by/:user', to: 'user_managed_collections_catalog#index', as: 'managed_collections_search'
 
   devise_for :users, :controllers => { registrations: 'registrations', sessions: 'sessions' }
   mount Hydra::RoleManagement::Engine => '/'
@@ -407,7 +409,7 @@ Rails.application.routes.draw do
   resources :docs do
     collection do
       get 'about'
-      get 'rss'
+      get 'mission'
     end
   end
 
@@ -548,7 +550,7 @@ Rails.application.routes.draw do
   get '/About/terms', to: redirect('/docs/about', status: 301)
   get '/About/howToCite', to: redirect('/', status: 301)
   get '/About/API', to: redirect('/', status: 301)
-  get '/About/report', to: redirect('/docs/rss', status: 301)
+  get '/About/report', to: redirect('/', status: 301)
   get '/About/termsAndConditions', to: redirect('/terms', status: 301)
 
   # MS1 Core Redirects

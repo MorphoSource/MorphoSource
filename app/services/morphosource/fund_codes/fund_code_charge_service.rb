@@ -1,28 +1,32 @@
 module Morphosource
   module FundCodes
     class FundCodeChargeService
+      include Morphosource::Jsend
       include SolrHelper
 
-      attr_reader :fund_code, :billing_rate, :billing_unit, :media_ids, 
+      attr_reader :fund_code, :billing_rate, :billing_unit, :save_charge, :media_ids, 
         :filesets_to_media, :fileset_ids, :units_consumed, :solr
       attr_accessor :start_date, :end_date, :media_sizes
 
-      def self.call(fund_code:, billing_rate:, billing_unit:, custom_start_date: nil, custom_end_date: nil)
+      # Generates (and only optionally saves) fund code charge objects
+      def self.call(fund_code:, billing_rate:, billing_unit:, custom_start_date: nil, custom_end_date: nil, save_charge: false)
         new(
           fund_code: fund_code, 
           billing_rate: billing_rate, 
           billing_unit: billing_unit, 
           custom_start_date: custom_start_date, 
-          custom_end_date: custom_end_date
+          custom_end_date: custom_end_date,
+          save_charge: save_charge
         ).call
       end
 
-      def initialize(fund_code:, billing_rate:, billing_unit:, custom_start_date: nil, custom_end_date: nil)
+      def initialize(fund_code:, billing_rate:, billing_unit:, custom_start_date: nil, custom_end_date: nil, save_charge: false)
         @fund_code = fund_code
         @billing_rate = billing_rate
         @billing_unit = billing_unit
         @start_date = custom_start_date
         @end_date = custom_end_date
+        @save_charge = save_charge
         @solr = solr_service.new
       end
 
@@ -31,24 +35,24 @@ module Morphosource
         return overlapping_charge_response unless validate_no_overlapping_charges
 
         query_charge_information
+        return fund_code_incoherent_charge_response unless validate_charge_sanity
 
+        message = ""
+        charges = []
         if media_ids.present? && fileset_ids.present? && units_consumed.present?
-          return {
-            status: 'success',
-            fund_code: fund_code&.id,
-            identifier: fund_code&.identifier,
-            message: 'Charge(s) successfully generated',
-            charges: generate_charges
-          }
-        else 
-          return {
-            status: 'failure',
-            fund_code: fund_code&.id,
-            identifier: fund_code&.identifier,
-            message: 'No charge possible. Either no media, no filesets, or no units consumed.',
-            charges: []
-          }
+          message = "One or more charges successfully generated.",
+          charges = generate_charges
+        else
+          message = "Fund code passed validation, but no charges were generated. Either no media, no filesets, or no units consumed.",
+          charges = []
         end
+
+        return jsend_success({
+          fund_code: fund_code&.id,
+          identifier: fund_code&.identifier,
+          message: message,
+          charges: charges
+        })
       end
 
       def query_charge_information
@@ -65,11 +69,13 @@ module Morphosource
           return
         end
 
+        # Query media associated with fund code uploaded before end date that are local (not remote)
         solr_params = {
           fq: [
             "#{solrize('has_model', :symbol)}:Media",
             assemble_or_query('id', initial_media_ids),
-            "date_uploaded_dtsi:[* TO \"#{solrize_date(end_date)}\"]"
+            "date_uploaded_dtsi:[* TO \"#{solrize_date(end_date)}\"]",
+            "-is_remote_backed_bsi:true"
           ],
           fl: [
             'id',
@@ -171,7 +177,7 @@ module Morphosource
           service_type: service_type,
           media_size_hash: media_sizes
         )
-        charge.save!
+        charge.save! if save_charge
         return charge
       end
 
@@ -247,26 +253,47 @@ module Morphosource
         !FundCodeCharge.where("fund_code_id = ? AND start_date <= ? AND ? <= end_date", fund_code&.id, end_date, start_date).exists?
       end
 
+      # fail validation if units consumed, billing rate, or external markup (only for external fc) are negative
+      def validate_charge_sanity
+        units_consumed >= 0.to_i && 
+        billing_rate.to_d >= 0.to_d && 
+        ( !fund_code.external_user || (fund_code.external_user_additional_rate_percent.to_d >= 0.to_d) )
+      end
+
       def fund_code_invalid_response
-        {
-          status: 'failure',
+        errors = {}
+        errors[:fund_code] = "Fund code (ID: #{fund_code&.id}) not present." if !fund_code.present?
+        errors[:fund_code_identifier] = "Fund code identifier (#{fund_code&.identifier}) not present." if !fund_code&.identifier.present?
+        errors[:fund_code_chargeable] = "Fund code not chargeable." if !fund_code&.chargeable
+
+        jsend_fail({
+          errors: errors,
           fund_code: fund_code&.id,
-          identifier: fund_code&.identifier,
-          message: 'Fund code not present, not chargeable, or fund code identifier not present',
-          charges: []
-        }
+          fund_code_identifier: fund_code&.identifier,
+          message: "Fund code not present, not chargeable, or fund code identifier not present."
+        })
       end
 
       def overlapping_charge_response
-        {
-          status: 'failure',
+        jsend_fail({
           fund_code: fund_code&.id,
-          identifier: fund_code&.identifier,
-          start_date: start_date,
-          end_date: end_date,
-          message: 'Charge dates overlap with another charge for this fund code',
-          charges: []
-        }
+          fund_code_identifier: fund_code&.identifier,
+          message: "Could not generate charge with start date #{start_date} and end date #{end_date}, dates overlap with existing charge for fund code ID #{fund_code&.id} with identifier #{fund_code&.identifier}."
+        })
+      end
+
+      def fund_code_incoherent_charge_response
+        errors = {}
+        errors[:units_consumed] = "Units consumed can not be negative." if !(units_consumed >= 0.to_i)
+        errors[:billing_rate] = "Billing rate can not be negative." if !(billing_rate.to_d >= 0.to_d)
+        errors[:external_user_additional_rate_percent] = "External fund code additional rate percent can not be negative." if (fund_code.external_user && !(fund_code.external_user_additional_rate_percent.to_d >= 0.to_d))
+
+        jsend_fail({
+          errors: errors,
+          fund_code: fund_code&.id,
+          fund_code_identifier: fund_code&.identifier,
+          message: "Could not generate charge, units consumed or billing rates are negative."
+        })
       end
     end
   end

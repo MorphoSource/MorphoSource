@@ -20,17 +20,17 @@ RSpec.describe Hyrax::MediaPresenter do
 
   describe "document attributes" do
     context "for media" do
-      attributes = [ 
-        :access_control_id, :agreement_uri, :ark, :cite_as, :depositor, :description, :doi, 
-        :download_reviewer, :fileset_accessibility, :fileset_visibility, :funding, :id, :identifier, 
-        :imaging_event_id, :is_remote_backed, :map_type, :media_organization_id, :media_type, 
-        :morphosource_use_agreement_type, :number_of_images_in_set, :organization_transfer_on_publish, 
-        :orientation, :part, :permits_3d_use, :permits_commercial_use, :physical_object_id, 
-        :physical_object_type, :preview_mode, :publication_status_label, :related_url, 
-        :remote_manifest_url, :remote_origin_url, :required_archival_of_published_derivatives, 
-        :rights_holder, :scale_bar, :series_type, :short_description, :side, :slice_thickness, 
-        :taxonomies_titles, :unit, :user_with_ownership, :x_spacing, :y_spacing, :z_spacing 
-      ] 
+      attributes = [
+        :access_control_id, :agreement_uri, :ark, :cite_as, :depositor, :description, :doi,
+        :download_reviewer, :fileset_accessibility, :fileset_visibility, :funding, :id, :identifier,
+        :imaging_event_id, :is_remote_backed, :map_type, :media_organization_id, :media_type,
+        :morphosource_use_agreement_type, :number_of_images_in_set, :organization_transfer_on_publish,
+        :orientation, :part, :permits_3d_use, :permits_commercial_use, :physical_object_id,
+        :physical_object_type, :preview_mode, :publication_status_label, :related_url,
+        :remote_manifest_url, :remote_origin_url, :required_archival_of_published_derivatives,
+        :rights_holder, :scale_bar, :series_type, :short_description, :side, :slice_thickness,
+        :taxonomies_titles, :unit, :user_with_ownership, :x_spacing, :y_spacing, :z_spacing
+      ]
 
       attributes.each do |attribute|
         it "returns false or a truthy value for media document attribute #{attribute}" do
@@ -66,8 +66,8 @@ RSpec.describe Hyrax::MediaPresenter do
     end
 
     context "for biological specimen object" do
-      attributes = [ 
-        :catalog_number, :cho_type, :collection_code, :idigbio_uuid, :institution_code, 
+      attributes = [
+        :catalog_number, :cho_type, :collection_code, :idigbio_uuid, :institution_code,
         :material, :occurrence_id, :short_title, :vouchered
       ]
 
@@ -96,12 +96,12 @@ RSpec.describe Hyrax::MediaPresenter do
 
     context "for imaging event" do
       attributes = [
-        :acquisition_type, :amperage, :background_removal, :detector_configuration, 
-        :detector_pixels_x, :detector_pixels_y, :detector_pixel_size_x, :detector_pixel_size_y, 
-        :detector_type, :exposure_time, :flux_normalization, :focal_length_type, :frame_averaging, 
-        :ie_filter, :ie_modality, :lens_make, :lens_model, :light_source, :optical_magnification, 
-        :phase_contrast, :pixel_spacing_calibration, :power, :projections, :rotation_number, 
-        :shading_correction, :slide_type, :source_detector_distance, :source_object_distance, 
+        :acquisition_type, :amperage, :background_removal, :detector_configuration,
+        :detector_pixels_x, :detector_pixels_y, :detector_pixel_size_x, :detector_pixel_size_y,
+        :detector_type, :exposure_time, :flux_normalization, :focal_length_type, :frame_averaging,
+        :ie_filter, :ie_modality, :lens_make, :lens_model, :light_source, :optical_magnification,
+        :phase_contrast, :pixel_spacing_calibration, :power, :projections, :rotation_number,
+        :shading_correction, :slide_type, :source_detector_distance, :source_object_distance,
         :surrounding_material, :voltage, :xray_tube_type, :target_material, :target_type
       ]
 
@@ -178,9 +178,9 @@ RSpec.describe Hyrax::MediaPresenter do
       end
 
       attributes = [
-        :bits_allocated, :bits_per_sample, :bounding_box_x, :bounding_box_y, :bounding_box_z, 
-        :centroid_x, :centroid_y, :centroid_z, :columns, :contents_accepted_file_count, :color_format, 
-        :color_space, :compression, :face_count, :has_uv_space, :height, :normals_format, 
+        :bits_allocated, :bits_per_sample, :bounding_box_x, :bounding_box_y, :bounding_box_z,
+        :centroid_x, :centroid_y, :centroid_z, :columns, :contents_accepted_file_count, :color_format,
+        :color_space, :compression, :face_count, :has_uv_space, :height, :normals_format,
         :original_file_id, :point_count, :rows, :vertex_color, :width
       ]
 
@@ -209,7 +209,7 @@ RSpec.describe Hyrax::MediaPresenter do
       ### Different behavior depending on if FileSet is single image or DCM in ZIP ###
 
       context "with single image file" do
-        before do 
+        before do
           new_file_set_document = file_set_document.to_h
           new_file_set_document["mime_type_ssi"] = "image/jpeg"
           image_representative_presenter = Hyrax::MediaFileSetPresenter.new(SolrDocument.new(new_file_set_document), ability, request)
@@ -234,7 +234,7 @@ RSpec.describe Hyrax::MediaPresenter do
       end
 
       context "with dicom file within zip" do
-        before do 
+        before do
           new_file_set_document = file_set_document.to_h
           new_file_set_document["mime_type_ssi"] = "application_zip"
           new_file_set_document["contents_mime_type_tesim"] = ["application/dicom"]
@@ -303,13 +303,13 @@ RSpec.describe Hyrax::MediaPresenter do
 
   describe "attachment files" do
     let(:pe) { SolrDocument.new({ id: "pe1" }) }
-    
+
     before do
       allow(Morphosource::AttachmentService).to receive(:get).and_return(true)
     end
 
     it "returns media custom agreement attachment file URL" do
-      expect(subject.attachment_url).to eq(["/attachments/123456789?field=agreement"])
+      expect(subject.attachment_url).to eq(["/attachments/#{media_document.id}?field=agreement"])
     end
 
     it "returns imaging event description attachment file URL" do
@@ -384,7 +384,7 @@ RSpec.describe Hyrax::MediaPresenter do
         context "but user does not have read permission" do
           let(:read_permission) { false }
 
-          it "returns false" do 
+          it "returns false" do
             expect(subject.universal_viewer?).to be false
           end
         end
@@ -400,7 +400,7 @@ RSpec.describe Hyrax::MediaPresenter do
         context "but user does not have read permission" do
           let(:read_permission) { false }
 
-          it "returns false" do 
+          it "returns false" do
             expect(subject.universal_viewer?).to be false
           end
         end
@@ -416,7 +416,7 @@ RSpec.describe Hyrax::MediaPresenter do
         context "but user does not have read permission" do
           let(:read_permission) { false }
 
-          it "returns false" do 
+          it "returns false" do
             expect(subject.universal_viewer?).to be false
           end
         end
@@ -432,7 +432,7 @@ RSpec.describe Hyrax::MediaPresenter do
         context "but user does not have read permission" do
           let(:read_permission) { false }
 
-          it "returns false" do 
+          it "returns false" do
             expect(subject.universal_viewer?).to be false
           end
         end
@@ -447,7 +447,7 @@ RSpec.describe Hyrax::MediaPresenter do
     let(:parent_media) { SolrDocument.new({ id: "2", has_model_ssim: ["Media"] }) }
     let(:ie) { SolrDocument.new({ id: "ie3", has_model_ssim: ["ImagingEvent"] }) }
     let(:pe) { SolrDocument.new({ id: "pe3", has_model_ssim: ["ProcessingEvent"] }) }
-    
+
     ### Different behaviors based on parent work hierarchy ###
 
     context "with raw grand-parent media" do
@@ -469,25 +469,25 @@ RSpec.describe Hyrax::MediaPresenter do
             expect(subject.parent_media).to eq([gparent_media, parent_media])
           end
         end
-  
+
         context "#parent_media_id_list" do
           it "returns only parent media work IDs" do
             expect(subject.parent_media_id_list).to eq(["1", "2"])
           end
         end
-  
+
         context "#parent_media_count" do
           it "returns count of parent media works" do
             expect(subject.parent_media_count).to eq("2")
           end
         end
-  
+
         context "#top_parent_media" do
           it "returns grandparent media" do
             expect(subject.top_parent_media).to eq(gparent_media)
           end
         end
-  
+
         context "#direct_parent" do
           it "returns parent media" do
             expect(subject.direct_parent).to eq(parent_media)
@@ -537,13 +537,13 @@ RSpec.describe Hyrax::MediaPresenter do
             expect(subject.processing_activity_count).to eq(0)
           end
         end
-         
+
         context "#this_media_processing_event" do
           it "returns this_media_processing_event" do
             expect(subject.this_media_processing_event[:id]).to eq(pe.id)
           end
         end
-      end 
+      end
     end
 
     context "with no present media parents, but absentee parent" do
@@ -564,25 +564,25 @@ RSpec.describe Hyrax::MediaPresenter do
             expect(subject.parent_media).to eq([])
           end
         end
-  
+
         context "#parent_media_id_list" do
           it "returns empty array" do
             expect(subject.parent_media_id_list).to eq([])
           end
         end
-  
+
         context "#parent_media_count" do
           it "returns 0 count of parent media works" do
             expect(subject.parent_media_count).to eq("0")
           end
         end
-  
+
         context "#top_parent_media" do
           it "returns nil" do
             expect(subject.top_parent_media).to eq(nil)
           end
         end
-  
+
         context "#direct_parent" do
           it "returns nil" do
             expect(subject.direct_parent).to eq(nil)
@@ -632,13 +632,13 @@ RSpec.describe Hyrax::MediaPresenter do
             expect(subject.processing_activity_count).to eq(0)
           end
         end
-         
+
         context "#this_media_processing_event" do
           it "returns this_media_processing_event" do
             expect(subject.this_media_processing_event[:id]).to eq(pe.id)
           end
         end
-      end 
+      end
     end
 
     context "raw media" do
@@ -697,23 +697,23 @@ RSpec.describe Hyrax::MediaPresenter do
             expect(subject.processing_activity_count).to eq(0)
           end
         end
-         
+
         context "#this_media_processing_event" do
           it "returns nil" do
             expect(subject.this_media_processing_event).to eq(nil)
           end
         end
-      end 
+      end
     end
   end
 
   describe "child work hierarchy methods" do
     let(:child1_media) { SolrDocument.new({ id: "1", has_model_ssim: ["Media"] }) }
     let(:child2_media) { SolrDocument.new({ id: "2", has_model_ssim: ["Media"] }) }
-  
+
     context "media has children" do
       let(:child_media) { [child1_media, child2_media] }
-      
+
       before do
         allow(subject).to receive(:direct_child_media_works).and_return(child_media)
         allow(subject).to receive(:related_media).and_return(child_media)
@@ -746,7 +746,7 @@ RSpec.describe Hyrax::MediaPresenter do
       end
     end
 
-    context "media has no children" do   
+    context "media has no children" do
       context "#child_media" do
         it "returns empty array" do
           expect(subject.child_media).to eq([])
@@ -774,7 +774,7 @@ RSpec.describe Hyrax::MediaPresenter do
   end
 
   describe "related media work methods" do
-    
+
     let(:media1) { SolrDocument.new({ id: "1", has_model_ssim: ["Media"] }) }
     let(:media2) { SolrDocument.new({ id: "2", has_model_ssim: ["Media"] }) }
     let(:media3) { SolrDocument.new({ id: "3", has_model_ssim: ["Media"] }) }

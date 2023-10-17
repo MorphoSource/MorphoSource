@@ -7,6 +7,7 @@ module Morphosource
         authorize! :edit, @collection
         begin
           @collection.ordered_media = ordered_media_ids
+          @collection.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
           @collection.save!
           flash[:notice] = 'Media order saved'
           flash.keep(:notice)
@@ -64,7 +65,11 @@ module Morphosource
           docs_hash = document_list.compact.map { |doc| [doc["id"], doc] }.to_h
           sortable = docs_hash.extract! *uniq_ordered_media
           sorted = sortable.sort_by { |id, doc| uniq_ordered_media.index(id) }.to_h
-          document_list = sorted.values + docs_hash.values
+          if @ordered_sort&.include? "desc"
+            document_list = docs_hash.values + sorted.values.reverse
+          else
+            document_list = sorted.values + docs_hash.values
+          end
         end
 
         page = params["page"].present? ? params["page"].to_i : 1

@@ -56,8 +56,8 @@ Hyrax.config do |config|
   # ID of a media work to be used as the front page preview
   config.front_page_media = Rails.env.production? ? '000009951' : nil
 
-  # Wordpress blog for news updates (optional), if excluded news & updates section will not appear on front page
-  config.wordpress_blog_url = ENV['WORDPRESS_BLOG_URL'] || nil
+  # Display site announcements? Requires github_access_token credential for GH discussions board
+  config.site_announcements = ENV['GITHUB_ACCESS_TOKEN'].present?
 
   ### Initial users and system users (should be customized for repository instances) ###
 
@@ -134,6 +134,9 @@ Hyrax.config do |config|
   config.packrat_api_idms_token_exchange_url = ENV.fetch('IDMS_TOKEN_EXCHANGE_URL', 'https://idms-web-ws.oit.duke.edu/idm-ws/clientSecret/createClientToken')
   config.packrat_api_endpoint = ENV.fetch('PACKRAT_API_ENDPOINT', '/api/v2')
   config.packrat_api_volume_id = ENV.fetch('PACKRAT_API_VOLUME_ID', 1931)
+
+  # Github GraphQL API credentials
+  config.github_access_token = ENV.fetch('GITHUB_ACCESS_TOKEN', nil)
 
   ### Locations where temporary or ancillary files are stored ###
 

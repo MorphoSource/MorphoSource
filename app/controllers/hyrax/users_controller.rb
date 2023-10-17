@@ -22,7 +22,7 @@ module Hyrax
       authenticate_user!
       user = ::User.from_url_component(params[:id])
       return redirect_to root_path, alert: "User '#{params[:id]}' does not exist" if user.nil?
-      @presenter = Hyrax::UserProfilePresenter.new(user, current_ability)
+      @presenter = Morphosource::UserProfilePresenter.new(user, current_ability)
     end
 
     def make_user_active
@@ -61,7 +61,7 @@ module Hyrax
             .references(:trophies)
             .order(sort_value)
             .page(params[:page] || 1).per(per_page_param)
-        
+
         return base
       end
 

@@ -13,7 +13,7 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
 
   let(:collection)      { double('collection') }
   let(:occurrence_key)  { 4003219413 }
-  let(:taxon_key)       { 5216061 }
+  let(:taxon_key)       { '5216061' }
   let(:occurrence_id)   { 'MCZ:SC:3793' }
   let(:specimen_uri)    { 'http://mczbase.mcz.harvard.edu/guid/MCZ:SC:3793' }
   let(:device_name)     { 'TissueScope LE 120' }

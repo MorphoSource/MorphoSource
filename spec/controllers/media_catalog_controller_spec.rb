@@ -16,15 +16,8 @@ RSpec.describe MediaCatalogController, :type => :controller do
     describe 'facet fields' do
       let(:facet_fields) { config.facet_fields }
 
-      it 'has 16 facet fields' do
-        expect(facet_fields.count).to eq(17)
-      end
-
-      describe 'generic type' do
-        subject { facet_fields['generic_type_sim'] }
-        it 'has the correct attributes' do
-          expect(subject.label).to eq("Generic Type Sim")
-        end
+      it 'has 18 facet fields' do
+        expect(facet_fields.count).to eq(18)
       end
 
       describe 'human readable media type' do
@@ -60,9 +53,17 @@ RSpec.describe MediaCatalogController, :type => :controller do
       end
 
       describe 'keyword' do
-        subject { facet_fields['keyword_sim'] }
+        subject { facet_fields['keyword_ssim'] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Tag")
+          expect(subject.limit).to eq(10)
+        end
+      end
+
+      describe 'taxonomy' do
+        subject { facet_fields['taxonomy_ssim'] }
+        it 'has the correct attributes' do
+          expect(subject.label).to eq("Taxonomy")
           expect(subject.limit).to eq(10)
         end
       end

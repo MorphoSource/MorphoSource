@@ -1,0 +1,13 @@
+# List of external document URLs for front page resources menu
+- label: hyrax.controls.links.resources.api
+  url: https://morphosource.stoplight.io/docs/morphosource-api/rm6bqdolcidct-morpho-source-rest-api
+  header: true
+  footer: true
+- label: hyrax.controls.links.resources.terms_vocabulary
+  url: https://www.morphosource.org/terms/ms
+  header: true
+  footer: true
+- label: hyrax.controls.links.resources.controlled_vocabularies
+  url: https://www.morphosource.org/terms/mscv
+  header: true
+  footer: false

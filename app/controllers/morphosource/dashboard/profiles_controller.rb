@@ -11,6 +11,14 @@ module Morphosource
       before_action :strip_empty_values, only: [:update]
       authorize_resource class: '::User', instance_name: :user
 
+      def show
+        add_breadcrumb t(:'hyrax.controls.home'), root_path
+        add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
+        add_breadcrumb t(:'hyrax.admin.sidebar.profile'), hyrax.dashboard_profile_path
+
+        @presenter = Morphosource::UserProfilePresenter.new(@user, current_ability)
+      end
+
       def edit_password
         add_breadcrumb t(:'hyrax.controls.home'), root_path
         add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
@@ -48,7 +56,7 @@ module Morphosource
       end
 
       def is_valid_domain?(path)
-        path.match? /^[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,63}$/i 
+        path.match? /^[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,63}$/i
       end
 
       private

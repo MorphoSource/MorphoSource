@@ -156,8 +156,10 @@
 
   <% if @collection.organization %>
     <div class="form-group row">
-      <h2>Remote File Submission Settings</h2>
-      <%= render 'morphosource/dashboard/collections/teams/organization/remote_file_permissions' %>
+      <div class="block-fill block-padding">
+        <h2 class="mt-0">Remote File Submission Settings</h2>
+        <%= render 'morphosource/dashboard/collections/teams/organization/remote_file_permissions' %>
+      </div>
     </div>
   <% end %>
 </div><!-- /right column -->

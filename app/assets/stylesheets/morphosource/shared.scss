@@ -384,6 +384,18 @@ div.wrapper_for_2 span.input-group-bt.field-controls {
   height: unset !important;
 }
 
+.checkbox-list {
+  div {
+    display: flex;
+  }
+  div > * {
+    align-self: baseline;
+  }
+  div > input[type=checkbox] {
+    margin: 0 1ch 0 0;
+  }
+}
+
 /* The switch - the box around the slider */
 .switch {
   position: relative;

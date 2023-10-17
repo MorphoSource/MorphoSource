@@ -3,7 +3,7 @@
              html: { multipart: true, class: 'form-horizontal' } do |f| %>
 
 <div class="row">
-  <div class="col-xs-6">
+  <div class="col-sm-12 col-md-6">
     <%= render partial: 'hyrax/dashboard/profiles/edit_email', locals: {f: f} %>
 
     <div class="form-group">
@@ -29,28 +29,28 @@
       </div>
     </div>
 
-  </div>
-  <div class="col-xs-6">
     <%= render partial: 'hyrax/dashboard/profiles/edit_profile_name_section', locals: {f: f} %>
-  </div>
-</div>
-
-<div class="row">
-
-  <%= render partial: 'hyrax/dashboard/profiles/edit_profile_type_section', locals: {f: f} %>
-  
-  <div class="col-lg-6 col-md-12 mt-2">
     <%= render partial: 'hyrax/dashboard/profiles/edit_sftp_share', locals: {f: f} %>
     <%= render partial: 'hyrax/dashboard/profiles/ms_profile', locals: {f: f} %>
   </div>
+
+  <div class="col-sm-12 col-md-6">
+    <%= render partial: 'hyrax/dashboard/profiles/edit_profile_type_section', locals: {f: f} %>
+    <%= render partial: 'hyrax/dashboard/profiles/edit_intent', locals: {f: f} %>  
+  </div>
+
 </div>
 
 <div class="row">
-  <%= render partial: 'hyrax/dashboard/profiles/edit_profile_bottom_section', locals: {f: f} %>  
-  <%= render 'trophy_edit', trophies: @trophies %>
-  <%= f.button t(".save_profile").html_safe, type: 'submit', class: "btn btn-primary" %>
+  <div class='col-xs-12 text-center'>
+    <%= render 'trophy_edit', trophies: @trophies %>
+    <p>
+      <%= f.check_box :terms_read, {checked: false, required: true}, true %>
+      <%= t("devise.passwords.edit.terms").html_safe %>
+    </p>
+    <p><%= f.button t(".save_profile").html_safe, type: 'submit', class: "btn btn-primary btn-lg" %></p>
+  </div>
 </div>
-
 <% end %>
 
 <script>

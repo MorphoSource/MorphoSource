@@ -7,51 +7,47 @@
 
 <div class="panel panel-default">
   <div class="row">
-    <div class="col-xs-6 profile">
+    <div class="col-sm-12 col-md-6 profile">
 
-        <div class="form-group">
-          <%= f.label :email, class: 'control-label', style: 'width: 33%; position: relative; left: 15px;'  %>
-          <%= f.email_field :email, autofocus: true, autocomplete: "email", style: 'position: relative; left: 15px;' %>
+      <%= render partial: 'hyrax/dashboard/profiles/edit_email', locals: {f: f} %>
+
+      <div class="form-group row">
+        <% if @minimum_password_length %>
+          <%= f.label "Password (" + @minimum_password_length.to_s + " characters minimum)", class: 'col-xs-4 control-label required' %>
+        <% else %>
+          <%= f.label :password, class: 'col-xs-4 control-label' %>
+        <% end %>
+        <div class="col-xs-8">
+          <%= f.password_field :password, autocomplete: "new-password" %>
         </div>
+      </div>
 
-        <div class="form-group">
-          <% if @minimum_password_length %>
-            <%= f.label ("Password (" + @minimum_password_length.to_s + " characters minimum)"), class: 'control-label', style: 'width: 33%; position: relative; left: 15px;' %>
-          <% else %>
-            <%= f.label :password, class: 'control-label', style: 'width: 33%; position: relative; left: 15px;' %>
-          <% end %>
-          <%= f.password_field :password, autocomplete: "new-password", style: 'position: relative; left: 15px;' %>
+      <div class="form-group row">
+        <%= f.label :password_confirm, class: 'col-xs-4 control-label required' %>
+        <div class="col-xs-8">
+          <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
         </div>
+      </div>
 
-        <div class="form-group">
-          <%= f.label :password_confirmation, class: 'control-label', style: 'width: 33%; position: relative; left: 15px;' %>
-          <%= f.password_field :password_confirmation, autocomplete: "new-password", style: 'position: relative; left: 15px;' %>
-        </div>
-
-    </div>
-    <div class="col-xs-6">
       <%= render partial: 'hyrax/dashboard/profiles/edit_profile_name_section', locals: {f: f} %>
-    </div>
-  </div>
-
-  <div class= "row">  
-
-    <%= render partial: 'hyrax/dashboard/profiles/edit_profile_type_section', locals: {f: f} %>
-
-    <div class="col-lg-6 col-md-12 mt-2">
       <%= render partial: 'hyrax/dashboard/profiles/ms_profile', locals: {f: f} %>
+
+    </div>
+
+    <div class="col-sm-12 col-md-6">
+      <%= render partial: 'hyrax/dashboard/profiles/edit_profile_type_section', locals: {f: f} %>
+      <%= render partial: 'hyrax/dashboard/profiles/edit_intent', locals: {f: f} %>  
     </div>
   </div>
 
   <div class="row">
-
-    <%= render partial: 'hyrax/dashboard/profiles/edit_profile_bottom_section', locals: {f: f} %>  
-
-    <div class='col-sm-4 control-label'></div>
-    <div class='col-sm-8'>
-      <%= f.submit "Sign up", class: 'btn btn-primary' %>
+    <div class='col-xs-12 text-center'>
+      <p>
+        <%= f.check_box :terms_read, {checked: false, required: true}, true %>
+        <%= t("devise.passwords.edit.terms").html_safe %>       
+      </p>
+      <p><%= f.submit "Sign up", class: 'btn btn-primary btn-lg' %></p>
     </div>
-
   </div>
 
 </div>

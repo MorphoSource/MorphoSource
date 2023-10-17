@@ -1,13 +1,15 @@
-<div class="checkbox-list demographics" style="display: flex; flex-direction: row;">
+<div class="demographics">
   <div class="profile-column">
     <% values.each do |value, prof_types| %>
       <%# data-target contains profile types associated with the demographic value %>
-      <div class="checkbox-wrapper" data-group="profile_type" data-target="<%= prof_types&.join(',') %>">
-        <%= f.check_box field, { 
+      <div class="checkbox-list checkbox-wrapper" data-group="profile_type" data-target="<%= prof_types&.join(',') %>">
+        <div>
+          <%= f.check_box field, { 
           multiple: true, 
           checked: (@user.send(field.to_sym).include? value)
-        }, value, false %>
-        <%= f.label(field.to_sym, value) %>
+          }, value, false %>
+          <%= f.label(field.to_sym, value) %>
+        </div>
       </div>
     <% end %>
 

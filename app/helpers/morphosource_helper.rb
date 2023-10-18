@@ -226,6 +226,10 @@ module MorphosourceHelper
     Rails.application.routes.url_helpers.qa_path + '/search/find_organizations?type[]=Organization&id=NA&q='
   end
 
+  def find_device_organizations_autocomplete_url
+    Rails.application.routes.url_helpers.qa_path + '/search/find_works?type[]=Organization&type[]=OrganizationCollection&id=NA'
+  end
+
   def find_organization_with_devices_autocomplete_url
     Rails.application.routes.url_helpers.qa_path + '/search/find_organizations_with_devices?type[]=Organization&id=NA&q='
   end

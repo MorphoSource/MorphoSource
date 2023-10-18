@@ -17,6 +17,6 @@ class Device < Morphosource::Works::Base
   include ::Hyrax::BasicMetadata
 
   def organization
-    member_of.select { |m| m.class == Organization }&.first
+    organization_id.present? ? ActiveFedora::Base.find(organization_id.first) : member_of.select { |m| m.class == Organization }&.first
   end
 end

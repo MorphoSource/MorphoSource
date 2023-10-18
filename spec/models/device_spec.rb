@@ -59,4 +59,25 @@ RSpec.describe Device do
 
   end
 
+  describe 'organization' do
+    subject { Device.create(title: ['device']) }
+    context 'organization is a parent work' do
+      let(:organization)  { FactoryBot.create(:organization) }
+      before do
+        organization.ordered_members << subject
+        organization.save!
+      end
+      it { expect(subject.organization).to eq(organization) }
+    end
+    context 'organization is a collection' do
+      let(:depositor)     { FactoryBot.create(:contributor) }
+      let(:organization)  { FactoryBot.create(:organization_collection, depositor: depositor.ms_id) }
+      before do
+        subject.organization_id = [organization.id]
+        subject.save!
+      end
+      it { expect(subject.organization).to eq(organization) }
+    end
+  end
+
 end

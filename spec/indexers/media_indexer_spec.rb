@@ -262,6 +262,25 @@ RSpec.describe MediaIndexer do
       expect(subject['y_spacing_tesim']).to match_array(media.y_spacing)
       expect(subject['z_spacing_tesim']).to match_array(media.z_spacing)
 
+    describe 'organizations' do
+      context 'organization is a work' do
+        it 'indexes organizations' do
+          expect(subject['media_organization_tesim']).to match_array([organization.title.first])
+          expect(subject['media_organization_ssim']).to match_array([organization.title.first])
+          expect(subject['media_organization_id_ssim']).to match_array([organization.id])
+          expect(subject['media_organization_id_tesim']).to match_array([organization.id])
+        end
+      end
+      context 'organization is a collection' do
+        let(:depositor)     { FactoryBot.create(:contributor) }
+        let(:organization)  { FactoryBot.create(:organization_collection, title: ['organization'], depositor: depositor.ms_id) }
+        it 'indexes organizations' do
+          expect(subject['media_organization_tesim']).to match_array([organization.title.first])
+          expect(subject['media_organization_ssim']).to match_array([organization.title.first])
+          expect(subject['media_organization_id_ssim']).to match_array([organization.id])
+          expect(subject['media_organization_id_tesim']).to match_array([organization.id])
+        end
+      end
     end
   end
 
@@ -291,6 +310,29 @@ RSpec.describe MediaIndexer do
       it 'is Private' do
         expect(subject['publication_status_ssi']).to eq('Private')
       end
+    end
+  end
+
+  describe 'organizations' do
+    let(:org1)            { Organization.create(title: ['Organization1']) }
+    let(:depositor)       { FactoryBot.create(:contributor) }
+    let(:org2)            { FactoryBot.create(:organization_collection, title: ['Organization2'], depositor: depositor.ms_id ) }
+    let(:specimen)        { BiologicalSpecimen.create(title: ['Specimen'], vouchered: ['Yes'], organization_id: [org1.id]) }
+    let(:cho)             { CulturalHeritageObject.create(title: ['CulturalHeritageObject'], vouchered: ['Yes'], organization_id: [org2.id]) }
+    let(:device)          { Device.create(title: ['Device'], modality: ['Photogrammetry']) }
+    let(:imaging_event1)  { ImagingEvent.create(title: ['Imaging Event'], ie_modality: device.modality, device_id: [device.id], physical_object_id: [specimen.id]) }
+    let(:imaging_event2)  { ImagingEvent.create(title: ['Imaging Event'], ie_modality: device.modality, device_id: [device.id], physical_object_id: [cho.id]) }
+    let(:media)           { Media.create(title: ['Media']) }
+
+    before do
+      imaging_event1.ordered_members << media
+      imaging_event2.ordered_members << media
+      [imaging_event1, imaging_event2].each(&:save)
+      media.reload
+    end
+
+    it 'returns all media organizations' do
+      expect(MediaIndexer.new(media).organizations).to match_array([org1, org2])
     end
   end
 

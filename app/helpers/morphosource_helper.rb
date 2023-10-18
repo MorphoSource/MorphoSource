@@ -9,7 +9,7 @@ module MorphosourceHelper
     def initialize(url)
       @message = ""
       @status = ""
-      @http_code = ""        
+      @http_code = ""
       @file_ext = ""
       @content_length = ""
       @e_tag = ""
@@ -23,7 +23,7 @@ module MorphosourceHelper
         @http_code = e.http_code
       rescue Exception => e
         @message = "#{e.message}"
-        @http_code = ""        
+        @http_code = ""
       end
       if @status == "success"
         @content_length = head.headers[:content_length]
@@ -35,18 +35,18 @@ module MorphosourceHelper
 
     def file_extension_from_content_type(content_type)
       return "" unless content_type.present?
-      case content_type 
+      case content_type
       when "application/zip"
         ".zip"
-      when "image/gif"   
+      when "image/gif"
         ".gif"
       when /^image\/jpe?g$/
         ".jpg"
       when "image/png"
-        ".png"   
+        ".png"
       when "image/bmp"
-        ".bmp"   
-      when "image/tiff"    
+        ".bmp"
+      when "image/tiff"
         ".tif"
       when "application/dicom"
         ".dcm"
@@ -68,11 +68,11 @@ module MorphosourceHelper
         ".x3d"
       when /^video\/mpe?g$/
         ".mpg"
-      when "video/mp4"    
+      when "video/mp4"
         ".mp4"
-      when "video/quicktime"    
+      when "video/quicktime"
         ".mov"
-      when "video/avi"    
+      when "video/avi"
         ".avi"
       when "video/x-m4v"
         ".m4v"
@@ -86,7 +86,7 @@ module MorphosourceHelper
         ""
       end
     end
-  
+
   end
 
   def solr_doc_find(id)
@@ -174,6 +174,15 @@ module MorphosourceHelper
     sortable_title_field = Solrizer.solr_name('title', :stored_sortable)
     hits = organizations
     hits.map { |hit| [ hit[sortable_title_field], hit.id ] }
+  end
+
+  # choose path based on whether organization is a work or collection
+  def organization_path(id)
+    if Organization.exists?(id)
+      main_app.show_organization_path(id)
+    else
+      main_app.organization_path(id)
+    end
   end
 
   def organizations

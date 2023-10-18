@@ -13,13 +13,13 @@
       Object Type
       <span class="text-muted-value"><%= presenter.model.model_name.to_s.titleize %></span>
     </div>
-    
+
     <% if presenter.parent_organization_title.present? %>
       <div class="text-muted-item mr-1" style="margin-bottom: 8px;">
         Organization
         <span class="text-muted-value"><%= presenter.attribute_to_html(
         :parent_organization_title,
-        link: Rails.application.routes.url_helpers.hyrax_organization_path(presenter.parent_organization.id),
+        link: organization_path(presenter.parent_organization.id),
         render_as: :showcase_simple_link,
         html_dl: false)
         %></span>
@@ -32,7 +32,7 @@
       Number of media representing object <span class="text-muted-value" style="margin-left: 0"><%= presenter.viewable_related_media_ids.count || 0 %>
     </div>
   </div>
-    
+
   <% if presenter.class.method_defined?(:idigbio_uuid) && presenter.idigbio_uuid.present? %>
     <div class="text-muted">
       Record imported from external source <span class="showcase-link"><a target="_blank" href="https://www.idigbio.org/portal/records/<%= presenter.idigbio_uuid&.first %>">iDigBio</a></span>

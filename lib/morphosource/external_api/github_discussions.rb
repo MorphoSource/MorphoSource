@@ -95,7 +95,11 @@ module Morphosource
           "query" => "
           {
             repository(owner: \"MorphoSource\", name: \"Community\") {
-              discussions(first: #{DSC_NUM}, categoryId: \"#{ANNOUNCEMENTS_CATEGORY_ID}\") {
+              discussions(
+                first: #{DSC_NUM}, 
+                categoryId: \"#{ANNOUNCEMENTS_CATEGORY_ID}\",
+                orderBy: {field: CREATED_AT, direction: DESC}
+              ) {
                 nodes {
                   title
                   createdAt

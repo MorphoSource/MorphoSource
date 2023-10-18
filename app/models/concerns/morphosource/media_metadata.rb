@@ -17,20 +17,20 @@ module Morphosource
 
       # Required select values
       property :media_type, predicate: ::RDF::URI.new("http://rs.tdwg.org/ac/terms/subtypeLiteral") do |index|
-        index.as :stored_searchable, :facetable
+        index.as :stored_searchable, :symbol
       end
 
       # Optional select values
       property :short_description, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/shortDescription") do |index|
-        index.as :stored_searchable, :facetable
+        index.as :stored_searchable, :symbol
       end
 
       property :side, predicate: ::RDF::URI.new("http://rs.tdwg.org/ac/terms/comments") do |index|
-        index.as :stored_searchable, :facetable
+        index.as :stored_searchable, :symbol
       end
 
       property :series_type, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/seriesType") do |index|
-        index.as :stored_searchable, :facetable
+        index.as :stored_searchable, :symbol
       end
 
       # Optional free text values
@@ -135,12 +135,12 @@ module Morphosource
 
       # Mesh and CTImageSeries field
       property :unit, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/ACExt/units") do |index|
-        index.as :stored_searchable, :facetable
+        index.as :stored_searchable, :symbol
       end
 
       # Mesh field
       property :map_type, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/mapType") do |index|
-        index.as :stored_searchable, :facetable
+        index.as :stored_searchable, :symbol
       end
     end
   end

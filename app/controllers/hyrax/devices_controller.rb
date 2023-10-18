@@ -12,5 +12,11 @@ module Hyrax
 
     # Use this line if you want to use a custom presenter
     self.show_presenter = Hyrax::DevicePresenter
+
+    # Update work index after initial creation to ensure index reflects organization metadata
+    def after_create_response
+      curation_concern.update_index if curation_concern.id.present?
+      super
+    end
   end
 end

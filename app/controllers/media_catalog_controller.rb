@@ -25,8 +25,11 @@ class MediaCatalogController < CatalogController
     config.add_facet_field solr_name("rights_statement", :symbol), label: "Rights Statement", limit: 10, helper_method: :rights_statement_title_by_id
     config.add_facet_field solr_name("license", :symbol), label: "CC License", limit: 10, helper_method: :license_title_by_id
 
+    # taxonomy
+    config.add_facet_field solr_name("taxonomy", :symbol), label: "Taxonomy", limit: 10
+
     # tags
-    config.add_facet_field solr_name("keyword", :facetable), label: "Tag", limit: 10
+    config.add_facet_field solr_name("keyword", :symbol), label: "Tag", limit: 10
 
     # collections
     config.add_facet_field solr_name('member_of_team_ids', :symbol), label: 'Team', limit: 10, helper_method: :collection_title_by_id
@@ -54,7 +57,7 @@ class MediaCatalogController < CatalogController
     config.add_index_field solr_name("rights_statement", :symbol), label: "Rights Statement", helper_method: :rights_statement_links
     config.add_index_field solr_name("license", :symbol), label: "CC License", helper_method: :license_links
 
-    
+
     # solr fields to be displayed in the show (single result) view
     # these fields also determine what fields are indexed for searching
     config.add_show_field solr_name('agreement_uri', :stored_searchable)

@@ -516,11 +516,35 @@ module Hyrax
       @cache_path ||= ->() { Rails.root + 'tmp' + 'uploads' + 'cache' }
     end
 
-    # YAML file application configuration
+    ### YAML file application configuration ###
+
+    # community
+
+    attr_writer :community_yml_path
+    def community_yml_path
+      @community_yml_path ||= "config/links/community.yml"
+    end
+
+    def community
+      return {} unless ( community_yml_path && File.exist?(community_yml_path) )
+      YAML.load_file(community_yml_path) || {}
+    end
+
+    attr_reader :header_community
+    def header_community
+      @header_community ||= community.select { |doc| doc["header"] }
+    end
+
+    attr_reader :footer_community
+    def footer_community
+      @footer_community ||= community.select { |doc| doc["footer"] }
+    end
+
+    # docs
 
     attr_writer :docs_yml_path
     def docs_yml_path
-      @docs_yml_path ||= "config/docs.yml"
+      @docs_yml_path ||= "config/links/docs.yml"
     end
 
     def docs
@@ -536,6 +560,28 @@ module Hyrax
     attr_reader :footer_docs
     def footer_docs
       @footer_docs ||= docs.select { |doc| doc["footer"] }
+    end
+
+    # resources
+
+    attr_writer :resources_yml_path
+    def resources_yml_path
+      @resources_yml_path ||= "config/links/resources.yml"
+    end
+
+    def resources
+      return {} unless ( resources_yml_path && File.exist?(resources_yml_path) )
+      YAML.load_file(resources_yml_path) || {}
+    end
+
+    attr_reader :header_resources
+    def header_resources
+      @header_resources ||= resources.select { |doc| doc["header"] }
+    end
+
+    attr_reader :footer_resources
+    def footer_resources
+      @footer_resources ||= resources.select { |doc| doc["footer"] }
     end
 
     # Enable IIIF image service. This is required to use the
@@ -728,6 +774,12 @@ module Hyrax
       @default_site_title ||= 'MorphoSource'
     end
 
+    # Try to display site announcements? Required github_access_token for GH discussions board
+    attr_writer :site_announcements
+    def site_announcements
+      @site_announcements ||= false
+    end
+
     # Packrat API fields (if not using Duke Packrat Storage, these fields are unnecessary)
     attr_writer :packrat_api_endpoint_client_id
     def packrat_api_endpoint_client_id
@@ -759,6 +811,12 @@ module Hyrax
       @packrat_api_volume_id ||= nil
     end
 
+    # Github GraphQL API credentials
+    attr_writer :github_access_token
+    def github_access_token
+      @github_access_token ||= nil
+    end
+
     # Fund code reporting fields (if not using fund code reporting features, these fields are unnecessary)
     attr_writer :subsidizing_fund_code_id
     def subsidizing_fund_code_id
@@ -768,12 +826,6 @@ module Hyrax
     attr_writer :unused_storage_fund_code_id
     def unused_storage_fund_code_id
       @unused_storage_fund_code_id ||= nil
-    end
-
-    # Wordpress blog for news updates (optional)
-    attr_writer :wordpress_blog_url
-    def wordpress_blog_url
-      @wordpress_blog_url ||= nil
     end
 
     attr_accessor :nested_relationship_reindexer

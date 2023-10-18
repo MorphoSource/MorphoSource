@@ -3,11 +3,11 @@ module Morphosource
     include Morphosource::MessageHelper
 
     def update_metadata_from_idigbio_occurrence_id(save_work=false, system_update=false, force_update=false, log_file=nil)
-      log = log_file.present?? Logger.new(log_file) : Logger.new(STDOUT) 
+      @log = log_file.present?? Logger.new(log_file) : Logger.new(STDOUT) 
       if idigbio_match_found == 1
         @idigbio_occurrence = idigbio_occurrence_id_results[:data].first
         if idigbio_recordset_different_from_org?
-          log.debug "iDigBio sync: Specimen #{self.id} not synced because the organization (#{self.organization_id.first}) has recordset ID(s) (#{@org_recordset_ids.join(', ')}) different from the iDigBio-supplied recordset ID #{@idb_recordset_id}."
+          @log.debug "iDigBio sync: Specimen #{self.id} not synced because the organization (#{self.organization_id.first}) has recordset ID(s) (#{@org_recordset_ids.join(', ')}) different from the iDigBio-supplied recordset ID #{@idb_recordset_id}."
         else
           @save_work = save_work
           @system_update = system_update
@@ -17,12 +17,12 @@ module Morphosource
     
           if force_update || idigbio_record_different_from_specimen?
             apply_idigbio_update
-            log.debug "IDigBio sync: Specimen #{id} updated as a result of " + (force_update ? "force_update" : "idigbio_record_different_from_specimen")
+            @log.debug "IDigBio sync: Specimen #{id} updated as a result of " + (force_update ? "force_update" : "idigbio_record_different_from_specimen")
           end
         end
       elsif idigbio_match_found > 1
         if system_update
-          log.debug "IDigBio sync: Specimen #{id} not synced because multiple records found for OID: #{occurrence_id.first}"
+          @log.debug "IDigBio sync: Specimen #{id} not synced because multiple records found for OID: #{occurrence_id.first}"
         end
       end
     end
@@ -68,6 +68,7 @@ module Morphosource
           @taxonomy_params_array << ActionController::Parameters.new(gbif_params)
         end
       end
+      @taxonomy_id_array = @taxonomy_id_array.uniq
     end
   
     def get_idigbio_metadata
@@ -81,12 +82,32 @@ module Morphosource
     end
   
     def idigbio_record_different_from_specimen?
-      @canonical_taxonomy_id != self.canonical_taxonomy_ids&.first ||
-      @taxonomy_id_array != self.taxonomy_id ||
-      @taxonomy_params_array.present? ||
-      @biospec_model_params.any? do |key, value|
-        Array(value) != self.send(key)
+      @log = Logger.new(STDOUT) unless @log.present?
+      is_diff = false
+      if @canonical_taxonomy_id.present? 
+        if !self.canonical_taxonomy_ids.to_a.include? @canonical_taxonomy_id  
+          is_diff = true
+          @log.debug "is_diff Specimen #{self.id}: canonical_taxonomy_ids #{self.canonical_taxonomy_ids.to_a} does not include #{@canonical_taxonomy_id}"
+        end
       end
+      # Note: self.taxonomy_id can contain more IDs than taxonomy_id_array since 
+      # new taxonomies are added when apply_idigbio_update was called in a previous update
+      if (@taxonomy_id_array - self.taxonomy_id.to_a).present? 
+        is_diff = true
+        @log.debug "is_diff Specimen #{self.id}: taxonomy_id_array #{@taxonomy_id_array} VS #{self.taxonomy_id.to_a}"
+      end
+      if @taxonomy_params_array.present? 
+        is_diff = true
+        @log.debug "is_diff Specimen #{self.id}: taxonomy_params_array #{taxonomy_params_array}"
+      end
+      @biospec_model_params.each do |key, value|
+        # case-insensitive comparison for cases like "male" vs. "Male"
+        if Array(value).map(&:downcase).sort != self.send(key).map(&:downcase).sort
+          is_diff = true
+          @log.debug "is_diff Specimen #{self.id}: key=#{key}, #{Array(value)} VS #{self.send(key)}"
+        end      
+      end
+      return is_diff
     end
   
     def apply_idigbio_update
@@ -138,8 +159,6 @@ module Morphosource
         self.idigbio_link_origin = @system_update ? ["system_generated"] : ["user"]
       end
       self.title = [generated_title]
-      # normally saving work is done separately (e.g. in a background job, form submit)
-      # set save_work flag if needed for debugging in the console
       self.save if @save_work
     end
 

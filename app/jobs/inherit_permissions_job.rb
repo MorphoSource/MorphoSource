@@ -9,7 +9,7 @@ class InheritPermissionsJob < Hyrax::ApplicationJob
   # @param work [String, ActiveFedora::Base] work ID or work containing access level and filesets
   def perform(work)
     begin
-      # Retry 3 times, sometimes this hits mysterious race(?) conditions
+      # Retry 3 times, sometimes this hits Ldp::Gone due to race conditions(?) deleting permissions
       retries ||= 0
 
       if work.is_a? String
@@ -18,6 +18,7 @@ class InheritPermissionsJob < Hyrax::ApplicationJob
       end
 
       work.file_sets.each do |file|
+        file.reload
         attribute_map = work.permissions.map(&:to_hash)
 
         # copy and removed access to the new access with the delete flag
@@ -32,11 +33,12 @@ class InheritPermissionsJob < Hyrax::ApplicationJob
         file.permissions_attributes = attribute_map
         file.save!
       end
-    rescue Exception => e
+    rescue StandardError => e
       if (retries += 1) <= 3
+        sleep 10 # Try and wait out whatever other permissions changes are happening
         retry
       else
-        raise e
+        raise e, "Maximum number of retries reached. Last exception message: #{e.message}"
       end
     end
   end

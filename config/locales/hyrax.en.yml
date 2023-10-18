@@ -132,18 +132,30 @@ en:
         modalities:
           "This describes the method used to image a physical object in order to create media."
     controls:
-      docs:
-        short_title: "Docs"
-        title: "Documentation"
-        guide: "Standard Users"
-        glossary: "Glossary of Terms"
-        contributors: "Contributor Users"
-        citation: "Citation"
-        faq: "FAQ"
-      resources:
-        title: "Resources"
-        api: "API"
-        rss: "Data Reporting"
+      about_footer: About MorphoSource
+      links:
+        community:
+          announcements: Announcements
+          community_hub: Community Hub
+          discussions: Discussions
+          questions_and_answers: Q&A
+          roadmap: Public Roadmap
+          title: Community
+          title_footer: Community
+        docs:
+          title_footer: Docs
+          title: Documentation
+          guide: Standard Users
+          glossary: Glossary of Terms
+          contributors: Contributor Users
+          citation: Citation
+          faq: FAQ
+        resources:
+          title: Resources
+          title_footer: Resources
+          api: API
+          terms_vocabulary: MS Terms Vocabulary
+          controlled_vocabularies: MS Controlled Vocabularies
     admin:
       sidebar:
         teams: 'Teams'

@@ -1,4 +1,4 @@
-<div class="col-xs-12 col-sm-6 col-right">
+<div class="col-xs-12 col-sm-6">
   <h2>Educators Organizing Online Courses</h2>
   <% published_mesh_number = Media.where(visibility_ssi: 'open', media_type: 'Mesh').count %>
   <% open_download_mesh_number = Media.where(visibility_ssi: 'open', fileset_accessibility: 'open', media_type: 'Mesh').count %>

@@ -1,5 +1,12 @@
 class OrganizationCollection < Collection
 
+  include Morphosource::OrganizationCollectionMetadata
+  include Morphosource::OrganizationMetadata
+  include Morphosource::PermissionsDefaultsMetadata
+  include Morphosource::LocationMetadata
+
+  self.indexer = OrganizationCollectionIndexer
+
   def initialize(params=nil)
     super
     self.collection_type_gid = collection_type.gid

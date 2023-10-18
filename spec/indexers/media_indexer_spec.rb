@@ -163,25 +163,11 @@ RSpec.describe MediaIndexer do
       expect(subject['taxonomy_ssim']).to match_array(taxonomy.title)
     end
 
-    describe 'organizations' do
-      context 'organization is a work' do
-        it 'indexes organizations' do
-          expect(subject['media_organization_tesim']).to match_array([organization.title.first])
-          expect(subject['media_organization_ssim']).to match_array([organization.title.first])
-          expect(subject['media_organization_id_ssim']).to match_array([organization.id])
-          expect(subject['media_organization_id_tesim']).to match_array([organization.id])
-        end
-      end
-      context 'organization is a collection' do
-        let(:depositor)     { FactoryBot.create(:contributor) }
-        let(:organization)  { FactoryBot.create(:organization_collection, title: ['organization'], depositor: depositor.ms_id) }
-        it 'indexes organizations' do
-          expect(subject['media_organization_tesim']).to match_array([organization.title.first])
-          expect(subject['media_organization_ssim']).to match_array([organization.title.first])
-          expect(subject['media_organization_id_ssim']).to match_array([organization.id])
-          expect(subject['media_organization_id_tesim']).to match_array([organization.id])
-        end
-      end
+    it 'indexes organizations' do
+      expect(subject['media_organization_tesim']).to match_array([organization.title.first])
+      expect(subject['media_organization_ssim']).to match_array([organization.title.first])
+      expect(subject['media_organization_id_ssim']).to match_array([organization.id])
+      expect(subject['media_organization_id_tesim']).to match_array([organization.id])
     end
   end
 
@@ -211,8 +197,7 @@ RSpec.describe MediaIndexer do
 
   describe 'organizations' do
     let(:org1)            { Organization.create(title: ['Organization1']) }
-    let(:depositor)       { FactoryBot.create(:contributor) }
-    let(:org2)            { FactoryBot.create(:organization_collection, title: ['Organization2'], depositor: depositor.ms_id ) }
+    let(:org2)            { Organization.create(title: ['Organization2']) }
     let(:specimen)        { BiologicalSpecimen.create(title: ['Specimen'], vouchered: ['Yes'], organization_id: [org1.id]) }
     let(:cho)             { CulturalHeritageObject.create(title: ['CulturalHeritageObject'], vouchered: ['Yes'], organization_id: [org2.id]) }
     let(:device)          { Device.create(title: ['Device'], modality: ['Photogrammetry']) }

@@ -8,21 +8,10 @@ RSpec.describe Morphosource::PhysicalObjectBehavior do
 
   describe 'parent organizations' do
     describe '#organizations' do
-      context 'organization is a work' do
-        it 'returns the parent organizations' do
-          expect(specimen.organizations).to eq([organization])
-          expect(cho.organizations).to eq([organization])
-        end
+      it 'returns the parent organizations' do
+        expect(specimen.organizations).to eq([organization])
+        expect(cho.organizations).to eq([organization])
       end
-      context 'organization is a collection' do
-        let(:user)          { FactoryBot.create(:contributor) }
-        let(:organization)  { FactoryBot.create(:organization_collection, depositor: user.ms_id) }
-        it 'returns the parent organizations' do
-          expect(specimen.organizations).to eq([organization])
-          expect(cho.organizations).to eq([organization])
-        end
-      end
-
     end
     describe '#organization_titles' do
       it 'returns the parent organization titles' do

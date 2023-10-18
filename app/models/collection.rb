@@ -77,16 +77,6 @@ class Collection < ActiveFedora::Base
     collection_type.title == 'Sequential Section List'
   end
 
-  def organization_collection?
-    collection_type.title == 'Organization'
-  end
-
-  # TODO: Alias this to organization_collection when migration
-  # from works to collections is complete.
-  def organization?
-    false
-  end
-
   def user_groups
     [managers_group, editors_group, depositors_group, downloaders_group, viewers_group]
   end
@@ -272,14 +262,6 @@ class Collection < ActiveFedora::Base
 
   def media
     Media.where("member_of_collection_ids_ssim:#{id}")
-  end
-
-  # Faster than ActiveFedora::Base.exists? for String ID by bypassing ActiveFedora::Base.find().
-  # @param [ActiveFedora::Base, String, Hash] object, id or hash of conditions
-  # @return [Boolean] true if object having the id or matching the conditions exists in the repository
-  def self.exists?(conditions)
-    conditions = { id: conditions } if conditions.is_a? String
-    super(conditions)
   end
 
   private

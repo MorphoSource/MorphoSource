@@ -210,18 +210,5 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
         end
       end
     end
-
-    describe 'new_orgs' do
-      let(:organization_work)       { FactoryBot.create(:organization) }
-      let(:organization_collection) { FactoryBot.create(:organization_collection, depositor: user.ms_id)}
-      let(:specimen)                { FactoryBot.build(:biological_specimen, organization_id: [organization_work.id, organization_collection.id]) }
-
-      before do
-        subject.instance_variable_set(:@curation_concern, specimen)
-      end
-      it 'returns both organization works and collections' do
-        expect(subject.send(:new_orgs)).to match_array([organization_work, organization_collection])
-      end
-    end
   end
 end

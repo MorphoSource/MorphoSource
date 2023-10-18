@@ -113,8 +113,8 @@ module Hyrax
     end
 
     def new_orgs
-      ActiveFedora::Base.find(Array(@curation_concern.organization_id))
-    end
+      Organization.find(Array(@curation_concern.organization_id))
+    end    
 
     def occurrence_id_changed?
       params[:existing_occurrence_id] != curation_concern.occurrence_id&.first

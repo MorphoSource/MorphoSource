@@ -45,8 +45,8 @@ module Morphosource
       # Media.find_by("media_type_tesim" => "Mesh")
       # Media.find_by( [ "media_type_tesim:Mesh", "id:123456789" ] )
       # Media.find_by( { "media_type_tesim" => "Mesh", id: "123456789" } )
-      #
-      # @param [Hash, String, Array] One or more conditions, using Solr field names
+      # 
+      # @param [Hash, String, Array] One or more conditions, using Solr field names 
       # @return [Morphosource::Works::Base, nil] First matching record object or nil if none found
       def self.find_by(arg, *args)
         where(arg, *args).take
@@ -83,10 +83,6 @@ module Morphosource
 
       def organization?
         self.class == Organization
-      end
-
-      def organization_collection?
-        false
       end
 
       def media?

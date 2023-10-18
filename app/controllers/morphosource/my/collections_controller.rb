@@ -48,6 +48,10 @@ module Morphosource
 
       private
 
+      def authorize_admin
+        redirect_to root_path and return unless current_user.admin?
+      end
+
       # uses the membership facet to get total counts for each category
       def collection_counts
         @response.facet_queries.each_with_object({}) do |(k,v), counts|

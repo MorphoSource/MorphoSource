@@ -36,6 +36,23 @@ module Morphosource
           end
         end
 
+        # convert MediaList to :media_list
+        def snake_case_collection_class
+          collection_class.to_s.underscore.to_sym
+        end
+
+        def collection_params
+          form_class.model_attributes(params[snake_case_collection_class])
+        end
+
+        def member_params
+          params.dig(snake_case_collection_class, :members)
+        end
+
+        def thumbnail_params
+          params.dig(snake_case_collection_class, :representative_id)
+        end
+
     end
   end
 end

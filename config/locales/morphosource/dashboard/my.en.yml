@@ -11,6 +11,26 @@ en:
             action:
               edit: 'Edit List'
               delete: 'Delete List'
+        media_lists:
+          action:
+            new: 'New Media List'
+          count: "<strong>%{total_count} lists</strong>"
+          page_title: 'Media Lists'
+          sequential_section_lists:
+            action:
+              new: 'New Sequential Section List'
+            count: "<strong>%{total_count} lists</strong>"
+            page_title: 'Sequential Section Lists'
+        sequential_section_lists:
+          action:
+            new: 'New Sequential Section List'
+          count: "<strong>%{total_count} lists</strong>"
+          page_title: 'Sequential Section Lists'
+        organizations:
+          action:
+            new: 'New Organization'
+          count: "<strong>%{total_count} organizations</strong>"
+          page_title: 'Organizations'
         media_objects:
           title: "Media and Objects"
         manage_requests:

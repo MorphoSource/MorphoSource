@@ -71,6 +71,10 @@ module Morphosource
 
     private
 
+      def authorize_admin
+        redirect_to root_path and return unless current_user&.admin?
+      end
+
       def decide_layout
         layout = case action_name
                 when 'show'

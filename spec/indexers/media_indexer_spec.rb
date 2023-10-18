@@ -261,9 +261,11 @@ RSpec.describe MediaIndexer do
       expect(subject['x_spacing_tesim']).to match_array(media.x_spacing)
       expect(subject['y_spacing_tesim']).to match_array(media.y_spacing)
       expect(subject['z_spacing_tesim']).to match_array(media.z_spacing)
+    end
 
     describe 'organizations' do
       context 'organization is a work' do
+        let(:organization)  { specimen_organization }
         it 'indexes organizations' do
           expect(subject['media_organization_tesim']).to match_array([organization.title.first])
           expect(subject['media_organization_ssim']).to match_array([organization.title.first])
@@ -273,7 +275,12 @@ RSpec.describe MediaIndexer do
       end
       context 'organization is a collection' do
         let(:depositor)     { FactoryBot.create(:contributor) }
-        let(:organization)  { FactoryBot.create(:organization_collection, title: ['organization'], depositor: depositor.ms_id) }
+        let(:organization)  { FactoryBot.create(:organization_collection, title: ['organization collection'], depositor: depositor.ms_id) }
+
+        before do
+          specimen.organization_id = [organization.id]
+          specimen.save!
+        end
         it 'indexes organizations' do
           expect(subject['media_organization_tesim']).to match_array([organization.title.first])
           expect(subject['media_organization_ssim']).to match_array([organization.title.first])
@@ -340,11 +347,8 @@ RSpec.describe MediaIndexer do
     let(:device)          { Device.create(title: ['device'], modality: ['Photogrammetry']) }
     let(:specimen)        { FactoryBot.create(:biological_specimen) }
     let(:imaging_event)   { FactoryBot.create(:imaging_event, title: ['imaging event'], ie_modality: device.modality, physical_object_id: [specimen.id], device_id: [device.id]) }
-
-    before do
-      imaging_event.ordered_members << media
-      imaging_event.save!
-    end
+    let(:media)           { Media.create(title: ['media']) }
+    subject               { SolrDocument.find(media.id) }
 
     context 'organization is a work' do
       let(:organization)  { FactoryBot.create(:organization, title: ['organization work'], institution_name: ['institution name']) }
@@ -352,13 +356,16 @@ RSpec.describe MediaIndexer do
       before do
         organization.ordered_members << device
         organization.save!
+        imaging_event.ordered_members << media
+        imaging_event.save!
+        media.update_index
       end
 
       it 'indexes organization fields' do
-        expect(subject['media_device_facility_organization_tesim']).to eq(organization.title.first)
-        expect(subject['media_device_facility_organization_ssim']).to eq(organization.title.first)
-        expect(subject['media_device_facility_organization_id_tesim']).to eq(organization.id)
-        expect(subject['media_device_facility_organization_id_ssim']).to eq(organization.id)
+        expect(subject['media_device_facility_organization_tesim']).to match_array(organization.title)
+        expect(subject['media_device_facility_organization_ssim']).to match_array(organization.title)
+        expect(subject['media_device_facility_organization_id_tesim']).to match_array(organization.id)
+        expect(subject['media_device_facility_organization_id_ssim']).to match_array(organization.id)
       end
     end
 
@@ -369,17 +376,20 @@ RSpec.describe MediaIndexer do
       before do
         device.organization_id = [organization.id]
         device.save!
+        imaging_event.ordered_members << media
+        imaging_event.save!
+        media.update_index
       end
 
       it 'indexes organization fields' do
-        expect(subject['media_device_facility_organization_tesim']).to eq(organization.title.first)
-        expect(subject['media_device_facility_organization_ssim']).to eq(organization.title.first)
-        expect(subject['media_device_facility_organization_id_tesim']).to eq(organization.id)
-        expect(subject['media_device_facility_organization_id_ssim']).to eq(organization.id)
+        expect(subject['media_device_facility_organization_tesim']).to match_array(organization.title)
+        expect(subject['media_device_facility_organization_ssim']).to match_array(organization.title)
+        expect(subject['media_device_facility_organization_id_tesim']).to match_array(organization.id)
+        expect(subject['media_device_facility_organization_id_ssim']).to match_array(organization.id)
       end
     end
   end
-  
+
   # helper method
   def add_ordered_members(parent, child)
     parent.ordered_members << child

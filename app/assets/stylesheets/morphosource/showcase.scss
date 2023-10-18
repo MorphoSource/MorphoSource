@@ -1470,4 +1470,8 @@ html {
   .form-group {
     min-height: 26px;
   }  
+  .form-horizontal .control-label {
+    padding-top: 0;
+    text-align: left;
+  }
 }

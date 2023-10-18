@@ -8,6 +8,7 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
   let fieldsToClear = [];
   let demogToWarn = [];
   let demogToClear = [];
+  let dgCheckboxesShown = [];
   isPageLoaded = false;
   currMetadataFields = [];
 
@@ -42,12 +43,7 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
     fieldsToClear = [];
     demogToWarn = [];
     demogToClear = [];
-
-    if (selectedProfType != '') {
-      $('.dg-group').addClass('show').removeClass('hide');
-    } else {
-      $('.dg-group').addClass('hide').removeClass('show');
-    }
+    dgCheckboxesShown = [];
 
     metadataElements.each(function() {
       /* data-target contains profile types that use this metadata field (as required and optional field)
@@ -78,6 +74,7 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
       // show/hide demographic checkbox
       if (dataTarget.includes(selectedProfType)) {
         $(this).addClass('show').removeClass('hide');
+        dgCheckboxesShown.push($(this).find('input[type="checkbox"]'));
       } else {
         $(this).addClass('hide').removeClass('show');
         let demogCheckbox = $(this).find('input[type="checkbox"]');
@@ -87,6 +84,16 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
         demogToClear.push(demogCheckbox.val());
       }
     });
+
+    if (selectedProfType != '') {
+      $('.dg-group').addClass('show').removeClass('hide');
+      if (dgCheckboxesShown.length == 1) {
+        // check the only demog checkbox available
+        dgCheckboxesShown[0].prop('checked', true);
+      }
+    } else {
+      $('.dg-group').addClass('hide').removeClass('show');
+    }
 
     if ( $('form[id*="edit_user"]').length && isPageLoaded) {
       msg = '';
@@ -100,8 +107,8 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
       }
       if (msg != '') {
         $.alert({
-          title: 'You have changed the profile type',
-          content: 'When you click Save:<ul class="align-li">' + msg + '</ul>',
+          title: '',
+          content: 'You have changed the profile type. When you click Save:<ul class="align-li">' + msg + '</ul>',
           columnClass: 'medium'
         });
       }

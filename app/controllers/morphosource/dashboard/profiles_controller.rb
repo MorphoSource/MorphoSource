@@ -11,6 +11,7 @@ module Morphosource
       before_action :authorize_edit, only: [:show]
       before_action :strip_empty_values, only: [:update]
       before_action :check_profile_type, only: [:update]
+      before_action :prep_form, only: [:edit, :update]
       authorize_resource class: '::User', instance_name: :user
 
       def edit_password
@@ -20,11 +21,10 @@ module Morphosource
         render 'edit_password'
       end
 
-      def edit 
+      def prep_form
         @all_metadata_fields = all_metadata_fields_hash
         @required_metadata_fields = required_metadata_fields_hash
         @all_demographics_values = all_demographics_values_hash
-        super
       end
 
       # Process changes from profile form

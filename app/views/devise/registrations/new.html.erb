@@ -1,6 +1,6 @@
 <% content_for :body_css_classes do %>showcase profile<% end %>
 <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-<h1>Sign up</h1>
+<h1 class="mt-2 mb-1"><i class="fa fa-edit"></i> Sign up</h1>
 <div class="row">
   <%= render "devise/shared/error_messages", resource: resource %>
 </div>
@@ -11,21 +11,17 @@
 
       <%= render partial: 'hyrax/dashboard/profiles/edit_email', locals: {f: f} %>
 
-      <div class="form-group row">
-        <% if @minimum_password_length %>
-          <%= f.label "Password (" + @minimum_password_length.to_s + " characters minimum)", class: 'col-xs-4 control-label required' %>
-        <% else %>
-          <%= f.label :password, class: 'col-xs-4 control-label' %>
-        <% end %>
-        <div class="col-xs-8">
-          <%= f.password_field :password, autocomplete: "new-password" %>
+      <div class="form-group">
+        <%= f.label :password, class: 'col-sm-4 control-label required' %>
+        <div class="col-sm-8">
+          <%= f.password_field :password, autocomplete: "new-password", class: "form-control w-100", minlength: @minimum_password_length.to_s %>
         </div>
       </div>
 
-      <div class="form-group row">
-        <%= f.label :password_confirm, class: 'col-xs-4 control-label required' %>
-        <div class="col-xs-8">
-          <%= f.password_field :password_confirmation, autocomplete: "new-password" %>
+      <div class="form-group">
+        <%= f.label :password_confirm, class: 'col-sm-4 control-label required' %>
+        <div class="col-sm-8">
+          <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control", minlength: @minimum_password_length.to_s %>
         </div>
       </div>
 
@@ -41,7 +37,7 @@
   </div>
 
   <div class="row">
-    <div class='col-xs-12 text-center'>
+    <div class='col-sm-12 text-center'>
       <p>
         <%= f.check_box :terms_read, {checked: false, required: true}, true %>
         <%= t("devise.passwords.edit.terms").html_safe %>       

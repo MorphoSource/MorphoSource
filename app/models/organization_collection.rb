@@ -5,6 +5,8 @@ class OrganizationCollection < Collection
   include Morphosource::PermissionsDefaultsMetadata
   include Morphosource::LocationMetadata
 
+  after_create :create_collection_groups
+
   self.indexer = OrganizationCollectionIndexer
 
   def initialize(params=nil)
@@ -22,5 +24,9 @@ class OrganizationCollection < Collection
 
   def human_readable_type
     'Organization'
+  end
+
+  def type_assigns_groups?
+    true
   end
 end

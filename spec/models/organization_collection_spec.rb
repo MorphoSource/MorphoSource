@@ -53,4 +53,20 @@ RSpec.describe OrganizationCollection, type: :model do
       expect(subject.human_readable_type).to eq('Organization')
     end
   end
+
+  describe '#create_collection_groups' do
+    let(:user)  { FactoryBot.create(:contributor) }
+    let!(:organization) { FactoryBot.create(:organization_collection, depositor: user.ms_id) }
+
+    it 'assigns them names with the collection id' do
+      group_names = Role.all.map(&:name)
+      Collection::DEFAULT_GROUP_ROLES.each do |role|
+        expect(group_names).to include("#{organization.id}_#{role}")
+      end
+    end
+
+    it 'adds the depositor to the managers group' do
+      expect(organization.managers).to include(user)
+    end
+  end
 end

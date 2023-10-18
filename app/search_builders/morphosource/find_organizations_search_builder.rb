@@ -16,8 +16,4 @@ class Morphosource::FindOrganizationsSearchBuilder < Morphosource::FindWorksSear
       )
     ]
   end
-
-  def models
-    [Organization, OrganizationCollection]
-  end
 end

@@ -7,15 +7,15 @@ module Morphosource
 
       # called from imaging event and processing event controllers
       def update_media_team_access
-        if @curation_concern.physical_object?
-          return if organization_id_param.nil?
+        if @curation_concern.physical_object?        
+          return if organization_id_param.nil?         
         elsif @curation_concern.imaging_event?
-          # e.g. called from IE form of media edit.
+          # e.g. called from IE form of media edit. 
           return if parents_attributes.nil? and !@po_changed
         else
           # e.g. call from processing event
           return if parents_attributes.nil?
-        end
+        end   
         return if organizations_unchanged?
         update_linked_team_access
       end
@@ -38,11 +38,11 @@ module Morphosource
         if env.present?
           # env passed from new submission (called from creating PO)
           @curation_concern = env.curation_concern
-          org = ActiveFedora::Base.find(env.attributes[:organization_id].first)
-          if org.present? && (org.organization? || org.organization_collection?)
+          org = Organization.find(env.attributes[:organization_id].first) 
+          if org.present?
             team_ids = linked_team_ids([org])
           else
-            team_ids = []
+            team_ids = [] 
           end
         else
           # this should be only called from editing PO
@@ -67,7 +67,7 @@ module Morphosource
       end
 
       def record_original_organizations
-        @original_organizations = ActiveFedora::Base.find(Array(@curation_concern.organization_id))
+        @original_organizations = Organization.find(Array(@curation_concern.organization_id))
       end
 
       def record_original_objects
@@ -121,7 +121,7 @@ module Morphosource
       end
 
       def update_linked_team_access_for_po
-        return unless @curation_concern.physical_object?
+        return unless @curation_concern.physical_object?        
         remove_organization_team_access_for_po
         if organization_id_param.present?
           add_organization_team_access_for_po

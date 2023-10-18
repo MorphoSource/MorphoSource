@@ -1,7 +1,7 @@
 module Morphosource::PhysicalObjectBehavior
 
   def organizations
-    ActiveFedora::Base.find(Array(organization_id))
+    Organization.find(Array(organization_id))
   end
 
   def organization_titles

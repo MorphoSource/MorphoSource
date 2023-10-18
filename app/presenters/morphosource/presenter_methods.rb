@@ -49,8 +49,8 @@ module Morphosource
     # physical objects showcase page methods
     def parent_organization
       organization_id = solr_document.organization_id&.first
-      return nil unless organization_id.present? && ( Organization.exists?(organization_id) || OrganizationCollection.exists?(organization_id) )
-      ActiveFedora::Base.find(organization_id)
+      return nil unless organization_id.present? && Organization.exists?(organization_id)
+      Organization.find(organization_id)
     end
 
     def parent_organization_id

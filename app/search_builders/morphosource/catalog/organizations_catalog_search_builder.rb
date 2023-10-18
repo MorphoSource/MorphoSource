@@ -3,6 +3,6 @@ class Morphosource::Catalog::OrganizationsCatalogSearchBuilder < Hyrax::CatalogS
   private
 
     def models
-      [::Organization, ::OrganizationCollection]
+      [::Organization]
     end
 end

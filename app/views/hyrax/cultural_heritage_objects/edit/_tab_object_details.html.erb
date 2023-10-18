@@ -8,7 +8,7 @@
         <%= @presenter.attribute_to_html(
           :parent_organization_title,
           label: 'Organization',
-          link: organization_path(@presenter.parent_organization.id),
+          link: Rails.application.routes.url_helpers.hyrax_organization_path(@presenter.parent_organization.id),
           render_as: :showcase_organization_title,
           html_dl: false)
         %>

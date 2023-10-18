@@ -25,12 +25,10 @@
 <div class="panel panel-default">
   <div class="panel-body">
     <div class="list-group">
-      <%= render "hyrax/users/vitals", user: @user %>
-
       <div class="list-group-item">
         <%= render 'hyrax/users/user_info', user: @user %>
       </div>
-
+      <%= render "hyrax/users/vitals", user: @user %>
       <% if @presenter.trophies.any? %>
         <div class="list-group-item">
           <%= render 'hyrax/users/contributions', presenter: @presenter %>

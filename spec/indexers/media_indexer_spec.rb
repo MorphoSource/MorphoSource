@@ -262,33 +262,6 @@ RSpec.describe MediaIndexer do
       expect(subject['y_spacing_tesim']).to match_array(media.y_spacing)
       expect(subject['z_spacing_tesim']).to match_array(media.z_spacing)
     end
-
-    describe 'organizations' do
-      context 'organization is a work' do
-        let(:organization)  { specimen_organization }
-        it 'indexes organizations' do
-          expect(subject['media_organization_tesim']).to match_array([organization.title.first])
-          expect(subject['media_organization_ssim']).to match_array([organization.title.first])
-          expect(subject['media_organization_id_ssim']).to match_array([organization.id])
-          expect(subject['media_organization_id_tesim']).to match_array([organization.id])
-        end
-      end
-      context 'organization is a collection' do
-        let(:depositor)     { FactoryBot.create(:contributor) }
-        let(:organization)  { FactoryBot.create(:organization_collection, title: ['organization collection'], depositor: depositor.ms_id) }
-
-        before do
-          specimen.organization_id = [organization.id]
-          specimen.save!
-        end
-        it 'indexes organizations' do
-          expect(subject['media_organization_tesim']).to match_array([organization.title.first])
-          expect(subject['media_organization_ssim']).to match_array([organization.title.first])
-          expect(subject['media_organization_id_ssim']).to match_array([organization.id])
-          expect(subject['media_organization_id_tesim']).to match_array([organization.id])
-        end
-      end
-    end
   end
 
   describe 'publication status' do
@@ -320,32 +293,9 @@ RSpec.describe MediaIndexer do
     end
   end
 
-  describe 'organizations' do
-    let(:org1)            { Organization.create(title: ['Organization1']) }
-    let(:depositor)       { FactoryBot.create(:contributor) }
-    let(:org2)            { FactoryBot.create(:organization_collection, title: ['Organization2'], depositor: depositor.ms_id ) }
-    let(:specimen)        { BiologicalSpecimen.create(title: ['Specimen'], vouchered: ['Yes'], organization_id: [org1.id]) }
-    let(:cho)             { CulturalHeritageObject.create(title: ['CulturalHeritageObject'], vouchered: ['Yes'], organization_id: [org2.id]) }
-    let(:device)          { Device.create(title: ['Device'], modality: ['Photogrammetry']) }
-    let(:imaging_event1)  { ImagingEvent.create(title: ['Imaging Event'], ie_modality: device.modality, device_id: [device.id], physical_object_id: [specimen.id]) }
-    let(:imaging_event2)  { ImagingEvent.create(title: ['Imaging Event'], ie_modality: device.modality, device_id: [device.id], physical_object_id: [cho.id]) }
-    let(:media)           { Media.create(title: ['Media']) }
-
-    before do
-      imaging_event1.ordered_members << media
-      imaging_event2.ordered_members << media
-      [imaging_event1, imaging_event2].each(&:save)
-      media.reload
-    end
-
-    it 'returns all media organizations' do
-      expect(MediaIndexer.new(media).organizations).to match_array([org1, org2])
-    end
-  end
-
-  describe 'device organization fields' do
+  describe 'organization fields' do
     let(:device)          { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-    let(:specimen)        { FactoryBot.create(:biological_specimen) }
+    let(:specimen)        { FactoryBot.create(:biological_specimen, organization_id: [organization.id]) }
     let(:imaging_event)   { FactoryBot.create(:imaging_event, title: ['imaging event'], ie_modality: device.modality, physical_object_id: [specimen.id], device_id: [device.id]) }
     let(:media)           { Media.create(title: ['media']) }
     subject               { SolrDocument.find(media.id) }
@@ -362,6 +312,10 @@ RSpec.describe MediaIndexer do
       end
 
       it 'indexes organization fields' do
+        expect(subject['media_organization_tesim']).to match_array(organization.title)
+        expect(subject['media_organization_ssim']).to match_array(organization.title)
+        expect(subject['media_organization_id_ssim']).to match_array([organization.id])
+        expect(subject['media_organization_id_tesim']).to match_array([organization.id])
         expect(subject['media_device_facility_organization_tesim']).to match_array(organization.title)
         expect(subject['media_device_facility_organization_ssim']).to match_array(organization.title)
         expect(subject['media_device_facility_organization_id_tesim']).to match_array(organization.id)
@@ -382,6 +336,10 @@ RSpec.describe MediaIndexer do
       end
 
       it 'indexes organization fields' do
+        expect(subject['media_organization_tesim']).to match_array(organization.title)
+        expect(subject['media_organization_ssim']).to match_array(organization.title)
+        expect(subject['media_organization_id_ssim']).to match_array([organization.id])
+        expect(subject['media_organization_id_tesim']).to match_array([organization.id])
         expect(subject['media_device_facility_organization_tesim']).to match_array(organization.title)
         expect(subject['media_device_facility_organization_ssim']).to match_array(organization.title)
         expect(subject['media_device_facility_organization_id_tesim']).to match_array(organization.id)

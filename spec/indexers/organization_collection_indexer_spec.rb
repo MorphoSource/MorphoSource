@@ -2,6 +2,7 @@ require 'rails_helper'
 
 RSpec.describe OrganizationCollectionIndexer do
   subject(:solr_document) { OrganizationCollectionIndexer.new(organization).generate_solr_document }
+  let(:user)              { FactoryBot.create(:contributor) }
   let(:organization)      { FactoryBot.create(:organization_collection, id: 'abcdef',
                                                                         address: ['26 Oxford Street'],
                                                                         agreement_uri: ['https://mcz.harvard.edu/permissions-copyright'],
@@ -15,7 +16,7 @@ RSpec.describe OrganizationCollectionIndexer do
                                                                         creator: ['Donald Duck'],
                                                                         contributor: ['Mickey Mouse'],
                                                                         data_manager: ['f95e50'],
-                                                                        depositor: '1234',
+                                                                        depositor: user.ms_id,
                                                                         description: ['lorem ipsum'],
                                                                         download_permission: ['restricted_download'],
                                                                         download_reviewer: ['2956'],

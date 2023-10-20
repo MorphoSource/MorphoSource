@@ -16,7 +16,7 @@
 
     <% if is_current_user_or_admin %>
       <%= render partial: 'display_field', 
-        collection: [:address], 
+        collection: [:address, :city], 
         as: :field_name, :locals => { user: user } %>
 
       <% if user.state %>
@@ -97,7 +97,7 @@
       as: :field_name, :locals => { user: user } %>
 
     <%= render partial: 'display_field', 
-      collection: [:demographics], 
+      collection: [:demographics, :intent], 
       as: :field_name, :locals => { user: user } %>
   </div>
 </div>

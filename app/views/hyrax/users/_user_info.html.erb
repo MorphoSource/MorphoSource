@@ -1,7 +1,7 @@
+<% @dashboard = @_request.fullpath.include?("/dashboard/profiles/") %>
 <% is_current_user_or_admin = current_user.present? && ( (user == current_user) || current_user.admin? ) %>
-
 <div class="row">
-  <div class="col-md-6">
+  <div class="col-md-12">
 
     <%= render partial: 'display_field', 
       collection: [
@@ -14,7 +14,7 @@
       ], 
       as: :field_name, :locals => { user: user } %>
 
-    <% if is_current_user_or_admin %>
+    <% if @dashboard %>
       <%= render partial: 'display_field', 
         collection: [:address, :city], 
         as: :field_name, :locals => { user: user } %>
@@ -66,6 +66,19 @@
     </div>
     <% end %>
 
+    <%#-- display profile type and metadata fields that are present  %>
+    <%= render partial: 'display_field', 
+      collection: [:profile_type], 
+      as: :field_name, :locals => { user: user } %>
+
+    <%= render partial: 'display_field', 
+      collection: @all_metadata_fields.keys, 
+      as: :field_name, :locals => { user: user } %>
+
+    <%= render partial: 'display_field', 
+      collection: [:demographics, :intent], 
+      as: :field_name, :locals => { user: user } %>
+
     <% if is_current_user_or_admin %>
       <% if user.sftp_share %>
       <div class="row">
@@ -84,20 +97,5 @@
       <% end %>
     <% end %>
 
-  </div>
-
-  <div class="col-md-6">
-    <%#-- display profile type and metadata fields that are present  %>
-    <%= render partial: 'display_field', 
-      collection: [:profile_type], 
-      as: :field_name, :locals => { user: user } %>
-
-    <%= render partial: 'display_field', 
-      collection: @all_metadata_fields.keys, 
-      as: :field_name, :locals => { user: user } %>
-
-    <%= render partial: 'display_field', 
-      collection: [:demographics, :intent], 
-      as: :field_name, :locals => { user: user } %>
   </div>
 </div>

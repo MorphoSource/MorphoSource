@@ -4,7 +4,11 @@
     <%= t("morphosource.dashboard.profiles.edit_primary."+field_name.to_s).html_safe %>
   </div>
   <div class="col-xs-9 showcase-value">
-    <%= user.send(field_name) %>
+    <% if (val = user.send(field_name)).is_a?(Array) %>
+      <%= val.join(", ") %>
+    <% else %>
+      <%= val %>
+    <% end %>
   </div>
 </div>
 <% end %>

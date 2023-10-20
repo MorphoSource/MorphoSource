@@ -3,9 +3,9 @@ class RegistrationsController < Devise::RegistrationsController
 
   with_themed_layout 'morphosource_1_column'
   before_action :strip_empty_values, :check_profile_type, only: [:create]
-  before_action :prep_form, only: [:new, :create]
+  before_action :prep_metadata_and_demographics, only: [:new, :create]
 
-  def prep_form
+  def prep_metadata_and_demographics
     @all_metadata_fields = all_metadata_fields_hash
     @required_metadata_fields = required_metadata_fields_hash
     @all_demographics_values = all_demographics_values_hash

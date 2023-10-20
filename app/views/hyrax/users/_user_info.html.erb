@@ -1,7 +1,7 @@
+<% is_current_user_or_admin = current_user.present? && ( (user == current_user) || current_user.admin? ) %>
+
 <div class="row">
   <div class="col-md-6">
-  <!--- If a user is viewing their own profile in the dashboard, show address, state, postal code, and telephone --->
-    <% @dashboard = @_request.fullpath.include?("/dashboard/profiles/") %>
 
     <%= render partial: 'display_field', 
       collection: [
@@ -14,7 +14,7 @@
       ], 
       as: :field_name, :locals => { user: user } %>
 
-    <% if @dashboard %>
+    <% if is_current_user_or_admin %>
       <%= render partial: 'display_field', 
         collection: [:address], 
         as: :field_name, :locals => { user: user } %>
@@ -66,32 +66,38 @@
     </div>
     <% end %>
 
+    <% if is_current_user_or_admin %>
+      <% if user.sftp_share %>
+      <div class="row">
+        <div class="col-xs-3 showcase-label">SFTP Share</div>
+        <div class="col-xs-9 showcase-value break-all"><%= user.sftp_share %> <%= sftp_share_status user.sftp_share %></div>
+      </div>
+      <% end %>
+
+      <% if user.remote_file_submitter? %>
+      <div class="row">
+        <div class="col-xs-3 showcase-label">Allowed Remote File Domains</div>
+        <div class="col-xs-9 showcase-value break-all block">
+          <%= render partial: 'user_allowed_domains', collection: user.allowed_domains, as: :item %>
+        </div>
+      </div>
+      <% end %>
+    <% end %>
+
   </div>
 
   <div class="col-md-6">
-    <!-- profile type section here -->
+    <%#-- display profile type and metadata fields that are present  %>
     <%= render partial: 'display_field', 
       collection: [:profile_type], 
       as: :field_name, :locals => { user: user } %>
 
+    <%= render partial: 'display_field', 
+      collection: @all_metadata_fields.keys, 
+      as: :field_name, :locals => { user: user } %>
 
-
+    <%= render partial: 'display_field', 
+      collection: [:demographics], 
+      as: :field_name, :locals => { user: user } %>
   </div>
 </div>
-
-<% if current_user.present? && ( (user == current_user) || current_user.admin? ) %>
-  <% if user.sftp_share %>
-  <div class="row">
-    <div class="col-xs-3 showcase-label">SFTP Share</div>
-    <div class="col-xs-9 showcase-value break-all"><%= user.sftp_share %> <%= sftp_share_status user.sftp_share %></div>
-  </div>
-  <% end %>
-  <% if user.remote_file_submitter? %>
-  <div class="row">
-    <div class="col-xs-3 showcase-label">Allowed Remote File Domains</div>
-    <div class="col-xs-9 showcase-value break-all">
-      <%= render partial: 'user_allowed_domains', collection: user.allowed_domains, as: :item %>
-    </div>
-  </div>
-  <% end %>
-<% end %>

@@ -1466,7 +1466,11 @@ html {
   }
 }
 
+/* user profile page specific styles */
 .showcase.profile {
+  .showcase-label {
+    font-weight: bold;
+  }
   .form-group {
     min-height: 26px;
   }  

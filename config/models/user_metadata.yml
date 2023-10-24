@@ -4,7 +4,6 @@ user_metadata:
   middle_name: string
   last_name: string
   city: string
-  social_media_handles: string
   typical_usage: text
   profile_type: string
   academic_institution_or_school: string

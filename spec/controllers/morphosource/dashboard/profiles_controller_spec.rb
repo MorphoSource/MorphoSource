@@ -65,7 +65,6 @@ RSpec.describe Morphosource::Dashboard::ProfilesController, :type => :controller
         middle_name: "",
         last_name: "",
         city: "",
-        social_media_handles: "",
         typical_usage: "",
         profile_type: "",
         academic_institution_or_school: "",

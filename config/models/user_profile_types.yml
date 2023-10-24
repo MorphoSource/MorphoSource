@@ -3,7 +3,7 @@ profile_types:
   universal:
     label: ""
     required_metadata_fields: [email, first_name, last_name, country, state]
-    metadata_fields: [middle_name, city, orcid, social_media_handles, website, typical_usage]
+    metadata_fields: [middle_name, city, orcid, twitter_handle, facebook_handle, website, typical_usage]
   faculty: 
     label: "Faculty or Staff (University, Museum, and/or Library)"
     required_metadata_fields: [academic_institution_or_school, department, academic_field]

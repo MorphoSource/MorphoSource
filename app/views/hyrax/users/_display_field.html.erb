@@ -1,0 +1,14 @@
+<% if (user.respond_to? field_name) && (user.send(field_name).present?) %>
+<div class="row">
+  <div class="col-xs-3 showcase-label">
+    <%= t("morphosource.dashboard.profiles.edit_primary."+field_name.to_s).html_safe %>
+  </div>
+  <div class="col-xs-9 showcase-value">
+    <% if (val = user.send(field_name)).is_a?(Array) %>
+      <%= val.join(", ") %>
+    <% else %>
+      <%= val %>
+    <% end %>
+  </div>
+</div>
+<% end %>

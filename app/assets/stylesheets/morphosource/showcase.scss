@@ -119,6 +119,11 @@ html {
     vertical-align: bottom;
   }
 
+  .checkbox-list label, 
+  label[for="user_Other: "] {
+    font-weight: normal !important;
+  }
+
   .profile-checkbox-list {
     [type="checkbox"] {
       width: 11px;
@@ -1458,5 +1463,19 @@ html {
       margin-left: unset;
       margin-right: unset;
     }
+  }
+}
+
+/* user profile page specific styles */
+.showcase.profile {
+  .showcase-label {
+    font-weight: bold;
+  }
+  .form-group {
+    min-height: 26px;
+  }  
+  .form-horizontal .control-label {
+    padding-top: 0;
+    text-align: left;
   }
 }

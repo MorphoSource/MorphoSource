@@ -4,51 +4,168 @@ include ActionDispatch::TestProcess
 
 RSpec.describe Morphosource::Dashboard::ProfilesController, :type => :controller  do
 
-  let!(:user) { User.create(email: "user@test.com", password: 'password', display_name: "Test User", affiliation: "Test Affiliation", department: "Test Department", address: "Test Address", country: "US", state: "NC", postal_code: "27278", telephone: "5555555555", demographics: ["demo1", "demo2"], intent: ["intent1", "intent2"], software: ["software1", "software2"], mesh_file_type: ["type1", "type2"], volume_file_type: ["type3", "type4"], printer_model: ["model1", "model2"], printer_file: ["type5", "type6"], orcid: "https://orcid.org/0000-0000-0000-0000", twitter_handle: "@TestTest", facebook_handle: "test.test", website: "morphosource.org", terms_read: true, ms_id: "msid678") }
+  let!(:user) { 
+    FactoryBot.create(:user,
+      email: "user@test.com",
+      password: 'password',
+      display_name: "Test User",
+      affiliation: "Test Affiliation",
+      department: "",
+      address: "Test Address",
+      country: "US",
+      state: "NC",
+      demographics: ["demo1", "demo2"],
+      intent: ["intent1", "intent2"],
+      orcid: "https://orcid.org/0000-0000-0000-0000",
+      twitter_handle: "@TestTest",
+      facebook_handle: "test.test",
+      website: "morphosource.org",
+      terms_read: true,
+      ms_id: "msid678") 
+  }
 
-  let!(:user2) { User.create(email: "user2@test.com", password: 'password', display_name: "Test User 2", ms_id: "msid22") }
+  let!(:user2) { 
+    FactoryBot.create(:user, 
+      email: "user2@test.com", 
+      password: 'password', 
+      display_name: "Test User 2",
+      profile_type: nil, 
+      ms_id: "msid22") 
+  }
 
   let(:admin_user) { FactoryBot.create(:admin) }
 
-  let(:update_params) { {user: {display_name: "New Display Name", affiliation: "New Affiliation", department: "New Department", address: "New Address", country: "CA", state: "MB", postal_code: "New Code", telephone: "New Phone", demographics: ["newdemo1", "newdemo2", ""], intent: ["new intent1", "new intent2", ""], software: ["new software1", "new software2", ""], mesh_file_type: ["new type1", "new type2", ""], volume_file_type: ["new type3", "new type4", ""], printer_model: ["new model1", "new model2", ""], printer_file: ["new type5", "new type6", ""], orcid: "https://orcid.org/1111-1111-1111-1111", twitter_handle: "new twitter", facebook_handle: "new facebook", website: "new website", terms_read: true, sftp_share: 'testshare'}, id: user.ms_id} }
+  let(:update_params) {
+    { 
+      user: {
+        display_name: "New Display Name",
+        affiliation: "New Affiliation",
+        department: "",
+        address: "New Address",
+        country: "CA",
+        state: "MB",
+        demographics: ["newdemo1", "newdemo2", ""],
+        intent: ["new intent1", "new intent2", ""],
+        orcid: "https://orcid.org/1111-1111-1111-1111",
+        twitter_handle: "new twitter",
+        facebook_handle: "new facebook",
+        website: "new website",
+        terms_read: true,
+        sftp_share: 'testshare',
+        profile_type: 'Artist'},
+      id: user.ms_id
+    }
+  }
 
-  let(:update_params_invalid_domain) { {user: {display_name: "New Display Name", affiliation: "New Affiliation", department: "New Department", address: "New Address", country: "CA", state: "MB", postal_code: "New Code", telephone: "New Phone", demographics: ["newdemo1", "newdemo2", ""], intent: ["new intent1", "new intent2", ""], software: ["new software1", "new software2", ""], mesh_file_type: ["new type1", "new type2", ""], volume_file_type: ["new type3", "new type4", ""], printer_model: ["new model1", "new model2", ""], printer_file: ["new type5", "new type6", ""], orcid: "https://orcid.org/1111-1111-1111-1111", twitter_handle: "new twitter", facebook_handle: "new facebook", website: "new website", terms_read: true, sftp_share: 'testshare'}, id: user.ms_id} }
+  # params specifically for testing new user profile
+  let(:update_params_new) {
+    { 
+      user: {
+        first_name: "",
+        middle_name: "",
+        last_name: "",
+        city: "",
+        typical_usage: "",
+        profile_type: "",
+        academic_institution_or_school: "",
+        department: "",
+        academic_field: "",
+        academic_subfield: "",
+        mentor_or_advisor: "",
+        instructor: "",
+        display_name: "New Display Name",
+        affiliation: "New Affiliation",
+        department: "New Department",
+        address: "New Address",
+        country: "",
+        state: "",
+        demographics: ["newdemo1", "newdemo2", ""],
+        intent: ["new intent1", "new intent2", ""],
+        orcid: "https://orcid.org/1111-1111-1111-1111",
+        twitter_handle: "new twitter",
+        facebook_handle: "new facebook",
+        website: "new website",
+        terms_read: true,
+        sftp_share: 'testshare',
+        profile_type: nil},
+      id: user2.ms_id
+    }
+  }
+
+  let(:update_params_invalid_domain) { {user: {display_name: "New Display Name", affiliation: "New Affiliation", department: "New Department", address: "New Address", country: "CA", state: "MB", demographics: ["newdemo1", "newdemo2", ""], intent: ["new intent1", "new intent2", ""], orcid: "https://orcid.org/1111-1111-1111-1111", twitter_handle: "new twitter", facebook_handle: "new facebook", website: "new website", terms_read: true, sftp_share: 'testshare'}, id: user.ms_id} }
 
 
   describe '#update' do
 
-    before do
-      sign_in user
-      allow(User).to receive(:from_url_component).with(update_params[:id]).and_return(user)
-      allow(User).to receive(:find).and_return(user)
+    context 'profile_type not valid' do
+      before do
+        sign_in user2
+      end
+      
+      it 'redirects and returns profile_type not valid' do
+        patch :update, params: update_params_new
+        expect(response.status).to eq(302)
+        expect(response.flash[:error]).to eq("Profile type not valid")
+      end
     end
 
-    it 'updates the user with MorphoSource attributes, and removes empty strings from multi-value attributes' do
-      patch :update, params: update_params
-      user.reload
-      expect(user.display_name).to eq("New Display Name")
-      expect(user.affiliation).to eq ("New Affiliation")
-      expect(user.department).to eq("New Department")
-      expect(user.address).to eq("New Address")
-      expect(user.country).to eq("CA")
-      expect(user.state).to eq("MB")
-      expect(user.postal_code).to eq("New Code")
-      expect(user.telephone).to eq("New Phone")
-      expect(user.demographics).to match_array(["newdemo1", "newdemo2"])
-      expect(user.intent).to match_array(["new intent1", "new intent2"])
-      expect(user.software).to match_array(["new software1", "new software2"])
-      expect(user.mesh_file_type).to match_array(["new type1", "new type2"])
-      expect(user.volume_file_type).to match_array(["new type3", "new type4"])
-      expect(user.printer_model).to match_array(["new model1", "new model2"])
-      expect(user.printer_file).to match_array(["new type5", "new type6"])
-      expect(user.orcid).to eq("https://orcid.org/1111-1111-1111-1111")
-      expect(user.twitter_handle).to eq("new twitter")
-      expect(user.facebook_handle).to eq("new facebook")
-      expect(user.website).to eq("new website")
-      expect(user.ms_id).to eq("msid678")
-      expect(user.sftp_share).to eq("testshare")
+    context 'required universal fields not present' do
+      before do
+        sign_in user2
+        update_params_new[:user][:profile_type] = "Artist"
+        update_params_new[:user][:department] = ""
+      end
+
+      it 'redirects and returns fields not present' do
+        patch :update, params: update_params_new
+        expect(response.status).to eq(302)
+        expect(response.flash[:error]).to include("first_name is required", 
+          "last_name is required", "Country is required", "State or Province is required")
+      end
     end
 
+    context 'profile_type not matched metadata' do
+      before do
+        sign_in user2
+        update_params_new[:user][:profile_type] = "Faculty or Staff (K-12)"
+      end
+
+      it 'redirects and returns fields not matched with profile_type' do
+        patch :update, params: update_params_new
+        expect(response.status).to eq(302)
+        expect(response.flash[:error]).to include("Organization cannot be present for profile type Faculty or Staff (K-12)", "first_name is required", "last_name is required", "Country is required", "State or Province is required", "academic_institution_or_school is required for profile type Faculty or Staff (K-12)", "academic_field is required for profile type Faculty or Staff (K-12)")
+      end
+    end
+
+    context 'successful update' do
+
+      before do
+        sign_in user
+        #allow(User).to receive(:from_url_component).with(update_params[:id]).and_return(user)
+        #allow(User).to receive(:find).and_return(user)
+      end
+
+      it 'updates the user with MorphoSource attributes, and removes empty strings from multi-value attributes' do
+        patch :update, params: update_params
+        user.reload
+        # check response.flash[:error] if fails here
+        expect(user.display_name).to eq("New Display Name")
+        expect(user.affiliation).to eq ("New Affiliation")
+        expect(user.department).to eq("")
+        expect(user.address).to eq("New Address")
+        expect(user.country).to eq("CA")
+        expect(user.state).to eq("MB")
+        expect(user.demographics).to match_array(["newdemo1", "newdemo2"])
+        expect(user.intent).to match_array(["new intent1", "new intent2"])
+        expect(user.orcid).to eq("https://orcid.org/1111-1111-1111-1111")
+        expect(user.twitter_handle).to eq("new twitter")
+        expect(user.facebook_handle).to eq("new facebook")
+        expect(user.website).to eq("new website")
+        expect(user.ms_id).to eq("msid678")
+        expect(user.sftp_share).to eq("testshare")
+        expect(user.profile_type).to eq('Artist')
+      end
+    end
   end
 
   describe 'edit' do

@@ -1,25 +1,6 @@
 module Morphosource::UserProfile::CheckboxValues
 
-  DEMOGRAPHICS =
-    ["Student (Grades K-6)",
-    "Student (Grades 7-12)",
-    "Student (University or Post-Secondary)",
-    "Student (Post-Graduate)",
-    "Faculty (Grades K-6)",
-    "Faculty (Grades K-7)",
-    "Faculty (University or Post-Secondary)",
-    "Faculty (Post-Graduate)",
-    "University Staff",
-    "General Educator",
-    "Museum Curator or Collections Manager",
-    "Museum Staff",
-    "Librarian",
-    "IT Professional",
-    "Private Individual",
-    "Researcher",
-    "Private Industry Professional",
-    "Artist",
-    "Government Employee"]
+  DEMOGRAPHICS = Hyrax.config.user_demographics
 
   INTENT =
     ["Completing Class Assignment(s) (Grades K-6)",

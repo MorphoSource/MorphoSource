@@ -1,3 +1,144 @@
+if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
+
+  const profileTypeConfig = <%= Hyrax.config.user_profile_type_config.to_json.html_safe %>;
+  const currProfType = mappedProfType($("#user_profile_type").val());
+  let selectedProfType;
+  let fieldsShown = [];
+  let fieldsToWarn = [];
+  let fieldsToClear = [];
+  let demogToWarn = [];
+  let demogToClear = [];
+  let dgCheckboxesShown = [];
+  isPageLoaded = false;
+  currMetadataFields = [];
+
+  function mappedProfType(label) {
+    if (label == '') { // e.g. "universal"
+      return '';
+    } 
+    for (var key in profileTypeConfig) {
+      if (profileTypeConfig.hasOwnProperty(key) && profileTypeConfig[key].hasOwnProperty("label")) {
+        if (profileTypeConfig[key]["label"] === label) {
+          return key;
+        }
+      }
+    }
+    return null; 
+  }
+
+  function fieldLabel(f) {
+    if ($('label[for='+ f + ']').length) {
+      return $('label[for='+ f + ']').html();
+    } else {
+      return f;
+    }
+  }
+
+  function handleProfileTypeChange() {
+    const metadataElements = $('.form-group[data-group="profile_type"]');
+    const demogElements = $('.checkbox-wrapper[data-group="profile_type"]');
+    selectedProfType = mappedProfType($("#user_profile_type").val());
+    fieldsShown = [];
+    fieldsToWarn = [];
+    fieldsToClear = [];
+    demogToWarn = [];
+    demogToClear = [];
+    dgCheckboxesShown = [];
+
+    metadataElements.each(function() {
+      /* data-target contains profile types that use this metadata field (as required and optional field)
+         data-target-require contains profile types that require this metadata field */
+      let dataTarget = $(this).data("target").split(",");
+      let dataTargetRequire = $(this).data("target-require").split(",");
+      // show/hide metadata field
+      if (dataTarget.includes(selectedProfType)) {
+        $(this).addClass('show').removeClass('hide');
+        fieldsShown.push($(this).find('input').attr('id'));
+      } else {
+        $(this).addClass('hide').removeClass('show');
+        fieldsToClear.push($(this).find('input').attr('id'));
+      }
+      // enable/disable required metadata fields
+      if (dataTargetRequire.includes(selectedProfType)) {
+        $(this).find('label').addClass('required');
+        $(this).find('input').prop('required', true);
+      } else {
+        $(this).find('label').removeClass('required');
+        $(this).find('input').prop('required', false);
+      }
+    });
+
+    demogElements.each(function() {
+      // data-target contains profile types associated with the demographic value 
+      let dataTarget = $(this).data("target").split(",");
+      // show/hide demographic checkbox
+      if (dataTarget.includes(selectedProfType)) {
+        $(this).addClass('show').removeClass('hide');
+        dgCheckboxesShown.push($(this).find('input[type="checkbox"]'));
+      } else {
+        $(this).addClass('hide').removeClass('show');
+        let demogCheckbox = $(this).find('input[type="checkbox"]');
+        if (demogCheckbox.is(':checked') && demogCheckbox.val() != "") {
+          demogToWarn.push(demogCheckbox.val());
+        }
+        demogToClear.push(demogCheckbox.val());
+      }
+    });
+
+    if (selectedProfType != '') {
+      $('.dg-group').addClass('show').removeClass('hide');
+      if (dgCheckboxesShown.length == 1) {
+        // check the only demog checkbox available
+        dgCheckboxesShown[0].prop('checked', true);
+      }
+    } else {
+      $('.dg-group').addClass('hide').removeClass('show');
+    }
+
+    if ( $('form[id*="edit_user"]').length && isPageLoaded) {
+      msg = '';
+      fieldsToWarn = currMetadataFields.filter(item => !fieldsShown.includes(item));
+      if (fieldsToWarn.length > 0) {
+        let labels = fieldsToWarn.map(f => fieldLabel(f)).join(', ');
+        msg += '<li>Any existing values of the following fields not associated with the selected profile type will be cleared: <b>' + labels + '</b></li>';
+      }
+      if (demogToWarn.length > 0) {
+        msg += '<li>The following professions not associated with the selected profile type will be removed: <b>' + demogToWarn.join(', ') + '</b></li>';
+      }
+      if (msg != '') {
+        $.alert({
+          title: '',
+          content: 'You have changed the profile type. When you click Save:<ul class="align-li">' + msg + '</ul>',
+          columnClass: 'medium'
+        });
+      }
+    }
+  } // handleProfileTypeChange
+
+  $('form[id*="_user"]').submit(function(event) {
+    // clear all fields that are not associated with the selected profile type 
+    $.each(fieldsToClear, function(idx, id) {
+      $("#"+id).val("");
+    });
+    // uncheck all demographic categories that are not associated with the selected profile type 
+    $.each(demogToClear, function(idx, value) {
+      $('[type="checkbox"][value="' + value + '"]').prop("checked", false);;
+    });      
+
+    if ($('[name="user[demographics][]"]').filter(':checked').length == 0) {
+      $.alert('Please choose one or more professions');
+      return false;
+    }
+  });
+
+  handleProfileTypeChange();
+
+  $('#user_profile_type').change(function() {
+    handleProfileTypeChange();
+  });
+
+}
+
 // Change state select options based on country
 function updateStates() {
   let country = $('#user_country').val();
@@ -33,6 +174,15 @@ function updateStates() {
 }
 
 $(document).ready(function() {
+
+  if ( $('form[id*="edit_user"]').length ) {    
+    // get the current metadata fields for removal later if user profile type is changed
+    $("div.form-group.show[data-group='profile_type'] input").each(function() {
+      currMetadataFields.push($(this).attr('id')); 
+    });
+  }
+  isPageLoaded = true;
+
   updateStates();
   // TBD: consider this more carefully - Devise wraps fields with a special class when validation fails, which so far is only messing up the layout of the elements. Below removes for now. 
   $(".field_with_errors").contents().unwrap();

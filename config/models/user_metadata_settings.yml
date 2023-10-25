@@ -1,0 +1,41 @@
+# config/models/user_metadata_settings.yml
+#
+# private_for: 
+# - the field is private if the user profile type is one of the value
+# - otherwise the field is public
+#
+settings:
+  first_name: 
+  middle_name: 
+  last_name: 
+  city:
+    private_for: ["all"]
+  typical_usage: 
+    private_for: ["all"]
+  profile_type: 
+  academic_institution_or_school:
+    private_for: ["Faculty or Staff (K-12)", "Student (K-12)"]
+  department: 
+  academic_field: 
+    private_for: ["all"]
+  academic_subfield:
+    private_for: ["all"]
+  mentor_or_advisor: 
+    private_for: ["all"]
+  instructor: 
+    private_for: ["all"]
+  email: 
+  display_name: 
+  address: 
+  state:
+    private_for: ["all"]
+  country: 
+  website: 
+  affiliation: 
+  orcid: 
+  facebook_handle: 
+  twitter_handle: 
+  demographics: 
+    private_for: ["all"]
+  intent: 
+    private_for: ["all"]

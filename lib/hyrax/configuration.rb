@@ -523,6 +523,11 @@ module Hyrax
       YAML.load_file(Rails.root.join('config', 'models', 'user_metadata.yml'))['user_metadata']
     end
 
+    attr_reader :user_profile_metadata_settings
+    def user_profile_metadata_settings
+      YAML.load_file(Rails.root.join('config', 'models', 'user_metadata_settings.yml'))['settings']
+    end
+
     attr_reader :user_profile_type_config
     def user_profile_type_config
       YAML.load_file(Rails.root.join('config', 'models', 'user_profile_types.yml'))['profile_types']

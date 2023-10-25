@@ -25,6 +25,10 @@ module Morphosource
         @all_metadata_fields = all_metadata_fields_hash
         @required_metadata_fields = required_metadata_fields_hash
         @all_demographics_values = all_demographics_values_hash
+
+
+        # todo: move below to :show only method?
+        @private_fields = private_fields(@user)
       end
 
       # Process changes from profile form

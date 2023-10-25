@@ -48,9 +48,9 @@ module Morphosource
 
       def sorted_metadata_fields
         @sorted_metadata_fields ||=  begin 
-          all_fields = non_universal_metadata_fields(:all)
+          non_universal_fields = non_universal_metadata_fields(:all)
           # sort all_fields based on the metadata fields yaml
-          all_fields.sort_by { |field| profile_metadata_fields.keys.index(field) || profile_metadata_fields.keys.length }
+          non_universal_fields.sort_by { |field| profile_metadata_fields.keys.index(field) || profile_metadata_fields.keys.length }
         end
       end
 
@@ -73,6 +73,18 @@ module Morphosource
           result_hash[field] = matching_keys unless matching_keys.empty?
         end
         return result_hash
+      end
+
+      def private_fields(user)
+        private_fields = []        
+        profile_metadata_settings.each do |field, settings|          
+          next if settings.nil? || settings['private_for'].nil?
+          private_for = settings['private_for']
+          if private_for.include?("all") || private_for.include?(user.profile_type)
+            private_fields << field
+          end
+        end
+        private_fields
       end
 
       def all_demographics_values_hash
@@ -102,6 +114,10 @@ module Morphosource
 
       def profile_metadata_fields
         @profile_metadata_fields ||= Hyrax.config.user_profile_metadata_fields
+      end
+
+      def profile_metadata_settings
+        @profile_metadata_settings ||= Hyrax.config.user_profile_metadata_settings
       end
 
       def user_demographics

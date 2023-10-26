@@ -7,6 +7,11 @@
 
 <div class="panel panel-default">
   <div class="row">
+    <div class="col-sm-12">
+      <div class="block-padding mb-1">
+        <%= t("morphosource.dashboard.profiles.form_instructions").html_safe %>
+      </div>
+    </div>
     <div class="col-sm-12 col-md-6 profile">
 
       <%= render partial: 'hyrax/dashboard/profiles/edit_email', locals: {f: f} %>

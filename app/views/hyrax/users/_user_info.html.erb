@@ -1,85 +1,32 @@
-<% @dashboard = @_request.fullpath.include?("/dashboard/profiles/") %>
-<% is_current_user_or_admin = current_user.present? && ( (user == current_user) || current_user.admin? ) %>
+<%# this partial is shared by dashboard profile (admin and user) and public profile page 
+check the field can be displayed (if user is current user, admin, or if field is public/private) %>
 <div class="row">
   <div class="col-md-12">
 
     <%= render partial: 'display_field', 
       collection: [
-        :display_name,
-        :first_name,
-        :middle_name, 
-        :last_name,
-        :email,
-        :affiliation
-      ], 
+        "display_name",
+        "first_name",
+        "middle_name", 
+        "last_name",
+        "email",
+        "address",
+        "city",
+        "state",
+        "country",
+        "affiliation",
+        "orcid",
+        "twitter_handle",
+        "facebook_handle",
+        "website",
+        "profile_type"
+      ] + @all_metadata_fields.keys + [
+        "demographics",
+        "intent"
+      ],
       as: :field_name, :locals => { user: user } %>
 
-    <% if @dashboard %>
-      <%= render partial: 'display_field', 
-        collection: [:address, :city], 
-        as: :field_name, :locals => { user: user } %>
-
-      <% if user.state %>
-      <div class="row">
-        <div class="col-xs-3 showcase-label">State/Province</div>
-          <% if Morphosource::UserProfile::LocationHelper::STATE[user.country]&.key(user.state) %>
-            <div class="col-xs-9 showcase-value"><%= Morphosource::UserProfile::LocationHelper::STATE[user.country].key(user.state) %></div>
-          <% else %>
-            <div class="col-xs-9 showcase-value"><%= user.state %></div>
-          <% end %>
-      </div>
-      <% end %>
-    <% end %>
-
-    <% if user.country %>
-    <div class="row">
-      <div class="col-xs-3 showcase-label">Country</div>
-      <div class="col-xs-9 showcase-value"><%= Morphosource::UserProfile::LocationHelper::COUNTRY.key(user.country) %></div>
-    </div>
-    <% end %>
-
-    <% if user.orcid.present? %>
-    <div class="row">
-      <div class="col-xs-3 showcase-label"><%= orcid_label('profile') %></div>
-      <div class="col-xs-9 showcase-value break-all"><%= link_to user.orcid, user.orcid, { target: '_blank' } %></div>
-    </div>
-    <% end %>
-
-    <% if user.twitter_handle.present? %>
-    <div class="row">
-      <div class="col-xs-3 showcase-label"><i class="fab fa-twitter" aria-hidden="true"></i> Twitter Handle</div>
-      <div class="col-xs-9 showcase-value break-all"><%= link_to user.twitter_handle, "http://twitter.com/#{user.twitter_handle}", {target:'_blank'} %></div>
-    </div>
-    <% end %>
-
-    <% if user.facebook_handle.present? %>
-    <div class="row">
-      <div class="col-xs-3 showcase-label"><i class="fab fa-facebook"></i> Facebook Handle</div>
-      <div class="col-xs-9 showcase-value break-all"><%= link_to user.facebook_handle, "http://facebook.com/#{user.facebook_handle}", {target:'_blank'} %></div>
-    </div>
-    <% end %>
-
-    <% if user.website %>
-    <div class="row">
-      <div class="col-xs-3 showcase-label"><i class="glyphicon glyphicon-globe"></i> Website(s)</div>
-      <div class="col-xs-9 showcase-value break-all"><%= iconify_auto_link(user.website) %></div>
-    </div>
-    <% end %>
-
-    <%#-- display profile type and metadata fields that are present  %>
-    <%= render partial: 'display_field', 
-      collection: [:profile_type], 
-      as: :field_name, :locals => { user: user } %>
-
-    <%= render partial: 'display_field', 
-      collection: @all_metadata_fields.keys, 
-      as: :field_name, :locals => { user: user } %>
-
-    <%= render partial: 'display_field', 
-      collection: [:demographics, :intent], 
-      as: :field_name, :locals => { user: user } %>
-
-    <% if is_current_user_or_admin %>
+    <% if @is_current_user_or_admin %>
       <% if user.sftp_share %>
       <div class="row">
         <div class="col-xs-3 showcase-label">SFTP Share</div>

@@ -18,8 +18,10 @@ module Morphosource
         add_breadcrumb t(:'hyrax.controls.home'), root_path
         add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
         add_breadcrumb t(:'hyrax.admin.sidebar.profile'), hyrax.dashboard_profile_path
-
         @presenter = Morphosource::UserProfilePresenter.new(@user, current_ability)
+        @private_fields = private_fields(@user)
+        @is_current_user_or_admin = current_user.present? && ( (@user == current_user) || current_user.admin? )
+        @dashboard = @_request.fullpath.include?("/dashboard/profiles/")
       end
 
       def edit_password
@@ -33,10 +35,6 @@ module Morphosource
         @all_metadata_fields = all_metadata_fields_hash
         @required_metadata_fields = required_metadata_fields_hash
         @all_demographics_values = all_demographics_values_hash
-
-
-        # todo: move below to :show only method?
-        @private_fields = private_fields(@user)
       end
 
       # Process changes from profile form

@@ -75,6 +75,14 @@ module Morphosource
         return result_hash
       end
 
+      def user_can_view?(field, user)
+        if private_fields(user).include?(field)
+          return false
+        else
+          return true
+        end
+      end
+
       def private_fields(user)
         private_fields = []        
         profile_metadata_settings.each do |field, settings|          

@@ -86,8 +86,8 @@ RSpec.describe Morphosource::Dashboard::ProfilesController, :type => :controller
         facebook_handle: "new facebook",
         website: "new website",
         terms_read: true,
-        sftp_share: 'testshare',
-        profile_type: nil},
+        sftp_share: 'testshare'
+        },
       id: user2.ms_id
     }
   }

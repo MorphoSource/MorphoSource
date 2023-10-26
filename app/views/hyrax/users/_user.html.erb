@@ -1,0 +1,28 @@
+<div class="panel panel-default panel-user">
+  <div class="panel-heading row">
+    <% if user.avatar.present? %>
+      <%= image_tag user.avatar.url(:thumb), width: 120, class: "float-left block-padding" %>
+      <h1><%= user.name %></h1>
+    <% else %>
+      <h1>
+        <span class="fa fa-id-card"></span> <%= user.name %>
+      </h1>
+    <% end %>
+  </div>
+
+  <div class="list-group row">
+    <%= render "hyrax/users/vitals", user: user %>
+
+    <div class="list-group-item">
+      <%= render 'hyrax/users/user_info', user: user %>
+    </div>
+  </div>
+
+  <div class="panel-footer row clearfix">
+    <% if can? :edit, user %>
+      <%= link_to hyrax.edit_dashboard_profile_path(user), class: "btn btn-default pull-right" do %>
+        <i class="glyphicon glyphicon-edit"></i> <%= t("hyrax.edit_profile") %>
+      <% end %>
+    <% end %>
+  </div>
+</div>

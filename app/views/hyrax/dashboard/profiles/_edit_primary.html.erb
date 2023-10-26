@@ -9,12 +9,12 @@
     <div class="form-group">
       <%= f.label :avatar, t("morphosource.dashboard.profiles.edit_primary.change_picture").html_safe, class: "col-sm-4 control-label" %>
       <div class="col-sm-8">
-        <div class="col-sm-7">
+        <div>
           <%= f.file_field :avatar %>
           <%= f.hidden_field :avatar_cache %>
         </div>
-        <div class="col-sm-5">
-          <% if @user.avatar? %>
+        <% if @user.avatar? %>
+          <div class="mt-1">
             <%= image_tag @user.avatar.url(:thumb) %>
             <div class="checkbox">
               <%= f.label :remove_avatar do %>
@@ -22,8 +22,8 @@
                 <%= t("morphosource.dashboard.profiles.edit_primary.delete_picture") %>
               <% end %>
             </div>
-          <% end %>
-        </div>
+          </div>
+        <% end %>
       </div>
     </div>
 

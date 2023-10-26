@@ -27,14 +27,14 @@ check the field can be displayed (if user is current user, admin, or if field is
       as: :field_name, :locals => { user: user } %>
 
     <% if @is_current_user_or_admin %>
-      <% if user.sftp_share %>
+      <% if user.batch_submission_contributor? && user.sftp_share.present? %>
       <div class="row">
         <div class="col-xs-3 showcase-label">SFTP Share</div>
         <div class="col-xs-9 showcase-value break-all"><%= user.sftp_share %> <%= sftp_share_status user.sftp_share %></div>
       </div>
       <% end %>
 
-      <% if user.remote_file_submitter? %>
+      <% if user.remote_file_submitter? && user.allowed_domains.present? %>
       <div class="row">
         <div class="col-xs-3 showcase-label">Allowed Remote File Domains</div>
         <div class="col-xs-9 showcase-value break-all block">

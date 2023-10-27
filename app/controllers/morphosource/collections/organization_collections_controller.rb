@@ -40,7 +40,6 @@ module Morphosource
           args.merge!(request.params)
           main_app.organization_media_facet_path(@collection.id, args)
         end
-
     end
   end
 end

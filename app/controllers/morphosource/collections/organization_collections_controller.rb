@@ -1,6 +1,7 @@
 module Morphosource
   module Collections
     class OrganizationCollectionsController < Morphosource::CollectionsController
+      include Morphosource::Collections::LinkedTeamsControllerBehavior
 
       skip_load_and_authorize_resource only: [:show, :about, :facet, :order_media], instance_name: :collection
 
@@ -8,6 +9,10 @@ module Morphosource
 
       # temporary restriction so only admins can access organizations
       before_action :authorize_admin
+
+      before_action :load_organization, only: [:show, :facet, :about,
+        :media_projects, :media_organization_transfer_status,
+        :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet]
 
       class_attribute :collection_type
 

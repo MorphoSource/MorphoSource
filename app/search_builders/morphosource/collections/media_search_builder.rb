@@ -9,7 +9,8 @@ module Morphosource
       def member_of_collection(solr_parameters)
         solr_parameters[:fq] ||= []
         # if collection is a team, get linked organization media
-        if collection.team? && collection.organization.present?
+        if (collection.team? && collection.organization.present?) ||
+            collection.organization_collection?
           solr_parameters[:fq] << "(#{collection_membership_field}:(#{collection_ids.join(' OR ')}) OR media_organization_id_ssim:#{collection.organization&.id})"
         else
           solr_parameters[:fq] << "(#{collection_membership_field}:(#{collection_ids.join(' OR ')}))"

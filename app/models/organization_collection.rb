@@ -9,6 +9,10 @@ class OrganizationCollection < Collection
 
   self.indexer = OrganizationCollectionIndexer
 
+  def search_builder_class
+    Morphosource::Collections::MediaSearchBuilder
+  end
+
   def initialize(params=nil)
     super
     self.collection_type_gid = collection_type.gid
@@ -28,5 +32,9 @@ class OrganizationCollection < Collection
 
   def type_assigns_groups?
     true
+  end
+
+  def organization
+    self
   end
 end

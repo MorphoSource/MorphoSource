@@ -29,6 +29,10 @@ module Morphosource
       Morphosource::Collections::MediaSearchBuilder
     end
 
+    def media_objects_search_builder_class
+      Morphosource::Collections::MediaObjectsSearchBuilder
+    end
+
     def self.remove_bookmarks
       configure_blacklight do |config|
         config.index.document_actions.delete(:bookmark)

@@ -20,6 +20,14 @@ module Morphosource
 
       self.collection_type = collection_type
 
+      def search_builder_class
+        Morphosource::Collections::OrganizationCollections::MediaSearchBuilder
+      end
+
+      def media_objects_search_builder_class
+        Morphosource::Collections::OrganizationCollections::MediaObjectsSearchBuilder
+      end
+
       def collection_type
         Hyrax::CollectionType.find_by(title: 'Organization')
       end

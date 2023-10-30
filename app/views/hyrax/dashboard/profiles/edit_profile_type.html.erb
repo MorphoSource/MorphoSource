@@ -1,0 +1,21 @@
+<% content_for :body_css_classes do %>showcase profile<% end %>
+
+<% provide :page_header do %>
+  <h1><span class="fa fa-id-card" aria-hidden="true"></span> Please Update Your Profile Type</h1>
+<% end %>
+
+<%= form_for @user,
+         url: hyrax.dashboard_profile_path(@user.to_param),
+         html: { multipart: true, class: 'form-horizontal' } do |f| %>
+<div class="panel panel-default">
+  <div class="panel-body">
+    <p>TBD: explaination to the user why we are requiring this </p>
+    <%= render partial: 'hyrax/dashboard/profiles/edit_profile_type_section', locals: {f: f} %>
+    <p><%= f.button t(".save_profile").html_safe, type: 'submit', class: "btn btn-primary btn-lg" %></p>
+  </div>
+</div>
+<% end %>
+
+<script>
+  <%= render partial: 'hyrax/dashboard/profiles/ms_profile_scripts', formats: [:js] %>
+</script>

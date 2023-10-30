@@ -3,6 +3,17 @@ require 'digest'
 class SessionsController < Devise::SessionsController
   # before_action :configure_sign_in_params, only: [:create]
 
+  def create
+    unless current_user.profile_type.present?
+      super do |resource|
+        if resource.persisted?
+          redirect_to edit_profile_type_path(resource) and return
+        end
+      end
+    end
+    super
+  end
+
   # GET /resource/sign_in
   def new
     if sign_in_params[:email] and sign_in_params[:password]

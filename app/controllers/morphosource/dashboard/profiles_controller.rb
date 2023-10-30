@@ -2,7 +2,7 @@ module Morphosource
   module Dashboard
     class ProfilesController < Hyrax::Dashboard::ProfilesController
 
-      with_themed_layout 'morphosource_dashboard'
+      with_themed_layout :decide_layout
       helper Morphosource::UserProfile::UserProfileHelper
       include Morphosource::UserProfile::ProfilesBehavior
 
@@ -11,7 +11,7 @@ module Morphosource
       before_action :authorize_edit, only: [:show]
       before_action :strip_empty_values, only: [:update]
       before_action :check_profile_type, only: [:update]
-      before_action :prep_metadata_and_demographics, only: [:edit, :update, :show]
+      before_action :prep_metadata_and_demographics, only: [:edit, :update, :show, :edit_profile_type]
       authorize_resource class: '::User', instance_name: :user
 
       def show
@@ -22,6 +22,9 @@ module Morphosource
         @private_fields = private_fields(@user)
         @is_current_user_or_admin = current_user.present? && ( (@user == current_user) || current_user.admin? )
         @dashboard = @_request.fullpath.include?("/dashboard/profiles/")
+      end
+
+      def edit_profile_type          
       end
 
       def edit_password
@@ -125,13 +128,35 @@ module Morphosource
         # Don't retain empty strings from 'other' fields.
         def strip_empty_values
           User::MULTI_VALUE_FIELDS.keys.each do |field|
-            params[:user][field].delete_if(&:empty?)
+            if params[:user][field].present? 
+              params[:user][field].delete_if(&:empty?)
+            end
           end
         end
 
         def redirect_with_error(messages)
           flash[:error] = messages
           redirect_to hyrax.dashboard_profile_path(@user.to_param)
+        end
+
+        def decided_layout
+          return 'morphosource_dashboard'
+          case action_name
+          when 'edit_profile_type'
+            'morphosource_dashboard'
+          else
+            'morphosource_dashboard'
+          end
+        end
+
+        def decide_layout
+          case action_name
+           when 'edit_profile_type'
+             layout = 'morphosource_base'
+           else
+             layout = 'morphosource_dashboard'
+           end
+           File.join(theme, layout)
         end
 
     end

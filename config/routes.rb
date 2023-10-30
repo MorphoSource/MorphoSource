@@ -600,6 +600,9 @@ Rails.application.routes.draw do
   get 'dashboard/profiles/:id/edit_password' => 'morphosource/dashboard/profiles#edit_password', as: 'profile_edit_password'
   patch 'dashboard/profiles/:id/update_password' => 'morphosource/dashboard/profiles#update_password', as: 'profile_update_password'
 
+  # Routes for editing/updating profile type
+  get 'dashboard/profiles/:id/edit_profile_type' => 'morphosource/dashboard/profiles#edit_profile_type', as: 'edit_profile_type'
+
   get 'dashboard/profiles/:id/edit' => 'morphosource/dashboard/profiles#edit', as: 'profile_edit'
 
   # Routes for fund code charge API

@@ -98,7 +98,7 @@ module Morphosource
       end
       if @taxonomy_params_array.present? 
         is_diff = true
-        @log.debug "is_diff Specimen #{self.id}: taxonomy_params_array #{taxonomy_params_array}"
+        @log.debug "is_diff Specimen #{self.id}: taxonomy_params_array #{@taxonomy_params_array}"
       end
       @biospec_model_params.each do |key, value|
         # case-insensitive comparison for cases like "male" vs. "Male"

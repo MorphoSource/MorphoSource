@@ -1,20 +1,38 @@
 require 'digest'
 
 class SessionsController < Devise::SessionsController
-  # before_action :configure_sign_in_params, only: [:create]
+  include Morphosource::UserProfile::ProfilesBehavior
+  prepend_before_action :require_no_authentication, only: [:edit_profile_type]
+  before_action :prep_metadata_and_demographics, only: [:edit_profile_type]
+  before_action :check_profile_type, only: :create
 
-  def create
-    unless current_user.profile_type.present?
-      super do |resource|
-        if resource.persisted?
-          redirect_to edit_profile_type_path(resource) and return
-        end
+  def check_profile_type
+    self.resource = warden.authenticate!(auth_options)
+    unless resource.profile_type.present? 
+      if request.parameters[:user][:profile_type].present?
+        # save profile type info and continue
+        byebug
+      else
+        sign_out(resource)
+#        flash[:alert] = "Your profile_type is not set"
+        redirect_to edit_profile_type_path(email: resource.email, password: params[:user][:password])
       end
     end
-    super
+  end
+  
+  def edit_profile_type
+    self.resource = resource_class.new(sign_in_params)
+    clean_up_passwords(resource)
+    yield resource if block_given?
+    respond_with(resource, serialize_options(resource))
   end
 
-  # GET /resource/sign_in
+  def prep_metadata_and_demographics
+    @all_metadata_fields = all_metadata_fields_hash
+    @required_metadata_fields = required_metadata_fields_hash
+    @all_demographics_values = all_demographics_values_hash
+  end
+
   def new
     if sign_in_params[:email] and sign_in_params[:password]
       u = User.find_by email: sign_in_params[:email]

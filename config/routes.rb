@@ -582,7 +582,10 @@ Rails.application.routes.draw do
   # ms1 users changing their password must agree to terms and conditions
   devise_scope :user do
     get '/users/password/ms1_edit', to: 'morphosource/passwords#ms1_edit', as: 'ms1_edit_user_password'
+    get '/edit_profile_type', to: 'sessions#edit_profile_type', as: 'edit_profile_type'
   end
+# Routes for editing/updating profile type
+#get 'dashboard/profiles/:id/edit_profile_type' => 'morphosource/dashboard/profiles#edit_profile_type', as: 'edit_profile_type'
 
   # Routes for granting/removing contributor status
   post 'users/:id/make_contributor' => 'contributors#make_contributor', as: 'make_contributor'
@@ -599,9 +602,6 @@ Rails.application.routes.draw do
   # Routes for editing/updating password from profile page
   get 'dashboard/profiles/:id/edit_password' => 'morphosource/dashboard/profiles#edit_password', as: 'profile_edit_password'
   patch 'dashboard/profiles/:id/update_password' => 'morphosource/dashboard/profiles#update_password', as: 'profile_update_password'
-
-  # Routes for editing/updating profile type
-  get 'dashboard/profiles/:id/edit_profile_type' => 'morphosource/dashboard/profiles#edit_profile_type', as: 'edit_profile_type'
 
   get 'dashboard/profiles/:id/edit' => 'morphosource/dashboard/profiles#edit', as: 'profile_edit'
 

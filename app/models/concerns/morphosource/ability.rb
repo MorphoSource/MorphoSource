@@ -2,7 +2,7 @@ module Morphosource
   module Ability
     extend ActiveSupport::Concern
     include Morphosource::Ability::TemporaryLinkAbilities
-    
+
     included do
       include Hyrax::Ability
 
@@ -82,6 +82,7 @@ module Morphosource
       rg = Array(@doc["read_access_group_ssim"])
       rg |= edit_groups(id)
       rg |= download_groups(id)
+      rg |= organization_groups(@doc) # add organization user groups as readers
       Rails.logger.debug("[CANCAN] read_groups: #{rg.inspect}")
       rg
     end
@@ -136,6 +137,14 @@ module Morphosource
       # @param document_id [String] the id of the document.
       def user_is_data_manager?(document_id)
         SolrDocument.find(document_id).user_with_ownership.first == current_user.user_key
+      end
+
+      # if document is a media and is associated with an organization collection
+      # returns user groups, ex: ["000200774_managers", "000200774_editors", "000200774_depositors", "000200774_downloaders", "000200774_viewers"]
+      def organization_groups(document)
+        return [] unless OrganizationCollection.exists?(document["media_organization_id_ssim"]&.first)
+
+        OrganizationCollection::DEFAULT_GROUP_ROLES.map{|role| "#{document["media_organization_id_ssim"].first}_#{role}"}
       end
 
   end

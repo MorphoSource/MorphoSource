@@ -1,25 +1,16 @@
+<%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: 'edit_profile_type' }) do |f| %>
+<%= f.hidden_field :email, value: @user_email %>
+<%= f.hidden_field :password, value: @user_password %>
 <h2>Please Select Your Profile Type</h2>
-
-<p>TBD: explaination to the user why we are requiring users to select profile type </p>
-
-<%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-
-
+<p class="mt-1 mb-2">TBD: explaination to the user why we are requiring users to select profile type </p>
 <div class="panel panel-default">
   <div class="panel-body">
     <%= render partial: 'hyrax/dashboard/profiles/edit_profile_type_section', locals: {f: f} %>
   </div>
 </div>
-
-
-    <p><%= f.email_field :email, value: request.parameters[:email] %></p>
-
-    <p><%= f.password_field :password, value: request.parameters[:password] %></p>
-
-
-  <div class="actions">
-    <%= f.submit "Log in", class: "btn btn-primary btn-lg" %>
-  </div>
+<div class="actions text-center">
+  <%= f.submit "Update Profile and Sign In", class: "btn btn-primary btn-lg" %>
+</div>
 <% end %>
 
 <script>

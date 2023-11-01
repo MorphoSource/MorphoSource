@@ -175,6 +175,10 @@ function updateStates() {
 
 $(document).ready(function() {
 
+  if ( $('form[class*="edit_profile_type"]').length ) { 
+    setTimeout(() => { $('input[type="hidden"]').val(''); window.location.href='/'; }, 1800000); 
+  }
+
   if ( $('form[id*="edit_user"]').length ) {    
     // get the current metadata fields for removal later if user profile type is changed
     $("div.form-group.show[data-group='profile_type'] input").each(function() {

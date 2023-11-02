@@ -27,6 +27,7 @@ settings:
   email: 
   display_name: 
   address: 
+    private_for: ["all"]
   state:
     private_for: ["all"]
   country: 
@@ -36,6 +37,5 @@ settings:
   facebook_handle: 
   twitter_handle: 
   demographics: 
-    private_for: ["all"]
   intent: 
     private_for: ["all"]

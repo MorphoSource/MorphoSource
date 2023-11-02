@@ -10,6 +10,10 @@ check the field can be displayed (if user is current user, admin, or if field is
         "middle_name", 
         "last_name",
         "email",
+        "profile_type"
+      ] + @all_metadata_fields.keys + [
+        "demographics",
+        "intent",
         "address",
         "city",
         "state",
@@ -18,11 +22,7 @@ check the field can be displayed (if user is current user, admin, or if field is
         "orcid",
         "twitter_handle",
         "facebook_handle",
-        "website",
-        "profile_type"
-      ] + @all_metadata_fields.keys + [
-        "demographics",
-        "intent"
+        "website"
       ],
       as: :field_name, :locals => { user: user } %>
 

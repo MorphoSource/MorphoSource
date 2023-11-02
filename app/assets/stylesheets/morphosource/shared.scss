@@ -385,6 +385,20 @@ div.wrapper_for_2 span.input-group-bt.field-controls {
   padding: 10px;
 }
 
+.block-sq {
+  border: 1px solid #DDDDDD;
+  border-radius: 0;
+  padding: 10px;
+}
+
+.block-tab-content {
+  border-left: 1px solid #DDDDDD;
+  border-right: 1px solid #DDDDDD;
+  border-bottom: 1px solid #DDDDDD;
+  border-radius: 0;
+  padding: 10px;
+}
+
 .block-fill {
   background-color: $block-background-color;
 }

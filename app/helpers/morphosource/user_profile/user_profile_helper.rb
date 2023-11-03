@@ -27,7 +27,7 @@ module Morphosource::UserProfile::UserProfileHelper
       return link_to user.website, website, { target:'_blank'}
     else
       if (val = user.send(field)).is_a?(Array) 
-        return val.join(", ") 
+        return val.reject!(&:empty?)&.join(", ") 
       else
         return val
       end

@@ -117,7 +117,9 @@ en:
         works:
           submission_button: 'New Submission'
       profiles:
-        form_instructions: 'Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.'
+        login_form_instructions: 'MorphoSource is improving user profiles! This will allow users to better identify themselves and their reasons for using or downloading data. It will also improve the ability of data contributors to demonstrate impact and reuse of data uploaded to MorphoSource. Before continuing, please select a user profile type that best describes you, and fill out any new required user information.'
+        register_form_instructions: 'To use MorphoSource, you must create a user account profile. This user profile helps identify you and your reasons for using or downloading data. The information you include may be provided to data contributors when you download data so that those contributors can demonstrate impact and reuse of data they contribute to MorphoSource. Select the type of user profile that best describes you, as you may be required to provide different user information based on the profile type.'
+        edit_form_instructions: 'On this page you can update your user account profile. This user profile helps identify you and your reasons for using or downloading data. The information you include may be provided to data contributors when you download data so that those contributors can demonstrate impact and reuse of data they contribute to MorphoSource. If you change the user profile type, you may be required to fill out new required user information based on the profile type.'
         edit_primary:
           address: "Address"
           affiliation: "Organization"

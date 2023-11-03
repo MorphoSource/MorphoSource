@@ -2,14 +2,14 @@
 <%= f.hidden_field :email, value: @user_email %>
 <%= f.hidden_field :password, value: @user_password %>
 <h2>Please Select Your Profile Type</h2>
-<p class="mt-1 mb-2">TBD: explaination to the user why we are requiring users to select profile type </p>
+<p class="mt-1 mb-2"><%= t("morphosource.dashboard.profiles.login_form_instructions").html_safe %></p>
 <div class="panel panel-default">
   <div class="panel-body">
     <%= render partial: 'hyrax/dashboard/profiles/edit_profile_type_section', locals: {f: f} %>
   </div>
 </div>
-<div class="actions text-center">
-  <%= f.submit "Update Profile and Sign In", class: "btn btn-primary btn-lg" %>
+<div class="actions text-center mt-2 mb-2">
+  <%= f.submit "Update Profile and Sign In", class: "btn btn-primary" %>
 </div>
 <% end %>
 

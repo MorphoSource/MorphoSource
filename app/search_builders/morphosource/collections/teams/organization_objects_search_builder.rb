@@ -8,6 +8,7 @@ module Morphosource
         self.default_processor_chain += [:apply_object_ids_filter]
 
         def initialize(*options)
+          byebug
           @org_media_object_ids = options.first.instance_variable_get(:@org_media_object_ids)
           super
         end

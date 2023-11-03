@@ -104,7 +104,7 @@ module Morphosource
         # case-insensitive comparison for cases like "male" vs. "Male"
         if Array(value).map(&:downcase).sort != self.send(key).map(&:downcase).sort
           is_diff = true
-          @log.debug "is_diff Specimen #{self.id}: key=#{key}, #{Array(value)} VS #{self.send(key)}"
+          @log.debug "is_diff Specimen #{self.id}: key=#{key}, #{Array(value)} VS #{self.send(key).to_a}"
         end      
       end
       return is_diff

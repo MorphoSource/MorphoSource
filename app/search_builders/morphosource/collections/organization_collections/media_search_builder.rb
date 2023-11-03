@@ -15,6 +15,7 @@ module Morphosource
           unless user_is_organization_member?
             solr_parameters[:fq] << gated_discovery_filters.reject(&:blank?).join(' OR ')
           end
+          byebug
           Rails.logger.debug("Solr parameters: #{solr_parameters.inspect}")
         end
 

@@ -27,8 +27,12 @@ module Morphosource
             @org_media_object_ids.blank? ? ['none'] : @org_media_object_ids
           end
 
-          def apply_organization_permissions?
-            false
+          # def apply_organization_permissions?
+          #   false
+          # end
+
+          def solr_access_filters_logic
+            [:apply_group_permissions, :apply_user_permissions]
           end
        end
     end

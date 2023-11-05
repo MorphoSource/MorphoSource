@@ -3,12 +3,14 @@ module Morphosource
     class ObjectsSearchBuilder < Hyrax::WorksSearchBuilder
       # override filter_collection_facet_for_access
       include Morphosource::Facets::CollectionsSearchBuilderBehavior
-      include Morphosource::OrganizationalAccessBehavior
+      # include Morphosource::OrganizationalAccessBehavior
 
 
       delegate :repository, to: :scope
 
       self.default_processor_chain += [:apply_object_ids_filter, :filter_collection_facet_for_access]
+
+      self.default_processor_chain -= [:add_access_controls_to_solr_params]
 
       def initialize(*options)
         @collection = options.first.instance_variable_get(:@collection)

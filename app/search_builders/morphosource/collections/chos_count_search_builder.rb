@@ -11,9 +11,9 @@ module Morphosource
         solr_parameters[:fl] = 'id'
       end
 
-      def apply_organization_permissions?
-        false
-      end
+      # def apply_organization_permissions?
+      #   false
+      # end
 
     end
   end

@@ -14,12 +14,22 @@ module Morphosource
     end
 
     # include organization permissions with user and group permissions
-    def solr_access_filters_logic
-      if apply_organization_permissions?
-        super << :apply_organization_permissions
-      else
-        super
-      end
+    # def solr_access_filters_logic
+    #   byebug
+    #   if apply_organization_permissions?
+    #     super << :apply_organization_permissions
+    #   else
+    #     super
+    #   end
+    # end
+
+    def gated_discovery_filters(permission_types = discovery_permissions, ability = current_ability)
+      byebug
+      [:apply_user_permissions, :apply_group_permissions, :apply_organization_permissions].map { |method| send(method, permission_types, ability).reject(&:blank?) }.reject(&:empty?)
     end
+
+    # def apply_organization_permissions?
+    #   false
+    # end
   end
 end

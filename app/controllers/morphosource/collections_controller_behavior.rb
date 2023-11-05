@@ -37,7 +37,9 @@ module Morphosource
       @can_deposit = current_ability.can? :deposit, @collection
       presenter
       (@media_count, @object_ids) = collection_media
+      byebug
       (@response, @document_list) = query_solr
+      byebug
       publication_settings_nag
       query_collection_counts
       query_collection_members
@@ -115,6 +117,7 @@ module Morphosource
       end
 
       def query_solr
+        byebug
         search_results(params)
       end
 
@@ -124,7 +127,9 @@ module Morphosource
 
       def collection_media
         repository.blacklight_config.max_per_page = 999999
+        byebug
         response = repository.search(media_objects_search_builder_class.new(scope: self, collection: @collection).rows(999999)).response
+        byebug
         media_count = response["numFound"].to_i
         object_ids = response["docs"].map{|d| d["physical_object_id_ssim"].try(:first)}.compact.uniq
         [media_count, object_ids]

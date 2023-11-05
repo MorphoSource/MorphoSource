@@ -10,7 +10,7 @@ class OrganizationCollection < Collection
   self.indexer = OrganizationCollectionIndexer
 
   def search_builder_class
-    Morphosource::Collections::MediaSearchBuilder
+    Morphosource::Collections::OrganizationCollections::MediaSearchBuilder
   end
 
   def initialize(params=nil)

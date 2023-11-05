@@ -22,6 +22,10 @@ module Morphosource
             solr_parameters[:fq] ||= []
             solr_parameters[:fq] << "(media_organization_id_ssim:#{@organization.id})"
           end
+
+          def apply_organization_permissions?
+            false
+          end
        end
      end
    end

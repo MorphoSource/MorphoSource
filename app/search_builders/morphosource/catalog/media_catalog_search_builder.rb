@@ -9,6 +9,10 @@ class Morphosource::Catalog::MediaCatalogSearchBuilder < Hyrax::CatalogSearchBui
 
   private
 
+    def apply_organization_permissions?
+      true
+    end
+
     def models
       [::Media]
     end

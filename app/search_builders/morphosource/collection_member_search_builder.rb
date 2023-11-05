@@ -2,7 +2,7 @@ module Morphosource
   # This search builder requires that a accessor named "collection" exists in the scope
   class CollectionMemberSearchBuilder < Hyrax::SearchBuilder
     include Hyrax::FilterByType
-    include Morphosource::OrganizationalAccessBehavior
+    # include Morphosource::OrganizationalAccessBehavior
 
     attr_reader :collection_id, :search_includes_models
 

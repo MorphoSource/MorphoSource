@@ -17,6 +17,10 @@ module Morphosource
         [BiologicalSpecimen]
       end
 
+      def apply_organization_permissions?
+        false
+      end
+
     end
   end
 end

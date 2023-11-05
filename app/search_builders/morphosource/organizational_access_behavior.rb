@@ -15,7 +15,11 @@ module Morphosource
 
     # include organization permissions with user and group permissions
     def solr_access_filters_logic
-      super << :apply_organization_permissions
+      if apply_organization_permissions?
+        super << :apply_organization_permissions
+      else
+        super
+      end
     end
   end
 end

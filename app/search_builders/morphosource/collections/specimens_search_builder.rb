@@ -3,6 +3,8 @@ module Morphosource
     class SpecimensSearchBuilder < Morphosource::Collections::ObjectsSearchBuilder
       include Hyrax::FilterByType
 
+      # include Morphosource::OrganizationalAccessBehavior
+
       self.default_processor_chain += [:return_selected_fields]
 
       def return_selected_fields(solr_parameters)

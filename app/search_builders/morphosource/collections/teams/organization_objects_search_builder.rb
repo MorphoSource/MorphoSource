@@ -3,6 +3,8 @@ module Morphosource
     module Teams
       class OrganizationObjectsSearchBuilder < Hyrax::WorksSearchBuilder
 
+        include Morphosource::OrganizationalAccessBehavior
+
         delegate :repository, to: :scope
 
         self.default_processor_chain += [:apply_object_ids_filter]

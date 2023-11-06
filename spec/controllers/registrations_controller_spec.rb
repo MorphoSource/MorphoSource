@@ -34,8 +34,44 @@ RSpec.describe RegistrationsController, :type => :controller  do
     terms_read: true
   }}}
 
+  let(:params2) { {user: {
+    email: "user@test.com",
+    password: 'password',
+    display_name: "Test User",
+    first_name: "first",
+    middle_name: "middle",
+    last_name: "last",
+    affiliation: "",
+    department: "",
+    address: "Test Address",
+    city: "city",
+    country: "US",
+    state: "NC",
+    demographics: ["demo1","demo2",""],
+    intent: ["intent1","intent2",""],
+    orcid: "https://orcid.org/0000-0000-0000-0000",
+    twitter_handle: "@TestTest",
+    facebook_handle: "test.test",
+    website: "morphosource.org",
+    profile_type: '',
+    typical_usage: "usage",
+    academic_institution_or_school: "school",
+    department: "dept",
+    academic_field: "acad field",
+    academic_subfield: "acad subfield",
+    mentor_or_advisor: "",
+    instructor: "",
+    terms_read: true
+  }}}
+
   before do
     @request.env["devise.mapping"] = Devise.mappings[:user]
+  end
+
+  it 'does not create a new user without a profile type' do
+    expect{
+      process :create, method: :post, params: params2
+    }.to change{User.count}.by(0)
   end
 
   it 'creates a new user with morphosource attributes, and removes empty strings from multi-value fields' do
@@ -66,4 +102,5 @@ RSpec.describe RegistrationsController, :type => :controller  do
     expect(user.academic_field).to eq("acad field")
     expect(user.academic_subfield).to eq("acad subfield")
   end
+
 end

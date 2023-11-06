@@ -9,7 +9,6 @@ RSpec.describe SessionsController, :type => :controller  do
   let(:user2)          { User.create(email: "user2@email.com", password: "password2", profile_type: nil) }
   let(:ms1_user)      { User.create(email: "test@test.com", password: "password", ms1_user: true, ms1_password_hash: Digest::MD5.hexdigest('hash')) }
 
-
   before do
     @request.env["devise.mapping"] = Devise.mappings[:user]
   end
@@ -42,11 +41,11 @@ RSpec.describe SessionsController, :type => :controller  do
 
     context 'when profile_type is not present AND user has selected a profile_type' do
       it 'should save profile_type info, and not redirect to edit_profile_type_path' do
-        post :create, params: { user: { email: user2.email, password: user2.password, profile_type: 'Artist' } }
-
-        # user not updated?    expect(user2.profile_type).to eq('')
-
+        post :create, params: { user: { email: user2.email, password: user2.password, profile_type: 'Artist', demographics: ['Artist'] } }
         expect(response).not_to redirect_to(edit_profile_type_path)
+        user2.reload
+        expect(user2.profile_type).to eq('Artist')
+        expect(user2.demographics).to eq(['Artist'])
       end
     end
   end

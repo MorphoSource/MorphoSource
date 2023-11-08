@@ -1,4 +1,4 @@
-class Morphosource::Catalog::MediaListsCatalogSearchBuilder < Hyrax::CatalogSearchBuilder
+class Morphosource::Catalog::MediaListsCatalogSearchBuilder < Morphosource::CatalogSearchBuilder
 
   private
 

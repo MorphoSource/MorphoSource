@@ -1,4 +1,4 @@
-class Morphosource::Catalog::OrganizationsCatalogSearchBuilder < Hyrax::CatalogSearchBuilder
+class Morphosource::Catalog::OrganizationsCatalogSearchBuilder < Morphosource::CatalogSearchBuilder
 
   private
 

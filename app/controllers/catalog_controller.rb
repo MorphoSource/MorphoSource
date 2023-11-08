@@ -9,11 +9,14 @@ class CatalogController < ApplicationController
   include Morphosource::Facets::Collections
 
   helper Morphosource::CatalogHelper
+  helper Morphosource::FacetParamsHelper
 
   layout "catalog"
 
   # This filter applies the hydra access controls
   before_action :enforce_show_permissions, only: :show
+
+  self.search_state_class = Morphosource::SearchState
 
   def self.uploaded_field
     solr_name('system_create', :stored_sortable, type: :date)
@@ -33,7 +36,7 @@ class CatalogController < ApplicationController
 
     config.show.tile_source_field = :content_metadata_image_iiif_info_ssm
     config.show.partials.insert(1, :openseadragon)
-    config.search_builder_class = Hyrax::CatalogSearchBuilder
+    config.search_builder_class = Morphosource::CatalogSearchBuilder
 
     # Show gallery view
     config.view.gallery.partials = [:index_header, :index]

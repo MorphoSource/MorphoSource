@@ -9,6 +9,8 @@ module Morphosource
 
       with_themed_layout 'morphosource_dashboard'
 
+      self.search_state_class = Morphosource::SearchState
+
       # Define collection specific filter facets.
       def self.configure_facets
         configure_blacklight do |config|

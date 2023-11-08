@@ -2,6 +2,8 @@ module Morphosource
   module My
     class CollectionsSearchBuilder < Hyrax::Dashboard::CollectionsSearchBuilder
       include Hyrax::Dashboard::ManagedSearchFilters
+      # enable f.field facet format
+      include Morphosource::Facets::SearchBuilderFacetParamsBehavior
 
       self.solr_access_filters_logic += [:apply_collection_download_permissions]
       self.default_processor_chain += [:filter_collections]

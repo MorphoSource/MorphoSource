@@ -23,6 +23,7 @@ module Morphosource
     class_attribute :can_authorize_with_temporary_link
     self.can_authorize_with_temporary_link = false
     self.presenter_class = presenter_class
+    self.search_state_class = Morphosource::SearchState
     self.temporary_access_link_class = TemporaryCollectionAccessLink
 
     def search_builder_class

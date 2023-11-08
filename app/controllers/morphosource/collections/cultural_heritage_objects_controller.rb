@@ -17,7 +17,6 @@ module Morphosource
           config.add_facet_field "organization", field: "organization_ssim", label: "Organization", limit: 10
           config.add_facet_field "team", field: "media_member_of_team_ids_ssim", label: "Team", limit: 10, helper_method: :collection_title_by_id
           config.add_facet_field "project", field: "media_member_of_project_ids_ssim", label: "Project", limit: 10, helper_method: :collection_title_by_id
-          
         end
       end
       configure_facets

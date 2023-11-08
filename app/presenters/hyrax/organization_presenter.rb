@@ -16,11 +16,15 @@ module Hyrax
     end
 
     def total_po
-      browse_service.total_po_by_org(solr_document.id)
+      @total_po ||= begin
+        media_count, @total_po = browse_service.total_media_and_po_by_org(solr_document.id)
+        @total_po
+      end
     end
 
     def total_media
-      browse_service.total_media_by_org(solr_document.id)
+      media_count, @total_po = browse_service.total_media_and_po_by_org(solr_document.id)
+      return media_count
     end
 
     # displays on catalog index

@@ -7,24 +7,18 @@ class ObjectsCatalogController < CatalogController
     # disable thumbnails
     config.index.thumbnail_field = ''
 
-    # facets
-    # type facet (specimen or cho)
-    config.add_facet_field solr_name("human_readable_type", :facetable), label: "Type", limit: 10
-    # creator
-    config.add_facet_field solr_name("creator", :facetable), label: "Creator", limit: 10
-    # organization
-    config.add_facet_field "organization_ssim", label: "Organization", limit: 10
-    # external taxonomy
-    config.add_facet_field "external_taxonomy_ssim", label: "Taxonomy (GBIF)", limit: 25
-    # media types
-    config.add_facet_field "public_media_type_ssim", label: "Media Type", limit: 10
-    # media tag
-    config.add_facet_field "public_media_keyword_ssim", label: "Media Tag", limit: 10
-    # media collection
-    config.add_facet_field solr_name('media_member_of_team_ids', :symbol), label: 'Team', limit: 10, helper_method: :collection_title_by_id
-    config.add_facet_field solr_name('media_member_of_project_ids', :symbol), label: 'Project', limit: 10, helper_method: :collection_title_by_id
-    config.add_facet_field solr_name('media_member_of_media_list_ids', :symbol), label: 'Media List', limit: 10, helper_method: :collection_title_by_id
-    config.add_facet_field solr_name('media_member_of_sequential_section_list_ids', :symbol), label: 'Seq. Section List', limit: 10, helper_method: :collection_title_by_id
+    # facet fields
+    config.add_facet_field "object_type", field: "human_readable_type_sim", label: "Object Type", limit: 10
+    config.add_facet_field "creator", field: "creator_sim", label: "Collector/Creator", limit: 10
+    config.add_facet_field "organization", field: "organization_ssim", label: "Organization", limit: 10
+    config.add_facet_field "taxonomy_name", field: "taxonomy_ssim", label: "Taxonomy (Name)", limit: 10
+    config.add_facet_field "taxonomy_gbif", field: "external_taxonomy_ssim", label: "Taxonomy (GBIF)", limit: 25
+    config.add_facet_field "media_type", field: "public_media_type_ssim", label: "Media Type", limit: 10
+    config.add_facet_field "media_tag", field: "public_media_keyword_ssim", label: "Media Tag", limit: 10
+    config.add_facet_field "team", field: "media_member_of_team_ids_ssim", label: "Team", limit: 10, helper_method: :collection_title_by_id
+    config.add_facet_field "project", field: "media_member_of_project_ids_ssim", label: "Project", limit: 10, helper_method: :collection_title_by_id
+    config.add_facet_field "media_list", field: "media_member_of_media_list_ids_ssim", label: "Media List", limit: 10, helper_method: :collection_title_by_id
+    config.add_facet_field "seq_section_list", field: "media_member_of_sequential_section_list_ids_ssim", label: "Seq. Section List", limit: 10, helper_method: :collection_title_by_id
 
     # search results display fields
     config.add_index_field solr_name("title", :stored_searchable), label: "Title", itemprop: 'name', if: false

@@ -8,6 +8,7 @@ module Morphosource
       class_attribute :create_work_presenter_class, :filtered_facets
 
       self.create_work_presenter_class = Hyrax::SelectTypeListPresenter
+      self.search_state_class = Morphosource::SearchState
 
       with_themed_layout 'morphosource_dashboard'
 

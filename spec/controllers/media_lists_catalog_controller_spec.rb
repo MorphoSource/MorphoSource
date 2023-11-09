@@ -29,10 +29,10 @@ RSpec.describe MediaListsCatalogController, :type => :controller do
       end
 
       describe 'human readable type' do
-        subject { facet_fields['human_readable_type_sim'] }
+        subject { facet_fields["type"] }
         it 'has the correct attributes' do
-          expect(subject.label).to eq("Type")
-          expect(subject.limit).to eq(5)
+          expect(subject.label).to eq("List Type")
+          expect(subject.limit).to eq(10)
         end
       end
     end

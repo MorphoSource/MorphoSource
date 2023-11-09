@@ -17,44 +17,68 @@ RSpec.describe ObjectsCatalogController, type: :controller do
     describe 'facet fields' do
       let(:facet_fields) { config.facet_fields }
 
-      it 'has 11 facet fields' do
-        expect(facet_fields.count).to eq(11)
+      it 'has 12 facet fields' do
+        expect(facet_fields.count).to eq(12)
       end
 
       describe 'human readable type' do
-        subject { facet_fields['human_readable_type_sim'] }
+        subject { facet_fields["object_type"] }
         it 'has the correct attributes' do
-          expect(subject.label).to eq('Type')
+          expect(subject.label).to eq('Object Type')
           expect(subject.limit).to eq(10)
         end
       end
 
       describe 'creator' do
-        subject { facet_fields['creator_sim'] }
+        subject { facet_fields["creator"] }
         it 'has the correct attributes' do
-          expect(subject.label).to eq('Creator')
+          expect(subject.label).to eq('Collector/Creator')
           expect(subject.limit).to eq(10)
         end
       end
 
       describe 'organization' do
-        subject { facet_fields['organization_ssim'] }
+        subject { facet_fields["organization"] }
         it 'has the correct attributes' do
           expect(subject.label).to eq('Organization')
           expect(subject.limit).to eq(10)
         end
       end
 
+      describe 'taxonomy_name' do
+        subject { facet_fields["taxonomy_name"]}
+        it 'has the correct attributes' do
+          expect(subject.label).to eq("Taxonomy (Name)")
+          expect(subject.limit).to eq(10)
+        end
+      end
+
+      describe 'taxonomy_gbif' do
+        subject { facet_fields["taxonomy_gbif"]}
+        it 'has the correct attributes' do
+          expect(subject.label).to eq("Taxonomy (GBIF)")
+          expect(subject.limit).to eq(25)
+        end
+      end
+
       describe 'media type' do
-        subject { facet_fields['public_media_type_ssim'] }
+        subject { facet_fields["media_type"] }
         it 'has the correct attributes' do
           expect(subject.label).to eq('Media Type')
           expect(subject.limit).to eq(10)
         end
       end
 
+      describe 'media tag' do
+        subject { facet_fields["media_tag"] }
+        it 'has the correct attributes' do
+          expect(subject.label).to eq('Media Tag')
+          expect(subject.limit).to eq(10)
+        end
+      end
+
       describe 'media teams' do
-        subject { facet_fields['media_member_of_team_ids_ssim'] }
+        subject { facet_fields["team"] }
         it 'has the correct attributes' do
           expect(subject.label).to eq('Team')
           expect(subject.limit).to eq(10)
@@ -62,7 +86,7 @@ RSpec.describe ObjectsCatalogController, type: :controller do
       end
 
       describe 'media projects' do
-        subject { facet_fields['media_member_of_project_ids_ssim'] }
+        subject { facet_fields["project"] }
         it 'has the correct attributes' do
           expect(subject.label).to eq('Project')
           expect(subject.limit).to eq(10)
@@ -70,7 +94,7 @@ RSpec.describe ObjectsCatalogController, type: :controller do
       end
 
       describe 'media lists' do
-        subject { facet_fields['media_member_of_media_list_ids_ssim'] }
+        subject { facet_fields["media_list"] }
         it 'has the correct attributes' do
           expect(subject.label).to eq('Media List')
           expect(subject.limit).to eq(10)
@@ -78,17 +102,9 @@ RSpec.describe ObjectsCatalogController, type: :controller do
       end
 
       describe 'media sequential section lists' do
-        subject { facet_fields['media_member_of_sequential_section_list_ids_ssim'] }
+        subject { facet_fields["seq_section_list"] }
         it 'has the correct attributes' do
           expect(subject.label).to eq('Seq. Section List')
-          expect(subject.limit).to eq(10)
-        end
-      end
-
-      describe 'media keyword' do
-        subject { facet_fields['public_media_keyword_ssim'] }
-        it 'has the correct attributes' do
-          expect(subject.label).to eq('Media Tag')
           expect(subject.limit).to eq(10)
         end
       end

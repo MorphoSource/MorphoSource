@@ -360,17 +360,6 @@ module Morphosource
       end
     end
 
-    def render_constraints_filters(localized_params = params)
-      return "".html_safe unless localized_params[:f]
-      path = controller.search_state_class.new(localized_params, blacklight_config, controller)
-      content = []
-      localized_params[:f].each_pair do |facet,values|
-        content << render_filter_element(facet, values, path)
-      end
-
-      safe_join(content.flatten, "\n")
-    end
-
     def morphosource_collection_controller?
       collection_controllers = [ Morphosource::Collections::TeamsController,
                                  Morphosource::Collections::ProjectsController,

@@ -2,7 +2,7 @@
   <div class="dashboard list-filters ms-list-filters" role="group">
     <div class="list-filters-label"><%= t("hyrax.dashboard.my.facet_label.works") %></div>
     <div class='ms-facets'>
-      <%= render_facet_partials %>
+      <%= render_facet_partials(fields=facet_field_names, options={ layout: "shared/facets/facet_layout" }) %>
     </div>
   </div>
 <% end %>

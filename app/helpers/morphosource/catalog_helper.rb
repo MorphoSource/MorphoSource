@@ -27,6 +27,13 @@ module Morphosource::CatalogHelper
     ( document[config[:key]] || [] ).any? { |id| can? :read, id }
   end
 
+  # override helper method from Blacklight to work with facet fields where field != key
+  # @param [String] field Solr facet name
+  # @return [Blacklight::Configuration::FacetField] Blacklight facet configuration for the solr field
+  def facet_configuration_for_field(field)
+    blacklight_config.facet_fields[field] || super(field)
+  end
+
   def modalities_service_instance
     @modalities_service_instance ||= Morphosource::ModalitiesService.new
   end

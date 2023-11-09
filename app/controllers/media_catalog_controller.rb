@@ -9,40 +9,23 @@ class MediaCatalogController < CatalogController
     config.search_builder_class = Morphosource::Catalog::MediaCatalogSearchBuilder
 
     # facet fields
-    # type
-    config.add_facet_field solr_name("human_readable_media_type", :symbol), label: "Type", limit: 10
-    # modality - inherited from imaging event modality
-    config.add_facet_field solr_name("modality", :symbol), label: "Modality", limit: 10, helper_method: :modality_label_by_id
-    # object type - specimen or cho
-    config.add_facet_field solr_name("media_physical_object_type", :symbol), label: "Object Type", limit: 10
-    # organization that owns the object
-    config.add_facet_field solr_name("media_organization", :symbol), label: "Organization", limit: 10
-    # organization that manages the imaging device
-    config.add_facet_field solr_name("media_device_facility_organization", :symbol), label: "Imaging Facility", limit: 10
-
-    # publication status and licensing
-    config.add_facet_field solr_name("publication_status", :stored_sortable), label: "Publication", limit: 10
-    config.add_facet_field solr_name("rights_statement", :symbol), label: "Rights Statement", limit: 10, helper_method: :rights_statement_title_by_id
-    config.add_facet_field solr_name("license", :symbol), label: "CC License", limit: 10, helper_method: :license_title_by_id
-
-    # taxonomy
-    config.add_facet_field solr_name("taxonomy", :symbol), label: "Taxonomy", limit: 10
-
-    # tags
-    config.add_facet_field solr_name("keyword", :symbol), label: "Tag", limit: 10
-
-    # collections
-    config.add_facet_field solr_name('member_of_team_ids', :symbol), label: 'Team', limit: 10, helper_method: :collection_title_by_id
-    config.add_facet_field solr_name('member_of_project_ids', :symbol), label: 'Project', limit: 10, helper_method: :collection_title_by_id
-    config.add_facet_field solr_name('member_of_media_list_ids', :symbol), label: 'Media List', limit: 10, helper_method: :collection_title_by_id
-    config.add_facet_field solr_name('member_of_sequential_section_list_ids', :symbol), label: 'Seq. Section List', limit: 10, helper_method: :collection_title_by_id
-
-    # users
-    config.add_facet_field solr_name('user_with_ownership_name', :symbol), label: 'Data Manager', limit: 10
-    config.add_facet_field solr_name('depositor_name', :symbol), label: 'Data Uploader', limit: 10
-
-    # fund code
-    config.add_facet_field solr_name('active_fund_code_title', :symbol), label: 'Data Sponsor', limit: 10
+    config.add_facet_field "media_type", field: "human_readable_media_type_ssim", label: "Media Type", limit: 10
+    config.add_facet_field "modality", field: "modality_ssim", label: "Modality", limit: 10, helper_method: :modality_label_by_id
+    config.add_facet_field "object_type", field: "media_physical_object_type_ssim", label: "Object Type", limit: 10
+    config.add_facet_field "organization", field: "media_organization_ssim",label: "Organization", limit: 10
+    config.add_facet_field "imaging_facility", field: "media_device_facility_organization_ssim", label: "Imaging Facility", limit: 10
+    config.add_facet_field "publication_status", field: "publication_status_ssi", label: "Publication Status", limit: 10
+    config.add_facet_field "rights_statement", field: "rights_statement_ssim", label: "Rights Statement", limit: 10, helper_method: :rights_statement_title_by_id
+    config.add_facet_field "license", field: "license_ssim", label: "CC License",limit: 10, helper_method: :license_title_by_id
+    config.add_facet_field "taxonomy_name", field: "taxonomy_ssim", label: "Taxonomy (Name)", limit: 10
+    config.add_facet_field "tag", field: "keyword_ssim", label: "Tag", limit: 10
+    config.add_facet_field "team", field: "member_of_team_ids_ssim", label: 'Team', limit: 10, helper_method: :collection_title_by_id
+    config.add_facet_field "project", field: "member_of_project_ids_ssim", label: 'Project', limit: 10, helper_method: :collection_title_by_id
+    config.add_facet_field "media_list", field: "member_of_media_list_ids_ssim", label: 'Media List', limit: 10, helper_method: :collection_title_by_id
+    config.add_facet_field "seq_section_list", field: "member_of_sequential_section_list_ids_ssim", label: 'Seq. Section List', limit: 10, helper_method: :collection_title_by_id
+    config.add_facet_field "owner", field: "user_with_ownership_name_ssim", label: 'Data Manager', limit: 10
+    config.add_facet_field "depositor", field: "depositor_name_ssim", label: 'Data Uploader', limit: 10
+    config.add_facet_field "sponsor", field: "active_fund_code_title_ssim", label: 'Data Sponsor', limit: 10
 
     # Search Results Fields
     config.add_index_field solr_name("title", :stored_searchable), label: "Title", itemprop: 'name', if: false

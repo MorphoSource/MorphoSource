@@ -20,7 +20,7 @@ module Morphosource
           config.facet_fields = {}
           # membership facet added in before_action :create_membership_facet
           config.add_facet_field "visibility", field: "visibility_ssi", label: "Visibility", limit: 10, helper_method: :visibility_label
-          config.add_facet_field "type", field:"human_readable_type_ssim", label: "Collection Type", limit: 10
+          config.add_facet_field "type", field: "human_readable_type_ssim", label: "Collection Type", limit: 10
         end
       end
       configure_facets

@@ -12,13 +12,13 @@ RSpec.describe Morphosource::My::CollectionsController, type: :controller do
       described_class.configure_facets
     end
     describe 'visibility' do
-      subject { facet_fields['visibility_ssi']}
+      subject { facet_fields["visibility"]}
       it 'has a record visibility facet' do
         expect(subject.label).to eq("Visibility")
       end
     end
     describe 'type' do
-      subject { facet_fields['human_readable_type_ssim']}
+      subject { facet_fields["type"]}
       it 'has a collection type facet' do
         expect(subject.label).to eq("Collection Type")
         expect(subject.limit).to eq(10)

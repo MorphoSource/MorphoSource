@@ -11,31 +11,59 @@ RSpec.describe Morphosource::My::BiologicalSpecimensController, type: :controlle
       allow_any_instance_of(described_class).to receive(:search_builder_class).and_return("search_builder_class")
       described_class.configure_facets
     end
+
     describe 'source' do
-      subject { facet_fields['record_source_ssim']}
+      subject { facet_fields["record_source"]}
       it 'has a record source facet' do
         expect(subject.label).to eq("Source")
       end
     end
+
     describe 'organization' do
-      subject { facet_fields['organization_ssim']}
+      subject { facet_fields["organization"]}
       it 'has an organization facet' do
         expect(subject.label).to eq("Organization")
         expect(subject.limit).to eq(10)
       end
     end
-    describe 'project' do
-      subject { facet_fields['media_member_of_project_ids_ssim'] }
-      it 'has a project facet' do
-        expect(subject.label).to eq("Project")
+
+    describe 'taxonomy name' do
+      subject { facet_fields["taxonomy_name"]}
+      it 'has a taxonomy name facet' do
+        expect(subject.label).to eq("Taxonomy (Name)")
+        expect(subject.limit).to eq(10)
+      end
+    end
+
+    describe 'taxonomy gbif' do
+      subject { facet_fields["taxonomy_gbif"]}
+      it 'has a taxonomy gbif facet' do
+        expect(subject.label).to eq("Taxonomy (GBIF)")
+        expect(subject.limit).to eq(25)
+      end
+    end
+
+    describe 'media type' do
+      subject { facet_fields["media_type"]}
+      it 'has a media type facet' do
+        expect(subject.label).to eq("Media Type")
+        expect(subject.limit).to eq(10)
+      end
+    end
+
+    describe 'team' do
+      subject { facet_fields["team"] }
+      it 'has a team facet' do
+        expect(subject.label).to eq("Team")
         expect(subject.limit).to eq(10)
         expect(subject.helper_method).to eq(:collection_title_by_id)
       end
     end
-    describe 'team' do
-      subject { facet_fields['media_member_of_team_ids_ssim'] }
-      it 'has a team facet' do
-        expect(subject.label).to eq("Team")
+
+    describe 'project' do
+      subject { facet_fields["project"] }
+      it 'has a project facet' do
+        expect(subject.label).to eq("Project")
         expect(subject.limit).to eq(10)
         expect(subject.helper_method).to eq(:collection_title_by_id)
       end

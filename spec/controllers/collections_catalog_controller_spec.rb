@@ -29,18 +29,18 @@ RSpec.describe CollectionsCatalogController, :type => :controller do
       end
 
       describe 'human readable type' do
-        subject { facet_fields['human_readable_type_sim'] }
+        subject { facet_fields["type"] }
         it 'has the correct attributes' do
-          expect(subject.label).to eq("Type")
-          expect(subject.limit).to eq(5)
+          expect(subject.label).to eq("Project or Team")
+          expect(subject.limit).to eq(10)
         end
       end
 
       describe 'linked organization' do
-        subject { facet_fields['linked_organization_sim'] }
+        subject { facet_fields["organization"] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Organization")
-          expect(subject.limit).to eq(5)
+          expect(subject.limit).to eq(10)
         end
       end
     end

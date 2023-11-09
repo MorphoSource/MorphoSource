@@ -61,7 +61,7 @@ RSpec.describe Morphosource::Facets::Collections do
 
         # when clicking on 'more' to get paginated results
         # ordering the facet by number of results
-        get :facet, params: {:id => 'member_of_team_ids_ssim' }
+        get :facet, params: {:id => "team" }
         display_facet = subject.instance_variable_get(:@display_facet)
         item1 = display_facet.items[0]
         item2 = display_facet.items[1]
@@ -70,7 +70,7 @@ RSpec.describe Morphosource::Facets::Collections do
 
         # when clicking on 'more' to get paginated results
         # ordering the facet alphabetically by title
-        get :facet, params: { :id => 'member_of_team_ids_ssim', "facet.sort" => "index" }
+        get :facet, params: { :id => "team", "facet.sort" => "index" }
         display_facet = subject.instance_variable_get(:@display_facet)
         item1 = display_facet.items[0]
         item2 = display_facet.items[1]

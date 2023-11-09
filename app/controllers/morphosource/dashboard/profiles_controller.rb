@@ -139,24 +139,8 @@ module Morphosource
           redirect_to hyrax.dashboard_profile_path(@user.to_param)
         end
 
-        def decided_layout
-          return 'morphosource_dashboard'
-          case action_name
-          when 'edit_profile_type'
-            'morphosource_dashboard'
-          else
-            'morphosource_dashboard'
-          end
-        end
-
         def decide_layout
-          case action_name
-           when 'edit_profile_type'
-             layout = 'morphosource_base'
-           else
-             layout = 'morphosource_dashboard'
-           end
-           File.join(theme, layout)
+          File.join(theme, ( action_name == 'edit_profile_type' ) ? 'morphosource_base' : 'morphosource_dashboard' )
         end
 
     end

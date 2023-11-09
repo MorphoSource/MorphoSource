@@ -16,12 +16,9 @@ module Morphosource
       end
 
       facet_config = facet_configuration_for_field(field)
-
       url_field = facet_config.key
 
       value = facet_value_for_facet_item(item)
-
-      #p = reset_search_params
 
       # need to dup the facet values too,
       # if the values aren't dup'd, then the values
@@ -55,7 +52,6 @@ module Morphosource
       end
 
       facet_config = facet_configuration_for_field(field)
-
       url_field = facet_config.key
 
       value = facet_value_for_facet_item(item)

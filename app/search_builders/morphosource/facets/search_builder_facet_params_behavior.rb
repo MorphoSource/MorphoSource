@@ -7,9 +7,9 @@ module Morphosource
   
         # Add fq params with f.<facet> format
         blacklight_params
-          .select { |param, value| param.start_with?("f.") && value.present? }
+          .select { |param, value| param.to_s.start_with?("f.") && value.present? }
           .each do |param, value|
-            facet_field = param.sub "f.", "" 
+            facet_field = param.to_s.sub("f.", "") 
             Array(value).reject(&:blank?).each do |v|
               solr_parameters.append_filter_query facet_value_to_fq_string(facet_field, v)
             end

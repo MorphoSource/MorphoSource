@@ -10,36 +10,36 @@ settings:
   last_name: 
   city:
     private_for:
-      - "all"
+      - all
   typical_usage: 
     private_for:
-      - "all"
+      - all
   profile_type: 
   academic_institution_or_school:
     private_for: 
-      - "Faculty or Staff (K-12)"
-      - "Student (K-12)"
+      - Faculty or Staff (K-12)
+      - Student (K-12)
   department: 
   academic_field: 
     private_for:
-      - "all"
+      - all
   academic_subfield:
     private_for:
-      - "all"
+      - all
   mentor_or_advisor: 
     private_for:
-      - "all"
+      - all
   instructor: 
     private_for:
-      - "all"
+      - all
   email: 
   display_name: 
   address: 
     private_for:
-      - "all"
+      - all
   state:
     private_for:
-      - "all"
+      - all
   country: 
   website: 
   affiliation: 
@@ -49,4 +49,4 @@ settings:
   demographics: 
   intent: 
     private_for:
-      - "all"
+      - all

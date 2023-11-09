@@ -1,7 +1,7 @@
 # config/models/user_profile_types.yml
 profile_types:
   universal:
-    label: ""
+    label: 
     required_metadata_fields:
       - email
       - first_name
@@ -17,7 +17,7 @@ profile_types:
       - website
       - typical_usage
   faculty: 
-    label: "Faculty or Staff (University, Museum, and/or Library)"
+    label: Faculty or Staff (University, Museum, and/or Library)
     required_metadata_fields:
       - academic_institution_or_school
       - department
@@ -25,17 +25,17 @@ profile_types:
     metadata_fields:
       - academic_subfield
     demographics:
-      - "Faculty (Univ or Post-Secondary)"
-      - "Faculty (Post-Graduate)"
-      - "University Staff"
-      - "General Educator"
-      - "Museum Curator or Collections Manager"
-      - "Museum Staff"
-      - "Librarian"
-      - "IT Professional"
-      - "Researcher"
+      - Faculty (Univ or Post-Secondary)
+      - Faculty (Post-Graduate)
+      - University Staff
+      - General Educator
+      - Museum Curator or Collections Manager
+      - Museum Staff
+      - Librarian
+      - IT Professional
+      - Researcher
   faculty_k12: 
-    label: "Faculty or Staff (K-12)"
+    label: Faculty or Staff (K-12)
     required_metadata_fields:
       - academic_institution_or_school
       - department
@@ -43,13 +43,13 @@ profile_types:
     metadata_fields:
       - academic_subfield
     demographics:
-      - "Faculty (K-6)"
-      - "Faculty (7-12)"
-      - "General Educator"
-      - "Librarian"
-      - "IT Professional"
+      - Faculty (K-6)
+      - Faculty (7-12)
+      - General Educator
+      - Librarian
+      - IT Professional
   educator_other:
-    label: "Educator (Other)"
+    label: Educator (Other)
     required_metadata_fields:
       - academic_institution_or_school
       - academic_field
@@ -58,13 +58,13 @@ profile_types:
       - department
       - academic_subfield
     demographics:
-      - "Faculty (K-6)"
-      - "Faculty (7-12)"
-      - "Faculty (University or Post-Secondary)"
-      - "Faculty (Post-Graduate)"
-      - "General Educator" 
+      - Faculty (K-6)
+      - Faculty (7-12)
+      - Faculty (University or Post-Secondary)
+      - Faculty (Post-Graduate)
+      - General Educator 
   student_postgrad:
-    label: "Student (Post-Graduate)"
+    label: Student (Post-Graduate)
     required_metadata_fields:
       - academic_institution_or_school
       - department
@@ -73,9 +73,9 @@ profile_types:
     metadata_fields:
       - academic_subfield
     demographics:
-      - "Student (Post-Graduate)"
+      - Student (Post-Graduate)
   student_undergrad: 
-    label: "Student (Undergraduate)"
+    label: Student (Undergraduate)
     required_metadata_fields:
       - academic_institution_or_school
       - academic_field
@@ -83,35 +83,35 @@ profile_types:
       - department
       - instructor
     demographics:
-      - "Student (University or Post-Secondary)"
+      - Student (University or Post-Secondary)
   student_k12:
-    label: "Student (K-12)"
+    label: Student (K-12)
     required_metadata_fields:
       - academic_institution_or_school
     metadata_fields:
       - instructor
     demographics:
-      - "Student (Grades K-6)"
-      - "Student (Grades 7-12)"
+      - Student (Grades K-6)
+      - Student (Grades 7-12)
   professional:
-    label: "Private Industry or Government Professional"
+    label: Private Industry or Government Professional
     required_metadata_fields:
       - affiliation
     metadata_fields:
     demographics:
-      - "Private Industry Professional"
-      - "Government Employee"
-      - "IT Professional"
+      - Private Industry Professional
+      - Government Employee
+      - IT Professional
   artist:
-    label: "Artist"
+    label: Artist
     required_metadata_fields:
     metadata_fields:
       - affiliation
     demographics:
-      - "Artist"
+      - Artist
   individual:
-    label: "Private Individual or Other"
+    label: Private Individual or Other
     required_metadata_fields:
     metadata_fields:
     demographics:
-      - "Private Individual"
+      - Private Individual

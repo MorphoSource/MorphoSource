@@ -13,8 +13,8 @@ module Morphosource
         profile_type_config.each do |prof_type, data|
           next if prof_type == 'universal'
 
-          metadata_fields = data['metadata_fields']
-          required_metadata_fields = data['required_metadata_fields']
+          metadata_fields = data['metadata_fields'] || []
+          required_metadata_fields = data['required_metadata_fields'] || []
 
           case type
           when :required

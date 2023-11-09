@@ -9,27 +9,37 @@ settings:
   middle_name: 
   last_name: 
   city:
-    private_for: ["all"]
+    private_for:
+      - "all"
   typical_usage: 
-    private_for: ["all"]
+    private_for:
+      - "all"
   profile_type: 
   academic_institution_or_school:
-    private_for: ["Faculty or Staff (K-12)", "Student (K-12)"]
+    private_for: 
+      - "Faculty or Staff (K-12)"
+      - "Student (K-12)"
   department: 
   academic_field: 
-    private_for: ["all"]
+    private_for:
+      - "all"
   academic_subfield:
-    private_for: ["all"]
+    private_for:
+      - "all"
   mentor_or_advisor: 
-    private_for: ["all"]
+    private_for:
+      - "all"
   instructor: 
-    private_for: ["all"]
+    private_for:
+      - "all"
   email: 
   display_name: 
   address: 
-    private_for: ["all"]
+    private_for:
+      - "all"
   state:
-    private_for: ["all"]
+    private_for:
+      - "all"
   country: 
   website: 
   affiliation: 
@@ -38,4 +48,5 @@ settings:
   twitter_handle: 
   demographics: 
   intent: 
-    private_for: ["all"]
+    private_for:
+      - "all"

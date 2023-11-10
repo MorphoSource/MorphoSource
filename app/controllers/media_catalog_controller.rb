@@ -18,6 +18,7 @@ class MediaCatalogController < CatalogController
     config.add_facet_field "rights_statement", field: "rights_statement_ssim", label: "Rights Statement", limit: 10, helper_method: :rights_statement_title_by_id
     config.add_facet_field "license", field: "license_ssim", label: "CC License",limit: 10, helper_method: :license_title_by_id
     config.add_facet_field "taxonomy_name", field: "taxonomy_ssim", label: "Taxonomy (Name)", limit: 10
+    config.add_facet_field "taxonomy_gbif", field: "external_taxonomy_ssim", label: "Taxonomy (GBIF)", limit: 25
     config.add_facet_field "tag", field: "keyword_ssim", label: "Tag", limit: 10
     config.add_facet_field "team", field: "member_of_team_ids_ssim", label: 'Team', limit: 10, helper_method: :collection_title_by_id
     config.add_facet_field "project", field: "member_of_project_ids_ssim", label: 'Project', limit: 10, helper_method: :collection_title_by_id
@@ -30,7 +31,7 @@ class MediaCatalogController < CatalogController
     # Search Results Fields
     config.add_index_field solr_name("title", :stored_searchable), label: "Title", itemprop: 'name', if: false
     config.add_index_field solr_name("physical_object_id", :stored_searchable), label: "Object", helper_method: :link_to_object
-    config.add_index_field solr_name("taxonomy", :stored_searchable), label: "Taxonomy"
+    config.add_index_field solr_name("taxonomy", :stored_searchable), label: "Taxonomy", helper_method: :italicize_taxonomy
     config.add_index_field solr_name("part", :stored_searchable), label: "Element or Part"
     config.add_index_field solr_name("human_readable_modality", :stored_searchable), label: "Modality"
     config.add_index_field solr_name("member_of_sequential_section_list_ids", :symbol), label: "Sequential Section List", if: :can_read_any, helper_method: :link_to_sequential_section_lists

@@ -22,7 +22,7 @@ class ObjectsCatalogController < CatalogController
 
     # search results display fields
     config.add_index_field solr_name("title", :stored_searchable), label: "Title", itemprop: 'name', if: false
-    config.add_index_field solr_name("taxonomy", :stored_searchable), label: "Taxonomy"
+    config.add_index_field solr_name("taxonomy", :stored_searchable), label: "Taxonomy", helper_method: :italicize_taxonomy
     config.add_index_field solr_name("organization", :stored_searchable), label: "Organization"
     config.add_index_field solr_name("human_readable_type", :stored_searchable), label: "Type"
     # do not show if object is a cho

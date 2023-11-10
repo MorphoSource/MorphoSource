@@ -296,10 +296,12 @@ class CatalogController < ApplicationController
       format.html { store_preferred_view }
       format.rss  { render :layout => false }
       format.json do
-        @presenter = Blacklight::JsonPresenter.new(@response,
-                                                   @document_list.map { |d| d.to_semantic_values },
-                                                   facets_from_request,
-                                                   blacklight_config)
+        @presenter = Morphosource::JsonPresenter.new(
+          @response,
+          @document_list.map { |d| d.to_semantic_values },
+          facets_from_request.reject { |f| f.name == "generic_type_sim" },
+          blacklight_config
+        )
       end
       format.csv do
         # Stream CSV since it might be very large

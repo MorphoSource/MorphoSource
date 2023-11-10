@@ -1,4 +1,10 @@
 module Morphosource::CatalogHelper
+  # ensure Taxonomy names are in italics
+  def italicize_taxonomy(args)
+    args[:value].map do |value|
+      tag.div(tag.i(sanitize(value)))
+    end.join.html_safe
+  end
 
   # media index metadata displays title linked to physical object
   def link_to_object(args)

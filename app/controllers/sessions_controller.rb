@@ -1,9 +1,7 @@
 require 'digest'
 
 class SessionsController < Devise::SessionsController
-  include Morphosource::Dashboard::ProfilesControllerBehavior
   prepend_before_action :require_no_authentication, only: [:edit_profile_type]
-  before_action :prep_metadata_and_demographics, only: [:edit_profile_type]
   before_action :check_profile_type, only: :create
 
   def check_profile_type
@@ -42,12 +40,6 @@ class SessionsController < Devise::SessionsController
     clean_up_passwords(resource)
     yield resource if block_given?
     respond_with(resource, serialize_options(resource))
-  end
-
-  def prep_metadata_and_demographics
-    @all_metadata_fields = all_metadata_fields_hash
-    @required_metadata_fields = required_metadata_fields_hash
-    @all_demographics_values = all_demographics_values_hash
   end
 
   def new

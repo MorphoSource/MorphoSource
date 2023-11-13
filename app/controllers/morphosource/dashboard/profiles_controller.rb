@@ -4,14 +4,12 @@ module Morphosource
 
       with_themed_layout :decide_layout
       helper Morphosource::UserProfile::UserProfileHelper
-      include Morphosource::Dashboard::ProfilesControllerBehavior
 
       before_action :find_user
       before_action :authenticate_user!
       before_action :authorize_edit, only: [:show]
       before_action :strip_empty_values, only: [:update]
       before_action :check_profile_type, only: [:update]
-      before_action :prep_metadata_and_demographics, only: [:edit, :update, :show, :edit_profile_type]
       authorize_resource class: '::User', instance_name: :user
 
       def show
@@ -19,12 +17,17 @@ module Morphosource
         add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
         add_breadcrumb t(:'hyrax.admin.sidebar.profile'), hyrax.dashboard_profile_path
         @presenter = Morphosource::UserProfilePresenter.new(@user, current_ability)
-        @private_fields = private_fields(@user)
         @is_current_user_or_admin = current_user.present? && ( (@user == current_user) || current_user.admin? )
         @dashboard = @_request.fullpath.include?("/dashboard/profiles/")
       end
 
+      def edit
+        @presenter = Morphosource::UserProfilePresenter.new(@user, current_ability)
+        super
+      end
+
       def edit_profile_type          
+        @presenter = Morphosource::UserProfilePresenter.new(@user, current_ability)
       end
 
       def edit_password
@@ -34,14 +37,9 @@ module Morphosource
         render 'edit_password'
       end
 
-      def prep_metadata_and_demographics
-        @all_metadata_fields = all_metadata_fields_hash
-        @required_metadata_fields = required_metadata_fields_hash
-        @all_demographics_values = all_demographics_values_hash
-      end
-
       # Process changes from profile form
       def update
+        @presenter = Morphosource::UserProfilePresenter.new(@user, current_ability)
         if conditionally_update
           handle_successful_update
           if @user.unconfirmed_email

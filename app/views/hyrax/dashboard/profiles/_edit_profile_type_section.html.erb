@@ -5,11 +5,11 @@
   </div>
 </div>
 
-<%= render partial: 'hyrax/dashboard/profiles/ms_profile_metadata', collection: @all_metadata_fields.keys, as: :member, :locals => { f: f } %>
+<%= render partial: 'hyrax/dashboard/profiles/ms_profile_metadata', collection: @presenter.all_metadata_fields.keys, as: :member, :locals => { f: f } %>
 
 <div class="checkbox-form-group dg-group row">
   <%= f.label :demographics, (t("morphosource.dashboard.profiles.edit_primary.demographics") + " (Choose One or More)").html_safe, class: 'col-sm-4 control-label required' %>
   <div class="col-sm-8">
-    <%= render partial: 'hyrax/dashboard/profiles/ms_profile_demographics', locals: {field: 'demographics', values: @all_demographics_values, f: f} %>
+    <%= render partial: 'hyrax/dashboard/profiles/ms_profile_demographics', locals: {field: 'demographics', values: @presenter.all_demographics_values, f: f} %>
   </div>
 </div>

@@ -2,7 +2,9 @@ class FundCodeChargesController < ApplicationController
   with_themed_layout 'morphosource_dashboard'
 
   def index
-    if require_permissions
+    if current_user.present? || api_request_with_token?
+      authorize_user_or_api_token!
+
       add_breadcrumb t(:'hyrax.controls.home'), root_path
       add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
       add_breadcrumb t(:'morphosource.admin.fund_code_charges.header'), main_app.fund_code_charges_path
@@ -21,9 +23,12 @@ class FundCodeChargesController < ApplicationController
         format.csv { send_data @charges.to_csv, filename: "charges-#{Date.today}.csv" }
       end
     else
+      # user not logged in and no token present for JSON API request
+      # redirect to root with Not Found flash if web, or 401 unauthorized by JSON
       respond_to do |format|
+        format.html { raise CanCan::AccessDenied }
         format.json { 
-          render_json_response(response_type: :forbidden)
+          render_json_response(response_type: :unauthorized)
         }
       end
     end
@@ -43,16 +48,21 @@ class FundCodeChargesController < ApplicationController
     @end_date ||= ( params[:end_date] || search_params[:end_date] )
   end
 
-  def require_permissions
-    request.format.json? ? authorize_api_request : authorize!(:read, :admin_dashboard)
+  def api_request_with_token?
+    request.format.json? && api_token_from_request.present?
   end
 
-  def authorize_api_request
+  def api_token_from_request
+    _, token = ActionController::HttpAuthentication::Basic::user_name_and_password(request)
+    return token
+  end
+
+  def authorize_user_or_api_token!
     if current_user.present?
       authorize! :read, :admin_dashboard
     else
-      user, pass = ActionController::HttpAuthentication::Basic::user_name_and_password(request)
-      pass.present? && auth_api_key(pass)
+      _, token = ActionController::HttpAuthentication::Basic::user_name_and_password(request)
+      raise CanCan::AccessDenied unless request.format.json? && token.present? && auth_api_key(token)
     end
   end
 

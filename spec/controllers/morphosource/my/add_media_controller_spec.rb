@@ -27,12 +27,15 @@ RSpec.describe Morphosource::My::AddMediaController, type: :controller do
     end
 
     context 'user is not authorized to edit the collection' do
+      let(:main_app) { Rails.application.routes.url_helpers }
+      
       before do
         sign_in user
         get :index, params: { collection_id: project.id }
       end
-      it 'is unauthorized' do
-        expect(response.status).to eq(401)
+      it 'redirects to site root with not found or unavailable flash' do
+        expect(response.status).to eq(302)
+        expect(response).to redirect_to main_app.root_path(locale: 'en')
       end
     end
 

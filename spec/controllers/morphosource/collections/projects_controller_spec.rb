@@ -104,11 +104,11 @@ RSpec.describe Morphosource::Collections::ProjectsController, type: :controller 
         end
 
         context 'when temporary link URL has been revoked' do
-          it 'user is redirected to sign-in page without authorization' do
+          it 'user is redirected to site root with not found flash without authorization' do
             temporary_link.destroy!
             get :show, params: { id: project.id, token: temporary_link.token }
             expect(response.status).to eq(302)
-            expect(response).to redirect_to main_app.new_user_session_path(locale: 'en')
+            expect(response).to redirect_to main_app.root_path(locale: 'en')
           end
         end
       end

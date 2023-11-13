@@ -32,9 +32,9 @@ RSpec.describe Hyrax::Dashboard::NestCollectionsController, type: :controller do
 
   describe 'create_relationship_under' do
     context 'user is not authorized to edit both parent and child' do
-      it 'is unauthorized' do
+      it 'redirects to root with not found or unavailable flash' do
         post :create_relationship_under, params: params
-        expect(response.status).to eq(401)
+        expect(response.status).to eq(302)
       end
     end
     context 'user is authorized' do
@@ -70,9 +70,9 @@ RSpec.describe Hyrax::Dashboard::NestCollectionsController, type: :controller do
 
   describe 'remove_relationship_under' do
     context 'user is not authorized to edit the parent' do
-      it 'is unauthorized' do
+      it 'redirects to root with not found or unavailable flash' do
         post :remove_relationship_under, params: params
-        expect(response.status).to eq(401)
+        expect(response.status).to eq(302)
       end
     end
     context 'user is authorized' do

@@ -49,16 +49,19 @@ RSpec.describe Morphosource::Admin::TemporaryMediaAccessLinksController, :type =
     end
 
     context 'when user is not data manager for media and cannot create temporary access links' do
+      let(:main_app) { Rails.application.routes.url_helpers }
+
       before do 
         allow(controller).to receive(:current_user) { public_user }
       end
 
-      it 'temporary access link is not created and response is error' do
+      it 'temporary access link is not created and response redirects to site root with not found or unavailable flash' do
         expect{
         process :create, method: :post, params: params
         }.to change{TemporaryMediaAccessLink.count}.by 0
 
-        expect(response).to have_http_status 401
+        expect(response).to have_http_status 302
+        expect(response).to redirect_to main_app.root_path(locale: 'en')
       end 
     end
   end
@@ -102,16 +105,19 @@ RSpec.describe Morphosource::Admin::TemporaryMediaAccessLinksController, :type =
     end
 
     context 'user is not able to delete temporary media access link' do
+      let(:main_app) { Rails.application.routes.url_helpers }
+      
       before do
         sign_in public_user
       end
 
-      it 'temporary access link is not deleted and page is redirected' do
+      it 'temporary access link is not deleted and page is redirected to site root with not found or unavailable flash' do
         expect{
           process :destroy, method: :delete, params: { id: temporary_link.id } 
         }.to change{TemporaryMediaAccessLink.count}.by(0)
   
-        expect(response).to have_http_status 401
+        expect(response).to have_http_status 302
+        expect(response).to redirect_to main_app.root_path(locale: 'en')
       end 
     end
   end

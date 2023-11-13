@@ -4,6 +4,7 @@ module Morphosource
 
       with_themed_layout :decide_layout
       helper Morphosource::UserProfile::UserProfileHelper
+      include Morphosource::Dashboard::ProfilesControllerBehavior
 
       before_action :find_user
       before_action :authenticate_user!

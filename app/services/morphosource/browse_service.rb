@@ -23,28 +23,26 @@ module Morphosource
       return solr.facet_fields(facet_fields)
     end
 
-    def total_media_by_org(organization_id)
+    def total_media_and_po_by_org(organization_id)
+      doc = SolrDocument.find(organization_id)
+      qry = "media_organization_id_ssim:#{organization_id}"
+      if doc['team_id_tesim'].present?
+        qry += " OR member_of_team_ids_ssim:#{doc['team_id_tesim'].first}"
+      end
+      facet_fields = [
+        "physical_object_id_tesim"
+      ]
       params = {
         rows: 0,
         fq: [
-          "media_organization_id_ssim:#{organization_id}",
+          qry,
           "(has_model_ssim:Media)"
-        ]
+        ],
+        "facet.limit": -1
       }
-      solr.get(nil, params)
-      solr.count
-    end
-
-    def total_po_by_org(organization_id)
-      params = {
-        rows: 0,
-        fq: [
-          "organization_id_ssim:#{organization_id}",
-          "(has_model_ssim:BiologicalSpecimen OR has_model_ssim:CulturalHeritageObject)"
-        ]
-      }
-      solr.get(nil, params)
-      solr.count
+      solr.get_facet_fields(nil, facet_fields, params)
+      facet_results = solr.facet_fields(facet_fields)
+      return solr.count, facet_results["physical_object_id_tesim"].size
     end
 
     def total_media_and_po_by_collection(collection_id)

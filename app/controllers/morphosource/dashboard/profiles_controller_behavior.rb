@@ -1,8 +1,6 @@
-# this module is shared by ProfilesController and RegistrationsController
-# mainly for validating and handling user profile type and related fields
 module Morphosource
-  module UserProfile
-    module ProfilesBehavior
+  module Dashboard
+    module ProfilesControllerBehavior
 
       def valid_profile_types
         @valid_profile_types ||= profile_type_config.values.map { |profile| profile['label'] }.compact

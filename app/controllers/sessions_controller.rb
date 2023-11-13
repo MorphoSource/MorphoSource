@@ -1,7 +1,7 @@
 require 'digest'
 
 class SessionsController < Devise::SessionsController
-  include Morphosource::UserProfile::ProfilesBehavior
+  include Morphosource::Dashboard::ProfilesControllerBehavior
   prepend_before_action :require_no_authentication, only: [:edit_profile_type]
   before_action :prep_metadata_and_demographics, only: [:edit_profile_type]
   before_action :check_profile_type, only: :create

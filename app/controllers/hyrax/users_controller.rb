@@ -1,7 +1,7 @@
 module Hyrax
   class UsersController < ApplicationController
     include Blacklight::SearchContext
-    include Morphosource::UserProfile::ProfilesBehavior
+    include Morphosource::Dashboard::ProfilesControllerBehavior
     prepend_before_action :find_user, only: [:show, :make_user_active, :make_user_inactive]
     before_action :prep_metadata_and_demographics, only: [:show]
 

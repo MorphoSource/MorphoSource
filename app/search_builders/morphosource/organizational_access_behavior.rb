@@ -24,7 +24,6 @@ module Morphosource
     # end
 
     def gated_discovery_filters(permission_types = discovery_permissions, ability = current_ability)
-      byebug
       [:apply_user_permissions, :apply_group_permissions, :apply_organization_permissions].map { |method| send(method, permission_types, ability).reject(&:blank?) }.reject(&:empty?)
     end
 

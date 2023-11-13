@@ -35,11 +35,11 @@ module Morphosource
       # save abilities so we won't have to check multiple times in views.
       @can_edit = current_ability.can? :edit, @collection
       @can_deposit = current_ability.can? :deposit, @collection
+      byebug
       presenter
+      byebug
       (@media_count, @object_ids) = collection_media
-      byebug
       (@response, @document_list) = query_solr
-      byebug
       publication_settings_nag
       query_collection_counts
       query_collection_members
@@ -61,9 +61,12 @@ module Morphosource
     private
 
       def presenter
+        byebug
         @presenter ||= begin
           curation_concern = @curation_concern.present? ? SolrDocument.find(@curation_concern.id) : SolrDocument.find(params[:id])
+          byebug
           raise CanCan::AccessDenied unless (curation_concern && current_ability.can?(:read, curation_concern))
+          byebug
           presenter_class.new(curation_concern, current_ability)
         end
       end
@@ -117,7 +120,6 @@ module Morphosource
       end
 
       def query_solr
-        byebug
         search_results(params)
       end
 
@@ -127,9 +129,7 @@ module Morphosource
 
       def collection_media
         repository.blacklight_config.max_per_page = 999999
-        byebug
         response = repository.search(media_objects_search_builder_class.new(scope: self, collection: @collection).rows(999999)).response
-        byebug
         media_count = response["numFound"].to_i
         object_ids = response["docs"].map{|d| d["physical_object_id_ssim"].try(:first)}.compact.uniq
         [media_count, object_ids]

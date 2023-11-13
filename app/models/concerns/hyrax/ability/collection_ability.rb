@@ -46,6 +46,7 @@ module Hyrax
           end
 
           can :read, ::Collection do |collection| # public show page  # for test by solr_doc, see solr_document_ability.rb
+            byebug
             test_read(collection.id)
           end
         end

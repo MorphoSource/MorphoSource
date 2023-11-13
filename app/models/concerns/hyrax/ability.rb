@@ -129,11 +129,11 @@ module Hyrax
 
       def user_abilities
         can [
-          :edit, 
-          :edit_password, 
-          :generate_new_api_key, 
-          :update, 
-          :update_password, 
+          :edit,
+          :edit_password,
+          :generate_new_api_key,
+          :update,
+          :update_password,
           :toggle_trophy
         ], ::User, id: current_user.id
         can :show, ::User
@@ -225,7 +225,7 @@ module Hyrax
       end
 
       def curation_concerns_models
-        [::FileSet, ::Collection, ::MediaList, ::SequentialSectionList] +
+        [::FileSet, ::Collection, ::MediaList, ::SequentialSectionList, ::OrganizationCollection] +
         Hyrax.config.curation_concerns
       end
 

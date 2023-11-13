@@ -345,6 +345,20 @@ class CatalogController < ApplicationController
     false
   end
 
+  protected
+
+  # override blacklight error handler to raise 404 responses in application format
+  # can't rely on ApplicationController due to Blacklight also using rescue_from
+  def invalid_document_id_error(exception)
+    respond_to do |format|
+      format.json { 
+        render json: { code: 404, message: t("cancan.not_found.message"), description: t("cancan.not_found.description")}, status: :not_found 
+      }
+      format.html { redirect_to main_app.root_url, notice: "#{t("cancan.not_found.message")}: #{t("cancan.not_found.description")}" }
+      format.js   { render nothing: true, status: :not_found }
+    end
+  end
+
   private
 
   def csv_enumerator

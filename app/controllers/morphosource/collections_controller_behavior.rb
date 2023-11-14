@@ -124,7 +124,7 @@ module Morphosource
 
       def collection_media
         repository.blacklight_config.max_per_page = 999999
-        response = repository.search(Morphosource::Collections::MediaObjectsSearchBuilder.new(scope: self, collection: @collection).rows(999999)).response
+        response = repository.search(media_objects_search_builder_class.new(scope: self, collection: @collection).rows(999999)).response
         media_count = response["numFound"].to_i
         object_ids = response["docs"].map{|d| d["physical_object_id_ssim"].try(:first)}.compact.uniq
         [media_count, object_ids]

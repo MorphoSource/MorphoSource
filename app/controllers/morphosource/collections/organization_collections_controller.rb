@@ -28,6 +28,10 @@ module Morphosource
         Morphosource::Collections::OrganizationCollections::MediaSearchBuilder
       end
 
+      def media_objects_search_builder_class
+        Morphosource::Collections::OrganizationCollections::MediaObjectsSearchBuilder
+      end
+
       private
 
         # link for facet filters

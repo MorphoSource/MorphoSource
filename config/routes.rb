@@ -143,13 +143,13 @@ Rails.application.routes.draw do
       # organization_collections
       get 'organizations/:id', to: 'organization_collections#show', as: 'organization'
       get 'organizations/:id', to: 'organization_collections#show', as: 'organization_collection'
-      get 'organizations/:id/biological_specimens', to: 'biological_specimens#show', as: 'organization_specimens'
-      get 'organizations/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show', as: 'organization_chos'
+      get 'organizations/:id/biological_specimens', to: 'organization_collections/physical_objects/biological_specimens#show', as: 'organization_specimens'
+      get 'organizations/:id/cultural_heritage_objects', to: 'organization_collections/physical_objects/cultural_heritage_objects#show', as: 'organization_chos'
       get 'organizations/:id/devices', to: 'devices#show', as: 'organization_devices'
       get 'organizations/:id/about', to: 'organization_collections#about', as: 'organization_about'
       get 'organizations/:collection_id/facet/:id', to: 'organization_collections#facet', as: 'organization_media_facet'
-      get 'organizations/:collection_id/biological_specimens/facet/:id', to: 'biological_specimens#facet', as: 'organization_specimens_facet'
-      get 'organizations/:collection_id/cultural_heritage_objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'organization_chos_facet'
+      get 'organizations/:collection_id/biological_specimens/facet/:id', to: 'organization_collections/physical_objects/biological_specimens#facet', as: 'organization_specimens_facet'
+      get 'organizations/:collection_id/cultural_heritage_objects/facet/:id', to: 'organization_collections/physical_objects/cultural_heritage_objects#facet', as: 'organization_chos_facet'
       get 'organizations/:collection_id/devices/facet/:id', to: 'devices#facet', as: 'organization_devices_facet'
 
       # csv exports

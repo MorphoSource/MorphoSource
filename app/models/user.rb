@@ -181,19 +181,21 @@ class User < ApplicationRecord
   def can_submit_remote_file?(url, org_id)
     return false unless self.remote_file_submitter? && org_id.present?
     begin
-      team = Organization.find(org_id)&.team
+      byebug
+      org = ActiveFedora::Base.find(org_id)
+      team = org.class == OrganizationCollection ? org : org&.team_id
     rescue ActiveFedora::ObjectNotFoundError
       Rails.logger.debug "Error in can_submit_remote_file: organization not found"
       return false
     end
     return false unless team.present?
     if url.nil?
-      # if url not available (e.g. determine to show/hide remote file tab), 
-      # no need to check domain.  Instead, check the permission at the team level and 
+      # if url not available (e.g. determine to show/hide remote file tab),
+      # no need to check domain.  Instead, check the permission at the team level and
       # the user's allowed_domains list for the team
       return team.can_submit_remote_files? && team.allowed_remote_source.present? &&
         allowed_domains[team.id].present?
-    end    
+    end
 
     return false unless allowed_domains[team.id].present?
     white_list = allowed_domains[team.id].split(/\n+|\r+/).reject(&:empty?)

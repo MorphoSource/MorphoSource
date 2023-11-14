@@ -25,7 +25,7 @@ module Morphosource
 
     def total_media_and_po_by_org(organization_id)
       doc = SolrDocument.find(organization_id)
-      qry = "media_organization_id_ssim:#{organization_id}"
+      qry = "media_organization_id_ssim:#{organization_id} OR media_device_facility_organization_id_ssim:#{organization_id}"
       if doc['team_id_tesim'].present?
         qry += " OR member_of_team_ids_ssim:#{doc['team_id_tesim'].first}"
       end

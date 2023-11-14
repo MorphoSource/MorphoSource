@@ -23,8 +23,6 @@ module Hyrax
       user = ::User.from_url_component(params[:id])
       return redirect_to root_path, alert: "User '#{params[:id]}' does not exist" if user.nil?
       @presenter = Morphosource::UserProfilePresenter.new(user, current_ability)
-      @is_current_user_or_admin = current_user.present? && ( (user == current_user) || current_user.admin? )
-      @dashboard = @_request.fullpath.include?("/dashboard/profiles/")
     end
 
     def make_user_active

@@ -26,7 +26,7 @@ check the field can be displayed (if user is current user, admin, or if field is
       ],
       as: :field_name, :locals => { user: user } %>
 
-    <% if @is_current_user_or_admin %>
+    <% if current_user&.admin? || (user == current_user) %>
       <% if user.batch_submission_contributor? && user.sftp_share.present? %>
       <div class="row">
         <div class="col-xs-3 showcase-label">SFTP Share</div>

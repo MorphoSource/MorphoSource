@@ -18,8 +18,6 @@ module Morphosource
         add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
         add_breadcrumb t(:'hyrax.admin.sidebar.profile'), hyrax.dashboard_profile_path
         @presenter = Morphosource::UserProfilePresenter.new(@user, current_ability)
-        @is_current_user_or_admin = current_user.present? && ( (@user == current_user) || current_user.admin? )
-        @dashboard = @_request.fullpath.include?("/dashboard/profiles/")
       end
 
       def edit

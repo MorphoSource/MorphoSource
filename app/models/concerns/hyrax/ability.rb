@@ -34,7 +34,8 @@ module Hyrax
                              :permission_template_abilities,
                              :solr_document_abilities,
                              :trophy_abilities,
-                             :temporary_link_abilities]
+                             :temporary_link_abilities,
+                             :organizational_member_abilities]
     end
 
     # Samvera doesn't use download user/groups, so make it an alias to read
@@ -129,6 +130,7 @@ module Hyrax
 
       def user_abilities
         can [
+<<<<<<< HEAD
           :edit, 
           :edit_profile_type,
           :edit_password, 
@@ -136,6 +138,13 @@ module Hyrax
           :update, 
           :update_profile_type,
           :update_password, 
+=======
+          :edit,
+          :edit_password,
+          :generate_new_api_key,
+          :update,
+          :update_password,
+>>>>>>> ca78b3f2 (add org-linked view ability)
           :toggle_trophy
         ], ::User, id: current_user.id
         can :show, ::User

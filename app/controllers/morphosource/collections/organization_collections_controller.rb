@@ -8,7 +8,7 @@ module Morphosource
       before_action :redirect_to_collection_type, only: []
 
       # temporary restriction so only admins can access organizations
-      before_action :authorize_admin
+      # before_action :authorize_admin
 
       before_action :load_organization, only: [:show, :facet, :about,
         :media_projects, :media_organization_transfer_status,
@@ -22,6 +22,10 @@ module Morphosource
 
       def collection_type
         Hyrax::CollectionType.find_by(title: 'Organization')
+      end
+
+      def search_builder_class
+        Morphosource::Collections::OrganizationCollections::MediaSearchBuilder
       end
 
       private

@@ -1,5 +1,5 @@
 class RegistrationsController < Devise::RegistrationsController
-  include Morphosource::Users::ProfileHelper
+  include Morphosource::UserProfile::ProfileHelper
 
   with_themed_layout 'morphosource_1_column'
   before_action :strip_empty_values, :check_profile_type, only: [:create]

@@ -102,13 +102,20 @@ module Morphosource
 
       def sorted_metadata_fields
         @sorted_metadata_fields ||=  begin 
-          non_universal_fields = non_universal_metadata_fields(:all)
+          non_universal_fields = non_universal_metadata_fields
           # sort all_fields based on the metadata fields yaml
           non_universal_fields.sort_by { |field| profile_metadata_fields.keys.index(field) || profile_metadata_fields.keys.length }
         end
       end
 
-      def non_universal_metadata_fields(type = :all)
+      #
+      # Non-universal metadata fields
+      #
+      # @param [:required, :optional, :either] type Whether the field is required / optional / either
+      #
+      # @return [Array<String>] Fields matching the specified type
+      #
+      def non_universal_metadata_fields(type = :either)
         fields = []
         profile_type_config.each do |prof_type, data|
           if prof_type != 'universal'

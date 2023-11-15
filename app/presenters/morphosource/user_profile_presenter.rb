@@ -24,19 +24,27 @@ module Morphosource
       @user
     end
 
-    # retruns a hash of: field => mapped profile types which has this field 
+    #
+    # All metadata fields with mapped profile types
+    #
+    # @return [Hash] hash of: field => mapped profile types which has this field 
+    #
     def all_metadata_fields
       @all_metadata_fields ||= begin
         result_hash = {}
         sorted_metadata_fields.each do |field|
-          matching_keys = find_keys_containing_field(field, :all)
+          matching_keys = find_keys_containing_field(field, :either)
           result_hash[field] = matching_keys unless matching_keys.empty?
         end
         result_hash
       end
     end
 
-    # retruns a hash of: field => mapped profile types which this field (required)
+    #
+    # Required fields with mapped profile types
+    #
+    # @return [Hash] hash of: field => mapped profile types with this field required
+    #
     def required_metadata_fields
       @required_metadata_fields ||= begin
         required_fields = non_universal_metadata_fields(:required)
@@ -49,7 +57,11 @@ module Morphosource
       end
     end
 
-    # retruns a hash of: demographic => mapped profile types associated with the demographic 
+    #
+    # All demographics values with mapped profile types
+    #
+    # @return [Hash] hash of: demographic => mapped profile types associated with the demographic 
+    #
     def all_demographics_values
       @all_demographics_values ||= begin
         result_hash = {}
@@ -61,6 +73,11 @@ module Morphosource
       end
     end
 
+    #
+    # Private Fields (fields that should not be shown to public) based on the user profile type
+    #
+    # @return [Array<String>] Field name
+    # 
     def private_fields
       @private_fields ||= begin
         fields = []        
@@ -80,7 +97,15 @@ module Morphosource
 
     private
 
-      def find_keys_containing_field(field, type = :all)
+      #
+      # Keys (profile types) which contain the specified field 
+      #
+      # @param [String] field Metadata field name
+      # @param [:required, :optional, :either] type Whether the field is required / optional / either
+      #
+      # @return [Array<String>] Keys matching the specified criteria
+      #
+      def find_keys_containing_field(field, type = :either)
         matching_keys = []
         profile_type_config.each do |prof_type, data|
           next if prof_type == 'universal'
@@ -97,7 +122,7 @@ module Morphosource
             if metadata_fields.include?(field)
               matching_keys << prof_type
             end
-          else
+          else # :either
             if metadata_fields.include?(field) || required_metadata_fields.include?(field)
               matching_keys << prof_type
             end
@@ -106,6 +131,13 @@ module Morphosource
         matching_keys
       end
 
+      #
+      # Keys (profile types) which contain the demographic field 
+      #
+      # @param [String] field Demographic field name
+      #
+      # @return [Array<String>] Keys contain the specified field
+      #
       def find_keys_containing_demographic(field)
         matching_keys = []
         profile_type_config.each do |prof_type, data|

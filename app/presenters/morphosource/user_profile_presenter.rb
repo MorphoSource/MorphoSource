@@ -1,6 +1,6 @@
 module Morphosource
   class UserProfilePresenter < Hyrax::UserProfilePresenter
-    include Morphosource::Dashboard::ProfilesControllerBehavior
+    include Morphosource::Users::ProfileHelper
 
     # returns the number of collections managed by @user viewable by @current_user
     def managed_collection_count

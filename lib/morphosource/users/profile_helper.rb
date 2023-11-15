@@ -1,7 +1,7 @@
 module Morphosource
-  module Dashboard
-    module ProfilesControllerBehavior
-      
+  module Users
+    module ProfileHelper
+
       private
 
       def user_params

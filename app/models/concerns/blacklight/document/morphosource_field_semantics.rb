@@ -8,6 +8,8 @@ module Blacklight
         case has_model&.first
         when 'Media'
           media_field_semantics
+        when 'FileSet'
+          file_set_field_semantics
         when 'BiologicalSpecimen', 'CulturalHeritageObject'
           physical_object_field_semantics
         when 'Collection'
@@ -84,6 +86,43 @@ module Blacklight
           data_depositor: "depositor_name_tesim",
           data_sponsor: "active_fund_code_title_ssim"
         }
+      end
+
+      def file_set_field_semantics
+        @field_semantics ||= {
+          file_name: "label_tesim",
+          file_size: "file_size_lts",
+          mime_type: "mime_type_ssi",
+          # mesh fields
+          point_count: "point_count_tesim",
+          face_count: "face_count_tesim",
+          has_uv_space: "has_uv_space_tesim",
+          vertex_color: "vertex_color_tesim",
+          bounding_box_x: "bounding_box_x_tesim",
+          bounding_box_y: "bounding_box_y_tesim",
+          bounding_box_z: "bounding_box_z_tesim",
+          centroid_x: "centroid_x_tesim",
+          centroid_y: "centroid_y_tesim",
+          centroid_z: "centroid_z_tesim",
+          # image fields
+          height: "height_is",
+          width: "width_is",
+          color_space: "color_space_tesim",
+          bits_allocated: "bits_allocated_tesim",
+          bits_per_sample: "bits_per_sample_tesim",
+          compression: "compression_tesim",
+          # dicom fields
+          rows: "rows_tesim",
+          columns: "columns_tesim",
+          # zip archive fields
+          contents_accepted_file_count: "contents_accepted_file_count_tesim",
+          contents_file_name: "contents_file_name_tesim",
+          contents_file_size: "contents_file_size_tesim",
+          contents_mime_type: "contents_mime_type_tesim",
+          # date fields
+          date_uploaded: "date_uploaded_dtsi",
+          date_modified: "date_modified_dtsi",
+      }
       end
 
       def physical_object_field_semantics

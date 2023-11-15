@@ -1,7 +1,7 @@
 require 'rails_helper'
+include ActionDispatch::TestProcess
 
 RSpec.describe MediaCatalogController, :type => :controller do
-
   describe 'Blacklight Configuration' do
     let(:config) { described_class.new.blacklight_config }
 
@@ -269,6 +269,100 @@ RSpec.describe MediaCatalogController, :type => :controller do
         it 'includes modality' do
           expect(subject.solr_parameters[:qf]).to include('human_readable_modality_tesim')
         end
+      end
+    end
+  end
+
+  describe '#show JSON API endpoint' do
+    context 'query private media' do
+      let (:media) { create(:private_media_document) }
+      
+      context 'without API key credentials' do
+        it 'returns 404 not found' do
+          get :show, params: { id: media.id }, format: :json
+          expect(response.content_type).to eq('application/json')
+          expect(response.code).to eq("404")
+        end
+      end
+
+      context 'with invalid API key credentials' do
+        it 'returns 404 not found' do
+          controller.request.env['HTTP_AUTHORIZATION'] = "nonsense"
+          get :show, params: { id: media.id }, format: :json
+          expect(response.content_type).to eq('application/json')
+          expect(response.code).to eq("404")
+        end
+      end
+
+      context 'when valid API key credentials' do
+        let (:user) { create(:admin) }
+
+        it 'returns 200 found' do
+          controller.request.env['HTTP_AUTHORIZATION'] = user.token
+          get :show, params: { id: media.id }, format: :json
+          expect(response.content_type).to eq('application/json')
+          expect(response.code).to eq("200")
+        expect(JSON.parse(response.body).dig("response", "media")).to be_present
+        end 
+      end
+    end
+
+    context 'query public media' do
+      let (:media) { create(:public_media_document) }
+
+      it 'returns 200 found' do
+        get :show, params: { id: media.id }, format: :json
+        expect(response.content_type).to eq('application/json')
+        expect(response.code).to eq("200")
+        expect(JSON.parse(response.body).dig("response", "media")).to be_present
+      end
+    end
+  end
+
+  describe "#show_file_metadata JSON API endpoint" do
+    context 'query private media' do
+      let! (:media) { create(:private_media_document) }
+      let! (:file_set) { create(:file_set_document) }
+      
+      context 'without API key credentials' do
+        it 'returns 404 not found' do
+          get :show_file_metadata, params: { id: media.id }, format: :json
+          expect(response.content_type).to eq('application/json')
+          expect(response.code).to eq("404")
+        end
+      end
+
+      context 'with invalid API key credentials' do
+        it 'returns 404 not found' do
+          controller.request.env['HTTP_AUTHORIZATION'] = "nonsense"
+          get :show_file_metadata, params: { id: media.id }, format: :json
+          expect(response.content_type).to eq('application/json')
+          expect(response.code).to eq("404")
+        end
+      end
+
+      context 'when valid API key credentials' do
+        let (:user) { create(:admin) }
+
+        it 'returns 200 found' do
+          controller.request.env['HTTP_AUTHORIZATION'] = user.token
+          get :show_file_metadata, params: { id: media.id }, format: :json
+          expect(response.content_type).to eq('application/json')
+          expect(response.code).to eq("200")
+          expect(JSON.parse(response.body).dig("response", "file_set")).to be_present
+        end 
+      end
+    end
+
+    context 'query public media' do
+      let! (:media) { create(:public_media_document) }
+      let! (:file_set) { create(:file_set_document) }
+
+      it 'returns 200 found' do  
+        get :show_file_metadata, params: { id: media.id }, format: :json
+        expect(response.content_type).to eq('application/json')
+        expect(response.code).to eq("200")
+        expect(JSON.parse(response.body).dig("response", "file_set")).to be_present
       end
     end
   end

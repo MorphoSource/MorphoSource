@@ -5,6 +5,9 @@ class MediaCatalogController < CatalogController
   include CatalogControllerRestApiBehavior
   include Morphosource::CatalogHelper
 
+  # This filter applies the hydra access controls to media file details API endpoint
+  before_action :enforce_show_permissions, only: [:show, :show_file_metadata]
+
   configure_blacklight do |config|
     config.search_builder_class = Morphosource::Catalog::MediaCatalogSearchBuilder
 
@@ -120,6 +123,21 @@ class MediaCatalogController < CatalogController
     respond_to do |format|
       format.html { setup_next_and_previous_documents }
       format.json { render json: { response: { @document.has_model.first.underscore => @document.to_semantic_values } } }
+      additional_export_formats(@document, format)
+    end
+  end
+
+  # an API route for returning media file object details using catalog
+  def show_file_metadata
+    @response, @document = fetch params[:id], { fq: "has_model_ssim:Media", fl: ["id", "file_set_ids_ssim"] }
+    _, @fileset_documents = fetch ( @document["file_set_ids_ssim"] || [] ), { fq: "has_model_ssim:FileSet" }
+    @fileset_document = @fileset_documents&.first
+
+    response = @fileset_document.present? ? 
+      { @fileset_document.has_model.first.underscore => @fileset_document.to_semantic_values } : {}
+
+    respond_to do |format|
+      format.json { render json: { response: response } }
       additional_export_formats(@document, format)
     end
   end

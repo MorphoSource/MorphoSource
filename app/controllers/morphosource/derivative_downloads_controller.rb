@@ -1,8 +1,9 @@
 module Morphosource
   class DerivativeDownloadsController < Hyrax::DownloadsController
+  include Morphosource::RestApiBehavior
     include Morphosource::TemporaryAccess::TemporaryAccessControllerBehavior
 
-    before_action :load_file, :authorize_download!
+    before_action :load_file, :authenticate_api_key_optional, :authorize_download!
 
     self.temporary_access_link_class = TemporaryMediaAccessLink
 

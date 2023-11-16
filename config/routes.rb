@@ -142,6 +142,7 @@ Rails.application.routes.draw do
 
       # organization_collections
       get 'organizations/:id', to: 'organization_collections#show', as: 'organization'
+      get 'organizations/:id', to: 'organization_collections#show', as: 'organization_collection'
       get 'organizations/:id/biological_specimens', to: 'biological_specimens#show', as: 'organization_specimens'
       get 'organizations/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show', as: 'organization_chos'
       get 'organizations/:id/devices', to: 'devices#show', as: 'organization_devices'

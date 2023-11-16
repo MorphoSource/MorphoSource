@@ -30,6 +30,10 @@ module Morphosource
       Morphosource::Collections::MediaSearchBuilder
     end
 
+    def media_count_search_builder_class
+      search_builder_class
+    end
+
     def media_objects_search_builder_class
       Morphosource::Collections::MediaObjectsSearchBuilder
     end

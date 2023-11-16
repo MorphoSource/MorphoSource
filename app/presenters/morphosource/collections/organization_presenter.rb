@@ -10,6 +10,10 @@ module Morphosource
         "Organization"
       end
 
+      def organization
+        @collection
+      end
+
     end
   end
 end

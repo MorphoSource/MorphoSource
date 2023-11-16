@@ -17,6 +17,10 @@ module Morphosource
     end
     alias media_tab_url collection_media_path
 
+    # show page main/device media tab
+    def device_media_tab_url(collection)
+      main_app.send("#{collection_type_machine_id(collection)}_device_media_path", collection)
+    end
 
     # show page main/specimens tab
     def specimens_tab_url(collection)
@@ -26,6 +30,11 @@ module Morphosource
     # show page main/chos tab
     def chos_tab_url(collection)
       main_app.send("#{collection_type_machine_id(collection)}_chos_path", collection)
+    end
+
+    # show page main/devices tab
+    def devices_tab_url(collection)
+      main_app.send("#{collection_type_machine_id(collection)}_devices_path", collection)
     end
 
     # show page main/about tab
@@ -377,7 +386,10 @@ module Morphosource
 
     def morphosource_physical_objects_controller?
       collection_controllers = [ Morphosource::Collections::BiologicalSpecimensController,
-                                 Morphosource::Collections::CulturalHeritageObjectsController]
+                                 Morphosource::Collections::CulturalHeritageObjectsController,
+                                 Morphosource::Collections::OrganizationCollections::PhysicalObjects::BiologicalSpecimensController,
+                                 Morphosource::Collections::OrganizationCollections::PhysicalObjects::CulturalHeritageObjectsController,
+                                 Morphosource::Collections::OrganizationCollections::DevicesController]
 
       collection_controllers.include? controller.class
     end

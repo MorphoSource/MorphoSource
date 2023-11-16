@@ -13,7 +13,8 @@ module Morphosource
       end
 
       def get_object_ids
-        (@media_count, @object_ids) = collection_media
+        @object_ids = collection_object_ids
+        @media_count = collection_media_count
       end
     end
   end

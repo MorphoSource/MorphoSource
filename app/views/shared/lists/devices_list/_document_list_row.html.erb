@@ -1,0 +1,11 @@
+<tr id="document_<%= document.id %>">
+  <td><%= document.id %>
+  <td><%= document['creator_tesim']&.first %></td>
+  <td class="break-all"><%= document['title_ssi'] %></td>
+  <td><%= device_modalities(document['modality_tesim']) %></td>
+  <td><%= document['description_tesim']&.first %></td>
+  <td>
+    <%= link_to_field('media_device_facility_organization_id', document.id, total_viewable_device_media(document.id), generic_type: "Media")%>
+  </td>
+  <td><%= document.date_uploaded %></td>
+</tr>

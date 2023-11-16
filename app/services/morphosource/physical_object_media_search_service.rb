@@ -22,9 +22,7 @@ module Morphosource
     private
 
       def list_search_builder
-        list_search_builder_class.new(scope: @context, object_id: @object_id)
-                                 .rows(999999)
-
+        list_search_builder_class.new(scope: @context, object_id: @object_id).rows(999999)
       end
   end
 end

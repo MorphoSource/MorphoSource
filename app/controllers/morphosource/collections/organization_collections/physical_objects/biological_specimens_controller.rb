@@ -4,9 +4,10 @@ module Morphosource
       module PhysicalObjects
         class BiologicalSpecimensController < Morphosource::Collections::BiologicalSpecimensController
 
-          def media_objects_search_builder_class
-            Morphosource::Collections::OrganizationCollections::MediaObjectsSearchBuilder
-          end
+          include Morphosource::Collections::OrganizationCollectionsControllerBehavior
+
+          # restrict to admins
+          # before_action :authorize_admin
 
         end
       end

@@ -130,21 +130,13 @@ module Hyrax
 
       def user_abilities
         can [
-<<<<<<< HEAD
-          :edit, 
-          :edit_profile_type,
-          :edit_password, 
-          :generate_new_api_key, 
-          :update, 
-          :update_profile_type,
-          :update_password, 
-=======
           :edit,
+          :edit_profile_type,
           :edit_password,
           :generate_new_api_key,
           :update,
+          :update_profile_type,
           :update_password,
->>>>>>> ca78b3f2 (add org-linked view ability)
           :toggle_trophy
         ], ::User, id: current_user.id
         can :show, ::User

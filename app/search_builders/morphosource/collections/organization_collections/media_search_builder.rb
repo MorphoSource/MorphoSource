@@ -3,29 +3,27 @@ module Morphosource
     module OrganizationCollections
       class MediaSearchBuilder < Morphosource::Collections::MediaSearchBuilder
 
-        def member_of_collection(solr_parameters)
-          solr_parameters[:fq] ||= []
-          solr_parameters[:fq] << "(member_of_collection_ids_ssim:#{collection.id} OR media_organization_id_ssim:#{collection.id})"
-        end
+        # organization collection members can view media associated with objects or devices from the organization
+        include Morphosource::OrganizationalAccessBehavior
 
-        # organization members can view all organization media
-        # other users can view media they have permission to view
-        def add_access_controls_to_solr_params(solr_parameters)
+        self.default_processor_chain -= [:member_of_collection]
+        self.default_processor_chain += [:apply_organization_filters]
+
+        def apply_organization_filters(solr_parameters)
           solr_parameters[:fq] ||= []
-          unless user_is_organization_member?
-            solr_parameters[:fq] << gated_discovery_filters.reject(&:blank?).join(' OR ')
-          end
+          solr_parameters[:fq] << organization_filters.reject(&:blank?).join(' OR ')
           Rails.logger.debug("Solr parameters: #{solr_parameters.inspect}")
         end
 
-        private
-
-          def user_is_organization_member?
-            return false unless current_user
-
-            (@collection.user_groups.map(&:name) & current_user.groups).present?
+        def organization_filters
+          organization_fields.each_with_object([]) do |field, filters|
+            filters << ["({!terms f=#{field}}#{collection.id})"]
           end
+        end
 
+        def organization_fields
+          ['media_organization_id_ssim','media_device_facility_organization_id_ssim']
+        end
       end
     end
   end

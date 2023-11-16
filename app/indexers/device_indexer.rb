@@ -11,6 +11,7 @@ class DeviceIndexer < Morphosource::WorkIndexer
 
   def generate_solr_document
    super.tap do |solr_doc|
+     solr_doc['creator_ssim'] = object.creator
      if (device_organization = object.organization).present?
       solr_doc["device_organization_id_tesim"] = device_organization.id
       solr_doc["device_organization_id_ssim"] = device_organization.id

@@ -1,0 +1,38 @@
+module Morphosource
+  module Collections
+    module OrganizationCollections
+      # Media that were created using a device that belongs to the organization
+      class DeviceMediaController < Morphosource::Collections::OrganizationCollectionsController
+
+        # restrict to admins
+        # before_action :authorize_admin
+
+        def search_builder_class
+          Morphosource::Collections::OrganizationCollections::DeviceMediaSearchBuilder
+        end
+
+        private
+
+          # link for facet filters
+          def search_action_url(*args)
+            args&.first&.delete("collection_id")
+            main_app.organization_device_media_path(@curation_concern, *args)
+          end
+
+          # The url of the "more" link for additional facet values
+          def search_facet_path(args = {})
+            # args id is the solr facet
+            # params id is the collection id
+            request.params.delete("id")
+            args.merge!(request.params)
+            main_app.organization_device_media_facet_path(@collection.id, args)
+          end
+
+          def tab
+            :device_media
+          end
+
+      end
+    end
+  end
+end

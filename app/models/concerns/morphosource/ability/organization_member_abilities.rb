@@ -32,6 +32,11 @@ module Morphosource
 
       private
 
+        # Users who are members of the organizations whose IDs are stored in these media fields can view the media
+        def organization_fields
+          ["media_organization_id_ssim","media_device_facility_organization_id_ssim"]
+        end
+
         def has_organizational_access_to_media?(media)
           Rails.logger.debug("[CANCAN] Checking for individual media access through organization membership")
           return false unless media = solr_document(media)
@@ -51,16 +56,16 @@ module Morphosource
         def organization_groups(media)
           return [] unless document = solr_document(media)
 
-          return [] unless org_id = document["media_organization_id_ssim"]&.first
+          organization_fields.each_with_object([]) do |field, groups|
+            next unless org_id = document[field]&.first
 
-          if OrganizationCollection.exists?(org_id)
-            OrganizationCollection::DEFAULT_GROUP_ROLES.map{|role| "#{document["media_organization_id_ssim"].first}_#{role}"}
-          elsif Organization.exists?(org_id)
-            return [] unless team_id = SolrDocument.find(org_id)['team_id_tesim']&.first
-
-            Collection::DEFAULT_GROUP_ROLES.map{|role| "#{team_id}_#{role}"}
-          else
-            []
+            if OrganizationCollection.exists?(org_id)
+              OrganizationCollection::DEFAULT_GROUP_ROLES.each {|role| groups << "#{document[field].first}_#{role}"}
+            elsif Organization.exists?(org_id)
+              if team_id = SolrDocument.find(org_id)['team_id_tesim']&.first
+                Collection::DEFAULT_GROUP_ROLES.each {|role| groups << "#{team_id}_#{role}"}
+              end
+            end
           end
         end
 

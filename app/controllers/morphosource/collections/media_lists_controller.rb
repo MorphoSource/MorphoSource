@@ -24,7 +24,7 @@ module Morphosource
         @can_edit = current_ability.can? :edit, @collection
         @can_deposit = current_ability.can? :deposit, @collection
         presenter
-        (@media_count, @object_ids) = collection_media
+        @object_ids = collection_object_ids
         (@response, @document_list) = query_solr
 
         if params[:preview].present?

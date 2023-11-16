@@ -143,9 +143,11 @@ Rails.application.routes.draw do
       # organization_collections
       get 'organizations/:id', to: 'organization_collections#show', as: 'organization'
       get 'organizations/:id', to: 'organization_collections#show', as: 'organization_collection'
+      get 'organizations/:id/device_media', to: 'organization_collections/device_media#show', as: 'organization_device_media'
+      get 'organizations/:collection_id/device_media/facet/:id', to: 'organization_collections/device_media#facet', as: 'organization_device_media_facet'
       get 'organizations/:id/biological_specimens', to: 'organization_collections/physical_objects/biological_specimens#show', as: 'organization_specimens'
       get 'organizations/:id/cultural_heritage_objects', to: 'organization_collections/physical_objects/cultural_heritage_objects#show', as: 'organization_chos'
-      get 'organizations/:id/devices', to: 'devices#show', as: 'organization_devices'
+      get 'organizations/:id/devices', to: 'organization_collections/devices#show', as: 'organization_devices'
       get 'organizations/:id/about', to: 'organization_collections#about', as: 'organization_about'
       get 'organizations/:collection_id/facet/:id', to: 'organization_collections#facet', as: 'organization_media_facet'
       get 'organizations/:collection_id/biological_specimens/facet/:id', to: 'organization_collections/physical_objects/biological_specimens#facet', as: 'organization_specimens_facet'

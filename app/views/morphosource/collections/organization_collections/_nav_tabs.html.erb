@@ -1,0 +1,39 @@
+<!-- morphosource/collections/organization_collections/nav_tabs -->
+<ul class="nav nav-tabs" role="tablist">
+  <li role="presentation" class=<%= active_tab?(:media) %> >
+    <a href=<%= media_tab_url(@collection) %> aria-controls="media" role="tab">
+    <i class="fa fa-cube" aria-hidden="true"></i> ORGANIZATION MEDIA
+    </a>
+  </li>
+  <li role="presentation" class=<%= active_tab?(:device_media) %> >
+    <a href=<%= device_media_tab_url(@collection) %> aria-controls="media" role="tab">
+    <i class="fa fa-cube" aria-hidden="true"></i> DEVICE MEDIA
+    </a>
+  </li>
+  <% if @specimen_count > 0 %>
+    <li role="presentation" class=<%= active_tab?(:specimens) %>>
+      <a href=<%= specimens_tab_url(@collection) %> aria-controls="biological_specimens" role="tab">
+        <i class="fas fa-frog" aria-hidden="true"></i> SPECIMENS
+      </a>
+    </li>
+  <% end %>
+  <% if @cho_count > 0 %>
+    <li role="presentation" class=<%= active_tab?(:chos) %>>
+      <a href=<%= chos_tab_url(@collection) %> aria-controls="biological_specimens" role="tab">
+        <i class="ms2-icon-bowl icon-bowl" aria-hidden="true"></i> CULTURAL HERITAGE OBJECTS
+      </a>
+    </li>
+  <% end %>
+  <% if @device_count > 0 %>
+    <li role="presentation" class=<%= active_tab?(:devices) %>>
+      <a href=<%= devices_tab_url(@collection) %> aria-controls="biological_specimens" role="tab">
+        <i class="fas fa-camera" aria-hidden="true"></i> DEVICES
+      </a>
+    </li>
+  <% end %>
+  <li role="presentation" class=<%= active_tab?(:about) %>>
+    <a href=<%= about_tab_url(@collection) %> aria-controls="biological_specimens" role="tab">
+      <i class="fa fa-newspaper" aria-hidden="true"></i> ABOUT
+    </a>
+  </li>
+</ul>

@@ -26,7 +26,9 @@ module Morphosource
       end
 
       def edit_profile_type          
-        @presenter = Morphosource::UserProfilePresenter.new(@user, current_ability)
+byebug 
+#        @presenter = Morphosource::UserProfilePresenter.new(@user, current_ability)
+        render 'edit_profile_type'
       end
 
       def edit_password

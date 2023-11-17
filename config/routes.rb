@@ -582,8 +582,13 @@ Rails.application.routes.draw do
   # ms1 users changing their password must agree to terms and conditions
   devise_scope :user do
     get '/users/password/ms1_edit', to: 'morphosource/passwords#ms1_edit', as: 'ms1_edit_user_password'
-    # Route for prompting user to update profile type
-    get '/edit_profile_type', to: 'sessions#edit_profile_type', as: 'edit_profile_type'
+
+
+# smc todo: remove routes and controller actions later
+#
+#    # Route for prompting user to update profile type
+#    get '/edit_profile_type', to: 'sessions#edit_profile_type', as: 'edit_profile_type'
+
   end
 
   # Routes for granting/removing contributor status
@@ -597,6 +602,9 @@ Rails.application.routes.draw do
   # Routes for granting/removing remote_file_submitter status
   post 'users/:id/make_remote_file_submitter' => 'remote_file_submitters#make_remote_file_submitter', as: 'make_remote_file_submitter'
   post 'users/:id/remove_remote_file_submitter' => 'remote_file_submitters#remove_remote_file_submitter', as: 'remove_remote_file_submitter'
+
+  # Routes for editing/updating profile type
+  get 'dashboard/profiles/:id/edit_profile_type' => 'morphosource/dashboard/profiles#edit_profile_type', as: 'edit_profile_type'
 
   # Routes for editing/updating password from profile page
   get 'dashboard/profiles/:id/edit_password' => 'morphosource/dashboard/profiles#edit_password', as: 'profile_edit_password'

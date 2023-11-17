@@ -130,6 +130,7 @@ module Hyrax
       def user_abilities
         can [
           :edit, 
+          :edit_profile_type,
           :edit_password, 
           :generate_new_api_key, 
           :update, 

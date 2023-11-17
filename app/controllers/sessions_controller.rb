@@ -6,7 +6,6 @@ class SessionsController < Devise::SessionsController
     unless current_user.profile_type.present?
       super do |resource|
         if resource.persisted?
-byebug 
           redirect_to edit_profile_type_path(resource) and return
         end
       end

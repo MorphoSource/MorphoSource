@@ -116,6 +116,57 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
             expect(response).to have_http_status(404)
             expect(response.content_type).to eq 'image/png'
           end
+
+          context 'user transmits API key' do
+            context 'and API key is nonsense' do
+              it 'sends default image with not found status code' do
+                controller.request.env['HTTP_AUTHORIZATION'] = "nonsense"
+                get :show, params: { id: private_media.id, file: 'thumbnail' }
+                expect(response).to have_http_status(404)
+                expect(response.content_type).to eq 'image/png'
+              end
+            end
+
+            context 'and API key is valid but does not have access to media' do
+              it 'sends default image with not found status code' do
+                controller.request.env['HTTP_AUTHORIZATION'] = user.token
+                get :show, params: { id: private_media.id, file: 'thumbnail' }
+                expect(response).to have_http_status(404)
+                expect(response.content_type).to eq 'image/png'
+              end
+            end
+
+            context 'and API key is valid and has access to media' do
+              before do
+                private_media.read_users += [user]
+                private_media.save
+                private_file_set.read_users += [user]
+                private_file_set.save
+              end
+
+              it 'sends requested file content from media id' do
+                controller.request.env['HTTP_AUTHORIZATION'] = user.token
+                get :show, params: { id: private_media.id, file: 'thumbnail' }
+                expect(response).to be_success
+                expect(response.body).to eq content
+                expect(response.headers['Content-Length']).to eq "25806"
+                expect(response.headers['Accept-Ranges']).to eq "bytes"
+                expect(ActiveFedora::Base).not_to receive(:find).with(private_media.id)
+                expect(ActiveFedora::Base).not_to receive(:find).with(private_file_set.id)
+              end
+      
+              it 'sends requested file content from file_set id' do
+                controller.request.env['HTTP_AUTHORIZATION'] = user.token
+                get :show, params: { id: private_file_set.id, file: 'thumbnail' }
+                expect(response).to be_success
+                expect(response.body).to eq content
+                expect(response.headers['Content-Length']).to eq "25806"
+                expect(response.headers['Accept-Ranges']).to eq "bytes"
+                expect(ActiveFedora::Base).not_to receive(:find).with(private_media.id)
+                expect(ActiveFedora::Base).not_to receive(:find).with(private_file_set.id)
+              end
+            end
+          end
         end
 
         context 'user is logged in and has user-level access' do

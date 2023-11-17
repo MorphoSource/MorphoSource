@@ -6,7 +6,7 @@ module Morphosource
     end
 
     def authenticate_api_key_required
-      warden.authenticate!(:api_key)
+      deny_access_unauthorized unless warden.authenticate(:api_key)
     end
 
     def deny_access_forbidden

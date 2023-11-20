@@ -55,8 +55,8 @@ module Morphosource
         json_obj = {            
           "response": {
             "media": {
-              "id": [media.id],
-              "download_url": [URI.encode(download_url)]
+              "id": media.id,
+              "download_url": URI.encode(download_url)
             }
           }
         }

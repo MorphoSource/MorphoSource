@@ -647,6 +647,7 @@ Rails.application.routes.draw do
   get 'api/media', to: 'media_catalog#index', as: 'api_media_search', defaults: { format: 'json' }
   get 'api/media/:id', to: 'media_catalog#show', as: 'api_media_show', defaults: { format: 'json' }
   get 'api/media/:id/file-metadata', to: 'media_catalog#show_file_metadata', as: 'api_media_show_file_metadata', defaults: { format: 'json' }
+  get 'api/media/:id/iiif/manifest', to: 'morphosource/manifests#get_manifest_link', as: 'api_media_get_manifest_link', defaults: { format: 'json' }
 
   # Generate media download link for API
   post 'api/download/:id', to: 'morphosource/media_api_downloads#api_generate_download', as: 'api_media_generate_download', defaults: { format: 'json' }

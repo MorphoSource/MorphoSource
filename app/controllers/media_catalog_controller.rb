@@ -14,6 +14,7 @@ class MediaCatalogController < CatalogController
     config.add_facet_field "object_type", field: "media_physical_object_type_ssim", label: "Object Type", limit: 10
     config.add_facet_field "organization", field: "media_organization_ssim",label: "Organization", limit: 10
     config.add_facet_field "imaging_facility", field: "media_device_facility_organization_ssim", label: "Imaging Facility", limit: 10
+    config.add_facet_field "device", field: "media_device_id_ssim", label: "Imaging Device", limit: 10, helper_method: :device_title_by_id
     config.add_facet_field "publication_status", field: "publication_status_ssi", label: "Publication Status", limit: 10
     config.add_facet_field "rights_statement", field: "rights_statement_ssim", label: "Rights Statement", limit: 10, helper_method: :rights_statement_title_by_id
     config.add_facet_field "license", field: "license_ssim", label: "CC License",limit: 10, helper_method: :license_title_by_id

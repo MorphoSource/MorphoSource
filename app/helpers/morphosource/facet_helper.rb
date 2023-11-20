@@ -15,6 +15,15 @@ module Morphosource
       end
     end
 
+    def device_title_by_id(id)
+      begin
+        doc = SolrDocument.find(id)
+        "#{ doc['creator_ssim']&.first || "" } #{ doc['title_tesim']&.first }".strip
+      rescue
+        id
+      end
+    end
+
     def user_name_by_id(id)
       begin
         User.find_by(ms_id: id).name

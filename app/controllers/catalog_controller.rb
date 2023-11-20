@@ -9,11 +9,14 @@ class CatalogController < ApplicationController
   include Morphosource::Facets::Collections
 
   helper Morphosource::CatalogHelper
+  helper Morphosource::FacetParamsHelper
 
   layout "catalog"
 
   # This filter applies the hydra access controls
   before_action :enforce_show_permissions, only: :show
+
+  self.search_state_class = Morphosource::SearchState
 
   def self.uploaded_field
     solr_name('system_create', :stored_sortable, type: :date)
@@ -33,7 +36,7 @@ class CatalogController < ApplicationController
 
     config.show.tile_source_field = :content_metadata_image_iiif_info_ssm
     config.show.partials.insert(1, :openseadragon)
-    config.search_builder_class = Hyrax::CatalogSearchBuilder
+    config.search_builder_class = Morphosource::CatalogSearchBuilder
 
     # Show gallery view
     config.view.gallery.partials = [:index_header, :index]
@@ -293,10 +296,12 @@ class CatalogController < ApplicationController
       format.html { store_preferred_view }
       format.rss  { render :layout => false }
       format.json do
-        @presenter = Blacklight::JsonPresenter.new(@response,
-                                                   @document_list.map { |d| d.to_semantic_values },
-                                                   facets_from_request,
-                                                   blacklight_config)
+        @presenter = Morphosource::JsonPresenter.new(
+          @response,
+          @document_list.map { |d| d.to_semantic_values },
+          facets_from_request.reject { |f| f.name == "generic_type_sim" },
+          blacklight_config
+        )
       end
       format.csv do
         # Stream CSV since it might be very large
@@ -338,6 +343,20 @@ class CatalogController < ApplicationController
   # this method is not called in that context.
   def render_bookmarks_control?
     false
+  end
+
+  protected
+
+  # override blacklight error handler to raise 404 responses in application format
+  # can't rely on ApplicationController due to Blacklight also using rescue_from
+  def invalid_document_id_error(exception)
+    respond_to do |format|
+      format.json { 
+        render json: { code: 404, message: t("cancan.not_found.message"), description: t("cancan.not_found.description")}, status: :not_found 
+      }
+      format.html { redirect_to main_app.root_url, notice: "#{t("cancan.not_found.message")}: #{t("cancan.not_found.description")}" }
+      format.js   { render nothing: true, status: :not_found }
+    end
   end
 
   private

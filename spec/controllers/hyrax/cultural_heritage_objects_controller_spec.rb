@@ -24,7 +24,7 @@ RSpec.describe Hyrax::CulturalHeritageObjectsController do
         end
       end
       context 'work is private' do
-        it 'is redirects to sign in' do
+        it 'it redirects to root with not found flash' do
           get :showcase, params: { id: private_cho.id }
           expect(response.status).to eq(302)
         end
@@ -41,9 +41,9 @@ RSpec.describe Hyrax::CulturalHeritageObjectsController do
         end
       end
       context 'work is private' do
-        it 'is unauthorized' do
+        it 'it redirects to root with not found flash' do
           get :showcase, params: { id: private_cho.id }
-          expect(response.status).to eq(401)
+          expect(response.status).to eq(302)
         end
       end
     end

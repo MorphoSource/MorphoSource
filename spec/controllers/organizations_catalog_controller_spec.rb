@@ -28,50 +28,50 @@ RSpec.describe OrganizationsCatalogController, :type => :controller do
       end
 
       describe 'organization type' do
-        subject { facet_fields['organization_type_ssim'] }
+        subject { facet_fields["organization_type"] }
         it 'has the correct attributes' do
-          expect(subject.label).to eq("Type")
-          expect(subject.limit).to eq(5)
+          expect(subject.label).to eq("Organization Type")
+          expect(subject.limit).to eq(10)
         end
       end
 
       describe 'institution name' do
-        subject { facet_fields['institution_name_ssim'] }
+        subject { facet_fields["institution_name"] }
         it 'has the correct attributes' do
-          expect(subject.label).to eq("Institution")
-          expect(subject.limit).to eq(5)
+          expect(subject.label).to eq("Institution Name")
+          expect(subject.limit).to eq(10)
         end
       end
 
       describe 'institution code' do
-        subject { facet_fields['institution_code_ssim'] }
+        subject { facet_fields["institution_code"] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Institution Code")
-          expect(subject.limit).to eq(5)
+          expect(subject.limit).to eq(10)
         end
       end
 
       describe 'country' do
-        subject { facet_fields['country_ssim'] }
+        subject { facet_fields["country"] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Country")
-          expect(subject.limit).to eq(5)
+          expect(subject.limit).to eq(10)
         end
       end
 
       describe 'state/province' do
-        subject { facet_fields['state_province_ssim'] }
+        subject { facet_fields["state_province"] }
         it 'has the correct attributes' do
-          expect(subject.label).to eq("State / Province")
-          expect(subject.limit).to eq(5)
+          expect(subject.label).to eq("State/Province")
+          expect(subject.limit).to eq(10)
         end
       end
 
       describe 'city' do
-        subject { facet_fields['city_ssim'] }
+        subject { facet_fields["city"] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("City")
-          expect(subject.limit).to eq(5)
+          expect(subject.limit).to eq(10)
         end
       end
     end

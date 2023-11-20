@@ -14,10 +14,10 @@ module Morphosource
       respond_to do |format|
         format.json do
           if @response.present?
-            @presenter = Blacklight::JsonPresenter.new(
+            @presenter = Morphosource::JsonPresenter.new(
               @response,
               @document_list,
-              facets_from_request,
+              facets_from_request.reject { |f| f.name == "generic_type_sim" },
               blacklight_config
             )
           else

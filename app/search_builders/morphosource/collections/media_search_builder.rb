@@ -3,6 +3,8 @@ module Morphosource
     class MediaSearchBuilder < Hyrax::CollectionMemberSearchBuilder
       # override filter_collection_facet_for_access
       include Morphosource::Facets::CollectionsSearchBuilderBehavior
+      # enable f.field facet format
+      include Morphosource::Facets::SearchBuilderFacetParamsBehavior 
 
       self.default_processor_chain += [:return_selected_fields, :filter_collection_facet_for_access]
 

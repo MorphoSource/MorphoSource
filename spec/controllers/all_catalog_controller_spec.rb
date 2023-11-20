@@ -6,7 +6,7 @@ RSpec.describe AllCatalogController, :type => :controller do
     let(:config) { described_class.new.blacklight_config }
     describe 'search_builder_class' do
       it 'is the hyrax catalog search builder' do
-        expect(config.search_builder_class).to eq(Hyrax::CatalogSearchBuilder)
+        expect(config.search_builder_class).to eq(Morphosource::CatalogSearchBuilder)
       end
     end
     describe 'facet fields' do

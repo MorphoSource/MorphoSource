@@ -9,6 +9,10 @@ module Morphosource
         index.as :stored_searchable, :facetable
       end
 
+      property :organization_id, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/organizationID") do |index|
+        index.as :stored_searchable, :symbol
+      end
+
     end
   end
 end

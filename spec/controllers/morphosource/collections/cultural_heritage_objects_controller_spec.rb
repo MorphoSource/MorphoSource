@@ -14,14 +14,14 @@ RSpec.describe Morphosource::Collections::CulturalHeritageObjectsController, typ
       described_class.configure_facets
     end
     describe 'organization' do
-      subject { facet_fields['organization_ssim']}
+      subject { facet_fields["organization"]}
       it 'has an organization facet' do
         expect(subject.label).to eq("Organization")
         expect(subject.limit).to eq(10)
       end
     end
     describe 'project' do
-      subject { facet_fields['media_member_of_project_ids_ssim'] }
+      subject { facet_fields["project"] }
       it 'has a project facet' do
         expect(subject.label).to eq("Project")
         expect(subject.limit).to eq(10)
@@ -29,7 +29,7 @@ RSpec.describe Morphosource::Collections::CulturalHeritageObjectsController, typ
       end
     end
     describe 'team' do
-      subject { facet_fields['media_member_of_team_ids_ssim'] }
+      subject { facet_fields["team"] }
       it 'has a team facet' do
         expect(subject.label).to eq("Team")
         expect(subject.limit).to eq(10)

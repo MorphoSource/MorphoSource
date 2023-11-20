@@ -14,6 +14,10 @@ module Morphosource
                                    rights_statement_blank
                                    team_id]
 
+      def organization?
+        self['has_model_ssim'] == ['Organization']
+      end
+
     end
   end
 end

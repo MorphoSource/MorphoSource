@@ -1,7 +1,7 @@
 require 'rails_helper'
+include ActionDispatch::TestProcess
 
 RSpec.describe MediaCatalogController, :type => :controller do
-
   describe 'Blacklight Configuration' do
     let(:config) { described_class.new.blacklight_config }
 
@@ -17,19 +17,19 @@ RSpec.describe MediaCatalogController, :type => :controller do
       let(:facet_fields) { config.facet_fields }
 
       it 'has 18 facet fields' do
-        expect(facet_fields.count).to eq(18)
+        expect(facet_fields.count).to eq(19)
       end
 
       describe 'human readable media type' do
-        subject { facet_fields['human_readable_media_type_ssim'] }
+        subject { facet_fields["media_type"] }
         it 'has the correct attributes' do
-          expect(subject.label).to eq("Type")
+          expect(subject.label).to eq("Media Type")
           expect(subject.limit).to eq(10)
         end
       end
 
       describe 'modality' do
-        subject { facet_fields['modality_ssim'] }
+        subject { facet_fields["modality"] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Modality")
           expect(subject.limit).to eq(10)
@@ -37,7 +37,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
       end
 
       describe 'physical object type' do
-        subject { facet_fields['media_physical_object_type_ssim'] }
+        subject { facet_fields["object_type"] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Object Type")
           expect(subject.limit).to eq(10)
@@ -45,31 +45,71 @@ RSpec.describe MediaCatalogController, :type => :controller do
       end
 
       describe 'organization' do
-        subject { facet_fields['media_organization_ssim'] }
+        subject { facet_fields["organization"] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Organization")
           expect(subject.limit).to eq(10)
         end
       end
 
+      describe 'imaging facility' do
+        subject { facet_fields["imaging_facility"] }
+        it 'has the correct attributes' do
+          expect(subject.label).to eq("Imaging Facility")
+          expect(subject.limit).to eq(10)
+        end
+      end
+
+      describe 'publication status' do
+        subject { facet_fields["publication_status"]}
+        it 'has the correct attributes' do
+          expect(subject.label).to eq("Publication Status")
+          expect(subject.limit).to eq(10)
+        end
+      end
+
+      describe 'rights statement' do
+        subject { facet_fields["rights_statement"]}
+        it 'has the correct attributes' do
+          expect(subject.label).to eq("Rights Statement")
+          expect(subject.limit).to eq(10)
+        end
+      end
+
+      describe 'license' do
+        subject { facet_fields["license"]}
+        it 'has the correct attributes' do
+          expect(subject.label).to eq("CC License")
+          expect(subject.limit).to eq(10)
+        end
+      end
+
+      describe 'taxonomy_name' do
+        subject { facet_fields["taxonomy_name"]}
+        it 'has the correct attributes' do
+          expect(subject.label).to eq("Taxonomy (Name)")
+          expect(subject.limit).to eq(10)
+        end
+      end
+
+      describe 'taxonomy_gbif' do
+        subject { facet_fields["taxonomy_gbif"]}
+        it 'has the correct attributes' do
+          expect(subject.label).to eq("Taxonomy (GBIF)")
+          expect(subject.limit).to eq(25)
+        end
+      end
+
       describe 'keyword' do
-        subject { facet_fields['keyword_ssim'] }
+        subject { facet_fields["tag"] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Tag")
           expect(subject.limit).to eq(10)
         end
       end
 
-      describe 'taxonomy' do
-        subject { facet_fields['taxonomy_ssim'] }
-        it 'has the correct attributes' do
-          expect(subject.label).to eq("Taxonomy")
-          expect(subject.limit).to eq(10)
-        end
-      end
-
       describe 'member of teams' do
-        subject { facet_fields['member_of_team_ids_ssim'] }
+        subject { facet_fields["team"] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Team")
           expect(subject.limit).to eq(10)
@@ -78,7 +118,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
       end
 
       describe 'member of projects' do
-        subject { facet_fields['member_of_project_ids_ssim'] }
+        subject { facet_fields["project"] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Project")
           expect(subject.limit).to eq(10)
@@ -86,8 +126,26 @@ RSpec.describe MediaCatalogController, :type => :controller do
         end
       end
 
+      describe 'member of media lists' do
+        subject { facet_fields["media_list"] }
+        it 'has the correct attributes' do
+          expect(subject.label).to eq("Media List")
+          expect(subject.limit).to eq(10)
+          expect(subject.helper_method).to eq(:collection_title_by_id)
+        end
+      end
+
+      describe 'member of seq. section lists' do
+        subject { facet_fields["seq_section_list"] }
+        it 'has the correct attributes' do
+          expect(subject.label).to eq("Seq. Section List")
+          expect(subject.limit).to eq(10)
+          expect(subject.helper_method).to eq(:collection_title_by_id)
+        end
+      end
+
       describe 'user_with_ownership_name' do
-        subject { facet_fields['user_with_ownership_name_ssim'] }
+        subject { facet_fields["owner"] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Data Manager")
           expect(subject.limit).to eq(10)
@@ -95,7 +153,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
       end
 
       describe 'depositor_name' do
-        subject { facet_fields['depositor_name_ssim'] }
+        subject { facet_fields["depositor"] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Data Uploader")
           expect(subject.limit).to eq(10)
@@ -103,7 +161,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
       end
 
       describe 'data sponsor' do
-        subject { facet_fields['active_fund_code_title_ssim'] }
+        subject { facet_fields["sponsor"] }
         it 'has the correct attributes' do
           expect(subject.label).to eq("Data Sponsor")
           expect(subject.limit).to eq(10)
@@ -211,6 +269,100 @@ RSpec.describe MediaCatalogController, :type => :controller do
         it 'includes modality' do
           expect(subject.solr_parameters[:qf]).to include('human_readable_modality_tesim')
         end
+      end
+    end
+  end
+
+  describe '#show JSON API endpoint' do
+    context 'query private media' do
+      let (:media) { create(:private_media_document) }
+      
+      context 'without API key credentials' do
+        it 'returns 404 not found' do
+          get :show, params: { id: media.id }, format: :json
+          expect(response.content_type).to eq('application/json')
+          expect(response.code).to eq("404")
+        end
+      end
+
+      context 'with invalid API key credentials' do
+        it 'returns 404 not found' do
+          controller.request.env['HTTP_AUTHORIZATION'] = "nonsense"
+          get :show, params: { id: media.id }, format: :json
+          expect(response.content_type).to eq('application/json')
+          expect(response.code).to eq("404")
+        end
+      end
+
+      context 'when valid API key credentials' do
+        let (:user) { create(:admin) }
+
+        it 'returns 200 found' do
+          controller.request.env['HTTP_AUTHORIZATION'] = user.token
+          get :show, params: { id: media.id }, format: :json
+          expect(response.content_type).to eq('application/json')
+          expect(response.code).to eq("200")
+        expect(JSON.parse(response.body).dig("response", "media")).to be_present
+        end 
+      end
+    end
+
+    context 'query public media' do
+      let (:media) { create(:public_media_document) }
+
+      it 'returns 200 found' do
+        get :show, params: { id: media.id }, format: :json
+        expect(response.content_type).to eq('application/json')
+        expect(response.code).to eq("200")
+        expect(JSON.parse(response.body).dig("response", "media")).to be_present
+      end
+    end
+  end
+
+  describe "#show_file_metadata JSON API endpoint" do
+    context 'query private media' do
+      let! (:media) { create(:private_media_document) }
+      let! (:file_set) { create(:file_set_document) }
+      
+      context 'without API key credentials' do
+        it 'returns 404 not found' do
+          get :show_file_metadata, params: { id: media.id }, format: :json
+          expect(response.content_type).to eq('application/json')
+          expect(response.code).to eq("404")
+        end
+      end
+
+      context 'with invalid API key credentials' do
+        it 'returns 404 not found' do
+          controller.request.env['HTTP_AUTHORIZATION'] = "nonsense"
+          get :show_file_metadata, params: { id: media.id }, format: :json
+          expect(response.content_type).to eq('application/json')
+          expect(response.code).to eq("404")
+        end
+      end
+
+      context 'when valid API key credentials' do
+        let (:user) { create(:admin) }
+
+        it 'returns 200 found' do
+          controller.request.env['HTTP_AUTHORIZATION'] = user.token
+          get :show_file_metadata, params: { id: media.id }, format: :json
+          expect(response.content_type).to eq('application/json')
+          expect(response.code).to eq("200")
+          expect(JSON.parse(response.body).dig("response", "file_set")).to be_present
+        end 
+      end
+    end
+
+    context 'query public media' do
+      let! (:media) { create(:public_media_document) }
+      let! (:file_set) { create(:file_set_document) }
+
+      it 'returns 200 found' do  
+        get :show_file_metadata, params: { id: media.id }, format: :json
+        expect(response.content_type).to eq('application/json')
+        expect(response.code).to eq("200")
+        expect(JSON.parse(response.body).dig("response", "file_set")).to be_present
       end
     end
   end

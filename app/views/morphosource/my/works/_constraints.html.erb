@@ -8,6 +8,6 @@
       <% end %>
     </div>
     <span class="constraints-label"><%= t('blacklight.search.filters.title') %></span>
-    <%= render_constraints(params.merge(route_set: main_app)) %>
+    <%= render_constraints(params) %>
   </div>
 <% end %>

@@ -8,10 +8,13 @@ module Morphosource
           config.search_builder_class = self.new.search_builder_class
           # clear catalog facet fields
           config.facet_fields = {}
-          config.add_facet_field "record_source_ssim", label: "Source", limit: 10
-          config.add_facet_field "organization_ssim", label: "Organization", limit: 10
-          config.add_facet_field "media_member_of_project_ids_ssim", label: "Project", limit: 10, helper_method: :collection_title_by_id
-          config.add_facet_field "media_member_of_team_ids_ssim", label: "Team", limit: 10, helper_method: :collection_title_by_id
+          config.add_facet_field "record_source", field: "record_source_ssim", label: "Source", limit: 10
+          config.add_facet_field "organization", field: "organization_ssim", label: "Organization", limit: 10
+          config.add_facet_field "taxonomy_name", field: "taxonomy_ssim", label: "Taxonomy (Name)", limit: 10
+          config.add_facet_field "taxonomy_gbif", field: "external_taxonomy_ssim", label: "Taxonomy (GBIF)", limit: 25
+          config.add_facet_field "media_type", field: "public_media_type_ssim", label: "Media Type", limit: 10
+          config.add_facet_field "team", field: "media_member_of_team_ids_ssim", label: "Team", limit: 10, helper_method: :collection_title_by_id
+          config.add_facet_field "project", field: "media_member_of_project_ids_ssim", label: "Project", limit: 10, helper_method: :collection_title_by_id
         end
       end
       

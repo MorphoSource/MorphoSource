@@ -32,11 +32,15 @@ FactoryBot.define do
       # ::RSpec::Mocks.allow_message(user.class, :find).with(user.id.to_s).and_return(user)
       # id is nil
       # ::RSpec::Mocks.allow_message(user.class, :find).with(nil).and_return(nil)
-
     end
 
     factory :admin do
       groups { ['admin'] }
+      after(:build) do |admin|
+        role = Role.find_or_create_by(name: "admin")
+        role.users << admin
+        role.save
+      end
     end
 
     factory :batch_submission_contributor do

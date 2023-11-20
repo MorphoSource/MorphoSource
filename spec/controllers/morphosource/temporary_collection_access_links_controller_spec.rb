@@ -8,6 +8,8 @@ RSpec.describe Morphosource::Admin::TemporaryCollectionAccessLinksController, :t
   let(:params) { { collection_id: project.id, expires_at: Time.zone.now + 1.month } }
 
   describe 'POST #create' do
+    let(:main_app) { Rails.application.routes.url_helpers }
+
     context 'when params are not provided' do
       it 'temporary access link is not created and response is error' do
         expect{
@@ -40,18 +42,21 @@ RSpec.describe Morphosource::Admin::TemporaryCollectionAccessLinksController, :t
         allow(controller).to receive(:current_user) { public_user }
       end
 
-      it 'temporary access link is not created and response is error' do
+      it 'temporary access link is not created and response redirects to site root with not found or unavailable flash' do
         expect{
         process :create, method: :post, params: params
         }.to change{TemporaryCollectionAccessLink.count}.by 0
 
-        expect(response).to have_http_status 401
+        expect(response).to have_http_status 302
+        expect(response).to redirect_to main_app.root_path(locale: 'en')
       end 
     end
   end
 
   describe 'POST #destroy' do
     let!(:temporary_link) { create(:temporary_collection_access_link, user: other_manager_user, collection_id: project.id )} 
+    let(:main_app) { Rails.application.routes.url_helpers }
+
     context 'when params are not provided' do
       it 'temporary access link is not created and response is error' do
         expect{
@@ -101,12 +106,13 @@ RSpec.describe Morphosource::Admin::TemporaryCollectionAccessLinksController, :t
         project.save
       end
 
-      it 'temporary access link is not deleted and page is redirected' do
+      it 'temporary access link is not deleted and redirects to site root with not found or unavailable flash' do
         expect{
           process :destroy, method: :delete, params: { id: temporary_link.id } 
         }.to change{TemporaryCollectionAccessLink.count}.by(0)
   
-        expect(response).to have_http_status 401
+        expect(response).to have_http_status 302
+        expect(response).to redirect_to main_app.root_path(locale: 'en')
       end 
     end
   end

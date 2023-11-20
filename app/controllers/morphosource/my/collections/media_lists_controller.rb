@@ -26,10 +26,6 @@ module Morphosource
 
         private
 
-          def authorize_admin
-            redirect_to root_path and return unless current_user.admin?
-          end
-
           def add_collection_type_breadcrumb
             add_breadcrumb t(:'hyrax.admin.sidebar.media_lists'), main_app.my_media_lists_path
           end

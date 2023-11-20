@@ -4,8 +4,12 @@
   <td class="break-all"><%= document['title_ssi'] %></td>
   <td><%= device_modalities(document['modality_tesim']) %></td>
   <td><%= document['description_tesim']&.first %></td>
+  <% device_media_count, device_imaging_event_count = device_media_and_imaging_event_counts(document.id) %>
   <td>
-    <%= link_to_field('media_device_facility_organization_id', document.id, total_viewable_device_media(document.id), generic_type: "Media")%>
+    <%= device_imaging_event_count %>
+  </td>
+  <td>
+    <%= link_to(device_media_count, main_app.media_search_path({"f"=>{"media_device_id_ssim"=>["#{document.id}"]}})) %>
   </td>
   <td><%= document.date_uploaded %></td>
 </tr>

@@ -293,6 +293,7 @@ Rails.application.routes.draw do
     get 'dashboard/profiles/:id/generate_new_api_key', to: 'dashboard/profiles#generate_new_api_key', as: 'profile_generate_new_api_key'
     put 'dashboard/profiles/:id', to: 'dashboard/profiles#update'
     patch 'dashboard/profiles/:id', to: 'dashboard/profiles#update'
+    patch 'dashboard/profiles/:id/update_profile_type', to: 'dashboard/profiles#update_profile_type', as: 'update_profile_type'
   end
 
   # override Hyrax::PagesController
@@ -582,13 +583,6 @@ Rails.application.routes.draw do
   # ms1 users changing their password must agree to terms and conditions
   devise_scope :user do
     get '/users/password/ms1_edit', to: 'morphosource/passwords#ms1_edit', as: 'ms1_edit_user_password'
-
-
-# smc todo: remove routes and controller actions later
-#
-#    # Route for prompting user to update profile type
-#    get '/edit_profile_type', to: 'sessions#edit_profile_type', as: 'edit_profile_type'
-
   end
 
   # Routes for granting/removing contributor status

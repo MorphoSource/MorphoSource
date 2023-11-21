@@ -5,11 +5,12 @@
 <% end %>
 
 <%= form_for @user,
-         url: hyrax.dashboard_profile_path(@user.to_param),
+         url: Rails.application.routes.url_helpers.update_profile_type_path(@user.to_param),
          html: { multipart: true, class: 'form-horizontal' } do |f| %>
+<%= hidden_field_tag :update_profile_token, @raw_token %>
 <div class="panel panel-default">
   <div class="panel-body">
-    <p>TBD: explaination to the user why we are requiring this </p>
+    <p>TBD: explaination to the user why we are requiring this EEEEE </p>
     <%= render partial: 'hyrax/dashboard/profiles/edit_profile_type_section', locals: {f: f} %>
     <p><%= f.button t(".save_profile").html_safe, type: 'submit', class: "btn btn-primary btn-lg" %></p>
   </div>

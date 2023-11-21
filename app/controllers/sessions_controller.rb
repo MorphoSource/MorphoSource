@@ -3,10 +3,16 @@ require 'digest'
 class SessionsController < Devise::SessionsController
 
   def create
-    unless current_user.profile_type.present?
-      super do |resource|
-        if resource.persisted?
-          redirect_to edit_profile_type_path(resource) and return
+    if user_signed_in?
+      unless current_user.profile_type.present?
+        super do |resource|
+          if resource.persisted?
+            raw, hashed = Devise.token_generator.generate(User, :update_profile_token)
+            current_user.update_profile_token = hashed
+            current_user.update_profile_sent_at = Time.now.utc
+            current_user.save
+            redirect_to edit_profile_type_path(resource, update_profile_token: raw) and return
+          end
         end
       end
     end

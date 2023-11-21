@@ -134,6 +134,7 @@ module Hyrax
           :edit_password, 
           :generate_new_api_key, 
           :update, 
+          :update_profile_type,
           :update_password, 
           :toggle_trophy
         ], ::User, id: current_user.id

@@ -1,18 +1,17 @@
 <% content_for :body_css_classes do %>showcase profile<% end %>
 
-<% provide :page_header do %>
-  <h1><span class="fa fa-id-card" aria-hidden="true"></span> Please Update Your Profile Type</h1>
-<% end %>
-
 <%= form_for @user,
          url: Rails.application.routes.url_helpers.update_profile_type_path(@user.to_param),
          html: { multipart: true, class: 'form-horizontal' } do |f| %>
 <%= hidden_field_tag :update_profile_token, @raw_token %>
-<div class="panel panel-default">
-  <div class="panel-body">
-    <p>TBD: explaination to the user why we are requiring this EEEEE </p>
+<div class="panel panel-default w-100 block">
+  <div class="panel-body w-50 mlr-auto">
+    <div class="text-padding mb-2">
+        <h1><span class="fa fa-id-card" aria-hidden="true"></span> Please Update Your Profile Type</h1>
+        <p class="mt-2"><%= t("morphosource.dashboard.profiles.login_form_instructions").html_safe %></p>
+    </div>
     <%= render partial: 'hyrax/dashboard/profiles/edit_profile_type_section', locals: {f: f} %>
-    <p><%= f.button t(".save_profile").html_safe, type: 'submit', class: "btn btn-primary btn-lg" %></p>
+    <div class="text-center mt-2"><%= f.button "Save Profile", type: 'submit', class: "btn btn-primary btn-lg" %></div>
   </div>
 </div>
 <% end %>

@@ -35,44 +35,13 @@ module Morphosource
         sign_out
       end
 
-
-
-    #  private
-
-      def validate_profile_token
-
-# todo: put token in session instead?
-
-
-        if (@raw_token = params[:update_profile_token]).present?
-          u = User.find_by(update_profile_token: Devise.token_generator.digest(User, :update_profile_token, @raw_token))
-          if u && u.update_profile_sent_at > 1.hour.ago
-            # Token is valid and not expired
-            sign_in(u) if (action_name == "update_profile_type" && !user_signed_in?)
-          else
-            sign_out if user_signed_in?
-            redirect_to new_user_session_path, alert: 'Session has expired.'
-          end
-        else
-          sign_out if user_signed_in?
-          redirect_to new_user_session_path, alert: 'Invalid session.'
-        end
-      end
-
-
       def update_profile_type
         @presenter = Morphosource::UserProfilePresenter.new(@user, current_ability)
+        @user.update_profile_token = nil
+        @user.update_profile_sent_at = nil
         if conditionally_update
           handle_successful_update
-          if @user.unconfirmed_email
-            notice = "You must confirm your email to finish processing the change of email address. Please respond to the confirmation email sent to the new address, and then log out and log back in to MorphoSource."
-            redirect_to hyrax.dashboard_profile_path(@user.to_param), notice: notice and return
-          else
-
-#todo: delete token and date
-
-            redirect_to hyrax.dashboard_profile_path(@user.to_param), notice: "Your profile has been updated"
-          end
+          redirect_to hyrax.dashboard_profile_path(@user.to_param), notice: "Your profile has been updated"
         else
           redirect_to hyrax.edit_dashboard_profile_path(@user.to_param), alert: @user.errors.full_messages
         end
@@ -117,6 +86,22 @@ module Morphosource
 
 
       private
+
+        def validate_profile_token
+          if (@raw_token = params[:update_profile_token]).present?
+            u = User.find_by(update_profile_token: Devise.token_generator.digest(User, :update_profile_token, @raw_token))
+            if u && u.update_profile_sent_at > 30.minutes.ago
+              # Token is valid and not expired
+              sign_in(u) if (action_name == "update_profile_type" && !user_signed_in?)
+            else
+              sign_out if user_signed_in?
+              redirect_to new_user_session_path, alert: 'Session invalid or expired.'
+            end
+          else
+            sign_out if user_signed_in?
+            redirect_to new_user_session_path, alert: 'Invalid session.'
+          end
+        end
 
         def authorize_edit
           authorize! :edit, @user

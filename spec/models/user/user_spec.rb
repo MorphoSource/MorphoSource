@@ -51,19 +51,35 @@ RSpec.describe User, type: :model do
     end
   end
 
-  describe '#name' do
-    context 'user has a display name' do
+  describe '#display_name and #name' do
+    context 'user has a first name and last name' do
       before do
-        user.display_name = 'display name'
+        user.write_attribute(:first_name, 'first')
+        user.write_attribute(:last_name, 'last')
+        user.write_attribute(:display_name, 'display name')
+        user.save
+      end
+      it 'returns the first and last name' do
+        expect(user.display_name).to eq("#{user.first_name} #{user.last_name}")
+        expect(user.name).to eq("#{user.first_name} #{user.last_name}")
+      end
+    end
+    context 'user has no first name, no last name, user has a display name' do
+      before do
+        user.write_attribute(:first_name, nil)
+        user.write_attribute(:last_name, nil)
+        user.write_attribute(:display_name, 'display name')
         user.save
       end
       it 'returns the display name' do
-        expect(user.name).to eq(user.display_name)
+        expect(user.name).to eq("display name")
       end
     end
-    context 'user does not have a display name' do
+    context 'user has no first name, no last name, no display name' do
       before do
-        user.display_name = nil
+        user.write_attribute(:first_name, nil)
+        user.write_attribute(:last_name, nil)
+        user.write_attribute(:display_name, nil)
         user.save
       end
       it 'returns the ms_id boilerplate' do

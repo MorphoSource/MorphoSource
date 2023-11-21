@@ -88,18 +88,21 @@ class User < ApplicationRecord
     ms_id
   end
 
-  # display ms_id if display name does not exist
-  def name
-    display_name.blank? ? "User #{ms_id.to_s.upcase}" : display_name
+  def display_name
+    if first_name.present? || last_name.present? 
+      "#{first_name} #{last_name}"
+    elsif read_attribute(:display_name).present?
+      read_attribute(:display_name)
+    else
+      "User #{ms_id.to_s.upcase}"
+    end
   end
 
-  # display email if display name does not exist
-  def name_or_email
-    display_name.blank? ? email : display_name
-  end
+  alias name display_name
+  alias name_or_email display_name
 
   def name_and_email
-    display_name.blank? ? email : "#{display_name} (#{email})"
+    "#{display_name} (#{email})"
   end
 
   def registered?

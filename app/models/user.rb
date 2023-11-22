@@ -91,15 +91,20 @@ class User < ApplicationRecord
   def display_name
     if first_name.present? || last_name.present? 
       "#{first_name} #{last_name}"
-    elsif read_attribute(:display_name).present?
-      read_attribute(:display_name)
     else
-      "User #{ms_id.to_s.upcase}"
+      read_attribute(:display_name)
     end
   end
 
-  alias name display_name
-  alias name_or_email display_name
+  # display ms_id if display name does not exist
+  def name
+    display_name.blank? ? "User #{ms_id.to_s.upcase}" : display_name
+  end
+
+  # display email if display name does not exist
+  def name_or_email
+    display_name.blank? ? email : display_name
+  end
 
   def name_and_email
     "#{display_name} (#{email})"

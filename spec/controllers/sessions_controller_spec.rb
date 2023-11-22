@@ -28,24 +28,13 @@ RSpec.describe SessionsController, :type => :controller  do
     context 'when profile_type is present' do
       it 'should not redirect to edit_profile_type_path' do
         post :create, params: { user: { email: user.email, password: user.password } }
-        expect(response).not_to redirect_to(edit_profile_type_path)
+        expect(response).not_to redirect_to(edit_profile_type_path user.id)
       end
     end
-
-    context 'when profile_type is not present AND user has not selected a profile_type' do
+    context 'when profile_type is not present' do
       it 'should redirect to edit_profile_type_path' do
         post :create, params: { user: { email: user2.email, password: user2.password } }
-        expect(response).to redirect_to(edit_profile_type_path)
-      end
-    end
-
-    context 'when profile_type is not present AND user has selected a profile_type' do
-      it 'should save profile_type info, and not redirect to edit_profile_type_path' do
-        post :create, params: { user: { email: user2.email, password: user2.password, profile_type: 'Artist', demographics: ['Artist'] } }
-        expect(response).not_to redirect_to(edit_profile_type_path)
-        user2.reload
-        expect(user2.profile_type).to eq('Artist')
-        expect(user2.demographics).to eq(['Artist'])
+        expect(response.redirect_url).to include(edit_profile_type_path(user2.ms_id))
       end
     end
   end

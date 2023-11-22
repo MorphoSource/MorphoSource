@@ -21,15 +21,21 @@ describe 'morphosource rake tasks' do
   end
 
   describe "morphosource:create_collection_types", type: :task do
-    let(:team_settings)     { Morphosource::CollectionTypes::Teams::SETTINGS }
-    let(:project_settings)  { Morphosource::CollectionTypes::Projects::SETTINGS }
-    let(:types)             { Hyrax::CollectionType.all }
-    let(:team_type)         { types.find{|t| t[:title] == "Team"} }
-    let(:project_type)      { types.find{|t| t[:title] == "Project"} }
-    let(:type_settings)     { [ { type: team_type, settings: team_settings }, { type: project_type, settings: project_settings } ] }
+    let(:team_settings)                     { Morphosource::CollectionTypes::Teams::SETTINGS }
+    let(:project_settings)                  { Morphosource::CollectionTypes::Projects::SETTINGS }
+    let(:media_list_settings)               { Morphosource::CollectionTypes::MediaLists::SETTINGS }
+    let(:sequential_section_list_settings)  { Morphosource::CollectionTypes::SequentialSectionLists::SETTINGS }
+    let(:organization_settings)             { Morphosource::CollectionTypes::Organizations::SETTINGS }
+    let(:types)                             { Hyrax::CollectionType.all }
+    let(:team_type)                         { types.find{|t| t[:title] == "Team"} }
+    let(:project_type)                      { types.find{|t| t[:title] == "Project"} }
+    let(:media_list_type)                   { types.find{|t| t[:title] == "Media List"} }
+    let(:sequential_section_list_type)      { types.find{|t| t[:title] == "Sequential Section List"} }
+    let(:organization_type)                 { types.find{|t| t[:title] == "Organization"} }
+    let(:type_settings)                     { [ { type: team_type, settings: team_settings }, { type: project_type, settings: project_settings }, { type: media_list_type, settings: media_list_settings }, { type: sequential_section_list_type, settings: sequential_section_list_settings }, { type: organization_type, settings: organization_settings } ] }
 
     it 'creates collection types' do
-      expect { create_collection_types.invoke }.to change { Hyrax::CollectionType.count }.by(4)
+      expect { create_collection_types.invoke }.to change { Hyrax::CollectionType.count }.by(5)
     end
 
     it 'assigns the correct attribute values' do
@@ -58,7 +64,7 @@ describe 'morphosource rake tasks' do
     it "assigns manager and creator participants" do
       create_collection_types.invoke
 
-      [team_type, project_type].each do |type|
+      types.each do |type|
         participants = type.collection_type_participants
         managers = participants.select{|p| p.agent_id == 'admin' && p.access == 'manage'}
         creators = participants.select{|p| p.agent_id == 'registered' && p.access == 'create'}

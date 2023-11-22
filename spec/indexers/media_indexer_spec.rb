@@ -261,7 +261,6 @@ RSpec.describe MediaIndexer do
       expect(subject['x_spacing_tesim']).to match_array(media.x_spacing)
       expect(subject['y_spacing_tesim']).to match_array(media.y_spacing)
       expect(subject['z_spacing_tesim']).to match_array(media.z_spacing)
-
     end
   end
 
@@ -294,11 +293,64 @@ RSpec.describe MediaIndexer do
     end
   end
 
+  describe 'organization fields' do
+    let(:device)          { Device.create(title: ['device'], modality: ['Photogrammetry']) }
+    let(:specimen)        { FactoryBot.create(:biological_specimen, organization_id: [organization.id]) }
+    let(:imaging_event)   { FactoryBot.create(:imaging_event, title: ['imaging event'], ie_modality: device.modality, physical_object_id: [specimen.id], device_id: [device.id]) }
+    let(:media)           { Media.create(title: ['media']) }
+    subject               { SolrDocument.find(media.id) }
+
+    context 'organization is a work' do
+      let(:organization)  { FactoryBot.create(:organization, title: ['organization work'], institution_name: ['institution name']) }
+
+      before do
+        organization.ordered_members << device
+        organization.save!
+        imaging_event.ordered_members << media
+        imaging_event.save!
+        media.update_index
+      end
+
+      it 'indexes organization fields' do
+        expect(subject['media_organization_tesim']).to match_array(organization.title)
+        expect(subject['media_organization_ssim']).to match_array(organization.title)
+        expect(subject['media_organization_id_ssim']).to match_array([organization.id])
+        expect(subject['media_organization_id_tesim']).to match_array([organization.id])
+        expect(subject['media_device_facility_organization_tesim']).to match_array(organization.title)
+        expect(subject['media_device_facility_organization_ssim']).to match_array(organization.title)
+        expect(subject['media_device_facility_organization_id_tesim']).to match_array(organization.id)
+        expect(subject['media_device_facility_organization_id_ssim']).to match_array(organization.id)
+      end
+    end
+
+    context 'organization is a collection' do
+      let(:user)          { FactoryBot.create(:contributor) }
+      let(:organization)  { FactoryBot.create(:organization_collection, title: ['organization work'], institution_name: ['institution name'], depositor: user.ms_id) }
+
+      before do
+        device.organization_id = [organization.id]
+        device.save!
+        imaging_event.ordered_members << media
+        imaging_event.save!
+        media.update_index
+      end
+
+      it 'indexes organization fields' do
+        expect(subject['media_organization_tesim']).to match_array(organization.title)
+        expect(subject['media_organization_ssim']).to match_array(organization.title)
+        expect(subject['media_organization_id_ssim']).to match_array([organization.id])
+        expect(subject['media_organization_id_tesim']).to match_array([organization.id])
+        expect(subject['media_device_facility_organization_tesim']).to match_array(organization.title)
+        expect(subject['media_device_facility_organization_ssim']).to match_array(organization.title)
+        expect(subject['media_device_facility_organization_id_tesim']).to match_array(organization.id)
+        expect(subject['media_device_facility_organization_id_ssim']).to match_array(organization.id)
+      end
+    end
+  end
+
   # helper method
   def add_ordered_members(parent, child)
     parent.ordered_members << child
     parent.save!
   end
 end
-
-

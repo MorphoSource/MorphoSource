@@ -64,6 +64,7 @@ Rails.application.routes.draw do
         resources :media, path: "media/:collection_id", only: [:index], controller: 'add_media', as: 'add_media'
         resources :specimens, only: [:index], controller: 'biological_specimens'
         resources :cultural_heritage_objects, only: [:index], controller: 'cultural_heritage_objects'
+        resources :organizations, only: [:index, :create], controller: 'collections/organization_collections'
         resources :media_lists, only: [:index, :create], controller: 'collections/media_lists'
         resources :sequential_section_lists, only: [:index, :create], controller: 'collections/media_lists/sequential_section_lists'
 
@@ -90,6 +91,8 @@ Rails.application.routes.draw do
     get 'media_lists/:id/media_requests', to: 'collections#media_requests', as: 'media_list_media_requests'
     get 'sequential_section_lists/:id/media_downloads', to: 'collections#media_downloads', as: 'sequential_section_list_media_downloads'
     get 'sequential_section_lists/:id/media_requests', to: 'collections#media_requests', as: 'sequential_section_list_media_requests'
+    get 'organizations/:id/media_downloads', to: 'collections#media_downloads', as: 'organization_media_downloads'
+    get 'organizations/:id/media_requests', to: 'collections#media_requests', as: 'organization_media_requests'
 
     scope module: :collections do
       # these get redirected to projects/teams/media lists/slide lists
@@ -136,6 +139,25 @@ Rails.application.routes.draw do
       get 'teams/:id/cultural_heritage_objects/objects_export', to: 'cultural_heritage_objects#objects_export', as: 'team_chos_export'
       get 'teams/:id/media_projects', to: 'teams#media_projects', as: 'team_media_projects'
       get 'teams/:id/media_organization_transfer_status', to: 'teams#media_organization_transfer_status', as: 'team_media_organization_transfer_status'
+
+      # organization_collections
+      get 'organizations/:id', to: 'organization_collections#show', as: 'organization'
+      get 'organizations/:id', to: 'organization_collections#show', as: 'organization_collection'
+      get 'organizations/:id/biological_specimens', to: 'biological_specimens#show', as: 'organization_specimens'
+      get 'organizations/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show', as: 'organization_chos'
+      get 'organizations/:id/devices', to: 'devices#show', as: 'organization_devices'
+      get 'organizations/:id/about', to: 'organization_collections#about', as: 'organization_about'
+      get 'organizations/:collection_id/facet/:id', to: 'organization_collections#facet', as: 'organization_media_facet'
+      get 'organizations/:collection_id/biological_specimens/facet/:id', to: 'biological_specimens#facet', as: 'organization_specimens_facet'
+      get 'organizations/:collection_id/cultural_heritage_objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'organization_chos_facet'
+      get 'organizations/:collection_id/devices/facet/:id', to: 'devices#facet', as: 'organization_devices_facet'
+
+      # csv exports
+      get 'organizations/:id/media_export', to: 'organization_collections#media_export_with_intersections_facet', as: 'organization_media_export'
+      get 'organizations/:id/media_download_counts', to: 'organization_collections#media_download_counts_with_intersections_facet', as: 'organization_media_download_counts'
+      get 'organizations/:id/biological_specimens/objects_export', to: 'biological_specimens#objects_export', as: 'organization_specimens_export'
+      get 'organizations/:id/cultural_heritage_objects/objects_export', to: 'cultural_heritage_objects#objects_export', as: 'organization_chos_export'
+      get 'organizations/:id/devices/devices_export', to: 'devices#devices_export', as: 'organization_devices_export'
 
       # media_lists
       get 'media_lists/:id', to: 'media_lists#show', as: 'media_list'
@@ -211,6 +233,16 @@ Rails.application.routes.draw do
         put 'projects/:id', to: 'projects#update', as: 'update_project'
         patch 'projects/:id', to: 'projects#update'
         get 'projects/:id/members', to: 'projects#members', as: 'project_members'
+
+        get 'organizations/new', to: 'organization_collections#new', as: 'new_organization'
+        post 'organizations', to: 'organization_collections#create'
+        get 'organizations/:id', to: 'organization_collections#edit', as: 'organization_edit'
+        get 'organizations/:id/edit', to: redirect('dashboard/organizations/%{id}')
+        get 'organizations/:id/files', to: 'organization_collections#files'
+        put 'organizations', to: 'organization_collections#update'
+        put 'organizations/:id', to: 'organization_collections#update', as: 'update_organization'
+        patch 'organizations/:id', to: 'organization_collections#update'
+        get 'organizations/:id/members', to: 'organization_collections#members', as: 'organization_members'
 
         get 'media_lists/new', to: 'media_lists#new', as: 'new_media_list'
         post 'media_lists', to: 'media_lists#create'
@@ -618,6 +650,8 @@ Rails.application.routes.draw do
   # Media
   get 'api/media', to: 'media_catalog#index', as: 'api_media_search', defaults: { format: 'json' }
   get 'api/media/:id', to: 'media_catalog#show', as: 'api_media_show', defaults: { format: 'json' }
+  get 'api/media/:id/file-metadata', to: 'media_catalog#show_file_metadata', as: 'api_media_show_file_metadata', defaults: { format: 'json' }
+  get 'api/media/:id/iiif/manifest', to: 'morphosource/manifests#get_manifest_link', as: 'api_media_get_manifest_link', defaults: { format: 'json' }
 
   # Generate media download link for API
   post 'api/download/:id', to: 'morphosource/media_api_downloads#api_generate_download', as: 'api_media_generate_download', defaults: { format: 'json' }

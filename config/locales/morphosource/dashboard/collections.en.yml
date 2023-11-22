@@ -43,6 +43,11 @@ en:
               title: 'Viewers'
               help: Viewers of this collection can view the collection even if it is private. Viewers are not given additional access to media in the collection.
               empty: No viewers have been added.
+        organization_collections:
+          new:
+            header: New Organization
+          edit:
+            header: Edit Organization
         projects:
           new:
             header: New Project

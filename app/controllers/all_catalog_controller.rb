@@ -10,7 +10,7 @@ class AllCatalogController < CatalogController
 
   configure_blacklight do |config|
     # returns all work types
-    config.search_builder_class = Hyrax::CatalogSearchBuilder
+    config.search_builder_class = Morphosource::CatalogSearchBuilder
 
     # facet fields
     config.add_facet_field solr_name("human_readable_type", :symbol), label: "Work Type", limit: 5

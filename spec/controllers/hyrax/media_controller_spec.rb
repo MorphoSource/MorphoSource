@@ -53,9 +53,9 @@ RSpec.describe Hyrax::MediaController, type: :controller do
 
       context 'work is private' do
         context 'user does not have access' do
-          it 'is unauthorized' do
+          it 'redirects to site root with not found flash' do
             get :showcase, params: { id: work.id }
-            expect(response.status).to eq(401)
+            expect(response.status).to eq(302)
           end
         end
         context 'user has edit access' do
@@ -129,7 +129,7 @@ RSpec.describe Hyrax::MediaController, type: :controller do
 
     describe 'user is not logged in' do
       context 'media is private' do
-        it 'redirects to sign in' do
+        it 'redirects site root with not found flash' do
           get :showcase, params: { id: work.id }
           expect(response.status).to eq(302)
         end
@@ -185,11 +185,11 @@ RSpec.describe Hyrax::MediaController, type: :controller do
 
         context 'when temporary link URL has been revoked' do
 
-          it 'user is redirected to sign-in page without authorization' do
+          it 'user is redirected to site root with not found flash without authorization' do
             temporary_link.destroy!
             get :showcase, params: { id: work.id, token: temporary_link.token }
             expect(response.status).to eq(302)
-            expect(response).to redirect_to main_app.new_user_session_path(locale: 'en')
+            expect(response).to redirect_to main_app.root_path(locale: 'en')
           end
         end
       end
@@ -255,7 +255,7 @@ RSpec.describe Hyrax::MediaController, type: :controller do
           end
 
           context 'when temporary link cookie has been revoked' do
-            it 'user is redirected to sign-in page without authorization' do
+            it 'user is redirected to site root with not found flash without authorization' do
               temporary_link.destroy!
 
               cookie_jar.encrypted["ta_#{temporary_link.media_id}"] = { 
@@ -265,7 +265,7 @@ RSpec.describe Hyrax::MediaController, type: :controller do
 
               get :showcase, params: { id: work.id }
               expect(response.status).to eq(302)
-              expect(response).to redirect_to main_app.new_user_session_path(locale: 'en')
+              expect(response).to redirect_to main_app.root_path(locale: 'en')
             end
           end
         end
@@ -306,7 +306,7 @@ RSpec.describe Hyrax::MediaController, type: :controller do
           end
 
           context 'when temporary link cookie has been revoked' do
-            it 'user is redirected to sign-in page without authorization' do
+            it 'user is redirected to to site root with not found flash without authorization' do
               temporary_link.destroy!
 
               cookie_jar.encrypted["ta_#{temporary_link.collection_id}"] = { 
@@ -316,7 +316,7 @@ RSpec.describe Hyrax::MediaController, type: :controller do
 
               get :showcase, params: { id: work.id }
               expect(response.status).to eq(302)
-              expect(response).to redirect_to main_app.new_user_session_path(locale: 'en')
+              expect(response).to redirect_to main_app.root_path(locale: 'en')
             end
           end  
         end

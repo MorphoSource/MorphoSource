@@ -103,11 +103,17 @@ module Morphosource
         organization_institution
     end
 
+    # originally created for editing organization in the specimen form
+    # now used only in the device new/edit form
     def member_of_organizations_json(work_type=nil)
       parent_works = model.in_works
       # If a work is deposited as a child of another work, it will have a parent_id
       if @controller.params[:parent_id]
         parent_works << ::ActiveFedora::Base.find(@controller.params[:parent_id])
+      end
+      # if a device has an organization id, add that organization
+      if model.organization_id.present?
+       (parent_works << ActiveFedora::Base.find(model.organization_id.first)).uniq
       end
       # filter by work type
       if work_type.present?
@@ -116,21 +122,7 @@ module Morphosource
       parent_works.map do |parent|
         {
           id: parent.id,
-          label: parent.to_s,
-          organization_type: parent.organization_type.first.to_s,
-          institution_name: parent.institution_name.first.to_s,
-          institution_code: parent.institution_code.first.to_s,
-          collection_code: parent.collection_code.first.to_s,
-          recordset_id: parent.recordset_id.first.to_s,
-          description: parent.description.first.to_s,
-          related_url: parent.related_url.first.to_s,
-          address: parent.address.first.to_s,
-          city: parent.city.first.to_s,
-          state_province: parent.state_province.first.to_s,
-          postal_code: parent.postal_code.first.to_s,
-          country: parent.country.first.to_s,
-          contact_person: parent.contact_person.first.to_s,
-          path: @controller.url_for(parent)
+          label: parent.title.first,
         }
       end.to_json
     end

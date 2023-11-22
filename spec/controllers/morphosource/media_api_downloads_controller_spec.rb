@@ -213,8 +213,8 @@ RSpec.describe Morphosource::MediaAPIDownloadsController, type: :controller do
 
               # test each params in the url generated
               resp_media = JSON.parse(response.body)["response"]["media"]
-              expect(resp_media["id"]).to eq([work1.id])
-              uri = URI.parse(resp_media["download_url"].first)
+              expect(resp_media["id"]).to eq(work1.id)
+              uri = URI.parse(resp_media["download_url"])
               params = URI.decode_www_form(uri.query)
               expect(params.assoc("download")&.last).to eq(download_hash)
               expect(params.assoc("key")&.last).to eq(work1.access_control_id)

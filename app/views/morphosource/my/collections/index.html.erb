@@ -5,7 +5,7 @@
 <% provide :page_header do %>
   <div class="col-xs-9 title">
     <h1>
-      <span class="fa fa-list" aria-hidden="true"></span> <%= t("morphosource.dashboard.my.#{@collections_type}.page_title") %>
+      <span class="fa fa-landmark" aria-hidden="true"></span> <%= t("morphosource.dashboard.my.#{@collections_type}.page_title") %>
     </h1>
   </div>
   <div class="col-xs-3 show-actions text-right">
@@ -15,7 +15,7 @@
     <% end %>
   </div>
   <div class="collection-description">
-      <%= t("morphosource.glossary.sequential_section_lists") %>
+    <%= t("morphosource.glossary.#{@collections_type}") %>
   </div>
   <% @collection_counts.each do |membership, count| %>
     <%= render 'membership_count', membership: membership, count: count %>

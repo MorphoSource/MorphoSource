@@ -9,6 +9,8 @@ module Morphosource
 
       with_themed_layout 'morphosource_dashboard'
 
+      self.search_state_class = Morphosource::SearchState
+
       # Define collection specific filter facets.
       def self.configure_facets
         configure_blacklight do |config|
@@ -17,8 +19,8 @@ module Morphosource
           # clear catalog facet fields
           config.facet_fields = {}
           # membership facet added in before_action :create_membership_facet
-          config.add_facet_field "visibility_ssi", label: "Visibility", limit: 10, helper_method: :visibility_label
-          config.add_facet_field "human_readable_type_ssim", label: "Collection Type", limit: 10
+          config.add_facet_field "visibility", field: "visibility_ssi", label: "Visibility", limit: 10, helper_method: :visibility_label
+          config.add_facet_field "type", field: "human_readable_type_ssim", label: "Collection Type", limit: 10
         end
       end
       configure_facets
@@ -47,6 +49,10 @@ module Morphosource
       end
 
       private
+
+      def authorize_admin
+        redirect_to root_path and return unless current_user.admin?
+      end
 
       # uses the membership facet to get total counts for each category
       def collection_counts

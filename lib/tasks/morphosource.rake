@@ -462,7 +462,7 @@ namespace :morphosource do
     Role.find_or_create_by(name: 'admin')
   end
 
-  desc 'Set up Team, Project, Media List, and Sequential Section List collection types'
+  desc 'Set up Team, Project, Media List, Sequential Section List, and Organization collection types'
   task :create_collection_types => :environment do
     if !Hyrax::CollectionType.where(title: Morphosource::CollectionTypes::Teams::SETTINGS[:title]).present?
       team = Hyrax::CollectionType.create(Morphosource::CollectionTypes::Teams::SETTINGS)
@@ -479,6 +479,10 @@ namespace :morphosource do
     if !Hyrax::CollectionType.where(title: Morphosource::CollectionTypes::SequentialSectionLists::SETTINGS[:title]).present?
       sequential_section_list = Hyrax::CollectionType.create(Morphosource::CollectionTypes::SequentialSectionLists::SETTINGS)
       Hyrax::CollectionTypes::CreateService.add_default_participants(sequential_section_list.id)
+    end
+    if !Hyrax::CollectionType.where(title: Morphosource::CollectionTypes::Organizations::SETTINGS[:title]).present?
+      organization = Hyrax::CollectionType.create(Morphosource::CollectionTypes::Organizations::SETTINGS)
+      Hyrax::CollectionTypes::CreateService.add_default_participants(organization.id)
     end
   end
 
@@ -805,7 +809,7 @@ namespace :morphosource do
     end
     if args[:send_email] ==  "true" && Hyrax.config.system_report_recipients.present?
       ApplicationMailer.send_email_with_attachment(
-        Hyrax.config.system_report_recipients, 
+        Hyrax.config.system_report_recipients,
         "MS IDigbio Update Report " + (update == false ? "(report only) " : "") +
         Time.now.strftime("%m-%d-%Y_%H-%M"),
         "Please see IDigbio Update Report in " + log_file,

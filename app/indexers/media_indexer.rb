@@ -73,17 +73,23 @@ class MediaIndexer < Morphosource::WorkIndexer
         physical_object_type = physical_objects.first.specimen? ? "Biological Specimen" : "Cultural Heritage Object"
         types = physical_objects.map(&:class).uniq
         if types == [CulturalHeritageObject]
+          external_taxonomy = nil
           taxonomy_titles = nil
         elsif types == [BiologicalSpecimen]
-          taxonomy_titles = physical_objects.map(&:taxonomies_titles).flatten
+          external_taxonomy = physical_objects.map(&:gbif_taxonomy_terms).flatten.uniq
+          taxonomy_titles = physical_objects.map(&:taxonomies_titles).flatten.uniq
           occurrence_id = physical_objects.map { |po| po.occurrence_id&.first }.compact
         else
+          external_taxonomy = []
           taxonomy_titles = []
           physical_objects.each do |object|
             if object.specimen?
+              external_taxonomy += object.gbif_taxonomy_terms
               taxonomy_titles += object.taxonomies_titles
             end
           end
+          external_taxonomy.uniq!
+          taxonomy_titles.uniq!
         end
 
         @organizations ||= organizations
@@ -125,6 +131,8 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['occurrence_id_ssim'] = occurrence_id
 
       # add taxonomies
+      solr_doc['external_taxonomy_tesim'] = external_taxonomy
+      solr_doc['external_taxonomy_ssim'] = external_taxonomy
       solr_doc['taxonomy_tesim'] = taxonomy_titles
       solr_doc['taxonomy_ssim'] = taxonomy_titles
 

@@ -6,9 +6,22 @@ en:
       device:
         description:        "Device works"
         name:               "Device"
+    devices:
+      form_parent_work_relationships:
+          actions:
+            remove: Remove from this work
+          attach_new_work: Deposit new work as child of this work
+          caption: This device currently belongs to these organizations
+          confirm:
+            cancel: Cancel
+            remove: Remove
+            text: Are you sure you want to remove this device from this organization?
+          header:
+            actions: Action
+            title: Organization title
   simple_form:
     labels:
       device:
         title: Model
         creator: Manufacturer
-        
+

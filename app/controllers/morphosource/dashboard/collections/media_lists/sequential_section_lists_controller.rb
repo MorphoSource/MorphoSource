@@ -26,19 +26,6 @@ module Morphosource
             def collection_class
               SequentialSectionList
             end
-
-            def collection_params
-              form_class.model_attributes(params[:sequential_section_list])
-            end
-
-            def member_params
-              params.dig(:sequential_section_list, :members)
-            end
-
-            def thumbnail_params
-              params.dig(:sequential_section_list, :representative_id)
-            end
-
         end
       end
     end

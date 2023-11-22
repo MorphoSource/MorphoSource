@@ -31,6 +31,10 @@
 
 en:
   hello: "Hello world"
+  cancan:
+    not_found:
+      message: "Not Found"
+      description: "Resource not found or unavailable."
   mailboxer:
     message_mailer:
       subject_new: 'MorphoSource: %{subject}'

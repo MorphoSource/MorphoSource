@@ -10,15 +10,15 @@ module Morphosource
       end
 
       property :city, predicate: ::RDF::Vocab::DWC.municipality do |index|
-        index.as :stored_searchable
+        index.as :stored_searchable, :symbol
       end
 
       property :state_province, predicate: ::RDF::Vocab::DWC.stateProvince do |index|
-        index.as :stored_searchable
+        index.as :stored_searchable, :symbol
       end
 
       property :country, predicate: ::RDF::Vocab::DWC.country do |index|
-        index.as :stored_searchable, :facetable
+        index.as :stored_searchable, :facetable, :symbol
       end
     end
   end

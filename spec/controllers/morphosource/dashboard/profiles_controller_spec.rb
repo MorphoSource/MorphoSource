@@ -169,6 +169,8 @@ RSpec.describe Morphosource::Dashboard::ProfilesController, :type => :controller
   end
 
   describe 'edit' do
+    let(:main_app) { Rails.application.routes.url_helpers }
+    
     context 'user is not signed in' do
       it 'is redirects' do
         get :edit, params: { id: user.ms_id }
@@ -179,10 +181,10 @@ RSpec.describe Morphosource::Dashboard::ProfilesController, :type => :controller
       before do
         sign_in user
       end
-      it 'is redirects to unauthorized when editing another user' do
+      it 'it redirects to site root with not found or unavailable flash when editing another user' do
         get :edit, params: { id: user2.ms_id }
-        expect(response.status).to eq(401)
-        expect(subject).to render_template("hyrax/base/unauthorized")
+        expect(response.status).to eq(302)
+        expect(response).to redirect_to main_app.root_path(locale: 'en')
       end
       it 'is renders edit profile page when editing own profile' do
         get :edit, params: { id: user.ms_id }

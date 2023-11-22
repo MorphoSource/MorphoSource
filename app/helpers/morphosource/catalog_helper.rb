@@ -1,4 +1,10 @@
 module Morphosource::CatalogHelper
+  # ensure Taxonomy names are in italics
+  def italicize_taxonomy(args)
+    args[:value].map do |value|
+      tag.div(tag.i(sanitize(value)))
+    end.join.html_safe
+  end
 
   # media index metadata displays title linked to physical object
   def link_to_object(args)
@@ -25,6 +31,13 @@ module Morphosource::CatalogHelper
   # @return [Boolean] whether any of the document IDs can be viewed
   def can_read_any(config, document)
     ( document[config[:key]] || [] ).any? { |id| can? :read, id }
+  end
+
+  # override helper method from Blacklight to work with facet fields where field != key
+  # @param [String] field Solr facet name
+  # @return [Blacklight::Configuration::FacetField] Blacklight facet configuration for the solr field
+  def facet_configuration_for_field(field)
+    blacklight_config.facet_fields[field] || super(field)
   end
 
   def modalities_service_instance

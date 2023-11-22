@@ -7,19 +7,13 @@ class OrganizationsCatalogController < CatalogController
     # disable thumbnails
     config.index.thumbnail_field = ''
 
-    # facets
-    # type of organization
-    config.add_facet_field "organization_type_ssim", label: "Type", limit: 5
-    # institution
-    config.add_facet_field "institution_name_ssim", label: "Institution", limit: 5
-    # institution code
-    config.add_facet_field "institution_code_ssim", label: "Institution Code", limit: 5
-    # country
-    config.add_facet_field "country_ssim", label: "Country", limit: 5
-    # state_province
-    config.add_facet_field "state_province_ssim", label: "State / Province", limit: 5
-    # city
-    config.add_facet_field "city_ssim", label: "City", limit: 5
+    # facet fields
+    config.add_facet_field "organization_type", field: "organization_type_ssim", label: "Organization Type", limit: 10
+    config.add_facet_field "institution_name", field: "institution_name_ssim", label: "Institution Name", limit: 10
+    config.add_facet_field "institution_code", field: "institution_code_ssim", label: "Institution Code", limit: 10
+    config.add_facet_field "country", field: "country_ssim", label: "Country", limit: 10
+    config.add_facet_field "state_province", field: "state_province_ssim", label: "State/Province", limit: 10
+    config.add_facet_field "city", field: "city_ssim", label: "City", limit: 10
 
     # search results display fields
     config.add_index_field solr_name("organization_type", :stored_searchable), label: "Type"

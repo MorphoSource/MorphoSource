@@ -1,0 +1,31 @@
+en:
+  morphosource:
+    collections:
+      organization:
+        exports:
+          media:
+            media_export:
+              label: Object media metadata with facets CSV
+              filename: 'Object%20Media%20Metadata'
+            media_download_counts:
+              label: Object media metadata with download counts CSV
+              filename: 'Object%20Media%20Download%20Counts'
+            media_downloads:
+              label: Individual object media downloads CSV
+              filename: 'Object%20Media%20Downloads'
+            media_requests:
+              label: Individual object media download requests CSV
+              filename: 'Object%20Media%20Requests'
+          device_media:
+            media_export:
+              label: Device media metadata with facets CSV
+              filename: 'Device%20Media%20Metadata'
+            media_download_counts:
+              label: Device media metadata with download counts CSV
+              filename: 'Device%20Media%20Download%20Counts'
+            media_downloads:
+              label: Individual device media downloads CSV
+              filename: 'Device%20Media%20Downloads'
+            media_requests:
+              label: Individual device media download requests CSV
+              filename: 'Device%20Media%20Requests'

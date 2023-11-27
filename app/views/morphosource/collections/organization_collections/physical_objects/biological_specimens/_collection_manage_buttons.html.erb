@@ -1,0 +1,18 @@
+<div class="row collection-manage-buttons pull-right">
+  <% if @can_edit %>
+    <div class="collection-manage-button-wrapper">
+      <%= link_to "Edit", hyrax.edit_dashboard_collection_path(@presenter), title: "t('hyrax.collection.actions.edit.desc')", class: 'btn btn-primary' %>
+    </div>
+    <div class="collection-manage-button-wrapper">
+      <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Export <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu">
+        <li>
+          <% byebug %>
+          <%= link_to 'Specimen metadata with facets CSV', specimens_export_csv_url(@collection), class: 'btn btn-primary' %>
+        </li>
+      </ul>
+    </div>
+  <% end %>
+</div>

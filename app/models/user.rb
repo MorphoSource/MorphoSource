@@ -181,7 +181,6 @@ class User < ApplicationRecord
   def can_submit_remote_file?(url, org_id)
     return false unless self.remote_file_submitter? && org_id.present?
     begin
-      byebug
       org = ActiveFedora::Base.find(org_id)
       team = org.class == OrganizationCollection ? org : org&.team_id
     rescue ActiveFedora::ObjectNotFoundError

@@ -44,6 +44,11 @@ module Morphosource
       works_export
     end
 
+    def devices_export
+      @document_type = 'device'
+      works_export
+    end
+
     def works_export
       deny_access_unauthorized and return unless current_user.present?
       deny_access_forbidden    and return unless current_user.can?(:edit, @collection)
@@ -53,7 +58,7 @@ module Morphosource
       end
       (@response, @document_list) = query_solr_all_results
       @document_list.map! { |d| d.to_semantic_values }
-      export_render("#{@document_type.titleize.pluralize} Query")
+      export_render(works_export_filename)
     end
 
     ### Download and Download Request Export ###
@@ -67,8 +72,7 @@ module Morphosource
       (_, @media_document_list) = query_solr_all_results
       media_ids = @media_document_list.map{|d| d["id"]}.flatten.compact.uniq
       @document_list = Morphosource::Reports::DownloadsReportService.call(media_ids)
-
-      export_render('Media%20Downloads')
+      export_render(media_downloads_filename)
     end
 
     def media_download_counts
@@ -101,8 +105,7 @@ module Morphosource
           { id: doc_semantic[:id], title: doc_semantic[:title], media: doc_semantic }.merge(dl_counts)
         end
       end
-
-      export_render('Media%20Download%20Counts')
+      export_render(media_download_counts_filename)
     end
 
     def media_requests
@@ -115,7 +118,7 @@ module Morphosource
       media_ids = @media_document_list.map{|d| d["id"]}.flatten.compact.uniq
       @document_list = Morphosource::Reports::RequestsReportService.call(media_ids)
 
-      export_render('Media%20Requests')
+      export_render(media_requests_filename)
     end
 
     private
@@ -174,6 +177,38 @@ module Morphosource
     def csv_response_headers(file_name)
       response.headers['Content-Type'] = 'text/csv'
       response.headers['Content-Disposition'] = "attachment; filename=MorphoSource%20#{collection.human_readable_type}%20#{@collection.id}%20-%20#{file_name}.csv"
+    end
+
+    def works_export_filename
+      begin
+        t("morphosource.collections.#{collection_type.title.downcase}.exports.#{tab.to_s}.media_export.filename")
+      rescue
+        "#{@document_type.titleize.pluralize} Query"
+      end
+    end
+
+    def media_download_counts_filename
+      begin
+        t("morphosource.collections.#{collection_type.title.downcase}.exports.#{tab.to_s}.media_download_counts.filename")
+      rescue
+        'Media%20Download%20Counts'
+      end
+    end
+
+    def media_downloads_filename
+      begin
+        t("morphosource.collections.#{collection_type.title.downcase}.exports.#{tab.to_s}.media_downloads.filename")
+      rescue
+        'Media%20Downloads'
+      end
+    end
+
+    def media_requests_filename
+      begin
+        t("morphosource.collections.#{collection_type.title.downcase}.exports.#{tab.to_s}.media_requests.filename")
+      rescue
+        'Media%20Requests'
+      end
     end
   end
 end

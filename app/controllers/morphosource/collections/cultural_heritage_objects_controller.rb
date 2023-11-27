@@ -27,6 +27,7 @@ module Morphosource
         def query_collection_counts
           @cho_count ||= @response.response["numFound"].to_i
           @specimen_count ||= collection_specimen_count
+          @media_count ||= collection_media_count
         end
 
         # link for facet filters

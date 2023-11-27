@@ -56,19 +56,39 @@ module Morphosource
     end
 
     def media_export_csv_url(collection)
-      main_app.send("#{collection_type_machine_id(collection)}_media_export_path", request.parameters.merge(id: collection.id, :format => :csv, :per_page => 1000000))
+      main_app.send("#{collection_type_machine_id(collection)}_#{@tab || 'media'}_export_path", request.parameters.merge(id: collection.id, :format => :csv, :per_page => 1000000))
     end
 
     def media_downloads_csv_url(collection)
-      main_app.send("#{collection_type_machine_id(collection)}_media_downloads_path", id: collection.id, :format => :csv, :per_page => 1000000)
+      main_app.send("#{collection_type_machine_id(collection)}_#{@tab || 'media'}_downloads_path", id: collection.id, :format => :csv, :per_page => 1000000)
     end
 
     def media_download_counts_csv_url(collection)
-      main_app.send("#{collection_type_machine_id(collection)}_media_download_counts_path", request.parameters.merge(id: collection.id, :format => :csv, :per_page => 1000000))
+      main_app.send("#{collection_type_machine_id(collection)}_#{@tab || 'media'}_download_counts_path", request.parameters.merge(id: collection.id, :format => :csv, :per_page => 1000000))
     end
 
     def media_requests_csv_url(collection)
-      main_app.send("#{collection_type_machine_id(collection)}_media_requests_path", id: collection.id, :format => :csv, :per_page => 1000000)
+      main_app.send("#{collection_type_machine_id(collection)}_#{@tab || 'media'}_requests_path", id: collection.id, :format => :csv, :per_page => 1000000)
+    end
+
+    def device_media_export_csv_url(collection)
+      main_app.send("#{collection_type_machine_id(collection)}_device_media_export_path", request.parameters.merge(id: collection.id, :format => :csv, :per_page => 1000000))
+    end
+
+    def device_media_downloads_csv_url(collection)
+      main_app.send("#{collection_type_machine_id(collection)}_device_media_downloads_path", id: collection.id, :format => :csv, :per_page => 1000000)
+    end
+
+    def device_media_download_counts_csv_url(collection)
+      main_app.send("#{collection_type_machine_id(collection)}_device_media_download_counts_path", request.parameters.merge(id: collection.id, :format => :csv, :per_page => 1000000))
+    end
+
+    def device_media_requests_csv_url(collection)
+      main_app.send("#{collection_type_machine_id(collection)}_device_media_requests_path", id: collection.id, :format => :csv, :per_page => 1000000)
+    end
+
+    def devices_export_csv_url(collection)
+      main_app.send("#{collection_type_machine_id(collection)}_devices_export_path", request.parameters.merge(id: collection.id, :format => :csv, :per_page => 1000000))
     end
 
     def collection_edit_path(collection)

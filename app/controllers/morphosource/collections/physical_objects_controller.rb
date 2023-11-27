@@ -12,6 +12,10 @@ module Morphosource
         search_builder_class.new(self)
       end
 
+      def media_count_search_builder_class
+        Morphosource::Collections::MediaSearchBuilder
+      end
+
       def get_object_ids
         @object_ids = collection_object_ids
         @media_count = collection_media_count

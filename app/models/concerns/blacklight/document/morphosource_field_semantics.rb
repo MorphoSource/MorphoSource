@@ -10,6 +10,8 @@ module Blacklight
           media_field_semantics
         when 'BiologicalSpecimen', 'CulturalHeritageObject'
           physical_object_field_semantics
+        when 'Device'
+          device_field_semantics
         when 'Collection'
           collection_field_semantics
         else
@@ -103,6 +105,18 @@ module Blacklight
           taxonomy_gbif: "external_taxonomy_tesim",
           sex: "sex_tesim",
           creator: "creator_tesim",
+          date_uploaded: "date_uploaded_dtsi",
+          date_modified: "date_modified_dtsi"
+        }
+      end
+
+      def device_field_semantics
+        @field_semantics ||= {
+          id: "id",
+          make: 'creator_tesim',
+          model: "title_ssi",
+          modalities: 'modality_tesim',
+          description: 'description_tesim',
           date_uploaded: "date_uploaded_dtsi",
           date_modified: "date_modified_dtsi"
         }

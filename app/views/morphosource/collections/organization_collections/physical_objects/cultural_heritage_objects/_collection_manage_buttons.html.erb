@@ -1,0 +1,30 @@
+<div class="row collection-manage-buttons pull-right">
+  <% if @can_edit %>
+    <div class="collection-manage-button-wrapper">
+      <%= link_to "Edit", hyrax.edit_dashboard_collection_path(@presenter), title: "t('hyrax.collection.actions.edit.desc')", class: 'btn btn-primary' %>
+    </div>
+    <div class="collection-manage-button-wrapper">
+      <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Export <span class="caret"></span>
+      </button>
+      <ul class="dropdown-menu">
+        <li>
+          <% if @tab == :specimens %>
+            <% query_link_title = 'Specimen metadata with facets CSV' %>
+            <% query_link_url = specimens_export_csv_url(@collection) %>
+          <% elsif @tab == :chos %>
+            <% query_link_title = 'Object metadata with facets CSV' %>
+            <% query_link_url = chos_export_csv_url(@collection) %>
+          <% else %>
+            <% query_link_title = 'Media metadata with facets CSV' %>
+            <% query_link_url = media_export_csv_url(@collection) %>
+          <% end %>
+          <%= link_to query_link_title,
+            query_link_url,
+            class: 'btn btn-primary'
+          %>
+        </li>
+      </ul>
+    </div>
+  <% end %>
+</div>

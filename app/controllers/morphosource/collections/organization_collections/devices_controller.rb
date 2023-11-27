@@ -9,10 +9,14 @@ module Morphosource
         # restrict to admins
         # before_action :authorize_admin
 
-        skip_load_and_authorize_resource only: [:show, :about, :facet, :objects_export], instance_name: :collection
+        skip_load_and_authorize_resource only: [:show, :about, :facet, :devices_export], instance_name: :collection
 
         def search_builder_class
           Morphosource::Collections::OrganizationCollections::DevicesSearchBuilder
+        end
+
+        def media_count_search_builder_class
+          Morphosource::Collections::OrganizationCollections::DeviceMediaSearchBuilder
         end
 
         def self.configure_facets

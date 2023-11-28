@@ -29,3 +29,22 @@ en:
             media_requests:
               label: Individual device media download requests CSV
               filename: 'Device%20Media%20Requests'
+        tabs:
+          media:
+            label: OBJECT MEDIA
+            hint: Media created by imaging objects owned by this organization
+          device_media:
+            label: DEVICE MEDIA
+            hint: Media created using a device owned by this organization
+          specimens:
+            label: SPECIMENS
+            hint: Biological Specimens that were imaged to create either Object Media or Device Media
+          chos:
+            label: CULTURAL HERITAGE OBJECTS
+            hint: Cultural Heritage Objects that were imaged to create either Object Media or Device Media
+          devices:
+            label: DEVICES
+            hint: Devices owned by this organization
+          about:
+            label: ABOUT
+            hint: Further information about this organization

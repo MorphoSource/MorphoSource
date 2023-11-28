@@ -18,7 +18,11 @@
     <%= t("morphosource.glossary.#{@collections_type}") %>
   </div>
   <% @collection_counts.each do |membership, count| %>
-    <%= render 'membership_count', membership: membership, count: count %>
+    <% if @collections_type == "organizations" %>
+      <%= render 'morphosource/my/collections/organizations/membership_count', membership: membership, count: count %>
+    <% else %>
+      <%= render 'membership_count', membership: membership, count: count %>
+    <% end %>
   <% end %>
 <% end %>
 

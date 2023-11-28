@@ -12,6 +12,8 @@ module Morphosource
             Morphosource::Collections::OrganizationCollections::OrganizationMediaSearchBuilder
           end
 
+          self.presenter_class = Morphosource::Collections::OrganizationPresenter
+
           # restrict to admins
           # before_action :authorize_admin
 

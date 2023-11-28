@@ -2,38 +2,44 @@
 <ul class="nav nav-tabs" role="tablist">
   <li role="presentation" class=<%= active_tab?(:media) %> >
     <a href=<%= media_tab_url(@collection) %> aria-controls="media" role="tab">
-    <i class="fa fa-cube" aria-hidden="true"></i> OBJECT MEDIA
+      <i class="fa fa-cube" aria-hidden="true"></i> <%= t("morphosource.collections.organization.tabs.media.label") %>
+      <%= render_hint_tag(t("morphosource.collections.organization.tabs.media.hint")) %>
     </a>
   </li>
   <li role="presentation" class=<%= active_tab?(:device_media) %> >
     <a href=<%= device_media_tab_url(@collection) %> aria-controls="media" role="tab">
-    <i class="fa fa-cube" aria-hidden="true"></i> DEVICE MEDIA
+      <i class="fa fa-cube" aria-hidden="true"></i> <%= t("morphosource.collections.organization.tabs.device_media.label") %>
+      <%= render_hint_tag(t("morphosource.collections.organization.tabs.device_media.hint")) %>
     </a>
   </li>
   <% if @specimen_count > 0 %>
     <li role="presentation" class=<%= active_tab?(:specimens) %>>
       <a href=<%= specimens_tab_url(@collection) %> aria-controls="biological_specimens" role="tab">
-        <i class="fas fa-frog" aria-hidden="true"></i> SPECIMENS
+        <i class="fas fa-frog" aria-hidden="true"></i> <%= t("morphosource.collections.organization.tabs.specimens.label") %>
+        <%= render_hint_tag(t("morphosource.collections.organization.tabs.specimens.hint")) %>
       </a>
     </li>
   <% end %>
   <% if @cho_count > 0 %>
     <li role="presentation" class=<%= active_tab?(:chos) %>>
       <a href=<%= chos_tab_url(@collection) %> aria-controls="biological_specimens" role="tab">
-        <i class="ms2-icon-bowl icon-bowl" aria-hidden="true"></i> CULTURAL HERITAGE OBJECTS
+        <i class="ms2-icon-bowl icon-bowl" aria-hidden="true"></i> <%= t("morphosource.collections.organization.tabs.chos.label") %>
+        <%= render_hint_tag(t("morphosource.collections.organization.tabs.chos.hint")) %>
       </a>
     </li>
   <% end %>
   <% if @device_count > 0 %>
     <li role="presentation" class=<%= active_tab?(:devices) %>>
       <a href=<%= devices_tab_url(@collection) %> aria-controls="biological_specimens" role="tab">
-        <i class="fas fa-camera" aria-hidden="true"></i> DEVICES
+        <i class="fas fa-camera" aria-hidden="true"></i> <%= t("morphosource.collections.organization.tabs.devices.label") %>
+        <%= render_hint_tag(t("morphosource.collections.organization.tabs.devices.hint")) %>
       </a>
     </li>
   <% end %>
   <li role="presentation" class=<%= active_tab?(:about) %>>
     <a href=<%= about_tab_url(@collection) %> aria-controls="biological_specimens" role="tab">
-      <i class="fa fa-newspaper" aria-hidden="true"></i> ABOUT
+      <i class="fa fa-newspaper" aria-hidden="true"></i> <%= t("morphosource.collections.organization.tabs.about.label") %>
+      <%= render_hint_tag(t("morphosource.collections.organization.tabs.about.hint")) %>
     </a>
   </li>
 </ul>

@@ -8,6 +8,24 @@ module Morphosource
         # temporary restriction so only admins can access organization lists
         before_action :authorize_admin
 
+        # Define collection specific filter facets.
+        def self.configure_facets
+          configure_blacklight do |config|
+            config.http_method = :post
+            config.search_builder_class = self.new.search_builder_class
+            # clear catalog facet fields
+            config.facet_fields = {}
+            # membership facet added in before_action :create_membership_facet
+            config.add_facet_field "institution", field: "institution_name_ssim", label: "Institution", limit: 10
+            config.add_facet_field "organization", field: "title_ssi", label: "Organization", limit: 10
+            config.add_facet_field "organization_type", field: "organization_type_ssim", label: "Organization Type", limit: 10
+            config.add_facet_field "country", field: "country_ssim", label: "Country", limit: 10
+            config.add_facet_field "state", field: "state_province_ssim", label: "State or Province", limit: 10
+            config.add_facet_field "city", field: "city_ssim", label: "City", limit: 10
+          end
+        end
+        configure_facets
+
         def collections_type
           "organizations"
         end

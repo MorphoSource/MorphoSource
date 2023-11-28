@@ -1,6 +1,11 @@
 en:
   morphosource:
     collections:
+      my:
+        organizations:
+          headings:
+            media: Object Media
+            device_media: Device Media
       organization:
         exports:
           media:

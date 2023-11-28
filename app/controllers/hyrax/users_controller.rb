@@ -2,7 +2,6 @@ module Hyrax
   class UsersController < ApplicationController
     include Blacklight::SearchContext
     prepend_before_action :find_user, only: [:show, :make_user_active, :make_user_inactive]
-
     helper Hyrax::TrophyHelper
 
     # do not restrict json (need it for searching for users during submission/record editing)

@@ -325,6 +325,7 @@ Rails.application.routes.draw do
     get 'dashboard/profiles/:id/generate_new_api_key', to: 'dashboard/profiles#generate_new_api_key', as: 'profile_generate_new_api_key'
     put 'dashboard/profiles/:id', to: 'dashboard/profiles#update'
     patch 'dashboard/profiles/:id', to: 'dashboard/profiles#update'
+    patch 'dashboard/profiles/:id/update_profile_type', to: 'dashboard/profiles#update_profile_type', as: 'update_profile_type'
   end
 
   # override Hyrax::PagesController
@@ -627,6 +628,9 @@ Rails.application.routes.draw do
   # Routes for granting/removing remote_file_submitter status
   post 'users/:id/make_remote_file_submitter' => 'remote_file_submitters#make_remote_file_submitter', as: 'make_remote_file_submitter'
   post 'users/:id/remove_remote_file_submitter' => 'remote_file_submitters#remove_remote_file_submitter', as: 'remove_remote_file_submitter'
+
+  # Routes for editing/updating profile type
+  get 'dashboard/profiles/:id/edit_profile_type' => 'morphosource/dashboard/profiles#edit_profile_type', as: 'edit_profile_type'
 
   # Routes for editing/updating password from profile page
   get 'dashboard/profiles/:id/edit_password' => 'morphosource/dashboard/profiles#edit_password', as: 'profile_edit_password'

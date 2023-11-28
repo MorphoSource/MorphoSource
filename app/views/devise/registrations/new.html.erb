@@ -1,58 +1,59 @@
-<h2>Sign up</h2>
-
-<div class="panel panel-default">
-  <div class="panel-body">
-    <div class="col-sm-12 profile">
-      <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-        <div class="form-group">
-          <%= render "devise/shared/error_messages", resource: resource %>
-        </div>
-
-        <div class="form-group">
-          <%= f.label :email, class: 'control-label', style: 'width: 33%; position: relative; left: 15px;'  %>
-          <%= f.email_field :email, autofocus: true, autocomplete: "email", style: 'position: relative; left: 15px;' %>
-        </div>
-
-        <div class="form-group">
-          <% if @minimum_password_length %>
-            <%= f.label ("Password (" + @minimum_password_length.to_s + " characters minimum)"), class: 'control-label', style: 'width: 33%; position: relative; left: 15px;' %>
-          <% else %>
-            <%= f.label :password, class: 'control-label', style: 'width: 33%; position: relative; left: 15px;' %>
-          <% end %>
-          <%= f.password_field :password, autocomplete: "new-password", style: 'position: relative; left: 15px;' %>
-        </div>
-
-        <div class="form-group">
-          <%= f.label :password_confirmation, class: 'control-label', style: 'width: 33%; position: relative; left: 15px;' %>
-          <%= f.password_field :password_confirmation, autocomplete: "new-password", style: 'position: relative; left: 15px;' %>
-        </div>
-
-
-        <%= render partial: 'hyrax/dashboard/profiles/ms_profile', locals: {f: f} %>
-
-        <div class="form-group">
-          <div class='col-sm-4 control-label'></div>
-          <div class='col-sm-8'>
-            <%= f.submit "Sign up" %>
-          </div>
-        </div>
-      <% end %>
-    </div>
-  </div>
+<% content_for :body_css_classes do %>showcase profile<% end %>
+<%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+<h1 class="mt-2"><i class="fa fa-edit"></i> Sign up</h1>
+<div class="row">
+  <%= render "devise/shared/error_messages", resource: resource %>
 </div>
 
-<style>
+<div class="panel panel-default">
+  <div class="row">
+    <div class="col-sm-12">
+      <div class="block-padding mb-1">
+        <%= t("morphosource.dashboard.profiles.register_form_instructions").html_safe %>
+      </div>
+    </div>
+    <div class="col-sm-12 col-md-6 profile">
 
-.form-group {
-  min-height: 30px;
-  display: flex;
-  flex-direction: row;
-}
+      <%= render partial: 'hyrax/dashboard/profiles/edit_email', locals: {f: f} %>
 
-</style>
+      <div class="form-group">
+        <%= f.label :password, class: 'col-sm-4 control-label required' %>
+        <div class="col-sm-8">
+          <%= f.password_field :password, autocomplete: "new-password", class: "form-control w-100", minlength: @minimum_password_length.to_s %>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :password_confirm, class: 'col-sm-4 control-label required' %>
+        <div class="col-sm-8">
+          <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control", minlength: @minimum_password_length.to_s %>
+        </div>
+      </div>
+
+      <%= render partial: 'hyrax/dashboard/profiles/edit_profile_name_section', locals: {f: f} %>
+      <%= render partial: 'hyrax/dashboard/profiles/ms_profile', locals: {f: f} %>
+
+    </div>
+
+    <div class="col-sm-12 col-md-6">
+      <%= render partial: 'hyrax/dashboard/profiles/edit_profile_type_section', locals: {f: f} %>
+      <%= render partial: 'hyrax/dashboard/profiles/edit_intent', locals: {f: f} %>  
+    </div>
+  </div>
+
+  <div class="row">
+    <div class='col-sm-12 text-center'>
+      <p>
+        <%= f.check_box :terms_read, {checked: false, required: true}, true %>
+        <%= t("devise.passwords.edit.terms").html_safe %>       
+      </p>
+      <p><%= f.submit "Sign up", class: 'btn btn-primary btn-lg' %></p>
+    </div>
+  </div>
+
+</div>
+<% end %>
 
 <script>
-
-  <%= render partial: 'hyrax/dashboard/profiles/ms_profile_scripts', formats: [:js] %>
-
+<%= render partial: 'hyrax/dashboard/profiles/ms_profile_scripts', formats: [:js] %>
 </script>

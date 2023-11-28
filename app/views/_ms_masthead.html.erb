@@ -7,7 +7,7 @@
           <%= render '/logo' %>
         </div>
         <div class="col-xs-10 col-sm-7">
-          <%= render partial: 'catalog/search_form' %>
+          <%= content_for?(:search_form) ? yield(:search_form) : render('/catalog/search_form') %>
         </div>
         <div class="col-xs-2 pull-right">
           <!-- mobile hamburger menu -->
@@ -21,7 +21,7 @@
       </div>
 
       <div class="collapse navbar-collapse col-xs-12 col-sm-3 navbar-right" id="top-navbar-collapse">
-        <%= render '/user_util_links' %>
+        <%= content_for?(:user_util_links) ? yield(:user_util_links) : render('/user_util_links') %>
       </div>
 
     </div>

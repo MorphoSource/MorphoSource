@@ -542,6 +542,26 @@ module Hyrax
 
     # docs
 
+    attr_reader :user_profile_metadata_fields
+    def user_profile_metadata_fields
+      YAML.load_file(Rails.root.join('config', 'models', 'user_metadata.yml'))['user_metadata']
+    end
+
+    attr_reader :user_profile_metadata_settings
+    def user_profile_metadata_settings
+      YAML.load_file(Rails.root.join('config', 'models', 'user_metadata_settings.yml'))['settings']
+    end
+
+    attr_reader :user_profile_type_config
+    def user_profile_type_config
+      YAML.load_file(Rails.root.join('config', 'models', 'user_profile_types.yml'))['profile_types']
+    end
+
+    attr_reader :user_demographics
+    def user_demographics
+      YAML.load_file(Rails.root.join('config', 'models', 'user_demographics.yml'))['ordered_values']
+    end
+
     attr_writer :docs_yml_path
     def docs_yml_path
       @docs_yml_path ||= "config/links/docs.yml"

@@ -1,36 +1,54 @@
 <%= form_for @user,
              url: hyrax.dashboard_profile_path(@user.to_param),
              html: { multipart: true, class: 'form-horizontal' } do |f| %>
-  <div class="form-group">
-    <%= f.label :avatar, t("morphosource.dashboard.profiles.edit_primary.change_picture").html_safe, class: "col-sm-4 control-label" %>
-    <div class="col-sm-8">
-      <%= image_tag @user.avatar.url(:thumb) if @user.avatar? %>
-      <%= f.file_field :avatar %>
-      <%= f.hidden_field :avatar_cache %>
-      <span class="help-block"><%= t('morphosource.dashboard.profiles.edit_primary.help_change_picture_type') %></span>
 
-      <div class="checkbox">
-        <%= f.label :remove_avatar do %>
-          <%= f.check_box :remove_avatar %>
-          <%= t("morphosource.dashboard.profiles.edit_primary.delete_picture") %>
-          <a href="#" id="delete_picture_help"
-          data-toggle="popover"
-          data-content="<%= t('morphosource.dashboard.profiles.edit_primary.delete_picture_data_content') %>"
-          data-original-title="<%= t('morphosource.dashboard.profiles.edit_primary.delete_picture_data_original_title') %>">
-            <i class="glyphicon glyphicon-question-sign"></i>
-          </a>
+<div class="row">
+  <div class="col-sm-12 col-md-6">
+    <%= render partial: 'hyrax/dashboard/profiles/edit_email', locals: {f: f} %>
+
+    <div class="form-group">
+      <%= f.label :avatar, t("morphosource.dashboard.profiles.edit_primary.change_picture").html_safe, class: "col-sm-4 control-label" %>
+      <div class="col-sm-8">
+        <div>
+          <%= f.file_field :avatar %>
+          <%= f.hidden_field :avatar_cache %>
+        </div>
+        <% if @user.avatar? %>
+          <div class="mt-1">
+            <%= image_tag @user.avatar.url(:thumb) %>
+            <div class="checkbox">
+              <%= f.label :remove_avatar do %>
+                <%= f.check_box :remove_avatar %>
+                <%= t("morphosource.dashboard.profiles.edit_primary.delete_picture") %>
+              <% end %>
+            </div>
+          </div>
         <% end %>
       </div>
     </div>
-  </div><!-- .form-group -->
 
-  <%= render partial: 'hyrax/dashboard/profiles/edit_email', locals: {f: f} %>
-  <%= render partial: 'hyrax/dashboard/profiles/edit_sftp_share', locals: {f: f} %>
-  <%= render partial: 'hyrax/dashboard/profiles/ms_profile', locals: {f: f} %>
+    <%= render partial: 'hyrax/dashboard/profiles/edit_profile_name_section', locals: {f: f} %>
+    <%= render partial: 'hyrax/dashboard/profiles/ms_profile', locals: {f: f} %>
+    <%= render partial: 'hyrax/dashboard/profiles/edit_sftp_share', locals: {f: f} %>
+  </div>
 
-  <%= render 'trophy_edit', trophies: @trophies %>
+  <div class="col-sm-12 col-md-6">
+    <%= render partial: 'hyrax/dashboard/profiles/edit_profile_type_section', locals: {f: f} %>
+    <%= render partial: 'hyrax/dashboard/profiles/edit_intent', locals: {f: f} %>  
+  </div>
 
-  <%= f.button t(".save_profile").html_safe, type: 'submit', class: "btn btn-primary" %>
+</div>
+
+<div class="row">
+  <div class='col-xs-12 text-center'>
+    <%= render 'trophy_edit', trophies: @trophies %>
+    <p>
+      <%= f.check_box :terms_read, {checked: false, required: true}, true %>
+      <%= t("devise.passwords.edit.terms").html_safe %>
+    </p>
+    <p><%= f.button t(".save_profile").html_safe, type: 'submit', class: "btn btn-primary btn-lg" %></p>
+  </div>
+</div>
 <% end %>
 
 <script>

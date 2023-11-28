@@ -1,9 +1,24 @@
 require 'digest'
 
 class SessionsController < Devise::SessionsController
-  # before_action :configure_sign_in_params, only: [:create]
 
-  # GET /resource/sign_in
+  def create
+    if user_signed_in?
+      unless current_user.profile_type.present?
+        super do |resource|
+          if resource.persisted?
+            raw, hashed = Devise.token_generator.generate(User, :update_profile_token)
+            current_user.update_profile_token = hashed
+            current_user.update_profile_sent_at = Time.now.utc
+            current_user.save
+            redirect_to edit_profile_type_path(resource, update_profile_token: raw) and return
+          end
+        end
+      end
+    end
+    super
+  end
+
   def new
     if sign_in_params[:email] and sign_in_params[:password]
       u = User.find_by email: sign_in_params[:email]

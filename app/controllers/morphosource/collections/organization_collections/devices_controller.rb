@@ -19,6 +19,8 @@ module Morphosource
           Morphosource::Collections::OrganizationCollections::DeviceMediaSearchBuilder
         end
 
+        self.presenter_class = Morphosource::Collections::OrganizationPresenter
+
         def self.configure_facets
           configure_blacklight do |config|
             config.http_method = :post

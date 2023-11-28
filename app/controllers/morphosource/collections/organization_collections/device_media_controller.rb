@@ -13,6 +13,8 @@ module Morphosource
           Morphosource::Collections::OrganizationCollections::DeviceMediaSearchBuilder
         end
 
+        self.presenter_class = Morphosource::Collections::OrganizationPresenter
+
         private
 
           # link for facet filters

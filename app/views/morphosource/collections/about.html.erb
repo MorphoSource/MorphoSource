@@ -35,6 +35,10 @@ provide :page_title, construct_page_title(@presenter.title)
                   <%= @presenter.organization.title.first %>
                   <%= @presenter.organization_badge %>
                   <%= @presenter.team_managed_badge %>
+                <% elsif @presenter.collection_type_title == 'Organization' %>
+                  <div class="super-title"><%= @presenter.organization.institution_name&.first %></div>
+                  <%= @presenter.organization.title.first %>
+                  <%= @presenter.organization_badge %>
                 <% else %>
                   <%= @presenter.title.first %>
                   <%= @presenter.collection_type_badge %>

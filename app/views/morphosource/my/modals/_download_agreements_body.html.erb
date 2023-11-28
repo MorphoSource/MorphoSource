@@ -1,10 +1,10 @@
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal"><span id="close-modal" aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
         <h2>Download Usage</h2>
+        <p><%= t("morphosource.modal.request.subtitle").html_safe %></p>
       </div>
       <div class="modal-body">
 
-        <label id="describe-usage">Please describe your intended usage:</label>
         <textarea id="custom-usage" rows="3" class="w-100"></textarea>
         <i id="char-alert">50 characters minimum: <span id="rchars">0</span></i>
 

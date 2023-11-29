@@ -1,0 +1,51 @@
+en:
+  morphosource:
+    dashboard:
+      collections:
+        organization_collection:
+          new:
+            header: 'New Organization'
+          action:
+            edit: 'Edit Organization'
+            delete: 'Delete Organization'
+            new: 'New Organization'
+            view: 'View Organization'
+            collection_update_success: ' was successfully updated.'
+          members:
+            roles:
+              contributor: 'manager'
+              non-contributor: 'viewer'
+  simple_form:
+    labels:
+      organization_collection:
+        address: Street Address
+        city: City
+        collection_code: Collection Code(s)
+        contact_person: Contact Person
+        country: Country
+        description: Organization Description
+        institution_code: Institution Code(s)
+        institution_name: Parent Institution Name
+        organization_type: Organization Type
+        postal_code: Postal Code
+        recordset_id: Recordset ID
+        related_url: Related URL
+        state_province: State/Province
+        title: Organization Name
+    hints:
+      organization_collection:
+        address: The street address of the organization
+        city: The city where the organization is located
+        collection_code: Contact Morphosource admins at morphosource@duke.edu to change the collection code(s)
+        contact_person: The name of the person to contact for questions about this organization
+        country: The country where the organization is located
+        description: A description of the organization
+        institution_code: Contact Morphosource admins at morphosource@duke.edu to change the institution code(s)
+        institution_name: Contact Morphosource admins at morphosource@duke.edu to change the institution name
+        organization_type: Contact Morphosource admins at morphosource@duke.edu to change the organization type
+        postal_code: The postal code of the organization
+        recordset_id: Contact Morphosource admins at morphosource@duke.edu to change the recordset ID
+        related_url: The website(s) associated with the organization.
+        state_province: The state or province where the organization is located
+        title: Contact Morphosource admins at morphosource@duke.edu to change the organization name
+        value_blank_check: If this is selected, users contributing media will be recommended or required to leave this field blank. You may not add a value to this field if this is selected.

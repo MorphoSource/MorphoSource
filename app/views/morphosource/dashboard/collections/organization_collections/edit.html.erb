@@ -1,0 +1,32 @@
+<% provide :page_title, construct_page_title( t('hyrax.dashboard.collections.edit.header', type_title: @collection.collection_type.title, title: @collection.title.first) ) %>
+
+<!-- create simple_form here to include update button above nav tabs -->
+<%= simple_form_for @form, url: collection_form_url(@form), wrapper: :showcase_default, html: { class: 'editor' } do |f| %>
+  <div class="row" style="margin-top:30px;">
+    <div class="col-md-12">
+      <%= render 'hyrax/base/flash_msg' %>
+      <% content_for :body_css_classes do %>showcase showcase-edit teams ms-collection-edit<% end %>
+
+      <div class="col-xs-9 title team-title">
+        <div>
+          <span class="fa fa-edit" aria-hidden="true"></span>
+          <h1 style="margin-bottom:20px;"><%= @collection.title.first %>
+            <%= @presenter.collection_type_badge %>
+            <%= @presenter.id_badge %>
+            <%= @presenter.permission_badge %>
+          </h1>
+        </div>
+        <div>
+          <%= f.submit t(:'hyrax.collection.select_form.update'), class: 'btn btn-primary', onclick: "confirmation_needed = false;", id: "update_submit", name: "update_collection" %>
+          <%= link_to "Public View", collection_media_path(@collection), class: 'btn btn-primary' %>
+        </div>
+      </div>
+      <br>
+      <div class="panel panel-default tabs teams" id="collection-edit-controls">
+        <%= render 'nav_tabs' %>
+        <%= render 'morphosource/dashboard/collections/organization_collections/details/form', f:f %>
+      </div>
+      </div>
+    </div>
+  </div>
+<% end %> <!-- simple_form_for -->

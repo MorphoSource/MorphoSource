@@ -17,7 +17,7 @@
       </tr>
       </thead>
       <tbody>
-        <%= render partial: 'morphosource/dashboard/collections/teams/projects/tab_project_list_row', collection: @projects, as: :document, locals: { parent_id: id } %>
+        <%= render partial: 'morphosource/dashboard/collections/child_projects/tab_project_list_row', collection: @projects, as: :document, locals: { parent_id: id } %>
       </tbody>
     </table>
   </section>

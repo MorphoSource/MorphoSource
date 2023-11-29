@@ -286,6 +286,9 @@ en:
           delete_Sequential Section List:
             label: 'Delete list'
             confirmation: 'Delete this list?'
+          delete_Organization:
+            label: 'Delete organization'
+            confirmation: 'Delete this organization?'
           public_view:
             label: 'Public view'
         form_relationships:

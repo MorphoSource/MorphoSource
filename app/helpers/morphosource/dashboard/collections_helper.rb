@@ -12,8 +12,13 @@ module Morphosource
         main_app.send("#{collection_type}_members_path", collection)
       end
 
+      def permissions_tab_url(collection)
+        organization_permissions_path(collection)
+      end
+
       def projects_tab_url(collection)
-        team_projects_path(collection)
+        collection_type = collection.collection_type.machine_id
+        main_app.send("#{collection_type}_projects_path", collection)
       end
 
       def organization_tab_url(collection)

@@ -1,0 +1,9 @@
+  <div class="row tab-action-buttons">
+      <%= f.submit t(:'hyrax.collection.select_form.update'), class: 'btn btn-primary', onclick: "confirmation_needed = false;", id: "update_submit", name: "update_collection" %>
+      <%= link_to t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.label'),
+                  hyrax.dashboard_collection_path(@presenter),
+                  title: t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.label'),
+                  class: 'btn btn-primary btn-warning btn-delete-collection',
+                  data: { confirm: t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.confirmation'),
+                          method: :delete } %>
+  </div>

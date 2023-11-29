@@ -17,6 +17,11 @@ module Morphosource
     end
     alias media_tab_url collection_media_path
 
+    # about page
+    def collection_about_path(collection)
+      main_app.send("#{collection_type_machine_id(collection)}_about_path", collection)
+    end
+
     # show page main/device media tab
     def device_media_tab_url(collection)
       main_app.send("#{collection_type_machine_id(collection)}_device_media_path", collection)

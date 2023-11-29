@@ -56,6 +56,8 @@ module Morphosource
       case form_model_name(f)
       when 'organization'
         f.object.download_permission
+      when 'organization_collection'
+        f.object.download_permission
       when 'media'
         media_download_permission(f.object)
       end
@@ -99,6 +101,8 @@ module Morphosource
       case form_model_name(f)
       when 'organization'
         "<input type='hidden' id= 'organization_download_permission' name='organization[download_permission]' class='download-permission' value= #{download_permission(f)} >".html_safe
+      when 'organization_collection'
+        "<input type='hidden' id= 'organization_collection_download_permission' name='organization_collection[download_permission]' class='download-permission' value= #{download_permission(f)} >".html_safe
       when 'media'
         "<input type='hidden' id= 'media_download_permission' name='media[visibility]' class='download-permission' value= #{download_permission(f)} >".html_safe
       end

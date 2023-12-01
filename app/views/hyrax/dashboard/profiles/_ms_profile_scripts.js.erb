@@ -34,6 +34,18 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
     }
   }
 
+  $.fn.setFieldRequired = function (isRequired) {
+    return this.each(function () {
+      if (isRequired) {
+        $(this).find('label').addClass('required');
+        $(this).find('input').prop('required', true);
+      } else {
+        $(this).find('label').removeClass('required');
+        $(this).find('input').prop('required', false);
+      }
+    });
+  };
+
   function handleProfileTypeChange() {
     const metadataElements = $('.form-group[data-group="profile_type"]');
     const demogElements = $('.checkbox-wrapper[data-group="profile_type"]');
@@ -85,7 +97,15 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
       }
     });
 
-    if (selectedProfType != '') {
+    if (selectedProfType != 'collection_or_facility_organization_group') {
+      $('.form-group.first_name, .form-group.last_name').setFieldRequired(true);
+      $('.form-group.display_name').setFieldRequired(false);
+    } else {
+      $('.form-group.first_name, .form-group.last_name').setFieldRequired(false);
+      $('.form-group.display_name').setFieldRequired(true);
+    }
+
+    if (selectedProfType != '' && selectedProfType != 'collection_or_facility_organization_group') {
       $('.dg-group').addClass('show').removeClass('hide');
       if (dgCheckboxesShown.length == 1) {
         // check the only demog checkbox available
@@ -125,9 +145,11 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
       $('[type="checkbox"][value="' + value + '"]').prop("checked", false);;
     });      
 
-    if ($('[name="user[demographics][]"]').filter(':checked').length == 0) {
-      $.alert('Please choose one or more professions');
-      return false;
+    if (selectedProfType != 'collection_or_facility_organization_group') { // group account does not require demographics
+      if ($('[name="user[demographics][]"]').filter(':checked').length == 0) {
+        $.alert('Please choose one or more professions');
+        return false;
+      }      
     }
   });
 

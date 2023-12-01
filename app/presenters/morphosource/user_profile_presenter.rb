@@ -142,7 +142,7 @@ module Morphosource
         matching_keys = []
         profile_type_config.each do |prof_type, data|
           next if prof_type == 'universal'
-          demographic_fields = data['demographics']
+          demographic_fields = data['demographics'] || []
           if demographic_fields.include?(field)
             matching_keys << prof_type
           end

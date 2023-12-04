@@ -14,7 +14,7 @@
     <%= render "hyrax/users/vitals", user: user %>
 
     <div class="list-group-item">
-      <%= render 'hyrax/users/user_info', user: user %>
+      <%= render partial: 'hyrax/users/user_info', locals: { user: user, field_list: @presenter.display_fields_for_public } %>
     </div>
   </div>
 </div>

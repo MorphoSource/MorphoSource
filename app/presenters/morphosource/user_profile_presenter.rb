@@ -73,6 +73,9 @@ module Morphosource
       end
     end
 
+    # 
+    # Return name-specific fields to be displayed based on group / individual account 
+    #
     def name_fields
       user.profile_type == GROUP_PROFILE_TYPE ? ["display_name"] : [
         "first_name",
@@ -81,8 +84,21 @@ module Morphosource
       ]
     end
 
-    # return a list of fields to be displayerd on dashboard/public user profile page
-    def display_field_list
+    # 
+    # Return a list of fields to be displayed on public user profile page
+    #
+    # @return [Array<String>] Field name
+    # 
+    def display_fields_for_public
+      display_fields - private_fields
+    end
+
+    # 
+    # Return a list of fields to be displayed on dashboard user profile page
+    #
+    # @return [Array<String>] Field name
+    # 
+    def display_fields
       name_fields + [
         "email",
         "profile_type"

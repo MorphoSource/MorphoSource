@@ -4,7 +4,7 @@ check the field can be displayed (if user is current user, admin, or if field is
   <div class="col-md-12">
 
     <%= render partial: 'display_field', 
-      collection: @presenter.display_field_list,
+      collection: field_list,
       as: :field_name, :locals => { user: user } %>
 
     <% if current_user&.admin? || (user == current_user) %>

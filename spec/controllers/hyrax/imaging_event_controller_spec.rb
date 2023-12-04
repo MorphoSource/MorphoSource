@@ -3,7 +3,6 @@
 require 'rails_helper'
 
 RSpec.describe Hyrax::ImagingEventsController do
-  let(:actor)                 { double(update: true) }
   let(:old_team)              { Collection.create(title: ['Old Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
   let(:old_organization)      { Organization.create(title: ['old org'], team_id: [old_team.id]) }
   let(:old_specimen)          { BiologicalSpecimen.create(title: ['old specimen'], vouchered: ["Yes"], organization_id: [old_organization.id]) }
@@ -12,7 +11,6 @@ RSpec.describe Hyrax::ImagingEventsController do
   let(:user)                  { User.create(email: 'email@email.com', password: 'password', ms_id: 'user') }
 
   before do
-    allow(subject).to receive(:actor).and_return(actor)
     allow(subject).to receive(:authorize!).with(:update, imaging_event).and_return(true)
 
     sign_in user
@@ -35,12 +33,12 @@ RSpec.describe Hyrax::ImagingEventsController do
       end
     end
 
-    context "when the imaging event's params include parents" do
+    context "when the imaging event's params include physical_object_id" do
       let(:media)                 { Media.create(title: ['media']) }
       let(:old_team_manager)      { User.create(email: 'oldmanager@test.com', password: 'password') }
       let(:old_team_depositor)    { User.create(email: 'olddepositor@test.com', password: 'password') }
       let(:old_team_viewer)       { User.create(email: 'oldviewer@test.com', password: 'password') }
-      let(:params)                { { id: imaging_event.id, 'imaging_event' => { 'work_parents_attributes' => parent_attributes } } }
+      let(:params)                { { id: imaging_event.id, 'imaging_event' => { 'physical_object_id' => [object_id] } } }
 
       before do
         imaging_event.ordered_members << media
@@ -59,7 +57,7 @@ RSpec.describe Hyrax::ImagingEventsController do
       end
 
       context 'and the parent specimen is not changed' do
-        let(:parent_attributes) { { '1' => { 'id' => old_specimen.id, '_destroy' => 'false' } } }
+        let(:object_id) { old_specimen.id }
 
         before do
           # this will get updated by the actor
@@ -76,12 +74,12 @@ RSpec.describe Hyrax::ImagingEventsController do
         end
       end
 
-      context 'and the parents are changed' do
-        let(:new_organization) { Organization.create(title: ['new org'], team_id: []) }
-        let(:new_specimen)     { BiologicalSpecimen.create(title: ['new specimen'], vouchered: ["Yes"], organization_id: [new_organization.id]) }
-        let(:new_team)         { Collection.create(title: ['New Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+      context 'and the objectss are changed' do
+        let(:new_organization)  { Organization.create(title: ['new org'], team_id: []) }
+        let(:new_specimen)      { BiologicalSpecimen.create(title: ['new specimen'], vouchered: ["Yes"], organization_id: [new_organization.id]) }
+        let(:new_team)          { Collection.create(title: ['New Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
 
-        let(:parent_attributes) { { '0' => { 'id' => old_specimen.id, '_destroy' => 'true' }, '1' => { 'id' => new_specimen.id, '_destroy' => 'false' } } }
+        let(:object_id)         { new_specimen.id }
 
         before do
           # this will be updated by the actor

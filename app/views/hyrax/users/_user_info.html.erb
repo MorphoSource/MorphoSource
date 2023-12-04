@@ -4,25 +4,7 @@ check the field can be displayed (if user is current user, admin, or if field is
   <div class="col-md-12">
 
     <%= render partial: 'display_field', 
-      collection: [
-        "first_name",
-        "middle_name", 
-        "last_name",
-        "email",
-        "profile_type"
-      ] + @presenter.all_metadata_fields.keys + [
-        "demographics",
-        "intent",
-        "address",
-        "city",
-        "state",
-        "country",
-        "affiliation",
-        "orcid",
-        "twitter_handle",
-        "facebook_handle",
-        "website"
-      ],
+      collection: @presenter.display_field_list,
       as: :field_name, :locals => { user: user } %>
 
     <% if current_user&.admin? || (user == current_user) %>

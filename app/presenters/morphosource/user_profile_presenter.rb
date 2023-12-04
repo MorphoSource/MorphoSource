@@ -73,6 +73,34 @@ module Morphosource
       end
     end
 
+    def name_fields
+      user.profile_type == GROUP_PROFILE_TYPE ? ["display_name"] : [
+        "first_name",
+        "middle_name", 
+        "last_name"
+      ]
+    end
+
+    # return a list of fields to be displayerd on dashboard/public user profile page
+    def display_field_list
+      name_fields + [
+        "email",
+        "profile_type"
+      ] + all_metadata_fields.keys + [
+        "demographics",
+        "intent",
+        "address",
+        "city",
+        "state",
+        "country",
+        "affiliation",
+        "orcid",
+        "twitter_handle",
+        "facebook_handle",
+        "website"
+      ]
+    end
+
     #
     # Private Fields (fields that should not be shown to public) based on the user profile type
     #

@@ -5,6 +5,8 @@ module Morphosource::UserProfile::ProfileHelper
   Hyrax.config.user_profile_type_config.each do |profile_type, data|
     PROFILE_TYPES[data['label']] = data['label'] if data['label'].present?
   end
+  GROUP_PROFILE_TYPE = "Collection or Facility Organization Group"
+  MAPPED_GROUP_PROFILE_TYPE = "collection_or_facility_organization_group"
 
   private
 
@@ -56,6 +58,9 @@ module Morphosource::UserProfile::ProfileHelper
   def validate_field_values
     # check required_metadata_fields for both universal and the user profile type
     required_fields = profile_type_config["universal"]['required_metadata_fields']
+    if user_mapped_profile_type == MAPPED_GROUP_PROFILE_TYPE
+      required_fields = required_fields - ["first_name", "last_name"] + ["display_name"]
+    end
     required_fields.each do |field|
       if user_params.has_key?(field)
         unless user_params[field].present?

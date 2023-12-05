@@ -182,7 +182,7 @@ class User < ApplicationRecord
     return false unless self.remote_file_submitter? && org_id.present?
     begin
       org = ActiveFedora::Base.find(org_id)
-      team = org.class == OrganizationCollection ? org : org&.team_id
+      team = org.class == OrganizationCollection ? org : org&.team
     rescue ActiveFedora::ObjectNotFoundError
       Rails.logger.debug "Error in can_submit_remote_file: organization not found"
       return false
@@ -195,7 +195,6 @@ class User < ApplicationRecord
       return team.can_submit_remote_files? && team.allowed_remote_source.present? &&
         allowed_domains[team.id].present?
     end
-
     return false unless allowed_domains[team.id].present?
     white_list = allowed_domains[team.id].split(/\n+|\r+/).reject(&:empty?)
     uri = URI(url)

@@ -44,7 +44,6 @@ module Morphosource
         end
 
         can :read, String do |id|
-          byebug
           if temporary_media_access_link.present? || temporary_collection_access_link.present?
             obj = ActiveFedora::Base.find(id)
             can? :read, obj

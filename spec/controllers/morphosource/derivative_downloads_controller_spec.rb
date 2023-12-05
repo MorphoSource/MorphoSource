@@ -226,7 +226,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
         end
 
         context 'user has temporary access cookie' do
-          let!(:temporary_link) { create(:temporary_media_access_link, user: user, media_id: private_media.id )}
+          let(:temporary_link) { create(:temporary_media_access_link, user: user, media_id: private_media.id )}
           let(:cookie_jar) { ActionDispatch::Request.new(Rails.application.env_config.deep_dup).cookie_jar }
 
           before do
@@ -244,8 +244,8 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
                 expect(response.headers['Accept-Ranges']).to eq "bytes"
               end
 
-              it 'gets media from Fedora, not file_set' do
-                expect(ActiveFedora::Base).to receive(:find).with(private_media.id)
+              it 'sends requested content from media id' do
+                expect(ActiveFedora::Base).not_to receive(:find).with(private_media.id)
                 expect(ActiveFedora::Base).not_to receive(:find).with(private_file_set.id)
                 get :show, params: { id: private_media.id, file: 'thumbnail' }
               end
@@ -260,7 +260,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
                 expect(response.headers['Accept-Ranges']).to eq "bytes"
               end
 
-              it 'gets file_set from Fedora, not media' do
+              it 'sends requested content from file set id' do
                 expect(ActiveFedora::Base).not_to receive(:find).with(private_media.id)
                 expect(ActiveFedora::Base).to receive(:find).with(private_file_set.id)
                 get :show, params: { id: private_file_set.id, file: 'thumbnail' }
@@ -364,8 +364,8 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
                 expect(response.headers['Accept-Ranges']).to eq "bytes"
               end
 
-              it 'gets media from Fedora, not file_set' do
-                expect(ActiveFedora::Base).to receive(:find).with(private_media.id)
+              it 'does not get anything from Fedora' do
+                expect(ActiveFedora::Base).not_to receive(:find).with(private_media.id)
                 expect(ActiveFedora::Base).not_to receive(:find).with(private_file_set.id)
                 get :show, params: { id: private_media.id, file: 'thumbnail' }
               end

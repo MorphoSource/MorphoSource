@@ -99,10 +99,16 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
 
     if (selectedProfType != 'collection_or_facility_organization_group') {
       $('.form-group.first_name, .form-group.last_name').setFieldRequired(true);
-      $('.form-group.display_name').setFieldRequired(false);
+      $('.form-group.first_name, .form-group.last_name, .form-group.middle_name').addClass('show').removeClass('hide');
+      $('.form-group.display_name').find('input').val('');
+      $('.form-group.display_name').setFieldRequired(false).addClass('hide').removeClass('show');
+      $('.form-group.display_name label').html('Display Name');
     } else {
       $('.form-group.first_name, .form-group.last_name').setFieldRequired(false);
-      $('.form-group.display_name').setFieldRequired(true);
+      $('.form-group.first_name, .form-group.last_name, .form-group.middle_name').find('input').val('');
+      $('.form-group.first_name, .form-group.last_name, .form-group.middle_name').addClass('hide').removeClass('show');
+      $('.form-group.display_name').setFieldRequired(true).addClass('show').removeClass('hide');
+      $('.form-group.display_name label').html('Organization Name');
     }
 
     if (selectedProfType != '' && selectedProfType != 'collection_or_facility_organization_group') {

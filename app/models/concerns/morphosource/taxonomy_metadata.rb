@@ -62,7 +62,7 @@ module Morphosource
       end
 
       property :gbif_key, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/gbifKey") do |index|
-        index.as :stored_searchable, :facetable
+        index.as :stored_searchable, :symbol
       end
 
     end

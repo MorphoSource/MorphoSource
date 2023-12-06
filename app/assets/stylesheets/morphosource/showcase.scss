@@ -1471,6 +1471,9 @@ html {
   .showcase-label {
     font-weight: bold;
   }
+  .control-label {
+    text-transform: capitalize;
+  }
   .form-group {
     min-height: 26px;
   }  

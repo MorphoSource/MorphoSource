@@ -8,14 +8,14 @@ module Morphosource
 
           skip_load_and_authorize_resource only: [:show, :about, :facet, :objects_export], instance_name: :collection
 
+          # restrict to admins
+          before_action :authorize_admin
+
           def media_count_search_builder_class
             Morphosource::Collections::OrganizationCollections::OrganizationMediaSearchBuilder
           end
 
           self.presenter_class = Morphosource::Collections::OrganizationPresenter
-
-          # restrict to admins
-          # before_action :authorize_admin
 
         end
       end

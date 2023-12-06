@@ -77,7 +77,7 @@ module Hyrax
 
     def new_orgs
       Organization.find(Array(@curation_concern.organization_id))
-    end
+    end    
 
   end
 end

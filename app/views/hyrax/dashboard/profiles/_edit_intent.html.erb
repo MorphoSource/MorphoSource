@@ -1,0 +1,18 @@
+<div class="checkbox-form-group row">
+  <div class="col-xs-4">
+    <%= f.label :intent, (t("morphosource.dashboard.profiles.edit_primary.intent") + " (You May Choose More Than One)").html_safe, class: 'control-label' %>
+  </div>
+  <div class="col-xs-8">  
+    <div class="checkbox-list intent">
+      <% intended_use = Morphosource::UserProfile::CheckboxValues::INTENT %>
+      <% intended_use.each do |use| %>
+        <div>
+        <%= f.check_box 'intent', { multiple: true, checked: (@user.intent.include? use) }, use, false %>
+        <%= f.label :intent, use %>
+        </div>
+      <% end %>
+      <%= f.label 'Other: ' %>
+      <%= f.text_field 'intent', { multiple: true, value: @user.other_intent } %>
+    </div>
+  </div>
+</div>

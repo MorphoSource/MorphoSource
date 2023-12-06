@@ -6,7 +6,7 @@
         <li><a href="#activity_log"><i class="glyphicon glyphicon-calendar"></i> <%= I18n.t('hyrax.user_profile.tab_activity') %></a></li>
       </ul>
 
-      <div class="tab-content">
+      <div class="tab-content block-tab-content">
         <%= render 'contributions', presenter: presenter %>
         <%= render 'activity', presenter: presenter %>
         <% if current_user.admin? %>

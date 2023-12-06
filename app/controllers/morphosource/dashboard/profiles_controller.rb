@@ -2,21 +2,49 @@ module Morphosource
   module Dashboard
     class ProfilesController < Hyrax::Dashboard::ProfilesController
 
-      with_themed_layout 'morphosource_dashboard'
+      with_themed_layout :decide_layout
       helper Morphosource::UserProfile::UserProfileHelper
+      include Morphosource::UserProfile::ProfileHelper
 
+      skip_before_action :verify_authenticity_token, only: [:update_profile_type]
+      skip_authorization_check only: [:update_profile_type]
+      before_action :validate_profile_token, only: [:edit_profile_type, :update_profile_type]
       before_action :find_user
-      before_action :authenticate_user!
+      before_action :authenticate_user!, except: [:edit_profile_type, :update_profile_type]
       before_action :authorize_edit, only: [:show]
       before_action :strip_empty_values, only: [:update]
-      authorize_resource class: '::User', instance_name: :user
+      before_action :check_profile_type, only: [:update]
+      authorize_resource class: '::User', instance_name: :user, except: [:update_profile_type]
 
       def show
         add_breadcrumb t(:'hyrax.controls.home'), root_path
         add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
         add_breadcrumb t(:'hyrax.admin.sidebar.profile'), hyrax.dashboard_profile_path
-
         @presenter = Morphosource::UserProfilePresenter.new(@user, current_ability)
+      end
+
+      def edit
+        @presenter = Morphosource::UserProfilePresenter.new(@user, current_ability)
+        super
+      end
+
+      def edit_profile_type
+        @presenter = Morphosource::UserProfilePresenter.new(@user, current_ability)
+        render 'edit_profile_type'
+        # sign out the user in case user navigates away from the page
+        sign_out
+      end
+
+      def update_profile_type
+        @presenter = Morphosource::UserProfilePresenter.new(@user, current_ability)
+        @user.update_profile_token = nil
+        @user.update_profile_sent_at = nil
+        if conditionally_update
+          handle_successful_update
+          redirect_to hyrax.dashboard_profile_path(@user.to_param), notice: "Your profile has been updated"
+        else
+          redirect_to hyrax.edit_dashboard_profile_path(@user.to_param), alert: @user.errors.full_messages
+        end
       end
 
       def edit_password
@@ -28,6 +56,7 @@ module Morphosource
 
       # Process changes from profile form
       def update
+        @presenter = Morphosource::UserProfilePresenter.new(@user, current_ability)
         if conditionally_update
           handle_successful_update
           if @user.unconfirmed_email
@@ -55,18 +84,72 @@ module Morphosource
         redirect_to main_app.profile_show_path, notice: "New API key has been generated."
       end
 
-      def is_valid_domain?(path)
-        path.match? /^[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,63}$/i
-      end
 
       private
+
+        def validate_profile_token
+          if (@raw_token = params[:update_profile_token]).present?
+            u = User.find_by(update_profile_token: Devise.token_generator.digest(User, :update_profile_token, @raw_token))
+            if u && u.update_profile_sent_at > 30.minutes.ago
+              # Token is valid and not expired
+              sign_in(u) if (action_name == "update_profile_type" && !user_signed_in?)
+            else
+              sign_out if user_signed_in?
+              redirect_to new_user_session_path, alert: 'Session invalid or expired.'
+            end
+          else
+            sign_out if user_signed_in?
+            redirect_to new_user_session_path, alert: 'Invalid session.'
+          end
+        end
 
         def authorize_edit
           authorize! :edit, @user
         end
 
         def user_params
-          params.require(:user).permit(:address, :affiliation, :sftp_share, :avatar, :country, :department, :display_name, :email, :facebook_handle, :linkedin_handle, :orcid, :postal_code, :remove_avatar, :state, :telephone, :terms_read, :twitter_handle, :website, demographics: [], software: [], intent: [], mesh_file_type: [], volume_file_type: [], printer_file: [], printer_model: [] )
+          # todo: remove the following fields, and clean up later
+          # Postal Code
+          # Telephone
+          # Software to view 3D
+          # File Type for 3D Mesh
+          # File Type for 3D Volume
+          # 3D Printer Machine Type
+          # 3D Printer File Type
+          @user_params ||= begin
+            existing_permit_list = [
+              :address,
+              :affiliation,
+              :sftp_share,
+              :avatar,
+              :country,
+              :department,
+              :display_name,
+              :email,
+              :facebook_handle,
+              :linkedin_handle,
+              :orcid,
+              :postal_code,
+              :remove_avatar,
+              :state,
+              :telephone,
+              :terms_read,
+              :twitter_handle,
+              :website,
+              demographics: [],
+              software: [],
+              intent: [],
+              mesh_file_type: [],
+              volume_file_type: [],
+              printer_file: [],
+              printer_model: []
+            ]
+            # add new user profile fields from yaml
+            profile_metadata_fields.each do |field, _type|
+              existing_permit_list << field.to_sym
+            end
+            params.require(:user).permit(existing_permit_list)
+          end
         end
 
         def update_password_params
@@ -76,8 +159,19 @@ module Morphosource
         # Don't retain empty strings from 'other' fields.
         def strip_empty_values
           User::MULTI_VALUE_FIELDS.keys.each do |field|
-            params[:user][field].delete_if(&:empty?)
+            if params[:user][field].present? 
+              params[:user][field].delete_if(&:empty?)
+            end
           end
+        end
+
+        def redirect_with_error(messages)
+          flash[:error] = messages
+          redirect_to hyrax.dashboard_profile_path(@user.to_param)
+        end
+
+        def decide_layout
+          File.join(theme, ( action_name == 'edit_profile_type' ) ? 'morphosource_base' : 'morphosource_dashboard' )
         end
 
     end

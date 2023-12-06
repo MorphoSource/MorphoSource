@@ -45,12 +45,7 @@ class User < ApplicationRecord
 
   MULTI_VALUE_FIELDS = {
     demographics: DEMOGRAPHICS,
-    intent: INTENT,
-    software: SOFTWARE,
-    mesh_file_type: MESH,
-    volume_file_type: VOLUME,
-    printer_model: PRINTER_MODEL,
-    printer_file: PRINTER_FILE
+    intent: INTENT
   }
 
    MULTI_VALUE_FIELDS.each_key do |field|

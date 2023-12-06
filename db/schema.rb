@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2023_11_09_175744) do
+ActiveRecord::Schema.define(version: 2023_11_20_132555) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -712,7 +712,6 @@ ActiveRecord::Schema.define(version: 2023_11_09_175744) do
     t.string "twitter_handle"
     t.string "display_name"
     t.string "address"
-    t.string "department"
     t.string "website"
     t.string "affiliation"
     t.string "telephone"
@@ -748,6 +747,21 @@ ActiveRecord::Schema.define(version: 2023_11_09_175744) do
     t.datetime "confirmed_at"
     t.datetime "confirmation_sent_at"
     t.string "unconfirmed_email"
+    t.text "allowed_remote_source"
+    t.string "first_name"
+    t.string "middle_name"
+    t.string "last_name"
+    t.string "city"
+    t.text "typical_usage"
+    t.string "profile_type"
+    t.string "academic_institution_or_school"
+    t.string "department"
+    t.string "academic_field"
+    t.string "academic_subfield"
+    t.string "mentor_or_advisor"
+    t.string "instructor"
+    t.string "update_profile_token"
+    t.datetime "update_profile_sent_at"
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["ms_id"], name: "index_users_on_ms_id"

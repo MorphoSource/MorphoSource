@@ -117,22 +117,25 @@ en:
         works:
           submission_button: 'New Submission'
       profiles:
+        login_form_instructions: 'MorphoSource is improving user profiles! This will allow users to better identify themselves and their reasons for using or downloading data. It will also improve the ability of data contributors to demonstrate impact and reuse of data uploaded to MorphoSource. Before continuing, please select a user profile type that best describes you, and fill out any new required user information.'
+        register_form_instructions: 'To use MorphoSource, you must create a user account profile. This user profile helps identify you and your reasons for using or downloading data. The information you include may be provided to data contributors when you download data so that those contributors can demonstrate impact and reuse of data they contribute to MorphoSource. Select the type of user profile that best describes you, as you may be required to provide different user information based on the profile type.'
+        edit_form_instructions: 'On this page you can update your user account profile. This user profile helps identify you and your reasons for using or downloading data. The information you include may be provided to data contributors when you download data so that those contributors can demonstrate impact and reuse of data they contribute to MorphoSource. If you change the user profile type, you may be required to fill out new required user information based on the profile type.'
         edit_primary:
           address: "Address"
           affiliation: "Organization"
-          change_picture: "<i class='glyphicon glyphicon-camera'></i> Change picture"
+          change_picture: '<i class="fa fa-portrait"></i> Profile picture'
           country: "Country"
           delete_picture: "Delete picture"
           delete_picture_data_content: "If you would like to remove your picture entirely, check the box and save your profile."
           delete_picture_data_original_title: "Delete Picture"
-          demographics: "Please Describe Your Profession<br>(You May Choose More Than One)"
+          demographics: "Profession"
           department: "Department"
           display_name: "Display Name"
           email: "Email Address"
           sftp_share: "SFTP Share"
           facebook_handle: "Facebook Handle"
           help_change_picture_type: "JPG, GIF, or PNG (less than 2MB)"
-          intent: "Please Describe Your Intended<br>Use For MorphoSource<br>(You May Choose More Than One)"
+          intent: "Intended Use For MorphoSource"
           mesh_file_type: "What File Type (If Any) Do You<br>Prefer To Use For 3D Mesh Files?"
           printer_file: "If You Are Involved In 3D Printing,<br>What File Type Does Your Printer<br>Or Its Software Require?<br>(You May Choose More Than One)"
           printer_model: "If You Are Involved In 3D Printing,<br>What Make and Model Of<br>3D Printer Do You Use?<br>(You May Choose More Than One)"

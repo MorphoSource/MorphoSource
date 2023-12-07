@@ -75,7 +75,7 @@ module Morphosource
       end
 
       def record_original_parents
-        @original_parents = @curation_concern.member_of
+        @original_parents ||= @curation_concern.member_of
       end
 
       private

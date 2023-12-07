@@ -180,35 +180,27 @@ module Morphosource
     end
 
     def works_export_filename
-      begin
-        t("morphosource.collections.#{collection_type.title.downcase}.exports.#{tab.to_s}.media_export.filename")
-      rescue
-        "#{@document_type.titleize.pluralize} Query"
-      end
+      t("morphosource.collections.#{collection_type.title.downcase}.exports.#{tab.to_s}.media_export.filename")
+    rescue
+      "#{@document_type.titleize.pluralize} Query"
     end
 
     def media_download_counts_filename
-      begin
-        t("morphosource.collections.#{collection_type.title.downcase}.exports.#{tab.to_s}.media_download_counts.filename")
-      rescue
-        'Media%20Download%20Counts'
-      end
+      t("morphosource.collections.#{collection_type.title.downcase}.exports.#{tab.to_s}.media_download_counts.filename")
+    rescue
+      'Media%20Download%20Counts'
     end
 
     def media_downloads_filename
-      begin
-        t("morphosource.collections.#{collection_type.title.downcase}.exports.#{tab.to_s}.media_downloads.filename")
-      rescue
-        'Media%20Downloads'
-      end
+      t("morphosource.collections.#{collection_type.title.downcase}.exports.#{tab.to_s}.media_downloads.filename")
+    rescue
+      'Media%20Downloads'
     end
 
     def media_requests_filename
-      begin
-        t("morphosource.collections.#{collection_type.title.downcase}.exports.#{tab.to_s}.media_requests.filename")
-      rescue
-        'Media%20Requests'
-      end
+      t("morphosource.collections.#{collection_type.title.downcase}.exports.#{tab.to_s}.media_requests.filename")
+    rescue
+      'Media%20Requests'
     end
   end
 end

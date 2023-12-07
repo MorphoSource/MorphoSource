@@ -70,23 +70,22 @@ module Morphosource
         end
 
         def solr_document(obj)
-          begin
-            case obj
-            when FileSet
-              return SolrDocument.find(obj.id)
-            when Media
-              return SolrDocument.find(obj.id)
-            when SolrDocument
-              return obj
-            when String
-              return SolrDocument.find(obj)
-            when Hash
-              return SolrDocument.find(obj['id'])
-            end
-          rescue
-            nil
+          case obj
+          when FileSet
+            return SolrDocument.find(obj.id)
+          when Media
+            return SolrDocument.find(obj.id)
+          when SolrDocument
+            return obj
+          when String
+            return SolrDocument.find(obj)
+          when Hash
+            return SolrDocument.find(obj['id'])
           end
+        rescue
+          nil
         end
+
     end
   end
 end

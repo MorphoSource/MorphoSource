@@ -43,6 +43,49 @@ RSpec.describe Morphosource::Collections::OrganizationCollectionsController, typ
     end
   end
 
+  describe 'collection access' do
+    let(:params)  { { id: organization.id } }
+
+    before do
+      sign_in user
+      allow(controller).to receive(:authorize_admin).and_return(true)
+      Hyrax::PermissionTemplate.find_or_create_by!(source_id: organization.id)
+    end
+
+    context 'user is an admin' do
+      let(:user) { FactoryBot.create(:admin) }
+
+      it 'responds with a 200' do
+        get :show, params: params
+        expect(response.status).to eq(200)
+        get :about, params: params
+        expect(response.status).to eq(200)
+        get :media_export_with_intersections_facet, params: params, format: :csv
+        expect(response.status).to eq(200)
+        get :media_download_counts_with_intersections_facet, params: params, format: :csv
+        expect(response.status).to eq(200)
+      end
+    end
+
+    context 'user is not an admin' do
+      let(:user)  { FactoryBot.create(:registered_user) }
+
+      it 'responds with a 200' do
+        get :show, params: params
+        expect(response.status).to eq(200)
+        get :about, params: params
+        expect(response.status).to eq(200)
+      end
+
+      it 'responds with a 302' do
+        get :media_export_with_intersections_facet, params: params
+        expect(response.status).to eq(302)
+        get :media_download_counts_with_intersections_facet, params: params
+        expect(response.status).to eq(302)
+      end
+    end
+  end
+
   describe 'presenter_class' do
     it {expect(subject.presenter_class).to eq(Morphosource::Collections::OrganizationPresenter) }
   end

@@ -15,12 +15,10 @@ RSpec.describe Hyrax::ProcessingEventsController do
   end
 
   describe 'instance methods' do
-    let(:actor)             { double(update: true) }
     let!(:processing_event) { ProcessingEvent.create(title: ['processing event']) }
     let(:user)              { User.create(email: 'email@email.com', password: 'password', ms_id: 'user') }
 
     before do
-      allow(subject).to receive(:actor).and_return(actor)
       allow(subject).to receive(:authorize!).with(:update, processing_event).and_return(true)
 
       sign_in user
@@ -123,10 +121,10 @@ RSpec.describe Hyrax::ProcessingEventsController do
         end
 
         context 'and the parents are changed' do
-          let(:new_organization) { Organization.create(title: ['new org'], team_id: []) }
-          let(:new_specimen)     { BiologicalSpecimen.create(title: ['new specimen'], vouchered: ["Yes"], organization_id: [new_organization.id]) }
+          let(:new_organization)  { Organization.create(title: ['new org'], team_id: []) }
+          let(:new_specimen)      { BiologicalSpecimen.create(title: ['new specimen'], vouchered: ["Yes"], organization_id: [new_organization.id]) }
           let(:new_imaging_event) { ImagingEvent.create(title: ['new imaging event'], device_id: [device.id], physical_object_id: [new_specimen.id], ie_modality: device.modality) }
-          let(:new_team)         { Collection.create(title: ['New Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+          let(:new_team)          { Collection.create(title: ['New Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
 
           before do
             # this will be updated by the actor
@@ -142,7 +140,7 @@ RSpec.describe Hyrax::ProcessingEventsController do
               processing_event.ordered_members << media
               works = [imaging_event, processing_event, media]
               works.each(&:save)
-              works.each(&:save)
+              subject.instance_variable_set(:@original_parents, [imaging_event])
             end
 
             context 'and the new organization does not have a linked team' do
@@ -219,6 +217,7 @@ RSpec.describe Hyrax::ProcessingEventsController do
             works.each(&:save)
 
             allow(subject).to receive(:new_parent_ancestors).and_return([new_imaging_event])
+            subject.instance_variable_set(:@original_parents, [media])
           end
           context 'and the new organization does not have a linked team' do
             it 'does not change read access for the old parent media' do

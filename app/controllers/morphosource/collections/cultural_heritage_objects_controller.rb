@@ -1,6 +1,7 @@
 module Morphosource
   module Collections
     class CulturalHeritageObjectsController < Morphosource::Collections::PhysicalObjectsController
+      include Morphosource::Collections::LinkedTeamsControllerBehavior
 
       skip_load_and_authorize_resource only: [:show, :about, :facet, :objects_export], instance_name: :collection
 
@@ -26,6 +27,7 @@ module Morphosource
         def query_collection_counts
           @cho_count ||= @response.response["numFound"].to_i
           @specimen_count ||= collection_specimen_count
+          @media_count ||= collection_media_count
         end
 
         # link for facet filters

@@ -1,0 +1,18 @@
+<table id="datatable-bso-list" class="table table-striped teams-projects">
+  <caption class="sr-only">List of items in this team</caption>
+  <thead>
+  <tr>
+    <th>ID</th>
+    <th>Manufacturer</th>
+    <th>Model</th>
+    <th>Modality</th>
+    <th>Description</th>
+    <th>Total Imaging Events</th>
+    <th>Total Media</th>
+    <th>Date Added</th>
+  </tr>
+  </thead>
+  <tbody>
+    <%= render partial: 'shared/lists/devices_list/document_list_row', collection: @document_list, as: :document %>
+  </tbody>
+</table>

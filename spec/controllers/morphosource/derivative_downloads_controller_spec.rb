@@ -22,18 +22,18 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
       context 'thumbnail request' do
         let(:file) { File.open(fixture_path + '/images/ms.jpg', 'rb') }
         let(:content) { file.read }
-  
+
         before do
           allow(Morphosource::DerivativePath).to receive(:derivative_path_for_reference).and_return(fixture_path + '/images/ms.jpg')
         end
-  
+
         context 'reference via media id' do
           it 'sends requested file content' do
             get :show, params: { id: public_media.id, file: 'thumbnail' }
             expect(response).to be_success
             expect(response.body).to eq content
             expect(response.headers['Content-Length']).to eq "25806"
-            expect(response.headers['Accept-Ranges']).to eq "bytes"   
+            expect(response.headers['Accept-Ranges']).to eq "bytes"
           end
 
           it 'does not get anything from Fedora' do
@@ -42,14 +42,14 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
             get :show, params: { id: public_media.id, file: 'thumbnail' }
           end
         end
-        
+
         context 'reference via file_set id' do
           it 'sends requested file content' do
             get :show, params: { id: public_file_set.id, file: 'thumbnail' }
             expect(response).to be_success
             expect(response.body).to eq content
             expect(response.headers['Content-Length']).to eq "25806"
-            expect(response.headers['Accept-Ranges']).to eq "bytes"            
+            expect(response.headers['Accept-Ranges']).to eq "bytes"
           end
 
           it 'does not get anything from Fedora' do
@@ -58,7 +58,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
             get :show, params: { id: public_file_set.id, file: 'thumbnail' }
           end
         end
-        
+
         context 'with default thumbnail' do
           before do
             allow(subject).to receive(:load_file).and_return(Rails.root.join("app", "assets", "images", "work.png").to_s)
@@ -84,7 +84,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
         before do
           allow(Morphosource::DerivativePath).to receive(:derivative_path_for_reference).and_return(fixture_path + '/bunny/bunny.glb')
         end
-  
+
         it 'sends requested file content' do
           get :show, params: { id: public_file_set.access_control_id, file: 'glb' }
           expect(response).to be_success
@@ -104,7 +104,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
       context 'thumbnail request' do
         let(:file) { File.open(fixture_path + '/images/ms.jpg', 'rb') }
         let(:content) { file.read }
-  
+
         before do
           allow(Morphosource::DerivativePath).to receive(:derivative_path_for_reference).and_return(fixture_path + '/images/ms.jpg')
         end
@@ -154,7 +154,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
                 expect(ActiveFedora::Base).not_to receive(:find).with(private_media.id)
                 expect(ActiveFedora::Base).not_to receive(:find).with(private_file_set.id)
               end
-      
+
               it 'sends requested file content from file_set id' do
                 controller.request.env['HTTP_AUTHORIZATION'] = user.token
                 get :show, params: { id: private_file_set.id, file: 'thumbnail' }
@@ -187,7 +187,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
             expect(ActiveFedora::Base).not_to receive(:find).with(private_media.id)
             expect(ActiveFedora::Base).not_to receive(:find).with(private_file_set.id)
           end
-  
+
           it 'sends requested file content from file_set id' do
             get :show, params: { id: private_file_set.id, file: 'thumbnail' }
             expect(response).to be_success
@@ -197,12 +197,12 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
             expect(ActiveFedora::Base).not_to receive(:find).with(private_media.id)
             expect(ActiveFedora::Base).not_to receive(:find).with(private_file_set.id)
           end
-  
+
           context 'with default thumbnail' do
             before do
               allow(subject).to receive(:load_file).and_return(Rails.root.join("app", "assets", "images", "work.png").to_s)
             end
-  
+
             it 'sends default image with success http code' do
               get :show, params: { id: private_file_set.id, file: 'thumbnail' }
               expect(response).to have_http_status(200)
@@ -226,7 +226,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
         end
 
         context 'user has temporary access cookie' do
-          let(:temporary_link) { create(:temporary_media_access_link, user: user, media_id: private_media.id )} 
+          let(:temporary_link) { create(:temporary_media_access_link, user: user, media_id: private_media.id )}
           let(:cookie_jar) { ActionDispatch::Request.new(Rails.application.env_config.deep_dup).cookie_jar }
 
           before do
@@ -241,23 +241,23 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
                 expect(response).to be_success
                 expect(response.body).to eq content
                 expect(response.headers['Content-Length']).to eq "25806"
-                expect(response.headers['Accept-Ranges']).to eq "bytes"   
+                expect(response.headers['Accept-Ranges']).to eq "bytes"
               end
 
-              it 'gets media from Fedora, not file_set' do
-                expect(ActiveFedora::Base).to receive(:find).with(private_media.id)
+              it 'sends requested content from media id' do
+                expect(ActiveFedora::Base).not_to receive(:find).with(private_media.id)
                 expect(ActiveFedora::Base).not_to receive(:find).with(private_file_set.id)
                 get :show, params: { id: private_media.id, file: 'thumbnail' }
               end
             end
-            
+
             context 'reference via file_set id' do
               it 'sends requested file content' do
                 get :show, params: { id: private_file_set.id, file: 'thumbnail' }
                 expect(response).to be_success
                 expect(response.body).to eq content
                 expect(response.headers['Content-Length']).to eq "25806"
-                expect(response.headers['Accept-Ranges']).to eq "bytes"            
+                expect(response.headers['Accept-Ranges']).to eq "bytes"
               end
 
               it 'gets file_set from Fedora, not media' do
@@ -266,12 +266,12 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
                 get :show, params: { id: private_file_set.id, file: 'thumbnail' }
               end
             end
-            
+
             context 'with default thumbnail' do
               before do
                 allow(subject).to receive(:load_file).and_return(Rails.root.join("app", "assets", "images", "work.png").to_s)
               end
-    
+
               context 'reference via file_set id' do
                 it 'sends default image with not found status code' do
                   get :show, params: { id: private_file_set.id, file: 'thumbnail' }
@@ -303,7 +303,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
                 expect(response).to be_success
                 expect(response.body).to eq content
                 expect(response.headers['Content-Length']).to eq "25806"
-                expect(response.headers['Accept-Ranges']).to eq "bytes"   
+                expect(response.headers['Accept-Ranges']).to eq "bytes"
               end
 
               it 'does not get anything from Fedora' do
@@ -312,14 +312,14 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
                 get :show, params: { id: private_media.id, file: 'thumbnail' }
               end
             end
-            
+
             context 'reference via file_set id' do
               it 'sends requested file content' do
                 get :show, params: { id: private_file_set.id, file: 'thumbnail' }
                 expect(response).to be_success
                 expect(response.body).to eq content
                 expect(response.headers['Content-Length']).to eq "25806"
-                expect(response.headers['Accept-Ranges']).to eq "bytes"            
+                expect(response.headers['Accept-Ranges']).to eq "bytes"
               end
 
               it 'does not get anything from Fedora' do
@@ -328,12 +328,12 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
                 get :show, params: { id: private_file_set.id, file: 'thumbnail' }
               end
             end
-            
+
             context 'with default thumbnail' do
               before do
                 allow(subject).to receive(:load_file).and_return(Rails.root.join("app", "assets", "images", "work.png").to_s)
               end
-    
+
               context 'reference via file_set id' do
                 it 'sends default image with success status code' do
                   get :show, params: { id: private_file_set.id, file: 'thumbnail' }
@@ -361,23 +361,23 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
                 expect(response).to be_success
                 expect(response.body).to eq content
                 expect(response.headers['Content-Length']).to eq "25806"
-                expect(response.headers['Accept-Ranges']).to eq "bytes"   
+                expect(response.headers['Accept-Ranges']).to eq "bytes"
               end
 
-              it 'gets media from Fedora, not file_set' do
-                expect(ActiveFedora::Base).to receive(:find).with(private_media.id)
+              it 'does not get anything from Fedora' do
+                expect(ActiveFedora::Base).not_to receive(:find).with(private_media.id)
                 expect(ActiveFedora::Base).not_to receive(:find).with(private_file_set.id)
                 get :show, params: { id: private_media.id, file: 'thumbnail' }
               end
             end
-            
+
             context 'reference via file_set id' do
               it 'sends requested file content' do
                 get :show, params: { id: private_file_set.id, file: 'thumbnail' }
                 expect(response).to be_success
                 expect(response.body).to eq content
                 expect(response.headers['Content-Length']).to eq "25806"
-                expect(response.headers['Accept-Ranges']).to eq "bytes"            
+                expect(response.headers['Accept-Ranges']).to eq "bytes"
               end
 
               it 'gets file_set from Fedora, not media' do
@@ -386,12 +386,12 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
                 get :show, params: { id: private_file_set.id, file: 'thumbnail' }
               end
             end
-            
+
             context 'with default thumbnail' do
               before do
                 allow(subject).to receive(:load_file).and_return(Rails.root.join("app", "assets", "images", "work.png").to_s)
               end
-    
+
               context 'reference via file_set id' do
                 it 'sends default image with not found status code' do
                   get :show, params: { id: private_file_set.id, file: 'thumbnail' }
@@ -410,7 +410,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
         end
       end
 
-      context '3D derivative preview request' do  
+      context '3D derivative preview request' do
         before do
           allow(Morphosource::DerivativePath).to receive(:derivative_path_for_reference).and_return(fixture_path + '/bunny/bunny.glb')
         end
@@ -455,7 +455,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
         end
 
         context 'user has temporary access cookie' do
-          let(:temporary_link) { create(:temporary_media_access_link, user: user, media_id: private_media.id )} 
+          let(:temporary_link) { create(:temporary_media_access_link, user: user, media_id: private_media.id )}
           let(:cookie_jar) { ActionDispatch::Request.new(Rails.application.env_config.deep_dup).cookie_jar }
 
           before do

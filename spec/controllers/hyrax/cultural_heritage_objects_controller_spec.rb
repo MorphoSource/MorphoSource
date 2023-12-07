@@ -50,31 +50,31 @@ RSpec.describe Hyrax::CulturalHeritageObjectsController do
   end
 
   describe 'instance methods' do
-    let(:actor)     { double(update: true) }
-    let(:cho)       { CulturalHeritageObject.create(title: ['private cho'], visibility: 'restricted', vouchered: ['Yes']) }
+    let(:cho)       { CulturalHeritageObject.create(title: ['private cho'], visibility: 'restricted', vouchered: ['Yes'], identifier: ['abc123']) }
     let(:user)      { User.create(email: 'email@email.com', password: 'password', ms_id: 'user') }
 
     before do
-      allow(subject).to receive(:actor).and_return(actor)
       allow(subject).to receive(:authorize!).with(:update, cho).and_return(true)
       sign_in user
     end
 
     describe '#update' do
+      let(:params)  { { id: cho.id, 'cultural_heritage_object' => { 'identifier' => [cho.identifier.first] } } }
       context 'when it successfully updates' do
         it 'calls #update_media_team_access' do
           expect(subject).to receive(:update_media_team_access)
           expect(subject).to receive(:update_po_team_access)
-          patch :update, params: { id: cho.id }
+          patch :update, params: params
         end
       end
     end
 
     describe '#update_media_team_access' do
+      let(:params)  { { id: cho.id, 'cultural_heritage_object' => { 'identifier' => [cho.identifier.first] } } }
       context "when the cho's params don't include parent organization_id" do
         it 'returns nil for organization_id_param' do
           expect(subject).to receive(:organization_id_param).and_return(nil)
-          patch :update, params: { id: cho.id }
+          patch :update, params: params
         end
       end
 
@@ -90,7 +90,7 @@ RSpec.describe Hyrax::CulturalHeritageObjectsController do
         let(:old_team_depositor)    { User.create(email: 'olddepositor@test.com', password: 'password') }
         let(:old_team_viewer)       { User.create(email: 'oldviewer@test.com', password: 'password') }
         let(:old_team_editor)       { User.create(email: 'oldeditor@test.com', password: 'password') }
-        let(:params)                { { id: cho.id, 'cultural_heritage_object' => { 'organization_id' => [parent_organization_id] } } }
+        let(:params)                { { id: cho.id, 'cultural_heritage_object' => { 'organization_id' => [parent_organization_id], 'identifier' => [cho.identifier.first] } } }
 
         before do
           imaging_event.ordered_members << media
@@ -138,7 +138,7 @@ RSpec.describe Hyrax::CulturalHeritageObjectsController do
         end
 
         context 'and the parents are changed' do
-          let(:new_organization) { Organization.new(title: ['new org'], team_id: []) }
+          let!(:new_organization) { FactoryBot.create(:organization, title: ['new org'], team_id: []) }
           let(:parent_organization_id) { new_organization.id }
 
           before do

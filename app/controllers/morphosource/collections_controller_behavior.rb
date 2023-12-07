@@ -36,7 +36,7 @@ module Morphosource
       @can_edit = current_ability.can? :edit, @collection
       @can_deposit = current_ability.can? :deposit, @collection
       presenter
-      (@media_count, @object_ids) = collection_media
+      @object_ids = collection_object_ids
       (@response, @document_list) = query_solr
       publication_settings_nag
       query_collection_counts
@@ -50,7 +50,7 @@ module Morphosource
     def about
       @tab = :about
       presenter
-      (@media_count, @object_ids) = collection_media
+      @object_ids = collection_object_ids
       query_collection_counts
       query_collection_members
       render 'about'
@@ -122,12 +122,10 @@ module Morphosource
         search_results(params.merge(return_all_fields: true))
       end
 
-      def collection_media
+      def collection_object_ids
         repository.blacklight_config.max_per_page = 999999
-        response = repository.search(Morphosource::Collections::MediaObjectsSearchBuilder.new(scope: self, collection: @collection).rows(999999)).response
-        media_count = response["numFound"].to_i
-        object_ids = response["docs"].map{|d| d["physical_object_id_ssim"].try(:first)}.compact.uniq
-        [media_count, object_ids]
+        response = repository.search(media_objects_search_builder_class.new(scope: self, collection: @collection).rows(999999)).response
+        response["docs"].map{|d| d["physical_object_id_ssim"].try(:first)}.compact.uniq
       end
 
       # override Hyrax::CollectionsControllerBehavior - member_works isn't necessary
@@ -137,8 +135,14 @@ module Morphosource
       end
 
       def query_collection_counts
+        @media_count ||= collection_media_count
         @specimen_count ||= collection_specimen_count
         @cho_count ||= collection_cho_count
+      end
+
+      def collection_media_count
+        search_builder = media_count_search_builder_class.new(scope: self, collection: @collection).rows(999999)
+        repository.search(search_builder.query).response["numFound"].to_i
       end
 
       # count of specimens whose media is returned by collection_media

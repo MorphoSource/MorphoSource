@@ -4,14 +4,32 @@
          url: Rails.application.routes.url_helpers.update_profile_type_path(@user.to_param),
          html: { multipart: true, class: 'form-horizontal' } do |f| %>
 <%= hidden_field_tag :update_profile_token, @raw_token %>
-<div class="panel panel-default w-100 block">
-  <div class="panel-body w-50 mlr-auto">
-    <div class="text-padding mb-2">
-        <h1><span class="fa fa-id-card" aria-hidden="true"></span> Please Update Your Profile Type</h1>
-        <p class="mt-2"><%= t("morphosource.dashboard.profiles.login_form_instructions").html_safe %></p>
-    </div>
+
+<div class="text-padding mb-2">
+  <h1><span class="fa fa-id-card" aria-hidden="true"></span> Please Update Your Profile Type</h1>
+  <p class="mt-2"><%= t("morphosource.dashboard.profiles.login_form_instructions").html_safe %></p>
+</div>
+
+<div class="row">
+  <div class="col-sm-12 col-md-6">
+    <%= render partial: 'hyrax/dashboard/profiles/edit_profile_name_section', locals: {f: f} %>
+    <%= render partial: 'hyrax/dashboard/profiles/ms_profile', locals: {f: f} %>
+  </div>
+
+  <div class="col-sm-12 col-md-6">
     <%= render partial: 'hyrax/dashboard/profiles/edit_profile_type_section', locals: {f: f} %>
-    <div class="text-center mt-2"><%= f.button "Save Profile", type: 'submit', class: "btn btn-primary btn-lg" %></div>
+    <%= render partial: 'hyrax/dashboard/profiles/edit_intent', locals: {f: f} %>  
+  </div>
+
+</div>
+
+<div class="row">
+  <div class='col-xs-12 text-center'>
+    <p>
+      <%= f.check_box :terms_read, {checked: false, required: true}, true %>
+      <%= t("devise.passwords.edit.terms").html_safe %>
+    </p>
+    <p><%= f.button t(".save_profile").html_safe, type: 'submit', class: "btn btn-primary btn-lg" %></p>
   </div>
 </div>
 <% end %>

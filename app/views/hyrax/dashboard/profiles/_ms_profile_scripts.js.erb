@@ -1,14 +1,14 @@
 if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
 
-  const profileTypeConfig = <%= Hyrax.config.user_profile_type_config.to_json.html_safe %>;
-  const currProfType = mappedProfType($("#user_profile_type").val());
-  let selectedProfType;
-  let fieldsShown = [];
-  let fieldsToWarn = [];
-  let fieldsToClear = [];
-  let demogToWarn = [];
-  let demogToClear = [];
-  let dgCheckboxesShown = [];
+  profileTypeConfig = <%= Hyrax.config.user_profile_type_config.to_json.html_safe %>;
+  currProfType = mappedProfType($("#user_profile_type").val());
+  var selectedProfType;
+  var fieldsShown = [];
+  var fieldsToWarn = [];
+  var fieldsToClear = [];
+  var demogToWarn = [];
+  var demogToClear = [];
+  var dgCheckboxesShown = [];
   isPageLoaded = false;
   currMetadataFields = [];
 
@@ -35,8 +35,8 @@ if ( $('form[id*="edit_user"]').length || $('form[id*="new_user"]').length ) {
   }
 
   function handleProfileTypeChange() {
-    const metadataElements = $('.form-group[data-group="profile_type"]');
-    const demogElements = $('.checkbox-wrapper[data-group="profile_type"]');
+    metadataElements = $('.form-group[data-group="profile_type"]');
+    demogElements = $('.checkbox-wrapper[data-group="profile_type"]');
     selectedProfType = mappedProfType($("#user_profile_type").val());
     fieldsShown = [];
     fieldsToWarn = [];

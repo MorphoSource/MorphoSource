@@ -4,9 +4,9 @@ RSpec.describe Hyrax::UsersController, :type => :controller do
   routes { Hyrax::Engine.routes }
 
   describe "query users" do
-    let!(:current_user)   { User.create(email: "email@email.com", password: "password", display_name: "Bugs Bunny")}
-    let!(:user1)          { User.create(email: "purple@email.com", password: "password", display_name: "Mickey Mouse") }
-    let!(:user2)          { User.create(email: "blue@email.com", password: "password", display_name: "Donald Duck") }
+    let!(:current_user)   { User.create(email: "email@email.com", password: "password", first_name: "Bugs", last_name: "Bunny")}
+    let!(:user1)          { User.create(email: "purple@email.com", password: "password", first_name: "Mickey", last_name: "Mouse")}
+    let!(:user2)          { User.create(email: "blue@email.com", password: "password", first_name: "Donald", last_name: "Duck")}
 
     before do
       sign_in current_user

@@ -4,8 +4,6 @@ module Morphosource::UserProfile::UserProfileHelper
 
   def profile_field_display(field, user)
     case field
-    when "display_name"
-      return user.read_attribute(:display_name)
     when "state"
       if Morphosource::UserProfile::LocationHelper::STATE[user.country]&.key(user.state) 
         return Morphosource::UserProfile::LocationHelper::STATE[user.country].key(user.state) 

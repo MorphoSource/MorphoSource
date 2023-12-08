@@ -19,6 +19,6 @@
 <div class="form-group display_name">
   <%= f.label :display_name, t("morphosource.dashboard.profiles.edit_primary.display_name").html_safe, class: 'col-sm-4 control-label' %>
   <div class="col-sm-8">
-    <%= text_field_tag 'user[display_name]', @user.read_attribute(:display_name), class: 'form-control', required: false %>
+    <%= text_field_tag 'user[display_name]', :display_name, class: 'form-control', required: false %>
   </div>
 </div>

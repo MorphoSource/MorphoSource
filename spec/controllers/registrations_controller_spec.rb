@@ -150,8 +150,7 @@ RSpec.describe RegistrationsController, :type => :controller  do
     expect(user.email).to eq("user@test.com")
     expect(user.facebook_handle).to eq("test.test")
     expect(user.twitter_handle).to eq("@TestTest")
-    expect(user.display_name).to eq("first last") # display_name is a method
-    expect(user.read_attribute(:display_name)).to eq("Test User")
+    expect(user.display_name).to eq("first last")
     expect(user.first_name).to eq("first")
     expect(user.middle_name).to eq("middle")
     expect(user.last_name).to eq("last")

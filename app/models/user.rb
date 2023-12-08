@@ -109,7 +109,7 @@ class User < ApplicationRecord
   end
 
   def name_and_email
-    "#{display_name} (#{email})"
+    display_name.blank? ? email : "#{display_name} (#{email})"
   end
 
   def registered?

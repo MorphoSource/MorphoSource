@@ -112,23 +112,23 @@ RSpec.describe Morphosource::CollectionRolesHelper, type: :helper do
 
       # device media tab
       helper.instance_variable_set(:@tab, :device_media)
-      expect(helper.media_export_csv_url(collection)).to eq("/organizations/#{collection.id}/device_media_export.csv?#{params.to_query}&per_page=1000000")
-      expect(helper.media_downloads_csv_url(collection)).to eq("/organizations/#{collection.id}/device_media_downloads.csv?per_page=1000000")
-      expect(helper.media_download_counts_csv_url(collection)).to eq("/organizations/#{collection.id}/device_media_download_counts.csv?#{params.to_query}&per_page=1000000")
-      expect(helper.media_requests_csv_url(collection)).to eq("/organizations/#{collection.id}/device_media_requests.csv?per_page=1000000")
+      expect(helper.device_media_export_csv_url(collection)).to eq("/organizations/#{collection.id}/device_media_export.csv?#{params.to_query}&per_page=1000000")
+      expect(helper.device_media_downloads_csv_url(collection)).to eq("/organizations/#{collection.id}/device_media_downloads.csv?per_page=1000000")
+      expect(helper.device_media_download_counts_csv_url(collection)).to eq("/organizations/#{collection.id}/device_media_download_counts.csv?#{params.to_query}&per_page=1000000")
+      expect(helper.device_media_requests_csv_url(collection)).to eq("/organizations/#{collection.id}/device_media_requests.csv?per_page=1000000")
 
-      expect(helper.device_media_tab_url(collection)).to eq("/organizations/#{collection.id}/device_media")
+      expect(helper.device_media_tab_url(collection)).to eq("/organizations/#{collection.id}/device-media")
       expect(helper.device_media_export_csv_url(collection)).to eq("/organizations/#{collection.id}/device_media_export.csv?#{params.to_query}&per_page=1000000")
       expect(helper.device_media_downloads_csv_url(collection)).to eq("/organizations/#{collection.id}/device_media_downloads.csv?per_page=1000000")
       expect(helper.device_media_download_counts_csv_url(collection)).to eq("/organizations/#{collection.id}/device_media_download_counts.csv?#{params.to_query}&per_page=1000000")
       expect(helper.device_media_requests_csv_url(collection)).to eq("/organizations/#{collection.id}/device_media_requests.csv?per_page=1000000")
 
       # specimens tab
-      expect(helper.specimens_tab_url(collection)).to eq("/organizations/#{collection.id}/biological_specimens")
+      expect(helper.specimens_tab_url(collection)).to eq("/organizations/#{collection.id}/biological-specimens")
       expect(helper.specimens_export_csv_url(collection)).to eq("/organizations/#{collection.id}/biological_specimens/objects_export.csv?#{params.to_query}&per_page=1000000")
 
       # chos tab
-      expect(helper.chos_tab_url(collection)).to eq("/organizations/#{collection.id}/cultural_heritage_objects")
+      expect(helper.chos_tab_url(collection)).to eq("/organizations/#{collection.id}/cultural-heritage-objects")
       expect(helper.chos_export_csv_url(collection)).to eq("/organizations/#{collection.id}/cultural_heritage_objects/objects_export.csv?#{params.to_query}&per_page=1000000")
 
       # devices tab

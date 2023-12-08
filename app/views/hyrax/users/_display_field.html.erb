@@ -1,8 +1,4 @@
-<% 
-if (user.respond_to? field_name) && (user.send(field_name).present?)  
-  # since the user_info partial is shared by dashboard profile (admin and user) and public profile page 
-  # check the field can be displayed (if dashboard page or if field is public/private)
-  if controller_name == "profiles" || (!@presenter.private_fields.include? field_name) %>
+<% if (user.respond_to? field_name) && (user.send(field_name).present?) %>
   <div class="row">
     <div class="col-xs-3 showcase-label">
       <%= t("morphosource.dashboard.profiles.edit_primary."+field_name.to_s).html_safe %>
@@ -11,5 +7,4 @@ if (user.respond_to? field_name) && (user.send(field_name).present?)
       <%= profile_field_display(field_name, user) %>
     </div>
   </div>
-  <% end %>
 <% end %>

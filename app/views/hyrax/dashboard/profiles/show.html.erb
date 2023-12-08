@@ -26,7 +26,7 @@
   <div class="panel-body">
     <div class="list-group">
       <div class="list-group-item">
-        <%= render 'hyrax/users/user_info', user: @user %>
+        <%= render partial: 'hyrax/users/user_info', locals: { user: @user, field_list: @presenter.display_fields } %>
       </div>
       <%= render "hyrax/users/vitals", user: @user %>
       <% if @presenter.trophies.any? %>

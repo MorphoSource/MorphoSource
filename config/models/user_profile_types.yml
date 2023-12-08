@@ -115,3 +115,9 @@ profile_types:
     metadata_fields:
     demographics:
       - Private Individual
+  collection_or_facility_organization_group:
+    label: Collection or Facility Organization Group
+    required_metadata_fields:
+    metadata_fields:
+      - academic_institution_or_school
+    demographics:      

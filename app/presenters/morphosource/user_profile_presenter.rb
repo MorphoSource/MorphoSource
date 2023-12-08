@@ -73,6 +73,50 @@ module Morphosource
       end
     end
 
+    # 
+    # Return name-specific fields to be displayed based on group / individual account 
+    #
+    def name_fields
+      user.profile_type == GROUP_PROFILE_TYPE ? ["display_name"] : [
+        "first_name",
+        "middle_name", 
+        "last_name"
+      ]
+    end
+
+    # 
+    # Return a list of fields to be displayed on public user profile page
+    #
+    # @return [Array<String>] Field name
+    # 
+    def display_fields_for_public
+      display_fields - private_fields
+    end
+
+    # 
+    # Return a list of fields to be displayed on dashboard user profile page
+    #
+    # @return [Array<String>] Field name
+    # 
+    def display_fields
+      name_fields + [
+        "email",
+        "profile_type"
+      ] + all_metadata_fields.keys + [
+        "demographics",
+        "intent",
+        "address",
+        "city",
+        "state",
+        "country",
+        "affiliation",
+        "orcid",
+        "twitter_handle",
+        "facebook_handle",
+        "website"
+      ]
+    end
+
     #
     # Private Fields (fields that should not be shown to public) based on the user profile type
     #
@@ -142,7 +186,7 @@ module Morphosource
         matching_keys = []
         profile_type_config.each do |prof_type, data|
           next if prof_type == 'universal'
-          demographic_fields = data['demographics']
+          demographic_fields = data['demographics'] || []
           if demographic_fields.include?(field)
             matching_keys << prof_type
           end

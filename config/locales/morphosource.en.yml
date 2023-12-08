@@ -174,7 +174,7 @@ en:
         title: "Edit Expiration Date"
       request:
         title: "Request Download"
-        subtitle: "Please let the data owner know how you intend to use their data"
+        subtitle: "Please let the data contributors know how you intend to use this media. <u>The information you fill out is very important for data contributors to evaluate how media are being used.</u> This information is read by both site administrators and data contributors."
     publication_status:
       open:
         text: "Open"

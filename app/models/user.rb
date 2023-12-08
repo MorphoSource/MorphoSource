@@ -17,6 +17,9 @@ class User < ApplicationRecord
   before_create :check_ms_id
   # increment based on highest current id
   before_create :reset_id_incrementer
+  # set display_name to first and last name for individual account
+  before_create :set_display_name
+  before_update :set_display_name
 
   # Connects this user object to Hydra behaviors.
   include Hydra::User
@@ -60,6 +63,14 @@ class User < ApplicationRecord
     )
   end
 
+  def set_display_name
+    if self.profile_type != "Collection or Facility Organization Group"
+      if (full_name = "#{self.first_name} #{self.last_name}").strip != ""
+        self.display_name = full_name
+      end
+    end
+  end
+
   # Devise callback for checking if user is active
   def active_for_authentication?
     super && active
@@ -88,7 +99,6 @@ class User < ApplicationRecord
     ms_id
   end
 
-  # display ms_id if display name does not exist
   def name
     display_name.blank? ? "User #{ms_id.to_s.upcase}" : display_name
   end

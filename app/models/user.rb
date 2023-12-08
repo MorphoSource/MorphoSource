@@ -65,7 +65,9 @@ class User < ApplicationRecord
 
   def set_display_name
     if self.profile_type != "Collection or Facility Organization Group"
-      self.display_name = "#{self.first_name} #{self.last_name}"
+      if (full_name = "#{self.first_name} #{self.last_name}").strip != ""
+        self.display_name = full_name
+      end
     end
   end
 

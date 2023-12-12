@@ -10,7 +10,7 @@
     </h1>
   </div>
   <div class="col-xs-3 show-actions text-right">
-    <% if can?(:create_any, Collection) %>
+    <% if (@collections_type == "media_lists" && current_user.registered?) || can?(:create_any, Collection) %>
       <% # link directly to create collection form with type %>
       <%= link_to(t("morphosource.dashboard.my.#{@collections_type}.action.new"), new_collection_url(@collections_type), class: 'btn btn-primary') %>
     <% end %>

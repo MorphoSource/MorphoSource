@@ -4,22 +4,22 @@
   header: false
   footer: true
 - label: hyrax.controls.links.docs.all_docs
-  url: https://wiki.duke.edu/display/MD/MorphoSource+Documentation+Home
+  url: https://duke.atlassian.net/wiki/spaces/MD/overview?homepageId=35422252
   header: true
   footer: true
 - label: hyrax.controls.links.docs.guide
-  url: https://wiki.duke.edu/display/MD/Standard+User+Docs
+  url: https://duke.atlassian.net/wiki/spaces/MD/pages/35422411/Standard+User+Docs
   header: true
   footer: true
 - label: hyrax.controls.links.docs.contributors
-  url: https://wiki.duke.edu/display/MD/Contributor+User+Docs
+  url: https://duke.atlassian.net/wiki/spaces/MD/pages/35422310/Contributor+User+Docs
   header: true
   footer: true
 - label: hyrax.controls.links.docs.citation
-  url: https://wiki.duke.edu/display/MD/Reference+and+Citation+of+Media+and+Projects
+  url: https://duke.atlassian.net/wiki/spaces/MD/pages/35422721/Reference+and+Citation+of+Media+and+Projects
   header: true
   footer: false
 - label: hyrax.controls.links.docs.faq
-  url: https://wiki.duke.edu/display/MD/Frequently+Asked+Questions
+  url: https://duke.atlassian.net/wiki/spaces/MD/pages/35422899/Frequently+Asked+Questions
   header: true
   footer: false  

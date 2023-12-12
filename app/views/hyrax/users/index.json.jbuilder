@@ -2,5 +2,5 @@
 json.users @users do |user|
   json.id user.id
   json.user_key user.ms_id
-  json.text user.email
+  json.text user.name_and_email
 end

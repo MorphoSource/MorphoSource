@@ -114,6 +114,14 @@ en:
           date_expired: 'Date Expired'
           date_requested: 'Date Requested'
           publication_status: 'Publication Status'
+        previous_requests:
+          table:
+            date_decided: Decided
+            download_reviewer: Decider
+            requesting_user: Requester
+            status: Status
+          page_title: "Previous Requests"
+          page_description: "This page lists requests to download your media that have already been decided. You can edit expiration dates for approved or expired requests."
         works:
           submission_button: 'New Submission'
       profiles:
@@ -150,6 +158,12 @@ en:
         view_api_key: "Display your user-specific API key, used to authenticate API requests as yourself. WARNING: This is SENSITIVE information, guard it like a password!"
         generate_new_api_key: "Generate a new user-specific API key. Your previous key will no longer be functional."
         api_key_explanation: "Your API key is below. This key can be used to authenticate API requests as yourself, granting access to your private media and other records, among other user-specific abilities and powers. Generally speaking, you should not share this key with other individuals or allow it to be publicly accessible, as this will allow other individuals to access MorphoSource and your data as if they were you. You should treat this key as sensitive information and guard it like a password. If your key somehow becomes a compromised, you can invalidate the current key and generate a new one."
+    table:
+      action: Action
+      agreed_to_terms: Agreed Terms
+      select_all: Select All
+      date_downloaded: Download
+      date_requested: Request
     validation:
       missing:
         title: 'Your work must have a title.'

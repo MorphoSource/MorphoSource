@@ -270,11 +270,11 @@ module MorphosourceHelper
     end
   end
 
-  def collapse_expand_panel_simple()
-    content_tag :div, class: "collapse-button" do
+  def collapse_expand_panel_simple(label: "Show more", div_class: "", glyphicon_class: "glyphicon-triangle-bottom")
+    content_tag :div, class: "collapse-button #{div_class}" do
       content_tag :a, class: "collapse-a", data: { toggle: "collapse", target: ".collapse-simple" }, aria: { label: "collapse/expand" } do
-        concat "Show more "
-        concat content_tag(:span, "", class: "glyphicon glyphicon-triangle-bottom")
+        concat "#{label} "
+        concat content_tag(:span, "", class: "glyphicon #{glyphicon_class}")
       end
     end
   end

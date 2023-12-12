@@ -1,26 +1,2 @@
-<% provide :page_title, page_title %>
-
-<nav class="breadcrumb" role="region" aria-label="Breadcrumb">
-  <ol>
-    <li><a href="/?locale=en">Home</a></li>
-    <li><a href="/dashboard?locale=en">Dashboard</a></li>
-    <li class="active"><%= page_title %></li>
-  </ol>
-</nav>
-
-<%= render 'search_container' %>
-
-<div class="panel panel-default itemtable <%= controller.controller_name %>">
-  <%= render 'heading' %>
-  <div class="panel-body showcase">
-    <% if page_description && !@search %>
-      <div class="panel panel-heading">
-        <%= page_description %>
-      </div>
-    <% end %>
-    <%= render 'document_list' %>
-    <div class="showcase">
-      <%= render 'results_pagination' %>
-    </div>
-  </div>
-</div>
+<!-- Index content is rendered as partial to provide for overriding by other views -->
+<%= render 'index_body' %>

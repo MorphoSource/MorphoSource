@@ -39,4 +39,11 @@ RSpec.describe Morphosource::FacetHelper, type: :helper do
     end
   end
 
+  describe 'device_title_by_id' do
+    let(:device)  { FactoryBot.create(:device, title: ['device model'], creator: ['device make']) }
+    it 'returns the device title' do
+      expect(device_title_by_id(device.id)).to eq("#{device.creator.first} #{device.title.first}")
+    end
+  end
+
 end

@@ -100,6 +100,7 @@ RSpec.describe OrganizationCollectionIndexer do
     expect(solr_document['state_province_tesim']).to match_array(organization.state_province)
     expect(solr_document['state_province_ssim']).to match_array(organization.state_province)
     expect(solr_document['title_sim']).to match_array(organization.title)
+    expect(solr_document['title_ssi']).to eq(organization.title.first)
     expect(solr_document['title_tesim']).to match_array(organization.title)
     expect(solr_document['visibility_ssi']).to eq(organization.visibility)
   end

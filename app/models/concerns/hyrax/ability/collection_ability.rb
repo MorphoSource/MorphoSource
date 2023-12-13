@@ -8,6 +8,10 @@ module Hyrax
           can :create_any, ::Collection
           can :view_admin_show_any, ::Collection
         else
+          if registered_user?
+            can [:create, :read], ::Collection
+          end
+
           if contributor?
             can :create_any, ::Collection
           end

@@ -7,6 +7,7 @@ module Morphosource
         before_action :redirect_to_collection_type, only: []
         before_action :build_breadcrumbs, only: []
         before_action :load_collection
+        skip_before_action :authorize_contributor
 
         self.presenter_class = Morphosource::Collections::MediaListPresenter
 

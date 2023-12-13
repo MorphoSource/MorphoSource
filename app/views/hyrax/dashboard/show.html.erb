@@ -49,6 +49,11 @@
                   <%= link_to "New sequential section list", main_app.new_sequential_section_list_path %>
                   <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.glossary.sequential_section_lists") %></p></i>
                 </div>
+
+                <div class="list-item">
+                  <%= link_to "New media list", main_app.new_media_list_path %>
+                  <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.glossary.media_lists") %></p></i>
+                </div>
               </div>
             </div>
 
@@ -71,6 +76,10 @@
                 <div class="list-item">
                   <%= link_to "My sequential section lists", main_app.my_sequential_section_lists_path %>
                   <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.dashboard.landing_page.hints.my_sequential_section_lists") %></p></i>
+                </div>
+                <div class="list-item">
+                  <%= link_to "My media lists", main_app.my_media_lists_path %>
+                  <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.dashboard.landing_page.hints.my_media_lists") %></p></i>
                 </div>
               </div>
             </div>
@@ -105,7 +114,18 @@
             <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.dashboard.landing_page.hints.my_pending_requests") %></p></i>
           </div>
           <div class="list-item"><%= link_to "Edit my user profile", edit_dashboard_profile_path(id: current_user.user_key) %></div>
-          <div class="list-item"><%= link_to "Change my password", main_app.profile_edit_password_path(id: current_user.user_key) %></div>
+          <div class="list-item"><%= link_to "Change my password", main_app.profile_edit_password_path(id: current_user.user_key) %>
+          </div>
+          <% if !current_user.contributor? && !current_user.admin? %>
+            <div class="list-item">
+              <%= link_to "New media list", main_app.new_media_list_path %>
+              <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.glossary.media_lists") %></p></i>
+            </div>
+            <div class="list-item">
+              <%= link_to "My media lists", main_app.my_media_lists_path %>
+              <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.dashboard.landing_page.hints.my_media_lists") %></p></i>
+            </div>
+          <% end %>
         </div>
       </div>
 

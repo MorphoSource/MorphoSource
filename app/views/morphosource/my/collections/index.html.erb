@@ -6,7 +6,7 @@
 <div class="row">
   <div class="col-xs-9 title">
     <h1>
-      <span class="fa fa-landmark" aria-hidden="true"></span> <%= t("morphosource.dashboard.my.#{@collections_type}.page_title") %>
+      <span class="fa <%= @collections_type == "organizations"? 'fa-landmark' : 'fa-list'  %>" aria-hidden="true"></span> <%= t("morphosource.dashboard.my.#{@collections_type}.page_title") %>
     </h1>
   </div>
   <div class="col-xs-3 show-actions text-right">

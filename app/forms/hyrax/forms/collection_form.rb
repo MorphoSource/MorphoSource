@@ -25,8 +25,8 @@ module Hyrax
 
       delegate :blacklight_config, to: Hyrax::CollectionsController
 
-      self.terms = [:alternative_title, 
-              :resource_type, :title, :creator, :contributor, 
+      self.terms = [:alternative_title,
+              :resource_type, :title, :creator, :contributor,
               :description, :keyword, :license, :publisher, :date_created, :subject, :language,
               :representative_id, :thumbnail_id, :identifier, :based_near,
               :related_url, :visibility, :collection_type_gid, :can_submit_remote_files, :allowed_remote_source]
@@ -133,14 +133,14 @@ module Hyrax
       private
 
       def all_files_with_access
-        # if team w/ a linked organization, use collection member service
-        # otherwise just get member work ids
-        if self.model.team? && self.model.organization.present?
-          object_ids = Morphosource::Collections::CollectionInformationService.new(scope: @scope, collection_id: id).collection_information["organization_object_ids"]
-          Morphosource::Collections::CollectionMemberService.new(scope: @scope, collection: self.model, params:{}).all_member_media(object_ids).response['docs'].map{ |doc| [doc['id'], doc['id']] }
+        if self.model.organization_collection?
+          search_builder = Morphosource::Collections::OrganizationCollections::MediaSearchBuilder.new(scope: @scope, collection: @model)
         else
-          member_presenters(member_work_ids).map { |m| [m.id, m.id] }
+          search_builder = Morphosource::Collections::MediaSearchBuilder.new(scope: @scope, collection: @model)
         end
+        search_builder.rows = 99999
+        search_builder.query["fl"] = 'id'
+        MediaCatalogController.new.repository.search(search_builder.query).response['docs'].map { |doc| [doc['id'], doc['id']] }
       end
 
       # Override this method if you have a different way of getting the member's ids

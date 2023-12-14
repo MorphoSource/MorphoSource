@@ -6,16 +6,16 @@ module Morphosource
         # Destroy temporary links
 
         can :destroy, TemporaryMediaAccessLink do |link|
-          ( current_user.id == link.user_id ) || current_user.admin? || user_is_data_manager?(link.media_id) 
+          ( current_user.id == link.user_id ) || current_user.admin? || user_is_data_manager?(link.media_id)
         end
-  
+
         can :destroy, TemporaryCollectionAccessLink do |link|
           ( current_user.id == link.user_id ) || current_user.admin? || (
             Collection.exists?(link.collection_id) &&
             Collection.find(link.collection_id).managers.include?(current_user)
           )
         end
-  
+
         # View Media, FileSets, and Projects via temporary access link
 
         can :read, Media do |obj|
@@ -59,22 +59,24 @@ module Morphosource
             temporary_media_access_link.active? && temporary_media_access_link.media_id == media.id
           elsif temporary_collection_access_link.present?
             Rails.logger.debug("[CANCAN] Checking for collection-level media temporary access grant")
-            temporary_collection_access_link.present? && 
+            temporary_collection_access_link.present? &&
               media.member_of_collection_ids.include?(temporary_collection_access_link.collection_id)
           end
         end
 
         def can_read_fileset_with_temporary_link?(fileset)
-          media = fileset.is_a?(ActiveFedora::Base) ? fileset.member_of&.first : FileSet.find(fileset.id).member_of&.first
-          can_read_media_with_temporary_link?(media) if media.present?
+          if temporary_media_access_link.present? || temporary_collection_access_link.present?
+            media = fileset.is_a?(ActiveFedora::Base) ? fileset.member_of&.first : FileSet.find(fileset.id).member_of&.first
+            can_read_media_with_temporary_link?(media) if media.present?
+          end
         end
 
         def can_read_collection_with_temporary_link?(collection)
           return unless temporary_collection_access_link.present?
           Rails.logger.debug("[CANCAN] Checking for collection temporary access grant")
-  
-          collection.project? && 
-            temporary_collection_access_link.active? && 
+
+          collection.project? &&
+            temporary_collection_access_link.active? &&
             temporary_collection_access_link.collection_id == collection.id
         end
 

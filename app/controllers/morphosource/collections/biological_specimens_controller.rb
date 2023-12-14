@@ -1,6 +1,7 @@
 module Morphosource
   module Collections
     class BiologicalSpecimensController < Morphosource::Collections::PhysicalObjectsController
+      include Morphosource::Collections::LinkedTeamsControllerBehavior
 
       skip_load_and_authorize_resource only: [:show, :about, :facet, :objects_export], instance_name: :collection
 
@@ -30,6 +31,7 @@ module Morphosource
         def query_collection_counts
           @specimen_count ||= @response.response["numFound"].to_i
           @cho_count ||= collection_cho_count
+          @media_count ||= collection_media_count
         end
 
         # link for facet filters

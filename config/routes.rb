@@ -91,8 +91,6 @@ Rails.application.routes.draw do
     get 'media_lists/:id/media_requests', to: 'collections#media_requests', as: 'media_list_media_requests'
     get 'sequential_section_lists/:id/media_downloads', to: 'collections#media_downloads', as: 'sequential_section_list_media_downloads'
     get 'sequential_section_lists/:id/media_requests', to: 'collections#media_requests', as: 'sequential_section_list_media_requests'
-    get 'organizations/:id/media_downloads', to: 'collections#media_downloads', as: 'organization_media_downloads'
-    get 'organizations/:id/media_requests', to: 'collections#media_requests', as: 'organization_media_requests'
 
     scope module: :collections do
       # these get redirected to projects/teams/media lists/slide lists
@@ -141,23 +139,40 @@ Rails.application.routes.draw do
       get 'teams/:id/media_organization_transfer_status', to: 'teams#media_organization_transfer_status', as: 'team_media_organization_transfer_status'
 
       # organization_collections
+      # object media tab
       get 'organizations/:id', to: 'organization_collections#show', as: 'organization'
       get 'organizations/:id', to: 'organization_collections#show', as: 'organization_collection'
-      get 'organizations/:id/biological_specimens', to: 'biological_specimens#show', as: 'organization_specimens'
-      get 'organizations/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show', as: 'organization_chos'
-      get 'organizations/:id/devices', to: 'devices#show', as: 'organization_devices'
-      get 'organizations/:id/about', to: 'organization_collections#about', as: 'organization_about'
       get 'organizations/:collection_id/facet/:id', to: 'organization_collections#facet', as: 'organization_media_facet'
-      get 'organizations/:collection_id/biological_specimens/facet/:id', to: 'biological_specimens#facet', as: 'organization_specimens_facet'
-      get 'organizations/:collection_id/cultural_heritage_objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'organization_chos_facet'
-      get 'organizations/:collection_id/devices/facet/:id', to: 'devices#facet', as: 'organization_devices_facet'
+      # device media tab
+      get 'organizations/:id/device-media', to: 'organization_collections/device_media#show', as: 'organization_device_media'
+      get 'organizations/:collection_id/device-media/facet/:id', to: 'organization_collections/device_media#facet', as: 'organization_device_media_facet'
+      # specimens tab
+      get 'organizations/:id/biological-specimens', to: 'organization_collections/physical_objects/biological_specimens#show', as: 'organization_specimens'
+      get 'organizations/:collection_id/biological-specimens/facet/:id', to: 'organization_collections/physical_objects/biological_specimens#facet', as: 'organization_specimens_facet'
+      # chos tab
+      get 'organizations/:id/cultural-heritage-objects', to: 'organization_collections/physical_objects/cultural_heritage_objects#show', as: 'organization_chos'
+      get 'organizations/:collection_id/cultural-heritage-objects/facet/:id', to: 'organization_collections/physical_objects/cultural_heritage_objects#facet', as: 'organization_chos_facet'
+      # devices tab
+      get 'organizations/:id/devices', to: 'organization_collections/devices#show', as: 'organization_devices'
+      get 'organizations/:collection_id/devices/facet/:id', to: 'organization_collections/devices#facet', as: 'organization_devices_facet'
+      # about tab
+      get 'organizations/:id/about', to: 'organization_collections#about', as: 'organization_about'
 
       # csv exports
+      # object media
       get 'organizations/:id/media_export', to: 'organization_collections#media_export_with_intersections_facet', as: 'organization_media_export'
       get 'organizations/:id/media_download_counts', to: 'organization_collections#media_download_counts_with_intersections_facet', as: 'organization_media_download_counts'
-      get 'organizations/:id/biological_specimens/objects_export', to: 'biological_specimens#objects_export', as: 'organization_specimens_export'
-      get 'organizations/:id/cultural_heritage_objects/objects_export', to: 'cultural_heritage_objects#objects_export', as: 'organization_chos_export'
-      get 'organizations/:id/devices/devices_export', to: 'devices#devices_export', as: 'organization_devices_export'
+      get 'organizations/:id/media_downloads', to: 'organization_collections#media_downloads', as: 'organization_media_downloads'
+      get 'organizations/:id/media_requests', to: 'organization_collections#media_requests', as: 'organization_media_requests'
+      # device media
+      get 'organizations/:id/device_media_export', to: 'organization_collections/device_media#media_export_with_intersections_facet', as: 'organization_device_media_export'
+      get 'organizations/:id/device_media_download_counts', to: 'organization_collections/device_media#media_download_counts_with_intersections_facet', as: 'organization_device_media_download_counts'
+      get 'organizations/:id/device_media_downloads', to: 'organization_collections/device_media#media_downloads', as: 'organization_device_media_downloads'
+      get 'organizations/:id/device_media_requests', to: 'organization_collections/device_media#media_requests', as: 'organization_device_media_requests'
+
+      get 'organizations/:id/biological_specimens/objects_export', to: 'organization_collections/physical_objects/biological_specimens#objects_export', as: 'organization_specimens_export'
+      get 'organizations/:id/cultural_heritage_objects/objects_export', to: 'organization_collections/physical_objects/cultural_heritage_objects#objects_export', as: 'organization_chos_export'
+      get 'organizations/:id/devices/devices_export', to: 'organization_collections/devices#devices_export', as: 'organization_devices_export'
 
       # media_lists
       get 'media_lists/:id', to: 'media_lists#show', as: 'media_list'

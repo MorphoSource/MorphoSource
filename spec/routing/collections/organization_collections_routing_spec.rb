@@ -17,18 +17,23 @@ RSpec.describe 'collections routing', type: :routing do
     expect(:get => "/organizations/#{id}").to route_to(route)
   end
 
+  it 'has an organization device media route' do
+    route = { controller: 'morphosource/collections/organization_collections/device_media', action: 'show', id: id }
+    expect(:get => "/organizations/#{id}/device-media").to route_to(route)
+  end
+
   it 'has an organization specimens route' do
-    route = { controller: 'morphosource/collections/biological_specimens', action: 'show', id: id }
-    expect(:get => "/organizations/#{id}/biological_specimens").to route_to(route)
+    route = { controller: 'morphosource/collections/organization_collections/physical_objects/biological_specimens', action: 'show', id: id }
+    expect(:get => "/organizations/#{id}/biological-specimens").to route_to(route)
   end
 
   it 'has an organization chos route' do
-    route = { controller: 'morphosource/collections/cultural_heritage_objects', action: 'show', id: id }
-    expect(:get => "/organizations/#{id}/cultural_heritage_objects").to route_to(route)
+    route = { controller: 'morphosource/collections/organization_collections/physical_objects/cultural_heritage_objects', action: 'show', id: id }
+    expect(:get => "/organizations/#{id}/cultural-heritage-objects").to route_to(route)
   end
 
   it 'has an organization devices route' do
-    route = { controller: 'morphosource/collections/devices', action: 'show', id: id }
+    route = { controller: 'morphosource/collections/organization_collections/devices', action: 'show', id: id }
     expect(:get => "/organizations/#{id}/devices").to route_to(route)
   end
 
@@ -43,17 +48,17 @@ RSpec.describe 'collections routing', type: :routing do
   end
 
   it 'has an organization specimens faceting route' do
-    route = { controller: 'morphosource/collections/biological_specimens', action: 'facet', id: id, collection_id: collection_id }
-    expect(:get => "/organizations/#{collection_id}/biological_specimens/facet/#{id}").to route_to(route)
+    route = { controller: 'morphosource/collections/organization_collections/physical_objects/biological_specimens', action: 'facet', id: id, collection_id: collection_id }
+    expect(:get => "/organizations/#{collection_id}/biological-specimens/facet/#{id}").to route_to(route)
   end
 
   it 'has an organization chos faceting route' do
-    route = { controller: 'morphosource/collections/cultural_heritage_objects', action: 'facet', id: id, collection_id: collection_id }
-    expect(:get => "/organizations/#{collection_id}/cultural_heritage_objects/facet/#{id}").to route_to(route)
+    route = { controller: 'morphosource/collections/organization_collections/physical_objects/cultural_heritage_objects', action: 'facet', id: id, collection_id: collection_id }
+    expect(:get => "/organizations/#{collection_id}/cultural-heritage-objects/facet/#{id}").to route_to(route)
   end
 
   it 'has an organization devices faceting route' do
-    route = { controller: 'morphosource/collections/devices', action: 'facet', id: id, collection_id: collection_id }
+    route = { controller: 'morphosource/collections/organization_collections/devices', action: 'facet', id: id, collection_id: collection_id }
     expect(:get => "/organizations/#{collection_id}/devices/facet/#{id}").to route_to(route)
   end
 end
@@ -101,12 +106,12 @@ RSpec.describe 'csv exports', type: :routing do
   let(:id)  { '12345' }
 
   it 'has a media_downloads route' do
-    route = { controller: 'morphosource/collections', action: 'media_downloads', id: id }
+    route = { controller: 'morphosource/collections/organization_collections', action: 'media_downloads', id: id }
     expect(:get => "/organizations/#{id}/media_downloads").to route_to(route)
   end
 
   it 'has a media_requests route' do
-    route = { controller: 'morphosource/collections', action: 'media_requests', id: id }
+    route = { controller: 'morphosource/collections/organization_collections', action: 'media_requests', id: id }
     expect(:get => "/organizations/#{id}/media_requests").to route_to(route)
   end
 
@@ -121,17 +126,17 @@ RSpec.describe 'csv exports', type: :routing do
   end
 
   it 'has a specimens objects_export route' do
-    route = { controller: 'morphosource/collections/biological_specimens', action: 'objects_export', id: id }
+    route = { controller: 'morphosource/collections/organization_collections/physical_objects/biological_specimens', action: 'objects_export', id: id }
     expect(:get => "/organizations/#{id}/biological_specimens/objects_export").to route_to(route)
   end
 
   it 'has a chos objects_export route' do
-    route = { controller: 'morphosource/collections/cultural_heritage_objects', action: 'objects_export', id: id }
+    route = { controller: 'morphosource/collections/organization_collections/physical_objects/cultural_heritage_objects', action: 'objects_export', id: id }
     expect(:get => "/organizations/#{id}/cultural_heritage_objects/objects_export").to route_to(route)
   end
 
   it 'has a devices_export route' do
-    route = { controller: 'morphosource/collections/devices', action: 'devices_export', id: id }
+    route = { controller: 'morphosource/collections/organization_collections/devices', action: 'devices_export', id: id }
     expect(:get => "/organizations/#{id}/devices/devices_export").to route_to(route)
   end
 end

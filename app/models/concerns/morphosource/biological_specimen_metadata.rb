@@ -22,7 +22,7 @@ module Morphosource
       end
 
       property :occurrence_id, predicate: ::RDF::Vocab::DWC.occurrenceID do |index|
-        index.as :stored_searchable
+        index.as :stored_searchable, :symbol
       end
 
       property :sex, predicate: ::RDF::Vocab::DWC.sex do |index|

@@ -2,7 +2,8 @@ module Morphosource
   module Ability
     extend ActiveSupport::Concern
     include Morphosource::Ability::TemporaryLinkAbilities
-    
+    include Morphosource::Ability::OrganizationMemberAbilities
+
     included do
       include Hyrax::Ability
 

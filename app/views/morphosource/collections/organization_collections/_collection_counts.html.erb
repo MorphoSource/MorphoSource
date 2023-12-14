@@ -1,0 +1,28 @@
+<!-- morphosource/collections/organization_collections/collection_counts -->
+<div class="text-muted">
+  <%= @media_count.to_s + ' Object Media' %>
+  <span class="device-media-count">
+    <% if @device_media_count > 0 %>
+      <%= ' · ' + @device_media_count.to_s + ' Device Media'.pluralize(@device_media_count) %>
+    <% end %>
+  </span>
+  <span class="bso-count">
+    <% if @specimen_count > 0 %>
+      <%= ' · ' + @specimen_count.to_s + ' Specimen'.pluralize(@specimen_count) %>
+    <% end %>
+  </span>
+  <span class="cho-count">
+    <% if @cho_count > 0 %>
+      <%= ' · ' + @cho_count.to_s + ' Object'.pluralize(@cho_count) %>
+    <% end %>
+  </span>
+  <span class="device-count">
+    <% if @device_count > 0 %>
+      <%= ' · ' + @device_count.to_s + ' Device'.pluralize(@device_count) %>
+    <% end %>
+  </span>
+  <% if @presenter.creator.present? %>
+    · Creator: <%= @presenter.creator.join(', ') %>
+  <% end %>
+  · Managed by: <%= @presenter.collection_managers %>
+</div>

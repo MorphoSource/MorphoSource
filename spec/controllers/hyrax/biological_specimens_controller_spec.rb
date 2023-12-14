@@ -33,12 +33,10 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
   end
 
   describe 'instance methods' do
-    let(:actor)     { double(update: true) }
     let(:specimen)  { BiologicalSpecimen.create(title: ['specimen'], visibility: 'restricted', vouchered: ["Yes"]) }
     let(:user)      { User.create(email: 'email@email.com', password: 'password', ms_id: 'user') }
 
     before do
-      allow(subject).to receive(:actor).and_return(actor)
       allow(subject).to receive(:authorize!).with(:update, specimen).and_return(true)
       sign_in user
     end
@@ -121,8 +119,8 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
         end
 
         context 'and the parents are changed' do
-          let(:new_organization) { Organization.new(title: ['new org'], team_id: []) }
-          let(:parent_organization_id) { new_organization.id }
+          let!(:new_organization)       { FactoryBot.create(:organization, title: ['new org'], team_id: []) }
+          let(:parent_organization_id)  { new_organization.id }
 
           before do
             # this will be updated by the actor

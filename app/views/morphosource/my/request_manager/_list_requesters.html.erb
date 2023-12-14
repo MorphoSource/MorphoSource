@@ -16,35 +16,53 @@
       </div>
     <% end %>
 
-    <div class="user-title user-div">
-      <h4>
-        <a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block-<%= requester.id %>" class="btn collapse-block">
-          <i class="fa fa-user"></i>
-          <%= requester_title(requester) %> 
-          <span class="glyphicon glyphicon-triangle-bottom collapse-block"></span>
-        </a>
-      </h4>
-
-      <div id="collapse-block-<%= requester.id %>" class="panel-collapse collapse-block glyphicon-only table collapse" aria-expanded="false">
-        <div class="user-details">      
-          <div class="row">
-            <div class="col-xs-6 col-sm-3 col-md-2  col-xl-1 showcase-label">Email:</div><div class="col-xs-6 col-sm-9 col-md-10 col-xl-11 showcase-value"><%= requester.email %></div>
-          </div>
-          <div class="row">
-            <div class="col-xs-6 col-sm-3 col-md-2  col-xl-1 showcase-label">Organization:</div><div class="col-xs-6 col-sm-9 col-md-10 col-xl-11 showcase-value"><%= requester.affiliation %></div>
-          </div>
-          <div class="row">
-            <div class="col-xs-6 col-sm-3 col-md-2  col-xl-1 showcase-label">Department:</div><div class="col-xs-6 col-sm-9 col-md-10 col-xl-11 showcase-value"><%= requester.department %></div>
-          </div>
-          <div class="row">
-            <div class="col-xs-6 col-sm-3 col-md-2  col-xl-1 showcase-label">Profession:</div>
-            <div class="col-xs-6 col-sm-9 col-md-10 col-xl-11 showcase-value">
-            <%= render partial: 'morphosource/my/request_manager/list_requester_demographics', collection: requester.demographics, as: :profession %>
-            </div>
-          </div>
-          <br clear="all" />
+    <div class="user-details">      
+      <div class="row">
+        <div class="col-xs-6 col-sm-3 col-md-2 showcase-label">User:</div><div class="col-xs-6 col-sm-9 col-md-10 showcase-value"><%= link_to requester.display_name, hyrax.user_path(requester) %></div>
+      </div>
+      <div class="row">
+        <div class="col-xs-6 col-sm-3 col-md-2 showcase-label">Email:</div><div class="col-xs-6 col-sm-9 col-md-10 showcase-value"><%= requester.email %></div>
+      </div>
+      <div class="row">
+        <div class="col-xs-6 col-sm-3 col-md-2 showcase-label">Profile Type:</div><div class="col-xs-6 col-sm-9 col-md-10 showcase-value"><%= requester.profile_type %></div>
+      </div>
+      <% if requester.affiliation.present? %>
+      <div class="row">
+        <div class="col-xs-6 col-sm-3 col-md-2 showcase-label">Organization:</div><div class="col-xs-6 col-sm-9 col-md-10 showcase-value"><%= requester.affiliation %></div>
+      </div>
+      <% end %>
+      <% if requester.department.present? %>
+      <div class="row">
+        <div class="col-xs-6 col-sm-3 col-md-2 showcase-label">Department:</div><div class="col-xs-6 col-sm-9 col-md-10 showcase-value"><%= requester.department %></div>
+      </div>
+      <% end %>
+      <% if requester.academic_field.present? %>
+      <div class="row">
+        <div class="col-xs-6 col-sm-3 col-md-2 showcase-label">Academic Field:</div><div class="col-xs-6 col-sm-9 col-md-10 showcase-value"><%= requester.academic_field %></div>
+      </div>
+      <% end %>
+      <% if requester.academic_subfield.present? %>
+      <div class="row">
+        <div class="col-xs-6 col-sm-3 col-md-2 showcase-label">Academic Subfield:</div><div class="col-xs-6 col-sm-9 col-md-10 showcase-value"><%= requester.academic_subfield %></div>
+      </div>
+      <% end %>
+      <% if requester.mentor_or_advisor.present? %>
+      <div class="row">
+        <div class="col-xs-6 col-sm-3 col-md-2 showcase-label">Mentor or Advisor:</div><div class="col-xs-6 col-sm-9 col-md-10 showcase-value"><%= requester.mentor_or_advisor %></div>
+      </div>
+      <% end %>
+      <% if requester.instructor.present? %>
+      <div class="row">
+        <div class="col-xs-6 col-sm-3 col-md-2 showcase-label">Instructor:</div><div class="col-xs-6 col-sm-9 col-md-10 showcase-value"><%= requester.instructor %></div>
+      </div>
+      <% end %>
+      <div class="row">
+        <div class="col-xs-6 col-sm-3 col-md-2 showcase-label">Profession:</div>
+        <div class="col-xs-6 col-sm-9 col-md-10 showcase-value">
+        <%= render partial: 'morphosource/my/request_manager/list_requester_demographics', collection: requester.demographics, as: :profession %>
         </div>
       </div>
+      <br clear="all" />
     </div>
 
     <% requester_uses.each_with_index do |use, counter| %>

@@ -6,7 +6,7 @@ module Morphosource
 
     included do
       property :modality, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/modality3D") do |index|
-        index.as :stored_searchable, :facetable
+        index.as :stored_searchable, :symbol
       end
 
       property :organization_id, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/organizationID") do |index|

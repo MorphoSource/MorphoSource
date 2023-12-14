@@ -47,7 +47,7 @@ body.showcase2 {
       font-size: 14px;
       margin-left: 3px !important;
       @media (min-width: 992px) {
-        width: 150px !important;
+        min-width: 150px !important;
         flex-grow: 0 !important;
       }
     }

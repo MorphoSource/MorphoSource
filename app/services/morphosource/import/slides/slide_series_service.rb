@@ -298,11 +298,11 @@ module Morphosource
           end
 
           def search_for_specimen
-            Morphosource::SolrService.new.get_docs("occurrence_id_tesim:#{@occurrence_json['occurrenceID']} AND has_model_ssim:BiologicalSpecimen")&.first
+            Morphosource::SolrService.new.get_docs("has_model_ssim:BiologicalSpecimen AND occurrence_id_ssim:#{@occurrence_json['occurrenceID']}")&.first
           end
 
           def search_for_taxonomy
-            Morphosource::SolrService.new.get_docs("has_model_ssim:Taxonomy AND gbif_key_tesim:#{@occurrence_json['taxonKey']}")&.first
+            Morphosource::SolrService.new.get_docs("has_model_ssim:Taxonomy AND gbif_key_ssim:#{@occurrence_json['taxonKey']}")&.first
           end
 
           def specimen_params_from_occurrence_id

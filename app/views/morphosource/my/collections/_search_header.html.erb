@@ -8,6 +8,10 @@
     <%= render 'search_form' %>
   </div>
   <div class="col-sm-2">
-  <%= render 'column_chooser' %>
+    <% if @collections_type == "organizations" %>
+      <%= render 'morphosource/my/collections/organizations/column_chooser' %>
+    <% else %>
+      <%= render 'column_chooser' %>
+    <% end %>
   </div>
 </div>

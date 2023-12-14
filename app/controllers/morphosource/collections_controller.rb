@@ -30,6 +30,14 @@ module Morphosource
       Morphosource::Collections::MediaSearchBuilder
     end
 
+    def media_count_search_builder_class
+      search_builder_class
+    end
+
+    def media_objects_search_builder_class
+      Morphosource::Collections::MediaObjectsSearchBuilder
+    end
+
     def self.remove_bookmarks
       configure_blacklight do |config|
         config.index.document_actions.delete(:bookmark)
@@ -44,7 +52,7 @@ module Morphosource
       configure_blacklight do |config|
         config.http_method = :post
         config.search_builder_class = self.new.search_builder_class
-        
+
         config.facet_fields = {} # clear catalog facet fields
         config.add_facet_field "media_type", field: "human_readable_media_type_ssim", label: "Media Type", limit: 10
         config.add_facet_field "object", field: "physical_object_title_ssim", label: "Object", limit: 10

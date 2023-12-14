@@ -1,7 +1,7 @@
 require 'rails_helper'
 require 'spec_helper'
 
-RSpec.describe Morphosource::Collections::DevicesController, type: :controller do
+RSpec.describe Morphosource::Collections::OrganizationCollections::DevicesController, type: :controller do
   let(:depositor)     { FactoryBot.create(:contributor) }
   let(:organization)  { FactoryBot.create(:organization_collection, visibility: 'open', depositor: depositor.ms_id) }
 

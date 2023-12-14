@@ -1,5 +1,5 @@
 module Morphosource
-  class PhysicalObjectMediaSearchBuilder < ::SearchBuilder
+  class PhysicalObjectMediaSearchBuilder < Morphosource::Catalog::MediaCatalogSearchBuilder
     include Hyrax::FilterByType
     attr_reader :object_id
 

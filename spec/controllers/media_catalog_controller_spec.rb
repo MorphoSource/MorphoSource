@@ -16,8 +16,8 @@ RSpec.describe MediaCatalogController, :type => :controller do
     describe 'facet fields' do
       let(:facet_fields) { config.facet_fields }
 
-      it 'has 18 facet fields' do
-        expect(facet_fields.count).to eq(19)
+      it 'has 20 facet fields' do
+        expect(facet_fields.count).to eq(20)
       end
 
       describe 'human readable media type' do

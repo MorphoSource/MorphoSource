@@ -156,22 +156,22 @@ RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
         end
 
         context 'user has already downloaded media using the same download URL hash' do
-          let!(:cart_item1) { CartItem.create!(user_id: user.ms_id, work_id: work1.id, in_cart: false, download_hash: download_hash, download_attempts: 1, date_downloaded: Date.yesterday) }
-          let!(:cart_item2) { CartItem.create!(user_id: user.ms_id, work_id: work2.id, in_cart: false, download_hash: download_hash, download_attempts: 1, date_downloaded: Date.yesterday) }
+          let!(:cart_item1) { CartItem.create!(user_id: user.ms_id, work_id: work1.id, in_cart: false, download_hash: download_hash, download_attempts: 1, date_downloaded: Time.current.yesterday.to_date) }
+          let!(:cart_item2) { CartItem.create!(user_id: user.ms_id, work_id: work2.id, in_cart: false, download_hash: download_hash, download_attempts: 1, date_downloaded: Time.current.yesterday.to_date) }
 
           it 'increments download attempts and updates download time on existing downloaded cart items' do
             expect{ process :show, method: :get, params: { key: [work1.access_control_id, work2.access_control_id], token: user.token, download: download_hash } }.to change{CartItem.count}.by(0)
             [cart_item1, cart_item2].each(&:reload)
-            expect(cart_item1.date_downloaded.to_date).to eq(Date.today)
+            expect(cart_item1.date_downloaded.to_date).to eq(Time.current.to_date)
             expect(cart_item1.download_attempts).to eq(2)
-            expect(cart_item2.date_downloaded.to_date).to eq(Date.today)
+            expect(cart_item2.date_downloaded.to_date).to eq(Time.current.to_date)
             expect(cart_item2.download_attempts).to eq(2)
           end
         end
 
         context 'user has already downloaded media using a different download URL hash' do
-          let!(:cart_item1) { CartItem.create!(user_id: user.ms_id, work_id: work1.id, in_cart: false, download_hash: SecureRandom.uuid, download_attempts: 1, date_downloaded: Date.yesterday) }
-          let!(:cart_item2) { CartItem.create!(user_id: user.ms_id, work_id: work2.id, in_cart: false, download_hash: SecureRandom.uuid, download_attempts: 1, date_downloaded: Date.yesterday) }
+          let!(:cart_item1) { CartItem.create!(user_id: user.ms_id, work_id: work1.id, in_cart: false, download_hash: SecureRandom.uuid, download_attempts: 1, date_downloaded: Time.current.yesterday.to_date) }
+          let!(:cart_item2) { CartItem.create!(user_id: user.ms_id, work_id: work2.id, in_cart: false, download_hash: SecureRandom.uuid, download_attempts: 1, date_downloaded: Time.current.yesterday.to_date) }
 
           it 'creates new downloaded cart items' do
             expect{ process :show, method: :get, params: { key: [work1.access_control_id, work2.access_control_id], token: user.token, download: download_hash } }.to change{CartItem.count}.by(2)
@@ -179,32 +179,32 @@ RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
         end
 
         context 'user has undownload approved requests for these media' do
-          let!(:cart_item1) { CartItem.create!(user_id: user.ms_id, work_id: work1.id, download_hash: nil, download_attempts: nil, date_downloaded: nil, date_approved: Date.yesterday, date_expired: Date.tomorrow, in_cart: true) }
-          let!(:cart_item2) { CartItem.create!(user_id: user.ms_id, work_id: work2.id, download_hash: nil, download_attempts: 1, date_downloaded: nil, date_approved: Date.yesterday, date_expired: Date.tomorrow, in_cart: true) }
+          let!(:cart_item1) { CartItem.create!(user_id: user.ms_id, work_id: work1.id, download_hash: nil, download_attempts: nil, date_downloaded: nil, date_approved: Time.current.yesterday.to_date, date_expired: Date.tomorrow, in_cart: true) }
+          let!(:cart_item2) { CartItem.create!(user_id: user.ms_id, work_id: work2.id, download_hash: nil, download_attempts: 1, date_downloaded: nil, date_approved: Time.current.yesterday.to_date, date_expired: Date.tomorrow, in_cart: true) }
 
           it 'adds download attempt and hash to existing request cart items' do
             expect{ process :show, method: :get, params: { key: [work1.access_control_id, work2.access_control_id], token: user.token, download: download_hash } }.to change{CartItem.count}.by(0)
             [cart_item1, cart_item2].each(&:reload)
-            expect(cart_item1.date_downloaded.to_date).to eq(Date.today)
+            expect(cart_item1.date_downloaded.to_date).to eq(Time.current.to_date)
             expect(cart_item1.download_attempts).to be(1)
             expect(cart_item1.download_hash).to eq(download_hash)
-            expect(cart_item2.date_downloaded.to_date).to eq(Date.today)
+            expect(cart_item2.date_downloaded.to_date).to eq(Time.current.to_date)
             expect(cart_item2.download_attempts).to eq(1)
             expect(cart_item2.download_hash).to eq(download_hash)
           end
         end
 
         context 'user repeats or resumes download of approved requests for these media' do
-          let!(:cart_item1) { CartItem.create!(user_id: user.ms_id, work_id: work1.id, download_hash: download_hash, download_attempts: 1, date_downloaded: Date.yesterday, date_approved: Date.yesterday, date_expired: Date.tomorrow, in_cart: true) }
-          let!(:cart_item2) { CartItem.create!(user_id: user.ms_id, work_id: work2.id, download_hash: download_hash, download_attempts: 1, date_downloaded: Date.yesterday, date_approved: Date.yesterday, date_expired: Date.tomorrow, in_cart: true) }
+          let!(:cart_item1) { CartItem.create!(user_id: user.ms_id, work_id: work1.id, download_hash: download_hash, download_attempts: 1, date_downloaded: Time.current.yesterday.to_date, date_approved: Time.current.yesterday.to_date, date_expired: Date.tomorrow, in_cart: true) }
+          let!(:cart_item2) { CartItem.create!(user_id: user.ms_id, work_id: work2.id, download_hash: download_hash, download_attempts: 1, date_downloaded: Time.current.yesterday.to_date, date_approved: Time.current.yesterday.to_date, date_expired: Date.tomorrow, in_cart: true) }
 
           it 'increments download attempts and updates download time on existing request cart items' do
             expect{ process :show, method: :get, params: { key: [work1.access_control_id, work2.access_control_id], token: user.token, download: download_hash } }.to change{CartItem.count}.by(0)
             [cart_item1, cart_item2].each(&:reload)
-            expect(cart_item1.date_downloaded.to_date).to eq(Date.today)
+            expect(cart_item1.date_downloaded.to_date).to eq(Time.current.to_date)
             expect(cart_item1.download_attempts).to be(2)
             expect(cart_item1.download_hash).to eq(download_hash)
-            expect(cart_item2.date_downloaded.to_date).to eq(Date.today)
+            expect(cart_item2.date_downloaded.to_date).to eq(Time.current.to_date)
             expect(cart_item2.download_attempts).to eq(2)
             expect(cart_item2.download_hash).to eq(download_hash)
           end
@@ -217,10 +217,10 @@ RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
           it 'adds download attempt and hash to existing request cart items' do
             expect{ process :show, method: :get, params: { key: [work1.access_control_id, work2.access_control_id], token: user.token, download: download_hash } }.to change{CartItem.count}.by(0)
             [cart_item1, cart_item2].each(&:reload)
-            expect(cart_item1.date_downloaded.to_date).to eq(Date.today)
+            expect(cart_item1.date_downloaded.to_date).to eq(Time.current.to_date)
             expect(cart_item1.download_attempts).to be(1)
             expect(cart_item1.download_hash).to eq(download_hash)
-            expect(cart_item2.date_downloaded.to_date).to eq(Date.today)
+            expect(cart_item2.date_downloaded.to_date).to eq(Time.current.to_date)
             expect(cart_item2.download_attempts).to eq(1)
             expect(cart_item2.download_hash).to eq(download_hash)
           end

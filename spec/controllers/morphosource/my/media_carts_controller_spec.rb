@@ -124,7 +124,7 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
           Media.find(cartItem3.work_id).access_control_id
         ] }
         before do
-          cartItem3.date_approved = Date.yesterday
+          cartItem3.date_approved = Time.current.yesterday
           cartItem3.save
           get :download, params: {}
         end
@@ -188,7 +188,7 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
       end
 
       it "removes the cart item from the cart, but doesn't delete if it has been requested" do
-        cartItem3.date_requested = Date.yesterday
+        cartItem3.date_requested = Time.current.yesterday
         cartItem3.save
         delete :destroy, params: {:batch_document_ids => [cartItem3.id]}
         cartItem3.reload
@@ -220,7 +220,7 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
       end
 
       it "removes the cart item from the cart, but doesn't delete if it has been requested" do
-        cartItem3.date_requested = Date.yesterday
+        cartItem3.date_requested = Time.current.yesterday
         cartItem3.save
         delete :destroy, params: {:item_id => cartItem3.id}
         cartItem3.reload
@@ -252,7 +252,7 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
       end
 
       it "removes the cart item from the cart, but doesn't delete if it has been requested" do
-        cartItem3.date_requested = Date.yesterday
+        cartItem3.date_requested = Time.current.yesterday
         cartItem3.save
         delete :destroy, params: {}
         cartItem3.reload

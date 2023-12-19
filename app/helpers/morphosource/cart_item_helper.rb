@@ -72,7 +72,7 @@ module Morphosource::CartItemHelper
   end
 
   def download_requested_button
-    link_to 'Download Requested', 'javascript:void(0)', class: 'btn btn-default', role: 'button', disabled: true
+    link_to 'DL Request Sent', 'javascript:void(0)', class: 'btn btn-default', role: 'button', disabled: true
   end
 
   def request_download_button
@@ -128,6 +128,23 @@ module Morphosource::CartItemHelper
       make_label("Requested","label label-primary",'')
     else
       make_label("Not Requested",'label label-info',"background-color: teal;")
+    end
+  end
+
+  # get the date associated with the most appropriate non-requested non-expired status
+  def item_status_date(item)
+    case item.request_status
+    when 'Canceled'
+      date(item, 'canceled')
+    when 'Denied'
+      date(item, 'denied')
+    when 'Expired'
+      # presumably all expired requests were approved at some point
+      date(item, 'approved')
+    when 'Approved'
+      date(item, 'approved')
+    when 'Cleared'
+      date(item, 'cleared')
     end
   end
 

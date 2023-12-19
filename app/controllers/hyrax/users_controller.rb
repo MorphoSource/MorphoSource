@@ -7,13 +7,11 @@ module Hyrax
     # do not restrict json (need it for searching for users during submission/record editing)
     # only allow admins to access the /users page
     def index
-      only_active = true
       if request.format == :html
         authorize! :index, ::User
-        only_active = false
         @groups = Morphosource::Users::Defaults::ROLES
       end
-      @users = search(params[:uq], only_active)
+      @users = search(params[:uq], false)
     end
 
     # Display user profile

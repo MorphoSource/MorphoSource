@@ -15,19 +15,5 @@
     <% else %> 
       <a class="btn btn-disabled tooltip-icon" data-original-title="" title="This media cannot be deleted because the media has child media.">Delete</a>
     <% end %>
-
   <% end %>
-
-  <%# if signed_in? %>
-    <%# if presenter.editor? || @curation_concern.open? %>
-      <%#= download_button(presenter.id) %>
-      <%#= choose_cart_button(presenter) %>
-    <%# elsif @curation_concern.restricted? %>
-      <%#= choose_download_button(presenter.id) %>
-      <%#= choose_cart_button(presenter) %>
-    <%# else %>
-      <%#= unavailable_for_download_button %>
-    <%# end %>
-
-  <%# end %>
 </div>

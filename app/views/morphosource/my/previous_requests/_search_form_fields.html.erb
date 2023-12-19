@@ -1,0 +1,19 @@
+<%= f.input :work_id, label: "Media ID", :input_html => {value: @work_id }, required: false %>
+
+<%= f.input :user_id, label: "Request User (For Multiple, Will Match Any)", input_html: { data: { user: format_users_select2(@user_id) } }, required: false %>
+
+<div class="mb-1">
+  <%= collapse_expand_panel_simple(label: "Show decision and date range search", div_class: "collapse collapse-simple in") %>
+  <div class="collapse collapse-simple <%= @date_param_present ? "in" : "" %>">
+    <% [ 'date_requested', 'date_approved','date_denied','date_canceled','date_expired','date_cleared', 'date_downloaded'].each do |attr| %>
+      <%= render partial: 'search_form_field_date_range', locals: { f: f, attr: attr } %>
+    <% end %>
+  </div>
+  <%= collapse_expand_panel_simple(label: "Hide decision and date range search", div_class: "collapse collapse-simple", glyphicon_class: "glyphicon-triangle-top") %>
+</div>
+
+<script>
+  $( document ).ready(function() {
+    $('#filter_items_user_id').userSearchMultiple($('#filter_items_user_id').data('user'));
+  });
+</script>

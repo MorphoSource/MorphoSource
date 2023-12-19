@@ -9,6 +9,8 @@ RSpec.describe Morphosource::My::PreviousRequestsController, :type => :controlle
     let(:expiration_date) { "2020-10-20" }
 
     before do
+      cartItem1.reviewers << current_user.ms_id
+      cartItem1.save
       put :edit_expiration, params: { item_id: cartItem1.id, expiration_date: expiration_date }
       cartItem1.reload
     end

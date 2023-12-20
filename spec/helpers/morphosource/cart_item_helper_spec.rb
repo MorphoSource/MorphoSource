@@ -211,7 +211,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
           end
 
           it 'returns the download requested button' do
-            expect(helper.choose_download_button).to eq("<a class=\"btn btn-default\" role=\"button\" disabled=\"disabled\" href=\"javascript:void(0)\">Download Requested</a>")
+            expect(helper.choose_download_button).to eq("<a class=\"btn btn-default\" role=\"button\" disabled=\"disabled\" href=\"javascript:void(0)\">DL Request Sent</a>")
           end
         end
 

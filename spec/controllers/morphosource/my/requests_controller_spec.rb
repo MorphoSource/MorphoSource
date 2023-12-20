@@ -8,8 +8,14 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
   include_context 'cart items'
 
   before do
+    Timecop.freeze(Time.local(1999, 9, 9, 9))
     allow(subject).to receive(:email_sender) { User.first }
   end
+
+  after do
+    Timecop.return
+  end
+
 
   describe "GET #index" do
 
@@ -50,6 +56,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
         end
 
         it "marks the item's date_requested as today" do
+byebug   
           expect(cartItem3.reload.date_requested.to_date).to eq(Date.today)
         end
 

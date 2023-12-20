@@ -5,6 +5,14 @@ include Warden::Test::Helpers
 
 RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
 
+  before do
+    Timecop.freeze(Time.local(1999, 9, 9, 9))
+  end
+
+  after do
+    Timecop.return
+  end
+
   describe "GET #show" do
     let(:user)        { User.create(email: 'user@email.com', password: 'password') }
     let(:depositor)   { User.create(email: 'depositor@email.com', password: 'password') }

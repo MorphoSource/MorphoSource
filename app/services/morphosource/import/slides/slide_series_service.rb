@@ -298,7 +298,9 @@ module Morphosource
           end
 
           def search_for_specimen
-            Morphosource::SolrService.new.get_docs("has_model_ssim:BiologicalSpecimen AND occurrence_id_ssim:#{@occurrence_json['occurrenceID']}")&.first
+            occurrence_id = @occurrence_json['occurrenceID']
+            specimen = Morphosource::SolrService.new.get_docs("has_model_ssim:BiologicalSpecimen AND occurrence_id_ssim:#{occurrence_id&.dump}")&.first # escape special characters when searching
+            specimen&.dig('occurrence_id_ssim')&.first == occurrence_id ? specimen : nil
           end
 
           def search_for_taxonomy

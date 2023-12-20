@@ -11,10 +11,15 @@ RSpec.describe User, type: :model do
   let(:works)             { [restricted_work, restricted_work2, open_work] }
 
   before do
+    Timecop.freeze(Time.local(1999, 9, 9, 9))
     works.each do |work|
       allow(SolrDocument).to receive(:find).and_call_original
       allow(SolrDocument).to receive(:find).with(work.id).and_return(SolrDocument.find(work.id))
     end
+  end
+
+  after do
+    Timecop.return
   end
 
   describe '#has_download_access_or_approval?' do
@@ -29,7 +34,7 @@ RSpec.describe User, type: :model do
     end
 
     context 'user has an approved request' do
-      let!(:cart_item) { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_requested: Time.current.yesterday, date_approved: Time.current.yesterday, date_expired: 1.year.from_now)}
+      let!(:cart_item) { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday, date_approved: Date.yesterday, date_expired: 1.year.from_now)}
 
       it { expect(subject).to be(true) }
     end
@@ -48,7 +53,7 @@ RSpec.describe User, type: :model do
     end
 
     context 'user has an approved download' do
-      let!(:cart_item) { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_requested: Time.current.yesterday, date_approved: Time.current.yesterday, date_expired: 1.year.from_now)}
+      let!(:cart_item) { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday, date_approved: Date.yesterday, date_expired: 1.year.from_now)}
 
       it{ expect(subject).to be(true) }
     end
@@ -107,10 +112,10 @@ RSpec.describe User, type: :model do
   # items with date_requested or date_cleared
   describe "items the user has requested" do
     # requested items
-    let!(:cart_item1) { CartItem.create(user_id: user.ms_id, work_id: 'aaa', date_requested: Time.current.yesterday) }
-    let!(:cart_item2) { CartItem.create(user_id: user.ms_id, work_id: 'bbb', date_requested: Time.current.yesterday) }
+    let!(:cart_item1) { CartItem.create(user_id: user.ms_id, work_id: 'aaa', date_requested: Date.yesterday) }
+    let!(:cart_item2) { CartItem.create(user_id: user.ms_id, work_id: 'bbb', date_requested: Date.yesterday) }
     # cleared
-    let!(:cart_item3) { CartItem.create(user_id: user.ms_id, work_id: 'ccc', date_cleared: Time.current.yesterday) }
+    let!(:cart_item3) { CartItem.create(user_id: user.ms_id, work_id: 'ccc', date_cleared: Date.yesterday) }
     # not requested
     let!(:cart_item4) { CartItem.create(user_id: user.ms_id, work_id: 'ddd' ) }
 
@@ -122,18 +127,18 @@ RSpec.describe User, type: :model do
   describe "a user's active requests" do
     # active - requested, approved, or cleared
     # requested
-    let!(:cart_item1) { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_requested: Time.current.yesterday) }
+    let!(:cart_item1) { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday) }
     # approved
-    let!(:cart_item2)  { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_requested: Time.current.yesterday, date_approved: Time.current.yesterday, date_expired: Time.current.tomorrow) }
+    let!(:cart_item2)  { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday, date_approved: Date.yesterday, date_expired: Date.tomorrow) }
     # cleared
-    let!(:cart_item3)  { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_cleared: Time.current.yesterday) }
+    let!(:cart_item3)  { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_cleared: Date.yesterday) }
     # inactive - denied, canceled, expired, not requested
     # denied
-    let!(:cart_item4) { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_requested: Time.current.yesterday, date_denied: Time.current) }
+    let!(:cart_item4) { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday, date_denied: Date.today) }
     # canceled
-    let!(:cart_item5) { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_requested: Time.current.yesterday, date_canceled: Time.current) }
+    let!(:cart_item5) { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday, date_canceled: Date.today) }
     # expired
-    let!(:cart_item6) { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_requested: Time.current.yesterday, date_approved: Time.current.yesterday, date_expired: Time.current.yesterday) }
+    let!(:cart_item6) { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday, date_approved: Date.yesterday, date_expired: Date.yesterday) }
     # not requested
     let!(:cart_item7) { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id) }
 
@@ -150,18 +155,18 @@ RSpec.describe User, type: :model do
 
     # requested items
     # requested
-    let!(:cart_item1) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work.id, date_requested: Time.current.yesterday, reviewers: [user.ms_id]) }
+    let!(:cart_item1) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday, reviewers: [user.ms_id]) }
 
     # approved
-    let!(:cart_item2) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work2.id, date_requested: Time.current.yesterday, date_approved: Time.current.yesterday, reviewers: [user.ms_id]) }
+    let!(:cart_item2) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work2.id, date_requested: Date.yesterday, date_approved: Date.yesterday, reviewers: [user.ms_id]) }
     # cleared
-    let!(:cart_item3) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work3.id, date_cleared: Time.current.yesterday, reviewers: [user.ms_id]) }
+    let!(:cart_item3) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work3.id, date_cleared: Date.yesterday, reviewers: [user.ms_id]) }
     # denied
-    let!(:cart_item4) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work.id, date_requested: Time.current.yesterday, date_denied: Time.current.yesterday, reviewers: [user.ms_id]) }
+    let!(:cart_item4) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday, date_denied: Date.yesterday, reviewers: [user.ms_id]) }
     # expired
-    let!(:cart_item5) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work.id, date_requested: Time.current.yesterday, date_approved: Time.current.yesterday, date_expired: Time.current.yesterday, reviewers: [user.ms_id]) }
+    let!(:cart_item5) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday, date_approved: Date.yesterday, date_expired: Date.yesterday, reviewers: [user.ms_id]) }
     # canceled
-    let!(:cart_item6) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work.id, date_requested: Time.current.yesterday, date_canceled: Time.current, reviewers: [user.ms_id]) }
+    let!(:cart_item6) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday, date_canceled: Date.today, reviewers: [user.ms_id]) }
 
     # not requested
     let!(:cart_item7) { CartItem.create(user_id: some_user.ms_id, work_id: restricted_work4.id, reviewers: [user.ms_id] ) }
@@ -182,7 +187,7 @@ RSpec.describe User, type: :model do
     let!(:cart_item2)       { CartItem.create(user_id: user.ms_id, work_id: restricted_work2.id) }
 
     # user has an approved request
-    let!(:cart_item3)       { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_requested: Time.current.yesterday, date_approved: Time.current.yesterday, date_expired: Time.current.tomorrow) }
+    let!(:cart_item3)       { CartItem.create(user_id: user.ms_id, work_id: restricted_work.id, date_requested: Date.yesterday, date_approved: Date.yesterday, date_expired: Date.tomorrow) }
 
     ## non-downloadable items
 
@@ -195,13 +200,13 @@ RSpec.describe User, type: :model do
     # item status is not requested
     let!(:cart_item5)       { CartItem.create(user_id: user.ms_id, work_id: private_work2.id) }
     # item status is requested
-    let!(:cart_item6)       { CartItem.create(user_id: user.ms_id, work_id: private_work2.id, date_requested: Time.current) }
+    let!(:cart_item6)       { CartItem.create(user_id: user.ms_id, work_id: private_work2.id, date_requested: Date.today) }
     # item status is cleared
-    let!(:cart_item7)       { CartItem.create(user_id: user.ms_id, work_id: private_work2.id, date_cleared: Time.current) }
+    let!(:cart_item7)       { CartItem.create(user_id: user.ms_id, work_id: private_work2.id, date_cleared: Date.today) }
     # item status is expired
-    let!(:cart_item8)       { CartItem.create(user_id: user.ms_id, work_id: private_work2.id, date_requested: Time.current.yesterday, date_approved: Time.current.yesterday, date_expired: Time.current.yesterday) }
+    let!(:cart_item8)       { CartItem.create(user_id: user.ms_id, work_id: private_work2.id, date_requested: Date.yesterday, date_approved: Date.yesterday, date_expired: Date.yesterday) }
     # item status is denied
-    let!(:cart_item9)       { CartItem.create(user_id: user.ms_id, work_id: private_work2.id, date_requested: Time.current.yesterday, date_denied: Time.current.yesterday) }
+    let!(:cart_item9)       { CartItem.create(user_id: user.ms_id, work_id: private_work2.id, date_requested: Date.yesterday, date_denied: Date.yesterday) }
     before do
       restricted_work2.download_users += [user]
       restricted_work2.save

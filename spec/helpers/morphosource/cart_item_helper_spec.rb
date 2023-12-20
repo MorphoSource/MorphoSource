@@ -3,6 +3,14 @@ require 'rails_helper'
 RSpec.describe Morphosource::CartItemHelper, type: :helper do
   include Rails.application.routes.url_helpers
 
+  before do
+    Timecop.freeze(Time.local(1999, 9, 9, 9))
+  end
+
+  after do
+    Timecop.return
+  end
+
   describe '#item_status_label and #item_action_button' do
     let(:depositor) { User.create(email: "test@test.com", password: "password") }
     let(:user)  { User.create(email: 'user@test.com', password: 'password') }
@@ -17,8 +25,8 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
         %(<button name=\"button\" type=\"submit\" id=\"request-button\" class=\"btn btn-info btn-request-download-item\" data-toggle=\"modal\" data-target=\"#pageModal\" data-item-id=\"0\">Request Download</button>)
       end
       before do
-        item.date_requested = Time.current.yesterday
-        item.date_canceled = Time.current
+        item.date_requested = Date.yesterday
+        item.date_canceled = Date.today
       end
 
       it 'creates a "Canceled" label' do
@@ -39,8 +47,8 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
         %(<a class=\"btn btn-danger\" style=\"\" rel=\"nofollow\" data-method=\"delete\" href=\"/remove_from_cart?item_id=#{item.id}\">Remove from Cart</a>)
       end
       before do
-        item.date_requested = Time.current.yesterday
-        item.date_denied = Time.current
+        item.date_requested = Date.yesterday
+        item.date_denied = Date.today
       end
 
       context 'the item is in the media cart' do
@@ -77,9 +85,9 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
         %(<a class=\"btn btn-primary\" style=\"\" data-method=\"get\" href=\"/request_again?item_id=#{item.id}\">Request Again</a>)
       end
       before do
-        item.date_requested = Time.current.yesterday
-        item.date_approved = Time.current.yesterday
-        item.date_expired = Time.current.yesterday
+        item.date_requested = Date.yesterday
+        item.date_approved = Date.yesterday
+        item.date_expired = Date.yesterday
       end
 
       it 'creates an "Expired" label' do
@@ -95,9 +103,9 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
         %(<span class=\"label label-success\" style=\"\">Approved</span>)
       end
       before do
-        item.date_requested = Time.current.yesterday
-        item.date_approved = Time.current.yesterday
-        item.date_expired = Time.current.tomorrow
+        item.date_requested = Date.yesterday
+        item.date_approved = Date.yesterday
+        item.date_expired = Date.tomorrow
       end
 
       it 'creates an "Approved" label' do
@@ -113,7 +121,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
         %(<a class=\"btn btn-danger\" style=\"background-color: gray;\" rel=\"nofollow\" data-method=\"put\" href=\"/cancel_request?item_id=#{item.id}\">Cancel</a>)
       end
       before do
-        item.date_requested = Time.current
+        item.date_requested = Date.today
       end
 
       it 'creates a "Requested" label' do

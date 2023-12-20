@@ -13,19 +13,27 @@ RSpec.describe CartItem, type: :model do
   let!(:cartItem1)    { CartItem.create(user: user, work_id: work1.id) }
   let!(:cartItem2)    { CartItem.create(user: user, work_id: work2.id) }
 
+  before do
+    Timecop.freeze(Time.local(1999, 9, 9, 9))
+  end
+
+  after do
+    Timecop.return
+  end
+
   describe '#active_request, #inactive_request' do
     context 'item is requested' do
       before do
-        cartItem1.date_requested = Time.current
-        cartItem1.save
+        cartItem1.date_requested = Date.today
+       cartItem1.save
       end
       it { expect(cartItem1.active_request?).to be(true) }
       it { expect(cartItem1.inactive_request?).to be(false) }
     end
     context 'item is approved' do
       before do
-        cartItem1.date_requested = Time.current
-        cartItem1.date_approved = Time.current
+        cartItem1.date_requested = Date.today
+        cartItem1.date_approved = Date.today
         cartItem1.save
       end
       it { expect(cartItem1.active_request?).to be(true) }
@@ -33,8 +41,8 @@ RSpec.describe CartItem, type: :model do
     end
     context 'item is cleared' do
       before do
-        cartItem1.date_requested = Time.current
-        cartItem1.date_cleared = Time.current
+        cartItem1.date_requested = Date.today
+        cartItem1.date_cleared = Date.today
         cartItem1.save
       end
       it { expect(cartItem1.active_request?).to be(true) }
@@ -42,8 +50,8 @@ RSpec.describe CartItem, type: :model do
     end
     context 'item is canceled' do
       before do
-        cartItem1.date_requested = Time.current
-        cartItem1.date_canceled = Time.current
+        cartItem1.date_requested = Date.today
+        cartItem1.date_canceled = Date.today
         cartItem1.save
       end
       it { expect(cartItem1.active_request?).to be(false) }
@@ -51,8 +59,8 @@ RSpec.describe CartItem, type: :model do
     end
     context 'item is denied' do
       before do
-        cartItem1.date_requested = Time.current
-        cartItem1.date_denied = Time.current
+        cartItem1.date_requested = Date.today
+        cartItem1.date_denied = Date.today
         cartItem1.save
       end
       it { expect(cartItem1.active_request?).to be(false) }
@@ -60,8 +68,8 @@ RSpec.describe CartItem, type: :model do
     end
     context 'item is expired' do
       before do
-        cartItem1.date_requested = Time.current.yesterday
-        cartItem1.date_expired = Time.current.yesterday
+        cartItem1.date_requested = Date.yesterday
+        cartItem1.date_expired = Date.yesterday
         cartItem1.save
       end
       it { expect(cartItem1.active_request?).to be(false) }
@@ -76,37 +84,37 @@ RSpec.describe CartItem, type: :model do
   describe '#request_status' do
     context 'user cancels the request' do
       before do
-        cartItem1.date_requested = Time.current.yesterday
-        cartItem1.date_canceled = Time.current
+        cartItem1.date_requested = Date.yesterday
+        cartItem1.date_canceled = Date.today
       end
       it { expect(cartItem1.request_status).to eq('Canceled') }
     end
     context 'data owner denies the download request' do
       before do
-        cartItem1.date_requested = Time.current.yesterday
-        cartItem1.date_denied = Time.current
+        cartItem1.date_requested = Date.yesterday
+        cartItem1.date_denied = Date.today
       end
       it { expect(cartItem1.request_status).to eq('Denied') }
     end
     context 'an approved request has an expiration date in the past' do
       before do
-        cartItem1.date_requested = Time.current.yesterday
-        cartItem1.date_approved = Time.current.yesterday
-        cartItem1.date_expired = Time.current.yesterday
+        cartItem1.date_requested = Date.yesterday
+        cartItem1.date_approved = Date.yesterday
+        cartItem1.date_expired = Date.yesterday
       end
       it { expect(cartItem1.request_status).to eq('Expired') }
     end
     context 'a request is approved by the data owner' do
       before do
-        cartItem1.date_requested = Time.current.yesterday
-        cartItem1.date_approved = Time.current.yesterday
-        cartItem1.date_expired = Time.current.tomorrow
+        cartItem1.date_requested = Date.yesterday
+        cartItem1.date_approved = Date.yesterday
+        cartItem1.date_expired = Date.tomorrow
       end
       it { expect(cartItem1.request_status).to eq('Approved') }
     end
     context 'a user has requested the item' do
       before do
-        cartItem1.date_requested = Time.current.yesterday
+        cartItem1.date_requested = Date.yesterday
       end
       it { expect(cartItem1.request_status).to eq('Requested') }
     end
@@ -122,36 +130,36 @@ RSpec.describe CartItem, type: :model do
     before do
       allow(cartItem2).to receive(:restricted?).and_return(true)
       [cartItem1,cartItem2].each do |items|
-        items.date_requested = Time.current.yesterday
+        items.date_requested = Date.yesterday
       end
     end
     context 'item is approved' do
       before do
-        cartItem1.date_approved = Time.current
-        cartItem1.date_expired = Time.current.tomorrow
+        cartItem1.date_approved = Date.today
+        cartItem1.date_expired = Date.tomorrow
       end
       it { expect(cartItem1.editable?).to be(true) }
       it { expect(cartItem2.editable?).to be(false) }
     end
     context 'item is expired' do
       before do
-        cartItem2.date_approved = Time.current
-        cartItem2.date_expired = Time.current.yesterday
+        cartItem2.date_approved = Date.today
+        cartItem2.date_expired = Date.yesterday
       end
       it { expect(cartItem1.editable?).to be(false) }
       it { expect(cartItem2.editable?).to be(true) }
     end
     context 'item is denied' do
       before do
-        cartItem1.date_denied = Time.current
+        cartItem1.date_denied = Date.today
       end
       it { expect(cartItem1.editable?).to be(false) }
       it { expect(cartItem2.editable?).to be(false) }
     end
     context 'item is cleared' do
       before do
-        cartItem1.date_cleared = Time.current
-        cartItem2.date_approved = Time.current.yesterday
+        cartItem1.date_cleared = Date.today
+        cartItem2.date_approved = Date.yesterday
       end
       it { expect(cartItem1.editable?).to be(false) }
       it { expect(cartItem2.editable?).to be(true) }
@@ -161,7 +169,7 @@ RSpec.describe CartItem, type: :model do
   describe '#unrequested' do
     context 'item has been requested' do
       before do
-        cartItem1.date_requested = Time.current.yesterday
+        cartItem1.date_requested = Date.yesterday
         cartItem1.save
       end
       it { expect(cartItem1.unrequested?).to be(false) }
@@ -174,8 +182,8 @@ RSpec.describe CartItem, type: :model do
   describe '#cleared?' do
     context 'item has been cleared' do
       before do
-        cartItem1.date_requested = Time.current.yesterday
-        cartItem1.date_cleared = Time.current.yesterday
+        cartItem1.date_requested = Date.yesterday
+        cartItem1.date_cleared = Date.yesterday
         cartItem1.save
       end
       it { expect(cartItem1.cleared?).to be(true) }
@@ -197,17 +205,17 @@ RSpec.describe CartItem, type: :model do
   describe '#expired?' do
     context 'an approved item is not yet expired' do
       before do
-        cartItem1.date_requested = Time.current.yesterday
-        cartItem1.date_approved = Time.current.yesterday
-        cartItem1.date_expired = Time.current.tomorrow
+        cartItem1.date_requested = Date.yesterday
+        cartItem1.date_approved = Date.yesterday
+        cartItem1.date_expired = Date.tomorrow
       end
       it { expect(cartItem1.expired?).to be(false) }
     end
     context 'an approved item has passed its expiration date' do
       before do
-        cartItem1.date_requested = Time.current.yesterday
-        cartItem1.date_approved = Time.current.yesterday
-        cartItem1.date_expired = Time.current.yesterday
+        cartItem1.date_requested = Date.yesterday
+        cartItem1.date_approved = Date.yesterday
+        cartItem1.date_expired = Date.yesterday
       end
       it { expect(cartItem1.expired?).to be(true) }
     end
@@ -222,13 +230,13 @@ RSpec.describe CartItem, type: :model do
     end
     context 'work is approved' do
       before do
-        cartItem1.date_requested = Time.current.yesterday
-        cartItem1.date_approved = Time.current.yesterday
+        cartItem1.date_requested = Date.yesterday
+        cartItem1.date_approved = Date.yesterday
         cartItem1.save
       end
       context 'work is expired' do
         before do
-          cartItem1.date_expired = Time.current.yesterday
+          cartItem1.date_expired = Date.yesterday
           cartItem1.save
         end
         it { expect(cartItem1.approved?).to be(false) }
@@ -271,9 +279,9 @@ RSpec.describe CartItem, type: :model do
       end
       context 'request is approved' do
         before do
-          cartItem1.date_requested = Time.current.yesterday
-          cartItem1.date_approved = Time.current.yesterday
-          cartItem1.date_expired = Time.current.tomorrow
+          cartItem1.date_requested = Date.yesterday
+          cartItem1.date_approved = Date.yesterday
+          cartItem1.date_expired = Date.tomorrow
         end
         it { expect(subject).to be(true) }
       end

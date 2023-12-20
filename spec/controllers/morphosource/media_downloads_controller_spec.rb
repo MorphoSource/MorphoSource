@@ -179,8 +179,8 @@ RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
         end
 
         context 'user has undownload approved requests for these media' do
-          let!(:cart_item1) { CartItem.create!(user_id: user.ms_id, work_id: work1.id, download_hash: nil, download_attempts: nil, date_downloaded: nil, date_approved: Time.current.yesterday.to_date, date_expired: Date.tomorrow, in_cart: true) }
-          let!(:cart_item2) { CartItem.create!(user_id: user.ms_id, work_id: work2.id, download_hash: nil, download_attempts: 1, date_downloaded: nil, date_approved: Time.current.yesterday.to_date, date_expired: Date.tomorrow, in_cart: true) }
+          let!(:cart_item1) { CartItem.create!(user_id: user.ms_id, work_id: work1.id, download_hash: nil, download_attempts: nil, date_downloaded: nil, date_approved: Time.current.yesterday.to_date, date_expired: Time.current.tomorrow.to_date, in_cart: true) }
+          let!(:cart_item2) { CartItem.create!(user_id: user.ms_id, work_id: work2.id, download_hash: nil, download_attempts: 1, date_downloaded: nil, date_approved: Time.current.yesterday.to_date, date_expired: Time.current.tomorrow.to_date, in_cart: true) }
 
           it 'adds download attempt and hash to existing request cart items' do
             expect{ process :show, method: :get, params: { key: [work1.access_control_id, work2.access_control_id], token: user.token, download: download_hash } }.to change{CartItem.count}.by(0)
@@ -195,8 +195,8 @@ RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
         end
 
         context 'user repeats or resumes download of approved requests for these media' do
-          let!(:cart_item1) { CartItem.create!(user_id: user.ms_id, work_id: work1.id, download_hash: download_hash, download_attempts: 1, date_downloaded: Time.current.yesterday.to_date, date_approved: Time.current.yesterday.to_date, date_expired: Date.tomorrow, in_cart: true) }
-          let!(:cart_item2) { CartItem.create!(user_id: user.ms_id, work_id: work2.id, download_hash: download_hash, download_attempts: 1, date_downloaded: Time.current.yesterday.to_date, date_approved: Time.current.yesterday.to_date, date_expired: Date.tomorrow, in_cart: true) }
+          let!(:cart_item1) { CartItem.create!(user_id: user.ms_id, work_id: work1.id, download_hash: download_hash, download_attempts: 1, date_downloaded: Time.current.yesterday.to_date, date_approved: Time.current.yesterday.to_date, date_expired: Time.current.tomorrow.to_date, in_cart: true) }
+          let!(:cart_item2) { CartItem.create!(user_id: user.ms_id, work_id: work2.id, download_hash: download_hash, download_attempts: 1, date_downloaded: Time.current.yesterday.to_date, date_approved: Time.current.yesterday.to_date, date_expired: Time.current.tomorrow.to_date, in_cart: true) }
 
           it 'increments download attempts and updates download time on existing request cart items' do
             expect{ process :show, method: :get, params: { key: [work1.access_control_id, work2.access_control_id], token: user.token, download: download_hash } }.to change{CartItem.count}.by(0)

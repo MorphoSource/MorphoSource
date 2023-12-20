@@ -50,7 +50,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
         end
 
         it "marks the item's date_requested as today" do
-          expect(cartItem3.reload.date_requested.to_date).to eq(Time.current.to_date)
+          expect(cartItem3.reload.date_requested.to_date).to eq(Date.today)
         end
 
         it "adds the intended use to the request" do
@@ -72,7 +72,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
 
       context 'the item has been requested before and cleared' do
         before do
-          cartItem3.date_cleared = Time.current.yesterday.to_date
+          cartItem3.date_cleared = Date.yesterday
           cartItem3.save
           request.env["HTTP_REFERER"] = "original_page"
           put :request_item, params: { item_id: cartItem3.id, intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
@@ -80,7 +80,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
 
         it "marks the item's date_requested as today" do
           cartItem3.reload
-          expect(cartItem3.date_requested.to_date).to eq(Time.current.to_date)
+          expect(cartItem3.date_requested.to_date).to eq(Date.today)
         end
 
         it "removes the date cleared" do
@@ -105,7 +105,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
 
         let(:requested_work)  { Media.create(id: "abc", title: ["Test Media Work"], depositor: depositor.ms_id, visibility: 'open', fileset_accessibility: ['restricted_download'])}
 
-        let!(:requested_item)  { CartItem.create(user_id: current_user.ms_id, work_id: requested_work.id, in_cart: true, date_requested: Time.current.yesterday.to_date, date_approved: Time.current.yesterday.to_date, date_expired: Time.current.yesterday.to_date)}
+        let!(:requested_item)  { CartItem.create(user_id: current_user.ms_id, work_id: requested_work.id, in_cart: true, date_requested: Date.yesterday, date_approved: Date.yesterday, date_expired: Date.yesterday)}
 
         let(:put_params)      { {item_id: requested_item.id, intended_use: ["Intended Use"], request_download_terms_agreed: 'on'} }
         let(:items_in_cart)   { current_user.items_in_cart }
@@ -134,7 +134,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
           work = requested_work
           expect(item.user_id).to eq(current_user.ms_id)
           expect(item.work_id).to eq(work.id)
-          expect(item.date_requested.to_date).to eq(Time.current.to_date)
+          expect(item.date_requested.to_date).to eq(Date.today)
           expect(item.restricted?).to be(true)
           expect(item.in_cart).to be(true)
           expect(item.date_cleared).to be(nil)
@@ -167,8 +167,8 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
 
         it "marks the items' date_requested as today" do
           [cartItem3,cartItem7].each(&:reload)
-          expect(cartItem3.date_requested.to_date).to eq(Time.current.to_date)
-          expect(cartItem7.date_requested.to_date).to eq(Time.current.to_date)
+          expect(cartItem3.date_requested.to_date).to eq(Date.today)
+          expect(cartItem7.date_requested.to_date).to eq(Date.today)
         end
 
         it "saves the intended use" do
@@ -188,7 +188,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
 
       context 'some of the items have been requested before' do
         before do
-          cartItem1.date_expired = Time.current.yesterday.to_date
+          cartItem1.date_expired = Date.yesterday
           cartItem1.save
           request.env["HTTP_REFERER"] = "original_page"
           put :request_item, params: { batch_document_ids: [cartItem3.id,cartItem7.id,cartItem1.id], intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
@@ -196,8 +196,8 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
 
         it "marks the previously unrequested items' date_requested as today" do
           [cartItem3,cartItem7].each(&:reload)
-          expect(cartItem3.date_requested.to_date).to eq(Time.current.to_date)
-          expect(cartItem7.date_requested.to_date).to eq(Time.current.to_date)
+          expect(cartItem3.date_requested.to_date).to eq(Date.today)
+          expect(cartItem7.date_requested.to_date).to eq(Date.today)
         end
 
         it "saves the previously unrequested items' intended use" do
@@ -217,7 +217,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
           expect(item.user_id).to eq(current_user.ms_id)
           expect(item.work_id).to eq(work.id)
           expect(item.in_cart).to be(true)
-          expect(item.date_requested.to_date).to eq(Time.current.to_date)
+          expect(item.date_requested.to_date).to eq(Date.today)
           expect(item.restricted?).to be(work.restricted?)
           expect(item.date_cleared).to be(nil)
           expect(item.use).to eq("Intended Use")
@@ -234,7 +234,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
 
       context 'one item in group has already been requested' do
         before do
-          cartItem1.date_expired = Time.current.yesterday.to_date
+          cartItem1.date_expired = Date.yesterday
           cartItem1.save
         end
         it 'creates a new cart item' do
@@ -274,7 +274,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
 
       context 'item ids are valid' do
         before do
-          cartItem1.date_expired = Time.current.yesterday.to_date
+          cartItem1.date_expired = Date.yesterday
           cartItem1.save
           request.env["HTTP_REFERER"] = "original_page"
           get :request_again, params: { item_id: cartItem1.id, intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
@@ -297,7 +297,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
           expect(item.user_id).to eq(current_user.ms_id)
           expect(item.work_id).to eq(work.id)
           expect(item.in_cart).to be(true)
-          expect(item.date_requested.to_date).to eq(Time.current.to_date)
+          expect(item.date_requested.to_date).to eq(Date.today)
           expect(item.restricted?).to be(work.restricted?)
           expect(item.date_cleared).to be(nil)
           expect(item.use).to eq("Intended Use")
@@ -310,7 +310,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
       context 'messages fail to send' do
         before do
           allow(subject).to receive(:send_request_message_to_reviewer).with(any_args).and_raise(NoMethodError)
-          cartItem1.date_expired = Time.current.yesterday.to_date
+          cartItem1.date_expired = Date.yesterday
           cartItem1.save
           request.env["HTTP_REFERER"] = "original_page"
           get :request_again, params: { item_id: cartItem1.id, intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
@@ -334,9 +334,9 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
       end
       context 'item ids are valid' do
         before do
-          cartItem1.date_expired = Time.current.yesterday.to_date
+          cartItem1.date_expired = Date.yesterday
           cartItem1.save
-          cartItem5.date_denied = Time.current.yesterday.to_date
+          cartItem5.date_denied = Date.yesterday
           cartItem5.save
           request.env["HTTP_REFERER"] = "original_page"
         end
@@ -365,7 +365,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
           expect(item1.user_id).to eq(current_user.ms_id)
           expect(item1.work_id).to eq(work1.id)
           expect(item1.in_cart).to be(true)
-          expect(item1.date_requested.to_date).to eq(Time.current.to_date)
+          expect(item1.date_requested.to_date).to eq(Date.today)
           expect(item1.restricted?).to be(work1.restricted?)
           expect(item1.date_cleared).to be(nil)
           expect(item1.use).to eq("Intended Use")
@@ -373,7 +373,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
           expect(item2.user_id).to eq(current_user.ms_id)
           expect(item2.work_id).to eq(work2.id)
           expect(item2.in_cart).to be(true)
-          expect(item2.date_requested.to_date).to eq(Time.current.to_date)
+          expect(item2.date_requested.to_date).to eq(Date.today)
           expect(item2.restricted?).to be(work2.restricted?)
           expect(item2.date_cleared).to be(nil)
           expect(item2.use).to eq("Intended Use")
@@ -405,7 +405,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
       end
       it "marks the cart item as canceled" do
         cartItem1.reload
-        expect(cartItem1.date_canceled.to_date).to eq(Time.current.to_date)
+        expect(cartItem1.date_canceled.to_date).to eq(Date.today)
       end
       it 'creates a new flash message' do
         expect(response.flash[:notice]).to eq("Request Canceled")
@@ -493,7 +493,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
       end
       it "marks the item as requested, saves the intended use, and leaves it in the cart" do
         expect(cartItem3.in_cart).to be(true)
-        expect(cartItem3.date_requested.to_date).to eq(Time.current.to_date)
+        expect(cartItem3.date_requested.to_date).to eq(Date.today)
         expect(cartItem3.use).to eq("Intended Use")
       end
       it "reloads the page" do
@@ -504,7 +504,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
       let(:post_params) {{work_id: [cartItem1.work_id], intended_use: ["Intended Use"], request_download_terms_agreed: 'on'}}
       before do
         request.env["HTTP_REFERER"] = "original_page"
-        cartItem1.date_expired = Time.current.yesterday.to_date
+        cartItem1.date_expired = Date.yesterday
         cartItem1.save
       end
 

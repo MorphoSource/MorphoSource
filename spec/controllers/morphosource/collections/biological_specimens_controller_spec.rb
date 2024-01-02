@@ -3,8 +3,14 @@ require 'spec_helper'
 
 RSpec.describe Morphosource::Collections::BiologicalSpecimensController, type: :controller do
 
+  describe 'LinkedTeamsControllerBehavior' do
+    it 'is included' do
+      expect(described_class.ancestors).to include(Morphosource::Collections::LinkedTeamsControllerBehavior)
+    end
+  end
+
   describe "search_builder_class" do
-    it{ expect(subject.search_builder_class).to eq(        Morphosource::Collections::SpecimensSearchBuilder) }
+    it{ expect(subject.search_builder_class).to eq(Morphosource::Collections::SpecimensSearchBuilder) }
   end
 
   describe ".configure_facets" do
@@ -114,6 +120,23 @@ RSpec.describe Morphosource::Collections::BiologicalSpecimensController, type: :
         end
       end
     end
+    context 'collection is an organization' do
+      let(:depositor)     { FactoryBot.create(:contributor) }
+      let!(:organization) { FactoryBot.create(:organization_collection, depositor: depositor.ms_id) }
+      before do
+        subject.instance_variable_set(:@collection, organization)
+      end
+      describe 'search_action_url' do
+        it 'is organization_specimens_path' do
+          expect(subject.send(:search_action_url)).to eq("/organizations/#{organization.id}/biological-specimens?locale=en")
+        end
+      end
+      describe 'search_facet_path' do
+        it 'is organization_specimens_facet_path' do
+          expect(subject.send(:search_facet_path, {id: facet_id})).to eq("/organizations/#{organization.id}/biological-specimens/facet/#{facet_id}?locale=en")
+        end
+      end
+    end
   end
 
   # helpers/morphosource/my/works_helper
@@ -126,7 +149,7 @@ RSpec.describe Morphosource::Collections::BiologicalSpecimensController, type: :
     before do
       allow(subject).to receive(:params).and_return(params)
       subject.instance_variable_set(:@collection, collection)
-      [:project?, :team?, :media_list?, :sequential_section_list?].each do |type|
+      [:project?, :team?, :media_list?, :sequential_section_list?, :organization_collection?].each do |type|
         allow(collection).to receive(type).and_return(false)
       end
     end
@@ -157,6 +180,13 @@ RSpec.describe Morphosource::Collections::BiologicalSpecimensController, type: :
         allow(collection).to receive(:sequential_section_list?).and_return(true)
       end
       it { expect(subject.search_action_for_dashboard).to eq(main_app.sequential_section_list_specimens_path(id: collection.id, locale: 'en')) }
+    end
+
+    context 'collection is an organization' do
+      before do
+        allow(collection).to receive(:organization_collection?).and_return(true)
+      end
+      it { expect(subject.search_action_for_dashboard).to eq(main_app.organization_specimens_path(id: collection.id, locale: 'en')) }
     end
   end
 end

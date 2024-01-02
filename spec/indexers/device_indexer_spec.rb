@@ -4,6 +4,15 @@ RSpec.describe DeviceIndexer do
   let(:device)              { Device.create(title: ['device']) }
   subject(:solr_document)   { described_class.new(device).generate_solr_document }
 
+  describe 'generate_solr_document' do
+    before do
+      device.creator = ['creator']
+    end
+    it 'indexes creator' do
+      expect(subject["creator_ssim"]).to match_array(device.creator)
+    end
+  end
+
   describe 'organization fields' do
     context 'organization is a work' do
       let(:organization)  { FactoryBot.create(:organization, title: ['organization work'], institution_name: ['institution name']) }

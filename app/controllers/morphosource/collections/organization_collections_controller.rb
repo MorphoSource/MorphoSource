@@ -4,7 +4,7 @@ module Morphosource
       include Morphosource::Collections::LinkedTeamsControllerBehavior
       include Morphosource::Collections::OrganizationCollectionsControllerBehavior
 
-      skip_load_and_authorize_resource only: [:show, :about, :facet, :order_media], instance_name: :collection
+      skip_load_and_authorize_resource only: [:show, :about, :facet, :order_media, :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet, :media_downloads, :media_requests], instance_name: :collection
 
       before_action :redirect_to_collection_type, only: []
 
@@ -12,8 +12,7 @@ module Morphosource
       before_action :authorize_admin
 
       before_action :load_organization, only: [:show, :facet, :about,
-        :media_projects, :media_organization_transfer_status,
-        :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet]
+        :media_projects, :media_organization_transfer_status]
 
       class_attribute :collection_type
 

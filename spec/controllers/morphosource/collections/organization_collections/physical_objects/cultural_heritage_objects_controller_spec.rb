@@ -1,7 +1,7 @@
 require 'rails_helper'
 require 'spec_helper'
 
-RSpec.describe Morphosource::Collections::OrganizationCollections::DevicesController, type: :controller do
+RSpec.describe Morphosource::Collections::OrganizationCollections::PhysicalObjects::CulturalHeritageObjectsController, type: :controller do
 
   let(:depositor)     { User.create(email: 'depositor@email.com', password: 'password') }
   let!(:organization) { FactoryBot.create(:organization_collection, visibility: 'open', depositor: depositor.ms_id) }
@@ -9,12 +9,6 @@ RSpec.describe Morphosource::Collections::OrganizationCollections::DevicesContro
   describe 'OrganizationCollectionsControllerBehavior' do
     it 'is included' do
       expect(described_class.ancestors).to include(Morphosource::Collections::OrganizationCollectionsControllerBehavior)
-    end
-  end
-
-  describe 'OrganizationHelper' do
-    it 'is included' do
-      expect(described_class.ancestors).to include(Morphosource::Collections::OrganizationHelper)
     end
   end
 
@@ -35,7 +29,7 @@ RSpec.describe Morphosource::Collections::OrganizationCollections::DevicesContro
         it 'responds with a 200' do
           get :show, params: params
           expect(response.status).to eq(200)
-          get :devices_export, params: params, format: :csv
+          get :objects_export, params: params, format: :csv
           expect(response.status).to eq(200)
         end
       end
@@ -46,7 +40,7 @@ RSpec.describe Morphosource::Collections::OrganizationCollections::DevicesContro
         it 'redirects to root' do
           get :show, params: params
           expect(response.status).to eq(302)
-          get :devices_export, params: params, format: :csv
+          get :objects_export, params: params, format: :csv
           expect(response.status).to eq(302)
         end
       end
@@ -65,7 +59,7 @@ RSpec.describe Morphosource::Collections::OrganizationCollections::DevicesContro
         it 'responds with a 200' do
           get :show, params: params
           expect(response.status).to eq(200)
-          get :devices_export, params: params, format: :csv
+          get :objects_export, params: params, format: :csv
           expect(response.status).to eq(200)
         end
       end
@@ -82,7 +76,7 @@ RSpec.describe Morphosource::Collections::OrganizationCollections::DevicesContro
           let(:user)  { depositor }
 
           it 'responds with a 200' do
-            get :devices_export, params: params, format: :csv
+            get :objects_export, params: params, format: :csv
           expect(response.status).to eq(200)
           end
         end
@@ -91,7 +85,7 @@ RSpec.describe Morphosource::Collections::OrganizationCollections::DevicesContro
           let(:user)  { FactoryBot.create(:contributor) }
 
           it 'responds with a 403' do
-            get :devices_export, params: params, format: :csv
+            get :objects_export, params: params, format: :csv
           expect(response.status).to eq(403)
           end
         end
@@ -99,83 +93,11 @@ RSpec.describe Morphosource::Collections::OrganizationCollections::DevicesContro
     end
   end
 
-  describe 'search_builder_class' do
-    it {expect(subject.search_builder_class).to eq(Morphosource::Collections::OrganizationCollections::DevicesSearchBuilder) }
-  end
-
   describe 'media_count_search_builder_class' do
-    it {expect(subject.media_count_search_builder_class).to eq(Morphosource::Collections::OrganizationCollections::DeviceMediaSearchBuilder) }
+    it {expect(subject.media_count_search_builder_class).to eq(Morphosource::Collections::OrganizationCollections::OrganizationMediaSearchBuilder) }
   end
 
   describe 'presenter_class' do
     it {expect(subject.presenter_class).to eq(Morphosource::Collections::OrganizationPresenter) }
-  end
-
-  describe 'search_action_url' do
-    let(:user) { FactoryBot.create(:admin) }
-
-    before do
-      subject.instance_variable_set(:@collection, organization)
-    end
-    it 'is organization_devices_path' do
-      expect(subject.send(:search_action_url)).to eq("/organizations/#{organization.id}/devices?locale=en")
-    end
-  end
-
-  describe 'configure_facets' do
-    let(:facet_fields)  { described_class.blacklight_config.facet_fields}
-
-    before do
-      described_class.configure_facets
-    end
-
-    describe 'manufacturer' do
-      subject { facet_fields["manufacturer"]}
-      it 'has a manufacturer facet' do
-        expect(subject.label).to eq("Manufacturer")
-      end
-    end
-
-    describe 'model' do
-      subject { facet_fields["model"] }
-      it 'has a model facet' do
-        expect(subject.label).to eq("Model")
-      end
-    end
-
-    describe 'modality' do
-      subject { facet_fields["modality"] }
-      it 'has a modality facet' do
-        expect(subject.label).to eq("Modality")
-      end
-    end
-  end
-
-  describe 'search_action_url' do
-    let(:user) { FactoryBot.create(:admin) }
-
-    before do
-      subject.instance_variable_set(:@collection, organization)
-    end
-
-    it 'is organization_devices_path' do
-      expect(subject.send(:search_action_url)).to eq("/organizations/#{organization.id}/devices?locale=en")
-    end
-  end
-
-  describe 'search_facet_path' do
-    let(:user) { FactoryBot.create(:admin) }
-
-    let(:facet_id)  { 'depositor_ssim' }
-    before do
-      subject.instance_variable_set(:@collection, organization)
-    end
-    it 'is device_facet_path' do
-      expect(subject.send(:search_facet_path, {id: facet_id})).to eq("/organizations/#{organization.id}/devices/facet/#{facet_id}?locale=en")
-    end
-  end
-
-  describe 'tab' do
-    it {expect(subject.send(:tab)).to eq(:devices) }
   end
 end

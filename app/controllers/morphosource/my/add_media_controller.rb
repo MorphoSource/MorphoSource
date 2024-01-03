@@ -4,10 +4,29 @@ module Morphosource
 
       rescue_from ActiveFedora::ObjectNotFoundError, with: :collection_not_found
 
+      with_themed_layout 'morphosource_1_column'
+
       before_action :authorize_collection_access, except: [:facet]
 
       def search_builder_class
         @collection.search_builder_class
+      end
+
+      def index
+        # The user's collections for the "add to collection" form
+        @user_collections = collections_service.search_results(:deposit)
+        # media/object counts at top of page
+        get_media_object_counts
+        # managed_works_count
+        @create_work_presenter = create_work_presenter_class.new(current_user)
+        @user = current_user
+        (@response, @document_list) = query_solr
+        prepare_instance_variables_for_batch_control_display
+        respond_to do |format|
+          format.html {
+            render 'morphosource/my/works/index'
+          }
+        end
       end
 
       private

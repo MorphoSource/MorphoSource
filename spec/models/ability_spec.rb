@@ -119,9 +119,10 @@ RSpec.describe Ability, type: :model do
           expect(contributor_ability).to be_able_to(:create, MediaList)
           expect(contributor_ability).to be_able_to(:create, SequentialSectionList)
         end
-        it 'does not allow registered users to create any collection types' do
-          expect(user_ability).not_to be_able_to(:create, Collection)
-          expect(user_ability).not_to be_able_to(:create, MediaList)
+        it 'allow registered users to create any media lists' do
+          expect(user_ability).to be_able_to(:create, MediaList)
+        end
+        it 'does not allow registered users to create any SequentialSectionList' do
           expect(user_ability).not_to be_able_to(:create, SequentialSectionList)
         end
         it 'does not allow guest users to create any collection types' do
@@ -176,7 +177,7 @@ RSpec.describe Ability, type: :model do
           expect(guest_ability).not_to be_able_to(:read, project)
 
           expect(admin_ability).to be_able_to(:read, media_list)
-          expect(user_ability).not_to be_able_to(:read, media_list)
+          expect(user_ability).to be_able_to(:read, media_list)
           expect(guest_ability).not_to be_able_to(:read, media_list)
 
           expect(admin_ability).to be_able_to(:read, sequential_section_list)

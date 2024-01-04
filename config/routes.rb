@@ -356,6 +356,8 @@ Rails.application.routes.draw do
       post 'dashboard/collections/:id/unlink_organization', action: :unlink_organization, controller: :linked_teams, as: 'dashboard_collection_unlink_organization'
       patch 'dashboard/collections/:id/update_permissions', to: 'linked_teams#update_permissions', as: 'update_default_permissions'
 
+      resources :collections, only: [:create]
+
       ### COLLECTION SUB-TYPES ###
       scope module: :collections, path: :dashboard do
         # Teams

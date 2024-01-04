@@ -43,7 +43,7 @@ Rails.application.routes.draw do
     get 'organization_paging/concern/organizations/chos/:id', to: redirect { |params, request| "concern/organizations/#{request.params[:id]}?#{request.params.to_query}" }
 
     ### PAGING ROUTES FOR MY PROJECTS AND TEAMS and BROWSE PROJECTS AND TEAMS ###
-    
+
     # My teams/projects paging
     get 'my_projects_paging/dashboard/my/teams', to: redirect { |params, request| "/dashboard/my/projects/?#{request.params.to_query}" }
     get 'my_teams_paging/dashboard/my/teams', to: redirect { |params, request| "/dashboard/my/teams/?#{request.params.to_query}" }
@@ -240,7 +240,7 @@ Rails.application.routes.draw do
       get 'organizations/:id', to: 'organization_collections#show', as: 'organization_collection'
       get 'organizations/:collection_id/facet/:id', to: 'organization_collections#facet', as: 'organization_media_facet'
 
-      # Device media tab 
+      # Device media tab
       get 'organizations/:id/device-media', to: 'organization_collections/device_media#show', as: 'organization_device_media'
       get 'organizations/:collection_id/device-media/facet/:id', to: 'organization_collections/device_media#facet', as: 'organization_device_media_facet'
 
@@ -321,13 +321,13 @@ Rails.application.routes.draw do
       get 'sequential_section_lists/:collection_id/biological_specimens/facet/:id', to: 'biological_specimens#facet', as: 'sequential_section_list_specimens_facet'
       get 'sequential_section_lists/:collection_id/cultural_heritage_objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'sequential_section_list_chos_facet'
 
-      # Sequential section list object CSV exports 
+      # Sequential section list object CSV exports
       get 'sequential_section_lists/:id/biological_specimens/objects_export', to: 'biological_specimens#objects_export', as: 'sequential_section_list_specimens_export'
       get 'sequential_section_lists/:id/cultural_heritage_objects/objects_export', to: 'cultural_heritage_objects#objects_export', as: 'sequential_section_list_chos_export'
     end
 
     ### DASHBOARD ###
-    scope module: :dashboard do 
+    scope module: :dashboard do
       ### PROFILE ###
       get 'dashboard/profiles/:id', to: 'profiles#show', as: 'profile_show'
       get 'dashboard/profiles/:id/edit', to: 'profiles#edit', as: 'profile_edit'
@@ -374,7 +374,7 @@ Rails.application.routes.draw do
         put 'teams', to: 'teams#update'
         put 'teams/:id', to: 'teams#update', as: 'update_team'
         patch 'teams/:id', to: 'teams#update'
-        
+
         # Projects
         get 'projects/new', to: 'projects#new', as: 'new_project'
         get 'projects/:id', to: 'projects#edit', as: 'project_edit'
@@ -384,7 +384,7 @@ Rails.application.routes.draw do
         put 'projects', to: 'projects#update'
         put 'projects/:id', to: 'projects#update', as: 'update_project'
         patch 'projects/:id', to: 'projects#update'
-        
+
 
         # Organization collections
         get 'organizations/new', to: 'organization_collections#new', as: 'new_organization'
@@ -396,7 +396,7 @@ Rails.application.routes.draw do
         put 'organizations', to: 'organization_collections#update'
         put 'organizations/:id', to: 'organization_collections#update', as: 'update_organization'
         patch 'organizations/:id', to: 'organization_collections#update'
-        
+
         # Media lists
         get 'media_lists/new', to: 'media_lists#new', as: 'new_media_list'
         get 'media_lists/:id', to: 'media_lists#edit', as: 'media_list_edit'
@@ -407,10 +407,10 @@ Rails.application.routes.draw do
         put 'media_lists', to: 'media_lists#update'
         put 'media_lists/:id', to: 'media_lists#update', as: 'update_media_list'
         patch 'media_lists/:id', to: 'media_lists#update'
-        
+
         # Sequential section lists (in scope media_lists due to inheriting from media list)
         scope module: :media_lists do
-          get 'sequential_section_lists/new', to: 'sequential_section_lists#new', as: 'new_sequential_section_list' 
+          get 'sequential_section_lists/new', to: 'sequential_section_lists#new', as: 'new_sequential_section_list'
           get 'sequential_section_lists/:id', to: 'sequential_section_lists#edit', as: 'sequential_section_list_edit'
           get 'sequential_section_lists/:id/files', to: 'sequential_section_lists#files'
           get 'sequential_section_lists/:id/members', to: 'sequential_section_lists#members', as: 'sequential_section_list_members'
@@ -479,7 +479,7 @@ Rails.application.routes.draw do
       get 'cart', action: :index, controller: :media_carts
       get 'downloads', action: :index, controller: :downloads
       get 'requests', action: :index, controller: :requests
-      
+
       get 'jobs', action: :index, controller: :background_jobs
       get 'fund_codes/(:id)', action: :index, controller: :fund_codes, as: 'fund_codes'
       patch 'fund_codes/:id', action: :update, controller: :fund_codes, as: 'fund_codes_update'
@@ -542,7 +542,7 @@ Rails.application.routes.draw do
     get 'teams_projects', to: 'collections_catalog#index', as: 'collection_search'
     get 'lists', to: 'media_lists_catalog#index', as: 'media_list_search'
     get 'all', to: 'all_catalog#index', as: 'all_search'
-  
+
     # user managed collections
     get 'teams_projects/managed_by/:user', to: 'user_managed_collections_catalog#index', as: 'managed_collections_search'
 
@@ -637,13 +637,14 @@ Rails.application.routes.draw do
     collection do
       get 'about'
       get 'mission'
+      get 'survey'
     end
   end
 
   # override Hyrax::PagesController
   get '/contributor_terms', to: 'docs#contributor_terms', as: 'contributor_terms'
   get '/terms', to: 'docs#terms', as: 'terms'
-  
+
   ### STATIC REDIRECTS ###
 
   # MS1 About/ redirects
@@ -668,10 +669,10 @@ Rails.application.routes.draw do
   get '/MyProjects/Dashboard/projectList', to: redirect('/dashboard', status: 301)
   get '/Browse/Index', to: redirect('/browse/categories', status: 301)
   get '/Search/Index', to: redirect('/catalog/media', status: 301)
-  
+
   # Universal Viewer Static Redirect
   get '/uv.html', to: redirect('/uv/uv.html', status: 301)
-  
+
   ### EXTERNAL FRAMEWORKS AND LIBRARIES ###
 
   # Resque
@@ -680,7 +681,7 @@ Rails.application.routes.draw do
 
   # RIIIF
   mount Riiif::Engine => 'images', as: :riiif if Hyrax.config.iiif_image_server?
-  
+
   ### HYRAX AND HYDRA RELATED ###
 
   # Devise and user roles

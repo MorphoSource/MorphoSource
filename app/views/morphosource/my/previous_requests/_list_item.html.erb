@@ -1,0 +1,81 @@
+<%# Was previously called _list_works.html.erb %>
+
+<% document = solr_doc_find(item.work_id) || {} %>
+<%# change list of all reviewers to decision user! %>
+<% decision_user = User.find_by_user_key(item.action_by) %>
+<% editable = item.editable? %>
+<% user_is_reviewer = item.reviewers.include?(current_user.ms_id) %>
+<% user_can_edit = editable && user_is_reviewer %>
+
+<tr id="item_<%= item.id %>" data-request-user="<%= item.user&.ms_id %>" data-work="<%= item.work_id %>" data-object="<%= document&.physical_object_id&.first %>" >
+  <td>
+    <% if user_can_edit %>
+      <%= render 'morphosource/batch_select/add_button', item: item %>
+    <% end %>
+  </td>
+  
+  <td>
+    <% if document.present? %>
+      <%= link_to [main_app, document], class: 'media-left', 'aria-hidden' => true do %>
+        <%= render_thumbnail_tag document, { class: 'hidden-xs file_listing_thumbnail' }, { suppress_link: true } %>
+        <div><%= document.id %></div>
+      <% end %>
+      <div><%= document&.human_readable_media_type %></div>
+    <% else %>
+      <%= item.work_id %>
+      <div>Media not found, may have been deleted</div>
+    <% end %>
+  </td>
+
+  <td><%= document&.part&.first %></td>
+  <td class="break-all">
+    <div><%= document["physical_object_title_ssim"]&.first %></div>
+    <div><i><%= document["taxonomy_ssim"]&.first %></i></div>
+  </td>
+
+  <td><%= link_to item.user.name, Hyrax::Engine.routes.url_helpers.user_path(item.user) %></td>
+  <td class="intended-use"><%= item.use %></td>
+  <td><%= item.download_request_terms_agreement ? "Yes" : "No" %></td>
+  <td class="date"><%= date(item,'requested') %></td>
+
+  <td><%= link_to decision_user&.name, Hyrax::Engine.routes.url_helpers.user_path(decision_user) %></td>
+  <td><%= item_status_label(item) %></td>
+  <td><%= item_status_date(item) %></td>
+  
+  <td class="date"><%= date(item,'expired') %></td>
+  <td class="date"><%= date(item,'downloaded') %></td>
+
+  <td>
+    <% if editable %>
+      <% if user_is_reviewer %>
+        <div>
+          <button class="btn btn-primary btn-sm mb-1" title="Edit request expiration date" data-toggle="modal" data-target="#pageModal" data-item-id=<%= item.id %>>Edit Exp.</button>
+
+          <div class="btn-group">
+            <button class="btn btn-primary btn-sm dropdown-toggle" title="Select all requests on page matching condition" data-toggle="dropdown" type="button" id="dropdownMenu_item_<%= item.id %>" aria-haspopup="true" aria-expanded="false" aria-controls="dropdown_ul_item<%= item.id %>" style="margin-left: 0;">
+              <span class="sr-only"><%= t("hyrax.dashboard.my.sr.press_to") %> </span>
+              <%= t("morphosource.table.select_all") %> <span class="caret" aria-hidden="true"></span>
+            </button>
+
+            <ul role="menu" id="dropdown_ul_item<%= item.id %>" class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenu_item_<%= item.id %>">
+              <li role="menuitem" tabindex="-1">
+                <a class="select-all-reqs-work" href="#" title="Select all requests on page for this media">Same media</a>
+              </li>
+              <li role="menuitem" tabindex="-1">
+                <a class="select-all-reqs-object" href="#" title="Select all requests on page for this physical object">Same physical object</a>
+              </li>
+              <li role="menuitem" tabindex="-1">
+                <a class="select-all-reqs-user" href="#" title="Select all requests on page for this requesting user">Same requesting user</a>
+              </li>
+              <li role="menuitem" tabindex="-1">
+                <a class="select-all-reqs-use" href="#" title="Select all requests on page for this user and intended use">Same intended use</a>
+              </li>
+            </ul>  
+          </div>
+        </div>
+      <% else %>
+        Can't edit expiration date, not active download reviewer
+      <% end %>
+    <% end %>
+  </td>
+</tr>

@@ -11,10 +11,15 @@ RSpec.describe User, type: :model do
   let(:works)             { [restricted_work, restricted_work2, open_work] }
 
   before do
+    Timecop.freeze(Time.local(1999, 9, 9, 9))
     works.each do |work|
       allow(SolrDocument).to receive(:find).and_call_original
       allow(SolrDocument).to receive(:find).with(work.id).and_return(SolrDocument.find(work.id))
     end
+  end
+
+  after do
+    Timecop.return
   end
 
   describe '#has_download_access_or_approval?' do

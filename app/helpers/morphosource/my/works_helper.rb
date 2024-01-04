@@ -49,6 +49,8 @@ module Morphosource
             main_app.media_list_specimens_path(@collection.id)
           elsif @collection.sequential_section_list?
             main_app.sequential_section_list_specimens_path(@collection.id)
+          elsif @collection.organization_collection?
+            main_app.organization_specimens_path(@collection.id)
           end
         when "morphosource/collections/cultural_heritage_objects"
           if @collection.project?
@@ -59,6 +61,8 @@ module Morphosource
             main_app.media_list_chos_path(@collection.id)
           elsif @collection.sequential_section_list?
             main_app.sequential_section_list_chos_path(@collection.id)
+          elsif @collection.organization_collection?
+            main_app.organization_chos_path(@collection.id)
           end
         else
           main_app.my_media_index_path

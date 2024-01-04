@@ -1,5 +1,13 @@
 RSpec.shared_context 'cart items', :shared_context => :metadata do
 
+  before do
+    Timecop.freeze(Time.local(1999, 9, 9, 9))
+  end
+
+  after do
+    Timecop.return
+  end
+
   let(:current_user)  { User.create(email: "example@email.com", password: "password") }
 
   let(:depositor)     { User.create(email: 'another@email.com', password: "password") }

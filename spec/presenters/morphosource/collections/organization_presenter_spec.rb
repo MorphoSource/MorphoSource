@@ -14,4 +14,28 @@ RSpec.describe Morphosource::Collections::OrganizationPresenter do
   describe 'collection_type_title' do
     it { expect(subject.collection_type_title).to eq("Organization") }
   end
+
+  describe 'object_media_count' do
+    let!(:media_doc) { FactoryBot.create(:public_media_document) }
+
+    before do
+      ActiveFedora::SolrService.add( { 'id' => media_doc['id'],
+                                        'media_organization_id_ssim': { 'set'  => [organization.id] }
+                                        }, softCommit: true )
+    end
+
+    it { expect(subject.object_media_count).to eq(1) }
+  end
+
+  describe 'device_media_count' do
+    let!(:media_doc) { FactoryBot.create(:public_media_document) }
+
+    before do
+      ActiveFedora::SolrService.add( { 'id' => media_doc['id'],
+                                        'media_device_facility_organization_id_ssim': { 'set'  => [organization.id] }
+                                        }, softCommit: true )
+    end
+
+    it { expect(subject.device_media_count).to eq(1) }
+  end
 end

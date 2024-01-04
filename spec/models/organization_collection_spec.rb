@@ -54,6 +54,10 @@ RSpec.describe OrganizationCollection, type: :model do
     end
   end
 
+  describe 'search_builder_class' do
+    it { expect(subject.search_builder_class).to eq(Morphosource::Collections::MediaSearchBuilder) }
+  end
+
   describe '#create_collection_groups' do
     let(:user)  { FactoryBot.create(:contributor) }
     let!(:organization) { FactoryBot.create(:organization_collection, depositor: user.ms_id) }

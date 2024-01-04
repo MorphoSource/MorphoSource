@@ -111,6 +111,7 @@ group :test do
   gem 'axe-matchers', '~> 2.3.0'
   gem 'rspec-json_expectations'
   gem 'vcr'
+  gem 'timecop'
 end
 
 gem "ezid-client", "~> 1.8"

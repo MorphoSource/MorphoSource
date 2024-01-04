@@ -6,9 +6,14 @@ include ActionDispatch::TestProcess
 RSpec.describe Morphosource::My::RequestManagersController, :type => :controller  do
 
   include_context 'cart items'
-
+ 
   before do
+    Timecop.freeze(Time.local(1999, 9, 9, 9))
     allow(subject).to receive(:email_sender) { User.first }
+  end
+
+  after do
+    Timecop.return
   end
 
   describe "GET #index" do
@@ -84,7 +89,7 @@ RSpec.describe Morphosource::My::RequestManagersController, :type => :controller
         cartItem1.reload
       end
       it "marks the item's date approved to today" do
-        expect(cartItem1.date_approved.to_date).to eq(Date.today)
+        expect(cartItem1.date_approved.to_date).to eq(Time.current.to_date)
       end
       it "marks the item's date expired to one month from now" do
         expect(cartItem1.date_expired).to eq(expiration_date)
@@ -105,8 +110,8 @@ RSpec.describe Morphosource::My::RequestManagersController, :type => :controller
         [cartItem1,cartItem5].each(&:reload)
       end
       it "marks the items' date approved to today" do
-        expect(cartItem1.date_approved.to_date).to eq(Date.today)
-        expect(cartItem5.date_approved.to_date).to eq(Date.today)
+        expect(cartItem1.date_approved.to_date).to eq(Time.current.to_date)
+        expect(cartItem5.date_approved.to_date).to eq(Time.current.to_date)
       end
       it 'marks the items action_by with the approver ms_id' do
         expect(cartItem1.action_by).to eq(current_user.ms_id)
@@ -143,7 +148,7 @@ RSpec.describe Morphosource::My::RequestManagersController, :type => :controller
       expect(cartItem5.date_requested).to be(nil)
     end
     it 'marks the date cleared as today' do
-      expect(cartItem5.date_cleared.to_date).to eq(Date.today)
+      expect(cartItem5.date_cleared.to_date).to eq(Time.current.to_date)
     end
     it 'records action_by' do
       expect(cartItem5.action_by).to eq(current_user.ms_id)
@@ -173,7 +178,7 @@ RSpec.describe Morphosource::My::RequestManagersController, :type => :controller
         cartItem5.reload
       end
       it "marks the item's date denied to today" do
-        expect(cartItem5.date_denied.to_date).to eq(Date.today)
+        expect(cartItem5.date_denied.to_date).to eq(Time.current.to_date)
       end
       it 'records action_by' do
         expect(cartItem5.action_by).to eq(current_user.ms_id)

@@ -6,11 +6,15 @@
 
 <% if current_user.contributor? %>
   <%= menu.nav_link(main_app.request_manager_path) do %>
-    <span class="fa fa-tasks" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.admin.sidebar.requests_for_my_media') %></span>
+    <span class="fa fa-tasks" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.admin.sidebar.new_requests_for_my_media') %></span>
+  <% end %>
+
+  <%= menu.nav_link(main_app.previous_requests_path) do %>
+    <span class="fa fas fa-stopwatch" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.admin.sidebar.previous_requests') %></span>
   <% end %>
 
   <%= menu.nav_link(hyrax.transfers_path) do %>
-    <span class="fa fas fa-arrows-alt-h" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.transfers') %></span>
+    <span class="fa fas fa-arrows-alt-h" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.ownership_transfers') %></span>
   <% end %>
 <% end %>
 

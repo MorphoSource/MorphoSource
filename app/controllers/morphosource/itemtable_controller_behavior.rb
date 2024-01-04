@@ -1,6 +1,7 @@
 # Methods to quickly bootstrap controllers that use JS datatable to list Rails DB objects
 module Morphosource
   module ItemtableControllerBehavior
+    # For custom param names, method returns real DB ordering clause and @sort_param is custom name
     def sort_param
       if params[:sort].present?
         sort_attribute, order = params[:sort].split(' ')
@@ -8,7 +9,14 @@ module Morphosource
           if !order.present? || !['asc', 'desc'].include?(order)
             order = 'desc'
           end
-          @sort_param = "#{sort_attribute} #{order.upcase}"
+          if custom_sort_params.key?(sort_attribute)
+            # special case for custom param names
+            @sort_param = "#{sort_attribute} #{order.upcase}"
+            return "#{custom_sort_params[sort_attribute]} #{order.upcase}"
+          else
+            @sort_param = "#{sort_attribute} #{order.upcase}"
+          end
+          
         else
           @sort_param = default_sort_param
         end
@@ -20,6 +28,11 @@ module Morphosource
     # Override this in controller to provide additional valid attributes
     def valid_sort_attributes
       ['id']
+    end
+
+    # Override this in controller to provide custom sort param names
+    def custom_sort_params
+      {}
     end
 
     # Override this in controller to provide different default sort

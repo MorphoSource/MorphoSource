@@ -2,86 +2,137 @@ require 'rails_helper'
 require 'spec_helper'
 
 RSpec.describe Morphosource::Collections::OrganizationCollectionsController, type: :controller do
-  let(:depositor)     { FactoryBot.create(:contributor) }
-  let!(:organization) { FactoryBot.create(:organization_collection, visibility: 'open', depositor: depositor.ms_id) }
 
-  describe 'temporary admin-only restriction' do
-    let(:params)  { { id: organization.id } }
-
-    before do
-      sign_in user
+  describe 'LinkedTeamsControllerBehavior' do
+    it 'is included' do
+      expect(described_class.ancestors).to include(Morphosource::Collections::LinkedTeamsControllerBehavior)
     end
+  end
 
-    context 'user is an admin' do
-      let(:user) { FactoryBot.create(:admin) }
-
-      it 'responds with a 200' do
-        get :show, params: params
-        expect(response.status).to eq(200)
-        get :about, params: params
-        expect(response.status).to eq(200)
-        get :media_export_with_intersections_facet, params: params, format: :csv
-        expect(response.status).to eq(200)
-        get :media_download_counts_with_intersections_facet, params: params, format: :csv
-        expect(response.status).to eq(200)
-      end
-    end
-
-    context 'user is not an admin' do
-      let(:user)  { FactoryBot.create(:registered_user) }
-
-      it 'redirects to root' do
-        get :show, params: params
-        expect(response.status).to eq(302)
-        get :about, params: params
-        expect(response.status).to eq(302)
-        get :media_export_with_intersections_facet, params: params
-        expect(response.status).to eq(302)
-        get :media_download_counts_with_intersections_facet, params: params
-        expect(response.status).to eq(302)
-      end
+  describe 'OrganizationCollectionsControllerBehavior' do
+    it 'is included' do
+      expect(described_class.ancestors).to include(Morphosource::Collections::OrganizationCollectionsControllerBehavior)
     end
   end
 
   describe 'collection access' do
-    let(:params)  { { id: organization.id } }
+    let(:depositor)     { User.create(email: 'depositor@email.com', password: 'password') }
+    let!(:organization) { FactoryBot.create(:organization_collection, visibility: 'open', depositor: depositor.ms_id) }
 
     before do
       sign_in user
-      allow(controller).to receive(:authorize_admin).and_return(true)
-      Hyrax::PermissionTemplate.find_or_create_by!(source_id: organization.id)
+      organization.create_collection_groups
+      Morphosource::Collections::PermissionsCreateService.create_default(collection: organization)
     end
 
-    context 'user is an admin' do
-      let(:user) { FactoryBot.create(:admin) }
+    # TODO: Remove admin-only restriction tests when organization collections go live on production
+    describe 'temporary admin-only restriction' do
+      let(:params)  { { id: organization.id } }
 
-      it 'responds with a 200' do
-        get :show, params: params
-        expect(response.status).to eq(200)
-        get :about, params: params
-        expect(response.status).to eq(200)
-        get :media_export_with_intersections_facet, params: params, format: :csv
-        expect(response.status).to eq(200)
-        get :media_download_counts_with_intersections_facet, params: params, format: :csv
-        expect(response.status).to eq(200)
+      context 'user is an admin' do
+        let(:user) { FactoryBot.create(:admin) }
+
+        it 'responds with a 200' do
+          get :show, params: params
+          expect(response.status).to eq(200)
+          get :about, params: params
+          expect(response.status).to eq(200)
+          get :media_export_with_intersections_facet, params: params, format: :csv
+          expect(response.status).to eq(200)
+          get :media_download_counts_with_intersections_facet, params: params, format: :csv
+          expect(response.status).to eq(200)
+          get :media_downloads, params: params, format: :csv
+          expect(response.status).to eq(200)
+          get :media_requests, params: params, format: :csv
+          expect(response.status).to eq(200)
+        end
+      end
+
+      context 'user is not an admin' do
+        let(:user)  { FactoryBot.create(:registered_user) }
+
+        it 'redirects to root' do
+          get :show, params: params
+          expect(response.status).to eq(302)
+          get :about, params: params
+          expect(response.status).to eq(302)
+          get :media_export_with_intersections_facet, params: params
+          expect(response.status).to eq(302)
+          get :media_download_counts_with_intersections_facet, params: params
+          expect(response.status).to eq(302)
+          get :media_downloads, params: params, format: :csv
+          expect(response.status).to eq(302)
+          get :media_requests, params: params, format: :csv
+          expect(response.status).to eq(302)
+        end
       end
     end
 
-    context 'user is not an admin' do
-      let(:user)  { FactoryBot.create(:registered_user) }
+    describe 'collection access' do
+      let(:params)  { { id: organization.id } }
 
-      it 'responds with a 200' do
-        get :show, params: params
-        expect(response.status).to eq(200)
-        get :about, params: params
-        expect(response.status).to eq(200)
+      before do
+        allow(controller).to receive(:authorize_admin).and_return(true)
       end
 
-      it 'responds with a 302' do
-        get :media_export_with_intersections_facet, params: params
-        expect(response.status).to eq(302)
-        get :media_download_counts_with_intersections_facet, params: params
-        expect(response.status).to eq(302)
+      context 'user is an admin' do
+        let(:user) { FactoryBot.create(:admin) }
+
+        it 'responds with a 200' do
+          get :show, params: params
+          expect(response.status).to eq(200)
+          get :about, params: params
+          expect(response.status).to eq(200)
+          get :media_export_with_intersections_facet, params: params, format: :csv
+          expect(response.status).to eq(200)
+          get :media_download_counts_with_intersections_facet, params: params, format: :csv
+          expect(response.status).to eq(200)
+          get :media_downloads, params: params, format: :csv
+          expect(response.status).to eq(200)
+          get :media_requests, params: params, format: :csv
+          expect(response.status).to eq(200)
+        end
+      end
+
+      context 'user is not an admin' do
+        let(:user)  { FactoryBot.create(:registered_user) }
+
+        it 'responds with a 200' do
+          get :show, params: params
+          expect(response.status).to eq(200)
+          get :about, params: params
+          expect(response.status).to eq(200)
+        end
+
+        context 'user is a collection editor' do
+          let(:user)  { depositor }
+
+          it 'responds with a 200' do
+            get :media_export_with_intersections_facet, params: params, format: :csv
+            expect(response.status).to eq(200)
+            get :media_download_counts_with_intersections_facet, params: params, format: :csv
+            expect(response.status).to eq(200)
+            get :media_downloads, params: params, format: :csv
+            expect(response.status).to eq(200)
+            get :media_requests, params: params, format: :csv
+            expect(response.status).to eq(200)
+          end
+        end
+
+        context 'user is not a collection editor' do
+          let(:user)  { FactoryBot.create(:contributor) }
+
+          it 'responds with a 403' do
+            get :media_export_with_intersections_facet, params: params
+            expect(response.status).to eq(403)
+            get :media_download_counts_with_intersections_facet, params: params
+            expect(response.status).to eq(403)
+            get :media_downloads, params: params, format: :csv
+            expect(response.status).to eq(403)
+            get :media_requests, params: params, format: :csv
+            expect(response.status).to eq(403)
+          end
+        end
       end
     end
   end
@@ -90,30 +141,130 @@ RSpec.describe Morphosource::Collections::OrganizationCollectionsController, typ
     it {expect(subject.presenter_class).to eq(Morphosource::Collections::OrganizationPresenter) }
   end
 
+  describe 'collection_type' do
+    it {expect(subject.collection_type).to eq(Hyrax::CollectionType.find_by(Morphosource::CollectionTypes::Organizations::SETTINGS)) }
+  end
+
+  describe 'search_builder_class' do
+    it {expect(subject.search_builder_class).to eq(Morphosource::Collections::OrganizationCollections::OrganizationMediaSearchBuilder) }
+  end
+
+  describe 'configure_facets' do
+    let(:facet_fields)  { described_class.blacklight_config.facet_fields}
+
+    before do
+      described_class.configure_facets
+    end
+
+    describe 'publication_status' do
+      subject { facet_fields["publication_status"]}
+      it 'has a publication_status facet' do
+        expect(subject.label).to eq("Publication Status")
+      end
+    end
+
+    describe 'media_type' do
+      subject { facet_fields["media_type"]}
+      it 'has a media_type facet' do
+        expect(subject.label).to eq("Media Type")
+      end
+    end
+
+    describe 'organization' do
+      subject { facet_fields["organization"]}
+      it 'has a organization facet' do
+        expect(subject.label).to eq("Organization")
+      end
+    end
+
+    describe 'object' do
+      subject { facet_fields["object"]}
+      it 'has a object facet' do
+        expect(subject.label).to eq("Object")
+      end
+    end
+
+    describe 'taxonomy_name' do
+      subject { facet_fields["taxonomy_name"]}
+      it 'has a taxonomy_name facet' do
+        expect(subject.label).to eq("Taxonomy (Name)")
+      end
+    end
+
+    describe 'device' do
+      subject { facet_fields["device"]}
+      it 'has a device facet' do
+        expect(subject.label).to eq("Device")
+      end
+    end
+
+    describe 'device_organization' do
+      subject { facet_fields["device_organization"]}
+      it 'has a device_organization facet' do
+        expect(subject.label).to eq("Device Organization")
+      end
+    end
+
+    describe 'team' do
+      subject { facet_fields["team"]}
+      it 'has a team facet' do
+        expect(subject.label).to eq("Team")
+        expect(subject.limit).to eq(10)
+        expect(subject.helper_method).to eq(:collection_title_by_id)
+      end
+    end
+
+    describe 'project' do
+      subject { facet_fields["project"] }
+      it 'has a project facet' do
+        expect(subject.label).to eq("Project")
+        expect(subject.limit).to eq(10)
+        expect(subject.helper_method).to eq(:collection_title_by_id)
+      end
+    end
+
+    describe 'owner' do
+      subject { facet_fields["owner"] }
+      it 'has a owner facet' do
+        expect(subject.label).to eq("Data Manager")
+      end
+    end
+
+    describe 'depositor' do
+      subject { facet_fields["depositor"] }
+      it 'has a depositor facet' do
+        expect(subject.label).to eq("Data Uploader")
+      end
+    end
+  end
+
   describe 'search_action_url' do
-    let(:user) { FactoryBot.create(:admin) }
+    let(:organization)  { FactoryBot.create(:organization_collection, visibility: 'open', depositor: user.ms_id) }
+    let(:user)          { FactoryBot.create(:admin) }
 
     before do
       subject.instance_variable_set(:@curation_concern, organization)
     end
-    it 'is media_list_path' do
+
+    it 'is organization_path' do
       expect(subject.send(:search_action_url)).to eq("/organizations/#{organization.id}?locale=en")
     end
   end
 
   describe 'search_facet_path' do
-    let(:user) { FactoryBot.create(:admin) }
+    let(:organization)  { FactoryBot.create(:organization_collection, visibility: 'open', depositor: user.ms_id) }
+    let(:user)          { FactoryBot.create(:admin) }
+    let(:facet_id)      { 'depositor_ssim' }
 
-    let(:facet_id)  { 'depositor_ssim' }
     before do
       subject.instance_variable_set(:@collection, organization)
     end
-    it 'is media_list_path' do
+    it 'is organization_path' do
       expect(subject.send(:search_facet_path, {id: facet_id})).to eq("/organizations/#{organization.id}/facet/#{facet_id}?locale=en")
     end
   end
 
-  describe 'collection_type' do
-    it {expect(subject.collection_type).to eq(Hyrax::CollectionType.find_by(Morphosource::CollectionTypes::Organizations::SETTINGS)) }
+  describe 'tab' do
+    it {expect(subject.send(:tab)).to eq(:media) }
   end
 end

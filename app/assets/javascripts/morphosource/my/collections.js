@@ -28,7 +28,7 @@
       });
     }
 
-    if ($('body.dashboard.collections-list').length) { // check if the page is dashboard collections
+    if ($('body.dashboard.ms-collections-list').length) { // check if the page is dashboard collections
 
       var collectionsTable = createCollectionsTable('#datatable-collections-list');
 

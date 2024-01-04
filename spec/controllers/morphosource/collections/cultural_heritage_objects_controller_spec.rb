@@ -3,8 +3,14 @@ require 'spec_helper'
 
 RSpec.describe Morphosource::Collections::CulturalHeritageObjectsController, type: :controller do
 
+  describe 'LinkedTeamsControllerBehavior' do
+    it 'is included' do
+      expect(described_class.ancestors).to include(Morphosource::Collections::LinkedTeamsControllerBehavior)
+    end
+  end
+
   describe "search_builder_class" do
-    it{ expect(subject.search_builder_class).to eq(        Morphosource::Collections::ChosSearchBuilder) }
+    it{ expect(subject.search_builder_class).to eq(Morphosource::Collections::ChosSearchBuilder) }
   end
 
   describe ".configure_facets" do
@@ -52,7 +58,7 @@ RSpec.describe Morphosource::Collections::CulturalHeritageObjectsController, typ
     before do
       allow(subject).to receive(:params).and_return(params)
       subject.instance_variable_set(:@collection, collection)
-      [:project?, :team?, :media_list?, :sequential_section_list?].each do |type|
+      [:project?, :team?, :media_list?, :sequential_section_list?, :organization_collection?].each do |type|
         allow(collection).to receive(type).and_return(false)
       end
     end
@@ -83,6 +89,13 @@ RSpec.describe Morphosource::Collections::CulturalHeritageObjectsController, typ
         allow(collection).to receive(:sequential_section_list?).and_return(true)
       end
       it { expect(subject.search_action_for_dashboard).to eq(main_app.sequential_section_list_chos_path(id: collection.id, locale: 'en')) }
+    end
+
+    context 'collection is an organization' do
+      before do
+        allow(collection).to receive(:organization_collection?).and_return(true)
+      end
+      it { expect(subject.search_action_for_dashboard).to eq(main_app.organization_chos_path(id: collection.id, locale: 'en')) }
     end
   end
 end

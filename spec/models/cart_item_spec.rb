@@ -13,11 +13,19 @@ RSpec.describe CartItem, type: :model do
   let!(:cartItem1)    { CartItem.create(user: user, work_id: work1.id) }
   let!(:cartItem2)    { CartItem.create(user: user, work_id: work2.id) }
 
+  before do
+    Timecop.freeze(Time.local(1999, 9, 9, 9))
+  end
+
+  after do
+    Timecop.return
+  end
+
   describe '#active_request, #inactive_request' do
     context 'item is requested' do
       before do
         cartItem1.date_requested = Date.today
-        cartItem1.save
+       cartItem1.save
       end
       it { expect(cartItem1.active_request?).to be(true) }
       it { expect(cartItem1.inactive_request?).to be(false) }

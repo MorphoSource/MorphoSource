@@ -8,7 +8,12 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
   include_context 'cart items'
 
   before do
+    Timecop.freeze(Time.local(1999, 9, 9, 9))
     allow(controller).to receive(:is_requests_page?).and_return(false)
+  end
+
+  after do
+    Timecop.return
   end
 
   describe "GET #index" do

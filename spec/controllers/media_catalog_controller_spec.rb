@@ -60,6 +60,14 @@ RSpec.describe MediaCatalogController, :type => :controller do
         end
       end
 
+      describe 'device' do
+        subject { facet_fields["device"] }
+        it 'has the correct attributes' do
+          expect(subject.label).to eq("Imaging Device")
+          expect(subject.limit).to eq(10)
+        end
+      end
+
       describe 'publication status' do
         subject { facet_fields["publication_status"]}
         it 'has the correct attributes' do
@@ -276,7 +284,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
   describe '#show JSON API endpoint' do
     context 'query private media' do
       let (:media) { create(:private_media_document) }
-      
+
       context 'without API key credentials' do
         it 'returns 404 not found' do
           get :show, params: { id: media.id }, format: :json
@@ -303,7 +311,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
           expect(response.content_type).to eq('application/json')
           expect(response.code).to eq("200")
         expect(JSON.parse(response.body).dig("response", "media")).to be_present
-        end 
+        end
       end
     end
 
@@ -323,7 +331,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
     context 'query private media' do
       let! (:media) { create(:private_media_document) }
       let! (:file_set) { create(:file_set_document) }
-      
+
       context 'without API key credentials' do
         it 'returns 404 not found' do
           get :show_file_metadata, params: { id: media.id }, format: :json
@@ -350,7 +358,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
           expect(response.content_type).to eq('application/json')
           expect(response.code).to eq("200")
           expect(JSON.parse(response.body).dig("response", "file_set")).to be_present
-        end 
+        end
       end
     end
 
@@ -358,7 +366,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
       let! (:media) { create(:public_media_document) }
       let! (:file_set) { create(:file_set_document) }
 
-      it 'returns 200 found' do  
+      it 'returns 200 found' do
         get :show_file_metadata, params: { id: media.id }, format: :json
         expect(response.content_type).to eq('application/json')
         expect(response.code).to eq("200")

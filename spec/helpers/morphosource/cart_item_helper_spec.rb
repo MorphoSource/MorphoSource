@@ -3,6 +3,14 @@ require 'rails_helper'
 RSpec.describe Morphosource::CartItemHelper, type: :helper do
   include Rails.application.routes.url_helpers
 
+  before do
+    Timecop.freeze(Time.local(1999, 9, 9, 9))
+  end
+
+  after do
+    Timecop.return
+  end
+
   describe '#item_status_label and #item_action_button' do
     let(:depositor) { User.create(email: "test@test.com", password: "password") }
     let(:user)  { User.create(email: 'user@test.com', password: 'password') }
@@ -211,7 +219,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
           end
 
           it 'returns the download requested button' do
-            expect(helper.choose_download_button).to eq("<a class=\"btn btn-default\" role=\"button\" disabled=\"disabled\" href=\"javascript:void(0)\">Download Requested</a>")
+            expect(helper.choose_download_button).to eq("<a class=\"btn btn-default\" role=\"button\" disabled=\"disabled\" href=\"javascript:void(0)\">DL Request Sent</a>")
           end
         end
 

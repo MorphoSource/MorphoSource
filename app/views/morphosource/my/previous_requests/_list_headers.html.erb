@@ -1,0 +1,15 @@
+<th></th>
+<th><%= sortable_itemtable_header("Media", 'work_id', 'desc') %></th>
+<th style="width: 10%;">Part</th>
+<th style="width: 10%;">Object</th>
+<th style="width: 10%;"><%= sortable_itemtable_header(t("morphosource.dashboard.my.previous_requests.table.requesting_user"), 'users.display_name', 'asc') %></th>
+<th><%= sortable_itemtable_header("Intended Use", 'use', 'asc') %></th>
+<th style="width: 5%;"><%= t("morphosource.table.agreed_to_terms") %></th>
+<th style="width: 10%;"><%= sortable_itemtable_header(t("morphosource.table.date_requested"), 'date_requested', 'desc') %></th>
+<th style="width: 5%;"><%= sortable_itemtable_header(t("morphosource.dashboard.my.previous_requests.table.download_reviewer"), 'decision_users.display_name', 'asc') %></th>
+<th><%= t("morphosource.dashboard.my.previous_requests.table.status") %></th>
+<th style="width: 10%;"><%= sortable_itemtable_header(t("morphosource.dashboard.my.previous_requests.table.date_decided"), 'date_decided', 'desc') %></th>
+<th style="width: 10%;"><%= sortable_itemtable_header(t("morphosource.admin.itemtable.date_expired"), 'date_expired', 'desc') %></th>
+<th style="width: 10%;"><%= sortable_itemtable_header(t("morphosource.table.date_downloaded"), 'date_downloaded', 'desc') %></th>
+<th style="width: 5%;"><%= t("morphosource.table.action") %></th>
+

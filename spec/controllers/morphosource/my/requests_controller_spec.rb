@@ -8,8 +8,14 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
   include_context 'cart items'
 
   before do
+    Timecop.freeze(Time.local(1999, 9, 9, 9))
     allow(subject).to receive(:email_sender) { User.first }
   end
+
+  after do
+    Timecop.return
+  end
+
 
   describe "GET #index" do
 

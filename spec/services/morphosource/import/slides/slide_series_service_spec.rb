@@ -150,6 +150,47 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
     end
   end
 
+  describe 'search_for_specimen' do
+    let(:occurrence_id)       { 'MCZ:SC:4009' }
+    let(:doc_id_1)            { 'MCZ' }
+    let(:doc_id_2)            { 'SC' }
+    let(:doc_id_3)            { '4009' }
+    let(:doc_ids)             { [doc_id_1, doc_id_2, doc_id_3] }
+
+    subject { described_class.new(occurrence_key)}
+
+    before do
+      occurrence_json['occurrenceID'] = occurrence_id
+      allow_any_instance_of(described_class).to receive(:occurrence_json).and_return(occurrence_json)
+      # create a record for each doc_id
+      doc_ids.each_with_index do |id, i|
+        ActiveFedora::SolrService.add( { 'id': i,
+                                         'has_model_ssim': { 'set' => 'BiologicalSpecimen' },
+                                         'occurrence_id_ssim': { 'set' => [id] }
+                                       }, softCommit: true)
+      end
+    end
+
+    context 'the record for the specimen exists' do
+      before do
+        ActiveFedora::SolrService.add( { 'id': 'occurrence_id',
+                                         'has_model_ssim': { 'set' => 'BiologicalSpecimen' },
+                                         'occurrence_id_ssim': { 'set' => [occurrence_id] }
+                                       }, softCommit: true)
+      end
+      it 'returns the solr hit' do
+        specimen = subject.send(:search_for_specimen)
+        expect(specimen['occurrence_id_ssim'].first).to eq(occurrence_id)
+      end
+    end
+
+    context 'record for the specimen does not exist' do
+      it 'returns nil' do
+        expect(subject.send(:search_for_specimen)).to eq(nil)
+      end
+    end
+  end
+
   describe 'taxonomy' do
     subject { described_class.new(occurrence_key) }
     before do

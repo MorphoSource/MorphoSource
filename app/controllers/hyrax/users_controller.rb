@@ -1,7 +1,7 @@
 module Hyrax
   class UsersController < ApplicationController
     include Blacklight::SearchContext
-    prepend_before_action :find_user, only: [:show, :make_user_active, :make_user_inactive]
+    prepend_before_action :find_user, only: [:show, :make_user_active, :make_user_inactive, :become]
     helper Hyrax::TrophyHelper
 
     # do not restrict json (need it for searching for users during submission/record editing)
@@ -20,6 +20,18 @@ module Hyrax
       user = ::User.from_url_component(params[:id])
       return redirect_to root_path, alert: "User '#{params[:id]}' does not exist" if user.nil?
       @presenter = Morphosource::UserProfilePresenter.new(user, current_ability)
+    end
+
+    # For admins, allow sign in as any user
+    # https://github.com/heartcombo/devise/wiki/How-To:-Sign-in-as-another-user-if-you-are-an-admin
+    def become
+      if current_user&.admin?
+        sign_in(:user, @user)
+        session[:become_user] = true
+        redirect_to root_url, notice: "Signed in as user #{@user.name}."
+      else
+        render :file => "#{Rails.root}/public/404.html",  layout: false, status: :not_found
+      end
     end
 
     def make_user_active

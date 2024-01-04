@@ -58,9 +58,12 @@ Rails.application.routes.draw do
 
     ### USERS ###
 
-    # Routes for making user account active/inactive
-    post 'users/:id/make_active' => 'users#make_user_active', as: 'make_active'
-    post 'users/:id/make_inactive' => 'users#make_user_inactive', as: 'make_inactive'
+    # Make user account active/inactive
+    post 'users/:id/make_active', to: 'users#make_user_active', as: 'make_active'
+    post 'users/:id/make_inactive', to: 'users#make_user_inactive', as: 'make_inactive'
+
+    # Admin sign in as user
+    get 'users/:id/become', to: 'users#become', as: 'become_user'
 
     ### AJAX ROUTES FOR MEDIA OWNERS SUBMITTING UPDATES TO MEDIA-ASSOCIATED IE AND PE WORKS ###
 

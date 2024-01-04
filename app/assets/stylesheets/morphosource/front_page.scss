@@ -40,10 +40,18 @@ nav#masthead .btn-default {
 ul#user_utility_links {
   margin-top: 5px;
   margin-right: 0;
-}
 
-ul#user_utility_links li a {
-  color: #fff;
+  li a {
+    color: #fff;
+  }
+
+  li.dropdown-header.admin-message {
+    color: #f68628;
+  }
+
+  span.fa-user-cog, span.fa-user-cog + span.caret {
+    color: #f68628;
+  }
 }
 
 /* Navbar styles */

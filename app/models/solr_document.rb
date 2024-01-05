@@ -26,10 +26,20 @@ class SolrDocument
   include Morphosource::Solr::SequentialSectionList
   include Morphosource::Solr::Taxonomy
 
+  # Query SolrDocument instances with multiple query statements
+  # Maximum number of instances/rows is 1000 by default
+  #
+  # @param query [Hash, String] Query statement(s), can be a single string or multiple hash queries (combined with AND)
+  # @param opts  [Hash] Optional Solr configuration parameters, such as :rows or :page
+  # 
+  # @return [Array<SolrDocument>] Array of queried SolrDocument instances
+  def self.where(query = {}, opts: {})
+    q = query.instance_of?(String) ? query : query.map { |k, v| "#{k}:#{v}" }.join(" AND ")
 
-  def self.where(params = {})
-    doc_params = { q: params.map { |k, v| "#{k}:#{v}" }.join(" AND ") }
-    repository.search(doc_params).documents
+    default_params = { rows: 1000 }
+    params = default_params.merge(q: q).merge(opts)
+    
+    repository.search(params).documents
   end
 
   # self.unique_key = 'id'

@@ -12,14 +12,14 @@ module MediaFinderHelper
   end
   
   #
-  # Works upstream from solr_document, default limit of 15 works upstream in hierarchy.
+  # Works upstream from solr_document, default limit of 50 works upstream in hierarchy.
   #
   # @param [SolrDocument] solr_document Media or other SolrDocument to travel upstream from
   # @param [Integer] limit Limit of works upstream to trawl and return
   #
   # @return [Array<SolrDocument>] Array of SolrDocuments of parent upstream works in parent-child order
   #
-  def parent_works(solr_document, limit = 15)
+  def parent_works(solr_document, limit = 50)
     return [] unless solr_document.present?
 
     parents = []

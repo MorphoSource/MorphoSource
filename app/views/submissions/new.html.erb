@@ -3,7 +3,8 @@
 <script type="text/javascript">
   var depositor = <%= current_user&.user_key.to_json.html_safe %>;
   var submissionYaml = <%= json_escape(YAML.load_file(Rails.root.join('config','submission.yml')).to_json.html_safe) %>;
-  var orgData = <%= @organizations_select2.to_json.html_safe %>;
+  var deviceOrgsData = <%= @device_organizations_select2.to_json.html_safe %>;
+  var objectOrgsData = <%= @object_organizations_select2.to_json.html_safe %>;
   var nullOrg = <%= @null_organization.to_json.html_safe %>;
   var deviceData = <%= @devices_with_ids.to_json.html_safe %>;
   var findMediaUrl = <%= find_media_autocomplete_url.to_json.html_safe %>;

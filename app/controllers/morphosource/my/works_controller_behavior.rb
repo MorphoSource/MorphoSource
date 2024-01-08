@@ -12,6 +12,14 @@ module Morphosource
         Hyrax::CollectionsService.new(self)
       end
 
+      def sequential_section_lists_service
+        Hyrax::SequentialSectionListsService.new(self)
+      end
+
+      def media_lists_service
+        Hyrax::MediaListsService.new(self)
+      end
+
       # populates media/object counts at top of page
       def get_media_object_counts
         @media_count_for_edit = media_count_for_edit

@@ -15,6 +15,7 @@ module Hyrax
 
           if contributor?
             can :create_any, ::Collection
+            can [:create, :read], ::SequentialSectionList
           end
 
           # TODO: Consider moving some of these up under contributor?

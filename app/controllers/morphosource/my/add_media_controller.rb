@@ -14,7 +14,6 @@ module Morphosource
 
       def index
         # The user's collections for the "add to collection" form
-byebug
         case @collection.human_readable_type
         when "Sequential Section List"
           @user_collections = sequential_section_lists_service.search_results(:deposit)
@@ -23,7 +22,6 @@ byebug
         else
           @user_collections = collections_service.search_results(:deposit)
         end
-byebug 
         # media/object counts at top of page
         get_media_object_counts
         # managed_works_count

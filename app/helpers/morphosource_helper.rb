@@ -371,8 +371,15 @@ module MorphosourceHelper
 
   def organization_devices(id)
     # get device id, make, and model for all devices associated with organization id
-    devices = Device.where('id' => Organization.where('id' => id).first.member_ids)
-    devices.map { |d| {'id': d.id, 'title': d.title, 'creator': d.creator, 'modality': d.modality, 'description': d.description } }
+    SolrDocument.where('has_model_ssim' => 'Device', 'device_organization_id_ssim' => id).map do |d| 
+      {
+        'id': d.id, 
+        'title': d.title, 
+        'creator': d.creator, 
+        'modality': d.modality, 
+        'description': d.description
+      }
+    end
   end
 
   def render_source_of_record(bso)

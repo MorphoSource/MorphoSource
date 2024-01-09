@@ -1,0 +1,55 @@
+// Used for langing page after user completes the Cultural Heritage survey.
+// https://www.morphosource.org/docs/survey
+
+.survey {
+
+  #front-banner {
+    display: flex;
+    flex-direction: row-reverse;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .survey-viewer-wrapper {
+    width: 300px;
+    padding-bottom: 20px;
+
+    .survey-viewer-caption {
+      text-align: center;
+    }
+  }
+
+  .survey-text-wrapper {
+    max-width: 800px;
+
+    p {
+      font-size: 18px;
+      font-weight: 300;
+    }
+  }
+
+  .survey-buttons-wrapper {
+    display: flex;
+    justify-content: space-evenly;
+    flex-wrap: wrap;
+
+    .survey-button-wrapper {
+      flex-grow: 1;
+      text-align: center;
+    }
+
+    .btn {
+      .survey-icon-row {
+        text-align: left;
+
+        i {
+          font-size: 2.5em;
+        }
+      }
+
+      .survey-text-row {
+        text-align: center;
+      }
+    }
+  }
+}

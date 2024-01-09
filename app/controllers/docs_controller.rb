@@ -21,6 +21,10 @@ class DocsController < ApplicationController
   def terms
   end
 
+  def survey
+    @title = I18n.t("docs.survey.title")
+  end
+
   private
 
     def outdated_flash

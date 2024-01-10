@@ -9,7 +9,7 @@ module Hyrax
           can :view_admin_show_any, ::Collection
         else
           if registered_user?
-            can [:create, :read], ::MediaList
+            can [:manage], ::MediaList
             cannot [:create, :read], ::SequentialSectionList
           end
 

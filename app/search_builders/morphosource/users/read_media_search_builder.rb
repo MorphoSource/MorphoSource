@@ -16,11 +16,16 @@ module Morphosource
           filters = []
           filters += read_groups_params
           filters += download_groups_params
+          filters += read_user_params
         end
 
         def apply_read_grants_filters(solr_parameters)
           solr_parameters[:fq] ||= []
           solr_parameters[:fq] << read_grants_filters.reject(&:blank?).join(' OR ')
+        end
+
+        def read_user_params
+          ["({!terms f=read_access_person_ssim}#{current_ability.current_user.ms_id})"]
         end
 
         def read_groups_params

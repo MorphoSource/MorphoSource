@@ -58,7 +58,7 @@ module BatchSubmissionTools
           field = field_terms_ary.last.to_sym
           row_data[model] = {} if !row_data.key?(model)
           row_data[model][field] = val.map(&:to_s) 
-          # Note: Values will be converted (e.g. from float) to strings, to avoid Invalid datatype error in Solrizer::InvalidIndexDescriptor
+          # Note: Values will be converted (e.g. from float) to strings, to avoid Invalid datatype error in ActiveFedora::Indexing::InvalidIndexDescriptor
         end
         return row_data
       end

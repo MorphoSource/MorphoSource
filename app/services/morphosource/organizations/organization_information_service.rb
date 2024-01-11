@@ -9,7 +9,7 @@ module Morphosource
         :bso_ids, :cho_ids, :n_idigbio, :info
       delegate :repository, to: :scope
 
-      SORTABLE_TITLE_FIELD = Solrizer.solr_name('title', :stored_sortable)
+      SORTABLE_TITLE_FIELD = ActiveFedora.index_field_mapper.solr_name('title', :stored_sortable)
 
       def initialize(scope, org)
         @solr = solr_service.new

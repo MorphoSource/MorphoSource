@@ -276,7 +276,7 @@ class Media < Morphosource::Works::Base
   def related_media_solr
     return [] if !imaging_event.present? || !imaging_event&.id.present?
 
-    qry = "#{Solrizer.solr_name('imaging_event_id', :stored_searchable)}:#{imaging_event.id} AND has_model_ssim:Media"
+    qry = "#{ActiveFedora.index_field_mapper.solr_name('imaging_event_id', :stored_searchable)}:#{imaging_event.id} AND has_model_ssim:Media"
     ::Morphosource::SolrService.new().get_docs(qry, args: { fl: 'id' } )
   end
 

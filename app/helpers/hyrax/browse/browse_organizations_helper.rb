@@ -10,7 +10,7 @@ module Hyrax::Browse::BrowseOrganizationsHelper
 
   def get_organization_count_by_type
     facets = browse_service.organization_facets
-    @org_type_and_count = facets[Solrizer.solr_name('organization_type', :facetable)] 
+    @org_type_and_count = facets[ActiveFedora.index_field_mapper.solr_name('organization_type', :facetable)] 
   end
 
   def total_collections

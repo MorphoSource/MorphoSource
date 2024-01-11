@@ -11,7 +11,7 @@ module Morphosource
         :n_idigbio, :collection_project_map, :collection_team_map, :po_counts_by_org, 
         :organizations, :info, :subcollection_ids
 
-      SORTABLE_TITLE_FIELD = Solrizer.solr_name('title', :stored_sortable)
+      SORTABLE_TITLE_FIELD = ActiveFedora.index_field_mapper.solr_name('title', :stored_sortable)
 
       def self.call(user, collections)
         new(user, collections).call

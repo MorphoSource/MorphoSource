@@ -32,11 +32,11 @@ module Morphosource
       end
 
       def member_ids
-        self[Solrizer.solr_name('member_ids', :symbol)]
+        self[ActiveFedora.index_field_mapper.solr_name('member_ids', :symbol)]
       end
 
       def related_media_ids
-        self[Solrizer.solr_name('related_media_ids', :symbol)]
+        self[ActiveFedora.index_field_mapper.solr_name('related_media_ids', :symbol)]
       end
 
       def provenance_details

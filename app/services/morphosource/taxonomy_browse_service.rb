@@ -174,7 +174,7 @@ module Morphosource
     end
 
     def solrize(name, type)
-      Solrizer.solr_name(name, type)
+      ActiveFedora.index_field_mapper.solr_name(name, type)
     end
 
     # Get specimens with published media for GBIF taxonomy rank

@@ -13,7 +13,7 @@ module Morphosource
 
     def organization_facets
       facet_fields = [
-        Solrizer.solr_name('organization_type', :facetable)
+        ActiveFedora.index_field_mapper.solr_name('organization_type', :facetable)
       ]
       params = {
         fl: 'id',
@@ -115,7 +115,7 @@ module Morphosource
 
     def media_type_and_modality_facets
       facet_fields = [
-        Solrizer.solr_name("media_type", :symbol),
+        ActiveFedora.index_field_mapper.solr_name("media_type", :symbol),
         "modality_ssim"
       ]
       params = {

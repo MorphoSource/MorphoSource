@@ -26,7 +26,7 @@ module Morphosource
       end
 
       def self.all_solr
-        Morphosource::SolrService.new.get_docs("#{Solrizer.solr_name('has_model', :symbol)}:#{name}")
+        Morphosource::SolrService.new.get_docs("#{ActiveFedora.index_field_mapper.solr_name('has_model', :symbol)}:#{name}")
       end
 
       # Determine if work already exists that matches provided conditions.

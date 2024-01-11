@@ -7,7 +7,7 @@ module Morphosource
         :collection_count_for_manager, :collection_count_for_editor, :collection_count_for_depositor,
         :collection_count_for_viewer, :collection_count_for_downloader, :ids_by_membership
 
-      SORTABLE_TITLE_FIELD = Solrizer.solr_name('title', :stored_sortable)
+      SORTABLE_TITLE_FIELD = ActiveFedora.index_field_mapper.solr_name('title', :stored_sortable)
 
       def self.call(user, collection_list_type_id, page = "my")
         new(user, collection_list_type_id, browse).call

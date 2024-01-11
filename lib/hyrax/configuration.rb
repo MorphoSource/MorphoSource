@@ -110,6 +110,14 @@ module Hyrax
       @analytics ||= false
     end
 
+    # Currently supports 'google' or 'matomo'
+    # google is default for backward compatability
+    attr_writer :analytics_provider
+    def analytics_provider
+      @analytics_provider ||=
+        ENV.fetch('HYRAX_ANALYTICS_PROVIDER', 'google')
+    end
+
     attr_writer :google_analytics_id
     def google_analytics_id
       @google_analytics_id ||= nil

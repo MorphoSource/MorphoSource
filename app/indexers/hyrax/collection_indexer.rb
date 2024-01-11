@@ -2,7 +2,7 @@ module Hyrax
   class CollectionIndexer < Hydra::PCDM::CollectionIndexer
     include Hyrax::IndexesThumbnails
 
-    STORED_LONG = Solrizer::Descriptor.new(:long, :stored)
+    STORED_LONG = ActiveFedora::Indexing::Descriptor.new(:long, :stored)
 
     self.thumbnail_path_service = Morphosource::CollectionThumbnailPathService
 

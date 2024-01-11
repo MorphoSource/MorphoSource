@@ -31,9 +31,7 @@ gem 'iiif_manifest', :git => 'https://github.com/MorphoSource/iiif_manifest.git'
 # used for XML validation in Crossref DOI deposit
 gem 'nokogiri'
 
-gem 'hyrax', '2.9.0'
-
-gem 'om'
+gem 'hyrax', '3.6.0'
 
 gem 'hydra-role-management'
 

@@ -62,7 +62,7 @@ Hyrax.config do |config|
   ### Initial users and system users (should be customized for repository instances) ###
 
   # Initial user accounts that will be created when running rake task create_development_users
-
+  
   # Single user email set by ENV["MS_TEST_USR"]
   config.ms_test_usr = Morphosource.ms_test_usr
   # Set by ENV["MS_TEST_PW"]

@@ -23,7 +23,7 @@ class MediaList < Collection
   end
 
   def search_builder_class
-    Morphosource::Users::PublishedMediaSearchBuilder
+    Morphosource::Users::AddToMediaListSearchBuilder
   end
 
   def list?

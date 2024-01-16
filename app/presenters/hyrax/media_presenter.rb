@@ -554,7 +554,7 @@ module Hyrax
     ### METHODS FINDING OTHER WORKS RELATED TO MEDIA UPSTREAM OR DOWNSTREAM IN TREE HIERARCHY ###
     
     #
-    # Find all "parent" works upstream from Media in hierarchy. By default, limit of 15 works above
+    # Find all "parent" works upstream from Media in hierarchy. By default, limit of 50 works above
     # will be found.
     #
     # @return [Array<SolrDocument>] Array of SolrDocuments of parent works
@@ -565,7 +565,7 @@ module Hyrax
 
     #
     # Find all "parent" media upstream from this Media in hierarchy, based on all_parent_works.
-    # Affected by 15 work limit from all_parent_works.
+    # Affected by 50 work limit from all_parent_works.
     #
     # @return [Array<SolrDocument>] Array of SolrDocuments of parent Media works
     #

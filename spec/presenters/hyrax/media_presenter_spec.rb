@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe Hyrax::MediaPresenter do
   # Presenter ability and request
-  let(:ability) { double Ability }
+  let(:ability) { Ability.new(User.new) }
   let(:request) { double(host: 'morphosource.org', base_url: 'https://www.morphosource.org') }
 
   # Solr documents necessary for presenter load
@@ -774,57 +774,36 @@ RSpec.describe Hyrax::MediaPresenter do
   end
 
   describe "related media work methods" do
-
-    let(:media1) { SolrDocument.new({ id: "1", has_model_ssim: ["Media"] }) }
-    let(:media2) { SolrDocument.new({ id: "2", has_model_ssim: ["Media"] }) }
-    let(:media3) { SolrDocument.new({ id: "3", has_model_ssim: ["Media"] }) }
-    let(:parent_media) { SolrDocument.new({ id: "4", has_model_ssim: ["Media"] }) }
-    let(:child_media) { SolrDocument.new({ id: "5", has_model_ssim: ["Media"] }) }
+    let!(:media1) { create(:media_document) }
+    let!(:media2) { create(:public_media_document) }
+    let!(:media3) { create(:public_media_document) }
+    let!(:parent_media) { create(:media_document) }
+    let!(:child_media) { create(:public_media_document) }
 
     before do
-      allow(::SolrDocument).to receive(:where).and_return([media1, media2, media3, parent_media, child_media])
       allow(subject).to receive(:parent_works).and_return([parent_media])
       allow(subject).to receive(:direct_child_media_works).and_return([child_media])
     end
 
     context "#related_media" do
       it "returns all related media" do
-        expect(subject.related_media).to eq([media1, media2, media3, parent_media, child_media])
+        expect(subject.related_media.map(&:id).sort).to eq([media1, media2, media3, parent_media, child_media].map(&:id).sort)
       end
     end
 
     context "#viewable_related_media" do
-      before do
-        allow(ability).to receive(:can?).and_return(false)
-        allow(ability).to receive(:can?).with(:read, media1).and_return(true)
-        allow(ability).to receive(:can?).with(:read, media3).and_return(true)
-      end
-
       it "returns only viewable related media" do
-        expect(subject.viewable_related_media).to eq([media1, media3])
+        expect(subject.viewable_related_media.map(&:id).sort).to eq([media2, media3, child_media].map(&:id).sort)
       end
     end
 
     context "#other_viewable_related_media" do
-      before do
-        allow(ability).to receive(:can?).and_return(true)
-        allow(ability).to receive(:can?).with(:read, media3).and_return(false)
-      end
-
       it "returns viewable non-parent non-child media" do
-        expect(subject.other_viewable_related_media).to eq([media1, media2])
+        expect(subject.other_viewable_related_media.map(&:id).sort).to eq([media2, media3].map(&:id).sort)
       end
     end
 
     context "#user_facing_related_media_count" do
-      before do
-        allow(ability).to receive(:can?).with(:read, media1).and_return(true)
-        allow(ability).to receive(:can?).with(:read, media2).and_return(false)
-        allow(ability).to receive(:can?).with(:read, media3).and_return(true)
-        allow(ability).to receive(:can?).with(:read, parent_media).and_return(false)
-        allow(ability).to receive(:can?).with(:read, child_media).and_return(true)
-      end
-
       it "returns count of viewable non-parent media plus count of parent media regardless of viewability" do
         expect(subject.user_facing_related_media_count).to eq(4)
       end

@@ -22,6 +22,7 @@ module Morphosource
           filters += download_groups_params
           filters += edit_groups_params
           filters += edit_user_params
+          filters += read_user_params
         end
 
         def apply_read_edit_filters(solr_parameters)
@@ -44,6 +45,10 @@ module Morphosource
 
         def edit_user_params
           ["({!terms f=edit_access_person_ssim}#{current_ability.current_user.ms_id})"]
+        end
+
+        def read_user_params
+          ["({!terms f=read_access_person_ssim}#{current_ability.current_user.ms_id})"]
         end
 
         def read_groups

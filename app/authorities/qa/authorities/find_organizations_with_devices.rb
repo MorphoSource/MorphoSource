@@ -1,4 +1,5 @@
 module Qa::Authorities
+  # Find organization and include device information with organization output
   class FindOrganizationsWithDevices < Qa::Authorities::FindWorks
     self.search_builder_class = Morphosource::FindOrganizationsSearchBuilder
 

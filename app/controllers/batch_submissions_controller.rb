@@ -1,7 +1,8 @@
 require 'roo'
 
 class BatchSubmissionsController < ApplicationController
-  include BatchSubmissionTools::Ms2Batch::BatchSubmissionHelper  
+  include BatchSubmissionTools::Ms2Batch::BatchSubmissionHelper
+  include Hyrax::WorksControllerBehavior
 
   load_and_authorize_resource 
   with_themed_layout 'morphosource_dashboard'
@@ -11,6 +12,12 @@ class BatchSubmissionsController < ApplicationController
   before_action :check_params, only: [:submit]
   before_action :check_request_manifest_object, :check_dup_job, only: [:ingest]
   after_action :start_ingest_job, only: [:ingest]
+
+  class_attribute :device_organizations_search_builder_class
+  self.device_organizations_search_builder_class = Morphosource::Catalog::Organizations::DeviceOrganizationsCatalogSearchBuilder
+
+  class_attribute :object_organizations_search_builder_class
+  self.object_organizations_search_builder_class = Morphosource::Catalog::Organizations::ObjectOrganizationsCatalogSearchBuilder
 
   attr_accessor :parent_media_row, :parent_media_id
 
@@ -62,8 +69,32 @@ class BatchSubmissionsController < ApplicationController
       work_data: work_data
     })
 
-    @organizations = Organization.all_solr
-    @organizations_select2 = @organizations.map do |o|
+    @device_organizations = repository.search(device_organizations_search_builder.query)["response"]["docs"]
+    @object_organizations = repository.search(object_organizations_search_builder.query)["response"]["docs"]
+
+    @device_organizations_select2 = @device_organizations.map do |o|
+      {
+        id: o['id'],
+        text: "#{[o['institution_name_tesim']&.first, o['title_tesim']&.first].compact.join(', ')} (#{o['institution_code_tesim']&.join('/')}:#{o['collection_code_tesim']&.join('/')})",
+        organization_type: o['organization_type_tesim']&.first,
+        institution_name: o['institution_name_tesim']&.first,
+        title: o['title_tesim']&.first,
+        institution_code: o['institution_code_tesim']&.join(', '),
+        collection_code: o['collection_code_tesim']&.join(', '),
+        recordset_id: o['recordset_id_tesim']&.join(', '),
+        related_url: o['related_url_tesim']&.first,
+        address: o['address_tesim']&.first,
+        city: o['city_tesim']&.first,
+        state_province: o['state_province_tesim']&.first,
+        country: o['country_tesim']&.first,
+        postal_code: o['postal_code_tesim']&.first,
+        description: o['description_tesim']&.first,
+        contact_person: o['contact_person_tesim']&.first,
+        devices: o['member_ids_ssim']
+      }
+    end
+
+    @object_organizations_select2 = @object_organizations.map do |o|
       {
         id: o['id'],
         text: "#{[o['institution_name_tesim']&.first, o['title_tesim']&.first].compact.join(', ')} (#{o['institution_code_tesim']&.join('/')}:#{o['collection_code_tesim']&.join('/')})",
@@ -1048,4 +1079,13 @@ class BatchSubmissionsController < ApplicationController
       end
     end
 
+    def device_organizations_search_builder
+      @device_organizations_search_builder ||= 
+        self.device_organizations_search_builder_class.new(self).rows(999999)
+    end
+  
+    def object_organizations_search_builder
+      @object_organizations_search_builder ||= 
+        self.object_organizations_search_builder_class.new(self).rows(999999)
+    end
 end

@@ -239,6 +239,11 @@ en:
             placeholder: "Enter complete words in list name"
           sequential_section_list:
             placeholder: "Enter complete words in list name"
+    survey:
+      banner_text_1: MorphoSource is a publicly accessible 3D data repository that enables museums, researchers, and scholars to upload, curate, and share 3D and 2D media representing physical objects of scholarly importance that can be found, viewed, and downloaded by other subject experts, educators, and the public.
+      banner_text_2: "We are an academic unit headquartered at Duke University and supported by public funding, and our mission is to democratize data access and to provide data contributors ways to archive and curate their material. You can read more about us here: <a href='https://www.morphosource.org/docs/about'>about MorphoSource <i class='fas fa-external-link-alt fa-sm'></i></a>."
+      banner_text_3: "There are currently over 2000 users from all over the world managing their data on MorphoSource. We are always looking for new contributors and collaborators. If you are interested in contributing data, please visit our <a href='https://duke.atlassian.net/wiki/spaces/MD/pages/35422310/Contributor+User+Docs'>contributors documentation <i class='fas fa-external-link-alt fa-sm'></i></a> to learn more."
+      banner_text_4: 'You can explore some of our Cultural Heritage collections using the buttons below:'
     taxonomy:
       labels:
         canonical: "Organizational"

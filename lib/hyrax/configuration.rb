@@ -385,12 +385,57 @@ module Hyrax
     # @!endgroup
     # @!group Valkyrie
 
-    # Not placing anything here for now
+    ##
+    # @return [Valkyrie::StorageAdapter]
+    def branding_storage_adapter
+      @branding_storage_adapter ||= Valkyrie::StorageAdapter.find(:branding_disk)
+    end
 
+    ##
+    # @param [#to_sym] adapter
+    def branding_storage_adapter=(adapter)
+      @branding_storage_adapter = Valkyrie::StorageAdapter.find(adapter.to_sym)
+    end
+
+    ##
+    # @return [Valkyrie::StorageAdapter]
+    def derivatives_storage_adapter
+      @derivatives_storage_adapter ||= Valkyrie::StorageAdapter.find(:derivatives_disk)
+    end
+
+    ##
+    # @param [#to_sym] adapter
+    def derivatives_storage_adapter=(adapter)
+      @derivatives_storage_adapter = Valkyrie::StorageAdapter.find(adapter.to_sym)
+    end
+
+    ##
+    # @return [#save, #save_all, #delete, #wipe!] an indexing adapter
+    def index_adapter
+      @index_adapter ||= Valkyrie::IndexingAdapter.find(:null_index)
+    end
+
+    ##
+    # @param [#to_sym] adapter
+    def index_adapter=(adapter)
+      @index_adapter = Valkyrie::IndexingAdapter.find(adapter.to_sym)
+    end
+
+    ##
+    # @return [Boolean] whether to use the experimental valkyrie index
+    def query_index_from_valkyrie
+      @query_index_from_valkyrie ||= false
+    end
+    attr_writer :query_index_from_valkyrie
+
+    ##
+    # @return [Boolean] whether to use experimental valkyrie storage features
+    def use_valkyrie?
+      return true if disable_wings # always return true if wings is disabled
+      ActiveModel::Type::Boolean.new.cast(ENV.fetch('HYRAX_VALKYRIE', false))
+    end
     # @!endgroup
-
-
-
+    
     attr_writer :feature_config_path
     def feature_config_path
       @feature_config_path ||= Rails.root.join('config', 'features.yml')
@@ -716,6 +761,20 @@ module Hyrax
     # @return [Class] the configured collection model class
     def collection_class
       collection_model.safe_constantize
+    end
+
+    attr_writer :admin_set_model
+    ##
+    # @return [#constantize] a string representation of the admin set
+    #   model
+    def admin_set_model
+      @admin_set_model ||= 'AdminSet'
+    end
+
+    ##
+    # @return [Class] the configured admin set model class
+    def admin_set_class
+      admin_set_model.constantize
     end
 
     # Should a button with "Share my work" show on the front page to users who are not logged in?

@@ -38,73 +38,111 @@ module Hyrax
 
       private
 
-        def remote_files_from_remote_origin_url(u, remote_manifest_info = nil)
-          uri = URI.parse(u)
-          remote_files = [{:url => u, :file_name => File.basename(uri.path)}]
-          if remote_manifest_info.present?
-            remote_files.first[:file_name] = remote_manifest_info["file_name"]
-            remote_files.first[:mime_type_of_remote] = remote_manifest_info["mime_type_of_remote"]
-          end
-          remote_files
+      def remote_files_from_remote_origin_url(u, remote_manifest_info = nil)
+        uri = URI.parse(u)
+        remote_files = [{:url => u, :file_name => File.basename(uri.path)}]
+        if remote_manifest_info.present?
+          remote_files.first[:file_name] = remote_manifest_info["file_name"]
+          remote_files.first[:mime_type_of_remote] = remote_manifest_info["mime_type_of_remote"]
         end
+        remote_files
+      end
 
-        def whitelisted_ingest_dirs
-          Hyrax.config.whitelisted_ingest_dirs
+      def attach_files(env, remote_files)
+        ingest_remote_files_service_class.new(user: env.user,
+                                              curation_concern: env.curation_concern,
+                                              remote_files: remote_files,
+                                              file_set_actor_class: file_set_actor_class).attach!
+      end
+
+      class IngestRemoteFilesService
+        ##
+        # @parm user [User]
+        # @parm curation_concern [Hyrax::Work]
+        # @param remote_files [HashWithIndifferentAccess]
+        # @param file_set_actor_class
+        # @param ordered_members [Array]
+        # @param ordered [Boolean]
+        # rubocop:disable Metrics/ParameterLists
+        def initialize(user:, curation_concern:, remote_files:, file_set_actor_class:, ordered_members: [], ordered: false)
+          @remote_files = remote_files
+          @user = user
+          @curation_concern = curation_concern
+          @file_set_actor_class = file_set_actor_class
+          @ordered_members = ordered_members
+          @ordered = ordered
         end
+        # rubocop:enable Metrics/ParameterLists
+        attr_reader :remote_files, :user, :curation_concern, :ordered_members, :ordered, :file_set_actor_class
 
-        # @param uri [URI] the uri fo the resource to import
-        def validate_remote_url(uri)
-          if uri.scheme == 'file'
-            path = File.absolute_path(CGI.unescape(uri.path))
-            whitelisted_ingest_dirs.any? do |dir|
-              path.start_with?(dir) && path.length > dir.length
-            end
-          else
-            # TODO: It might be a good idea to validate other URLs as well.
-            #       The server can probably access URLs the user can't.
-            true
-          end
-        end
-
-        # @param [HashWithIndifferentAccess] remote_files
-        # @return [TrueClass]
-        def attach_files(env, remote_files)
-          return true unless remote_files.present?
+        ##
+        # @return true
+        def attach!
+          return true unless remote_files
           remote_files.each do |file_info|
             next if file_info.blank? || file_info[:url].blank?
             # Escape any space characters, so that this is a legal URI
             uri = URI.parse(Addressable::URI.escape(file_info[:url]))
-            unless validate_remote_url(uri)
-              Rails.logger.error "User #{env.user.user_key} attempted to ingest file from url #{file_info[:url]}, which doesn't pass validation"
+            unless self.class.validate_remote_url(uri)
+              Rails.logger.error "User #{user.user_key} attempted to ingest file from url #{file_info[:url]}, which doesn't pass validation"
               return false
             end
             auth_header = file_info.fetch(:auth_header, {})
-            file_name = file_info[:file_name]
             mime_type_of_remote = file_info[:mime_type_of_remote]
-            create_file_from_url(env, uri, file_name, auth_header, mime_type_of_remote)
+            create_file_from_url(uri, file_info[:file_name], auth_header, mime_type_of_remote)
           end
+          add_ordered_members! if ordered
           true
         end
 
-        # Generic utility for creating FileSet from a URL
-        # Used in to import files using URLs from a file picker like browse_everything
-        def create_file_from_url(env, uri, file_name, auth_header = {}, mime_type_of_remote = nil)
-          import_url = URI.decode_www_form_component(uri.to_s)
-          ::FileSet.new(import_url: import_url, label: file_name, mime_type_of_remote: mime_type_of_remote) do |fs|
-            actor = Hyrax::Actors::FileSetActor.new(fs, env.user)
-            actor.create_metadata(visibility: env.curation_concern.visibility)
-            actor.attach_to_work(env.curation_concern)
-            fs.save!
-            if uri.scheme == 'file'
-              # Turn any %20 into spaces.
-              # Turn + signs to %2B first, otherwise unescape will convert + signs to spaces
-              file_path = CGI.unescape(uri.path.gsub('+', '%2B'))
-              IngestLocalFileJob.perform_later(fs, file_path, env.user)
-            elsif env.curation_concern.has_remote_manifest?
-              ImportUrlJob.perform_now(fs, operation_for(user: actor.user), auth_header)
-            else
-              ImportUrlJob.perform_later(fs, operation_for(user: actor.user), auth_header)
+        def self.registered_ingest_dirs
+          Hyrax.config.registered_ingest_dirs
+        end
+
+        # @param uri [URI] the uri fo the resource to import
+        def self.validate_remote_url(uri)
+          if uri.scheme == 'file'
+            path = File.absolute_path(CGI.unescape(uri.path))
+            registered_ingest_dirs.any? do |dir|
+              path.start_with?(dir) && path.length > dir.length
             end
+          else
+            Rails.logger.debug "Assuming #{uri.scheme} uri is valid without a serious attempt to validate: #{uri}"
+            true
+          end
+        end
+
+        private
+
+        def create_file_from_url(uri, file_name, auth_header, mime_type_of_remote = nil)
+          import_url = URI.decode_www_form_component(uri.to_s)
+          use_valkyrie = false
+          case curation_concern
+          when Valkyrie::Resource
+            file_set = Hyrax.persister.save(resource: Hyrax::FileSet.new(import_url: import_url, label: file_name))
+            use_valkyrie = true
+          else
+            file_set = ::FileSet.new(import_url: import_url, label: file_name, mime_type_of_remote: mime_type_of_remote)
+          end
+          __create_file_from_url(file_set: file_set, uri: uri, auth_header: auth_header, use_valkyrie: use_valkyrie)
+        end
+
+        def __create_file_from_url(file_set:, uri:, auth_header:, use_valkyrie: Hyrax.config.use_valkyrie?)
+          actor = file_set_actor_class.new(file_set, user, use_valkyrie: use_valkyrie)
+          actor.create_metadata(visibility: curation_concern.visibility)
+          actor.attach_to_work(curation_concern)
+          file_set.save! if file_set.respond_to?(:save!)
+          # We'll remember the order, but if it's not `@ordered` we won't do anything.
+          ordered_members << file_set
+          if uri.scheme == 'file'
+            # Turn any %20 into spaces.
+            # Turn + signs to %2B first, otherwise unescape will convert + signs to spaces
+            file_path = CGI.unescape(uri.path.gsub('+', '%2B'))
+            IngestLocalFileJob.perform_later(file_set, file_path, user)
+          elsif env.curation_concern.has_remote_manifest?
+            ImportUrlJob.perform_now(file_set, operation_for(user: user), auth_header)
+          else
+            ImportUrlJob.perform_later(file_set, operation_for(user: user), auth_header)
           end
         end
 
@@ -112,6 +150,15 @@ module Hyrax
           Hyrax::Operation.create!(user: user,
                                    operation_type: "Attach Remote File")
         end
+
+        def add_ordered_members!
+          actor = Hyrax::Actors::OrderedMembersActor.new(ordered_members, user)
+          actor.attach_ordered_members_to_work(curation_concern)
+        end
+      end
+
+      class_attribute :file_set_actor_class, default: ::Hyrax::Actors::FileSetActor
+      class_attribute :ingest_remote_files_service_class, default: ::Hyrax::Actors::CreateWithRemoteFilesActor::IngestRemoteFilesService
     end
   end
 end

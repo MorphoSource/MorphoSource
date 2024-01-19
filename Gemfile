@@ -32,6 +32,8 @@ gem 'nokogiri'
 
 gem 'hyrax', '3.6.0'
 
+gem 'hydra-role-management'
+
 gem 'resque'
 gem 'resque-pool'
 gem 'resque-web', require: 'resque_web'

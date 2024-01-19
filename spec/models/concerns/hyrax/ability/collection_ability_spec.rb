@@ -6,8 +6,7 @@ require 'rails_helper'
 RSpec.describe 'Hyrax::Ability::CollectionAbility' do
   subject { ability }
 
-  let!(:user)           { User.create(email: 'email@email.com', password: 'password') }
-  let(:current_user)    { user }
+  let(:current_user)    { User.create(email: 'email@email.com', password: 'password') }
   let(:ability)         { Ability.new(current_user) }
   let!(:depositor)      { User.create(email: 'email2@email.com', password: 'password') }
   let(:collection)      { Collection.create(id: 'Team', title: ['Team'], depositor: depositor.ms_id, collection_type_gid: team_collection_type.gid) }

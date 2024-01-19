@@ -62,7 +62,7 @@ services:
       context: .
       target: msworker
     container_name: app_test
-    command: sh -c 'rm -rf /app/samvera/hyrax-webapp/tmp/* && bundle && bundle exec rake hydra:test_server'
+    command: sh -c 'bundle && bundle exec puma -v -b tcp://0.0.0.0:3000'
     user: app
     env_file:
       - ./vendor/docker/credentials.env
@@ -70,9 +70,11 @@ services:
       - ./vendor/docker/docker-compose-test.env
     depends_on:
       - db_migrate
+      - fcrepo
       - memcached
       - postgres
       - redis
+      - solr
     profiles:
       - test
     volumes:
@@ -133,7 +135,7 @@ services:
       - morphosource
 
   postgres:
-    image: postgres:latest
+    image: postgres:15.1
     container_name: postgres
     env_file:
       - ./vendor/docker/credentials.env
@@ -180,7 +182,7 @@ services:
     command:
       - sh
       - "-c"
-      - "solr-precreate hydra-development /core_config"
+      - "precreate-core hyrax_test /core_config; precreate-core hyrax-valkyrie-test /core_config; precreate-core hyrax-valkyrie-dev /core_config; solr-precreate hyrax /core_config"
     volumes:
       - solr_home:/opt/solr/server/solr/mycores
       - ./solr/config:/core_config/conf

@@ -405,7 +405,7 @@ RSpec.describe Media do
     end
 
     describe 'fund code associations' do
-      let(:user) { User.create(email: 'user@email.com', password: 'password') }
+      let(:user) { create(:user) }
       let(:fund_code) { FundCode.new(title: 'Test Title', description: 'Test Description', user: user) }
       let(:media) { Media.create(title: ['title'], media_type: ['Image'], visibility: 'open') }
 
@@ -487,8 +487,8 @@ RSpec.describe Media do
     end
 
     describe 'transfer_media_to_organization' do
-      let(:data_manager)          { User.create(email: 'email@email.com', password: 'password') }
-      let(:depositor)             { User.create(email: 'depositor@email.com', password: 'password') }
+      let(:data_manager)          { create(:user) }
+      let(:depositor)             { create(:user) }
       let!(:contributor_role)     { Role.create(name: 'contributor') }
       let!(:organization)          { Organization.create(title: ['organization'], permissions_enforcement_mode: nil, data_manager: [data_manager.ms_id]) }
       let(:media)                 { Media.create(title: ['media'], depositor: depositor.ms_id, visibility: 'restricted', fileset_accessibility: ['private'], organization_transfer_on_publish: true) }

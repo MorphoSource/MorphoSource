@@ -310,6 +310,18 @@ module Hyrax
       @import_export_jar_file_path ||= "tmp/fcrepo-import-export.jar"
     end
 
+    # @!attribute [w] virus_scanner
+    #   @return [Hyrax::VirusScanner] the default system virus scanner
+    attr_writer :virus_scanner
+    def virus_scanner
+      @virus_scanner ||=
+        if Hyrax.primary_work_type.respond_to?(:default_system_virus_scanner)
+          Hyrax.primary_work_type.default_system_virus_scanner
+        else
+          Hyrax::VirusScanner
+        end
+    end
+
     # MS-specific dependencies
 
     attr_writer :blender_path
@@ -718,6 +730,30 @@ module Hyrax
       collection_model.safe_constantize
     end
 
+    attr_writer :admin_set_model
+    ##
+    # @return [#constantize] a string representation of the admin set
+    #   model
+    def admin_set_model
+      @admin_set_model ||= 'AdminSet'
+    end
+
+    ##
+    # @return [Class] the configured admin set model class
+    def admin_set_class
+      admin_set_model.constantize
+    end
+
+    attr_writer :id_field
+    def id_field
+      @id_field || index_field_mapper.id_field
+    end
+
+    attr_writer :index_field_mapper
+    def index_field_mapper
+      @index_field_mapper ||= ActiveFedora.index_field_mapper
+    end
+
     # Should a button with "Share my work" show on the front page to users who are not logged in?
     attr_writer :display_share_button_when_not_logged_in
     def display_share_button_when_not_logged_in?
@@ -993,9 +1029,13 @@ module Hyrax
     end
 
     attr_accessor :nested_relationship_reindexer
-
     def default_nested_relationship_reindexer
       ->(id:, extent:) { rescued_nested_relationship_reindexer(id: id, extent: extent) }
+    end
+
+    attr_writer :solr_select_path
+    def solr_select_path
+      @solr_select_path ||= ActiveFedora.solr_config.fetch(:select_path, 'select')
     end
 
     def rescued_nested_relationship_reindexer(id:, extent:)
@@ -1004,6 +1044,20 @@ module Hyrax
       rescue Ldp::Gone => e
         Rails.logger.error "Samvera::NestingIndexer.reindex_relationships experienced Ldp::Gone error with work #{id}"
       end
+    end
+
+    # A configuration point for changing the available range for
+    # selecting per page results
+    #
+    # @!attribute [w] range_for_number_of_results_to_display_per_page
+    #   A configuration point for changing the available range for
+    #   selecting per page results
+    # @note This has no impact on the default page size of the controller.
+    attr_writer :range_for_number_of_results_to_display_per_page
+
+    # @return [Array<Integer>]
+    def range_for_number_of_results_to_display_per_page
+      @range_for_number_of_results_to_display_per_page ||= [10, 20, 50, 100]
     end
 
     private

@@ -12,8 +12,8 @@ module Morphosource
         after_update_error(err_msg) if err_msg.present?
         return if err_msg.present?
 
-        collection.reindex_extent = Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
-        members = collection.add_member_objects batch_ids
+        @collection.reindex_extent = Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
+        members = @collection.add_member_objects batch_ids
         update_physical_object_index
         messages = members.collect { |member| member.errors.full_messages }.flatten
         if messages.size == members.size
@@ -46,7 +46,7 @@ module Morphosource
       private
 
         def filter_docs_with_access_by_collection_type
-          if collection.list?
+          if @collection.list?
             filter_docs_with_read_access!
           else
             filter_docs_with_edit_access!

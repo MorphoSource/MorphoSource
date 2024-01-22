@@ -32,7 +32,7 @@ gem 'nokogiri'
 
 gem 'hyrax', '3.6.0'
 
-gem 'hydra-role-management'
+gem 'hydra-role-management', '~> 1.1.0'
 
 gem 'resque'
 gem 'resque-pool'

@@ -2,7 +2,19 @@
 module Morphosource
   module Collections
     # Responsible for retrieving collection members
+    # TODO: The Hyrax equivalent of this class is deprecated in 3.6.0, might want to update
     class CollectionMemberService < Hyrax::Collections::CollectionMemberService
+      attr_reader :scope, :params, :collection
+      delegate :repository, to: :scope
+
+      # @param scope [#repository] Typically a controller object which responds to :repository
+      # @param [Collection]
+      # @param [ActionController::Parameters] query params
+      def initialize(scope:, collection:, params:)
+        @scope = scope
+        @collection = collection
+        @params = params
+      end
 
       # @api public
       #
@@ -122,6 +134,18 @@ module Morphosource
       #
       def assemble_organization_media_query(organization_object_ids)
         " OR (#{ActiveFedora.index_field_mapper.solr_name('physical_object_id', :stored_searchable)}:(#{organization_object_ids.join(' OR ')}))"
+      end
+
+      # @api private
+      #
+      def query_solr(query_builder:, query_params:)
+        repository.search(query_builder.with(query_params).query)
+      end
+
+      # @api private
+      #
+      def query_solr_with_field_selection(query_builder:, fl:)
+        repository.search(query_builder.merge(fl: fl).query)
       end
 
       # @api private

@@ -139,7 +139,7 @@ module Hyrax
             # Turn + signs to %2B first, otherwise unescape will convert + signs to spaces
             file_path = CGI.unescape(uri.path.gsub('+', '%2B'))
             IngestLocalFileJob.perform_later(file_set, file_path, user)
-          elsif env.curation_concern.has_remote_manifest?
+          elsif curation_concern.has_remote_manifest?
             ImportUrlJob.perform_now(file_set, operation_for(user: user), auth_header)
           else
             ImportUrlJob.perform_later(file_set, operation_for(user: user), auth_header)

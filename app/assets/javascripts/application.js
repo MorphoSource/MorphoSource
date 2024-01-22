@@ -37,6 +37,7 @@
 //= require morphosource/ms_registry
 //= require morphosource/ms_registry_entry
 //= require morphosource/ms_controlled_vocabulary
+//= require morphosource/relationships/resource
 //= require morphosource/ms_organization_resource
 //= require morphosource/ms_taxonomy_resource
 //= require morphosource/ms_unlinked_organizations

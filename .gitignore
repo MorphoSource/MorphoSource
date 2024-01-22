@@ -36,9 +36,6 @@
 # Below are copied from RDR. Might need them later
 # ---------------------------------------------------
 
-# Ignore role_map.yml
-/config/role_map.yml
-
 # Pre-compiled assets
 /public/assets
 

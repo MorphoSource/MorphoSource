@@ -558,6 +558,17 @@ html {
 
 .showcase {
 
+  /* hide the collapse/expand buttons when responsive */
+  table.dataTable.dtr-inline.collapsed > tbody {
+    tr.parent > td:first-child:before, 
+    tr.parent > th:first-child:before,
+    tr > td:first-child:before, 
+    tr > th:first-child:before {
+      content: none;
+      display: none;
+    }
+  }
+
   table.dataTable {
     tr {
       border-bottom: none;

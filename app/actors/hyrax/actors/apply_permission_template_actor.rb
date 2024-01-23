@@ -26,6 +26,8 @@ module Hyrax
         def add_collection_participants(env)
           return if env.attributes[:collection_id].blank?
           collection_id = env.attributes.delete(:collection_id) # delete collection_id from attributes because works do not have a collection_id property
+          return unless ActiveFedora::Base.find(collection_id).media_inherit_permissions? # check if collection type applies permissions to media
+
           template = Hyrax::PermissionTemplate.find_by!(source_id: collection_id)
           set_curation_concern_access(env, template)
         end

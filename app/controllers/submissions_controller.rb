@@ -316,7 +316,7 @@ class SubmissionsController < ApplicationController
           @submission.canonical_taxonomy_id = new_taxon_id if taxon_params[:canonical]
         end
       else
-        puts("Creating #{work} if necessary")
+        # puts("Creating #{work} if necessary")
         create_work_if_needed(work, params)
       end
     end
@@ -350,7 +350,7 @@ class SubmissionsController < ApplicationController
 
   def create_work_if_needed(work, params)
     if !@submission.public_send(to_id(work)).present? && params[work]
-      puts("Creating #{work}")
+      # puts("Creating #{work}")
       new_work_id, new_work = prepare_and_create_work(work, params)
       @submission.public_send(to_id(work) + '=', new_work_id)
       create_attachment_if_needed(work, new_work_id) if ['imaging_event', 'processing_event', 'media'].include?(work)
@@ -386,7 +386,6 @@ class SubmissionsController < ApplicationController
     else
       finalize_model_params(work, model_params)
     end
-
   end
 
   def finalize_model_params(work, model_params, addl_params={})
@@ -500,7 +499,6 @@ class SubmissionsController < ApplicationController
     new_params = {
       "member_of_collection_ids" => ""
     }
-
     if model_params.key? "member_of_collections_attributes"
       coll_attrs = {}
       i = 0

@@ -8,18 +8,18 @@ module Hyrax
           can :create_any, ::Collection
           can :view_admin_show_any, ::Collection
         else
-          if registered_user?
-            can [:create], ::MediaList
-            can :manage, ::MediaList do |collection|
-              Hyrax::Collections::PermissionsService.can_deposit_in_collection?(ability: self, collection_id: collection.id)
-            end
-          end
-
           if contributor?
             can :create_any, ::Collection
             can :manage, ::Collection do |collection|
               Hyrax::Collections::PermissionsService.can_deposit_in_collection?(ability: self, collection_id: collection.id)
             end
+          elsif registered_user?
+            can [:create], ::MediaList
+            can :manage, ::MediaList do |collection|
+              Hyrax::Collections::PermissionsService.can_deposit_in_collection?(ability: self, collection_id: collection.id)
+            end
+            cannot [:manage], ::SequentialSectionList
+            cannot [:manage_any], ::SequentialSectionList
           end
 
           # TODO: Consider moving some of these up under contributor?

@@ -1,0 +1,8 @@
+<% # app/views/records/edit_fields/_list_type.html.erb %>
+<% list_types_service = Morphosource::ListTypesService.new %>
+<%= f.input :list_type, as: :select,
+    collection: list_types_service.select_all_options(f.object.list_type),
+    include_blank: true,
+    input_html: { class: 'form-control' },
+    label_wrapper_html: { class: 'parsed' } 
+%>

@@ -11,6 +11,9 @@
               <h2>GENERAL DETAILS</h2>
               <%= render_edit_field_partial('title', f: f) %>
               <%= render_edit_field_partial('description', f: f) %>
+              <% if @collection.media_list? %>
+                <%= render_edit_field_partial('list_type', f: f) %>
+              <% end %>
               <%= render_edit_field_partial('creator', f: f) %>
               <%= render_edit_field_partial('contributor', f: f) %>
               <%= render_edit_field_partial('based_near', f: f) %>

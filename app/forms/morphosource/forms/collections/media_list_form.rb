@@ -6,7 +6,9 @@ module Morphosource
 
         self.model_class = ::MediaList
 
-        self.single_valued_fields = [:title, :description]
+        self.terms += [:list_type]
+
+        self.single_valued_fields = [:title, :description, :list_type]
 
         delegate :blacklight_config, to: Morphosource::Collections::MediaListsController
 

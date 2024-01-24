@@ -226,8 +226,18 @@ module MorphosourceHelper
     Rails.application.routes.url_helpers.qa_path + '/search/find_organizations?type[]=Organization&id=NA&q='
   end
 
-  def find_device_organizations_autocomplete_url
+  def find_organizations_for_device_autocomplete_url
     Rails.application.routes.url_helpers.qa_path + '/search/find_works?type[]=Organization&type[]=OrganizationCollection&id=NA'
+  end
+
+  # Finds organizations with organization type that includes scanning facility
+  def find_device_organization_autocomplete_url
+    Rails.application.routes.url_helpers.qa_path + '/search/find_device_organizations?type[]=Organization&id=NA&q='
+  end
+
+  # Finds organizations with organization type that includes object collection
+  def find_object_organization_autocomplete_url
+    Rails.application.routes.url_helpers.qa_path + '/search/find_object_organizations?type[]=Organization&id=NA&q='
   end
 
   def find_organization_with_devices_autocomplete_url
@@ -361,8 +371,15 @@ module MorphosourceHelper
 
   def organization_devices(id)
     # get device id, make, and model for all devices associated with organization id
-    devices = Device.where('id' => Organization.where('id' => id).first.member_ids)
-    devices.map { |d| {'id': d.id, 'title': d.title, 'creator': d.creator, 'modality': d.modality, 'description': d.description } }
+    SolrDocument.where('has_model_ssim' => 'Device', 'device_organization_id_ssim' => id).map do |d| 
+      {
+        'id': d.id, 
+        'title': d.title, 
+        'creator': d.creator, 
+        'modality': d.modality, 
+        'description': d.description
+      }
+    end
   end
 
   def render_source_of_record(bso)

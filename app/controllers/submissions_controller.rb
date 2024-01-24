@@ -17,6 +17,12 @@ class SubmissionsController < ApplicationController
 
   before_action :instantiate_work_forms
 
+  class_attribute :device_organizations_search_builder_class
+  self.device_organizations_search_builder_class = Morphosource::Catalog::Organizations::DeviceOrganizationsCatalogSearchBuilder
+
+  class_attribute :object_organizations_search_builder_class
+  self.object_organizations_search_builder_class = Morphosource::Catalog::Organizations::ObjectOrganizationsCatalogSearchBuilder
+
   # return all possible organization records for organization search
   configure_blacklight do |config|
     config.max_per_page = 1000000
@@ -42,9 +48,32 @@ class SubmissionsController < ApplicationController
       work_data: work_data
     })
 
-    @organizations = repository.search(Morphosource::Catalog::OrganizationsCatalogSearchBuilder.new(self).rows(999999).query)["response"]["docs"]
+    @device_organizations = repository.search(device_organizations_search_builder.query)["response"]["docs"]
+    @object_organizations = repository.search(object_organizations_search_builder.query)["response"]["docs"]
 
-    @organizations_select2 = @organizations.map do |o|
+    @device_organizations_select2 = @device_organizations.map do |o|
+      {
+        id: o['id'],
+        text: "#{[o['institution_name_tesim']&.first, o['title_tesim']&.first].compact.join(', ')} (#{o['institution_code_tesim']&.join('/')}:#{o['collection_code_tesim']&.join('/')})",
+        organization_type: o['organization_type_tesim']&.first,
+        institution_name: o['institution_name_tesim']&.first,
+        title: o['title_tesim']&.first,
+        institution_code: o['institution_code_tesim']&.join(', '),
+        collection_code: o['collection_code_tesim']&.join(', '),
+        related_url: o['related_url_tesim']&.first,
+        address: o['address_tesim']&.first,
+        city: o['city_tesim']&.first,
+        state_province: o['state_province_tesim']&.first,
+        country: o['country_tesim']&.first,
+        postal_code: o['postal_code_tesim']&.first,
+        description: o['description_tesim']&.first,
+        contact_person: o['contact_person_tesim']&.first,
+        devices: o['member_ids_ssim'],
+        data_manager: o['data_manager_tesim']&.first
+      }
+    end
+
+    @object_organizations_select2 = @object_organizations.map do |o|
       {
         id: o['id'],
         text: "#{[o['institution_name_tesim']&.first, o['title_tesim']&.first].compact.join(', ')} (#{o['institution_code_tesim']&.join('/')}:#{o['collection_code_tesim']&.join('/')})",
@@ -316,7 +345,7 @@ class SubmissionsController < ApplicationController
           @submission.canonical_taxonomy_id = new_taxon_id if taxon_params[:canonical]
         end
       else
-        puts("Creating #{work} if necessary")
+        #puts("Creating #{work} if necessary")
         create_work_if_needed(work, params)
       end
     end
@@ -350,7 +379,7 @@ class SubmissionsController < ApplicationController
 
   def create_work_if_needed(work, params)
     if !@submission.public_send(to_id(work)).present? && params[work]
-      puts("Creating #{work}")
+      #puts("Creating #{work}")
       new_work_id, new_work = prepare_and_create_work(work, params)
       @submission.public_send(to_id(work) + '=', new_work_id)
       create_attachment_if_needed(work, new_work_id) if ['imaging_event', 'processing_event', 'media'].include?(work)
@@ -884,5 +913,15 @@ class SubmissionsController < ApplicationController
     objects = media.first.physical_objects
     related_media = media.first.related_media
     media + organizations + objects + related_media
+  end
+
+  def device_organizations_search_builder
+    @device_organizations_search_builder ||=
+      self.device_organizations_search_builder_class.new(self).rows(999999)
+  end
+
+  def object_organizations_search_builder
+    @object_organizations_search_builder ||=
+      self.object_organizations_search_builder_class.new(self).rows(999999)
   end
 end

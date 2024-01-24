@@ -34,6 +34,10 @@ class OrganizationCollection < Collection
     true
   end
 
+  def media_inherit_permissions?
+    false
+  end
+
   def organization
     self
   end

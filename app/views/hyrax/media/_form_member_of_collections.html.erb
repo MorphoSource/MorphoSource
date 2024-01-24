@@ -23,11 +23,15 @@
 
 <script type="text/x-tmpl" id="tmpl-collection">
 <tr>
-    <td>
-        <div class="row">
-            <div class="col-xs-10 showcase-value">{%= o.title %}</div>
-            <div class="col-xs-2"><i class="{%= o.removable == true ? 'show' : 'hide' %} fa fa-times-circle" aria-hidden="true" data-behavior="remove-relationship" style="color: #286090;"></i></div>
-        </div>
-    </td>
+  <td>
+    <div class="row collection-edit-block">
+      <div class="col-xs-10 showcase-value">{%= o.title %}</div>
+      <div class="col-xs-2">
+        <i class="btn-remove {%= o.removable == false ? 'tooltip-icon' : '' %} fa fa-times-circle" aria-hidden="true" data-behavior="remove-relationship">
+          <p class="hint hide">You do not have permission to remove the media from this collection</p>
+        </i>
+      </div>
+    </div>
+  </td>
 </tr>
 </script>

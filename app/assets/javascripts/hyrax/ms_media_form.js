@@ -264,9 +264,6 @@ $( document ).ready(function() {
 
   if ($('form[id*="edit_media"]').length) { // if edit media form page
 
-    // disable all remove collection buttons that are marked as tooltip-icon
-    $('.collection-edit-block i.btn-remove.tooltip-icon').off('click');
-
     $('#tab-media-details[class!="active"] a').on('click', function(){
       var uvIframe = document.getElementById("uv-iframe");
       if (this.ariaExpanded == "false" && uvIframe) {        

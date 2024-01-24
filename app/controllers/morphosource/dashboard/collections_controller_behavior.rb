@@ -4,8 +4,6 @@ module Morphosource
       extend ActiveSupport::Concern
 
       include Morphosource::CollectionsControllerBehavior
-      # include collection type paths
-      include Morphosource::CollectionHelper
 
       included do
         # This is needed as of BL 3.7
@@ -30,9 +28,9 @@ module Morphosource
           action = @_params["action"]
           case action
           when "update"
-            redirect_to update_collection_path(@collection), flash: @flashes
+            redirect_to helpers.update_collection_path(@collection), flash: @flashes
           when "edit"
-            redirect_to collection_edit_path(@collection), flash: @flashes
+            redirect_to helpers.collection_edit_path(@collection), flash: @flashes
           end
         end
 

@@ -7,9 +7,12 @@ module Hyrax
 
     before_action :authenticate_user!, except: [:index]      
 
-    def search_builder_class
-      Morphosource::OrganizationsSearchBuilder
+    def self.configure_facets
+      configure_blacklight do |config|
+        config.search_builder_class = Morphosource::OrganizationsSearchBuilder
+      end
     end
+    configure_facets
 
     def index
       (@response, @document_list) = query_solr

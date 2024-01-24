@@ -233,8 +233,9 @@ class Collection < ActiveFedora::Base
 
   # override Hyrax::CollectionBehavior method to allow collection types to be changed
   def collection_type_gid=(new_collection_type_gid)
+    new_collection_type_gid = new_collection_type_gid&.to_s
     new_collection_type = Hyrax::CollectionType.find_by_gid!(new_collection_type_gid)
-    super
+    super(new_collection_type_gid)
     @collection_type = new_collection_type
     collection_type_gid
   end

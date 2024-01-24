@@ -176,8 +176,7 @@ RSpec.describe Ability, type: :model do
           expect(guest_ability).not_to be_able_to(:read, project)
 
           expect(admin_ability).to be_able_to(:read, media_list)
-#          expect(user_ability).to be_able_to(:read, media_list)
-#          expect(depositor_ability).to be_able_to(:read, media_list)
+          expect(user_ability).to be_able_to(:read, media_list)
           expect(guest_ability).not_to be_able_to(:read, media_list)
 
           expect(admin_ability).to be_able_to(:read, sequential_section_list)

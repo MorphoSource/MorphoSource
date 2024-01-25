@@ -45,6 +45,10 @@ terms:
     term: Confocal Image Stacking
     abbreviation: Confocal
     active: true
+  - id: LightSheetFluorescenceMicroscopy
+    term: Light Sheet Fluorescence Microscopy
+    abbreviation: LSFM
+    active: true
   - id: Infrared
     term: Infrared
     abbreviation: Infrared

@@ -22,6 +22,7 @@ module Ms1to2
             'StructuredLight' => 'StructuredLight',
             'LaserScan' => 'LaserScan',
             'ConfocalImageStacking' => 'ConfocalImageStacking',
+            'LightSheetFluorescenceMicroscopy' => 'LightSheetFluorescenceMicroscopy',
             'Infrared' => 'Infrared',
             'ReflectanceTransformationImaging' => 'ReflectanceTransformationImaging',
             'Photography' => 'Photography',

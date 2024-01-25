@@ -131,6 +131,7 @@ RSpec.describe Media do
         "StructuredLight" => "Structured Light",
         "LaserScan" => "Laser Scan",
         "ConfocalImageStacking" => "Confocal Image Stacking",
+        "LightSheetFluorescenceMicroscopy" => "Light Sheet Fluorescence Microscopy",
         "Infrared" => "Infrared",
         "ReflectanceTransformationImaging" => "Reflectance Transformation Imaging",
         "Photography" => "Photography",

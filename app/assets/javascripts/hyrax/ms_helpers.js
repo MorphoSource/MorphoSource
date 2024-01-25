@@ -289,55 +289,58 @@ function modalityAbbrev(m) {
       return 'CT';
       break;
     case 'MagneticResonanceImaging':
-      return 'MRI'
+      return 'MRI';
       break;
     case 'PositronEmissionTomography':
-      return 'PET'
+      return 'PET';
       break;
     case 'SinglePhotonEmissionComputedTomography':
-      return 'SPECT'
+      return 'SPECT';
       break;
     case 'NeutronComputedTomography':
-      return 'NCT'
+      return 'NCT';
       break;
     case 'SynchrotronImaging':
-      return 'Synchro'
+      return 'Synchro';
       break;
     case 'Photogrammetry':
-      return 'Photogram'
+      return 'Photogram';
       break;
     case 'StructuredLight':
-      return 'StrLight'
+      return 'StrLight';
       break;
     case 'LaserScan':
-      return 'Laser'
+      return 'Laser';
       break;
     case 'ConfocalImageStacking':
-      return 'Confocal'
+      return 'Confocal';
+      break;
+    case 'LightSheetFluorescenceMicroscopy':
+      return 'LSFM';
       break;
     case 'Infrared':
-      return 'Infrared'
+      return 'Infrared';
       break;
     case 'ReflectanceTransformationImaging':
-      return 'RTI'
+      return 'RTI';
       break;
     case 'Photography':
-      return 'Photo'
+      return 'Photo';
       break;
     case 'ScanningElectronMicroscopy':
-      return 'SEM'
+      return 'SEM';
       break;
     case 'BornDigital':
-      return 'BD'
+      return 'BD';
       break;
     case 'XRay':
-      return 'XRay'
+      return 'XRay';
       break;
     case 'LaserAidedProfiling':
-      return 'LAP'
+      return 'LAP';
       break;
     case 'Video':
-      return 'Video'
+      return 'Video';
       break;
     default:
       return 'Etc';

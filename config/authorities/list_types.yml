@@ -1,7 +1,10 @@
 terms:
   - id: Lesson Plan
     term: Lesson Plan
+    help_text: help text 1
   - id: Research Dataset
     term: Research Dataset
+    help_text: help text 2
   - id: Thematic
     term: Thematic
+    help_text: help text 3

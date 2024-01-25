@@ -3,6 +3,5 @@
 <%= f.input :list_type, as: :select,
     collection: list_types_service.select_all_options(f.object.list_type),
     include_blank: true,
-    input_html: { class: 'form-control' },
-    label_wrapper_html: { class: 'parsed' } 
+    input_html: { class: 'form-control' }
 %>

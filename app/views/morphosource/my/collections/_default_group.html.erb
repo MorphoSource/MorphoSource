@@ -8,6 +8,9 @@
       <!-- data-orderable='false' prevents jquery ordering of dataTable -->
       <th class="no-sort" data-orderable="false">&nbsp;<!-- thumbnail column --></th>
       <th data-orderable="false"><%= sortable_table_header(t("hyrax.dashboard.my.heading.title"), 'title_si')  %></th>
+      <% if @collections_type == "media_lists" %>
+        <th data-orderable="false"><%= sortable_table_header(t("hyrax.dashboard.my.heading.list_type"), 'list_type_ssim') %></th>
+      <% end %>
       <th data-orderable="false"><%= t("hyrax.dashboard.my.heading.media") %></th>
       <th data-orderable="false"><%= sortable_table_header(t("hyrax.dashboard.my.heading.last_modified"), 'date_modified_dtsi') %></th>
       <th data-orderable="false"><%= t("hyrax.dashboard.my.heading.membership") %></th>

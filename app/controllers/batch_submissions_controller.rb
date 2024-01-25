@@ -955,6 +955,8 @@ class BatchSubmissionsController < ApplicationController
       'Laser'
     when 'ConfocalImageStacking'
       'Confocal'
+    when 'LightSheetFluorescenceMicroscopy'
+      'LSFM'
     when 'Infrared'
       'Infrared'
     when 'ReflectanceTransformationImaging'

@@ -271,49 +271,9 @@ $( document ).ready(function() {
       }
     })
 
-    function updateMediaTitle() {
-      var parts = $('[name="media[part][]"]').map(function(){
-        if ($(this).val() != '')
-          return $(this).val();
-      }).get().join(', ');
-      if (parts == '') {
-        parts = 'Element Unspecified';
-      }
-      parts = toTitleCase(parts);
-      var mediaType = $('[name="media[media_type]"]').val();
-      mediaType = '[' + mediaType + ']';
-      if ($('[name="imaging_event[ie_modality]"]').length)
-        var ie_modality = $('[name="imaging_event[ie_modality]"]').val();
-      else if ($('.showcase-value.imaging_event_modality').length)
-        var ie_modality = $('.showcase-value.imaging_event_modality').html();
-      else
-        var ie_modality = 'modality_undefined';
-      ie_modality = '[' + modalityAbbrev(ie_modality) + ']';
-      var title = parts + ' ' + mediaType + ' ' + ie_modality;
-      $('#showcase-title').text(title);
-    }
-
-    function updateDevice(organization, instutition) {
-      var organization_institution = $('#organization-title-value').text();
-      //console.log('in updateDevice, organization_institution ', organization_institution);
-      var organization_institution = organization + ' (' + instutition + ')';
-      $('#device-organization-institution-value').text(organization_institution);
-    }
-
     setupTooltip();
     removeLastRepeatable();
     adjust_form_media_type();
-
-    // update anything else after selecting a device.  remove later if not needed
-    //$('#select_device [data-behavior="add-relationship"]').click(function() {
-    //  var device_id = $('#device-id').text();
-    //  updateDevice('aaa', 'bb');
-    //})
-
-    // Change title on the fly when corresponding fields are updated
-    $('.form-group').on('change', '[name="media[media_type]"], input.media_part, [name="imaging_event[ie_modality]"]', function(){
-        updateMediaTitle();
-    });
 
     // when switching tab, show/hide content
     $('.nav-tabs > li').click(function() {

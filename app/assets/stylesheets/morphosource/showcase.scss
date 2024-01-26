@@ -806,6 +806,24 @@ html {
     white-space: nowrap;
   }
 
+  [class*="choose-columns"],
+  [class*="choose-columns"]:focus,
+  [class*="choose-columns"]:focus-visible {
+    background-color: transparent;
+    outline: none;
+    .dropdown-toggle, 
+    .dropdown-toggle:focus, 
+    .dropdown-toggle:focus-visible, 
+    .dropdown-toggle:active,
+    .dropdown-toggle:hover {
+      background-color: transparent;
+      outline: none;
+      .caret {
+        color: $button-color;
+      }
+    }
+  }
+
   .btn-danger {
     background-color: $button-danger-color;
     border-color: $button-danger-color;

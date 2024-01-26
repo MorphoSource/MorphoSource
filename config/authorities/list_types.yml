@@ -1,10 +1,10 @@
 terms:
   - id: Lesson Plan
     term: Lesson Plan
-    help_text: help text 1
+    help_text: "Lesson plan list type: Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. "
   - id: Research Dataset
     term: Research Dataset
-    help_text: help text 2
+    help_text: "Research Dataset list type: Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat." 
   - id: Thematic
     term: Thematic
-    help_text: help text 3
+    help_text: "Thematic list type: Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur." 

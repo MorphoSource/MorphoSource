@@ -27,6 +27,8 @@ module Morphosource
         can :read, String do |id|
           obj = SolrDocument.find(id)
           can? :read, obj
+        rescue
+          false
         end
       end
 

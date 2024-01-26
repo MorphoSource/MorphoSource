@@ -262,7 +262,7 @@ module Hyrax
 
     #
     # Count of files in a single location of accepted file type for archive ZIP/TAR file.
-    # For CT Image Series, this expresses the number of images in the primary series of the archive. 
+    # For Volumetric Image Series, this expresses the number of images in the primary series of the archive. 
     #
     # @return [String] Human-readable formatted numeric string for number of files
     #

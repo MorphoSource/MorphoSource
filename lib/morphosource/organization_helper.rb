@@ -178,12 +178,7 @@ module Morphosource
     end
 
     def media_type_label(value)
-      case value
-      when 'CTImageSeries'
-        'CT Image Series'
-      else
-        value.underscore.titleize
-      end
+      Morphosource::MediaTypesService.short_term(value) || "Unknown Type"
     end
 
     def origin_label(value)

@@ -95,7 +95,7 @@ en:
         media_types: Media Types
         taxonomies: Browse Taxonomy
         Mesh: Mesh or Point Cloud
-        CTImageSeries: CT Image Series
+        CTImageSeries: Volumetric Image Series
         PhotogrammetryImageSeries: Photogrammetry Image Series
         Image: Image
         Video: Video

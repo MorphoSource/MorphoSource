@@ -95,15 +95,15 @@ RSpec.describe Media do
         before do
           subject.media_type = ['CTImageSeries']
         end
-        it 'returns CT Image Series' do
-          expect(subject.human_readable_media_type).to eq ["CT Image Series"]
+        it 'returns Volumetric Image Series' do
+          expect(subject.human_readable_media_type).to eq ["Volumetric Image Series"]
         end
       end
       context 'media type is PhotogrammetryImageSeries' do
         before do
           subject.media_type = ['PhotogrammetryImageSeries']
         end
-        it 'returns CT Image Series' do
+        it 'returns Photogrammetry Image Series' do
           expect(subject.human_readable_media_type).to eq ["Photogrammetry Image Series"]
         end
       end
@@ -111,7 +111,7 @@ RSpec.describe Media do
         before do
           subject.media_type = ['Anything Else']
         end
-        it 'returns CT Image Series' do
+        it 'returns Anything Else' do
           expect(subject.human_readable_media_type).to eq ["Anything Else"]
         end
       end

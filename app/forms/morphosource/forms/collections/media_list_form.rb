@@ -8,8 +8,6 @@ module Morphosource
 
         self.terms += [:list_type]
 
-        self.required_fields = [:list_type]
-
         self.single_valued_fields = [:title, :description, :list_type]
 
         delegate :blacklight_config, to: Morphosource::Collections::MediaListsController

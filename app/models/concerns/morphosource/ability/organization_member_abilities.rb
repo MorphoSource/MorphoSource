@@ -27,6 +27,8 @@ module Morphosource
         can :read, String do |id|
           obj = SolrDocument.find(id)
           can? :read, obj
+        rescue
+          false
         end
       end
 
@@ -48,7 +50,7 @@ module Morphosource
           Rails.logger.debug("[CANCAN] Checking for individual file set access through organization membership")
           return false unless file_set = solr_document(file_set)
 
-          return false unless media_id = Morphosource::SolrService.new.get_docs("file_set_ids_ssim:#{file_set.id}").first["id"]
+          return false unless media_id = Morphosource::SolrService.new.get_docs("file_set_ids_ssim:#{file_set.id}").first&.dig("id")
 
           has_organizational_access_to_media?(media_id)
         end

@@ -23,7 +23,7 @@ RSpec.describe 'Morphosource::Ability', type: :model do
       let(:nonexistent_id) { '123' }
 
       it 'returns false' do
-        expect(ability.can? :read, non_existant_id).to be(false)
+        expect(ability.can? :read, nonexistent_id).to be(false)
         expect(ability.can? :read, nil).to be(false)
       end
     end

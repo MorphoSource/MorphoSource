@@ -21,7 +21,8 @@
                 collection: ['Yes','No'],
                 include_blank: true,
                 input_html: { class: 'form-control' },
-                label_wrapper_html: { class: 'required-flag' }
+                label_wrapper_html: { class: 'required-flag' },
+                required: true
             %>
             <%= f.input :description %>
             <%= render_edit_field_partial('sex', f: f) %>

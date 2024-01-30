@@ -8,7 +8,15 @@
         </button>
         <ul class="dropdown-menu">
           <li><input type="checkbox" class="toggle-vis" data-column="1" checked="checked" /> Title</li>
-          <% nextIndex = 2 %>
+          <% 
+          nextIndex = 2 
+          if @collections_type == "media_lists"
+            %>
+            <li><input type="checkbox" class="toggle-vis" data-column="<%= nextIndex %>" checked="checked" /> List type</li>
+            <% 
+            nextIndex = 3
+          end 
+          %>
           <li><input type="checkbox" class="toggle-vis" data-column="<%= nextIndex %>" checked="checked" /> Media</li>
           <li><input type="checkbox" class="toggle-vis" data-column="<%= nextIndex + 1 %>" checked="checked" /> Last modified</li>
           <li><input type="checkbox" class="toggle-vis" data-column="<%= nextIndex + 2 %>" checked="checked" /> Membership</li>

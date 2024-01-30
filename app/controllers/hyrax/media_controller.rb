@@ -69,7 +69,7 @@ module Hyrax
     def edit
       build_form
       @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
-
+      @member_of_collections_json = member_of_collections_json(@presenter.member_of_collection_presenters)  
       if (
         @presenter.imaging_event.present? && 
         (ie_work = ImagingEvent.find_by(id: @presenter.imaging_event.id)).present?
@@ -89,6 +89,16 @@ module Hyrax
       @new_processing_event_form = Hyrax::WorkFormService.build(::ProcessingEvent.new, current_ability, self)
       set_flash
       render '/hyrax/media/edit', presenter: @presenter
+    end
+
+    def member_of_collections_json(member_of_collections)
+      member_of_collections.map do |coll|
+        {
+          id: coll.id,
+          label: coll.title.first,
+          removable: current_user.can?(:edit, Collection.find(coll.id))
+        }
+      end.to_json
     end
 
     def set_flash

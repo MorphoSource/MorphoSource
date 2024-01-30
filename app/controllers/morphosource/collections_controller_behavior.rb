@@ -67,7 +67,8 @@ module Morphosource
       end
 
       def publication_settings_nag
-        flash[:alert] = "Your project or team is not published, but you have one or more media that are published. Publishing this project will increase the visibility of your published media, and will not affect the visibility of any private media you may have in the project or team. Select Edit to control publication settings." if private_project_published_media?
+        collection_type = @presenter&.human_readable_type&.downcase || "collection"
+        flash[:alert] = "Your #{collection_type} is not published, but you have one or more media that are published. Publishing this #{collection_type} will increase the visibility of your published media, and will not affect the visibility of any private media you may have in the #{collection_type}. Select Edit to control publication settings." if private_project_published_media?
       end
 
       def private_project_published_media?

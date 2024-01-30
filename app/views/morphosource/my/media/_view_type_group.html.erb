@@ -10,18 +10,10 @@
           <li><input type="checkbox" class="toggle-vis" data-column="2" checked="checked" /> ID</li>
           <li><input type="checkbox" class="toggle-vis" data-column="3" checked="checked" /> Part</li>
           <li><input type="checkbox" class="toggle-vis" data-column="4" checked="checked" /> Object</li>
-          <%
-          nextIndex = 5
-          if @po_type == 'bso'
-            %>
-            <li><input type="checkbox" class="toggle-vis" data-column="<%= nextIndex + 1 %>" checked="checked" /> Taxonomy</li>
-            <%
-            nextIndex = nextIndex + 1
-          end
-          %>
-          <li><input type="checkbox" class="toggle-vis" data-column="<%= nextIndex %>" checked="checked" /> Type</li>
-          <li><input type="checkbox" class="toggle-vis" data-column="<%= nextIndex + 1 %>" checked="checked" /> Date Added</li>
-          <li><input type="checkbox" class="toggle-vis" data-column="<%= nextIndex + 2 %>" checked="checked" /> Publication Status</li>
+          <li><input type="checkbox" class="toggle-vis" data-column="5" checked="checked" /> Taxonomy</li>
+          <li><input type="checkbox" class="toggle-vis" data-column="6" checked="checked" /> Type</li>
+          <li><input type="checkbox" class="toggle-vis" data-column="7" checked="checked" /> Date Added</li>
+          <li><input type="checkbox" class="toggle-vis" data-column="8" checked="checked" /> Publication Status</li>
         </ul>
       </div>
 

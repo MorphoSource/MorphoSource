@@ -558,6 +558,17 @@ html {
 
 .showcase {
 
+  /* hide the collapse/expand buttons when responsive */
+  table.dataTable.dtr-inline.collapsed > tbody {
+    tr.parent > td:first-child:before, 
+    tr.parent > th:first-child:before,
+    tr > td:first-child:before, 
+    tr > th:first-child:before {
+      content: none;
+      display: none;
+    }
+  }
+
   table.dataTable {
     tr {
       border-bottom: none;
@@ -793,6 +804,24 @@ html {
     color: $button-font-color;
     border-color: $button-border-color;
     white-space: nowrap;
+  }
+
+  [class*="choose-columns"],
+  [class*="choose-columns"]:focus,
+  [class*="choose-columns"]:focus-visible {
+    background-color: transparent;
+    outline: none;
+    .dropdown-toggle, 
+    .dropdown-toggle:focus, 
+    .dropdown-toggle:focus-visible, 
+    .dropdown-toggle:active,
+    .dropdown-toggle:hover {
+      background-color: transparent;
+      outline: none;
+      .caret {
+        color: $button-color;
+      }
+    }
   }
 
   .btn-danger {

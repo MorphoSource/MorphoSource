@@ -7,6 +7,9 @@ module Morphosource
       property :ordered_media, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/orderedMedia") do |index|
         index.as :stored_searchable
       end
+      property :list_type, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/listType") do |index|
+        index.as :stored_searchable, :symbol
+      end
     end
   end
 end

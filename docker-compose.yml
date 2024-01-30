@@ -28,7 +28,9 @@ services:
       - .:/app/samvera/hyrax-webapp
       - hyrax-derivatives:/app/samvera/hyrax-webapp/derivatives
       - hyrax-uploads:/app/samvera/hyrax-webapp/uploads
+      - rails-public:/app/samvera/hyrax-webapp/public
       - rails-tmp:/app/samvera/hyrax-webapp/tmp
+      - /Users/smc101/docker-share:/docker-share
     networks:
       - morphosource
 
@@ -37,7 +39,10 @@ services:
       context: .
       target: msworker
     container_name: app_worker
-    command: sh -c 'bundle && QUEUE=* bundle exec rails resque:workers'
+    command: sh -c 'bundle && COUNT=1 QUEUE=* bundle exec rails resque:workers'
+#    command: sh -c 'bundle && QUEUE=* bundle exec rails resque:workers'
+    stdin_open: true
+    tty: true
     user: app
     env_file:
       - ./vendor/docker/credentials.env
@@ -53,7 +58,9 @@ services:
       - .:/app/samvera/hyrax-webapp
       - hyrax-derivatives:/app/samvera/hyrax-webapp/derivatives
       - hyrax-uploads:/app/samvera/hyrax-webapp/uploads
+      - rails-public:/app/samvera/hyrax-webapp/public
       - rails-tmp:/app/samvera/hyrax-webapp/tmp
+      - /Users/smc101/docker-share:/docker-share
     networks:
       - morphosource
 
@@ -102,33 +109,8 @@ services:
       - solr
     volumes:
       - .:/app/samvera/hyrax-webapp
+      - rails-public:/app/samvera/hyrax-webapp/public
       - rails-tmp:/app/samvera/hyrax-webapp/tmp
-    networks:
-      - morphosource
-
-  db_migrate_test:
-    build:
-      context: .
-      target: morphosource
-      args:
-        - EXTRA_APK_PACKAGES=git less
-    container_name: db_migrate_test
-    user: app
-    env_file:
-      - ./vendor/docker/credentials.env
-      - ./vendor/docker/docker-compose.env
-      - ./vendor/docker/docker-compose-test.env
-    command: sh -c 'bundle && db-migrate-test.sh'
-    depends_on:
-      - postgres
-      - fcrepo
-      - solr
-      - app_test
-    profiles:
-      - test
-    volumes:
-      - .:/app/samvera/hyrax-webapp
-      - test-tmp:/app/samvera/hyrax-webapp/tmp
     networks:
       - morphosource
 
@@ -151,8 +133,8 @@ services:
     volumes:
       - fcrepo:/data
       - ./vendor/docker/fcrepo/fedora.xml:/var/lib/jetty/webapps/fedora.xml
-    ports:
-     - 8080:8080
+    ports: # Re-open ports for local dev environments
+      - 8080:8080
     networks:
       - morphosource
 
@@ -175,8 +157,8 @@ services:
   solr:
     image: solr:7.7.3
     container_name: solr
-    ports:
-     - 8983:8983
+    ports: # Re-open ports for local dev environments
+      - 8983:8983
     command:
       - sh
       - "-c"
@@ -209,6 +191,7 @@ volumes:
   fcrepo:
   hyrax-derivatives:
   hyrax-uploads:
+  rails-public:
   rails-tmp:
   redis:
   solr_home:
@@ -216,6 +199,7 @@ volumes:
   test-uploads:
   test-public:
   test-tmp:
+  docker-share:
 
 networks:
   morphosource:

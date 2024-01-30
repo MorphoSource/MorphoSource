@@ -5,7 +5,7 @@ RSpec.describe Morphosource::Forms::Collections::MediaListForm do
   let(:collection_form) { Hyrax::Forms::CollectionForm }
 
   it "has expected metadata terms" do
-    expect(subject.terms).to match_array(collection_form.terms)
+    expect(subject.terms).to match_array(collection_form.terms + [:list_type])
   end
 
   it "has expected required metadata terms" do

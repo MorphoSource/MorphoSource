@@ -34,6 +34,13 @@ input[type=checkbox].disabled {
 
 .showcase-edit {
 
+  .fa.btn-remove {
+    color: $button-color;
+  }
+  .fa.btn-remove.tooltip-icon {
+    color: $link-disabled-font-color;
+  }
+
   .multi_value .listing .input-group {
     margin-bottom: 0;
   }

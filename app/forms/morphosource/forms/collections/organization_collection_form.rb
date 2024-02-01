@@ -6,8 +6,6 @@ module Morphosource
 
         self.model_class = ::OrganizationCollection
 
-        self.single_valued_fields = [:title, :description]
-
         delegate :blacklight_config, to: Morphosource::Collections::OrganizationCollectionsController
 
         self.terms += [:address,

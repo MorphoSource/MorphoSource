@@ -39,17 +39,6 @@ module Morphosource
           presenter
         end
 
-        def after_update
-          respond_to do |format|
-            format.html {
-              redirect_to organization_permissions_path(@collection), notice: "Remote file submission settings updated" and return if params[:update_remote_file_submission_settings]
-
-              redirect_to collection_media_path(@collection), notice: t('hyrax.dashboard.my.action.collection_update_success')
-            }
-            format.json { render json: @collection, status: :updated, location: collection_media_path(@collection) }
-          end
-        end
-
         private
 
           def default_collection_type
@@ -64,6 +53,10 @@ module Morphosource
           # send a blank array so page doesn't break
           def member_subcollections
             []
+          end
+
+          def organization_permissions_tab
+            organization_permissions_path(@organization)
           end
 
           def load_collection

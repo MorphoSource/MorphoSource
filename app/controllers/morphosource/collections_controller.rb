@@ -63,6 +63,8 @@ module Morphosource
         config.add_facet_field "project", field: "member_of_project_ids_ssim", label: "Project", limit: 10, helper_method: :collection_title_by_id
         config.add_facet_field "owner", field: "user_with_ownership_name_ssim", label: "Data Manager", limit: 10
         config.add_facet_field "depositor", field: "depositor_name_ssim", label: "Data Uploader", limit: 10
+        # hidden field used to determine if there are specimens on the page
+        config.add_facet_field "object_type", field: "media_physical_object_type_ssim", label: "Object Type", limit: 10, show: false
       end
     end
     configure_facets

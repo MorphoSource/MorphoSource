@@ -96,7 +96,7 @@ module Hyrax
         end
 
         def self.registered_ingest_dirs
-          Hyrax.config.registered_ingest_dirs
+          Hyrax.config.whitelisted_ingest_dirs
         end
 
         # @param uri [URI] the uri fo the resource to import

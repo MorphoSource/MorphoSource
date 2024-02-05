@@ -175,5 +175,6 @@ module SimpleForm
   class FormBuilder < ActionView::Helpers::FormBuilder
     map_type :multi_value, to: MultiValueInput
     map_type :multi_value_select, to: MultiValueSelectInput
+    map_type :controlled_vocabulary, to: ControlledVocabularyInput
   end
 end

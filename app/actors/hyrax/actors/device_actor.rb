@@ -27,7 +27,7 @@ module Hyrax
         def save_organization_id(env)
           env.attributes['organization_id'] ||= []
           organizations = env.attributes['work_parents_attributes']
-          organizations.each do |k, v|
+          organizations&.each do |k, v|
             id = v['id']
             if v['_destroy'] == "false"
               env.attributes['organization_id'] << id

@@ -29,6 +29,11 @@ RSpec.describe IIIFManifest::FileSetManager do
       allow(file_set).to receive(:mime_type).and_return(mime_type)
       file_set.update_index
     end
+    context 'media type is not set' do
+      let(:media_type)  { [] }
+
+      it { expect(subject.results).to eq([]) }
+    end
 
     context 'when media is a mesh' do
       let(:media_type) { ['Mesh'] }

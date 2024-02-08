@@ -9,7 +9,13 @@ module Morphosource
       before_action :authorize_collection_access, except: [:facet]
 
       def search_builder_class
-        @collection.search_builder_class
+        if @collection.present?
+          @collection.search_builder_class
+        elsif current_user.admin?
+          Morphosource::Users::EditMediaSearchBuilder
+        else
+          Morphosource::Users::MyMediaSearchBuilder
+        end
       end
 
       def index

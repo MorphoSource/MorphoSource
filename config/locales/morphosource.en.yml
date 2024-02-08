@@ -173,7 +173,7 @@ en:
       format_labels:
         image: 'Image'
         video: 'Video'
-        ct_mri: 'CT/MRI Image Series'
+        ct_mri: 'Volumetric Image Series'
         photogrammetry: 'Photogrammetry Image Series'
         mesh: 'Mesh or Point Cloud'
         sequential_section: 'Sequential Section Image Series'

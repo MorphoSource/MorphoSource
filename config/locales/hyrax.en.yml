@@ -95,7 +95,7 @@ en:
         media_types: Media Types
         taxonomies: Browse Taxonomy
         Mesh: Mesh or Point Cloud
-        CTImageSeries: CT Image Series
+        CTImageSeries: Volumetric Image Series
         PhotogrammetryImageSeries: Photogrammetry Image Series
         Image: Image
         Video: Video
@@ -259,6 +259,7 @@ en:
           edit_sequential section_list: Edit sequential section list
           delete_sequential section_list: Delete sequential section list
         heading:
+          list_type: List type
           visibility: Visibility
           collection_type: collection type
       collections:

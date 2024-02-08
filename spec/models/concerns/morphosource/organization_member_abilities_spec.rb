@@ -19,6 +19,15 @@ RSpec.describe 'Morphosource::Ability', type: :model do
   end
 
   describe 'organizational_member_abilities' do
+    context 'the work does not exist' do
+      let(:nonexistent_id) { '123' }
+
+      it 'returns false' do
+        expect(ability.can? :read, nonexistent_id).to be(false)
+        expect(ability.can? :read, nil).to be(false)
+      end
+    end
+
     context 'the work is private' do
       context 'the user is not a member of the media organization' do
         before do

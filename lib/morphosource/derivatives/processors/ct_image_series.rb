@@ -23,7 +23,7 @@ module Morphosource::Derivatives::Processors
     def process_with_timeout
       Timeout.timeout(timeout) { create_ct_image_series_derivative }
     rescue Timeout::Error
-      raise Morphosource::Derivatives::Processors::TimeoutError, "Unable to process CT Image Series derivative\nThe command took longer than #{timeout} seconds to execute"
+      raise Morphosource::Derivatives::Processors::TimeoutError, "Unable to process Volumetric Image Series derivative\nThe command took longer than #{timeout} seconds to execute"
     end
 
     protected

@@ -328,6 +328,7 @@ Rails.application.routes.draw do
 
     ### DASHBOARD ###
     scope module: :dashboard do
+
       ### PROFILE ###
       get 'dashboard/profiles/:id', to: 'profiles#show', as: 'profile_show'
       get 'dashboard/profiles/:id/edit', to: 'profiles#edit', as: 'profile_edit'
@@ -384,7 +385,6 @@ Rails.application.routes.draw do
         put 'projects', to: 'projects#update'
         put 'projects/:id', to: 'projects#update', as: 'update_project'
         patch 'projects/:id', to: 'projects#update'
-
 
         # Organization collections
         get 'organizations/new', to: 'organization_collections#new', as: 'new_organization'
@@ -723,5 +723,3 @@ Rails.application.routes.draw do
     concerns :exportable
   end
 end
-
-

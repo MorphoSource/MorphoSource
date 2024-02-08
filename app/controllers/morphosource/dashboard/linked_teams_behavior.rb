@@ -8,7 +8,7 @@ module Morphosource
 
       def add_organization
         @organization.team_id = [@team.id]
-        @organization.save
+        @organization.save!
         add_read_permissions
         add_permissions_for_po
       end
@@ -25,12 +25,12 @@ module Morphosource
         end
       end
 
-      def add_permissions_for_po        
+      def add_permissions_for_po
         @po_edit_groups = groups_for_po(@team.id)
         @organization.physical_objects.each do |po|
           final_read_groups = po.read_groups + @po_edit_groups
           final_edit_groups = po.edit_groups + @po_edit_groups
-          UpdateWorkAccessGroupsJob.perform_later(po, final_read_groups, final_edit_groups) 
+          UpdateWorkAccessGroupsJob.perform_later(po, final_read_groups, final_edit_groups)
         end
       end
 
@@ -140,10 +140,10 @@ module Morphosource
 
       def format_update_params
         format_download_permission
-        multi_value_fields = [:data_manager, :download_permission, :download_reviewer, :permits_3d_use, 
-          :permits_commercial_use, :license, :rights_statement, :agreement_uri, 
-          :morphosource_use_agreement_type, :required_archival_of_published_derivatives, 
-          :preview_mode, :rights_holder, :rights_holder_blank, :rights_statement_blank, 
+        multi_value_fields = [:data_manager, :download_permission, :download_reviewer, :permits_3d_use,
+          :permits_commercial_use, :license, :rights_statement, :agreement_uri,
+          :morphosource_use_agreement_type, :required_archival_of_published_derivatives,
+          :preview_mode, :rights_holder, :rights_holder_blank, :rights_statement_blank,
           :license_blank, :permissions_enforcement_mode]
         multi_value_fields.each do |field|
           @params[field] = Array(@params[field]) if @params.key?(field)

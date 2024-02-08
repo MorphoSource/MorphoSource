@@ -110,14 +110,7 @@ class Media < Morphosource::Works::Base
   end
 
   def human_readable_media_type
-    case media_type.first
-    when "CTImageSeries"
-      ["CT Image Series"]
-    when "PhotogrammetryImageSeries"
-      ["Photogrammetry Image Series"]
-    else
-      media_type
-    end
+    [Morphosource::MediaTypesService.short_term(media_type&.first) || "Unknown Type"]
   end
 
   def modality

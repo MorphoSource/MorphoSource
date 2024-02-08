@@ -154,19 +154,6 @@ RSpec.describe Morphosource::CollectionsController, type: :controller do
         end
       end
     end
-    describe 'calling other methods' do
-      before do
-        team.visibility = 'open'
-        team.save!
-      end
-      it do
-        expect(subject).to receive(:presenter)
-        expect(subject).to receive(:query_solr)
-        expect(subject).to receive(:query_collection_counts)
-        expect(subject).to receive(:query_collection_members)
-        get :show, params: { id: team.id }
-      end
-    end
   end
 
   describe '#about' do

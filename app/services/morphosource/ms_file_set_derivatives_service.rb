@@ -83,7 +83,7 @@ module Morphosource
         elsif @errors.count > 1
           err0_trace = @errors[0].backtrace.present? ? " (#{@errors[0].backtrace.first})" : ""
           err1_trace = @errors[1].backtrace.present? ? " (#{@errors[1].backtrace.first})" : ""
-          raise "Two errors were encountered generating derivatives for CT image series. Error 1 from 2D thumbnail derivative generation: #{@errors[0].message}#{err0_trace}. Error 2 from 3D asset derivative generation: #{@errors[1].message}#{err1_trace}."
+          raise "Two errors were encountered generating derivatives for volumetric image series. Error 1 from 2D thumbnail derivative generation: #{@errors[0].message}#{err0_trace}. Error 2 from 3D asset derivative generation: #{@errors[1].message}#{err1_trace}."
         end
       end
 

@@ -9,14 +9,19 @@ module Morphosource
           # clear catalog facet fields
           config.facet_fields = {}
           config.add_facet_field "media_type", field: "human_readable_media_type_ssim", label: "Media Type", limit: 10
+          config.add_facet_field "modality", field: "modality_ssim", label: "Modality", limit: 10
+          config.add_facet_field "object_type", field: "media_physical_object_type_ssim", label: "Object Type", limit: 10
           config.add_facet_field "object", field: "physical_object_title_ssim", label: "Object", limit: 10
           config.add_facet_field "organization", field: "media_organization_ssim", label: "Organization", limit: 10
+          config.add_facet_field "imaging_facility", field: "media_device_facility_organization_ssim", label: "Imaging Facility", limit: 10
+          config.add_facet_field "imaging_device", field: "media_device_ssim", label: "Imaging Device", limit: 10
           config.add_facet_field "publication_status", field: "publication_status_ssi", label: "Publication Status", limit: 10
           config.add_facet_field "taxonomy_name", field: "taxonomy_ssim", label: "Taxonomy (Name)", limit: 10
           config.add_facet_field "team", field: "member_of_team_ids_ssim", label: "Team", limit: 10, helper_method: :collection_title_by_id
           config.add_facet_field "project", field: "member_of_project_ids_ssim", label: "Project", limit: 10, helper_method: :collection_title_by_id
           config.add_facet_field "owner", field: "user_with_ownership_name_ssim", label: "Data Manager", limit: 10
           config.add_facet_field "depositor", field: "depositor_name_ssim", label: "Data Uploader", limit: 10
+          config.add_facet_field "data_sponsor", field: "active_fund_code_title_ssim", label: "Data Sponsor", limit: 10
         end
       end
       configure_facets

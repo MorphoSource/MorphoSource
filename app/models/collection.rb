@@ -208,6 +208,7 @@ class Collection < ActiveFedora::Base
   end
 
   def remove_team_access_grants(work)
+    return unless team? || project?  
     work.edit_groups -= [managers_group.name, editors_group.name]
     work.read_groups -= [viewers_group.name]
     work.download_groups -= [downloaders_group.name]

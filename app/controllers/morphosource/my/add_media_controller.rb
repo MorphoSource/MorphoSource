@@ -9,13 +9,11 @@ module Morphosource
       before_action :authorize_collection_access, except: [:facet]
 
       def search_builder_class
-        if @collection.present?
-          @collection.search_builder_class
-        elsif current_user.admin?
-          Morphosource::Users::EditMediaSearchBuilder
-        else
-          Morphosource::Users::MyMediaSearchBuilder
+        unless @collection.present?
+          # e.g. called from filter works > more link
+          @collection = Collection.find(params["collection_id"])
         end
+        @collection.search_builder_class
       end
 
       def index

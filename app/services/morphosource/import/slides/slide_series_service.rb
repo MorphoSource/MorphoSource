@@ -264,7 +264,7 @@ module Morphosource
           def gbif_slides
             media = occurrence_json.dig('extensions', 'http://rs.tdwg.org/ac/terms/Multimedia')
             # filter for iiif uri with full area and max size - variant is sometimes not applied correctly.
-            media = media.select { |m| m['http://rs.tdwg.org/ac/terms/accessURI'].include?('full/max') }
+            media = media.select { |m| m['http://rs.tdwg.org/ac/terms/accessURI'].include?('full/') }
             return media unless filter_slides.present?
 
             media.select { |m| m['http://rs.tdwg.org/ac/terms/variant'] == filter_slides }

@@ -11,7 +11,7 @@ module Hydra::Works
       new(object, source, options).characterize
     end
 
-    attr_accessor :object, :source, :mapping, :parser_class, :tools
+    attr_accessor :object, :source, :mapping, :parser_class, :tools, :tmp_dir_path
     attr_accessor :sub_object, :content, :file_name, :accepted_file_count
 
     def initialize(object, source, options)
@@ -24,18 +24,33 @@ module Hydra::Works
     end
 
     def characterize
+      # Peek inside of archives
       if File.extname(@source).downcase == ".tar"
         @content, @file_name, @accepted_file_count = tar_to_content
       else
         @content, @file_name, @accepted_file_count = zip_to_content
       end
       raise "Error characterizing #{source}: no representative file found" if file_name == nil
-      @parser_class, @tools = blender_options if mesh_file_types.include? File.extname(file_name).downcase
+
+      # Extract metadata
+      if mesh_file_types.include? File.extname(file_name).downcase
+        # Use Blender instead of FITS for characterization
+        @parser_class, @tools = blender_options
+        # Special case if GLTF: must extract all files
+        if File.extname(file_name).downcase == '.gltf'
+          @needs_cleanup = true
+          @content = extract_representative_content_and_others
+        end
+      end
       extracted_md = extract_metadata(content)
+
+      # Process metadata
       terms = parse_metadata(extracted_md)
       store_metadata(terms) # places fields in sub_object (always have to call fields directly)
       transfer_metadata_to_object # places fields in object
       transfer_special_fields_to_object # places mime_type and file_size in object from sub_object
+    ensure
+      cleanup_tmp_files if @needs_cleanup
     end
 
     # Gets representative zip file as content.
@@ -135,10 +150,65 @@ module Hydra::Works
       ['mime_type', 'file_size']
     end
 
-    def transfer_special_fields_to_object
-      object.send('contents_file_name=', file_name)
-      object.send('contents_accepted_file_count=', accepted_file_count)
-      special_fields.each { |sf| object.send("contents_#{sf.to_s}=", sub_object.send(sf)) }
+    # Extract all archive files to a tmp location
+    def extract_representative_content_and_others
+      @tmp_dir_path = Rails.root.join(Hyrax.config.derivatives_tmp_path, SecureRandom.uuid)
+      Dir.mkdir tmp_dir_path unless File.exist? tmp_dir_path
+      content_path = nil
+
+      case File.extname(source).downcase
+      when '.zip'
+        content_path = extract_representative_content_and_others_zip
+      when '.tar'
+        content_path = extract_representative_content_and_others_tar
+      else
+        raise "Archive file extension not valid"
+      end
+
+      if content_path
+        return open(content_path)
+      else
+        raise "Previously identified representative file not found in archive when extracting files for characterization"
+      end
+    end
+
+    def extract_representative_content_and_others_zip
+      content_path = nil 
+      Zip::File.open(source) do |zip_file|
+        zip_file.each do |f|
+          next if File.basename(f.name).start_with?('.')
+
+          f_path = File.join(tmp_dir_path, f.name)
+          zip_file.extract(f.name, f_path)
+          
+          if f.name == file_name
+            content_path = f_path
+          end
+        end
+      end
+      return content_path
+    end
+
+    def extract_representative_content_and_others_tar
+      content_path = nil
+      File.open(source, 'rb') do |file|
+        Archive::Tar::Minitar::Reader.open(file) do |tar|
+          tar.each do |f|
+            next if !f.file? || File.basename(f.name).start_with?('.')
+
+            f_path = File.join(tmp_dir_path, f.name)
+            File.new(f_path, 'wb')
+            File.open(f_path, 'wb') do |output_file|
+              output_file.write(f.read)
+            end
+
+            if f.name == file_name
+              content_path = f_path
+            end
+          end
+        end
+      end
+      return content_path
     end
 
     def extract_metadata(content)
@@ -200,5 +270,19 @@ module Hydra::Works
       sub_object.send("#{property}=", value)
     end
 
+    def transfer_special_fields_to_object
+      object.send('contents_file_name=', file_name)
+      object.send('contents_accepted_file_count=', accepted_file_count)
+      special_fields.each { |sf| object.send("contents_#{sf.to_s}=", sub_object.send(sf)) }
+    end
+
+    # In special GLTF case that all archive files are extracted, delete files after characterization
+    def cleanup_tmp_files
+      begin
+        FileUtils.rm_r tmp_dir_path
+      rescue Errno::ENOTEMPTY
+        Rails.logger.debug "in cleanup_tmp_files: Directory '#{tmp_dir_path}' not empty."
+      end
+    end
   end
 end

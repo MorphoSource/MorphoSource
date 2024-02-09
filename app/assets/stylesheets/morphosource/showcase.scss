@@ -78,6 +78,10 @@ html {
 */
 .showcase {
 
+  .viewer-wrapper iframe {
+    position: inherit;
+  }
+
   ul.error-list, ul.warn-list {
     margin-left: 0;
     margin-block-start: 0;

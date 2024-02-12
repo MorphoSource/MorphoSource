@@ -58,7 +58,7 @@ module Morphosource
       def after_update
         respond_to do |format|
           format.html {
-            redirect_to organization_permissions_tab, notice: "Remote file submission settings updated" and return if params[:update_remote_file_submission_settings]
+            redirect_to permissions_path, notice: "Remote file submission settings updated" and return if params[:update_remote_file_submission_settings]
 
             redirect_to collection_media_path(@collection), notice: t('hyrax.dashboard.my.action.collection_update_success')
           }
@@ -188,7 +188,7 @@ module Morphosource
         @collection.thumbnail_id = media.try(:thumbnail_id)
       end
 
-      def organization_permissions_tab
+      def permissions_path
         team_organization_path(@collection)
       end
     end

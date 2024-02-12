@@ -55,7 +55,7 @@ module Morphosource
             []
           end
 
-          def organization_permissions_tab
+          def permissions_path
             organization_permissions_path(@organization)
           end
 

@@ -147,4 +147,41 @@ RSpec.describe Morphosource::CollectionRolesHelper, type: :helper do
     end
 
   end
+
+  describe 'list_includes_specimens?' do
+    let(:response)    { Morphosource::SolrService.new.get("has_model_ssim:Media", {"facet.field"=>["media_physical_object_type_ssim"]}) }
+
+    context 'document list is only specimens' do
+      let!(:media_doc1) { FactoryBot.create(:media_document) }
+      let!(:media_doc2) { FactoryBot.create(:media_document) }
+      let!(:media_doc3) { FactoryBot.create(:media_document) }
+
+      it 'returns true' do
+        expect(helper.response_includes_specimens?(response)).to be true
+      end
+    end
+
+    context 'document list is only cultural heritage objects' do
+      let!(:media_doc1) { FactoryBot.create(:cho_media_document) }
+      let!(:media_doc2) { FactoryBot.create(:cho_media_document) }
+      let!(:media_doc3) { FactoryBot.create(:cho_media_document) }
+
+      it 'returns false' do
+        expect(helper.response_includes_specimens?(response)).to be false
+      end
+    end
+
+    context 'document list is a mix of specimens and cultural heritage objects' do
+      let!(:media_doc1) { FactoryBot.create(:media_document) }
+      let!(:media_doc2) { FactoryBot.create(:media_document) }
+      let!(:media_doc3) { FactoryBot.create(:media_document) }
+      let!(:media_doc4) { FactoryBot.create(:cho_media_document) }
+      let!(:media_doc5) { FactoryBot.create(:cho_media_document) }
+      let!(:media_doc6) { FactoryBot.create(:cho_media_document) }
+
+      it 'returns true' do
+        expect(helper.response_includes_specimens?(response)).to be true
+      end
+    end
+  end
 end

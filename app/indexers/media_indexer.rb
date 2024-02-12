@@ -186,6 +186,7 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['physical_object_title_ssi'] = physical_object_title&.first&.downcase
       solr_doc['taxonomy_ssi'] = taxonomy_titles&.first&.downcase
       solr_doc['human_readable_media_type_ssi'] = mt&.first&.downcase
+      solr_doc['short_description_ssi'] = object.short_description&.first&.downcase
 
       # fund code data sponsor
       solr_doc['active_fund_code_title_ssim'] = object.active_fund_code_title

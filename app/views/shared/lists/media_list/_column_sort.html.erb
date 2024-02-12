@@ -7,11 +7,8 @@
     <li><input type="checkbox" class="toggle-vis" data-column="3" checked="checked" /> Part</li>
     <li><input type="checkbox" class="toggle-vis" data-column="4" checked="checked" /> Object</li>
     <li><input type="checkbox" class="toggle-vis" data-column="5" checked="checked" />
-      <% if first_media_is_specimen?(@document_list.first) %>
-        Taxonomy</li>
-      <% else %>
-        Description</li>
-      <% end %>
+      <%= response_includes_specimens?(@response) ? "Taxonomy" : "Description" %>
+    </li>
     <li><input type="checkbox" class="toggle-vis" data-column="6" checked="checked" /> Type</li>
     <% nextIndex = 7 %>
     <% if @is_team %>

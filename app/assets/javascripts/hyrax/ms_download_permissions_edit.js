@@ -4,9 +4,9 @@ $( document ).ready(function() {
   var organization_edit_form = $('form[id*="edit_organization"]');
 
   if ($('form[id*="edit_organization"]').length) {
-    var model = 'organization'
+    var model = $('form[id*="edit_organization_collection"]').length ? 'organization_collection' : 'organization';
   } else if ($('form[id*="edit_media"]').length) {
-    var model = 'media'
+    var model = 'media';
   }
 
   if ( media_edit_form.length || organization_edit_form.length ) {

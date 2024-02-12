@@ -74,6 +74,14 @@ RSpec.describe 'collections dashboard routes', type: :routing do
     route = { controller: 'morphosource/dashboard/collections/organization_collections', action: 'members', id: id }
     expect(:get => "/dashboard/organizations/#{id}/members").to route_to(route)
   end
+  it 'has a permissions route' do
+    route = { controller: 'morphosource/dashboard/collections/organization_collections', action: 'permissions', id: id }
+    expect(:get => "/dashboard/organizations/#{id}/permissions").to route_to(route)
+  end
+  it 'has a projects route' do
+    route = { controller: 'morphosource/dashboard/collections/organization_collections', action: 'projects', id: id }
+    expect(:get => "/dashboard/organizations/#{id}/projects").to route_to(route)
+  end
   it 'has a new organization route' do
     route = { controller: 'morphosource/dashboard/collections/organization_collections', action: 'new' }
     expect(:get => "/dashboard/organizations/new").to route_to(route)

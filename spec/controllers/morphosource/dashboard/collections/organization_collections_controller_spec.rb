@@ -3,54 +3,65 @@ require 'rails_helper'
 
 RSpec.describe Morphosource::Dashboard::Collections::OrganizationCollectionsController, type: :controller do
 
+  let(:depositor)     { FactoryBot.create(:contributor) }
+  let!(:organization) { FactoryBot.create(:organization_collection, visibility: 'open', depositor: depositor.ms_id) }
+  let(:params)        { { id: organization.id } }
+  let(:user)          { depositor }
+
+  before do
+    sign_in user
+  end
+
   describe 'temporary admin-only restriction' do
-    let(:depositor)     { FactoryBot.create(:contributor) }
-    let!(:organization) { FactoryBot.create(:organization_collection, visibility: 'open', depositor: depositor.ms_id) }
-    let(:params)        { { id: organization.id } }
-
-    before do
-      sign_in user
-    end
-
     context 'user is an admin' do
       let(:user)  { FactoryBot.create(:admin) }
 
-      it 'responds with a 200' do
+      it 'responds with a 200 or a redirect' do
         get :edit, params: params
         expect(response.status).to eq(200)
         get :members, params: params
         expect(response.status).to eq(200)
+        get :permissions, params: params
+        expect(response.status).to eq(200)
+        get :projects, params: params
+        expect(response.status).to eq(200)
         get :new
         expect(response.status).to eq(200)
-        post :create, params: { "organization_collection" => { "title" => ['organization'] } }
-        expect(response.status).to eq(200)
-        put :update, params: { "organization_collection" => { "id" => organization.id } }
-        expect(response.status).to eq(200)
-        patch :update, params: { "organization_collection" => { "id" => organization.id } }
-        expect(response.status).to eq(200)
+        post :create, params: { "organization_collection" => { "title" => 'organization' } }
+        expect(response).to redirect_to(organization_edit_path(OrganizationCollection.last))
+        put :update, params: { "id" => organization.id, "organization_collection" => { "title" => "new title" } }
+        expect(response).to redirect_to(organization_path(organization))
+        put :update, params: { "id" => organization.id, "update_remote_file_submission_settings" => "true","organization_collection" => { "title" => "new title" } }
+        expect(response).to redirect_to(organization_permissions_path(organization))
+        patch :update, params: { "id" => organization.id, "organization_collection" => { "title" => "new title" } }
+        expect(response).to redirect_to(organization_path(organization))
+        put :update, params: { "id" => organization.id, "update_remote_file_submission_settings" => "true","organization_collection" => { "title" => "new title" } }
+        expect(response).to redirect_to(organization_permissions_path(organization))
         get :files, params: params
         expect(response.status).to eq(200)
       end
     end
 
     context 'user is not an admin' do
-      let(:user)  { depositor }
-
-      it 'responds with a redirect' do
+      it 'responds with a redirect to root' do
       get :edit, params: params
-        expect(response.status).to eq(302)
+        expect(response.status).to redirect_to(root_path)
         get :members, params: params
-        expect(response.status).to eq(302)
+        expect(response.status).to redirect_to(root_path)
+        get :permissions, params: params
+        expect(response.status).to redirect_to(root_path)
+        get :projects, params: params
+        expect(response.status).to redirect_to(root_path)
         get :new
-        expect(response.status).to eq(302)
-        post :create, params: { "organization_collection" => { "title" => ['organization'] } }
-        expect(response.status).to eq(302)
-        put :update, params: { "organization_collection" => { "id" => organization.id } }
-        expect(response.status).to eq(302)
-        patch :update, params: { "organization_collection" => { "id" => organization.id } }
-        expect(response.status).to eq(302)
+        expect(response.status).to redirect_to(root_path)
+        post :create, params: { "organization_collection" => { "title" => 'organization' } }
+        expect(response.status).to redirect_to(root_path)
+        put :update, params: { "id" => organization.id, "organization_collection" => { "title" => "organization title" } }
+        expect(response.status).to redirect_to(root_path)
+        patch :update, params: { "id" => organization.id, "organization_collection" => { "title" => "organization title" } }
+        expect(response.status).to redirect_to(root_path)
         get :files, params: params
-        expect(response.status).to eq(302)
+        expect(response.status).to redirect_to(root_path)
       end
     end
   end
@@ -60,7 +71,7 @@ RSpec.describe Morphosource::Dashboard::Collections::OrganizationCollectionsCont
   end
 
   describe 'form_class' do
-    it { expect(controller.form_class).to be(Morphosource::Forms::Collections::OrganizationForm) }
+    it { expect(controller.form_class).to be(Morphosource::Forms::Collections::OrganizationCollectionForm) }
   end
 
   describe 'default_collection_type' do
@@ -71,5 +82,12 @@ RSpec.describe Morphosource::Dashboard::Collections::OrganizationCollectionsCont
 
   describe 'collection_class' do
     it { expect(subject.send(:collection_class)).to eq(OrganizationCollection) }
+  end
+
+  describe 'organization_permissions_tab' do
+    it 'is the organization_permissions_path' do
+      subject.instance_variable_set(:@organization, organization)
+      expect(subject.send(:organization_permissions_tab)).to eq(organization_permissions_path(organization))
+    end
   end
 end

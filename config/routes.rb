@@ -392,6 +392,8 @@ Rails.application.routes.draw do
         get 'organizations/:id/edit', to: redirect('dashboard/organizations/%{id}')
         get 'organizations/:id/files', to: 'organization_collections#files'
         get 'organizations/:id/members', to: 'organization_collections#members', as: 'organization_members'
+        get 'organizations/:id/permissions', to: 'organization_collections#permissions', as: 'organization_permissions'
+        get 'organizations/:id/projects', to: 'organization_collections#projects', as: 'organization_projects'
         post 'organizations', to: 'organization_collections#create'
         put 'organizations', to: 'organization_collections#update'
         put 'organizations/:id', to: 'organization_collections#update', as: 'update_organization'

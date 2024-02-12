@@ -4,11 +4,7 @@ $( document ).ready(function() {
   var organization_edit_form = $('form[id*="edit_organization"]');
 
   if ($('form[id*="edit_organization"]').length) {
-    if ($('form[id*="edit_organization_collection"]').length) {
-      var model = 'organization_collection'
-    } else {
-      var model = 'organization'
-    }
+    var model = $('form[id*="edit_organization_collection"]').length ? 'organization_collection' : 'organization';
   } else if ($('form[id*="edit_media"]').length) {
     var model = 'media'
   }

@@ -674,6 +674,20 @@ input[type=checkbox].disabled {
     }
   }
 
+  .fileupload-buttonbar {
+    padding: 2px 8px;
+  }
+
+  #delete-organization {
+    margin-left: 10px;
+  }
+
+  // uploaded logos and banners
+  div.branding-logo-row, div.branding-banner-row {
+    position: relative;
+    left: 15px;
+  }
+
   .form-add-organization-wrapper {
     > div {
       text-align: center;

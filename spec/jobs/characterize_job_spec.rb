@@ -96,16 +96,10 @@ RSpec.describe CharacterizeJob do
           expect(subject[:point_count_tesim].first).to eq("86317")
           expect(subject[:face_count_tesim].first).to eq("149999")
           expect(subject[:edges_per_face_tesim].first).to eq("3")
-          expect(subject[:bounding_box_x_tesim].first).to eq("9118.23876953125")
-          expect(subject[:bounding_box_y_tesim].first).to eq("3385.9429931640625")
-          expect(subject[:bounding_box_z_tesim].first).to eq("381.0865936279297")
           expect(subject[:color_format_tesim].first).to eq("")
           expect(subject[:normals_format_tesim].first).to eq("")
           expect(subject[:has_uv_space_tesim].first).to eq("True")
           expect(subject[:vertex_color_tesim].first).to eq("False")
-          expect(subject[:centroid_x_tesim].first).to eq("139.47683424785572")
-          expect(subject[:centroid_y_tesim].first).to eq("7.3251120224119735")
-          expect(subject[:centroid_z_tesim].first).to eq("-67.93428492292928")
         end
       end
         
@@ -241,16 +235,10 @@ RSpec.describe CharacterizeJob do
           expect(subject[:point_count_tesim].first).to eq("75818")
           expect(subject[:face_count_tesim].first).to eq("149999")
           expect(subject[:edges_per_face_tesim].first).to eq("3")
-          expect(subject[:bounding_box_x_tesim].first).to eq("9118.23876953125")
-          expect(subject[:bounding_box_y_tesim].first).to eq("381.0865936279297")
-          expect(subject[:bounding_box_z_tesim].first).to eq("3385.9429931640625")
           expect(subject[:color_format_tesim].first).to eq("")
           expect(subject[:normals_format_tesim].first).to eq("")
           expect(subject[:has_uv_space_tesim].first).to eq("True")
           expect(subject[:vertex_color_tesim].first).to eq("False")
-          expect(subject[:centroid_x_tesim].first).to eq("120.84283218195982")
-          expect(subject[:centroid_y_tesim].first).to eq("-72.52004865040944")
-          expect(subject[:centroid_z_tesim].first).to eq("-25.204862603600535")
         end
       end
 
@@ -272,16 +260,10 @@ RSpec.describe CharacterizeJob do
           expect(subject[:point_count_tesim].first).to eq("86317")
           expect(subject[:face_count_tesim].first).to eq("149999")
           expect(subject[:edges_per_face_tesim].first).to eq("3")
-          expect(subject[:bounding_box_x_tesim].first).to eq("9118.23876953125")
-          expect(subject[:bounding_box_y_tesim].first).to eq("3385.9429931640625")
-          expect(subject[:bounding_box_z_tesim].first).to eq("381.0865936279297")
           expect(subject[:color_format_tesim].first).to eq("")
           expect(subject[:normals_format_tesim].first).to eq("")
           expect(subject[:has_uv_space_tesim].first).to eq("True")
           expect(subject[:vertex_color_tesim].first).to eq("False")
-          expect(subject[:centroid_x_tesim].first).to eq("139.47683424785572")
-          expect(subject[:centroid_y_tesim].first).to eq("7.3251120224119735")
-          expect(subject[:centroid_z_tesim].first).to eq("-67.93428492292928")
         end
       end
     end

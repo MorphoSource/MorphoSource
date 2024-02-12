@@ -72,6 +72,11 @@ PUBLIC_MEDIA_DOC_ATTRIBUTES = PRIVATE_MEDIA_DOC_ATTRIBUTES.merge( {
   read_access_group_ssim: ["public"]
 } )
 
+CHO_MEDIA_DOC_ATTRIBUTES = PRIVATE_MEDIA_DOC_ATTRIBUTES.merge( {
+  media_physical_object_type_tesim: ["Cultural Heritage Object"],
+  media_physical_object_type_ssim: ["Cultural Heritage Object"]
+} )
+
 FactoryBot.define do
   factory :media_document, class: "SolrDocument", aliases: [:private_media_document] do
     sequence(:id, 100000) { |n| n.to_s.rjust(9, "0") } # sequence ids starting at '000100000'
@@ -80,6 +85,10 @@ FactoryBot.define do
 
     factory :public_media_document do
       initialize_with     { new(PUBLIC_MEDIA_DOC_ATTRIBUTES.merge({'id': id})) }
+    end
+
+    factory :cho_media_document do
+      initialize_with     { new(CHO_MEDIA_DOC_ATTRIBUTES.merge({'id': id})) }
     end
   end
 end

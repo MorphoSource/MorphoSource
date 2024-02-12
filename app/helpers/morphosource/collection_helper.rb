@@ -436,5 +436,11 @@ module Morphosource
       count.nil? ? @blacklight_config.default_solr_params[:rows].to_s : count
     end
 
+    # check if current page of media includes media imaged from biological specimens
+    # used to determine if taxonomy column should be displayed
+    def response_includes_specimens?(response)
+      @includes_specimens ||= response["facet_counts"]["facet_fields"]["media_physical_object_type_ssim"].include? "Biological Specimen"
+    end
+
   end
 end

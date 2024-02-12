@@ -9,6 +9,10 @@ module Morphosource
       before_action :authorize_collection_access, except: [:facet]
 
       def search_builder_class
+        unless @collection.present?
+          # e.g. called from filter works > more link
+          @collection = Collection.find(params["collection_id"])
+        end
         @collection.search_builder_class
       end
 

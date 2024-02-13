@@ -34,6 +34,20 @@ input[type=checkbox].disabled {
 
 .showcase-edit {
 
+  .fileinput-button input {
+      border-width: 0 0 100px 200px;
+      border: solid transparent;
+      cursor: pointer;
+      direction: ltr;
+      filter: alpha(opacity=0);
+      margin: 0;
+      opacity: 0;
+      position: absolute;
+      right: 0;
+      top: 0;
+      -moz-transform: translate(-300px, 0) scale(4);
+  }
+
   .multi_value .listing .input-group {
     margin-bottom: 0;
   }
@@ -462,7 +476,7 @@ input[type=checkbox].disabled {
     width:auto;
   }
 
-  #fileupload {
+  #fileupload, #fileuploadlogo {
     p {
       padding: 0 10px;
       box-sizing: content-box !important;
@@ -474,7 +488,6 @@ input[type=checkbox].disabled {
       margin-bottom: 0;
     }
     .fileupload-buttonbar {
-      padding: 0;
       box-sizing: content-box !important;
       .fileinput-button {
         margin-left: auto;

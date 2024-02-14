@@ -1,9 +1,34 @@
-//$(document).on('turbolinks:load', function() {
+function afterLogoUpload() {
+  disableUpload('fileuploadlogo');
+}  
+
+function afterBannerUpload() {
+  disableUpload('fileuploadbanner');
+}  
+
+function enableUpload(className) {
+  $('.' + className + ' input[type="file"]').prop("disabled", false);
+  $('.' + className + ' .fileinput-button').removeClass('disabled');
+}
+
+function disableUpload(className) {
+  $('.' + className + ' input[type="file"]').prop("disabled", true);
+  $('.' + className + ' .fileinput-button').addClass('disabled');
+}
+
 $(document).ready(function() {
 
   if ( $('form[id*="edit_collection"]').length ||
        $('form[id*="edit_media_list"]').length ||
        $('form[id*="edit_sequential_section_list"]').length ) { // if collection form page (edit)
+
+    if ($('.branding-logo-remove').length) {
+      disableUpload('fileuploadlogo');
+    }
+
+    if ($('.branding-banner-remove').length) {
+      disableUpload('fileuploadbanner');
+    }
 
     setupTooltip();
     removeLastRepeatable();

@@ -40,7 +40,7 @@
         <span class="template-download fade">
           <div id="banner">
             <div class="row branding-banner-row">
-              <div class="col-sm-3">
+              <div class="col-sm-5">
                 <span class="name">
                   <span>{%=file.name%}</span>
                   <input type="hidden" name="banner_files[]" value="{%=file.id%}">
@@ -50,9 +50,9 @@
                 {% } %}
               </div>
 
-              <div class="col-sm-2">
-                <button class="btn btn-link remove branding-banner-remove" data-type="{%=file.deleteType%}" data-url="{%=file.deleteUrl%}" onclick=$("#banner").remove(); {% if (file.deleteWithCredentials) { %} data-xhr-fields='{"withCredentials":true}'{% } %}>
-                  <span class="glyphicon glyphicon-remove"></span>
+              <div class="col-sm-7">
+                <button class="btn btn-link remove branding-banner-remove" data-type="{%=file.deleteType%}" data-url="{%=file.deleteUrl%}" onclick='$("#banner").remove(); enableUpload("fileuploadbanner");' {% if (file.deleteWithCredentials) { %} data-xhr-fields='{"withCredentials":true}'{% } %}>
+                  <span class="fa fa-times-circle"></span>
                   <span class="controls-remove-text">Remove</span>
                   <span class="sr-only">
                     previous
@@ -63,7 +63,7 @@
             </div> <!-- row branding-banner-row -->
           </div> <!-- end container banner -->
         </span>
-{% }  $("div#banner").remove(); %}
+{% }  $("div#banner").remove(); afterBannerUpload(); %}
 </script>
 
 <!-- The template to display logo in the table once upload is complete -->
@@ -105,8 +105,8 @@
 
               <div class="col-sm-1 text-right">
                 <span class="input-group-btn field-controls">
-            <button class="btn btn-sm btn-danger delete branding-logo-remove" data-type="{%=file.deleteType%}" data-url="{%=file.deleteUrl%}"{% if (file.deleteWithCredentials) { %} data-xhr-fields='{"withCredentials":true}'{% } %}>
-                    <span class="glyphicon glyphicon-remove"></span>
+            <button class="btn btn-sm btn-danger delete branding-logo-remove" data-type="{%=file.deleteType%}" data-url="{%=file.deleteUrl%}"{% if (file.deleteWithCredentials) { %} data-xhr-fields='{"withCredentials":true}'{% } %} onclick="enableUpload('fileuploadlogo');">
+                    <span class="fa fa-times-circle"></span>
                     <span class="controls-remove-text">Remove</span>
                     <span class="sr-only">
                       previous

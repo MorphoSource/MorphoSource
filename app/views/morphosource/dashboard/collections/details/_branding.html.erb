@@ -6,7 +6,7 @@ https://github.com/samvera/hyrax/blob/v2.7.0/app/views/hyrax/dashboard/collectio
   <h2><%= t('hyrax.dashboard.collections.form_branding.logo.label') %></h2>
   <p><%= t('hyrax.dashboard.collections.form_branding.logo.description') %></p>
 
-  <div id="fileuploadlogo">
+  <div id="fileuploadlogo" class="fileuploadlogo">
     <!-- Redirect browsers with JavaScript disabled to the origin page -->
     <noscript><input type="hidden" name="redirect" value="<%= main_app.root_path %>" /></noscript>
     <!-- The table listing the files available for upload/download -->
@@ -40,25 +40,25 @@ https://github.com/samvera/hyrax/blob/v2.7.0/app/views/hyrax/dashboard/collectio
           <% f.object.logo_info.each_with_index do |linfo, i| %>
             <div class="row branding-logo-row" id="logorow_<%= i %>">
               <div class="col-sm-3">
-                <span class="name">
+                <span class="name break-all">
                   <span><%= linfo[:file] %></span>
                 <input type="hidden" name="logo_files[]" value="<%= linfo[:full_path] %>" />
                 </span>
               </div>
 
-              <div class="col-sm-7 branding-logo-input">
+              <div class="col-sm-8 branding-logo-input">
                 <label for="linkurl_<%= i %>">
                   <span class="col-xs-4">Link URL:</span>
                   <span class="col-xs-8"><input id="linkurl_<%= i %>" class="branding-logo-input" type="text" name="linkurl[]" value="<%= linfo[:linkurl] %>" /></span>
                 </label>
                 <label for="alttext_<%= i %>">
-                  <span class="col-xs-4">Alt Text:</span>
-                  <span class="col-xs-8"><input id="alttext_<%= i %>" class="branding-logo-input" type="text" name="alttext[]" value="<%= linfo[:alttext] %>" /></span>
+                  <span class="col-xs-3">Alt Text:</span>
+                  <span class="col-xs-9"><input id="alttext_<%= i %>" class="branding-logo-input" type="text" name="alttext[]" value="<%= linfo[:alttext] %>" /></span>
                 </label>
               </div>
 
               <div class="col-sm-1">
-                <button class="btn delete branding-logo-remove" data-type="DELETE" data-url="/" onclick=$("#logorow_<%= i %>").remove();>
+                <button class="btn delete branding-logo-remove" data-type="DELETE" data-url="/" onclick='$("#logorow_<%= i %>").remove();enableUpload("fileuploadlogo");'>
                   <span class="fa fa-times-circle"></span>
                   <span class="controls-remove-text">Remove</span>
                    <span class="sr-only">
@@ -81,7 +81,7 @@ https://github.com/samvera/hyrax/blob/v2.7.0/app/views/hyrax/dashboard/collectio
   <h2><%= t('hyrax.dashboard.collections.form_branding.banner.label') %></h2>
   <p><%= t('hyrax.dashboard.collections.form_branding.banner.description') %>.</p>
 
-  <div id="fileupload">
+  <div id="fileupload" class="fileuploadbanner">
     <!-- Redirect browsers with JavaScript disabled to the origin page -->
     <noscript><input type="hidden" name="redirect" value="<%= main_app.root_path %>" /></noscript>
     <!-- The table listing the files available for upload/download -->
@@ -114,15 +114,15 @@ https://github.com/samvera/hyrax/blob/v2.7.0/app/views/hyrax/dashboard/collectio
         <% if f.object.banner_info[:file] %>
           <div id="banner">
             <div class="row branding-banner-row">
-              <div class="col-sm-3">
-                <span class="name">
+              <div class="col-sm-5">
+                <span class="name break-all">
                   <span><%= f.object.banner_info[:file] %></span>
                   <input type="hidden" name="banner_unchanged" value="true" />
                 </span>
               </div>
 
-              <div class="col-sm-2">
-                <button class="btn delete branding-banner-remove" data-type="DELETE" data-url="/" onclick=$("#banner").remove();>
+              <div class="col-sm-7">
+                <button class="btn delete branding-banner-remove" data-type="DELETE" data-url="/" onclick='$("#banner").remove(); enableUpload("fileuploadbanner")';>
                   <span class="fa fa-times-circle"></span>
                   <span class="controls-remove-text">Remove</span>
                   <span class="sr-only">

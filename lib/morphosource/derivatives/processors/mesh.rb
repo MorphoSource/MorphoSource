@@ -94,12 +94,12 @@ module Morphosource::Derivatives::Processors
 
     def create_tmp_nondraco_glb
       blender = Morphosource::Derivatives::Blender.new(source_path, glb_path, unit)
-      blender.call # todo add output and error check it
+      blender.call
     end
 
     def create_tmp_draco_glb
       gltf_pipeline = Morphosource::Derivatives::GltfPipeline.new(glb_path, draco_glb_path)
-      gltf_pipeline.call # todo add output and error check it
+      gltf_pipeline.call 
     end
 
     def write_draco_glb

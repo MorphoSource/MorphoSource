@@ -84,10 +84,10 @@ RSpec.describe Morphosource::Dashboard::Collections::OrganizationCollectionsCont
     it { expect(subject.send(:collection_class)).to eq(OrganizationCollection) }
   end
 
-  describe 'organization_permissions_tab' do
+  describe 'permissions_path' do
     it 'is the organization_permissions_path' do
       subject.instance_variable_set(:@organization, organization)
-      expect(subject.send(:organization_permissions_tab)).to eq(organization_permissions_path(organization))
+      expect(subject.send(:permissions_path)).to eq(organization_permissions_path(organization))
     end
   end
 end

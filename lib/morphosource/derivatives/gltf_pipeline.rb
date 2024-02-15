@@ -21,5 +21,12 @@ module Morphosource::Derivatives
       def command
         "gltf-pipeline -i '#{source_path}' -o '#{out_path}' -d"
       end
+
+      # Check for produced derivative file, otherwise raise gltf-pipeline response as error
+      def post_process(raw_output)
+        if !File.exists?(out_path) || (File.size(out_path) == 0)
+          raise Morphosource::Derivatives::GltfPipeline.new("File not successfully created by derivative tool.\nTool command: \"#{command}\"\nTool output:\n\"#{raw_output}\"")
+        end
+      end
   end
 end

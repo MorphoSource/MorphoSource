@@ -102,7 +102,7 @@ RSpec.describe Morphosource::PermissionsHelper, type: :helper do
     end
     context 'organization collection' do
       let(:organization)  { FactoryBot.build(:organization_collection) }
-      let(:form)          { Morphosource::Collections::OrganizationCollectionForm.new(organization, nil, nil) }
+      let(:form)          { Morphosource::Forms::Collections::OrganizationCollectionForm.new(organization, nil, nil) }
       it 'has the correct values' do
         helper.simple_form_for form, url: '' do |f|
           expect(helper.form_model_name(f)).to eq('organization_collection')

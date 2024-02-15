@@ -1,6 +1,7 @@
 require 'om'
 
 module Hydra::Works::Characterization
+  # XML document for mesh metadata, used by Blender and other tools (e.g., gltf-inspect)
   class BlenderDocument
     include OM::XML::Document
     set_terminology do |t|

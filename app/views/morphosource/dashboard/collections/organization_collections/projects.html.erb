@@ -19,29 +19,11 @@
         </div>
       </div>
       <br>
-        <div class="panel panel-default tabs teams" id="collection-edit-controls">
-          <%= render 'nav_tabs' %>
-
-          <div class="tab-content">
-            <% case @tab %>
-            <% when :details %>
-              <%= render 'morphosource/dashboard/collections/details/form' %>
-            <% when :organization %>
-              <%= render 'morphosource/dashboard/collections/teams/organization/form' %>
-            <% when :projects %>
-              <%= render 'morphosource/dashboard/collections/child_projects/projects' %>
-            <% when :members %>
-              <%= render 'morphosource/dashboard/collections/members/form' %>
-            <% end %>
-
-          </div> <!-- end tab-content -->
-
-        </div> <!-- end collection-controls -->
-
-      <%# only render add project modal if collection is a team %>
-      <% if @presenter.collection_type.title == "Team" %>
+      <div class="panel panel-default tabs teams" id="collection-edit-controls">
+        <%= render 'nav_tabs' %>
+        <%= render 'morphosource/dashboard/collections/child_projects/projects' %>
+      </div>
         <%= render 'hyrax/my/collections/modal_add_project', id: @presenter.id, source: 'show' %>
-      <% end %>
-
+      </div>
     </div>
   </div>

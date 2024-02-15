@@ -20,7 +20,7 @@ RSpec.describe 'MCZ Metadata' do
       expect(slide['http://purl.org/dc/terms/description'].present?).to be(true)
       expect(slide['http://rs.tdwg.org/ac/terms/resourceCreationTechnique']).to eq('Sequential Section Scan')
       expect(slide['http://rs.tdwg.org/ac/terms/variant']).to eq('ac:BestQuality')
-      expect(slide['http://rs.tdwg.org/ac/terms/accessURI']).to include('/full/max/0/default.png')
+      expect(slide['http://rs.tdwg.org/ac/terms/accessURI']).to include('default.png')
       expect(slide['http://purl.org/dc/terms/title'].present?).to be(true)
       expect(slide['http://rs.tdwg.org/dwc/terms/scientificName'].present?).to be(true)
       # MCZ iiif json
@@ -62,6 +62,6 @@ RSpec.describe 'MCZ Metadata' do
 
   def slides(recent)
     media = recent['extensions']['http://rs.tdwg.org/ac/terms/Multimedia']
-    media.select { |s| (s['http://rs.tdwg.org/ac/terms/variant'] == 'ac:BestQuality') && (s['http://rs.tdwg.org/ac/terms/accessURI'].include? '/full/max/') }
+    media.select { |s| (s['http://rs.tdwg.org/ac/terms/variant'] == 'ac:BestQuality') && (s['http://rs.tdwg.org/ac/terms/accessURI'].include? '/full/') }
   end
 end

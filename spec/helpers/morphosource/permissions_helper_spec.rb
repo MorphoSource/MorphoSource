@@ -100,6 +100,16 @@ RSpec.describe Morphosource::PermissionsHelper, type: :helper do
         end
       end
     end
+    context 'organization collection' do
+      let(:organization)  { FactoryBot.build(:organization_collection) }
+      let(:form)          { Morphosource::Forms::Collections::OrganizationCollectionForm.new(organization, nil, nil) }
+      it 'has the correct values' do
+        helper.simple_form_for form, url: '' do |f|
+          expect(helper.form_model_name(f)).to eq('organization_collection')
+          expect(helper.download_permission_input(f)).to eq("<input type='hidden' id= 'organization_collection_download_permission' name='organization_collection[download_permission]' class='download-permission' value= #{download_permission(f)} >".html_safe)
+        end
+      end
+    end
   end
 
   describe 'download_permission, badge_class, human_readable_publication_status' do

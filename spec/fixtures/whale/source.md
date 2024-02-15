@@ -1,0 +1,1 @@
+This asset represents a fossil whale excavation site and was made available by the Smithsonian (https://3d.si.edu/object/3d/fossil-whale-excavation-site-mpc-677:a4068a00-9712-4c8e-8948-a9e2ea27fe0a) with CC0 licensing. It is used here as a fixture for automated tests using archived OBJ and GLTF multi-file meshes, as well as single-file GLB meshes.

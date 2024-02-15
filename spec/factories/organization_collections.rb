@@ -11,7 +11,7 @@ FactoryBot.define do
     end
 
     after(:create) do |organization|
-      # find media_list by id
+      # find organization_collection by id
       ::RSpec::Mocks.allow_message(organization.class, :find).with(organization.id).and_return(organization)
       # find collection by id
       ::RSpec::Mocks.allow_message(::Collection, :find).with(organization.id).and_return(organization)

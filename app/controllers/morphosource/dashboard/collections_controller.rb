@@ -58,7 +58,7 @@ module Morphosource
       def after_update
         respond_to do |format|
           format.html {
-            redirect_to team_organization_path(@collection), notice: "Remote file submission settings updated" and return if params[:update_remote_file_submission_settings]
+            redirect_to permissions_path, notice: "Remote file submission settings updated" and return if params[:update_remote_file_submission_settings]
 
             redirect_to collection_media_path(@collection), notice: t('hyrax.dashboard.my.action.collection_update_success')
           }
@@ -165,12 +165,12 @@ module Morphosource
 
       def load_collection
         if params[:id] || params[:collection_id]
-          @curation_concern ||= params[:collection_id].present? ? ::Collection.find(params[:collection_id]) : ::Collection.find(params[:id])
+          @curation_concern = params[:collection_id].present? ? ::Collection.find(params[:collection_id]) : ::Collection.find(params[:id])
           authorize! :edit, @curation_concern
         else
           @curation_concern ||= collection_class.new
         end
-        @collection ||= @curation_concern
+        @collection = @curation_concern
         rescue CanCan::AccessDenied
         redirect_to root_url, alert: 'You are not authorized to access this collection.'
       end
@@ -186,6 +186,10 @@ module Morphosource
       def update_thumbnail
         media = Media.where(id: thumbnail_params).first
         @collection.thumbnail_id = media.try(:thumbnail_id)
+      end
+
+      def permissions_path
+        team_organization_path(@collection)
       end
     end
   end

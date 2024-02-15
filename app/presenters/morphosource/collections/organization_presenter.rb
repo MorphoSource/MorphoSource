@@ -2,6 +2,8 @@ module Morphosource
   module Collections
     class OrganizationPresenter < Morphosource::CollectionPresenter
 
+      delegate :organization_type, :collection_code, :institution_code, :institution_name, :recordset_id, to: :solr_document
+
       def edit_path
         Rails.application.routes.url_helpers.organization_edit_path(id, locale: I18n.locale)
       end

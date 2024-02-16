@@ -16,8 +16,14 @@
     <div class="col-xs-6 showcase-label">Data Projects</div>
     <div class="col-xs-6 showcase-value">
       <%= number_with_delimiter(
+
+
+byebug 
+
+# need to replace hardcoded collection type id for project?
+
         Morphosource::SolrService.new.get_count(
-          'has_model_ssim:Collection AND collection_type_gid_ssim:gid://morpho-source-sf/hyrax-collectiontype/2'
+          'has_model_ssim:Collection AND collection_type_gid_ssim:gid://#{GlobalID.app}/Hyrax::CollectionType/2'
         ),
         :delimiter => ','
       ) %>

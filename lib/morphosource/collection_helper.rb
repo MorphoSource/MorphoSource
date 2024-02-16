@@ -104,7 +104,7 @@ module Morphosource
     end
 
     def page_is_team?
-      path_info.include?("teams")
+      @page_is_team ||= path_info.include?("teams")
     end
 
     def page_is_organization?
@@ -124,15 +124,25 @@ module Morphosource
     end
 
     def collection_type
-      if page_is_team?
-        'team'
-      elsif page_is_project?
-        'project'
-      elsif page_is_media_list?
-        'media list'
-      elsif page_is_sequential_section_list?
-        'sequential section list'
+      @collection_type ||= begin
+        if page_is_team?
+          'team'
+        elsif page_is_project?
+          'project'
+        elsif page_is_media_list?
+          'media list'
+        elsif page_is_sequential_section_list?
+          'sequential section list'
+        end
       end
+    end
+
+    def page_collection_type_id
+      @page_collection_type_id ||= collection_type_id_by_machine_name(collection_type.gsub(' ', '_'))
+    end
+
+    def collection_type_id_by_machine_name(machine_name)
+      Hyrax::CollectionType.find_by(machine_id: machine_name).gid.split('/').last.to_i
     end
 
     def collection_count_for(count)

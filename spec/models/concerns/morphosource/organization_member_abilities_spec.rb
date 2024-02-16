@@ -8,7 +8,7 @@ RSpec.describe 'Morphosource::Ability', type: :model do
   let(:ability)         { Ability.new(user) }
 
   let(:media)           { FactoryBot.create(:media) }
-  let(:media_doc)       { SolrDocument.new(media.to_solr) }
+  let(:media_doc)       { SolrDocument.find(media.id) }
 
   let(:file_set)        { FactoryBot.create(:file_set) }
   let(:file_set_doc)    { SolrDocument.new(file_set.to_solr) }
@@ -67,25 +67,103 @@ RSpec.describe 'Morphosource::Ability', type: :model do
         context 'the organization is a collection' do
           let(:organization)  { FactoryBot.create(:organization_collection, depositor: depositor.ms_id) }
 
-          before do
-            allow(user).to receive(:groups).and_return(["#{organization.id}_viewers"])
+          context 'the organization is not the data owner' do
+            context 'the user has a manager or editor role' do
+              before do
+                allow(user).to receive(:groups).and_return(["#{organization.id}_managers"])
+              end
+
+              it 'returns false for media and file sets' do
+                # media
+                expect(ability.can? :edit, media.id).to be(false)
+                expect(ability.can? :edit, media).to be(false)
+                expect(ability.can? :edit, media_doc).to be(false)
+                expect(user.can? :edit, media.id).to be(false)
+                expect(user.can? :edit, media).to be(false)
+                expect(user.can? :edit, media_doc).to be(false)
+                # file set
+                expect(ability.can? :edit, file_set.id).to be(false)
+                expect(ability.can? :edit, file_set).to be(false)
+                expect(ability.can? :edit, file_set_doc).to be(false)
+                expect(user.can? :edit, file_set.id).to be(false)
+                expect(user.can? :edit, file_set).to be(false)
+                expect(user.can? :edit, file_set_doc).to be(false)
+              end
+            end
+            context 'the user has another role' do
+              before do
+                allow(user).to receive(:groups).and_return(["#{organization.id}_viewers"])
+              end
+
+              it 'returns false for media and file sets' do
+                # media
+                expect(ability.can? :edit, media.id).to be(false)
+                expect(ability.can? :edit, media).to be(false)
+                expect(ability.can? :edit, media_doc).to be(false)
+                expect(user.can? :edit, media.id).to be(false)
+                expect(user.can? :edit, media).to be(false)
+                expect(user.can? :edit, media_doc).to be(false)
+                # file set
+                expect(ability.can? :edit, file_set.id).to be(false)
+                expect(ability.can? :edit, file_set).to be(false)
+                expect(ability.can? :edit, file_set_doc).to be(false)
+                expect(user.can? :edit, file_set.id).to be(false)
+                expect(user.can? :edit, file_set).to be(false)
+                expect(user.can? :edit, file_set_doc).to be(false)
+              end
+            end
           end
 
-          it 'returns true for media and file sets' do
-            # media
-            expect(ability.can? :read, media.id).to be(true)
-            expect(ability.can? :read, media).to be(true)
-            expect(ability.can? :read, media_doc).to be(true)
-            expect(user.can? :read, media.id).to be(true)
-            expect(user.can? :read, media).to be(true)
-            expect(user.can? :read, media_doc).to be(true)
-            # file set
-            expect(ability.can? :read, file_set.id).to be(true)
-            expect(ability.can? :read, file_set).to be(true)
-            expect(ability.can? :read, file_set_doc).to be(true)
-            expect(user.can? :read, file_set.id).to be(true)
-            expect(user.can? :read, file_set).to be(true)
-            expect(user.can? :read, file_set_doc).to be(true)
+
+          context 'the organization is the data owner' do
+            before do
+              media.owner = organization.id
+              media.save!
+            end
+            context 'the user has a manager or editor role' do
+              before do
+                allow(user).to receive(:groups).and_return(["#{organization.id}_managers"])
+              end
+
+              it 'returns true for media and file sets' do
+                # media
+                expect(ability.can? :edit, media.id).to be(true)
+                expect(ability.can? :edit, media).to be(true)
+                expect(ability.can? :edit, media_doc).to be(true)
+                expect(user.can? :edit, media.id).to be(true)
+                expect(user.can? :edit, media).to be(true)
+                expect(user.can? :edit, media_doc).to be(true)
+                # file set
+                expect(ability.can? :edit, file_set.id).to be(true)
+                expect(ability.can? :edit, file_set).to be(true)
+                expect(ability.can? :edit, file_set_doc).to be(true)
+                expect(user.can? :edit, file_set.id).to be(true)
+                expect(user.can? :edit, file_set).to be(true)
+                expect(user.can? :edit, file_set_doc).to be(true)
+              end
+            end
+            context 'the user has another role' do
+              before do
+                allow(user).to receive(:groups).and_return(["#{organization.id}_viewers"])
+              end
+
+              it 'returns false for media and file sets' do
+                # media
+                expect(ability.can? :edit, media.id).to be(false)
+                expect(ability.can? :edit, media).to be(false)
+                expect(ability.can? :edit, media_doc).to be(false)
+                expect(user.can? :edit, media.id).to be(false)
+                expect(user.can? :edit, media).to be(false)
+                expect(user.can? :edit, media_doc).to be(false)
+                # file set
+                expect(ability.can? :edit, file_set.id).to be(false)
+                expect(ability.can? :edit, file_set).to be(false)
+                expect(ability.can? :edit, file_set_doc).to be(false)
+                expect(user.can? :edit, file_set.id).to be(false)
+                expect(user.can? :edit, file_set).to be(false)
+                expect(user.can? :edit, file_set_doc).to be(false)
+              end
+            end
           end
         end
 

@@ -15,7 +15,7 @@ module Morphosource
 
     # This overrides the models in FilterByType
     def models
-      [::Organization]
+      [::Organization, ::OrganizationCollection]
     end
 
     def show_only_organizations(solr_parameters)

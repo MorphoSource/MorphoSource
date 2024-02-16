@@ -208,7 +208,7 @@ class Collection < ActiveFedora::Base
   end
 
   def remove_team_access_grants(work)
-    return unless team? || project?  
+    return unless team? || project?
     work.edit_groups -= [managers_group.name, editors_group.name]
     work.read_groups -= [viewers_group.name]
     work.download_groups -= [downloaders_group.name]
@@ -281,6 +281,20 @@ class Collection < ActiveFedora::Base
   def self.exists?(conditions)
     conditions = { id: conditions } if conditions.is_a? String
     super(conditions)
+  end
+
+  # Finds the first record matching the specified conditions, or nil if no record found.
+  # Similar to ActiveRecord find_by method.
+  #
+  # Media.find_by(id: "123456789")
+  # Media.find_by("media_type_tesim" => "Mesh")
+  # Media.find_by( [ "media_type_tesim:Mesh", "id:123456789" ] )
+  # Media.find_by( { "media_type_tesim" => "Mesh", id: "123456789" } )
+  #
+  # @param [Hash, String, Array] One or more conditions, using Solr field names
+  # @return [Morphosource::Works::Base, nil] First matching record object or nil if none found
+  def self.find_by(arg, *args)
+    where(arg, *args).take
   end
 
   private

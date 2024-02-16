@@ -86,6 +86,10 @@ module Morphosource
       # -- Data Manager Status and Transfer Timing --
       # -- This is technical metadata and will be used by the repository ---
 
+      property :managed_by, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/managedBy"), multiple: false do |index|
+        index.as :symbol, :stored_sortable
+      end
+
       # Should media management be transferred to the object organization when media is published?
       property :organization_transfer_on_publish, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/organizationTransferOnPublish"), multiple: false do |index|
         index.as :stored_sortable

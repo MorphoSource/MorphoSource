@@ -290,7 +290,9 @@ class CatalogController < ApplicationController
     if request.format == "csv"
       blacklight_config.max_per_page = 1_000_000
     end
+    byebug
     (@response, @document_list) = search_results(params)
+    byebug
     @document_type = document_type
     respond_to do |format|
       format.html { store_preferred_view }
@@ -305,7 +307,7 @@ class CatalogController < ApplicationController
       end
       format.csv do
         # Stream CSV since it might be very large
-        
+
         headers.delete("Content-Length")
         headers["Cache-Control"] = "no-cache"
         headers["Content-Type"] = "text/csv"
@@ -351,8 +353,8 @@ class CatalogController < ApplicationController
   # can't rely on ApplicationController due to Blacklight also using rescue_from
   def invalid_document_id_error(exception)
     respond_to do |format|
-      format.json { 
-        render json: { code: 404, message: t("cancan.not_found.message"), description: t("cancan.not_found.description")}, status: :not_found 
+      format.json {
+        render json: { code: 404, message: t("cancan.not_found.message"), description: t("cancan.not_found.description")}, status: :not_found
       }
       format.html { redirect_to main_app.root_url, notice: "#{t("cancan.not_found.message")}: #{t("cancan.not_found.description")}" }
       format.js   { render nothing: true, status: :not_found }

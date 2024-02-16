@@ -7,6 +7,10 @@ module Morphosource
     included do
       # media ownership transfer
       property :media_ownership_transfer, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/mediaOwnershipTransfer"), multiple: false
+
+      property :email, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/email"), multiple: false do |index|
+        index.as :symbol
+      end
     end
   end
 end

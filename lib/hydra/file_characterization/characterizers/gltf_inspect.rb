@@ -10,11 +10,7 @@ module Hydra::FileCharacterization::Characterizers
     protected
 
       def command_path
-        if tool_path.present?
-          File.join(tool_path, "gltf-inspect")
-        else
-          "gltf-inspect"
-        end
+        "gltf-inspect"
       end
 
       def command
@@ -43,7 +39,7 @@ module Hydra::FileCharacterization::Characterizers
           if meshes.present?
             mesh_metadata = calc_mesh_metadata(meshes)
           else
-            # raise error here
+            raise GltfInspectError("No mesh data present in gltf-inspect report. Gltf-inspect output:\n#{output}")
           end
 
           # scene (bounding box and centroid) metadata
@@ -51,12 +47,12 @@ module Hydra::FileCharacterization::Characterizers
           if scenes.present?
             scene_metadata = calc_scene_metadata(scenes)
           else
-            # raise error here
+            raise GltfInspectError("No scene data present in gltf-inspect report. Gltf-inspect output:\n#{output}")
           end
 
           return mesh_metadata.merge(scene_metadata)
         else
-          # raise error here
+          raise GltfInspectError("Gltf-inspect report returned malformed JSON. Gltf-inspect output:\n#{output}")
         end
       end
 
@@ -80,7 +76,14 @@ module Hydra::FileCharacterization::Characterizers
           attributes.concat(mesh["attributes"] || [])
         end
 
-        edges_per_face = calc_edges_per_face(modes.uniq)
+        most_common_mode = ( modes.tally.max_by { |mode, cnt| cnt } || [])[0]
+        spec_modes = {
+          "TRIANGLES" => 3, 
+          "LINES" => 1, 
+          "POINTS" => 0
+        }
+        edges_per_face = spec_modes[most_common_mode&.strip&.upcase] || spec_modes["TRIANGLES"]
+
         color_format, vertex_color, has_uv_space, normals_format = calc_attributes(attributes.uniq)
 
         return {
@@ -94,26 +97,12 @@ module Hydra::FileCharacterization::Characterizers
         }.compact
       end
 
-      # Returns list of edges per polygon face values corresponding to GLTF spec modes
-      def calc_edges_per_face(modes) 
-        # spec has others (line_loop, line_strip, triangle_strip, triangle_fan), not supporting for now
-        spec_modes = {
-          "TRIANGLES": 3, 
-          "LINES": 1, 
-          "POINTS": 0
-        }
-        
-        # modes not required, TRIANGLES aka 3 is default
-        return modes.count? ? modes.map { |mode| spec_modes[mode.strip.upcase] }.compact : [spec_modes["TRIANGLES"]]
-      end
-
       def calc_attributes(attributes)
-        color_format = nil
-        vertex_color = nil
-        has_uv_space = nil
         normals_format = nil
-
-
+        color_format = nil
+        vertex_color = "False"
+        has_uv_space = "False"
+        
         attributes.each do |attr|
           attr_name = attr.split(":").first.upcase || ""
           
@@ -122,12 +111,12 @@ module Hydra::FileCharacterization::Characterizers
           end
 
           if attr_name.include?("COLOR")
-            vertex_color = true
             color_format = "vertex color"
+            vertex_color = "True"
           end
 
           if attr_name.include?("TEXCOORD")
-            has_uv_space = true
+            has_uv_space = "True"
           end
         end
 
@@ -200,49 +189,65 @@ module Hydra::FileCharacterization::Characterizers
       def generate_xml(metadata)
         builder = Nokogiri::XML::Builder.new do |xml|
           xml.blender do
-            xml.identification { xml.identity(format: file_format, mimetype: mimetype) }
+            xml.identification do
+              xml.identity(format: file_format, mimetype: mimetype) do
+                xml.tool do
+                  xml.gltfInspectVersion "0.0.1"
+                end
+              end
+            end
 
             xml.fileinfo do
-              xml.filepath { |f| f.name filename }
-              xml.filename { |f| f.name File.basename(filename) }
-              xml.mimetype { |m| m.name mimetype }
+              xml.filepath filename
+              xml.filename File.basename(filename)
+              xml.mimetype mimetype
             end
 
             xml.metadata do
               xml.mesh do
-                xml.pointCount { |p| metadata[:point_count] } if metadata[:point_count]
-                xml.faceCount { |p| metadata[:face_count] } if metadata[:face_count]
-                xml.edgesPerFace { |p| metadata[:edges_per_face] } if metadata[:edges_per_face]
-                xml.colorFormat { |p| metadata[:color_format] } if metadata[:color_format]
-                xml.normalsFormat { |p| metadata[:normals_format] } if metadata[:normals_format]
-                xml.hasUvSpace { |p| metadata[:has_uv_space] } if metadata[:has_uv_space]
-                xml.vertexColor { |p| metadata[:vertex_color] } if metadata[:vertex_color]
-
+                xml.pointCount metadata[:point_count] if metadata[:point_count].present?
+                xml.faceCount metadata[:face_count] if metadata[:face_count].present?
+                xml.edgesPerFace metadata[:edges_per_face] if metadata[:edges_per_face].present?
+                xml.colorFormat metadata[:color_format] if metadata[:color_format].present?
+                xml.normalsFormat metadata[:normals_format] if metadata[:normals_format].present?
+                xml.hasUvSpace metadata[:has_uv_space] if metadata[:has_uv_space].present?
+                xml.vertexColor metadata[:vertex_color] if metadata[:vertex_color].present?
 
                 xml.boundingboxdimensions do
-                  xml.boundingBoxX { |b| metadata[:bounding_box_x] } if metadata[:bounding_box_x]
-                  xml.boundingBoxY { |b| metadata[:bounding_box_y] } if metadata[:bounding_box_y]
-                  xml.boundingBoxZ { |b| metadata[:bounding_box_z] } if metadata[:bounding_box_z]
+                  xml.boundingBoxX metadata[:bounding_box_x] if metadata[:bounding_box_x].present?
+                  xml.boundingBoxY metadata[:bounding_box_y] if metadata[:bounding_box_y].present?
+                  xml.boundingBoxZ metadata[:bounding_box_z] if metadata[:bounding_box_z].present?
                 end
 
                 xml.centroid do
-                  xml.centroidX { |c| metadata[:centroid_x] } if metadata[:centroid_x]
-                  xml.centroidY { |c| metadata[:centroid_y] } if metadata[:centroid_y]
-                  xml.centroidZ { |c| metadata[:centroid_z] } if metadata[:centroid_z]
+                  xml.centroidX metadata[:centroid_x] if metadata[:centroid_x].present?
+                  xml.centroidY metadata[:centroid_y] if metadata[:centroid_y].present?
+                  xml.centroidZ metadata[:centroid_z] if metadata[:centroid_z].present?
+                  xml.centroidMethod "Bounding Box"
                 end
               end
             end
           end
         end
-        builder.doc
+        builder.doc.to_s
       end
 
-      # Remove any non-XML output that precedes the <?xml> tag
-      # todo: possibly remove blender errors and non-xml output
-      def post_process(raw_output)
-        md = /\A(.*)(<\?xml.*)\Z/m.match(raw_output)
-        logger.warn "----- WARNING ----- Blender produced non-xml output: \"#{md[1].chomp}\"" unless md[1].empty?
-        md[2]
+      def file_format
+        File.extname(filename).downcase
+      end
+
+      def mimetype
+        if (file_format == ".gltf") || (file_format == ".glb")
+          "model/gltf+json"
+        else
+          MIME::Types.type_for(file_format)&.first&.content_type || "application/octet-stream"
+        end
+
+        case File.extname(filename).downcase
+        when ".gltf", ".glb"
+          "model/gltf+json"
+        when ""
+        end
       end
   end
 end

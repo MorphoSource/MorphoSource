@@ -151,6 +151,9 @@ else:
 
       identification = ET.SubElement(blender, 'identification')
       identity = ET.SubElement(identification, 'identity', attrib={"format":file_suffix(filepath)[1:], "mimetype":mimetype})
+      tool = ET.SubElement(identity, 'tool')
+      e = ET.SubElement(tool, 'blenderVersion')
+      e.text = bpy.app.version_string
       fileinfo = ET.SubElement(blender, 'fileinfo')
       e = ET.SubElement(fileinfo, 'filepath')
       e.text = str(filepath)
@@ -179,7 +182,9 @@ else:
       e = ET.SubElement(cen, 'centroidY')
       e.text = str(centroid_y)
       e = ET.SubElement(cen, 'centroidZ')
-      e.text = str(centroid_z)  
+      e.text = str(centroid_z)
+      e = ET.SubElement(cen, 'centroidMethod')
+      e.text = "Vertex Mean" 
       e = ET.SubElement(mesh, 'hasUvSpace')
       e.text = str(has_uv_space)
       e = ET.SubElement(mesh, 'vertexColor')

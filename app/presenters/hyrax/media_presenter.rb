@@ -43,9 +43,10 @@ module Hyrax
 
     # Attributes from FileSet solr document
     delegate :bits_allocated, :bits_per_sample, :bounding_box_x, :bounding_box_y, :bounding_box_z, 
-      :centroid_x, :centroid_y, :centroid_z, :columns, :contents_accepted_file_count, :color_format, 
-      :color_space, :compression, :face_count, :has_uv_space, :height, :normals_format, 
-      :original_file_id, :point_count, :rows, :vertex_color, :width,
+      :centroid_x, :centroid_y, :centroid_z, :centroid_method, :columns, 
+      :contents_accepted_file_count, :color_format, :color_space, :compression, :face_count, 
+      :has_uv_space, :height, :normals_format, :original_file_id, :point_count, :rows, :vertex_color, 
+      :width,
       to: :representative_presenter, allow_nil: true
 
     # Attributes from Media solr document
@@ -243,8 +244,12 @@ module Hyrax
     #
     def centroid_location
       if centroid_x.present? && centroid_y.present? && centroid_z.present?
-        [ centroid_x.first, centroid_y.first, centroid_z.first,].
+        centroid_label = [ centroid_x.first, centroid_y.first, centroid_z.first,].
           map { |n| number_with_precision(n, precision: 3) }.join(", ")
+        if centroid_method&.first.present?
+          centroid_label += " (#{centroid_method&.first})"
+        end
+        return centroid_label
       end
     end
 

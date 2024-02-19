@@ -1,6 +1,7 @@
 require 'om'
 
 module Hydra::Works::Characterization
+  # XML document for mesh metadata, used by Blender and other tools (e.g., gltf-inspect)
   class BlenderDocument
     include OM::XML::Document
     set_terminology do |t|
@@ -9,6 +10,10 @@ module Hydra::Works::Characterization
         t.identity do
           t.format_label(path: { attribute: 'format' })
           t.mime_type(path: { attribute: 'mimetype' })
+          t.tool do
+            t.blender_version(path: 'blenderVersion')
+            t.gltf_inspect_version(path: 'gltfInspectVersion')
+          end
         end
       end
       t.fileinfo do
@@ -37,6 +42,7 @@ module Hydra::Works::Characterization
             t.centroid_x(path: 'centroidX')
             t.centroid_y(path: 'centroidY')
             t.centroid_z(path: 'centroidZ')
+            t.centroid_method(path: 'centroidMethod')
           end
           t.edges_per_face(path: 'edgesPerFace')
           t.color_format(path: 'colorFormat')
@@ -45,11 +51,12 @@ module Hydra::Works::Characterization
           t.vertex_color(path: 'vertexColor')
         end
       end
-      # fits_version needs a different name than it's target node since they're at the same level
-      #t.fits_version(proxy: [:fits, :fits_v])
+
       t.format_label(proxy: [:identification, :identity, :format_label])
       # Can't use .mime_type because it's already defined for this dcoument so method missing won't work.
       t.file_mime_type(proxy: [:identification, :identity, :mime_type])
+      t.blender_version(proxy: [:identification, :identity, :tool, :blender_version])
+      t.gltf_inspect_version(proxy: [:identification, :identity, :tool, :gltf_inspect_version])
       t.file_size(proxy: [:fileinfo, :file_size])
       t.filename(proxy: [:fileinfo, :filename])
       t.original_checksum(proxy: [:fileinfo, :original_checksum])
@@ -69,6 +76,7 @@ module Hydra::Works::Characterization
       t.centroid_x(proxy: [:metadata, :mesh, :centroid, :centroid_x])
       t.centroid_y(proxy: [:metadata, :mesh, :centroid, :centroid_y])
       t.centroid_z(proxy: [:metadata, :mesh, :centroid, :centroid_z])
+      t.centroid_method(proxy: [:metadata, :mesh, :centroid, :centroid_method])
       t.edges_per_face(proxy: [:metadata, :mesh, :edges_per_face])
       t.color_format(proxy: [:metadata, :mesh, :color_format])
       t.normals_format(proxy: [:metadata, :mesh, :normals_format])

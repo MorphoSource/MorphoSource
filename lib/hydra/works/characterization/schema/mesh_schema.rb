@@ -13,5 +13,8 @@ module Hydra::Works::Characterization
     property :centroid_x, predicate: RDF::URI('https://www.morphosource.org/terms/centroidX')
     property :centroid_y, predicate: RDF::URI('https://www.morphosource.org/terms/centroidY')
     property :centroid_z, predicate: RDF::URI('https://www.morphosource.org/terms/centroidZ')
+    property :centroid_method, predicate: RDF::URI('https://www.morphosource.org/terms/centroidMethod')
+    property :blender_version, predicate: RDF::URI('https://www.morphosource.org/terms/blenderVersion')
+    property :gltf_inspect_version, predicate: RDF::URI('https://www.morphosource.org/terms/gltfInspectVersion')
   end
 end

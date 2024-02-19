@@ -127,6 +127,7 @@ module Hyrax
               :centroid_x,
               :centroid_y,
               :centroid_z,
+              :centroid_method,
               :color_format,
               :normals_format,
               :has_uv_space,

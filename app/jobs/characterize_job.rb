@@ -12,9 +12,9 @@ class CharacterizeJob < Hyrax::ApplicationJob
   def perform(file_set, file_id, filepath = nil)
     raise "#{file_set.class.characterization_proxy} was not found for FileSet #{file_set.id}" unless file_set.characterization_proxy?
     filepath = Hyrax::WorkingDirectory.find_or_retrieve(file_id, file_set.id) unless filepath && File.exist?(filepath)
-    # Run FITS , then blender (if it is a mesh file type).  
+    # Run FITS , then gltf-inspect (for glb/gltf) or blender (for other mesh file types).  
     # For mesh files:
-    # - we want blender to overwrite the mime type output from FITS
+    # - we want gltf-inspect/blender to overwrite the mime type output from FITS
     # - we still want to run FITS to get basic file info (e.g. checksum)
     Rails.logger.debug "Running FITS characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
     Hydra::Works::CharacterizationService.run(file_set.characterization_proxy, filepath)
@@ -27,7 +27,15 @@ class CharacterizeJob < Hyrax::ApplicationJob
 
     begin
       ext = File.extname(filepath)
-      if (ext =~ /\.(glb|gltf|obj|ply|stl|wrl|x3d)$/)
+      if (ext =~ /\.(glb|gltf)$/)
+        gltf_inspect_options = {
+          "parser_class" => Hydra::Works::Characterization::BlenderDocument, 
+          "tool_class" => :gltf_inspect
+        }
+        Rails.logger.debug "Running gltf-inspect characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
+        Hydra::Works::CharacterizationService.run(file_set.characterization_proxy, filepath, gltf_inspect_options)
+        Rails.logger.debug "Ran gltf-inspect characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
+      elsif (ext =~ /\.(obj|ply|stl|wrl|x3d)$/)
         blender_options = {
           "parser_class" => Hydra::Works::Characterization::BlenderDocument, 
           "tool_class" => :blender

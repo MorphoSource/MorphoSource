@@ -33,14 +33,16 @@ module Hydra::Works
       raise "Error characterizing #{source}: no representative file found" if file_name == nil
 
       # Extract metadata
-      if mesh_file_types.include? File.extname(file_name).downcase
+      if blender_mesh_file_types.include? File.extname(file_name).downcase
         # Use Blender instead of FITS for characterization
         @parser_class, @tools = blender_options
-        # Special case if GLTF: must extract all files
+      elsif gltf_inspect_mesh_file_types.include? File.extname(file_name).downcase
+        # Extract all files to temp location and use gltf-inspect instead of FITS for characterization
         if File.extname(file_name).downcase == '.gltf'
           @needs_cleanup = true
           @content = extract_representative_content_and_others
         end
+        @parser_class, @tools = gltf_inspect_options
       end
       extracted_md = extract_metadata(content)
 
@@ -109,12 +111,20 @@ module Hydra::Works
       ['.dcm', '.dicom', '.glb', '.gltf', '.obj', '.ply', '.stl', '.wrl', '.x3d', '.tiff', '.tif', '.bmp', '.png', '.jpeg', '.jpg', '.svg', '.dng', '.nef', '.crw', '.cr2', '.cr3', '.iiq', '.arw', '.raw', '.rw2']
     end
 
-    def mesh_file_types
-      ['.glb', '.gltf', '.obj', '.ply', '.stl', '.wrl', '.x3d']
+    def gltf_inspect_mesh_file_types
+      ['.glb', '.gltf']
+    end
+
+    def blender_mesh_file_types
+      ['.obj', '.ply', '.stl', '.wrl', '.x3d']
     end
 
     def blender_options
       return Hydra::Works::Characterization::BlenderDocument, :blender
+    end
+
+    def gltf_inspect_options
+      return Hydra::Works::Characterization::BlenderDocument, :gltf_inspect
     end
 
     def file_name

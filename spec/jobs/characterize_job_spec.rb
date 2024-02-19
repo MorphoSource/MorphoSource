@@ -39,19 +39,25 @@ RSpec.describe CharacterizeJob do
         end
         subject { SolrDocument.find(file_set.id) }
         it "has PLY attributes in the metadata" do
+          # mesh details
           expect(subject[:point_count_tesim].first).to eq("35947")
           expect(subject[:face_count_tesim].first).to eq("69451")
           expect(subject[:edges_per_face_tesim].first).to eq("3")
           expect(subject[:bounding_box_x_tesim].first).to eq("0.1556989997625351")
           expect(subject[:bounding_box_y_tesim].first).to eq("0.15433360636234283")
           expect(subject[:bounding_box_z_tesim].first).to eq("0.1206732988357544")
-          expect(subject[:color_format_tesim].first).to eq("")
-          expect(subject[:normals_format_tesim].first).to eq("")
+          expect(subject[:color_format_tesim]&.first.present?).to be false
+          expect(subject[:normals_format_tesim]&.first.present?).to be false
           expect(subject[:has_uv_space_tesim].first).to eq("False")
           expect(subject[:vertex_color_tesim].first).to eq("False")
           expect(subject[:centroid_x_tesim].first).to eq("-0.026759909997859")
           expect(subject[:centroid_y_tesim].first).to eq("0.09521605980032478")
           expect(subject[:centroid_z_tesim].first).to eq("0.00894711457962819")
+
+          # method and tool details
+          expect(subject[:centroid_method_tesim].first).to eq "Vertex Mean"
+          expect(subject[:blender_version_tesim]&.first.present?).to be true
+          expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be false
         end
       end
     
@@ -64,23 +70,99 @@ RSpec.describe CharacterizeJob do
         end
         subject { SolrDocument.find(file_set.id) }
         it "has OBJ attributes in the metadata" do
+          # mesh details
           expect(subject[:point_count_tesim].first).to eq("34834")
           expect(subject[:face_count_tesim].first).to eq("69451")
           expect(subject[:edges_per_face_tesim].first).to eq("3")
           expect(subject[:bounding_box_x_tesim].first).to eq("0.1556990034878254")
           expect(subject[:bounding_box_y_tesim].first).to eq("0.15433400869369507")
           expect(subject[:bounding_box_z_tesim].first).to eq("0.1206739991903305")
-          expect(subject[:color_format_tesim].first).to eq("")
-          expect(subject[:normals_format_tesim].first).to eq("")
+          expect(subject[:color_format_tesim]&.first.present?).to be false
+          expect(subject[:normals_format_tesim]&.first.present?).to be false
           expect(subject[:has_uv_space_tesim].first).to eq("False")
           expect(subject[:vertex_color_tesim].first).to eq("False")
           expect(subject[:centroid_x_tesim].first).to eq("-0.026662636876096206")
           expect(subject[:centroid_y_tesim].first).to eq("0.09490209697499395")
           expect(subject[:centroid_z_tesim].first).to eq("0.008991039898314488")
+
+          # method and tool details
+          expect(subject[:centroid_method_tesim].first).to eq "Vertex Mean"
+          expect(subject[:blender_version_tesim]&.first.present?).to be true
+          expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be false
         end
       end
 
-      describe 'GLB characterization' do
+      describe 'simple GLTF characterization' do
+        let(:file_path_string) {fixture_path + '/bunny/bunny.gltf'}
+        let(:mesh_file) { File.open(file_path_string) }
+
+        before do
+          Hydra::Works::AddFileToFileSet.call(file_set, mesh_file, :original_file)
+          described_class.perform_now(file_set, file_set.original_file.id, file_path_string)
+        end
+    
+        # find the solr doc, then verify the metadata
+        subject { SolrDocument.find(file_set.id) }
+    
+        it "has GLTF attributes in the metadata" do
+          # mesh details
+          expect(subject[:point_count_tesim].first).to eq("34834")
+          expect(subject[:face_count_tesim].first).to eq("69451")
+          expect(subject[:edges_per_face_tesim].first).to eq("3")
+          expect(subject[:bounding_box_x_tesim].first).to eq("0.1557")
+          expect(subject[:bounding_box_y_tesim].first).to eq("0.15433")
+          expect(subject[:bounding_box_z_tesim].first).to eq("0.12067")
+          expect(subject[:color_format_tesim]&.first.present?).to be false
+          expect(subject[:normals_format_tesim].first).to eq("vertex normals")
+          expect(subject[:has_uv_space_tesim].first).to eq("False")
+          expect(subject[:vertex_color_tesim].first).to eq("False")
+          expect(subject[:centroid_x_tesim].first).to eq("-0.016839999999999994")
+          expect(subject[:centroid_y_tesim].first).to eq("0.110155")
+          expect(subject[:centroid_z_tesim].first).to eq("-0.0015350000000000016")
+
+          # method and tool details
+          expect(subject[:centroid_method_tesim].first).to eq "Bounding Box"
+          expect(subject[:blender_version_tesim]&.first.present?).to be false
+          expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be true
+        end
+      end
+
+      describe 'simple GLB characterization' do
+        let(:file_path_string) {fixture_path + '/bunny/bunny.glb'}
+        let(:mesh_file) { File.open(file_path_string) }
+
+        before do
+          Hydra::Works::AddFileToFileSet.call(file_set, mesh_file, :original_file)
+          described_class.perform_now(file_set, file_set.original_file.id, file_path_string)
+        end
+    
+        # find the solr doc, then verify the metadata
+        subject { SolrDocument.find(file_set.id) }
+    
+        it "has GLB attributes in the metadata" do
+          # mesh details
+          expect(subject[:point_count_tesim].first).to eq("34834")
+          expect(subject[:face_count_tesim].first).to eq("69451")
+          expect(subject[:edges_per_face_tesim].first).to eq("3")
+          expect(subject[:bounding_box_x_tesim].first).to eq("0.1557")
+          expect(subject[:bounding_box_y_tesim].first).to eq("0.15433")
+          expect(subject[:bounding_box_z_tesim].first).to eq("0.12067")
+          expect(subject[:color_format_tesim]&.first.present?).to be false
+          expect(subject[:normals_format_tesim].first).to eq("vertex normals")
+          expect(subject[:has_uv_space_tesim].first).to eq("False")
+          expect(subject[:vertex_color_tesim].first).to eq("False")
+          expect(subject[:centroid_x_tesim].first).to eq("-0.016839999999999994")
+          expect(subject[:centroid_y_tesim].first).to eq("0.110155")
+          expect(subject[:centroid_z_tesim].first).to eq("-0.0015350000000000016")
+
+          # method and tool details
+          expect(subject[:centroid_method_tesim].first).to eq "Bounding Box"
+          expect(subject[:blender_version_tesim]&.first.present?).to be false
+          expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be true
+        end
+      end
+
+      describe 'complex GLB characterization' do
         let(:file_path_string) {fixture_path + '/whale/whale-mpc-677-150k-4096.glb'}
         let(:mesh_file) { File.open(file_path_string) }
 
@@ -93,13 +175,19 @@ RSpec.describe CharacterizeJob do
         subject { SolrDocument.find(file_set.id) }
     
         it "has GLB attributes in the metadata" do
+          # mesh details
           expect(subject[:point_count_tesim].first).to eq("86317")
           expect(subject[:face_count_tesim].first).to eq("149999")
           expect(subject[:edges_per_face_tesim].first).to eq("3")
-          expect(subject[:color_format_tesim].first).to eq("")
-          expect(subject[:normals_format_tesim].first).to eq("")
+          expect(subject[:color_format_tesim]&.first.present?).to be false
+          expect(subject[:normals_format_tesim].first).to eq("vertex normals")
           expect(subject[:has_uv_space_tesim].first).to eq("True")
           expect(subject[:vertex_color_tesim].first).to eq("False")
+
+          # method and tool details
+          expect(subject[:centroid_method_tesim].first).to eq "Bounding Box"
+          expect(subject[:blender_version_tesim]&.first.present?).to be false
+          expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be true
         end
       end
         
@@ -112,19 +200,25 @@ RSpec.describe CharacterizeJob do
         end
         subject { SolrDocument.find(file_set.id) }
         it "has STL attributes in the metadata" do
+          # mesh details
           expect(subject[:point_count_tesim].first).to eq("34834")
           expect(subject[:face_count_tesim].first).to eq("69451")
           expect(subject[:edges_per_face_tesim].first).to eq("3")
           expect(subject[:bounding_box_x_tesim].first).to start_with("0.")
           expect(subject[:bounding_box_y_tesim].first).to start_with("0.")
           expect(subject[:bounding_box_z_tesim].first).to start_with("0.")
-          expect(subject[:color_format_tesim].first).to eq("")
-          expect(subject[:normals_format_tesim].first).to eq("")
+          expect(subject[:color_format_tesim]&.first.present?).to be false
+          expect(subject[:normals_format_tesim]&.first.present?).to be false
           expect(subject[:has_uv_space_tesim].first).to eq("False")
           expect(subject[:vertex_color_tesim].first).to eq("False")
           expect(subject[:centroid_x_tesim].first).to start_with("-0.")
           expect(subject[:centroid_y_tesim].first).to start_with("0.")
           expect(subject[:centroid_z_tesim].first).to start_with("0.")
+
+          # method and tool details
+          expect(subject[:centroid_method_tesim].first).to eq "Vertex Mean"
+          expect(subject[:blender_version_tesim]&.first.present?).to be true
+          expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be false
         end
       end
     
@@ -137,6 +231,7 @@ RSpec.describe CharacterizeJob do
         end
         subject { SolrDocument.find(file_set.id) }
         it "has WRL attributes in the metadata" do
+          # mesh details
           expect(subject[:point_count_tesim].first).to eq("35947")
           expect(subject[:face_count_tesim].first).to eq("69451")
           expect(subject[:edges_per_face_tesim].first).to eq("3")
@@ -144,12 +239,17 @@ RSpec.describe CharacterizeJob do
           expect(subject[:bounding_box_y_tesim].first).to start_with("0.")
           expect(subject[:bounding_box_z_tesim].first).to start_with("0.")
           expect(subject[:color_format_tesim].first).to eq("vertex color")
-          expect(subject[:normals_format_tesim].first).to eq("")
+          expect(subject[:normals_format_tesim]&.first.present?).to be false
           expect(subject[:has_uv_space_tesim].first).to eq("True")
           expect(subject[:vertex_color_tesim].first).to eq("True")
           expect(subject[:centroid_x_tesim].first).to start_with("-0.")
           expect(subject[:centroid_y_tesim].first).to start_with("0.")
           expect(subject[:centroid_z_tesim].first).to start_with("0.")
+
+          # method and tool details
+          expect(subject[:centroid_method_tesim].first).to eq "Vertex Mean"
+          expect(subject[:blender_version_tesim]&.first.present?).to be true
+          expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be false
         end
       end
     
@@ -162,6 +262,7 @@ RSpec.describe CharacterizeJob do
         end
         subject { SolrDocument.find(file_set.id) }
         it "has X3D attributes in the metadata" do
+          # mesh details
           expect(subject[:point_count_tesim].first).to eq("34834")
           expect(subject[:face_count_tesim].first).to eq("69451")
           expect(subject[:edges_per_face_tesim].first).to eq("3")
@@ -169,12 +270,17 @@ RSpec.describe CharacterizeJob do
           expect(subject[:bounding_box_y_tesim].first).to start_with("0.")
           expect(subject[:bounding_box_z_tesim].first).to start_with("0.")
           expect(subject[:color_format_tesim].first).to eq("vertex color")
-          expect(subject[:normals_format_tesim].first).to eq("")
+          expect(subject[:normals_format_tesim]&.first.present?).to be false
           expect(subject[:has_uv_space_tesim].first).to eq("True")
           expect(subject[:vertex_color_tesim].first).to eq("True")
           expect(subject[:centroid_x_tesim].first).to start_with("-0.")
           expect(subject[:centroid_y_tesim].first).to start_with("0.")
           expect(subject[:centroid_z_tesim].first).to start_with("0.")
+
+          # method and tool details
+          expect(subject[:centroid_method_tesim].first).to eq "Vertex Mean"
+          expect(subject[:blender_version_tesim]&.first.present?).to be true
+          expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be false
         end
       end
     
@@ -230,15 +336,21 @@ RSpec.describe CharacterizeJob do
         subject { SolrDocument.find(file_set.id) }
     
         it "has OBJ attributes in the metadata" do
+          # mesh details
           expect(subject.mime_type).to eq("application/zip")
           expect(subject.contents_mime_type.first).to eq("text/prs.wavefront-obj")
           expect(subject[:point_count_tesim].first).to eq("75818")
           expect(subject[:face_count_tesim].first).to eq("149999")
           expect(subject[:edges_per_face_tesim].first).to eq("3")
-          expect(subject[:color_format_tesim].first).to eq("")
-          expect(subject[:normals_format_tesim].first).to eq("")
+          expect(subject[:color_format_tesim]&.first.present?).to be false
+          expect(subject[:normals_format_tesim]&.first.present?).to be false
           expect(subject[:has_uv_space_tesim].first).to eq("True")
           expect(subject[:vertex_color_tesim].first).to eq("False")
+
+          # method and tool details
+          expect(subject[:centroid_method_tesim].first).to eq "Vertex Mean"
+          expect(subject[:blender_version_tesim]&.first.present?).to be true
+          expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be false
         end
       end
 
@@ -255,15 +367,21 @@ RSpec.describe CharacterizeJob do
         subject { SolrDocument.find(file_set.id) }
     
         it "has GLTF attributes in the metadata" do
+          # mesh details
           expect(subject.mime_type).to eq("application/zip")
           expect(subject.contents_mime_type.first).to eq("model/gltf+json")
           expect(subject[:point_count_tesim].first).to eq("86317")
           expect(subject[:face_count_tesim].first).to eq("149999")
           expect(subject[:edges_per_face_tesim].first).to eq("3")
-          expect(subject[:color_format_tesim].first).to eq("")
-          expect(subject[:normals_format_tesim].first).to eq("")
+          expect(subject[:color_format_tesim]&.first.present?).to be false
+          expect(subject[:normals_format_tesim].first).to eq("vertex normals")
           expect(subject[:has_uv_space_tesim].first).to eq("True")
           expect(subject[:vertex_color_tesim].first).to eq("False")
+
+          # method and tool details
+          expect(subject[:centroid_method_tesim].first).to eq "Bounding Box"
+          expect(subject[:blender_version_tesim]&.first.present?).to be false
+          expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be true
         end
       end
     end

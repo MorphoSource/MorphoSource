@@ -674,11 +674,7 @@ namespace :morphosource do
       update = false
     end
     # update all bso and cho with org linked team
-    coll_type_id = Hyrax::CollectionType.find_by(machine_id: 'team').gid.split('/').last.to_i
-
-byebug
-
-    qry = "linked_organization_id_ssi:* AND has_model_ssim:Collection AND collection_type_gid_ssim:\"gid://#{GlobalID.app}/Hyrax::CollectionType/#{coll_type_id}\""
+    qry = "linked_organization_id_ssi:* AND has_model_ssim:Collection AND collection_type_gid_ssim:\"gid://#{GlobalID.app}/Hyrax::CollectionType/#{Hyrax.config.team_collection_type_id}\""
     result = ActiveFedora::SolrService.query(qry, rows: 999999)
     puts "#{result.count} org-linked teams found "
     result.each do |hit|
@@ -705,13 +701,7 @@ byebug
       update = false
     end
     # update all bso and cho with org linked team
-
-
-byebug
-
-# need to replace hardcoded collection type id for team?
-
-    qry = "linked_organization_id_ssi:* AND has_model_ssim:Collection AND collection_type_gid_ssim:\"gid://#{GlobalID.app}/Hyrax::CollectionType/1\""
+    qry = "linked_organization_id_ssi:* AND has_model_ssim:Collection AND collection_type_gid_ssim:\"gid://#{GlobalID.app}/Hyrax::CollectionType/#{Hyrax.config.team_collection_type_id}\""
     result = ActiveFedora::SolrService.query(qry, rows: 999999)
     puts "#{result.count} org-linked teams found "
     result.each do |hit|

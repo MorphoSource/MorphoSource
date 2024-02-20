@@ -10,6 +10,12 @@ html {
   box-sizing: inherit !important;
 }
 
+nav#masthead {
+  .container-fluid {
+    width: unset;
+    max-width: inherit;
+  }
+}
 
 .showcase.cart {
   input.batch_document_selector, input[type=checkbox].disabled {
@@ -806,21 +812,11 @@ html {
     white-space: nowrap;
   }
 
-  [class*="choose-columns"],
-  [class*="choose-columns"]:focus,
-  [class*="choose-columns"]:focus-visible {
-    background-color: transparent;
-    outline: none;
-    .dropdown-toggle, 
-    .dropdown-toggle:focus, 
-    .dropdown-toggle:focus-visible, 
-    .dropdown-toggle:active,
-    .dropdown-toggle:hover {
-      background-color: transparent;
+  [class*="choose-columns"] {
+    button, button * {
+      color: $button-color;
+      background-color: #fff !important;
       outline: none;
-      .caret {
-        color: $button-color;
-      }
     }
   }
 

@@ -76,7 +76,11 @@ module Hydra::FileCharacterization::Characterizers
           attributes.concat(mesh["attributes"] || [])
         end
 
-        most_common_mode = ( modes.tally.max_by { |mode, cnt| cnt } || [])[0]
+        most_common_mode = ( 
+          modes.group_by(&:itself).transform_values(&:count).max_by { |mode, cnt| cnt } || 
+          []
+        )&.first
+
         spec_modes = {
           "TRIANGLES" => 3, 
           "LINES" => 1, 

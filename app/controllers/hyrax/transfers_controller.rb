@@ -26,6 +26,7 @@ module Hyrax
     end
 
     def create
+      byebug
       @proxy_deposit_request.sending_user = current_user
       if @proxy_deposit_request.save
         #redirect_to hyrax.transfers_path, notice: "Transfer request created"
@@ -47,11 +48,13 @@ module Hyrax
     # Kicks of a job that completes the transfer. If params[:reset] is set, it will revoke
     # any existing edit permissions on the work.
     def accept
+      byebug
       @proxy_deposit_request.transfer!(params[:reset])
       # todo: might need to file a bug on this.  no need to add proxy user if the user is already in the proxy user list
+      byebug
       if params[:sticky]
-        unless current_user.can_receive_deposits_from.include? @proxy_deposit_request.sending_user 
-          current_user.can_receive_deposits_from << @proxy_deposit_request.sending_user 
+        unless current_user.can_receive_deposits_from.include? @proxy_deposit_request.sending_user
+          current_user.can_receive_deposits_from << @proxy_deposit_request.sending_user
         end
       end
       redirect_to hyrax.transfers_path, notice: "Transfer has been accepted."
@@ -78,8 +81,8 @@ module Hyrax
           proxy_deposit_request.transfer!(params[:reset])
           # todo: might need to file a bug on this.  no need to add proxy user if the user is already in the proxy user list
           if params[:sticky]
-            unless current_user.can_receive_deposits_from.include? proxy_deposit_request.sending_user 
-              current_user.can_receive_deposits_from << proxy_deposit_request.sending_user 
+            unless current_user.can_receive_deposits_from.include? proxy_deposit_request.sending_user
+              current_user.can_receive_deposits_from << proxy_deposit_request.sending_user
             end
           end
         end
@@ -87,7 +90,7 @@ module Hyrax
       elsif params[:decision] == 'reject'
         @proxy_deposit_requests.each do |proxy_deposit_request|
           proxy_deposit_request.reject!
-        end  
+        end
         notice = "One or more transfers have been rejected. If this action included a large number of transfers, they may take a few moments to process."
       end
 
@@ -142,7 +145,7 @@ module Hyrax
       end
 
       def load_batch_transfers
-        @proxy_deposit_requests = 
+        @proxy_deposit_requests =
           params[:batch_transfers]
           .map { |id| ProxyDepositRequest.find(id) }
       end

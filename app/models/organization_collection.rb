@@ -50,4 +50,8 @@ class OrganizationCollection < Collection
     (institution_name + title).join(' - ')
   end
   alias display_name name
+
+  def self.primary_key
+    self.try(:id) || 'OrganizationCollection'
+  end
 end

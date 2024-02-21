@@ -19,7 +19,10 @@ class ProxyDepositRequest < ActiveRecord::Base
 
   public
 
+  # belongs_to :receiving_user, class_name: 'User'
+  # belongs_to :receiving_user, class_name: 'OrganizationCollection'
   belongs_to :receiving_user, class_name: 'User'
+  belongs_to :receiving_organization, class_name: 'OrganizationCollection'
   belongs_to :sending_user, class_name: 'User'
 
   # @param [User] user - the person who needs to take action on the ownership transfer request
@@ -77,7 +80,19 @@ class ProxyDepositRequest < ActiveRecord::Base
   # @param [String] user_key - The key of the user that will receive the transfer
   # @note The HTML form for creating a ProxyDepositRequest requires this method
   def transfer_to=(user_key)
-    self.receiving_user = User.find_by_user_key(user_key)
+    self.receiving_user = select_receiving_user(user_key)
+    self.receiving_organization = select_receiving_user(user_key)
+  end
+
+  def select_receiving_user(user_key)
+    if receiving_user = User.find_by_user_key(user_key)
+      receiving_user
+    elsif organization = OrganizationCollection.find_by(id: user_key)
+      self.receiving_organization_id = organization.id
+      byebug
+      # receiving_user = organization.managers.first
+      organization
+    end
   end
 
   # @return [nil, String] nil if we don't have a receiving user, otherwise it returns the receiving_user's user_key
@@ -87,9 +102,14 @@ class ProxyDepositRequest < ActiveRecord::Base
     receiving_user.try(:user_key)
   end
 
+  def receiving_organization
+    SolrDocument.find(receiving_organization_id)
+  end
+
   private
 
     def transfer_to_should_be_a_contributor
+
       errors.add(:transfer_to, "must have contributor access") unless receiving_user.contributor?
     end
 
@@ -163,8 +183,9 @@ class ProxyDepositRequest < ActiveRecord::Base
 
   # @param [TrueClass,FalseClass] reset (false)  if true, reset the access controls. This revokes edit access from the depositor
   def transfer!(reset = false)
+    byebug
     work.add_to_organization_team if organization_transfer
-    ContentDepositorChangeEventJob.perform_later(work, receiving_user, reset, sending_user)
+    ContentDepositorChangeEventJob.perform_now(work, receiving_user, reset, sending_user, receiving_organization_id)
     fulfill!(status: ACCEPTED)
   end
 

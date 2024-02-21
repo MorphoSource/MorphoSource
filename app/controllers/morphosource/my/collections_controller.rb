@@ -50,8 +50,12 @@ module Morphosource
 
       private
 
-      def query_solr
-        search_results(params)
+      def search_service
+        Hyrax::SearchService.new(
+          config: blacklight_config,
+          search_builder_class: self.search_builder_class,
+          scope: self
+        )
       end
 
       def authorize_admin

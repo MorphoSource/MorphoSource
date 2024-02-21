@@ -50,6 +50,10 @@ module Morphosource
 
       private
 
+      def query_solr
+        search_results(params)
+      end
+
       def authorize_admin
         redirect_to root_path and return unless current_user.admin?
       end

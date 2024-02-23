@@ -19,7 +19,7 @@
             </relative-time>
           </td>
           <% if req.receiving_organization_id %>
-            <td><%= link_to req.receiving_organization['display_name_ssi'], main_app.organization_path(req.receiving_organization_id) %></td>
+            <td><%= link_to req.receiving_organization&.display_name, main_app.organization_path(req.receiving_organization_id) %></td>
           <% else %>
             <td><%= link_to req.receiving_user.name, hyrax.user_path(req.receiving_user) %></td>
           <% end %>

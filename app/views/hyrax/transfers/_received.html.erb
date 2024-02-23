@@ -20,7 +20,12 @@
           <%= req.created_at.to_formatted_s(:long_ordinal) %>
         </relative-time>
       </td>
-      <td><%= link_to req.sending_user.name, hyrax.user_path(req.sending_user) %></td>
+      <% if OrganizationCollection.exists?(req.receiving_user_id) %>
+        <% organization = SolrDocument.find(req.receiving_user_id) %>
+        <td><%= link_to req.sending_user.name, hyrax.user_path(req.sending_user) %><br/>( to <%= link_to organization['title_tesim']&.first, main_app.organization_path(organization) %> )</td>
+      <% else %>
+        <td><%= link_to req.sending_user.name, hyrax.user_path(req.sending_user) %></td>
+      <% end %>
       <td><%= req.organization_transfer ? req.sender_comment.html_safe : req.sender_comment %></td>
       <td>
         <% if req.pending? %>

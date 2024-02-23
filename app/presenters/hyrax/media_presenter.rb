@@ -70,7 +70,6 @@ module Hyrax
     # @param [ActionDispatch::Request] request the http request context. Used so
     #                                  the GraphExporter knows what URLs to draw.
     def initialize(solr_document, current_ability, request = nil)
-      byebug
       # File status used by controller and other methods to detect when file has recently been added
       @file_status = ""
       super(solr_document, current_ability, request)

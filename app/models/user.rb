@@ -9,6 +9,7 @@ class User < ApplicationRecord
   has_many :temporary_media_access_links
   has_many :temporary_collection_access_links
 
+
   has_secure_token
 
   paginates_per 10

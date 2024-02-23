@@ -72,7 +72,6 @@ module Hyrax
         ::SolrDocument.find(curation_concern.id) : ::SolrDocument.find(params[:id])
       raise CanCan::AccessDenied.new(nil, :show) unless (curation_concern && current_ability.can?(:edit, curation_concern))
       @presenter = show_presenter.new(curation_concern_solr_doc, current_ability, request)
-      byebug
       @member_of_collections_json = member_of_collections_json(@presenter.member_of_collection_presenters)
       if (
         @presenter.imaging_event.present? &&

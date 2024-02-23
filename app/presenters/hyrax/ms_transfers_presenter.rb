@@ -1,6 +1,7 @@
 module Hyrax
   class MsTransfersPresenter # taken from Hyrax::TransfersPresenter
     def initialize(current_user, view_context, request)
+      byebug
       @current_user = current_user
       @view_context = view_context
       @request = request
@@ -15,6 +16,7 @@ module Hyrax
     end
 
     def render_received_transfers
+      byebug
       if incoming_proxy_deposits.present?
         render 'hyrax/transfers/received', incoming_proxy_deposits: paginated_incoming_proxy_deposits
       else
@@ -33,6 +35,7 @@ module Hyrax
       delegate :render, :t, to: :view_context
 
       def incoming_proxy_deposits
+        byebug
         @incoming ||= begin
           if @request.params['days'].present?
             number_of_days = @request.params['days']

@@ -26,8 +26,8 @@ module Hyrax
     end
 
     def create
-      byebug
       @proxy_deposit_request.sending_user = current_user
+      byebug
       if @proxy_deposit_request.save
         #redirect_to hyrax.transfers_path, notice: "Transfer request created"
         redirect_to main_app.media_showcase_edit_path(params[:id]), notice: "Transfer request has been sent."
@@ -42,16 +42,15 @@ module Hyrax
       add_breadcrumb t(:'hyrax.controls.home'), root_path
       add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
       add_breadcrumb t(:'hyrax.admin.sidebar.transfers'), hyrax.transfers_path
+      byebug
       @presenter = MsTransfersPresenter.new(current_user, view_context, request)
     end
 
     # Kicks of a job that completes the transfer. If params[:reset] is set, it will revoke
     # any existing edit permissions on the work.
     def accept
-      byebug
       @proxy_deposit_request.transfer!(params[:reset])
       # todo: might need to file a bug on this.  no need to add proxy user if the user is already in the proxy user list
-      byebug
       if params[:sticky]
         unless current_user.can_receive_deposits_from.include? @proxy_deposit_request.sending_user
           current_user.can_receive_deposits_from << @proxy_deposit_request.sending_user

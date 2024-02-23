@@ -54,4 +54,12 @@ class OrganizationCollection < Collection
   def self.primary_key
     self.try(:id) || 'OrganizationCollection'
   end
+
+  def self.polymorphic_name
+    "OrganizationCollection"
+  end
+
+  def self.relation_delegate_class(klass = nil)
+    OrganizationCollection
+  end
 end

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_02_06_185502) do
+ActiveRecord::Schema.define(version: 2024_02_23_213914) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -396,8 +396,8 @@ ActiveRecord::Schema.define(version: 2024_02_06_185502) do
 
   create_table "proxy_deposit_requests", force: :cascade do |t|
     t.string "work_id", null: false
-    t.integer "sending_user_id", null: false
-    t.integer "receiving_user_id", null: false
+    t.string "sending_user_id", null: false
+    t.string "receiving_user_id", null: false
     t.datetime "fulfillment_date"
     t.string "status", default: "pending", null: false
     t.text "sender_comment"

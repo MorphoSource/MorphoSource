@@ -7,6 +7,12 @@ module Hydra::FileCharacterization::Characterizers
 
   class GltfInspect < Hydra::FileCharacterization::Characterizer
 
+    attr_reader :format
+    def initialize(filename, tool_path = nil, format = :xml)
+      super(filename, tool_path)
+      @format = format
+    end
+
     protected
 
       def command_path
@@ -21,7 +27,14 @@ module Hydra::FileCharacterization::Characterizers
       def post_process(raw_output)
         json_output = parse_json(raw_output)
         metadata = parse_metadata(json_output)
-        generate_xml(metadata)
+        
+        if format == :xml
+          generate_xml(metadata)
+        elsif format == :json
+          metadata
+        else
+          raise "Unrecognized return format"
+        end
       end
 
       # Try to parse JSON from output or return error

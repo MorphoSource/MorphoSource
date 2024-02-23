@@ -8,6 +8,7 @@ module Morphosource
     autoload :CTImageSeriesDerivatives
     autoload :ImageSeriesCroppedImageDerivatives
     autoload :MeshDerivatives
+    autoload :MeshGltfDerivatives
     autoload :VideoDerivatives
 
     autoload :Processors
@@ -20,6 +21,8 @@ module Morphosource
     autoload :DerivativeTool
     autoload :Fiji
     autoload :GltfPipeline
+    autoload :GltfScale
+    autoload :GltfTransform
     autoload :Img2dcm
 
     def self.blender_path

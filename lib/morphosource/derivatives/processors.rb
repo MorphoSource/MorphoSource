@@ -9,6 +9,7 @@ module Morphosource
       autoload :ImageSeriesCroppedImage
       autoload :ImageSeriesUtil
       autoload :Mesh
+      autoload :MeshGltf
       autoload :Video
     end
   end

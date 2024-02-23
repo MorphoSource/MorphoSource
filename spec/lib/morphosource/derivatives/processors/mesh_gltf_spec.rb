@@ -1,11 +1,14 @@
 require 'rails_helper'
 
-describe Morphosource::Derivatives::Processors::Mesh do
+# require GltfTransform to ensure GltfTransformError gets autoloaded
+require 'morphosource/derivatives/gltf_transform'
+
+describe Morphosource::Derivatives::Processors::MeshGltf do
 	subject { described_class.new(file_name, directives) }
 
 	let(:file_name) { 'file_name' }
 	let(:derivative_path) { '/tmp/test.glb' }
-	let(:directives) { { label: :glb, format: 'glb', unit: 'm', url: URI("file://#{derivative_path}").to_s } }
+	let(:directives) { { label: :glb, format: 'glb', unit: 'mm', url: URI("file://#{derivative_path}").to_s } }
 
 	describe "#process" do
 		context "when a timeout is set" do
@@ -30,8 +33,16 @@ describe Morphosource::Derivatives::Processors::Mesh do
 		end
 
 		context "with an input file" do
-			describe "PLY format" do
-				let(:file_name) { File.join(fixture_path, 'bunny/bunny.ply') }
+      describe "where file does not exist " do
+				let(:file_name) { File.join(fixture_path, 'fake.glb') }
+
+				it "raises Morphosource::Derivatives::GltfTransformError" do
+					expect { subject.process }.to raise_error(an_instance_of(Morphosource::Derivatives::GltfTransformError))
+				end
+			end
+
+			describe "simple mesh GLB format" do
+				let(:file_name) { File.join(fixture_path, 'bunny/bunny.glb') }
 
 				it "produces the derivative mesh with a non-zero filesize" do
 					subject.process
@@ -40,8 +51,8 @@ describe Morphosource::Derivatives::Processors::Mesh do
 				end
 			end
 
-			describe "OBJ (single file) format" do
-				let(:file_name) { File.join(fixture_path, 'bunny/bunny.obj') }
+			describe "simple mesh GLTF (single file) format" do
+				let(:file_name) { File.join(fixture_path, 'bunny/bunny.gltf') }
 
 				it "produces the derivative mesh with a non-zero filesize" do
 					subject.process
@@ -50,8 +61,8 @@ describe Morphosource::Derivatives::Processors::Mesh do
 				end
 			end
 
-			describe "STL format" do
-				let(:file_name) { File.join(fixture_path, 'bunny/bunny.stl') }
+      describe "complex mesh GLB format" do
+				let(:file_name) { File.join(fixture_path, 'whale/whale-mpc-677-150k-4096.glb') }
 
 				it "produces the derivative mesh with a non-zero filesize" do
 					subject.process
@@ -60,8 +71,8 @@ describe Morphosource::Derivatives::Processors::Mesh do
 				end
 			end
 
-			describe "WRL format" do
-				let(:file_name) { File.join(fixture_path, 'bunny/bunny.wrl') }
+			describe "complex mesh GLTF (multi-file) format" do
+				let(:file_name) { File.join(fixture_path, 'whale/whale-mpc-677-150k-4096-gltf.zip') }
 
 				it "produces the derivative mesh with a non-zero filesize" do
 					subject.process
@@ -70,8 +81,9 @@ describe Morphosource::Derivatives::Processors::Mesh do
 				end
 			end
 
-			describe "X3D format" do
-				let(:file_name) { File.join(fixture_path, 'bunny/bunny.x3d') }
+      describe "complex mesh GLTF (multi-file) format in meter scale" do
+				let(:file_name) { File.join(fixture_path, 'whale/whale-mpc-677-150k-4096-gltf.zip') }
+        let(:directives) { { label: :glb, format: 'glb', unit: 'm', url: URI("file://#{derivative_path}").to_s } }
 
 				it "produces the derivative mesh with a non-zero filesize" do
 					subject.process
@@ -80,8 +92,9 @@ describe Morphosource::Derivatives::Processors::Mesh do
 				end
 			end
 
-			describe "OBJ (multi-file) format" do
-				let(:file_name) { File.join(fixture_path, 'whale/whale-mpc-677-150k-4096-obj.zip') }
+      describe "complex mesh GLTF (multi-file) format with no scale" do
+				let(:file_name) { File.join(fixture_path, 'whale/whale-mpc-677-150k-4096-gltf.zip') }
+        let(:directives) { { label: :glb, format: 'glb', unit: nil, url: URI("file://#{derivative_path}").to_s } }
 
 				it "produces the derivative mesh with a non-zero filesize" do
 					subject.process

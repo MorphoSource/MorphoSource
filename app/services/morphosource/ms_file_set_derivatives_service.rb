@@ -8,7 +8,8 @@ module Morphosource
       when *file_set.class.audio_mime_types           then create_audio_derivatives(filename)
       when *file_set.class.video_mime_types           then create_video_derivatives(filename)
       when *file_set.class.image_mime_types           then create_image_derivatives(filename)
-      when *file_set.class.mesh_mime_types            then create_mesh_derivatives(filename)
+      when *file_set.class.gltf_mesh_mime_types       then create_gltf_mesh_derivatives(filename)
+      when *file_set.class.misc_mesh_mime_types       then create_misc_mesh_derivatives(filename)
       when *file_set.class.archive_mime_types         then create_archive_derivatives(filename)
       end
     end
@@ -43,7 +44,23 @@ module Morphosource
         )
       end
 
-      def create_mesh_derivatives(filename)
+      # Create derivative for gltf mesh format
+      def create_gltf_mesh_derivatives(filename)
+        parent_work = file_set.member_of&.first
+        Morphosource::Derivatives::MeshGltfDerivatives.create(
+          filename,
+          outputs: [ {
+            label: :glb,
+            format: 'glb',
+            point_count: file_set.point_count&.first,
+            unit: parent_work&.unit&.first,
+            url: derivative_url('glb')
+          } ]
+        )
+      end
+
+      # Create derivative for general (non-gltf) mesh formats
+      def create_misc_mesh_derivatives(filename)
         parent_work = file_set.member_of&.first
         Morphosource::Derivatives::MeshDerivatives.create(
           filename,
@@ -74,7 +91,11 @@ module Morphosource
             parent_work&.z_spacing&.first
           )
         elsif parent_work&.media_type&.first == 'Mesh'
-          create_mesh_derivatives(filename)
+          # Need to know archive representative file mime type to choose derivatives pipeline
+          case file_set.contents_mime_type&.first
+          when *file_set.class.gltf_mesh_mime_types       then create_gltf_mesh_derivatives(filename)
+          when *file_set.class.misc_mesh_mime_types       then create_misc_mesh_derivatives(filename)
+          end
         end
 
         # Handle errors

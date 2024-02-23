@@ -84,6 +84,7 @@ class MsFileSetIndexer < Hyrax::FileSetIndexer
       solr_doc['gltf_inspect_version_tesim'] = object.gltf_inspect_version
       
       # zip archive contents
+      solr_doc['contents_all_files_ssim'] = object.contents_all_files
       solr_doc['contents_mime_type_tesim'] = object.contents_mime_type
       solr_doc['contents_file_name_tesim'] = object.contents_file_name
       solr_doc['contents_file_size_tesim'] = object.contents_file_size

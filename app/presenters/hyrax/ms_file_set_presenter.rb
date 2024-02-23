@@ -71,6 +71,7 @@ module Hyrax
         :has_uv_space,
         :vertex_color,
         # zip archive contents
+        :contents_all_files,
         :contents_mime_type,
         :contents_file_name,
         :contents_file_size,

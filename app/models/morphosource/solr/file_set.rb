@@ -70,6 +70,7 @@ module Morphosource
                            gltf_inspect_version]
 
       ZIP_PROPERTIES = %w[contents_accepted_file_count
+                          contents_all_files
                           contents_file_name
                           contents_file_size
                           contents_mime_type]

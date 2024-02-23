@@ -20,8 +20,7 @@ module Morphosource
 
           config.default_solr_params = {
             qt: "search",
-            rows: 10,
-            qf: "title_tesim description_tesim creator_tesim keyword_tesim physical_object_title_tesim taxonomy_tesim"
+            qf: "id title_tesim description_tesim creator_tesim keyword_tesim physical_object_title_tesim taxonomy_tesim"
           }
         end
       end

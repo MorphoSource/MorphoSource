@@ -45,4 +45,9 @@ class OrganizationCollection < Collection
   def attachment(field_name)
     Morphosource::AttachmentService.get(self, field_name)
   end
+
+  def name
+    (institution_name + title).join(' - ')
+  end
+  alias display_name name
 end

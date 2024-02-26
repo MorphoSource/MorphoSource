@@ -5,6 +5,7 @@ class OrganizationCollectionIndexer < Hyrax::CollectionWithBasicMetadataIndexer
       solr_doc['media_ownership_transfer_bsi'] = object.media_ownership_transfer
       solr_doc['generic_type_sim'] = ['Collection']
       solr_doc['title_ssi'] = object.title.first
+      solr_doc['display_name_ssi'] = object.display_name
     end
   end
 end

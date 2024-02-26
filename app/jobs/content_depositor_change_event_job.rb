@@ -11,6 +11,7 @@ class ContentDepositorChangeEventJob < ContentEventJob
   # @param [User] user the user the work is being transfered to.
   # @param [TrueClass,FalseClass] reset (false) if true, reset the access controls. This revokes edit access from the depositor
   def perform(work, user, reset = false, sending_user = nil)
+    # byebug
     @reset = reset
     @new_owner = user
     @sending_user = sending_user
@@ -18,6 +19,7 @@ class ContentDepositorChangeEventJob < ContentEventJob
   end
 
   def action
+    # byebug
     "User #{link_to_profile @sending_user} has transferred #{link_to_work work.title.first} to user #{link_to_profile @new_owner}"
   end
 
@@ -41,6 +43,8 @@ class ContentDepositorChangeEventJob < ContentEventJob
     if @sending_user.present?
       @sending_user.log_profile_event(event)
     end
-    @new_owner.log_event(event)
+    if @new_owner.is_a? User
+      @new_owner.log_event(event)
+    end
   end
 end

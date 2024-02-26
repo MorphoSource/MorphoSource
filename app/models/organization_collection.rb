@@ -50,4 +50,8 @@ class OrganizationCollection < Collection
     (institution_name + title).join(' - ')
   end
   alias display_name name
+
+  def proxy_deposit_requests
+    ProxyDepositRequest.where(receiving_user_id: id)
+  end
 end

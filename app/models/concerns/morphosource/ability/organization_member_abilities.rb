@@ -9,8 +9,16 @@ module Morphosource
           has_organizational_access_to_media? obj
         end
 
+        can :edit, ::Media do |obj|
+          has_organizational_edit_access_to_media? obj
+        end
+
         can :read, ::FileSet do |obj|
           has_organizational_access_to_fileset? obj
+        end
+
+        can :edit, ::FileSet do |obj|
+          has_organizational_edit_access_to_fileset? obj
         end
 
         can :read, ::SolrDocument do |obj|
@@ -24,9 +32,27 @@ module Morphosource
           end
         end
 
+        can :edit, ::SolrDocument do |obj|
+          case obj.has_model&.first
+          when 'Media'
+            has_organizational_edit_access_to_media? obj
+          when 'FileSet'
+            has_organizational_edit_access_to_fileset? obj
+          else
+            false
+          end
+        end
+
         can :read, String do |id|
           obj = SolrDocument.find(id)
           can? :read, obj
+        rescue
+          false
+        end
+
+        can :edit, String do |id|
+          obj = SolrDocument.find(id)
+          can? :edit, obj
         rescue
           false
         end
@@ -46,6 +72,12 @@ module Morphosource
           (organization_groups(media) & @user_groups).present?
         end
 
+        def has_organizational_edit_access_to_media?(media)
+          Rails.logger.debug("[CANCAN] Checking for individual media edit access through organization membership")
+          return false unless media = solr_document(media)
+          (organization_edit_groups(media) & @user_groups).present?
+        end
+
         def has_organizational_access_to_fileset?(file_set)
           Rails.logger.debug("[CANCAN] Checking for individual file set access through organization membership")
           return false unless file_set = solr_document(file_set)
@@ -53,6 +85,15 @@ module Morphosource
           return false unless media_id = Morphosource::SolrService.new.get_docs("file_set_ids_ssim:#{file_set.id}").first&.dig("id")
 
           has_organizational_access_to_media?(media_id)
+        end
+
+        def has_organizational_edit_access_to_fileset?(file_set)
+          Rails.logger.debug("[CANCAN] Checking for individual file set edit access through organization membership")
+          return false unless file_set = solr_document(file_set)
+
+          return false unless media_id = Morphosource::SolrService.new.get_docs("file_set_ids_ssim:#{file_set.id}").first&.dig("id")
+
+          has_organizational_edit_access_to_media?(media_id)
         end
 
         def organization_groups(media)
@@ -70,6 +111,14 @@ module Morphosource
             end
           end
         end
+
+        def organization_edit_groups(media)
+          return [] unless document = solr_document(media)
+          owner_id = media['owner_ssim']&.first
+          return [] unless OrganizationCollection.exists?(owner_id)
+          ['managers', 'editors'].each_with_object([]) {|role, groups| groups << "#{owner_id}_#{role}"}
+        end
+
 
         def solr_document(obj)
           case obj

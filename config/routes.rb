@@ -635,6 +635,9 @@ Rails.application.routes.draw do
   post '/batch_submissions/ingest', to: 'batch_submissions#ingest'
   get '/batch_submissions/result', to: 'batch_submissions#result', as: 'batch_submissions_result'
 
+  ### DATA MANAGER SEARCH ###
+  get '/data_managers', to: 'morphosource/data_managers#index', as: 'data_managers'
+
   ### DOCS ###
   resources :docs do
     collection do

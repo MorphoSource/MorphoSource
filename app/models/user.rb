@@ -9,6 +9,7 @@ class User < ApplicationRecord
   has_many :temporary_media_access_links
   has_many :temporary_collection_access_links
 
+
   has_secure_token
 
   paginates_per 10
@@ -114,6 +115,10 @@ class User < ApplicationRecord
 
   def registered?
     groups.include? 'registered'
+  end
+
+  def organization_collection?
+    false
   end
 
   # Mailboxer (the notification system) needs the User object to respond to this method

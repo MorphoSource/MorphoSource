@@ -105,7 +105,6 @@ class ProxyDepositRequest < ActiveRecord::Base
   # @note The HTML form for creating a ProxyDepositRequest requires this method
   def transfer_to=(user_key)
     self.receiving_user_id = select_receiving_user(user_key).id
-    # byebug
     # self.receiving_organization_id = select_receiving_organization(user_key)
   end
 
@@ -220,7 +219,6 @@ class ProxyDepositRequest < ActiveRecord::Base
   # @param [TrueClass,FalseClass] reset (false)  if true, reset the access controls. This revokes edit access from the depositor
   def transfer!(reset = false)
     work.add_to_organization_team if organization_transfer
-    byebug
     # ContentDepositorChangeEventJob.perform_now(work, receiving_user, reset, sending_user)
     ContentDepositorChangeEventJob.perform_now(work, receiving_user, reset, sending_user)
     fulfill!(status: ACCEPTED)

@@ -7,7 +7,7 @@ module Morphosource
         include Morphosource::Collections::OrganizationHelper
 
         # restrict to admins
-        before_action :authorize_admin
+        # before_action :authorize_admin
 
         skip_load_and_authorize_resource only: [:show, :about, :facet, :devices_export], instance_name: :collection
 

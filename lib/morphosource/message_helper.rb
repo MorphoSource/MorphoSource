@@ -12,6 +12,7 @@ module Morphosource
     def user_email_link(users)
       list = []
       users.each do |user|
+        next if user.is_a? OrganizationCollection # TODO
         list << "<a href='mailto:#{user.email}'>#{user.name_or_email}</a>"
       end
       return list.to_sentence.html_safe

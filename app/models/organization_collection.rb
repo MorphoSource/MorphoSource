@@ -54,4 +54,8 @@ class OrganizationCollection < Collection
   def proxy_deposit_requests
     ProxyDepositRequest.where(receiving_user_id: id)
   end
+
+  def email
+    managers.map(&:email)
+  end
 end

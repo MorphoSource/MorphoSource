@@ -526,6 +526,13 @@ module MorphosourceHelper
     user.display_name.present? ? user.display_name : user.email
   end
 
+  def data_manager_display(key)
+    manager = ::User.find_by_user_key(key) || ::OrganizationCollection.find_by(id: key)
+    return key if manager.nil?
+
+    manager.display_name.present? ? manager.display_name : ( manager.try(:email) || manager.try(:title)&.first )
+  end
+
   def sftp_share_status(path)
     return "" unless path.present?
     icon = '<i class="glyphicon glyphicon-alert tooltip-icon text-alert"><p class="hint hide">Not connected</p></i>'

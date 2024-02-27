@@ -79,10 +79,6 @@ class MsFileSetIndexer < Hyrax::FileSetIndexer
       solr_doc['centroid_x_tesim'] = object.centroid_x
       solr_doc['centroid_y_tesim'] = object.centroid_y
       solr_doc['centroid_z_tesim'] = object.centroid_z
-      solr_doc['centroid_method_tesim'] = object.centroid_method
-      solr_doc['blender_version_tesim'] = object.blender_version
-      solr_doc['gltf_inspect_version_tesim'] = object.gltf_inspect_version
-      
       # zip archive contents
       solr_doc['contents_all_files_tesim'] = object.contents_all_files
       solr_doc['contents_mime_type_tesim'] = object.contents_mime_type

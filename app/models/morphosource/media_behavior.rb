@@ -40,5 +40,9 @@ module Morphosource
       download_reviewers = User.where(ms_id: download_reviewer.to_a).map(&:ms_id)
       download_reviewers.present? ? Array(download_reviewers) : Array(user_with_ownership)
     end
+
+    def user_with_ownership
+      OrganizationCollection.find_by(id: owner)&.id || User.find_by(ms_id: owner)&.ms_id || depositor
+    end
   end
 end

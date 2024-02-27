@@ -36,7 +36,6 @@ module Morphosource
 
     def self.apply_organization_metadata(work, organization)
       work.owner = organization.id
-      # byebug
       # work.download_reviewer = organization['download_reviewer_ssim']
     end
   end

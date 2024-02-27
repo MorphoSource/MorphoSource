@@ -142,14 +142,6 @@ module Morphosource
       end
     end
 
-    def page_collection_type_id
-      @page_collection_type_id ||= collection_type_id_by_machine_name(collection_type.gsub(' ', '_'))
-    end
-
-    def collection_type_id_by_machine_name(machine_name)
-      Hyrax::CollectionType.find_by(machine_id: machine_name).gid.split('/').last.to_i
-    end
-
     def collection_count_for(count)
       count.to_s + ' ' + @collection_list_type.pluralize(count)
     end

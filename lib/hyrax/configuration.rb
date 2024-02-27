@@ -776,20 +776,6 @@ module Hyrax
       collection_model.safe_constantize
     end
 
-    attr_writer :project_collection_type_id
-    ##
-    # @return [Integer] collection type ID for project 
-    def project_collection_type_id
-      Hyrax::CollectionType.find_by(machine_id: 'project').gid.split('/').last.to_i
-    end
-
-    attr_writer :team_collection_type_id
-    ##
-    # @return [Integer] collection type ID for team
-    def team_collection_type_id
-      Hyrax::CollectionType.find_by(machine_id: 'team').gid.split('/').last.to_i
-    end
-
     attr_writer :admin_set_model
     ##
     # @return [#constantize] a string representation of the admin set

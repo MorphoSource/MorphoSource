@@ -29,6 +29,7 @@ module Hyrax
           @collection_list_type = "collection"
         end
 
+        @page_collection_type_id = Morphosource::CollectionTypesService.collection_type_id_by_name(collection_type)
         collections_by_memberships
         query_collection_information
 
@@ -60,11 +61,11 @@ module Hyrax
         end
         # todo: see if there is a way to avoid queries to get each membership docs
         # currently this is needed, at least for getting the counts
-        manager_docs = teams_service.collection_docs_by_type_and_ids(page_collection_type_id, collection_filter_params, manager_collection_ids)
-        editor_docs = teams_service.collection_docs_by_type_and_ids(page_collection_type_id, collection_filter_params, editor_collection_ids)
-        depositor_docs = teams_service.collection_docs_by_type_and_ids(page_collection_type_id, collection_filter_params, depositor_collection_ids)
-        downloader_docs = teams_service.collection_docs_by_type_and_ids(page_collection_type_id, collection_filter_params, downloader_collection_ids)
-        viewer_docs = teams_service.collection_docs_by_type_and_ids(page_collection_type_id, collection_filter_params, viewer_collection_ids)
+        manager_docs = teams_service.collection_docs_by_type_and_ids(@page_collection_type_id, collection_filter_params, manager_collection_ids)
+        editor_docs = teams_service.collection_docs_by_type_and_ids(@page_collection_type_id, collection_filter_params, editor_collection_ids)
+        depositor_docs = teams_service.collection_docs_by_type_and_ids(@page_collection_type_id, collection_filter_params, depositor_collection_ids)
+        downloader_docs = teams_service.collection_docs_by_type_and_ids(@page_collection_type_id, collection_filter_params, downloader_collection_ids)
+        viewer_docs = teams_service.collection_docs_by_type_and_ids(@page_collection_type_id, collection_filter_params, viewer_collection_ids)
         # pass the target_collection_ids to information service
         if params['k_membership'].present?
           case params['k_membership']
@@ -80,7 +81,7 @@ module Hyrax
               @document_list = viewer_docs
             end
         else
-          all_memberships_docs = teams_service.collection_docs_by_type_and_ids(page_collection_type_id, collection_filter_params, all_memberships_collection_ids)
+          all_memberships_docs = teams_service.collection_docs_by_type_and_ids(@page_collection_type_id, collection_filter_params, all_memberships_collection_ids)
           @document_list = all_memberships_docs
         end
         @paginated_document_list = paginated_item_list
@@ -140,11 +141,11 @@ module Hyrax
         end
 
         def teams_information_service
-          @teams_information_service ||= information_service_class.new(current_user, page_collection_type_id, "my", @target_collection_ids)
+          @teams_information_service ||= information_service_class.new(current_user, @page_collection_type_id, "my", @target_collection_ids)
         end
 
         def browse_teams_information_service
-          @teams_information_service ||= information_service_class.new(current_user, page_collection_type_id, "browse", nil)
+          @teams_information_service ||= information_service_class.new(current_user, @page_collection_type_id, "browse", nil)
         end
 
         def paginated_item_list

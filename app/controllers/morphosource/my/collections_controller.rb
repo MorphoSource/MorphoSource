@@ -26,7 +26,7 @@ module Morphosource
       configure_facets
 
       def search_builder_class
-       Morphosource::My::CollectionsSearchBuilder
+        Morphosource::My::CollectionsSearchBuilder
       end
 
       def index
@@ -49,14 +49,6 @@ module Morphosource
       end
 
       private
-
-      def search_service
-        Hyrax::SearchService.new(
-          config: blacklight_config,
-          search_builder_class: self.search_builder_class,
-          scope: self
-        )
-      end
 
       def authorize_admin
         redirect_to root_path and return unless current_user.admin?

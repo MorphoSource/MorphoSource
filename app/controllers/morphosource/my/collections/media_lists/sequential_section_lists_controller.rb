@@ -22,6 +22,10 @@ module Morphosource
             "sequential_section_lists"
           end
 
+          def search_builder_class
+            Morphosource::My::Collections::MediaLists::SequentialSectionListsSearchBuilder
+          end
+
           def search_action_url(*args)
             main_app.my_sequential_section_lists_url(*args)
           end

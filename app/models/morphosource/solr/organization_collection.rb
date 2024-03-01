@@ -26,6 +26,10 @@ module Morphosource
         self['recordset_id_ssim']
       end
 
+      def display_name
+        self['display_name_ssi']
+      end
+
     end
   end
 end

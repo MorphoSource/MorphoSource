@@ -19,13 +19,8 @@ class ProxyDepositRequest < ActiveRecord::Base
 
   public
 
-  # belongs_to :receiving_user, class_name: 'User'
-  # belongs_to :receiving_user, class_name: 'OrganizationCollection'
   belongs_to :receiving_user, polymorphic: true
-  # belongs_to :receiving_organization, class_name: 'OrganizationCollection', optional: true
   belongs_to :sending_user, class_name: 'User'
-
-  # belongs_to :receiver, polymorphic: true
 
   # @param [User] user - the person who needs to take action on the ownership transfer request
   # @param [number_of_days] - for pulling either all transfers, or just x number of days
@@ -133,7 +128,7 @@ class ProxyDepositRequest < ActiveRecord::Base
   end
 
   def receiving_user
-    @receiving_user ||= (User.find_by_user_key(receiving_user_id) || OrganizationCollection.find_by(id: receiving_user_id))
+    @receiving_user ||= (User.find_by(id: receiving_user_id) || OrganizationCollection.find_by(id: receiving_user_id))
   end
 
   private

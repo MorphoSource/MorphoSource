@@ -1,4 +1,4 @@
-
+# When searching for data managers, returns both users and organization collections
 module Morphosource
   class DataManagersController < Hyrax::UsersController
 
@@ -16,7 +16,23 @@ module Morphosource
       end
 
       def search_params(q)
-        {"qt"=>"search", "user_query"=> q, "fq"=>["", "{!terms f=has_model_ssim}OrganizationCollection"], "sort"=>"score desc", "q"=>"{!lucene}_query_:\"{!dismax v=$user_query}\"", "defType"=>"lucene", "qf"=>"title_tesim institution_name_tesim", "pf"=>"title_tesim",  "wt"=>"json"}
+        params = {}
+        # params[:qt] = "search"
+        params[:user_query] = q
+        params[:fq] = ["", "{!terms f=has_model_ssim}OrganizationCollection"]
+        params[:sort] = "score desc"
+        params[:q] = "{!lucene}_query_:\"{!dismax v=$user_query}\""
+        params[:defType] = "lucene"
+        params[:qf] = "title_tesim institution_name_tesim"
+        params[:pf] = "title_tesim"
+        # params[:wt] = "json"
+        params
       end
+
+      # config.default_solr_params = {
+      #   qt: "search",
+      #   rows: 10,
+      #   qf: "id title_tesim description_tesim creator_tesim keyword_tesim physical_object_title_tesim taxonomy_tesim"
+      # }
   end
 end

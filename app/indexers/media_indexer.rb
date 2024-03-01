@@ -24,7 +24,7 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['user_with_ownership_ssi'] = object.user_with_ownership
 
       # Data manager name and email
-      owner = media_owner(object)
+      owner = media_owner
       solr_doc['user_with_ownership_name_tesim'] = owner&.name || "Unknown User"
       solr_doc['user_with_ownership_name_ssim'] = owner&.name || "Unknown User"
       solr_doc['user_with_ownership_email_tesim'] = owner&.email
@@ -229,11 +229,11 @@ class MediaIndexer < Morphosource::WorkIndexer
     end
   end
 
-  def media_owner(object)
-    @user_with_ownership ||= find_owner(object)
+  def media_owner
+    @user_with_ownership ||= find_media_owner
   end
 
-  def find_owner(object)
+  def find_media_owner
     owner_id = object.user_with_ownership
     User.find_by_user_key(owner_id) || OrganizationCollection.find_by(id: owner_id)
   end

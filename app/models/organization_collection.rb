@@ -58,4 +58,12 @@ class OrganizationCollection < Collection
   def email
     managers.map(&:email)
   end
+
+  def self.primary_key
+    "id"
+  end
+
+  def self.polymorphic_name
+    "OrganizationCollection"
+  end
 end

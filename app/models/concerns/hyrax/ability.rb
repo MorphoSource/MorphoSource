@@ -114,26 +114,10 @@ module Hyrax
       end
 
       def proxy_deposit_abilities
-        if Flipflop.transfer_works?
-          can :transfer, String do |id|
-            user_is_data_manager?(id)
-          end
-        end
-
         can :create, ProxyDepositRequest if Flipflop.proxy_deposit? && registered_user?
 
-        # can :accept, ProxyDepositRequest, receiving_user_id: current_user.id, status: 'pending'
-        # can :reject, ProxyDepositRequest, receiving_user_id: current_user.id, status: 'pending'
-
-        can :accept, ProxyDepositRequest do |request|
-          # byebug
-          user_is_manager_of_organization?(request.receiving_user_id) && request.status == 'pending'
-        end
-
-        can :reject, ProxyDepositRequest do |request|
-          user_is_manager_of_organization?(request.receiving_user_id) && request.status == 'pending'
-        end
-
+        can :accept, ProxyDepositRequest, receiving_user_id: current_user.id, status: 'pending'
+        can :reject, ProxyDepositRequest, receiving_user_id: current_user.id, status: 'pending'
         # a user who sent a proxy deposit request can cancel it if it's pending.
         can :destroy, ProxyDepositRequest, sending_user_id: current_user.id, status: 'pending'
       end
@@ -231,25 +215,10 @@ module Hyrax
       # Returns true if the current user is the depositor of the specified work
       # @param document_id [String] the id of the document.
       def user_is_depositor?(document_id)
-        return true if current_user.admin?
-
         Hyrax::WorkRelation.new.search_with_conditions(
           id: document_id,
           DepositSearchBuilder.depositor_field => current_user.user_key
         ).any?
-      end
-
-      def user_is_data_manager?(document_id)
-        return true if current_user.admin?
-
-        owner_id = SolrDocument.find(document_id)['user_with_ownership_ssim']&.first
-        current_user.user_key == owner_id || user_is_manager_of_organization?(owner_id)
-      end
-
-      def user_is_manager_of_organization?(organization_id)
-        return true if current_user.admin?
-
-        current_user.groups.include? "#{organization_id}_managers"
       end
 
       def curation_concerns_models

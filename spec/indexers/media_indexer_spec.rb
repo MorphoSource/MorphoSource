@@ -353,4 +353,31 @@ RSpec.describe MediaIndexer do
     parent.ordered_members << child
     parent.save!
   end
+
+  describe 'media_owner' do
+    let(:depositor) { FactoryBot.create(:contributor) }
+    let(:media)     { Media.new(depositor: depositor.ms_id) }
+
+    context 'media has a depositor only' do
+      it 'indexes depositor as owner' do
+        expect(described_class.new(media).media_owner).to eq(depositor)
+      end
+    end
+    context 'media has a depositor and an owner' do
+      context 'owner is a user' do
+        let(:owner)     { FactoryBot.create(:contributor) }
+        before { media.owner = owner.ms_id }
+        it 'indexes owner as owner' do
+          expect(described_class.new(media).media_owner).to eq(owner)
+        end
+      end
+      context 'owner is an organization' do
+        let(:owner)     { FactoryBot.create(:organization_collection, depositor: depositor.ms_id) }
+        before { media.owner = owner.id }
+        it 'indexes depositor as owner' do
+          expect(described_class.new(media).media_owner).to eq(owner)
+        end
+      end
+    end
+  end
 end

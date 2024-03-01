@@ -36,7 +36,7 @@
                                     'param-key' => @imaging_event_form.model_name.param_key },
                             multipart: true
                           } do |i| %>
-        <%= hidden_field_tag :media_id, @presenter.id %>
+        <%= hidden_field_tag :media_id, @presenter.id %> 
         <div class="row related_form imaging-event" style="display:none">
           <%= render 'form_imaging_event', i: i, presenter: @presenter %>
         </div>
@@ -75,7 +75,7 @@
                           multipart: true
                         } do |p| %>
 
-      <%= hidden_field_tag :media_id, @presenter.id %>
+      <%= hidden_field_tag :media_id, @presenter.id %>             
       <div class="row related_form processing-event" id="related_form_processing_event" style="display:none">
         <%= render 'form_processing_event', p: p, presenter: @presenter %>
       </div>
@@ -102,6 +102,7 @@
     </div>
 
 <% end %>
+
 <% if can? :transfer, @presenter.id %>
 <div class="row related_form share" style="display:none">
   <%= render_async hyrax.new_work_transfer_path(@presenter.id), event_name: "share-tab-loaded" do %>

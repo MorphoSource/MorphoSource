@@ -527,7 +527,7 @@ module MorphosourceHelper
   end
 
   def data_manager_display(key)
-    manager = ::User.find_by_user_key(key) || ::OrganizationCollection.find_by(id: key)
+    manager = ::User.find_by(id: key) || SolrDocument.where("id" => key).first
     return key if manager.nil?
 
     manager.display_name.present? ? manager.display_name : ( manager.try(:email) || manager.try(:title)&.first )

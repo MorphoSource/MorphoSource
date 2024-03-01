@@ -2,7 +2,7 @@
 document.addEventListener("share-tab-loaded", function(event) {
 
   var transferToSelect = $('#proxy_deposit_request_transfer_to');
-  transferToSelect.dataManagerSearch();
+  transferToSelect.dataManagerSearch(); // returns a list of users & organization collections
 
   $('#btn-transfer-submit').click(function() {
     if (transferToSelect.val().length == 0) {

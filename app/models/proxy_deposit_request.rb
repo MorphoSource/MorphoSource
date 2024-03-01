@@ -19,13 +19,8 @@ class ProxyDepositRequest < ActiveRecord::Base
 
   public
 
-  # belongs_to :receiving_user, class_name: 'User'
-  # belongs_to :receiving_user, class_name: 'OrganizationCollection'
   belongs_to :receiving_user, polymorphic: true
-  # belongs_to :receiving_organization, class_name: 'OrganizationCollection', optional: true
   belongs_to :sending_user, class_name: 'User'
-
-  # belongs_to :receiver, polymorphic: true
 
   # @param [User] user - the person who needs to take action on the ownership transfer request
   # @param [number_of_days] - for pulling either all transfers, or just x number of days
@@ -34,34 +29,13 @@ class ProxyDepositRequest < ActiveRecord::Base
   #       this is reasonable. In the view we will render the #to_s of the associated work. So we may as well preload the SOLR document.
   # Replacing deleted_work? with remove_deleted_transfers to avoid loading Fedora media objects
   def self.incoming_for(user:, number_of_days:)
-    manager_groups = user.groups.select{|g| g.include? '_managers'}
-    # org_collection_groups = Morphosource::SolrService.new.get_docs("has_model_ssim:OrganizationCollection")
-    ids = user.roles.map{|r| r.name.chomp("_managers") if r.name.include? "managers"}.compact
-    if ids.empty?
-      org_ids = []
+    ids = user.collections_managed_ids << user.id
+    if number_of_days == 'all'
+      transfers = where(receiving_user_id: ids).order('created_at desc')
+      remove_deleted_transfers(transfers)
     else
-      org_ids = Morphosource::SolrService.new.get_docs("has_model_ssim:OrganizationCollection", fq: ["id:(#{ids.join(' OR ').upcase})"], fl: ["id"]).map{|hit| hit["id"]}
-    end
-
-    # org_ids = org_collection_groups.map{|doc| doc["id"]}
-    # org_ids = org_ids.map{|id| "#{id}_managers"}
-    # groups = manager_groups & org_ids
-    if org_ids.present?
-      if number_of_days == 'all'
-        transfers = where(receiving_user: org_ids).order('created_at desc')
-        remove_deleted_transfers(transfers)
-      else
-        transfers = where(receiving_user: org_ids).where("created_at > ?", number_of_days.to_i.days.ago).order('created_at desc')
-        remove_deleted_transfers(transfers)
-      end
-    else
-      if number_of_days == 'all'
-        transfers = where(receiving_user: user).order('created_at desc')
-        remove_deleted_transfers(transfers)
-      else
-        transfers = where(receiving_user: user).where("created_at > ?", number_of_days.to_i.days.ago).order('created_at desc')
-        remove_deleted_transfers(transfers)
-      end
+      transfers = where(receiving_user_id: ids).where("created_at > ?", number_of_days.to_i.days.ago).order('created_at desc')
+      remove_deleted_transfers(transfers)
     end
   end
 
@@ -104,17 +78,12 @@ class ProxyDepositRequest < ActiveRecord::Base
   # @param [String] user_key - The key of the user that will receive the transfer
   # @note The HTML form for creating a ProxyDepositRequest requires this method
   def transfer_to=(user_key)
-    self.receiving_user_id = select_receiving_user(user_key).id
-    # self.receiving_organization_id = select_receiving_organization(user_key)
+    self.receiving_user_id = select_receiving_user(user_key).id # user or organization collection
   end
 
   def select_receiving_user(user_key)
     User.find_by_user_key(user_key) || OrganizationCollection.find_by(id: user_key)
   end
-
-  # def select_receiving_organization(user_key)
-  #   OrganizationCollection.find_by(id: user_key)&.id
-  # end
 
   # @return [nil, String] nil if we don't have a receiving user, otherwise it returns the receiving_user's user_key
   # @note The HTML form for creating a ProxyDepositRequest requires this method
@@ -133,7 +102,7 @@ class ProxyDepositRequest < ActiveRecord::Base
   end
 
   def receiving_user
-    @receiving_user ||= (User.find_by_user_key(receiving_user_id) || OrganizationCollection.find_by(id: receiving_user_id))
+    @receiving_user ||= (User.find_by(id: receiving_user_id) || OrganizationCollection.find_by(id: receiving_user_id))
   end
 
   private
@@ -219,8 +188,7 @@ class ProxyDepositRequest < ActiveRecord::Base
   # @param [TrueClass,FalseClass] reset (false)  if true, reset the access controls. This revokes edit access from the depositor
   def transfer!(reset = false)
     work.add_to_organization_team if organization_transfer
-    # ContentDepositorChangeEventJob.perform_now(work, receiving_user, reset, sending_user)
-    ContentDepositorChangeEventJob.perform_now(work, receiving_user, reset, sending_user)
+    ContentDepositorChangeEventJob.perform_later(work, receiving_user, reset, sending_user)
     fulfill!(status: ACCEPTED)
   end
 

@@ -2,7 +2,7 @@ module Morphosource
   module Ability
     module OrganizationMemberAbilities
 
-      # View Media and FileSets through organization membership
+      # Access Media and FileSets through organization membership
       def organizational_member_abilities
 
         can :read, ::Media do |obj|
@@ -55,6 +55,24 @@ module Morphosource
           can? :edit, obj
         rescue
           false
+        end
+
+        # Proxy Deposits
+
+        can :transfer, String do |id|
+          user_is_media_organization_manager?(id)
+        end
+
+        can :accept, ProxyDepositRequest do |request|
+          return false unless request.status == "pending"
+
+          user_is_media_organization_manager?(request.work_id)
+        end
+
+        can :reject, ProxyDepositRequest do |request|
+          return false unless request.status == "pending"
+
+          user_is_media_organization_manager?(request.work_id)
         end
       end
 
@@ -135,6 +153,15 @@ module Morphosource
           end
         rescue
           nil
+        end
+
+        def user_is_media_organization_manager?(document_id)
+          owner_id = SolrDocument.find(document_id)['user_with_ownership_ssi']
+          user_is_manager_of_organization?(owner_id)
+        end
+
+        def user_is_manager_of_organization?(id)
+          current_user.groups.include? "#{id}_managers"
         end
 
     end

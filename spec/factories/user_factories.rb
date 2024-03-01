@@ -53,6 +53,11 @@ FactoryBot.define do
 
     factory :contributor do
       groups { ['contributor'] }
+      after(:build) do |contributor|
+        role = Role.find_or_create_by(name: "contributor")
+        role.users << contributor
+        role.save
+      end
     end
 
     factory :registered_user do

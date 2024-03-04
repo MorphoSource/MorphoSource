@@ -4,7 +4,7 @@ module Morphosource
       class Aat < ActiveTriples::Resource
         include Morphosource::ControlledVocabularies::GettyAuthorities
 
-        class_attribute :label
+        class_attribute :label, :full_label
 
         def cache_key_prefix
           'morphosource_getty_aat_label-v1-'

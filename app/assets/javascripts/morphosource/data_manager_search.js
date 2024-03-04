@@ -1,6 +1,5 @@
 // Based on Hyrax userSearch https://github.com/samvera/hyrax/blob/v2.9.0/app/assets/javascripts/hyrax/user_search.js
 // Returns both users and organization collections
-
 (function( $ ){
 
   $.fn.dataManagerSearch = function() {

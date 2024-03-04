@@ -5,34 +5,20 @@ module Morphosource
     def index
       users = search(params[:uq], false)
       organizations = search_organizations(params[:uq])
-      @data_managers = organizations + users
+      @data_managers = (organizations + users).sort_by!{|x| x.display_name}
+    end
+
+    def blacklight_config
+      OrganizationsCatalogController.blacklight_config
     end
 
     private
 
       def search_organizations(q)
+        blacklight_params = ActionController::Parameters.new( { "search_field"=>"all_fields", "q" => q } )
+        search_builder = Morphosource::Catalog::OrganizationCollectionsCatalogSearchBuilder.new(self).with(blacklight_params)
         repository = OrganizationsCatalogController.new.repository
-        repository.search(search_params(q)).documents
+        repository.search(search_builder.query).documents
       end
-
-      def search_params(q)
-        params = {}
-        # params[:qt] = "search"
-        params[:user_query] = q
-        params[:fq] = ["", "{!terms f=has_model_ssim}OrganizationCollection"]
-        params[:sort] = "score desc"
-        params[:q] = "{!lucene}_query_:\"{!dismax v=$user_query}\""
-        params[:defType] = "lucene"
-        params[:qf] = "title_tesim institution_name_tesim"
-        params[:pf] = "title_tesim"
-        # params[:wt] = "json"
-        params
-      end
-
-      # config.default_solr_params = {
-      #   qt: "search",
-      #   rows: 10,
-      #   qf: "id title_tesim description_tesim creator_tesim keyword_tesim physical_object_title_tesim taxonomy_tesim"
-      # }
   end
 end

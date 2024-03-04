@@ -51,18 +51,21 @@ class OrganizationCollection < Collection
   end
   alias display_name name
 
-  def proxy_deposit_requests
-    ProxyDepositRequest.where(receiving_user_id: id)
-  end
-
   def email
     managers.map(&:email)
   end
 
+  def proxy_deposit_requests
+    ProxyDepositRequest.where(receiving_user_id: id)
+  end
+
+  # used by ProxyDepositRequest
   def self.primary_key
     "id"
   end
 
+  # used by ProxyDepositRequest
+  # goes in receiving_user_type
   def self.polymorphic_name
     "OrganizationCollection"
   end

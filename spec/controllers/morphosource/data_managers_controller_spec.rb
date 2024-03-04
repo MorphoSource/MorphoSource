@@ -6,9 +6,9 @@ RSpec.describe Morphosource::DataManagersController, type: :controller do
   let!(:bbb_user)          { FactoryBot.create(:user, display_name: 'BBB User') }
   let!(:ccc_user)          { FactoryBot.create(:user, display_name: 'CCC User') }
 
-  let!(:aaa_organization)  { FactoryBot.build(:organization_collection, id: 'aaa', title: ['AAA Organization'], institution_name: ['AAA Institution']) }
-  let!(:bbb_organization)  { FactoryBot.build(:organization_collection, id: 'bbb', title: ['BBB Organization'], institution_name: ['BBB Institution']) }
-  let!(:ccc_organization)  { FactoryBot.build(:organization_collection, id: 'ccc', title: ['CCC Organization'], institution_name: ['CCC Institution']) }
+  let!(:aaa_organization)  { FactoryBot.build(:organization_collection, id: 'aaa', title: ['AAA Organization'], institution_name: ['AAA Institution'], visibility: 'open') }
+  let!(:bbb_organization)  { FactoryBot.build(:organization_collection, id: 'bbb', title: ['BBB Organization'], institution_name: ['BBB Institution'], visibility: 'open') }
+  let!(:ccc_organization)  { FactoryBot.build(:organization_collection, id: 'ccc', title: ['CCC Organization'], institution_name: ['CCC Institution'], visibility: 'open') }
 
   before do
     [aaa_organization, bbb_organization, ccc_organization].each do |org|

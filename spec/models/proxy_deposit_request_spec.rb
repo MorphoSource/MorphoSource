@@ -63,4 +63,76 @@ RSpec.describe ProxyDepositRequest do
       end
     end
   end
+
+  describe 'incoming_for' do
+    let!(:receiving_user) { FactoryBot.create(:contributor) }
+    let(:work)            { FactoryBot.create(:media) }
+    let(:organization)    { FactoryBot.create(:organization_collection, depositor: user6.ms_id) }
+    let!(:proxy_deposit_request) {
+      ProxyDepositRequest.create(
+      work_id: work.id, sending_user_id: user5.id, receiving_user_id: organization.id, status: "pending", sender_comment: "test")
+    }
+
+    context 'receiving_user is the user' do
+      before do
+        proxy_deposit_request.receiving_user_id = receiving_user.id
+        proxy_deposit_request.save!
+      end
+      it 'returns the request' do
+        expect(ProxyDepositRequest.incoming_for(user: receiving_user, number_of_days: 'all')).to match_array([proxy_deposit_request])
+      end
+    end
+
+    context 'receiving_user is an organization' do
+      let(:work2)           { FactoryBot.create(:media) }
+      let(:work3)           { FactoryBot.create(:media) }
+      let(:organization2)   { FactoryBot.create(:organization_collection, depositor: user6.ms_id) }
+      let(:organization3)   { FactoryBot.create(:organization_collection, depositor: user6.ms_id) }
+      let(:proxy_deposit_request2) {
+        ProxyDepositRequest.create(
+        work_id: work2.id, sending_user_id: user5.id, receiving_user_id: organization2.id, status: "pending", sender_comment: "test")
+      }
+      let(:proxy_deposit_request3) {
+        ProxyDepositRequest.create(
+        work_id: work3.id, sending_user_id: user5.id, receiving_user_id: organization3.id, status: "pending", sender_comment: "test")
+      }
+
+      context 'user is an organization manager' do
+        before do
+          allow(receiving_user).to receive(:groups).and_return(["#{organization.id}_managers"])
+        end
+        it 'returns the request for organization managers' do
+          expect(ProxyDepositRequest.incoming_for(user: receiving_user, number_of_days: 'all')).to match_array([proxy_deposit_request])
+        end
+      end
+
+      context 'user is not an organization manager' do
+        it 'does not return the request' do
+          expect(ProxyDepositRequest.incoming_for(user: receiving_user, number_of_days: 'all')).to match_array([])
+        end
+      end
+      context 'user manages multiple organizations' do
+        before do
+          [proxy_deposit_request2, proxy_deposit_request3].each(&:touch)
+          allow(receiving_user).to receive(:groups).and_return(["#{organization.id}_managers", "#{organization2.id}_managers", "#{organization3.id}_managers"])
+        end
+
+        it 'returns the requests for organization managers' do
+          expect(ProxyDepositRequest.incoming_for(user: receiving_user, number_of_days: 'all')).to match_array([proxy_deposit_request, proxy_deposit_request2, proxy_deposit_request3])
+        end
+
+        context 'user manages multiple organizations and individual media' do
+          let(:work4) { FactoryBot.create(:media) }
+          let(:work5) { FactoryBot.create(:media) }
+
+          let!(:proxy_deposit_request4) { ProxyDepositRequest.create(work_id: work4.id, sending_user_id: user5.id, receiving_user_id: receiving_user.id, status: "pending", sender_comment: "test") }
+          let!(:proxy_deposit_request5) { ProxyDepositRequest.create(work_id: work5.id, sending_user_id: user5.id, receiving_user_id: receiving_user.id, status: "pending", sender_comment: "test") }
+
+          it 'returns the request for organization managers and individual requests' do
+            expect(ProxyDepositRequest.incoming_for(user: receiving_user, number_of_days: 'all')).to match_array([proxy_deposit_request, proxy_deposit_request2, proxy_deposit_request3, proxy_deposit_request4, proxy_deposit_request5])
+          end
+        end
+      end
+    end
+  end
 end

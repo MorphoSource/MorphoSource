@@ -29,34 +29,13 @@ class ProxyDepositRequest < ActiveRecord::Base
   #       this is reasonable. In the view we will render the #to_s of the associated work. So we may as well preload the SOLR document.
   # Replacing deleted_work? with remove_deleted_transfers to avoid loading Fedora media objects
   def self.incoming_for(user:, number_of_days:)
-    manager_groups = user.groups.select{|g| g.include? '_managers'}
-    # org_collection_groups = Morphosource::SolrService.new.get_docs("has_model_ssim:OrganizationCollection")
-    ids = user.roles.map{|r| r.name.chomp("_managers") if r.name.include? "managers"}.compact
-    if ids.empty?
-      org_ids = []
+    ids = user.collections_managed_ids << user.id
+    if number_of_days == 'all'
+      transfers = where(receiving_user_id: ids).order('created_at desc')
+      remove_deleted_transfers(transfers)
     else
-      org_ids = Morphosource::SolrService.new.get_docs("has_model_ssim:OrganizationCollection", fq: ["id:(#{ids.join(' OR ').upcase})"], fl: ["id"]).map{|hit| hit["id"]}
-    end
-
-    # org_ids = org_collection_groups.map{|doc| doc["id"]}
-    # org_ids = org_ids.map{|id| "#{id}_managers"}
-    # groups = manager_groups & org_ids
-    if org_ids.present?
-      if number_of_days == 'all'
-        transfers = where(receiving_user: org_ids).order('created_at desc')
-        remove_deleted_transfers(transfers)
-      else
-        transfers = where(receiving_user: org_ids).where("created_at > ?", number_of_days.to_i.days.ago).order('created_at desc')
-        remove_deleted_transfers(transfers)
-      end
-    else
-      if number_of_days == 'all'
-        transfers = where(receiving_user: user).order('created_at desc')
-        remove_deleted_transfers(transfers)
-      else
-        transfers = where(receiving_user: user).where("created_at > ?", number_of_days.to_i.days.ago).order('created_at desc')
-        remove_deleted_transfers(transfers)
-      end
+      transfers = where(receiving_user_id: ids).where("created_at > ?", number_of_days.to_i.days.ago).order('created_at desc')
+      remove_deleted_transfers(transfers)
     end
   end
 

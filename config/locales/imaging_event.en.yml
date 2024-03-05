@@ -5,6 +5,7 @@ en:
         imaging_event:
           show:
             imaging_event_modality: Modality
+            date_created: &date_created Event date
             detector_pixels_x: &detector_pixels_x Detector pixels X
             detector_pixel_size_x: &detector_pixel_size_x Detector pixels size X
             detector_pixels_y: &detector_pixels_y Detector pixels Y
@@ -12,7 +13,7 @@ en:
             device_label: Device
             device_organization_institution: Device facility
             imaging_event_creator: Creator
-            imaging_event_date_created: Event Date
+            imaging_event_date_created: *date_created
             imaging_event_software: Software
             imaging_event_description: Description
             imaging_event_description_attachment: Description attachment

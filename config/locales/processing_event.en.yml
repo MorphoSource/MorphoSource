@@ -4,8 +4,8 @@ en:
       fields:
         processing_event:
           show:
-            date_created: Event date
-            description: Description
+            date_created: &date_created Event date
+            description: &description Description
   hyrax:
     icons:
       processing_event:     'fa fa-file-text-o'
@@ -16,8 +16,8 @@ en:
   simple_form:
     labels:
       processing_event:
-        description: Description
-        date_created: Event Date
+        description: *description
+        date_created: *date_created
     hints:
       processing_event:
         creator: Person or group responsible for the processing event

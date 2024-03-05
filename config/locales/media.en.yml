@@ -134,7 +134,7 @@ en:
         file_types: File format of uploaded file and, if file is an archive, one or more identified media files within archive
         funding: Grants, organizations, or individuals who funded creation of Media
         has_uv_space: Whether or not a mapping exists to project a 3D object's surface to a 2D image for texture mapping and is present with the 3D object 
-        human_readable_media_type: Type, nature, or classification of Media, the general or high-level type of all file data
+        human_readable_media_type: &human_readable_media_type Type, nature, or classification of Media, the general or high-level type of all file data
         identifier: Identifier for Media applied by an external non-MorphoSource entity, such an ARK, DOI, GUID, or other identifier format
         image_height: Height in pixels and/or number of rows of image data
         image_width: Width in pixels and/or number of columns of image data
@@ -142,7 +142,7 @@ en:
         license: Applicable Creative Commons license governing use and reuse
         map_type: Type of texture map or projection accompanying 3D mesh model, such as color or normal maps
         media_organization: Organization (collection, institution, department, etc.) responsible for managing object represented by Media
-        media_type: Type, nature, or classification of Media, the general or high-level type of all file data
+        media_type: *human_readable_media_type
         orientation: Specific orientation (= direction, view angle) of the subject represented in Media
         parent_media_count: Number of Media above this Media in the processing workflow, all of which contributed to produce this Media
         part: Portion or product of physical object or organism represented by Media

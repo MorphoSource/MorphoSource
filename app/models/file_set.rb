@@ -106,6 +106,7 @@ class FileSet < ActiveFedora::Base
 
   # for zip archive contents
   delegate(
+    :contents_all_files,
     :contents_mime_type,
     :contents_file_name,
     :contents_file_size,

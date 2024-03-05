@@ -1,6 +1,7 @@
 module Hyrax
   module Renderers
     class ShowcaseDefaultAttributeRenderer < AttributeRenderer
+      include ActionView::Context
       include ActionView::Helpers::NumberHelper
       include MorphosourceHelper
       
@@ -12,11 +13,11 @@ module Hyrax
           css_classes << options[:css_classes]
         end
         markup << %(<div class='row'>)
-        if options[:label].present?
-          markup << %(<div class='col-xs-6 showcase-label'>#{options[:label]}</div>)
-        else
-          markup << %(<div class='col-xs-6 showcase-label'>#{label}</div>)
-        end          
+
+        labelContent = options[:label].present? ? options[:label] : label
+        hintContent  = options[:show_hint] ? hint : ""
+        markup << %(<div class='col-xs-6 showcase-label'>#{labelContent}#{hintContent}</div>)
+
         attributes = microdata_object_attributes(field).merge(class: "attribute attribute-#{field}")
         markup << %(<div class='col-xs-6 showcase-value #{css_classes}'>)
         if values_blank?
@@ -41,6 +42,19 @@ module Hyrax
 
       def values_blank?
         values.blank? || (values.is_a?(Array) && values.all? { |x| x.blank? } )
+      end
+
+      def hint
+        content_tag :i, class: ["material-icons", "tooltip-icon"] do
+          content_tag :p, class: ["hint", "hide"] do
+            translate(
+              :"simple_form.hints.#{options[:work_type].downcase}.#{field}",
+              default: [
+                :"simple_form.hints.defaults.#{field}"
+              ]
+            )
+          end
+        end.html_safe
       end
     end
   end

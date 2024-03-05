@@ -12,7 +12,7 @@ module Hydra::Works
     end
 
     attr_accessor :object, :source, :mapping, :parser_class, :tools, :tmp_dir_path
-    attr_accessor :sub_object, :content, :file_name, :accepted_file_count
+    attr_accessor :sub_object, :content, :file_name, :accepted_file_count, :all_files
 
     def initialize(object, source, options)
       @object       = object
@@ -23,12 +23,14 @@ module Hydra::Works
       @sub_object = Hydra::PCDM::File.new()
     end
 
+    # @!group Core characterization
+
     def characterize
       # Peek inside of archives
       if File.extname(@source).downcase == ".tar"
-        @content, @file_name, @accepted_file_count = tar_to_content
+        @all_files, @content, @file_name, @accepted_file_count = tar_to_content
       else
-        @content, @file_name, @accepted_file_count = zip_to_content
+        @all_files, @content, @file_name, @accepted_file_count = zip_to_content
       end
       raise "Error characterizing #{source}: no representative file found" if file_name == nil
 
@@ -55,62 +57,6 @@ module Hydra::Works
       cleanup_tmp_files if @needs_cleanup
     end
 
-    # Gets representative zip file as content.
-    # Unlike Morphosource::Works::CharacterizationService, expects source to be a string.
-    def zip_to_content
-      rep_f = nil
-      accepted_file_count = 0
-      Zip::File.open(source) do |zip_file|
-        zip_file.each do |f|
-          next if File.basename(f.name).start_with?('.')
-          accepted_file_count = accepted_file_count + 1 if f_priority(f)
-          if ( !rep_f && f_priority(f) ) || ( f_priority(f) && f_priority(f) < f_priority(rep_f) )
-            rep_f = f
-          end
-        end
-        rep_f = zip_file.first if !rep_f.presence
-        return rep_f.get_input_stream, rep_f.name, accepted_file_count if rep_f
-      end
-    end
-
-    def tar_to_content
-      rep_f = nil
-      rep_f_content = nil
-      accepted_file_count = 0
-
-      Archive::Tar::Minitar.open(source) do |tar|
-        tar.each do |f|
-          next if !f.file? || File.basename(f.name).start_with?('.')
-
-          puts f.name
-          puts f_priority(f)
-          accepted_file_count = accepted_file_count + 1 if f_priority(f) 
-          if ( !rep_f && f_priority(f) ) || ( f_priority(f) && f_priority(f) < f_priority(rep_f) )
-            rep_f = f
-            rep_f_content = rep_f.read
-          end
-        end
-        if !rep_f.presence
-          rep_f = zip_file.first 
-          rep_f_content = rep_f.read
-        end
-
-        return rep_f_content, rep_f.name, accepted_file_count if rep_f
-      end
-    end
-
-    def f_priority(f)
-      file_type_priorities.find_index(File.extname(f.name).downcase)
-    end
-
-    def file_is_hidden?(f)
-      f.name[0] == '.'
-    end
-
-    def file_type_priorities
-      ['.dcm', '.dicom', '.glb', '.gltf', '.obj', '.ply', '.stl', '.wrl', '.x3d', '.tiff', '.tif', '.bmp', '.png', '.jpeg', '.jpg', '.svg', '.dng', '.nef', '.crw', '.cr2', '.cr3', '.iiq', '.arw', '.raw', '.rw2']
-    end
-
     def gltf_inspect_mesh_file_types
       ['.glb', '.gltf']
     end
@@ -127,37 +73,78 @@ module Hydra::Works
       return Hydra::Works::Characterization::BlenderDocument, :gltf_inspect
     end
 
-    def file_name
-      @file_name
+    # @!endgroup
+    # @!group Archive file handling
+
+    # Gets representative zip file as content.
+    # Unlike Morphosource::Works::CharacterizationService, expects source to be a string.
+    def zip_to_content
+      all_files_flat = []
+      rep_f = nil
+      zip_accepted_file_count = 0
+
+      Zip::File.open(source) do |zip_file|
+        zip_file.each do |f|
+          next if File.basename(f.name).start_with?('.')
+          all_files_flat << f.name
+          zip_accepted_file_count = zip_accepted_file_count + 1 if f_priority(f)
+          if ( !rep_f && f_priority(f) ) || ( f_priority(f) && f_priority(f) < f_priority(rep_f) )
+            rep_f = f
+          end
+        end
+
+        rep_f = zip_file.first if !rep_f.presence
+        all_files = nest_paths(all_files_flat)
+        return all_files, rep_f&.get_input_stream, rep_f&.name, zip_accepted_file_count
+      end
     end
 
-    def accepted_file_count
-      @accepted_file_count
+    def tar_to_content
+      all_files_flat = []
+      rep_f = nil
+      rep_f_content = nil
+      tar_accepted_file_count = 0
+
+      Archive::Tar::Minitar.open(source) do |tar|
+        tar.each do |f|
+          next if !f.file? || File.basename(f.name).start_with?('.')
+
+          all_files_flat << f.name
+          tar_accepted_file_count = tar_accepted_file_count + 1 if f_priority(f) 
+          if ( !rep_f && f_priority(f) ) || ( f_priority(f) && f_priority(f) < f_priority(rep_f) )
+            rep_f = f
+            rep_f_content = rep_f.read
+          end
+        end
+
+        if !rep_f.presence
+          rep_f = zip_file.first 
+          rep_f_content = rep_f.read
+        end
+        all_files = nest_paths(all_files_flat)
+        return all_files, rep_f_content, rep_f&.name, tar_accepted_file_count
+      end
     end
 
-    def transfer_metadata_to_object
-      zip_contents_properties.each { |p| object.send("#{p.to_s}=", sub_object.send(p)) }
-      # todo add special fields like representative mime type, filename, location, etc.
+    def f_priority(f)
+      file_type_priorities.find_index(File.extname(f.name).downcase)
     end
 
-    def zip_contents_properties
-      zip_contents_schemas.inject([]) { |a, s| (a + s.properties.map { |p| p.name } ).uniq }
+    def file_is_hidden?(f)
+      f.name[0] == '.'
     end
 
-    def zip_contents_schemas
-      [
-        Hydra::Works::Characterization::DicomSchema,
-        Hydra::Works::Characterization::MeshSchema,
-        Hydra::Works::Characterization::ImageExtSchema,
-        Hydra::Works::Characterization::AudioSchema,
-        Hydra::Works::Characterization::DocumentSchema,
-        Hydra::Works::Characterization::ImageSchema,
-        Hydra::Works::Characterization::VideoSchema
-      ]
+    def file_type_priorities
+      ['.dcm', '.dicom', '.glb', '.gltf', '.obj', '.ply', '.stl', '.wrl', '.x3d', '.tiff', '.tif', '.bmp', '.png', '.jpeg', '.jpg', '.svg', '.dng', '.nef', '.crw', '.cr2', '.cr3', '.iiq', '.arw', '.raw', '.rw2']
     end
 
-    def special_fields
-      ['mime_type', 'file_size']
+    # Recursively nest a flat list of file paths, returning an array of file name strings or nested hashes
+    def nest_paths(paths)
+      w_slash, wo_slash = paths.partition { |s| s.include?('/') }
+      a = w_slash
+        .group_by { |s| s[/[^\/]+/] }
+        .map { |k, v| { k => nest_paths( v.map { |s| s[/(?<=\/).+/] }.compact ) } }
+      wo_slash + a 
     end
 
     # Extract all archive files to a tmp location
@@ -221,6 +208,9 @@ module Hydra::Works
       return content_path
     end
 
+    # @!endgroup
+    # @!group Characterize, extract XML metadata, and parse to terms
+
     def extract_metadata(content)
       Hydra::FileCharacterization.characterize(content, file_name, tools) do |cfg|
         cfg[:fits] = Hydra::Derivatives.fits_path
@@ -252,6 +242,9 @@ module Hydra::Works
       h.delete_if { |_k, v| v.empty? }
     end
 
+    # @!endgroup
+    # @!group Transfer and store characterized terms on characterization proxy and FileSet
+
     # Assign values of the instance properties from the metadata mapping :prop => val
     def store_metadata(terms)
       terms.each_pair do |term, value|
@@ -280,10 +273,36 @@ module Hydra::Works
       sub_object.send("#{property}=", value)
     end
 
+    def transfer_metadata_to_object
+      zip_contents_properties.each { |p| object.send("#{p.to_s}=", sub_object.send(p)) }
+      # todo add special fields like representative mime type, filename, location, etc.
+    end
+
+    def zip_contents_properties
+      zip_contents_schemas.inject([]) { |a, s| (a + s.properties.map { |p| p.name } ).uniq }
+    end
+
+    def zip_contents_schemas
+      [
+        Hydra::Works::Characterization::DicomSchema,
+        Hydra::Works::Characterization::MeshSchema,
+        Hydra::Works::Characterization::ImageExtSchema,
+        Hydra::Works::Characterization::AudioSchema,
+        Hydra::Works::Characterization::DocumentSchema,
+        Hydra::Works::Characterization::ImageSchema,
+        Hydra::Works::Characterization::VideoSchema
+      ]
+    end
+
     def transfer_special_fields_to_object
       object.send('contents_file_name=', file_name)
       object.send('contents_accepted_file_count=', accepted_file_count)
+      object.send('contents_all_files=', all_files&.to_json || "[]")
       special_fields.each { |sf| object.send("contents_#{sf.to_s}=", sub_object.send(sf)) }
+    end
+
+    def special_fields
+      ['mime_type', 'file_size']
     end
 
     # In special GLTF case that all archive files are extracted, delete files after characterization

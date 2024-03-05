@@ -361,22 +361,38 @@ en:
       collection:
         based_near: A place name related to the collection, such as its site of publication, or the city, state, or country the collection contents are about.
       defaults:
-        agreement_uri: Additional terms and conditions that users must agree to in order to download media.
+        agreement_uri: Additional terms and conditions that users must agree to in order to download media
         data_manager: The user who should control most or all media representing organization objects. They will receive requests to transfer ownership of newly published or submitted media from original contributors to data manager. Contact admins to change.
-        download_permission: Media publication status. Can be private, published with open download (any user can download), or published with restricted download (users must request to download).
-        download_reviewer: MorphoSource user(s) who will receive download requests for restricted download media. If no reviewers are listed, the data manager will receive requests. If reviewers are listed, ONLY those users will receive requests.
-        permissions_enforcement_mode: Whether organization default permission values are recommended or required to be used by new media contributors.
-        preview_mode: "Whether media should be previewed with an interactive 3D/2D preview or restricted to a small 2D thumbnail. Interactive/Embeddable is generally recommended."
-        morphosource_use_agreement_type: "The type of usage agreement that users must agree to in order to download media. Other conditions and agreements may be specified above and beyond this."
-        permits_3d_use: "Whether 3D printing of media is permitted, prohibited, or limited. If 3D printing is limited, see documentation for more detail."
-        permits_commercial_use: "Whether media may be used for commercial purposes or not."
-        required_archival_of_published_derivatives: "Whether published derivatives created from media must be reuploaded to MorphoSource or elsewhere."
-        rights_holder: Holder of intellectual property rights (either copyright or license-based) for the digital object.
-        rights_statement: Standardized rights statements that can be used to communicate the copyright and re-use status of digital objects.
+        download_permission: Media publication status, can be private, published with open download (any user can download), or published with restricted download (users must request to download)
+        download_reviewer: Users that receive and decide requests to download Media if published with Restricted Download, defaults to data manager if not specified
+        license: Applicable Creative Commons license governing use and reuse
+        permissions_enforcement_mode: Whether organization default permission values are recommended or required to be used by new media contributors
+        publisher: Entity responsible for making the resource available
+        preview_mode: Whether media can be previewed with interactive 3D/2D preview or restricted to small 2D thumbnail, Interactive/Embeddable generally recommended
+        morphosource_use_agreement_type: Type of MorphoSource use agreement users must agree to when downloading Media
+        permits_3d_use: Whether Media may be 3D printed freely, may be 3D printed in limited ways, or if 3D printing is prohibited
+        permits_commercial_use: Whether commercial use of Media is permitted
+        required_archival_of_published_derivatives: Whether and how future derivatives created from Media must be rearchived on a public-facing digital repository such as MorphoSource
+        rights_holder: List of holders of intellectual property rights (copyright or license-based)
+        rights_statement: Standardized rights statement used to communicate copyright and/or reuse status
     labels:
       defaults:
         find_parent_work: Add to work
         description: Description
+        download_permission: Download permission
+        download_reviewer: Download reviewer
+        rights_statement: Copyright statement
+        license: License
+        morphosource_use_agreement_type: MorphoSource use agreement type
+        permits_commercial_use: Permits commercial use
+        permits_3d_use: Permits 3D use
+        required_archival_of_published_derivatives: Required archival of published derivatives
+        rights_holder: IP Holder
+        funding: Funding attribution
+        publisher: Publisher
+        cite_as: Cite as
+        agreement_uri: Additional usage agreement
+        preview_mode: Media preview mode
     placeholders:
       defaults:
         find_parent_work: Search...

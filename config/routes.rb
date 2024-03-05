@@ -14,6 +14,7 @@ Rails.application.routes.draw do
     put 'concern/media/:id/mint_doi', to: 'media#mint_doi', as: :media_mint_doi
     get 'concern/media/:id/temporary_link/:token', to: 'media#showcase', as: 'media_showcase_temporary_link'
     get 'concern/media/:id/thumbnail', to: 'media#thumbnail'
+    get 'concern/media/:id/modal/archive-contents', to: 'media#modal_file_archive_contents'
     get 'concern/parent/:parent_id/media/:id', to: 'media#showcase'
 
     # Biological specimens

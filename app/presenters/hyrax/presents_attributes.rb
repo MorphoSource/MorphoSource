@@ -18,6 +18,9 @@ module Hyrax
         return
       end
 
+      # include work_type by default
+      options = { work_type: model&.model_name&.to_s }.merge(options)
+
       if options[:html_dl]
         renderer_for(field, options).new(field, send(field), options).render_dl_row
       else

@@ -3,27 +3,43 @@ en:
     search:
       fields:
         show:
+          accepted_file_count: Number of images in set
           agreement_uri: Additional usage agreement
           ark: MorphoSource ARK
           centroid_location: Centroid coordinates
           cite_as: Cite as
           color_format: Color information format
+          depositor: Data uploaded by
           description: Full description
+          device_and_facility: Device
+          direct_parent: Derived directly from
           doi: MorphoSource DOI
           face_count: Polygons
+          file_label_basename: File name
+          file_types: File format(s)
           funding: Funding attribution
           has_uv_space: UV coordinates
+          human_readable_media_type: Media type
           identifier: External identifier
+          imaging_event_modality: Modality
           license: Creative Commons license
+          media_organization: Object organization
           media_type: Media type
           normals_format: Normal information format
+          parent_media_count: Number of parent media
           part: Object element or part
           permits_3d_use: Permits 3D use
+          physical_object_title: Object represented
           point_count: Points
           preview_mode: Media preview mode
+          processing_event_count: Number of processing events
+          publication_status_label: Publication status
           related_url: External media URL
           rights_holder: IP holder
           rights_statement: Copyright statement
+          taxonomy_title: Object taxonomy
+          user_with_ownership: Data managed by
+          work_id: Media ID
           x_spacing: X pixel spacing
           y_spacing: Y pixel spacing
           z_spacing: Z pixel spacing
@@ -94,8 +110,59 @@ en:
         z_spacing: Z pixel spacing
     hints:
       media:
+        accepted_file_count: Number of identified media files. For image stacks, the largest number of relevant files of a same type in a single directory, indicating number of images in set. Not equivalent to count of all files in archive.
+        archive_representative_file_label_basename: Name of file identified as either the central file of the archive or a single example of the central group of files, used for generating preview derivatives
+        archive_representative_file_type: Format of file identified as either the central file of the archive or a single example of the central group of files, used for generating preview derivatives
+        ark: Persistent identifier for Media automatically created on Media submission. ARKs can apply to both unpublished and published media.
+        bounding_box_dimensions: Length across X, Y, and Z axes of the rectangular bounding box surrounding a 3D digital object
+        centroid_location: X, Y, and Z coordinates of the centroid of a 3D object
+        cite_as: Instructions and guidelines for the citation of Media
+        color_depth: Number of bits allocated or stored for each pixel sample
+        color_space: Color space of image data
+        compression: Compression scheme used on image data
+        creator: Person or group responsible for creation of Media
+        date_created: Date on which Media was created
+        date_uploaded: Date on which Media was uploaded to MorphoSource
+        depositor: User who uploaded Media
+        device_and_facility: Device used to image Media
+        direct_parent: Media that was processed to create Media
+        doi: Persistent identifier for Media created only on user request. DOIs can apply only to published media.
+        face_count: Number of polygonal faces comprising a 3D mesh
+        file_label_basename: Name of uploaded file
+        file_origin: Origin of file, whether hosted by MorphoSource (default) or on an external file host (remote)
+        file_size: Size of uploaded file
+        file_types: File format of uploaded file and, if file is an archive, one or more identified media files within archive
+        funding: Grants, organizations, or individuals who funded creation of Media
+        has_uv_space: Whether or not a mapping exists to project a 3D object's surface to a 2D image for texture mapping and is present with the 3D object 
+        human_readable_media_type: &human_readable_media_type Type, nature, or classification of Media, the general or high-level type of all file data
+        identifier: Identifier for Media applied by an external non-MorphoSource entity, such an ARK, DOI, GUID, or other identifier format
+        image_height: Height in pixels and/or number of rows of image data
+        image_width: Width in pixels and/or number of columns of image data
+        imaging_event_modality: Imaging modality used in the imaging event that produced Media
+        license: Applicable Creative Commons license governing use and reuse
+        map_type: Type of texture map or projection accompanying 3D mesh model, such as color or normal maps
+        media_organization: Organization (collection, institution, department, etc.) responsible for managing object represented by Media
+        media_type: *human_readable_media_type
+        orientation: Specific orientation (= direction, view angle) of the subject represented in Media
+        parent_media_count: Number of Media above this Media in the processing workflow, all of which contributed to produce this Media
+        part: Portion or product of physical object or organism represented by Media
+        physical_object_title: Physical object or organism represented by Media
+        point_count: Number of 3D coordinate points comprising a 3D mesh or point cloud
+        processing_event_count: Number of events modifying data to produce Media
+        publication_status_label: Whether Media may be found in public search and/or downloaded
+        publisher: Entity responsible for making the resource available
+        related_url: URL for additional resource that might provide additional information about Media or Physical Object
+        scale_bar: Details of scale bar accompanying a photogrammetry image series
+        series_type: Broad type or kind of volumetric image series, distiguishing between initial projections and other derived series forms
+        short_description: Brief single sentence description of Media
+        description: Full detailed description of Media and context
+        side: Side of larger object on which is located the represented component part, if Media represents a component part of a larger whole object
         slice_thickness: The thickness of each image slice comprising the 3D stack
+        taxonomy_title: For physical objects that are organisms, the biological taxonomy associated with that organism
         unit: Unit of measurement used for the distance between pixels
+        user_with_ownership: User with highest level of management control over Media
+        vertex_color: Whether or not a 3D object has color information encoded into vertices or points that comprise a mesh or point cloud
+        work_id: MorphoSource-specific unique ID identifier for Media
         x_spacing: The distance from the center of one pixel to the center of an adjacent pixel on the X axis
         y_spacing: The distance from the center of one pixel to the center of an adjacent pixel on the Y axis
         z_spacing: The distance between adjacent slices, measured from center to center on the Z axis

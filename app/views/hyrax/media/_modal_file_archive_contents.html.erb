@@ -1,0 +1,20 @@
+<div id="archive-contents">
+  <div id="archive-contents-file-list">
+    <% if local_assigns.key? :archive_files %>
+      <% if archive_files.nil? %>
+        <span>Archive contents have not yet been characterized. This may mean characterization is still in process and will complete successfully in time, or it may mean that a file corruption or formatting issue is preventing MorphoSource from characterizing this file.</span>
+      <% elsif archive_files.present? %>
+        <%= format_nested_files(@presenter.file_label_basename, archive_files) %>
+      <% elsif ( archive_files.is_a?(Array) && archive_files.empty ) %>
+        <span>Either this is an empty archive or no files could be characterized from the archive, possibily due to a file formatting issue.</span>
+      <% else %>
+        <span>An unknown error occurred retrieving archive contents.</span>
+      <% end %>
+    <% else %>
+    Loading...
+    <% end %>
+  </div>
+  <div id="archive-contents-error-message" style="display: none;">
+    <span>An error occurred while loading the list of files in the archive. Please reload the page and try again.</span>
+  </div>
+</div>

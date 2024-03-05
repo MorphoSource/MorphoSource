@@ -1,0 +1,35 @@
+<div class="modal fade" id="modal-archive-info" tabindex="-1" role="dialog" aria-labelledby="modal-label" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <h2>Archive File Information</h2>
+      </div>
+      <div class="modal-body">
+        <div class="row showcase2-row media-showcase">
+          <div class="col-xs-12">
+            <div class="content-block">
+              <%= @presenter.attribute_to_html(:file_label_basename, label: "Archive file name", render_as: :showcase_default, include_empty: true, show_hint: true) %>
+              <%= @presenter.attribute_to_html(:archive_representative_file_label_basename, label: "Representative file name", render_as: :showcase_default, include_empty: true, show_hint: true) %>
+              <%= @presenter.attribute_to_html(:archive_representative_file_type, label: "Representative file format", render_as: :showcase_default, include_empty: true, show_hint: true) %>
+              <%= @presenter.attribute_to_html(:accepted_file_count, label: "Number of recognized media files", render_as: :showcase_default, include_empty: true, show_hint: true) %>
+            </div>
+            <hr />
+            <div class="content-block">
+              <div class="row">
+                <div class="col-xs-12">
+                  <div class="archive-contents-header">Archive Contents</div>
+                  <div id="archive-contents-wrapper">
+                    <%= render "modal_file_archive_contents" %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

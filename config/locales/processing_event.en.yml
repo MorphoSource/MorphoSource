@@ -1,4 +1,11 @@
 en:
+  blacklight:
+    search:
+      fields:
+        processing_event:
+          show:
+            date_created: Event date
+            description: Description
   hyrax:
     icons:
       processing_event:     'fa fa-file-text-o'
@@ -13,6 +20,11 @@ en:
         date_created: Event Date
     hints:
       processing_event:
-        software: Software used to process the media
-        description: A description of the workflow or processing steps taken
-        creator: The person or group responsible for the processing event
+        creator: Person or group responsible for the processing event
+        date_created: Date on which processing occurred
+        description: Description of the workflow or processing steps taken
+        description_attachment: Attachment document file (TXT, PDF, or DOCX) providing additional description or context for Media processing
+        pe_description: Attachment document file (TXT, PDF, or DOCX) providing additional description or context for Media processing
+        software: Software used to process Media
+        
+        

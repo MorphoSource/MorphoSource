@@ -4,6 +4,10 @@ module Morphosource
       extend ActiveSupport::Concern
       include Hydra::Works::MimeTypes
 
+      def archive?
+        self.class.archive_mime_types.include? mime_type
+      end
+
       def mesh?
         self.class.mesh_mime_types.include?(mime_type) || self.class.archive_mime_types.include?(mime_type)
       end

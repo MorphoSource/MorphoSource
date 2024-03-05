@@ -1,5 +1,3 @@
-<!-- These fields are used in Media Showcase edit
-Labels and hints are in config/locales/media_permissions -->
 <%= render_edit_field_partial('download_permission', f: f) %>
 <%= render_edit_field_partial('download_reviewer', f: f) %>
 <%= render_edit_field_partial('rights_holder', f: f) %>
@@ -21,7 +19,7 @@ Labels and hints are in config/locales/media_permissions -->
   include_empty: true, 
   text_if_empty: 'None',
   attachment_file_url: @presenter.attachment_url,
-  html_dl: false) 
+  show_hint: true) 
 %>
 <% if @presenter.agreement_uri.present? || @presenter.attachment_url.present? %>
   <div class="form-group row">

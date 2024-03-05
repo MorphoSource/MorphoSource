@@ -1,0 +1,82 @@
+# config/authorities/mime_types.yml
+# List of MIME types with human-readable label, only used for finding labels
+terms:
+  # 3D
+  - id: application/ply
+    term: PLY
+    active: true
+  - id: application/stl
+    term: STL
+    active: true
+  - id: model/gltf+json
+    term: gLTF
+    active: true
+  - id: model/vrml
+    term: VRML
+    active: true
+  - id: model/x3d+xml
+    term: X3D
+    active: true
+  - id: text/prs.wavefront-obj
+    term: OBJ
+    active: true
+  # Archive
+  - id: application/x-tar
+    term: TAR archive
+    active: true
+  - id: application/zip
+    term: ZIP archive
+    active: true
+  # Image or Image Stack
+  - id: application/dicom
+    term: DICOM
+    active: true
+  - id: image/bmp
+    term: BMP
+    active: true
+  - id: image/gif
+    term: GIF
+    active: true
+  - id: image/jp2
+    term: JPEG 2000
+    active: true
+  - id: image/jpeg
+    term: JPEG
+    active: true
+  - id: image/jpg
+    term: JPEG
+    active: true
+  - id: image/png
+    term: PNG
+    active: true
+  - id: image/svg+xml
+    term: SVG
+    active: true
+  - id: image/tiff
+    term: TIFF
+    active: true
+  # Video
+  - id: video/avi
+    term: AVI
+    active: true
+  - id: video/mp4
+    term: MP4
+    active: true
+  - id: video/mpeg
+    term: MPEG
+    active: true
+  - id: video/mpg
+    term: MPEG
+    active: true
+  - id: video/quicktime
+    term: MOV
+    active: true
+  - id: video/x-m4v
+    term: M4V
+    active: true
+  - id: video/x-ms-wmv
+    term: WMV
+    active: true
+  
+  
+  

@@ -42,9 +42,11 @@ module Hyrax
       to: :physical_object, prefix: true, allow_nil: true
 
     # Attributes from FileSet solr document
-    delegate :bits_allocated, :bits_per_sample, :bounding_box_x, :bounding_box_y, :bounding_box_z, 
-      :centroid_x, :centroid_y, :centroid_z, :centroid_method, :columns, 
-      :contents_accepted_file_count, :color_format, :color_space, :compression, :face_count, 
+    delegate :"archive?", :bits_allocated, :bits_per_sample, 
+      :bounding_box_x, :bounding_box_y, :bounding_box_z, 
+      :centroid_x, :centroid_y, :centroid_z, :centroid_method, :columns,
+      :contents_accepted_file_count, :contents_file_name, :contents_mime_type, 
+      :color_format, :color_space, :compression, :face_count, 
       :has_uv_space, :height, :normals_format, :original_file_id, :point_count, :rows, :vertex_color, 
       :width,
       to: :representative_presenter, allow_nil: true
@@ -278,15 +280,54 @@ module Hyrax
       end
     end
 
-    
+    def archive_files
+      @archive_files ||= begin
+        if (
+          archive? && 
+          representative_presenter&.contents_all_files&.first.present? &&
+          (all_files = JSON.parse(representative_presenter&.contents_all_files&.first)).present? &&
+          all_files.is_a?(Array)
+        )
+          all_files
+        end
+      end
+    end
+
     #
     # MIME type of either FileSet binary file itself or a representive file in an archive file
+    #
+    # @deprecated Use file_types instead
     #
     # @return [String] MIME type of file itself or archive file content or "unknown" if no other
     #
     def mime_type
       @mime_type ||= begin
         representative_presenter&.contents_mime_type&.first || representative_presenter&.mime_type || "unknown"
+      end
+    end
+    
+    #
+    # File type label from mime type of either FileSet binary file itself or a representive file in an archive file
+    #
+    # @return [String] MIME type of file itself
+    #
+    def file_types
+      @file_type ||= begin
+        [
+          Morphosource::MimeTypesService.label(representative_presenter&.mime_type),
+          Morphosource::MimeTypesService.label(representative_presenter&.contents_mime_type&.first)
+        ].compact.join(", ")
+      end
+    end
+
+    #
+    # MIME type of representive file in an archive file
+    #
+    # @return [String] MIME type of archive file content
+    #
+    def archive_representative_file_type
+      @archive_representative_file_type ||= begin
+        Morphosource::MimeTypesService.label(representative_presenter&.contents_mime_type&.first)
       end
     end
 
@@ -338,12 +379,30 @@ module Hyrax
     end
 
     #
-    # FileSet file name label
+    # FileSet file name or full remote URL label
     #
     # @return [String] For local files, filename; for remote files, remote URL
     #
     def file_label
       is_remote_backed ? ( remote_origin_url || "" ) : ( representative_presenter&.label || "" )
+    end
+
+    #
+    # FileSet file name without any path or, for remote files, URL
+    #
+    # @return [String] Filename
+    #
+    def file_label_basename
+      File.basename(file_label || "")
+    end
+
+    #
+    # File name for representative file within archive
+    #
+    # @return [String] Filename
+    #
+    def archive_representative_file_label_basename
+      File.basename(representative_presenter&.contents_file_name&.first || "")
     end
 
     ### DEVICE FIELDS ###

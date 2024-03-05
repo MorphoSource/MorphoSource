@@ -1,6 +1,5 @@
-<div class="row">
-  <div class="content-block-lg col-xs-12">
-    
+<div>
+  <div class="content-block-lg col-xs-12 mb-1">
     <div class="row" style="background-color: #efefef; margin-bottom: 20px">
       <h3 style='font-weight: 500; padding-left: 15px; margin-top: 10px;'><i class="fas fa-bolt fa-lg" style="width: 30px; text-align: center;"></i> <span>STEP <%= step_number.to_s %>: IMAGE PROCESSING</span></h3>
     </div>
@@ -42,23 +41,30 @@
     <div class="row">
       <div class="col-sm-6">
         <div class="content-block" style="margin-bottom: 30px">
-          <h2>Processing Details</h2>
-            <div class="row">
-              <div class="col-xs-6 showcase-label">Creator</div>
-              <div class="col-xs-6 showcase-value"><%= creator ? creator : '--' %></div>
-            </div>
-            <div class="row">
-              <div class="col-xs-6 showcase-label">Date processed</div>
-              <div class="col-xs-6 showcase-value"><%= date_created ? display_date(date_created) : '--' %></div>
-            </div>
-            <div class="row">
-              <div class="col-xs-6 showcase-label">Software</div>
-              <div class="col-xs-6 showcase-value"><%= software ? software : '--' %></div>
-            </div>
-            <div class="row">
-              <div class="col-xs-6 showcase-label">Description</div>
-              <div class="col-xs-6 showcase-value"><%= description ? description : '--' %></div>
-            </div>
+          <h2 class="header-modal-definitions">
+            Processing Details
+            <a href='#' data-toggle="modal" data-target="#modal-image-acquisition-details-processing-definitions">Field Definitions</a>
+          </h2>
+            <%= Hyrax::Renderers::ShowcaseDefaultAttributeRenderer.new(
+              :creator, 
+              creator, 
+              { include_empty: true, work_type: "processing_event" }
+            ).render %>
+            <%= Hyrax::Renderers::ShowcaseDateAttributeRenderer.new(
+              :date_created, 
+              date_created, 
+              { include_empty: true, work_type: "processing_event" }
+            ).render %>
+            <%= Hyrax::Renderers::ShowcaseDefaultAttributeRenderer.new(
+              :software, 
+              software, 
+              { include_empty: true, work_type: "processing_event" }
+            ).render %>
+            <%= Hyrax::Renderers::ShowcaseDefaultAttributeRenderer.new(
+              :description, 
+              description, 
+              { include_empty: true, work_type: "processing_event" }
+            ).render %>
             <div class="row">
               <div class="col-xs-6 showcase-label">Description attachment</div>
               <div class="col-xs-6 showcase-value">
@@ -115,4 +121,10 @@
 
   </div><!-- /content-block-lg -->
 
-</div><!-- /row -->
+</div>
+
+<%# Definitions modal %>
+<% fields = [
+  :creator, :date_created, :software, :description, :description_attachment
+]%>
+<%= render partial: 'modal_field_definitions', locals: { fields: fields, modal_id: 'modal-image-acquisition-details-processing-definitions', work_type: :processing_event } %>

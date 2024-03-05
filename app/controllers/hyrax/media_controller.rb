@@ -65,6 +65,21 @@ module Hyrax
       render '/hyrax/media/showcase', presenter: @presenter
     end
 
+    # dynamically loads archive file contents list for archive information modal
+    def modal_file_archive_contents
+      curation_concern_solr_doc = curation_concern.present? ? 
+        ::SolrDocument.find(curation_concern.id) : ::SolrDocument.find(params[:id])
+      raise CanCan::AccessDenied.new(nil, :show) unless (curation_concern && current_ability.can?(:read, curation_concern))
+
+      @presenter = show_presenter.new(curation_concern_solr_doc, current_ability, request)
+
+      respond_to do |format|
+        format.js { render layout: false }
+        format.html { render 'showcase'}
+      end
+
+    end
+
     # overriding action methods from works_controller_behavior.rb
     def edit
       build_form

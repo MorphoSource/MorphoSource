@@ -18,7 +18,7 @@ module Hyrax
       content_tag(:ul) do
         content_tag(:li, class: "file-item") do
           concat "<i class='far fa-file-archive'></i>#{filename.to_s}".html_safe
-          concat content_tag(:ul) { files.collect { |node| format_file(node) } }
+          concat content_tag(:ul) { sort_mixed_array(files).collect { |node| format_file(node) } }
         end
       end
     end
@@ -34,11 +34,11 @@ module Hyrax
     def format_file(node)
       if node.is_a?(String)
         # Just a file reference, print with current indentation
-        content_tag(:li, "<i class='far fa-file fa-fw'></i>#{node.to_s}".html_safe, class: "file-item")
+        concat content_tag(:li, "<i class='far fa-file fa-fw'></i>#{node.to_s}".html_safe, class: "file-item")
       elsif node.is_a?(Hash)
         # Directory hash with directory name and contents, each contents array may be files or nested sub-dirs
         node.collect do |dir_name, dir_contents|
-          concat content_tag(:li, class: "dir-item") { format_li_sublist(dir_name, dir_contents) }
+          concat content_tag(:li, class: "dir-item") { format_li_sublist(dir_name, sort_mixed_array(dir_contents)) }
         end
       else
         ""
@@ -47,7 +47,12 @@ module Hyrax
 
     def format_li_sublist(label, contents)
       concat "<i class='far fa-folder fa-fw'></i>#{label}".html_safe
-      concat content_tag(:ul) { contents.collect { |sub_node| concat(format_file(sub_node)) } }
+      concat content_tag(:ul) { contents.collect { |sub_node| format_file(sub_node) } }
+    end
+
+    # Sort contents of array where values are either string or a Hash with single key->value pair
+    def sort_mixed_array(arr)
+      arr.sort_by { |v| v.is_a?(Hash) ? v.keys&.first : v }
     end
   end
 end

@@ -49,12 +49,6 @@ module Morphosource
             OrganizationCollection
           end
 
-          # member subcollections will be addressed by MR-1554
-          # send a blank array so page doesn't break
-          def member_subcollections
-            []
-          end
-
           def permissions_path
             organization_permissions_path(@organization)
           end

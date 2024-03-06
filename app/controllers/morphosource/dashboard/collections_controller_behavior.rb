@@ -53,6 +53,14 @@ module Morphosource
           params.dig(snake_case_collection_class, :representative_id)
         end
 
+        def member_subcollections
+          docs = Morphosource::SolrService.new.get_docs("has_model_ssim:Collection AND member_of_collection_ids_ssim:#{@collection.id}")
+          docs.each do |doc|
+            media_count = Morphosource::SolrService.new.get_docs("member_of_collection_ids_ssim:#{doc['id']}").count
+            doc.merge!({"media_count" => media_count})
+          end
+        end
+
     end
   end
 end

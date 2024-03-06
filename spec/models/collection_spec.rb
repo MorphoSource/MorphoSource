@@ -7,10 +7,10 @@ RSpec.describe Collection, type: :model do
   let(:user)                    { User.create(email: 'email@email.com', password: 'password', ms_id: 'abc123') }
   let(:team)                    { Collection.create(title: ['Team_B'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
   let(:project)                 { Collection.create(title: ['Project_B'], collection_type_gid: project_collection_type.gid, depositor: user.ms_id) }
-  let(:media)     { Media.create(title: ['media']) }
-  let(:media2)    { Media.create(title: ['media2']) }
-  let(:media3)    { Media.create(title: ['media3']) }
-  let(:all_media) { [media, media2, media3] }
+  let(:media)                   { Media.create(title: ['media']) }
+  let(:media2)                  { Media.create(title: ['media2']) }
+  let(:media3)                  { Media.create(title: ['media3']) }
+  let(:all_media)               { [media, media2, media3] }
 
 
   describe 'organization methods' do
@@ -85,68 +85,90 @@ RSpec.describe Collection, type: :model do
   end
 
   describe '#copy_parent_membership, #remove_parent_membership' do
-    # let(:parent)            { Collection.create(title: ['Parent'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
-    let(:team_manager)    { User.create(email: 'manager@email.com', password: 'password') }
-    let(:team_editor)     { User.create(email: 'editor@email.com', password: 'password') }
-    let(:team_depositor)  { User.create(email: 'depositor@email.com', password: 'password') }
-    let(:team_downloader) { User.create(email: 'downloader@email.com', password: 'password') }
-    let(:team_viewer)     { User.create(email: 'viewer@email.com', password: 'password') }
+    let(:manager)             { FactoryBot.create(:contributor) }
+    let(:editor)              { FactoryBot.create(:contributor) }
+    let(:depositor)           { FactoryBot.create(:contributor) }
+    let(:downloader)          { FactoryBot.create(:registered_user) }
+    let(:viewer)              { FactoryBot.create(:registered_user) }
 
-    before do
-      team.create_collection_groups
-      project.create_collection_groups
+    let(:project_manager)     { FactoryBot.create(:contributor) }
+    let(:project_editor)      { FactoryBot.create(:contributor) }
+    let(:project_depositor)   { FactoryBot.create(:contributor) }
+    let(:project_downloader)  { FactoryBot.create(:registered_user) }
+    let(:project_viewer)      { FactoryBot.create(:registered_user) }
 
-      team.managers << team_manager
-      team.editors << team_editor
-      team.depositors << team_depositor
-      team.downloaders << team_downloader
-      team.viewers << team_viewer
-      team.user_groups.each(&:save)
-    end
+    let(:organization)        { FactoryBot.create(:organization_collection, depositor: user.ms_id) }
+    let(:collections)         { [team, organization] }
 
-    describe 'copy_parent_membership' do
-      it 'copies the parent members to the child collection' do
-        project.copy_parent_membership(team.id)
-
-        expect(project.managers).to include(team_manager)
-        expect(project.editors).to include(team_editor)
-        expect(project.depositors).to include(team_depositor)
-        expect(project.downloaders).to include(team_downloader)
-        expect(project.viewers).to include(team_viewer)
-      end
-    end
-
-    describe 'remove_parent_membership' do
-      let(:project_manager)    { User.create(email: 'project_manager@email.com', password: 'password') }
-      let(:project_editor)     { User.create(email: 'project_editor@email.com', password: 'password') }
-      let(:project_depositor)  { User.create(email: 'project_depositor@email.com', password: 'password') }
-      let(:project_downloader) { User.create(email: 'project_downloader@email.com', password: 'password') }
-      let(:project_viewer)     { User.create(email: 'project_viewer@email.com', password: 'password') }
-
+    context 'the parent collection is a team or organization' do
       before do
-       project.managers << project_manager
-       project.editors << project_editor
-       project.depositors << project_depositor
-       project.downloaders << project_downloader
-       project.viewers << project_viewer
-       project.user_groups.each(&:save)
-       project.copy_parent_membership(team.id)
+        allow(Collection).to receive(:find).with(team.id).and_return(team)
+        allow(Collection).to receive(:find).with(organization.id).and_return(organization)
+
+        collections.each do |parent|
+          parent.create_collection_groups
+          parent.managers << manager
+          parent.editors << editor
+          parent.depositors << depositor
+          parent.downloaders << downloader
+          parent.viewers << viewer
+          parent.user_groups.each(&:save)
+        end
+
+        project.create_collection_groups
       end
 
-      it 'removes team members except designated user from the project' do
-        expect(project.managers).to match_array([team_manager, project_manager, user])
-        expect(project.editors).to match_array([team_editor, project_editor])
-        expect(project.depositors).to match_array([team_depositor,project_depositor])
-        expect(project.downloaders).to match_array([team_downloader, project_downloader])
-        expect(project.viewers).to match_array([team_viewer, project_viewer])
+      it 'copies parent membership and removes parent members except designated user from the project' do
+        collections.each do |parent|
+          # project initially has no members except for the depositor
+          expect(project.managers).to match_array([user])
+          expect(project.editors).to match_array([])
+          expect(project.depositors).to match_array([])
+          expect(project.downloaders).to match_array([])
+          expect(project.viewers).to match_array([])
 
-        project.remove_parent_membership(team, team_manager)
+          # copy parent membership to project
+          project.copy_parent_membership(parent.id)
 
-        expect(project.managers).to match_array([team_manager, project_manager])
-        expect(project.editors).to match_array([ project_editor])
-        expect(project.depositors).to match_array([project_depositor])
-        expect(project.downloaders).to match_array([project_downloader])
-        expect(project.viewers).to match_array([ project_viewer])
+          expect(project.managers).to include(manager)
+          expect(project.editors).to include(editor)
+          expect(project.depositors).to include(depositor)
+          expect(project.downloaders).to include(downloader)
+          expect(project.viewers).to include(viewer)
+
+          # add additional members to the project
+          project.managers << project_manager
+          project.editors << project_editor
+          project.depositors << project_depositor
+          project.downloaders << project_downloader
+          project.viewers << project_viewer
+          project.user_groups.each(&:save)
+
+          expect(project.managers).to match_array([manager, project_manager, user])
+          expect(project.editors).to match_array([editor, project_editor])
+          expect(project.depositors).to match_array([depositor, project_depositor])
+          expect(project.downloaders).to match_array([downloader, project_downloader])
+          expect(project.viewers).to match_array([viewer, project_viewer])
+
+          # remove parent membership from project
+          project.remove_parent_membership(parent, manager)
+
+          expect(project.managers).to match_array([manager, project_manager])
+          expect(project.editors).to match_array([ project_editor])
+          expect(project.depositors).to match_array([project_depositor])
+          expect(project.downloaders).to match_array([project_downloader])
+          expect(project.viewers).to match_array([ project_viewer])
+
+          # reset project groups
+          project.managers.delete(manager)
+          project.managers.delete(project_manager)
+          project.managers << user
+          project.editors.delete(project_editor)
+          project.depositors.delete(project_depositor)
+          project.downloaders.delete(project_downloader)
+          project.viewers.delete(project_viewer)
+          project.user_groups.each(&:save)
+        end
       end
     end
   end

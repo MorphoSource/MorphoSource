@@ -40,4 +40,8 @@ module TestHelpers
     Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::Organizations::SETTINGS)
   end
 
+  def expect_cancan_access_denied
+    expect(response).to redirect_to(main_app.root_path(locale: 'en'))
+    expect(flash[:notice]).to eq("#{I18n.t("cancan.not_found.message")}: #{I18n.t("cancan.not_found.description")}")
+  end
 end

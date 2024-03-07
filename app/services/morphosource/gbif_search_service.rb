@@ -109,15 +109,17 @@ module Morphosource
     def prepare_results(results)
 
       new_results = []
-      results.each do |taxon|
-        if taxon['taxonomicStatus'] == 'SYNONYM' && taxon.has_key?('acceptedKey')
-          new_taxon = Morphosource::Gbif.view(taxon['acceptedKey'])[:data]
-          new_results << prepare_result(new_taxon, true)
-        else
-          new_results << prepare_result(taxon)
+      if results.present?
+        results.each do |taxon|
+          if taxon['taxonomicStatus'] == 'SYNONYM' && taxon.has_key?('acceptedKey')
+            new_taxon = Morphosource::Gbif.view(taxon['acceptedKey'])[:data]
+            new_results << prepare_result(new_taxon, true)
+          else
+            new_results << prepare_result(taxon)
+          end
         end
       end
-
+      
       return new_results
     end
 

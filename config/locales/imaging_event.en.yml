@@ -1,4 +1,24 @@
 en:
+  blacklight:
+    search:
+      fields:
+        imaging_event:
+          show:
+            imaging_event_modality: Modality
+            date_created: &date_created Event date
+            detector_pixels_x: &detector_pixels_x Detector pixels X
+            detector_pixel_size_x: &detector_pixel_size_x Detector pixels size X
+            detector_pixels_y: &detector_pixels_y Detector pixels Y
+            detector_pixel_size_y: &detector_pixel_size_y Detector pixels size Y
+            device_label: Device
+            device_organization_institution: Device facility
+            imaging_event_creator: Creator
+            imaging_event_date_created: *date_created
+            imaging_event_software: Software
+            imaging_event_description: Description
+            imaging_event_description_attachment: Description attachment
+            imaging_event_reference_attachment: Reference attachment
+            xray_tube_type: &xray_tube_type X-ray tube type
   hyrax:
     icons:
       imaging_event:     'fa fa-file-text-o'
@@ -9,41 +29,65 @@ en:
   simple_form:
     labels:
       imaging_event:
-        # X-ray CT metadata
+        detector_pixels_x: *detector_pixels_x
+        detector_pixel_size_x: *detector_pixel_size_x
+        detector_pixels_y: *detector_pixels_y
+        detector_pixel_size_y: *detector_pixel_size_y
+        xray_tube_type: *xray_tube_type
     hints:
       imaging_event:
-        software: Software used to operate scanner, if any.
+        creator: &creator Person or group responsible for the imaging event
+        date_created: &date_created Date on which imaging occurred
+        description: &description Description of imaging workflow
+        device_label: Device used to image Media
+        device_organization_institution: Facility that manages device used for imaging
+        ie_description: &ie_description Attachment document file (TXT, PDF, or DOCX) providing additional description or context for Media imaging
+        ie_modality: &ie_modality Imaging modality used in the imaging event that produced Media
+        ie_reference: &ie_reference Attachment document, usually a 2D image, visually documenting the state of the Physical Object at the time of imaging
+        imaging_event_creator: *creator
+        imaging_event_date_created: *date_created
+        imaging_event_description: *description
+        imaging_event_description_attachment: *ie_description
+        imaging_event_reference_attachment: *ie_reference
+        imaging_event_modality: *ie_modality
+        imaging_event_software: &imaging_event_software Software used to operate scanner, if any
+        software: *imaging_event_software
         # X-ray CT metadata
-        exposure_time: Exposure time of a volume shall be the time of the X-Ray radiation in position with this volume. It depends on the travel speed and the total collimation width.
-        flux_normalization: Flux Normalization Calibration
-        pixel_spacing_calibration:
-        shading_correction: Shading Correction Calibration
-        filter: Filter (material that xrays must pass through before encounter object and detector and its thickness in millimeters)
-        frame_averaging: Frame Averaging. The number of images acquired at each projection angle and their average.
-        projections: The number of images at distinct angles used to create a 3D image.
-        voltage: Voltage, units in kilovolts
-        power:  = kV*Amps, units in kilowatts
-        amperage: Amperage, units in microAmps
-        surrounding_material: Wedge (material surrounding/enveloping the focal object of the scan)
-        xray_tube_type: brand/model, reflection vs. transmission target (a little like 'lens type' for photogrammetry)
-        target_type:
-        detector_type: The type of detector used to acquire this image.
-        detector_pixels_x: The number of pixels in the X direction of the detector (number of columns).
-        detector_pixel_size_x: Length in mmm of each pixel in the X direction.
-        detector_pixels_y: The number of pixels in the Y direction of the detector (number of rows).
-        detector_pixel_size_y: Length in mmm of each pixel in the Y direction.
-        detector_configuration: The physical configuration of the detector.
-        slide_type: 'Histological: animal or plant tissues.'
-        source_object_distance: Distance between x-ray source and target object.
-        source_detector_distance: Distance between x-ray source and x-ray detector.
-        target_material: Tungsten, molybdenum, copper, etc.
-        rotation_number: For systems with vertical translation capabilities.
-        phase_contrast: In phase contrast, the xray beam energy is modulated between higher and lower energies and this helps increase contrast between materials (need to look into implications for reporting voltage and amps)
-        optical_magnification: All microCT scanners use geometric magnification.  Only a few also use optical magnification (Ziess/Xradia machines do - which makes them more flexible and powerful in some ways - but more systems may in the future)
+        exposure_time: Time of X-Ray exposure in msec. Exposure time of a volume shall be the time of the X-Ray radiation in position with this volume. It depends on the travel speed and the total collimation width.
+        flux_normalization: Whether flux normalization calibration is used or not
+        pixel_spacing_calibration: Type of correction for the effect of geometric magnification or calibration against an object of known size, if any
+        shading_correction: Whether shading correction calibration is used or not
+        filter: &filter Type and thickness in millimeters of filter(s) inserted into the X-Ray beam.
+        ie_filter: *filter
+        frame_averaging: Number of images acquired at each projection angle and their average
+        projections: Number of images at distinct angles used to create a 3D image
+        voltage: Peak kilo voltage output of the X-Ray generator used in kilovolts
+        power: Power in kilowatts to the X-Ray generator (= kV*Amps)
+        amperage: X-Ray tube current in microAmps Amperage
+        surrounding_material: Wedge, or the material surrounding and/or enveloping the focal object
+        xray_tube_type: Free text describing type of X-Ray tube, possibly including brand and/or model of tube
+        target_type: Type of the anode of the X-Ray source
+        detector_type: Type of detector used to acquire this image
+        detector_pixels_x: Number of pixels in the X direction of the detector (number of columns)
+        detector_pixel_size_x: Length in mmm of each pixel in the X direction
+        detector_pixels_y: Number of pixels in the Y direction of the detector (number of rows)
+        detector_pixel_size_y: Length in mmm of each pixel in the Y direction
+        detector_configuration: Physical configuration of the detector.
+        source_object_distance: Distance in mm from X-Ray source to isocenter (center of field of view)
+        source_detector_distance: Distance in mm from X-Ray source to detector center
+        target_material: The primary material in the anode of the X-Ray source
+        rotation_number: For systems with vertical translation capabilities, ratio of the Table Feed per Rotation (DICOM 0018,9310) to the Total Collimation Width (DICOM 0018,9307)
+        phase_contrast: Whether phase contrast of X-Ray beam - in other words, modulating the beam between higher and lower energies to increase contrast between materials - is used or not
+        optical_magnification: Whether optical magnification is used or not. This property is only for indicating optical magnification specifically, and is different from geometric magnification.
+        acquisition_type: Description of the method used during acquisition of this frame
         # Photogrammetry properties
         focal_length_type: Focal length variable or fixed
         background_removal: Free text description of background removal methods
         # Photogrammetry properties and Photography properties
-        lens_make: The DSLR body would be the 'capture device' while the lens  make/model is designated here.  Not sure if we need to consider whether multiple lens might be used for the same image series.
-        lens_model: The DSLR body would be the 'capture device' while the lens  make/model is designated here.  Not sure if we need to consider whether multiple lens might be used for the same image series.
+        lens: Camera lens manufacturer/make and model
+        lens_make: The manufacturer of the camera lens.
+        lens_model: The model of the camera lens.
         light_source: Strobe light vs static light vs cross-polarized light vs patterned light
+        other_details: Other details providing context on photogrammetry or photography imaging
+        # Sequential section scan (slide) properties
+        slide_type: Type of sequential section slide imaged. Value must be "Histological" or "Other".

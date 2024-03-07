@@ -1,31 +1,59 @@
-<h2>FILE OBJECT DETAILS</h2>
+<h2 class="header-modal-definitions">
+  FILE OBJECT DETAILS
+  <a href='#' data-toggle="modal" data-target="#modal-file-object-details-definitions">Field Definitions</a>
+</h2>
 
-<%= presenter.attribute_to_html(:file_origin, render_as: :showcase_default, include_empty: false, html_dl: false) %>
-<%= presenter.attribute_to_html(:mime_type, label: "File format(s)", render_as: :showcase_default, include_empty: true, html_dl: false) %>
-<%= presenter.attribute_to_html(:file_size, label: "File size", render_as: :showcase_default, include_empty: true, html_dl: false) %>
-<% if presenter.media_type&.first == 'Mesh' %>
-  <%= presenter.attribute_to_html(:point_count, render_as: :showcase_default, include_empty: true, html_dl: false) %>
-  <%= presenter.attribute_to_html(:face_count, render_as: :showcase_default, include_empty: true, html_dl: false) %>
-  <%= presenter.attribute_to_html(:map_type, render_as: :showcase_default, include_empty: true, html_dl: false) %>
-  <%= presenter.attribute_to_html(:has_uv_space, render_as: :showcase_default, include_empty: true, html_dl: false) %>
-  <%= presenter.attribute_to_html(:vertex_color, render_as: :showcase_default, include_empty: true, html_dl: false) %>
-  <%= presenter.attribute_to_html(:bounding_box_dimensions, render_as: :showcase_default, include_empty: true, html_dl: false) %>
-  <%= presenter.attribute_to_html(:centroid_location, render_as: :showcase_default, include_empty: true, html_dl: false) %>
-  <%= presenter.attribute_to_html(:unit, label: "Units of point coordinates", render_as: :showcase_default, include_empty: true, html_dl: false) %>
-<% elsif presenter.media_type&.first.match(/image/i) %>
-  <%= presenter.attribute_to_html(:image_width, render_as: :showcase_default, include_empty: true, html_dl: false) %>
-  <%= presenter.attribute_to_html(:image_height, render_as: :showcase_default, include_empty: true, html_dl: false) %>
-  <%= presenter.attribute_to_html(:color_space, render_as: :showcase_default, include_empty: true, html_dl: false) %>
-  <%= presenter.attribute_to_html(:color_depth, render_as: :showcase_default, include_empty: true, html_dl: false) %>
-  <%= presenter.attribute_to_html(:compression, render_as: :showcase_default, include_empty: true, html_dl: false) %>
-  <%= presenter.attribute_to_html(:series_type, render_as: :showcase_default, include_empty: false, html_dl: false) %>
-  <% if ['CTImageSeries','SequentialSectionImageSeries'].include? presenter.media_type&.first %>
-    <%= presenter.attribute_to_html(:x_spacing, render_as: :showcase_default, number_with_precision: 6, include_empty: true, html_dl: false) %>
-    <%= presenter.attribute_to_html(:y_spacing, render_as: :showcase_default, number_with_precision: 6, include_empty: true, html_dl: false) %>
-    <%= presenter.attribute_to_html(:z_spacing, render_as: :showcase_default, number_with_precision: 6, include_empty: true, html_dl: false) %>
-    <%= presenter.attribute_to_html(:unit, label: "Pixel spacing units", render_as: :showcase_default, include_empty: true, html_dl: false) %>
-    <%= presenter.attribute_to_html(:slice_thickness, render_as: :showcase_default, include_empty: true, html_dl: false) %>
-  <% end %>
-  <%= presenter.attribute_to_html(:accepted_file_count, label: "Number of images in set", render_as: :showcase_default, include_empty: false, html_dl: false) %>
-  <%= presenter.attribute_to_html(:scale_bar, render_as: :showcase_default, include_empty: false, html_dl: false) %>
+<%= presenter.attribute_to_html(:file_origin, render_as: :showcase_default, include_empty: false) %>
+
+<% if presenter&.representative_presenter&.archive? %>
+  <%= presenter.attribute_to_html(
+    :file_label_basename, 
+    content: "<a href='#' id='modal-archive-info-toggle' data-media-id='#{presenter.id || ""}'>More archive information</a>",
+    render_as: :showcase_value_and_content,
+    include_empty: true) 
+  %>
+  <%= render 'modal_file_archive_information' %>
+<% else %>
+  <%= presenter.attribute_to_html(:file_label_basename, render_as: :showcase_default, include_empty: true) %>
 <% end %>
+<%= presenter.attribute_to_html(:file_types, render_as: :showcase_default, include_empty: true) %>
+<%= presenter.attribute_to_html(:file_size, render_as: :showcase_default, include_empty: true) %>
+
+<% if presenter.media_type&.first == 'Mesh' %>
+  <%= presenter.attribute_to_html(:point_count, render_as: :showcase_default, include_empty: true) %>
+  <%= presenter.attribute_to_html(:face_count, render_as: :showcase_default, include_empty: true) %>
+  <%= presenter.attribute_to_html(:map_type, render_as: :showcase_default, include_empty: true) %>
+  <%= presenter.attribute_to_html(:has_uv_space, render_as: :showcase_default, include_empty: true) %>
+  <%= presenter.attribute_to_html(:vertex_color, render_as: :showcase_default, include_empty: true) %>
+  <%= presenter.attribute_to_html(:bounding_box_dimensions, render_as: :showcase_default, include_empty: true) %>
+  <%= presenter.attribute_to_html(:centroid_location, render_as: :showcase_default, include_empty: true) %>
+  <%= presenter.attribute_to_html(:unit, label: "Units of point coordinates", render_as: :showcase_default, include_empty: true) %>
+<% elsif presenter.media_type&.first.match(/image/i) %>
+  <%= presenter.attribute_to_html(:image_width, render_as: :showcase_default, include_empty: true) %>
+  <%= presenter.attribute_to_html(:image_height, render_as: :showcase_default, include_empty: true) %>
+  <%= presenter.attribute_to_html(:color_space, render_as: :showcase_default, include_empty: true) %>
+  <%= presenter.attribute_to_html(:color_depth, render_as: :showcase_default, include_empty: true) %>
+  <%= presenter.attribute_to_html(:compression, render_as: :showcase_default, include_empty: true) %>
+  <%= presenter.attribute_to_html(:series_type, render_as: :showcase_default, include_empty: false) %>
+  <% if ['CTImageSeries','SequentialSectionImageSeries'].include? presenter.media_type&.first %>
+    <%= presenter.attribute_to_html(:x_spacing, render_as: :showcase_default, number_with_precision: 6, include_empty: true) %>
+    <%= presenter.attribute_to_html(:y_spacing, render_as: :showcase_default, number_with_precision: 6, include_empty: true) %>
+    <%= presenter.attribute_to_html(:z_spacing, render_as: :showcase_default, number_with_precision: 6, include_empty: true) %>
+    <%= presenter.attribute_to_html(:unit, label: "Pixel spacing units", render_as: :showcase_default, include_empty: true) %>
+    <%= presenter.attribute_to_html(:slice_thickness, render_as: :showcase_default, include_empty: true) %>
+  <% end %>
+  <%= presenter.attribute_to_html(:accepted_file_count, render_as: :showcase_default, include_empty: false) %>
+  <%= presenter.attribute_to_html(:scale_bar, render_as: :showcase_default, include_empty: false) %>
+<% end %>
+
+<%# Definitions modal %>
+<% fields = [:file_origin, :file_label_basename, :file_types, :file_size, :point_count, :face_count, 
+  :map_type, :has_uv_space, :vertex_color, :bounding_box_dimensions, :centroid_location, :unit,
+  :image_width, :image_height, :color_space, :color_depth, :compression, :series_type, :x_spacing,
+  :y_spacing, :z_spacing, :unit, :slice_thickness, :accepted_file_count, :scale_bar
+] %>
+<%= render partial: 'modal_field_definitions', locals: { fields: fields, modal_id: 'modal-file-object-details-definitions' } %>
+
+
+
+

@@ -70,8 +70,17 @@ RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
 RUN pip3 install --no-cache-dir --upgrade pip && \
   pip3 install --no-cache-dir numpy Pillow pydicom
 
-# Install GLTF Pipeline 3D mesh derivative tool
+# Install GLTF Pipeline 3D mesh derivative tool, used for creating Draco GLBs
 RUN npm install --global gltf-pipeline
+
+# Install GLTF Transform 3D mesh derivative tool, used for simplifying GLTF derivatives and creating Draco GLBs
+RUN npm install --global @gltf-transform/cli
+
+# Install gltf-inspect 3D mesh derivative tool, used for characterizing info from GLB/GLTF files
+RUN npm install --global @morphosource/gltf-inspect@0.2.0
+
+# Install gltf-scale 3D mesh scaling tool, used for creating GLB derivatives with real world scales
+RUN npm install --global @morphosource/gltf-scale@0.0.1
 
 # Create symlink to Firefox (for automated tests)
 RUN mkdir -p /opt/firefox && \

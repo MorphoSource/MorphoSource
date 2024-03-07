@@ -10,6 +10,12 @@ html {
   box-sizing: inherit !important;
 }
 
+nav#masthead {
+  .container-fluid {
+    width: unset;
+    max-width: inherit;
+  }
+}
 
 .showcase.cart {
   input.batch_document_selector, input[type=checkbox].disabled {
@@ -95,6 +101,56 @@ html {
   input.disabled {
     margin: initial;
     padding: 5px 10px;
+  }
+
+  #modal-archive-info {
+    .modal-body {
+      padding-top: 0;
+      padding-bottom: 0;
+    }
+
+    hr {
+      margin-top: 15px;
+      margin-bottom: 15px;
+    }
+
+    ul {
+      list-style-type: none;
+      padding-inline-start: 20px;
+    }
+
+    #archive-contents-file-list > ul {
+      padding-inline-start: 0;
+    }
+
+    .archive-contents-header {
+      font-weight: 500;
+      margin-bottom: 5px;
+    }
+  
+    li.file-item > i.far, li.dir-item > i.far {
+      margin-right: 5px;
+    }
+  }
+
+  .modal-definitions {
+    h2 {
+      margin-bottom: 0;
+    }
+
+    hr {
+      margin-top: 15px;
+      margin-bottom: 15px;
+    }
+
+    .modal-body .term-container:last-child hr {
+      display: none;
+    }
+
+    .term-name {
+      font-weight: 500;
+      margin-bottom: 3px;
+    }
   }
 
   .modal-dialog {
@@ -806,21 +862,11 @@ html {
     white-space: nowrap;
   }
 
-  [class*="choose-columns"],
-  [class*="choose-columns"]:focus,
-  [class*="choose-columns"]:focus-visible {
-    background-color: transparent;
-    outline: none;
-    .dropdown-toggle, 
-    .dropdown-toggle:focus, 
-    .dropdown-toggle:focus-visible, 
-    .dropdown-toggle:active,
-    .dropdown-toggle:hover {
-      background-color: transparent;
+  [class*="choose-columns"] {
+    button, button * {
+      color: $button-color;
+      background-color: #fff !important;
       outline: none;
-      .caret {
-        color: $button-color;
-      }
     }
   }
 
@@ -913,7 +959,7 @@ html {
   }
   h2 {
     border-bottom: 3px solid $line-color;
-    padding: 6px 8px 6px 0;
+    padding: 6px 0 6px 0;
     font-size:13px;
     @media (min-width: 414px) {
       font-size: 2.6vw;
@@ -931,6 +977,15 @@ html {
         font-size: 2vw;
         top: -10px;
       }
+    }
+  }
+  h2.header-modal-definitions {
+    display: flex;
+    justify-content: space-between;
+
+    a {
+      text-transform: none;
+      font-weight: normal;
     }
   }
   h3 {

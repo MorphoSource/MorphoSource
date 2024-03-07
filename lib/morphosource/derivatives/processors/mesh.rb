@@ -68,7 +68,7 @@ module Morphosource::Derivatives::Processors
           tar.each_entry do |entry|
             next if entry.name.start_with?('PaxHeader')
             next if File.basename(entry.name).start_with?('.')
-            fpath = File.join(tmp_dir_path, File.basename(entry.name))
+            fpath = File.join(tmp_dir_path, entry.name)
             unless File.exist?(fpath)
               File.new(fpath, 'wb')
               File.open(fpath, 'wb') do |output_file|
@@ -85,8 +85,8 @@ module Morphosource::Derivatives::Processors
       Zip::File.open(source_path) do |zip_file|
         zip_file.each do |f|
           next if File.basename(f.name).start_with?('.')
-          fpath = File.join(tmp_dir_path, File.basename(f.name))
-          zip_file.extract(f, fpath) unless File.exist?(fpath)
+          fpath = File.join(tmp_dir_path, f.name)
+          zip_file.extract(f.name, fpath) unless File.exist?(fpath)
           @source_path = fpath if acceptable_archive_mesh_formats.include? File.extname(f.name).downcase 
         end
       end
@@ -94,12 +94,12 @@ module Morphosource::Derivatives::Processors
 
     def create_tmp_nondraco_glb
       blender = Morphosource::Derivatives::Blender.new(source_path, glb_path, unit)
-      blender.call # todo add output and error check it
+      blender.call
     end
 
     def create_tmp_draco_glb
       gltf_pipeline = Morphosource::Derivatives::GltfPipeline.new(glb_path, draco_glb_path)
-      gltf_pipeline.call # todo add output and error check it
+      gltf_pipeline.call 
     end
 
     def write_draco_glb

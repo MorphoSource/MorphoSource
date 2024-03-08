@@ -4,7 +4,7 @@
       <%= label.present? ? label : 'Attachment File' %>
     </label>
     <i class="material-icons tooltip-icon" data-original-title="" title="">
-      <p class="hint hide"><%= t("simple_form.hints.#{curation_concern.model_name.to_s.underscore}.#{field}") %></p>
+      <p class="hint hide"><%= t("simple_form.hints.#{curation_concern&.model_name&.to_s&.underscore}.#{field}") %></p>
     </i>
   </div>
   <div class="col-xs-6 showcase-value">

@@ -70,7 +70,6 @@ module Morphosource
                            gltf_inspect_version]
 
       ZIP_PROPERTIES = %w[contents_accepted_file_count
-                          contents_all_files
                           contents_file_name
                           contents_file_size
                           contents_mime_type]
@@ -92,6 +91,10 @@ module Morphosource
 
       def width
         self["width_is"]
+      end
+
+      def contents_all_files
+        self["contents_all_files_ss"]
       end
     end
   end

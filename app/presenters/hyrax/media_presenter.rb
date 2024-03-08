@@ -284,8 +284,8 @@ module Hyrax
       @archive_files ||= begin
         if (
           archive? && 
-          representative_presenter&.contents_all_files&.first.present? &&
-          (all_files = JSON.parse(representative_presenter&.contents_all_files&.first)).present? &&
+          representative_presenter&.contents_all_files.present? &&
+          (all_files = JSON.parse(representative_presenter&.contents_all_files)).present? &&
           all_files.is_a?(Array)
         )
           all_files

@@ -2,8 +2,8 @@ module Morphosource
   module Ability
     module OrganizationMemberAbilities
 
-      # Access Media and FileSets through organization membership
-      def organizational_member_abilities
+      # View Media and FileSets through organization membership
+      def organization_member_abilities
 
         can :read, ::Media do |obj|
           has_organizational_access_to_media? obj
@@ -119,7 +119,6 @@ module Morphosource
 
           organization_fields.each_with_object([]) do |field, groups|
             next unless org_id = document[field]&.first
-
             if OrganizationCollection.exists?(org_id)
               OrganizationCollection::DEFAULT_GROUP_ROLES.each {|role| groups << "#{document[field].first}_#{role}"}
             elsif Organization.exists?(org_id)

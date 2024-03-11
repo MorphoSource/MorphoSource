@@ -18,7 +18,7 @@ RSpec.describe 'Morphosource::Ability', type: :model do
     media.save!
   end
 
-  describe 'organizational_member_abilities' do
+  describe 'organization_member_abilities' do
     context 'the work does not exist' do
       let(:nonexistent_id) { '123' }
 

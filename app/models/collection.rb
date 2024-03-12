@@ -40,7 +40,11 @@ class Collection < ActiveFedora::Base
   end
 
   def media_inherit_permissions?
-    team? || project?
+    team? || ( project? && !organization_project? )
+  end
+
+  def organization_project?
+    member_of_collections.any? { |c| c.organization_collection? }
   end
 
   # managers_group, depositors_group, editors_group, downloaders_group, and viewers_group methods

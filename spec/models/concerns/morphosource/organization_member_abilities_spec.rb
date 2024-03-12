@@ -12,10 +12,62 @@ RSpec.describe 'Morphosource::Ability', type: :model do
   let(:proxy_deposit_request) { ProxyDepositRequest.create(receiving_user_id: organization.id, sending_user_id: sending_user.id, work_id: media.id, status: 'pending' ) }
   let(:depositor)             { FactoryBot.create(:contributor) }
   let(:organization)          { FactoryBot.create(:organization_collection, depositor: depositor.ms_id) }
+  let(:project)               { FactoryBot.create(:project, depositor: depositor.ms_id) }
+
+  let(:org_manager)           { FactoryBot.create(:contributor) }
+  let(:org_editor)            { FactoryBot.create(:contributor) }
+  let(:org_depositor)         { FactoryBot.create(:contributor) }
+  let(:org_downloader)        { FactoryBot.create(:registered_user) }
+  let(:org_viewer)            { FactoryBot.create(:registered_user) }
+
+  let(:org_members)           { [org_manager, org_editor, org_depositor, org_downloader, org_viewer] }
+
+  # let(:org_manager_ability)   { Ability.new(org_manager) }
+  # let(:org_editor_ability)    { Ability.new(org_editor) }
+  # let(:org_depositor_ability) { Ability.new(org_depositor) }
+  # let(:org_downloader_ability){ Ability.new(org_downloader) }
+  # let(:org_viewer_ability)    { Ability.new(org_viewer) }
+
+  let(:project_manager)       { FactoryBot.create(:contributor) }
+  let(:project_editor)        { FactoryBot.create(:contributor) }
+  let(:project_depositor)     { FactoryBot.create(:contributor) }
+  let(:project_downloader)    { FactoryBot.create(:registered_user) }
+  let(:project_viewer)        { FactoryBot.create(:registered_user) }
+
+  let(:project_members)       { [project_manager, project_editor, project_depositor, project_downloader, project_viewer] }
+
+  # let(:project_manager_ability)   { Ability.new(project_manager) }
+  # let(:project_editor_ability)    { Ability.new(project_editor) }
+  # let(:project_depositor_ability) { Ability.new(project_depositor) }
+  # let(:project_downloader_ability){ Ability.new(project_downloader) }
+  # let(:project_viewer_ability)    { Ability.new(project_viewer) }
 
   before do
+    # add fileset to media
     media.ordered_members << file_set
     media.save!
+    # create project groups
+    project.create_collection_groups
+    # add project to organization
+    project.member_of_collections << organization
+    project.copy_parent_membership(organization.id)
+    project.save!
+
+    # add organization users to groups
+    organization.managers << org_manager
+    organization.editors << org_editor
+    organization.depositors << org_depositor
+    organization.downloaders << org_downloader
+    organization.viewers << org_viewer
+    organization.user_groups.each(&:save)
+
+    # add project users to groups
+    project.managers << project_manager
+    project.editors << project_editor
+    project.depositors << project_depositor
+    project.downloaders << project_downloader
+    project.viewers << project_viewer
+    project.user_groups.each(&:save)
   end
 
   describe 'organization_member_abilities' do
@@ -63,93 +115,38 @@ RSpec.describe 'Morphosource::Ability', type: :model do
 
         context 'the organization is a collection' do
           context 'the organization is not the data owner' do
-            context 'the user has a manager role' do
-              before do
-                allow(user).to receive(:groups).and_return(["#{organization.id}_managers"])
-              end
-
-              it 'returns true for read and false for edit, transfer, accept, and reject' do
-                # media
-                expect(can_read?(media)).to be(true)
-                expect(can_edit?(media)).to be(false)
-                expect(can_transfer?(media)).to be(false)
-                expect(can_accept?(proxy_deposit_request)).to be(false)
-                expect(can_reject?(proxy_deposit_request)).to be(false)
-                # file set
-                expect(can_read?(file_set)).to be(true)
-                expect(can_edit?(file_set)).to be(false)
+            # all organization members can read org media and file sets
+            it 'returns the correct permissions for each user' do
+              org_members.each do |org_member|
+                expect(can_read?(org_member, media)).to be(true)
+                expect(can_edit?(org_member, media)).to be(false)
+                expect(can_transfer?(org_member, media)).to be(false)
+                expect(can_accept?(org_member, proxy_deposit_request)).to be(false)
+                expect(can_reject?(org_member, proxy_deposit_request)).to be(false)
+                expect(can_read?(org_member, file_set)).to be(true)
+                expect(can_edit?(org_member, file_set)).to be(false)
               end
             end
 
-            context 'the user has an editor role' do
+            context 'the media is added to an organization project' do
               before do
-                allow(user).to receive(:groups).and_return(["#{organization.id}_editors"])
+                media.member_of_collections << project
+                media.save!
               end
 
-              it 'returns true for read and false for edit, transfer, accept and reject' do
-                # media
-                expect(can_read?(media)).to be(true)
-                expect(can_edit?(media)).to be(false)
-                expect(can_transfer?(media)).to be(false)
-                expect(can_accept?(proxy_deposit_request)).to be(false)
-                expect(can_reject?(proxy_deposit_request)).to be(false)
-                # file set
-                expect(can_read?(file_set)).to be(true)
-                expect(can_edit?(file_set)).to be(false)
-              end
-            end
-
-            context 'the user has a depositor role' do
-              before do
-                allow(user).to receive(:groups).and_return(["#{organization.id}_depositors"])
-              end
-
-              it 'returns true for read and false for edit, transfer, accept and reject' do
-                # media
-                expect(can_read?(media)).to be(true)
-                expect(can_edit?(media)).to be(false)
-                expect(can_transfer?(media)).to be(false)
-                expect(can_accept?(proxy_deposit_request)).to be(false)
-                expect(can_reject?(proxy_deposit_request)).to be(false)
-                # file set
-                expect(can_read?(file_set)).to be(true)
-                expect(can_edit?(file_set)).to be(false)
-              end
-            end
-
-            context 'the user has a downloader role' do
-              before do
-                allow(user).to receive(:groups).and_return(["#{organization.id}_downloaders"])
-              end
-
-              it 'returns true for read and false for edit, transfer, accept, and reject' do
-                # media
-                expect(can_read?(media)).to be(true)
-                expect(can_edit?(media)).to be(false)
-                expect(can_transfer?(media)).to be(false)
-                expect(can_accept?(proxy_deposit_request)).to be(false)
-                expect(can_reject?(proxy_deposit_request)).to be(false)
-                # file set
-                expect(can_read?(file_set)).to be(true)
-                expect(can_edit?(file_set)).to be(false)
-              end
-            end
-
-            context 'the user has a viewer role' do
-              before do
-                allow(user).to receive(:groups).and_return(["#{organization.id}_viewers"])
-              end
-
-              it 'returns true for read and false for edit, transfer, accept, and reject' do
-                # media
-                expect(can_read?(media)).to be(true)
-                expect(can_edit?(media)).to be(false)
-                expect(can_transfer?(media)).to be(false)
-                expect(can_accept?(proxy_deposit_request)).to be(false)
-                expect(can_reject?(proxy_deposit_request)).to be(false)
-                # file set
-                expect(can_read?(file_set)).to be(true)
-                expect(can_edit?(file_set)).to be(false)
+              it 'returns the correct permissions for each user' do
+                # org members org membership is copied to the project
+                # org and project managers can read & edit, cannot transfer, accept, reject
+                byebug
+                [org_manager, project_manager].each do |manager|
+                  expect(can_read?(manager, media)).to be(true)
+                  expect(can_edit?(manager, media)).to be(true)
+                  expect(can_transfer?(manager, media)).to be(false)
+                  expect(can_accept?(manager, proxy_deposit_request)).to be(false)
+                  expect(can_reject?(manager, proxy_deposit_request)).to be(false)
+                  expect(can_read?(manager, file_set)).to be(true)
+                  expect(can_edit?(manager, file_set)).to be(true)
+                end
               end
             end
           end
@@ -160,93 +157,32 @@ RSpec.describe 'Morphosource::Ability', type: :model do
               media.save!
             end
 
-            context 'the user has a manager role' do
-              before do
-                allow(user).to receive(:groups).and_return(["#{organization.id}_managers"])
-              end
-
-              it 'returns true for read, edit, transfer, accept, reject' do
-                # media
-                expect(can_read?(media)).to be(true)
-                expect(can_edit?(media)).to be(true)
-                expect(can_transfer?(media)).to be(true)
-                expect(can_accept?(proxy_deposit_request)).to be(true)
-                expect(can_reject?(proxy_deposit_request)).to be(true)
-                # file set
-                expect(can_read?(file_set)).to be(true)
-                expect(can_edit?(file_set)).to be(true)
-              end
-            end
-
-            context 'the user has an editor role' do
-              before do
-                allow(user).to receive(:groups).and_return(["#{organization.id}_editors"])
-              end
-
-              it 'returns true for read and edit, false for transfer, accept, and reject' do
-                # media
-                expect(can_read?(media)).to be(true)
-                expect(can_edit?(media)).to be(true)
-                expect(can_transfer?(media)).to be(false)
-                expect(can_accept?(proxy_deposit_request)).to be(false)
-                expect(can_reject?(proxy_deposit_request)).to be(false)
-                # file set
-                expect(can_read?(file_set)).to be(true)
-                expect(can_edit?(file_set)).to be(true)
-              end
-            end
-
-            context 'the user has a depositor role' do
-              before do
-                allow(user).to receive(:groups).and_return(["#{organization.id}_depositors"])
-              end
-
-              it 'returns true for read and false for edit, transfer, accept, and reject' do
-                # media
-                expect(can_read?(media)).to be(true)
-                expect(can_edit?(media)).to be(false)
-                expect(can_transfer?(media)).to be(false)
-                expect(can_accept?(proxy_deposit_request)).to be(false)
-                expect(can_reject?(proxy_deposit_request)).to be(false)
-                # file set
-                expect(can_read?(file_set)).to be(true)
-                expect(can_edit?(file_set)).to be(false)
-              end
-            end
-
-            context 'the user has a downloader role' do
-              before do
-                allow(user).to receive(:groups).and_return(["#{organization.id}_downloaders"])
-              end
-
-              it 'returns true for read and false for edit, transfer, accept, and reject' do
-                # media
-                expect(can_read?(media)).to be(true)
-                expect(can_edit?(media)).to be(false)
-                expect(can_transfer?(media)).to be(false)
-                expect(can_accept?(proxy_deposit_request)).to be(false)
-                expect(can_reject?(proxy_deposit_request)).to be(false)
-                # file set
-                expect(can_read?(file_set)).to be(true)
-                expect(can_edit?(file_set)).to be(false)
-              end
-            end
-
-            context 'the user has a viewer role' do
-              before do
-                allow(user).to receive(:groups).and_return(["#{organization.id}_viewers"])
-              end
-
-              it 'returns true for read and false for edit, transfer, accept, and reject' do
-                # media
-                expect(can_read?(media)).to be(true)
-                expect(can_edit?(media)).to be(false)
-                expect(can_transfer?(media)).to be(false)
-                expect(can_accept?(proxy_deposit_request)).to be(false)
-                expect(can_reject?(proxy_deposit_request)).to be(false)
-                # file set
-                expect(can_read?(file_set)).to be(true)
-                expect(can_edit?(file_set)).to be(false)
+            it 'returns the correct permissions for each member' do
+              # manager can read, edit, transfer, accept, reject
+              expect(can_read?(org_manager, media)).to be(true)
+              expect(can_edit?(org_manager, media)).to be(true)
+              expect(can_transfer?(org_manager, media)).to be(true)
+              expect(can_accept?(org_manager, proxy_deposit_request)).to be(true)
+              expect(can_reject?(org_manager, proxy_deposit_request)).to be(true)
+              expect(can_read?(org_manager, file_set)).to be(true)
+              expect(can_edit?(org_manager, file_set)).to be(true)
+              # editor can read & edit, cannot transfer, accept, reject
+              expect(can_read?(org_editor, media)).to be(true)
+              expect(can_edit?(org_editor, media)).to be(true)
+              expect(can_transfer?(org_editor, media)).to be(false)
+              expect(can_accept?(org_editor, proxy_deposit_request)).to be(false)
+              expect(can_reject?(org_editor, proxy_deposit_request)).to be(false)
+              expect(can_read?(org_editor, file_set)).to be(true)
+              expect(can_edit?(org_editor, file_set)).to be(true)
+              # depositor, downloader, and viewer can read, cannot edit, transfer, accept, reject
+              [org_depositor, org_downloader, org_viewer].each do |member|
+                expect(can_read?(member, media)).to be(true)
+                expect(can_edit?(member, media)).to be(false)
+                expect(can_transfer?(member, media)).to be(false)
+                expect(can_accept?(member, proxy_deposit_request)).to be(false)
+                expect(can_reject?(member, proxy_deposit_request)).to be(false)
+                expect(can_read?(member, file_set)).to be(true)
+                expect(can_edit?(member, file_set)).to be(false)
               end
             end
           end
@@ -272,7 +208,9 @@ RSpec.describe 'Morphosource::Ability', type: :model do
     end
   end
 
-  def can_read?(work)
+  def can_read?(user, work)
+    user = User.find(user.id)
+    ability = Ability.new(user)
     work_doc = SolrDocument.find(work.id)
     result = []
     result << (ability.can? :read, work.id)
@@ -286,7 +224,9 @@ RSpec.describe 'Morphosource::Ability', type: :model do
     result.first
   end
 
-  def can_edit?(work)
+  def can_edit?(user, work)
+    user = User.find(user.id)
+    ability = Ability.new(user)
     work_doc = SolrDocument.find(work.id)
     result = []
     result << (ability.can? :edit, work.id)
@@ -300,7 +240,9 @@ RSpec.describe 'Morphosource::Ability', type: :model do
     result.first
   end
 
-  def can_transfer?(work)
+  def can_transfer?(user, work)
+    user = User.find(user.id)
+    ability = Ability.new(user)
     result = []
     result << (ability.can? :transfer, work.id)
     result << (user.can? :transfer, work.id)
@@ -309,7 +251,9 @@ RSpec.describe 'Morphosource::Ability', type: :model do
     result.first
   end
 
-  def can_accept?(request)
+  def can_accept?(user, request)
+    user = User.find(user.id)
+    ability = Ability.new(user)
     result = []
     result << (ability.can? :accept, request)
     result << (user.can? :accept, request)
@@ -318,7 +262,9 @@ RSpec.describe 'Morphosource::Ability', type: :model do
     result.first
   end
 
-  def can_reject?(request)
+  def can_reject?(user, request)
+    user = User.find(user.id)
+    ability = Ability.new(user)
     result = []
     result << (ability.can? :reject, request)
     result << (user.can? :reject, request)

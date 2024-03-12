@@ -3,6 +3,7 @@ module Morphosource
     extend ActiveSupport::Concern
     include Morphosource::Ability::TemporaryLinkAbilities
     include Morphosource::Ability::OrganizationMemberAbilities
+    include Morphosource::Ability::OrganizationProjectMemberAbilities
 
     included do
       include Hyrax::Ability
@@ -136,7 +137,9 @@ module Morphosource
       # Returns true if the current user is the manager of the specified work
       # @param document_id [String] the id of the document.
       def user_is_data_manager?(document_id)
-        SolrDocument.find(document_id).user_with_ownership.first == current_user.user_key
+        return false unless current_user
+
+        SolrDocument.find(document_id).user_with_ownership&.first == current_user.user_key
       end
 
   end

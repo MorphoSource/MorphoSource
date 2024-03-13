@@ -78,7 +78,7 @@ class CollectionRolesController < ApplicationController
 
   def update_child_groups
     @parent = @collection
-    child_ids = @subcollection_docs.map(&:id)
+    child_ids = @subcollection_docs.map { |doc| doc['id'] }
     child_ids.each do |id|
       update_child_collection(id)
     end

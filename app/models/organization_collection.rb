@@ -75,6 +75,7 @@ class OrganizationCollection < Collection
     def create_organization_project
       project = example_organization_project
       project.create_collection_groups
+      Morphosource::Collections::PermissionsCreateService.create_default(collection: project)
       project.member_of_collections << self
       project.save!
       project

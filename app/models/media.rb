@@ -135,7 +135,7 @@ class Media < Morphosource::Works::Base
     file_visibilities = []
 
     # check to make sure the media is not destroyed before indexing is done
-    if file_sets.first&.parent.present? 
+    if file_sets&.first&.parent.present? 
       file_sets.each do |file|
         if file.embargo&.active?
           file_visibilities << Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_EMBARGO

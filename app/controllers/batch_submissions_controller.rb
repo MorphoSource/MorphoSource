@@ -422,9 +422,8 @@ class BatchSubmissionsController < ApplicationController
           end
         else
           # local file upload
-          if val.match(/[\/\\]/).present?   
-            # avoid any slashes that will set a path
-            error_msg = "media.media_file: File name #{val} is not valid.  Please use a valid file name."
+          if !val.match?(/^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)*$/)
+            error_msg = "media.media_file: File name #{val} is not valid.  Please use a valid file name (alphanumeric, dashes or underscores, with a valid file extension)."
           elsif !File.exist?(File.join(user_share_full_path, val))
             error_msg = "media.media_file: File #{val} cannot be found. Please check your shared folder."
           elsif File.directory?(user_share_full_path + val)
@@ -442,8 +441,12 @@ class BatchSubmissionsController < ApplicationController
         end
       end
     when "media.preview_file"
-      if val.present? && !File.exist?(user_share_full_path + val)
-        error_msg = "media.preview_file: File #{val} cannot be found. Please check your shared folder."
+      if val.present?
+        if !val.match?(/^[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)*$/)
+          error_msg = "media.preview_file: File name #{val} is not valid.  Please use a valid file name (alphanumeric, dashes or underscores, with a valid file extension)."
+        elsif !File.exist?(user_share_full_path + val)
+          error_msg = "media.preview_file: File #{val} cannot be found. Please check your shared folder."
+        end
       end
     when "media.media_type"
       if valid_media_types.ignore_case_include? val

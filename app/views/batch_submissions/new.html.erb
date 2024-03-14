@@ -5,6 +5,7 @@
   var depositor = <%= current_user&.user_key.to_json.html_safe %>;
   var deviceOrgsData = <%= @device_organizations_select2.to_json.html_safe %>;
   var objectOrgsData = <%= @object_organizations_select2.to_json.html_safe %>;
+  var orgData = objectOrgsData
   var nullOrg = <%= @null_organization.to_json.html_safe %>;
   var deviceData = <%= @devices_with_ids.to_json.html_safe %>;
 </script>

@@ -225,13 +225,13 @@ $( document ).ready(function() {
         // get the org, device org, and device details from orgData and deviceData objects, 
         // then set the details in prevBsData to be used for select2-selecting event
         let orgId = formData["batch_submission[organization_search]"];
-        let orgIndex = objectOrgsData.findIndex(item => item.id === orgId);
+        let orgIndex = orgData.findIndex(item => item.id === orgId);
         let deviceOrgId = formData["batch_submission[device_organization_search]"];
-        let deviceOrgIndex = objectOrgsData.findIndex(item => item.id === deviceOrgId);
+        let deviceOrgIndex = orgData.findIndex(item => item.id === deviceOrgId);
         let deviceId = formData["batch_submission[device_id]"];
         prevBsData = { 
-          organization: objectOrgsData[orgIndex],
-          device_organization: deviceOrgsData[deviceOrgIndex],
+          organization: orgData[orgIndex],
+          device_organization: orgData[deviceOrgIndex],
           device: deviceData[deviceId]
         }
         $("#batch_submission_organization_search").select2('val', orgId).trigger('select2-selecting'); 

@@ -13,14 +13,14 @@ module Morphosource
 
       def all_collections_by_type(collection_type_id, fq_params = [])
         #fq_params << "#{ActiveFedora.index_field_mapper.solr_name('has_model', :symbol)}:#{Collection}"
-        fq_params << "(#{ActiveFedora.index_field_mapper.solr_name('collection_type_gid', :symbol)}:\"gid://morpho-source-sf/hyrax-collectiontype/#{collection_type_id}\")"
+        fq_params << "(#{ActiveFedora.index_field_mapper.solr_name('collection_type_gid', :symbol)}:\"gid://#{GlobalID.app}/Hyrax::CollectionType/#{collection_type_id}\")"
         response = available_collections_filter_query(fq_params: fq_params)
         return response
       end
 
       def collection_docs_by_type_and_ids(collection_type_id, fq_params = [], collection_ids)
         return [] unless collection_ids.present?
-        fq_params << "(#{ActiveFedora.index_field_mapper.solr_name('collection_type_gid', :symbol)}:\"gid://morpho-source-sf/hyrax-collectiontype/#{collection_type_id}\")"
+        fq_params << "(#{ActiveFedora.index_field_mapper.solr_name('collection_type_gid', :symbol)}:\"gid://#{GlobalID.app}/Hyrax::CollectionType/#{collection_type_id}\")"
         fq_params << assemble_or_query('id', collection_ids)
         response = available_collections_filter_query(fq_params: fq_params)
         return response.documents

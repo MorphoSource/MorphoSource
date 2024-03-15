@@ -674,7 +674,7 @@ namespace :morphosource do
       update = false
     end
     # update all bso and cho with org linked team
-    qry = "linked_organization_id_ssi:* AND has_model_ssim:Collection AND collection_type_gid_ssim:\"gid://morpho-source-sf/hyrax-collectiontype/1\""
+    qry = "linked_organization_id_ssi:* AND has_model_ssim:Collection AND collection_type_gid_ssim:\"gid://#{GlobalID.app}/Hyrax::CollectionType/#{Morphosource::CollectionTypesService.team_collection_type_id}\""
     result = ActiveFedora::SolrService.query(qry, rows: 999999)
     puts "#{result.count} org-linked teams found "
     result.each do |hit|
@@ -701,7 +701,7 @@ namespace :morphosource do
       update = false
     end
     # update all bso and cho with org linked team
-    qry = "linked_organization_id_ssi:* AND has_model_ssim:Collection AND collection_type_gid_ssim:\"gid://morpho-source-sf/hyrax-collectiontype/1\""
+    qry = "linked_organization_id_ssi:* AND has_model_ssim:Collection AND collection_type_gid_ssim:\"gid://#{GlobalID.app}/Hyrax::CollectionType/#{Morphosource::CollectionTypesService.team_collection_type_id}\""
     result = ActiveFedora::SolrService.query(qry, rows: 999999)
     puts "#{result.count} org-linked teams found "
     result.each do |hit|

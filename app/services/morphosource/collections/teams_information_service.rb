@@ -77,7 +77,7 @@ module Morphosource
             fl: ['id'],
             fq: [
               "#{solrize('has_model', :symbol)}:Collection",
-              "(#{solrize('collection_type_gid', :symbol)}:\"gid://morpho-source-sf/hyrax-collectiontype/#{@collection_list_type_id}\")"
+              "(#{solrize('collection_type_gid', :symbol)}:\"gid://#{GlobalID.app}/Hyrax::CollectionType/#{@collection_list_type_id}\")"
             ]
           }
           solr.get(nil, params)        

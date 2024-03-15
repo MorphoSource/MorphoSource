@@ -17,6 +17,11 @@ module Morphosource
     end
     alias media_tab_url collection_media_path
 
+    # about page
+    def collection_about_path(collection)
+      main_app.send("#{collection_type_machine_id(collection)}_about_path", collection)
+    end
+
     # show page main/device media tab
     def device_media_tab_url(collection)
       main_app.send("#{collection_type_machine_id(collection)}_device_media_path", collection)
@@ -104,7 +109,7 @@ module Morphosource
     end
 
     def page_is_team?
-      path_info.include?("teams")
+      @page_is_team ||= path_info.include?("teams")
     end
 
     def page_is_organization?
@@ -124,14 +129,16 @@ module Morphosource
     end
 
     def collection_type
-      if page_is_team?
-        'team'
-      elsif page_is_project?
-        'project'
-      elsif page_is_media_list?
-        'media list'
-      elsif page_is_sequential_section_list?
-        'sequential section list'
+      @collection_type ||= begin
+        if page_is_team?
+          'team'
+        elsif page_is_project?
+          'project'
+        elsif page_is_media_list?
+          'media list'
+        elsif page_is_sequential_section_list?
+          'sequential section list'
+        end
       end
     end
 
@@ -359,12 +366,7 @@ module Morphosource
     end
 
     def media_type_label(value)
-      case value
-      when 'CTImageSeries'
-        'CT Image Series'
-      else
-        value.underscore.titleize
-      end
+      Morphosource::MediaTypesService.short_term(value) || "Unknown Type"
     end
 
     def origin_label(value)
@@ -434,6 +436,12 @@ module Morphosource
 
     def order_media_per_page(count)
       count.nil? ? @blacklight_config.default_solr_params[:rows].to_s : count
+    end
+
+    # check if current page of media includes media imaged from biological specimens
+    # used to determine if taxonomy column should be displayed
+    def response_includes_specimens?(response)
+      @includes_specimens ||= response["facet_counts"]["facet_fields"]["media_physical_object_type_ssim"].include? "Biological Specimen"
     end
 
   end

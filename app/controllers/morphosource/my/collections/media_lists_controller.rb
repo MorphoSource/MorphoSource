@@ -5,8 +5,9 @@ module Morphosource
 
         before_action :build_breadcrumbs, only: []
 
-        # temporary restriction so only admins can access media lists and sequential section lists
-        before_action :authorize_admin
+        configure_blacklight do |config|
+          config.search_builder_class = Morphosource::My::Collections::MediaListsSearchBuilder
+        end
 
         def collections_type
           "media_lists"

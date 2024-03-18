@@ -18,7 +18,7 @@
           callback(data);
         },
         ajax: { // Use the jQuery.ajax wrapper provided by Select2
-          url: "/data_managers.json",
+          url: "/data-managers",
           dataType: "json",
           data: function (term, page) {
             return {
@@ -26,6 +26,7 @@
             };
           },
           results: function(data, page) {
+            console.log(data.users);
             return { results: data.users };
           }
         },

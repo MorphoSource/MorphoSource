@@ -636,7 +636,7 @@ Rails.application.routes.draw do
   get '/batch_submissions/result', to: 'batch_submissions#result', as: 'batch_submissions_result'
 
   ### DATA MANAGER SEARCH ###
-  get '/data_managers', to: 'morphosource/data_managers#index', as: 'data_managers'
+  get '/data-managers', to: 'morphosource/data_managers#index', as: 'data_managers', defaults: { format: 'json' }
 
   ### DOCS ###
   resources :docs do

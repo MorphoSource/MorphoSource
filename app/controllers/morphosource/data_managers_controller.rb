@@ -3,6 +3,7 @@ module Morphosource
   class DataManagersController < Hyrax::UsersController
 
     def index
+      params[:group] = "contributor" # limit users to those with contributor status
       users = search(params[:uq], false)
       organizations = search_organizations(params[:uq])
       @data_managers = (organizations + users).sort_by!{|x| x.display_name || '' }

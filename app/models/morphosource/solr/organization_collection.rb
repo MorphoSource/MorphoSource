@@ -21,6 +21,7 @@ module Morphosource
       def institution_name
         self['institution_name_ssim']
       end
+      alias department institution_name
 
       def recordset_id
         self['recordset_id_ssim']
@@ -29,6 +30,7 @@ module Morphosource
       def display_name
         self['display_name_ssi']
       end
+      alias name display_name
 
     end
   end

@@ -526,13 +526,6 @@ module MorphosourceHelper
     user.display_name.present? ? user.display_name : user.email
   end
 
-  def data_manager_display(key)
-    manager = ::User.find_by(id: key) || SolrDocument.where("id" => key).first
-    return key if manager.nil?
-
-    manager.display_name.present? ? manager.display_name : ( manager.try(:email) || manager.try(:title)&.first )
-  end
-
   def sftp_share_status(path)
     return "" unless path.present?
     icon = '<i class="glyphicon glyphicon-alert tooltip-icon text-alert"><p class="hint hide">Not connected</p></i>'
@@ -546,7 +539,6 @@ module MorphosourceHelper
     return false unless path.present?
     return (Dir.exist?(Hyrax.config.sftp_share_root + path) or Dir.exist?(path))
   end
-
 end
 
 class Array

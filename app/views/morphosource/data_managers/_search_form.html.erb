@@ -7,7 +7,5 @@
     <button type="submit" class="btn btn-primary" id="user_submit">
       <i class="glyphicon glyphicon-search"></i> Go
     </button>
-    <% byebug %>
-    <%= select_tag :group, options_for_select(@groups, params[:group]), include_blank: "All User Groups", class: "pull-right", :onchange => "this.form.submit();" %>
   <% end %>
 </div>

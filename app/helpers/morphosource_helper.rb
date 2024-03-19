@@ -533,6 +533,29 @@ module MorphosourceHelper
     manager.display_name.present? ? manager.display_name : ( manager.try(:email) || manager.try(:title)&.first )
   end
 
+  def data_manager_path(user)
+    case user
+    when User
+      hyrax.user_path(user)
+    when SolrDocument
+      main_app.organization_collection_path(user.id)
+    end
+  end
+
+  def managed_media_count(user)
+    scope = controller
+    scope.user = user
+    search_builder = Morphosource::Users::ManagedMediaSearchBuilder.new(controller)
+    repository = MediaCatalogController.new.repository
+    repository.search(search_builder.query).response["numFound"]
+  end
+
+  def organization_managers(organization)
+    org = SolrDocument.find(organization.id)
+    managers = Role.find_by(name: "#{org.id}_managers")&.users
+    managers.sort.map { |manager| link_to manager.name, hyrax.user_path(manager) }.join('</br>').html_safe
+  end
+
   def sftp_share_status(path)
     return "" unless path.present?
     icon = '<i class="glyphicon glyphicon-alert tooltip-icon text-alert"><p class="hint hide">Not connected</p></i>'

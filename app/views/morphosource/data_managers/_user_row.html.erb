@@ -1,0 +1,22 @@
+<% if user.is_a? User %>
+  <tr>
+    <td><%= link_to data_manager_path(user) do %>
+          <%= image_tag(user.avatar.url(:thumb), width: 30) if user.avatar.file %>
+        <% end %>
+    </td>
+    <td><%= link_to user.name, hyrax.user_path(user) %></td>
+    <td><%= user.department %></td>
+    <td></td>
+    <td><%= user.created_at %></td>
+    <td><%= managed_media_count(user) %></td>
+  </tr>
+<% else %>
+  <tr>
+    <td><%= image_tag(user.logo_record.first[:file_location], width: 30) if user.logo_record&.first %></td>
+    <td><%= link_to user.title.first, data_manager_path(user) %></td>
+    <td><%= user.department&.first %></td>
+    <td><%= organization_managers(user) %></td>
+    <td><%= user.created_at %></td>
+    <td><%= managed_media_count(user) %></td>
+  </tr>
+<% end %>

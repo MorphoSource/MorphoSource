@@ -286,13 +286,13 @@ class Collection < ActiveFedora::Base
   # Finds the first record matching the specified conditions, or nil if no record found.
   # Similar to ActiveRecord find_by method.
   #
-  # Media.find_by(id: "123456789")
-  # Media.find_by("media_type_tesim" => "Mesh")
-  # Media.find_by( [ "media_type_tesim:Mesh", "id:123456789" ] )
-  # Media.find_by( { "media_type_tesim" => "Mesh", id: "123456789" } )
+  # Collection.find_by(id: "123456789")
+  # Collection.find_by("human_readable_type_tesim" => "Project")
+  # Collection.find_by( [ "human_readable_type_tesim:Project", "id:123456789" ] )
+  # Collection.find_by( { ""human_readable_type_tesim" => "Project", id: "123456789" } )
   #
   # @param [Hash, String, Array] One or more conditions, using Solr field names
-  # @return [Morphosource::Works::Base, nil] First matching record object or nil if none found
+  # @return [::Collection, nil] First matching record object or nil if none found
   def self.find_by(arg, *args)
     where(arg, *args).take
   end

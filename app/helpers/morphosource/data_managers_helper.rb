@@ -5,7 +5,7 @@ module Morphosource
 
     def data_manager_display(key)
       manager = ::User.find_by(id: key) || SolrDocument.where("id" => key).first
-      return key if manager.nil?
+      return "User or Organization #{key}" if manager.nil?
 
       manager.display_name.present? ? manager.display_name : ( manager.try(:email) || manager.try(:title)&.first )
     end

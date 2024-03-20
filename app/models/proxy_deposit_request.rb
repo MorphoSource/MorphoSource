@@ -86,9 +86,7 @@ class ProxyDepositRequest < ActiveRecord::Base
   end
 
   def select_receiving_user(user_key)
-    # @receiving_user ||= (User.find_by_user_key(user_key) || OrganizationCollection.find_by(id: user_key))
-    byebug
-    @receiving_user ||= (User.find_by_user_key(user_key) || SolrDocument.find(user_key))
+    @receiving_user ||= (User.find_by_user_key(user_key) || OrganizationCollection.find_by(id: user_key))
   end
 
   # @return [nil, String] nil if we don't have a receiving user, otherwise it returns the receiving_user's user_key

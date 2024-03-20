@@ -18,11 +18,7 @@
               <%= req.created_at.to_formatted_s(:long_ordinal) %>
             </relative-time>
           </td>
-          <% if req.receiving_organization %>
-            <td><%= link_to req.receiving_organization&.display_name, main_app.organization_path(req.receiving_organization&.id) %></td>
-          <% else %>
-            <td><%= link_to req.receiving_user.name, hyrax.user_path(req.receiving_user) %></td>
-          <% end %>
+          <td><%= link_to_receiving_user(req.receiving_user_id) %></td>
           <td><%= req.organization_transfer ? req.sender_comment.html_safe : req.sender_comment %></td>
           <td>
             <% if req.pending? && !req.organization_transfer %>

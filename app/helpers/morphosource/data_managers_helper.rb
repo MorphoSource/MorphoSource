@@ -18,5 +18,14 @@ module Morphosource
         main_app.organization_collection_path(user.id)
       end
     end
+
+    def link_to_receiving_user(receiving_user_id)
+      if OrganizationCollection.exists?(receiving_user_id)
+        organization = SolrDocument.find(receiving_user_id)
+        link_to organization['title_tesim']&.first, main_app.organization_path(organization)
+      else
+        link_to User.find(receiving_user_id).name, hyrax.user_path(User.find(receiving_user_id))
+      end
+    end
   end
 end

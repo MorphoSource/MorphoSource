@@ -44,12 +44,15 @@ $( document ).ready(function() {
       if ($(this).val() == 'Yes') {
         $('.allowed-remote-source-wrapper').addClass('show').removeClass('hidden');
       } else {
-        $('.allowed-remote-source-wrapper').addClass('hidden').removeClass('show');        
+        $('.allowed-remote-source-wrapper').addClass('hidden').removeClass('show');
       }
     });
   }
 
-  if ( $('form.team_organization_permissions_edit').length ) {
+  if (
+    $('form.team_organization_permissions_edit').length ||
+    $('form[id*="edit_organization_collection"]').length
+  ) {
 
     $('div#organization-permissions input:checkbox').each(function() {
       blankValueEffect($(this));

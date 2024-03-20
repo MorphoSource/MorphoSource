@@ -1,4 +1,4 @@
-require 'hydra-file_characterization'
+require_relative '../../file_characterization/characterizers'
 require 'nokogiri'
 
 module Hydra::Works

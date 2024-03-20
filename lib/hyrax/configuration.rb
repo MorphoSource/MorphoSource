@@ -472,6 +472,64 @@ module Hyrax
       @max_days_between_fixity_checks ||= 7
     end
 
+    attr_writer :enable_noids
+    def enable_noids?
+      return @enable_noids unless @enable_noids.nil?
+      @enable_noids = true
+    end
+
+    attr_writer :noid_template
+    def noid_template
+      @noid_template ||= '.reeddeeddk'
+    end
+
+    attr_writer :noid_minter_class
+    def noid_minter_class
+      @noid_minter_class ||= ::Noid::Rails::Minter::Db
+    end
+
+    attr_writer :minter_statefile
+    def minter_statefile
+      @minter_statefile ||= '/tmp/minter-state'
+    end
+
+    attr_writer :display_media_download_link
+    def display_media_download_link?
+      return @display_media_download_link unless @display_media_download_link.nil?
+      @display_media_download_link = true
+    end
+
+    attr_writer :fits_path
+    def fits_path
+      @fits_path ||= 'fits.sh'
+    end
+
+    attr_writer :blender_path
+    def blender_path
+      @blender_path ||= 'blender'
+    end
+
+    attr_writer :fiji_path
+    def fiji_path
+      @fiji_path ||= 'fiji'
+    end
+
+    # Custom executable path for running fiji scripts
+    attr_writer :fiji_script_command
+    def fiji_script_command
+      @fiji_script_command ||= nil
+    end
+
+    attr_writer :python_path
+    def python_path
+      @python_path ||= 'python3'
+    end
+
+    attr_writer :derivatives_tmp_path
+    def derivatives_tmp_path
+      @derivatives_tmp_path ||= Rails.root.join("tmp")
+    end
+
     # Override characterization runner
     attr_accessor :characterization_runner
 
@@ -535,21 +593,21 @@ module Hyrax
     end
 
     # @!attribute [w] update_fast_queue_name
-    #   ActiveJob queue to handle background work or collection update jobs that need to be run relatively soon. 
+    #   ActiveJob queue to handle background work or collection update jobs that need to be run relatively soon.
     attr_writer :update_fast_queue_name
     def update_fast_queue_name
       @update_fast_queue_name ||= :update_fast
     end
 
     # @!attribute [w] update_medium_queue_name
-    #   ActiveJob queue to handle background work or collection update jobs that can be run with medium priority. 
+    #   ActiveJob queue to handle background work or collection update jobs that can be run with medium priority.
     attr_writer :update_medium_queue_name
     def update_medium_queue_name
       @update_medium_queue_name ||= :update_medium
     end
 
     # @!attribute [w] update_slow_queue_name
-    #   ActiveJob queue to handle background work or collection update jobs that can be run relatively slowly. 
+    #   ActiveJob queue to handle background work or collection update jobs that can be run relatively slowly.
     attr_writer :update_slow_queue_name
     def update_slow_queue_name
       @update_slow_queue_name ||= :update_slow
@@ -616,6 +674,46 @@ module Hyrax
     attr_writer :rights_statement_service_class
     def rights_statement_service_class
       @rights_statement_service_class ||= Hyrax::RightsStatementService
+    end
+
+    attr_writer :index_related_works
+    def index_related_works
+      @index_related_works ||= false
+    end
+
+    attr_writer :unknown_ct_scanner
+    def unknown_ct_scanner
+      @unknown_ct_scanner ||= nil
+    end
+
+    attr_writer :null_organization_id
+    def null_organization_id
+      @null_organization_id ||= nil
+    end
+
+    attr_writer :max_for_download_request_details
+    def max_for_download_request_details
+      @max_for_download_request_details ||= 100
+    end
+
+    attr_writer :host_name
+    def host_name
+      @host_name ||= "morphosource.org"
+    end
+
+    attr_writer :sftp_share_root
+    def sftp_share_root
+      @sftp_share_root ||= "/sftp_share_root_NOT_DEFINED/"
+    end
+
+    attr_writer :front_page_media
+    def front_page_media
+      @front_page_media ||= nil
+    end
+
+    attr_writer :survey_media
+    def survey_media
+      @survey_media ||= nil
     end
 
     attr_writer :persistent_hostpath
@@ -719,7 +817,7 @@ module Hyrax
 
     attr_writer :default_show_work_item_rows
     def default_show_work_item_rows
-      @default_show_work_item_rows ||= 10 # default rows per page 
+      @default_show_work_item_rows ||= 10 # default rows per page
     end
 
     attr_writer :default_rows_per_page_range
@@ -749,7 +847,7 @@ module Hyrax
 
     attr_writer :batch_user_key
     def batch_user_key
-      @batch_user_key 
+      @batch_user_key
     end
 
     attr_writer :audit_user_key

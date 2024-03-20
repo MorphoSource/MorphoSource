@@ -34,7 +34,15 @@ class OrganizationCollection < Collection
     true
   end
 
+  def media_inherit_permissions?
+    false
+  end
+
   def organization
     self
+  end
+
+  def attachment(field_name)
+    Morphosource::AttachmentService.get(self, field_name)
   end
 end

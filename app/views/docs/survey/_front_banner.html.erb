@@ -1,0 +1,71 @@
+<div id="front-banner" class="row">
+  <div class="survey-viewer-wrapper">
+    <div>
+    <% if Hyrax.config.survey_media.present? && Media.exists?(Hyrax.config.survey_media) %>
+    <!--
+      # <iframe
+      #   height="100%"
+      #   width="100%"
+      #   src="<%= universal_viewer_base_url %>#?manifest=<%= Rails.application.routes.url_helpers.manifest_path(id: Media.find(Hyrax.config.survey_media).access_control_id) %>&config=<%= universal_viewer_config_url_front_page %>"
+      #   allowfullscreen
+      #   frameborder="0">
+      # </iframe>
+      -->
+      <iframe
+        height="100%"
+        width="100%"
+        src="https://www.morphosource.org/uv/uv.html#?manifest=/manifests/24e24e32-1b09-4f63-8e60-d5c1db38af44&amp;config=https://www.morphosource.org/uv/uv-config-front-page.json" allowfullscreen="" frameborder="0">
+      </iframe>
+      <div class="survey-viewer-caption">
+        <a href="https://www.morphosource.org/concern/media/000474136?locale=en"> Dancing Man Figure <br/> Yale Peabody Museum <br/> Media 000474136</a>
+      </div>
+    </div>
+    <% end %>
+  </div>
+  <div class="survey-text-wrapper">
+    <p><%= t('morphosource.survey.banner_text_1') %></p>
+    <p><%= t('morphosource.survey.banner_text_2').html_safe %></p>
+    <p><%= t('morphosource.survey.banner_text_3').html_safe %></p>
+    <p><%= t('morphosource.survey.banner_text_4') %></p>
+    <div class="row survey-buttons-wrapper"s>
+      <div class="survey-button-wrapper">
+        <%= link_to "https://www.morphosource.org/catalog/media?f.object_type=Cultural+Heritage+Object&locale=en&q=&search_field=all_fields", class: 'btn' do %>
+          <div class="row survey-icon-row">
+            <div class="col-xs-3 col-align col-align--center">
+              <div class="row"><i class="ms2-icon-bowl icon-bowl"></i></div>
+            </div>
+            <div class="col-xs-9 col-align col-align--center">
+              <div class="row survey-text-row">Browse Media</div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      <div class="survey-button-wrapper">
+        <%= link_to "https://www.morphosource.org/teams/000392215?locale=en", class: 'btn' do %>
+          <div class="row survey-icon-row">
+            <div class="col-xs-3 col-align col-align--center">
+              <div class="row"><i class="fa fa-landmark"></i></div>
+            </div>
+            <div class="col-xs-9 col-align col-align--center">
+              <div class="row survey-text-row">View an Example</div>
+              <div class="row survey-text-row">Organization</div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+      <div class="survey-button-wrapper">
+        <%= link_to "https://www.morphosource.org/projects/000474834?locale=en", class: 'btn' do %>
+          <div class="row survey-icon-row">
+            <div class="col-xs-3 col-align col-align--center">
+              <div class="row"><i class="fa fa-folder-open"></i></div>
+            </div>
+            <div class="col-xs-9 col-align col-align--center">
+              <div class="row survey-text-row">View an</div>
+              <div class="row survey-text-row">Example Project</div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

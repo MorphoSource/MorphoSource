@@ -1,0 +1,31 @@
+<%# app/views/records/edit_fields/_list_type.html.erb %>
+<% list_types_service = Morphosource::ListTypesService.new %>
+<%= f.input :list_type, as: :select,
+  collection: list_types_service.select_all_options(f.object.list_type),
+  include_blank: true,
+  input_html: { class: 'form-control' }
+%>
+<% list_types_service.help_text_list.each do |item| %>
+  <div data-value="<%= item[0] %>" class="help-text text-padding mb-2 hide"><%= item[1] %></div>
+<% end %>
+
+<script>
+function listTypeChange() {
+  var selectedValue = $("#media_list_list_type").val();
+  $(".help-text").each(function() {
+    if ($(this).data("value") === selectedValue) {
+      $(this).addClass("show").removeClass("hide");
+    } else {
+      $(this).addClass("hide").removeClass("show");
+    }
+  });
+}
+
+$(document).ready(function() {
+  listTypeChange();
+});
+
+$("#media_list_list_type").on("change", function() {
+  listTypeChange();
+});
+</script>

@@ -65,11 +65,26 @@ module Hyrax
       render '/hyrax/media/showcase', presenter: @presenter
     end
 
+    # dynamically loads archive file contents list for archive information modal
+    def modal_file_archive_contents
+      curation_concern_solr_doc = curation_concern.present? ? 
+        ::SolrDocument.find(curation_concern.id) : ::SolrDocument.find(params[:id])
+      raise CanCan::AccessDenied.new(nil, :show) unless (curation_concern && current_ability.can?(:read, curation_concern))
+
+      @presenter = show_presenter.new(curation_concern_solr_doc, current_ability, request)
+
+      respond_to do |format|
+        format.js { render layout: false }
+        format.html { render 'showcase'}
+      end
+
+    end
+
     # overriding action methods from works_controller_behavior.rb
     def edit
       build_form
       @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
-
+      @member_of_collections_json = member_of_collections_json(@presenter.member_of_collection_presenters)  
       if (
         @presenter.imaging_event.present? && 
         (ie_work = ImagingEvent.find_by(id: @presenter.imaging_event.id)).present?
@@ -89,6 +104,16 @@ module Hyrax
       @new_processing_event_form = Hyrax::WorkFormService.build(::ProcessingEvent.new, current_ability, self)
       set_flash
       render '/hyrax/media/edit', presenter: @presenter
+    end
+
+    def member_of_collections_json(member_of_collections)
+      member_of_collections.map do |coll|
+        {
+          id: coll.id,
+          label: coll.title.first,
+          removable: current_user.can?(:edit, Collection.find(coll.id))
+        }
+      end.to_json
     end
 
     def set_flash

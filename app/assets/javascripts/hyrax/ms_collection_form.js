@@ -20,7 +20,8 @@ $(document).ready(function() {
 
   if ( $('form[id*="edit_collection"]').length ||
        $('form[id*="edit_media_list"]').length ||
-       $('form[id*="edit_sequential_section_list"]').length ) { // if collection form page (edit)
+       $('form[id*="edit_sequential_section_list"]').length ||
+       $('form[id*="edit_organization_collection"]').length) { // if collection form page (edit)
 
     if ($('.branding-logo-remove').length) {
       disableUpload('fileuploadlogo');
@@ -74,12 +75,12 @@ $(document).ready(function() {
       url.searchParams.set("expires_at", $(this).val());
       a.attr('href', url);
     });
-  
+
     var clipboard = new Clipboard('.copy-temporary-collection-link');
     clipboard.on('success', function(e) {
       $(e.trigger).tooltip('show');
       e.clearSelection();
-    }); 
+    });
 
   } // end if collection form page
 

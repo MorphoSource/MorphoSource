@@ -1,7 +1,7 @@
 
 //import Registry from 'hyrax/relationships/registry'
 import Registry from './ms_registry'
-import Resource from 'hyrax/relationships/resource'
+import Resource from 'morphosource/relationships/resource'
 import OrganizationResource from './ms_organization_resource'
 import TaxonomyResource from './ms_taxonomy_resource'
 import DeviceResource from './ms_device_resource'
@@ -155,7 +155,7 @@ export default class RelationshipsControl {
       )
     } else {
       this.members.forEach((elem) =>
-        this.registry.addResource(new Resource(elem.id, elem.label))
+        this.registry.addResource(new Resource(elem.id, elem.label, elem.removable))
       )
     }
   }

@@ -22,6 +22,10 @@ class MediaList < Collection
     Morphosource::Collections::MediaListPresenter
   end
 
+  def search_builder_class
+    Morphosource::Users::AddToMediaListSearchBuilder
+  end
+
   def list?
     true
   end

@@ -56,6 +56,9 @@ Hyrax.config do |config|
   # ID of a media work to be used as the front page preview
   config.front_page_media = Rails.env.production? ? '000009951' : nil
 
+  # ID of a media work to be used as the end survey preview
+  config.survey_media = Rails.env.production? ? '000474136' : nil
+
   # Display site announcements? Requires github_access_token credential for GH discussions board
   config.site_announcements = ENV['GITHUB_ACCESS_TOKEN'].present?
 
@@ -74,7 +77,7 @@ Hyrax.config do |config|
   config.ms_init_usr = Morphosource.ms_init_usr
   # Set by ENV["MS_INIT_PW"]
   config.ms_init_pw = Morphosource.ms_init_pw
-  
+
   # Email message sender (for download review notifications, contributor app responses, etc.)
   # Rake task create_production_users will create a user account corresponding to this email
   config.contact_email = ENV['CONTACT_EMAIL'] || "do.not.reply@morphosource.org"
@@ -82,7 +85,7 @@ Hyrax.config do |config|
   # Email address(es) for receiving system reports (e.g duplicate specimens)
   config.system_report_recipients = ENV['SYSTEM_REPORT_RECIPIENTS'] || ""
 
-  # Email address for overriding all mail recipients when sending emails from actionmailer 
+  # Email address for overriding all mail recipients when sending emails from actionmailer
   # (for receiving emails in dev / local test environments)
   config.override_mail_recipient = ENV['OVERRIDE_MAIL_RECIPIENT'] || ""
 
@@ -161,7 +164,7 @@ Hyrax.config do |config|
 
   # Path to where derivative generation tmp files should be placed (temporary method)
   config.derivatives_tmp_path = ENV.fetch("DERIVATIVES_TMP_PATH", Rails.root.join("tmp"))
-  
+
   # directory path for finding MS1 dropbox user folders
   config.sftp_share_root = ENV['SFTP_SHARE_ROOT']
 
@@ -384,8 +387,8 @@ Hyrax.config do |config|
   config.index_related_works = true
 
   # Fund code reporting fields (if not using fund code reporting features, these fields are unnecessary)
-  config.subsidizing_fund_code_id = ENV.fetch('SUBSIDIZING_FUND_CODE_ID', Rails.env.production? ? 4 : nil) 
-  config.unused_storage_fund_code_id = ENV.fetch('UNUSED_STORAGE_FUND_CODE_ID', Rails.env.production? ? 18 : nil) 
+  config.subsidizing_fund_code_id = ENV.fetch('SUBSIDIZING_FUND_CODE_ID', Rails.env.production? ? 4 : nil)
+  config.unused_storage_fund_code_id = ENV.fetch('UNUSED_STORAGE_FUND_CODE_ID', Rails.env.production? ? 18 : nil)
 end
 
 Date::DATE_FORMATS[:standard] = "%m/%d/%Y"

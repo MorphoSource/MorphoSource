@@ -1,0 +1,10 @@
+terms:
+  - id: Lesson Plan
+    term: Lesson Plan
+    help_text: "Media to be used as part of an educational lesson, whether for a class, a workshop, or a tutorial."
+  - id: Research Dataset
+    term: Research Dataset
+    help_text: "Media to be used as the dataset for a research project, whether for a published article, a class project, or for personal research." 
+  - id: Thematic
+    term: Thematic
+    help_text: "Media grouped together by a specific topic or theme. This could include Media that all represent a specific kind of animal or other type of physical object, Media that were created through a particular imaging modality, or any other category a user prefers." 

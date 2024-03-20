@@ -11,14 +11,16 @@ module Morphosource::Derivatives
 
     protected
       def internal_call
-        process_file
+        output = process_file
+        post_process(output)
       end
 
       def process_file
-        IO.popen(command) do |command_io|
+        IO.popen(command + " 2>&1") do |command_io|
           res = command_io.readlines.join('; ')
           command_io.close
-          puts "Possible issue with derivative tool executing command \"#{command}\": \"#{res}\"" if $?.to_i == 0 && res
+          puts "Possible issue with derivative tool.\nTool command: \"#{command}\"\nTool output:\n\"#{res}\"" if !$?.success? && res
+          return res
         end
       end
 
@@ -39,6 +41,10 @@ module Morphosource::Derivatives
 
       def command
         ""
+      end
+
+      def post_process(raw_output)
+        # does nothing, override to use in inherited classes
       end
   end
 end

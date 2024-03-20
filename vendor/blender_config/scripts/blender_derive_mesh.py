@@ -5,6 +5,7 @@ import argparse
 import io
 import bpy
 import bpy_types
+import traceback
 
 def file_name(filepath):
     return path.split(filepath)[1]
@@ -146,7 +147,9 @@ if (args.input and args.output and args.unit and
         else:
             err_msg = 'Error deleting Blender scene objects'
     except Exception as e:
-        err_msg = str(e).replace("\n", "; ")
+        trace = traceback.format_exc()
+        msg = str(e).replace("\n", "; ")
+        err_msg = msg + "\n" + trace
 else:
     err_msg = 'Command line arguments not supplied or inappropriate'
 

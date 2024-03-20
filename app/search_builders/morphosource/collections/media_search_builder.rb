@@ -4,7 +4,7 @@ module Morphosource
       # override filter_collection_facet_for_access
       include Morphosource::Facets::CollectionsSearchBuilderBehavior
       # enable f.field facet format
-      include Morphosource::Facets::SearchBuilderFacetParamsBehavior 
+      include Morphosource::Facets::SearchBuilderFacetParamsBehavior
 
       self.default_processor_chain += [:return_selected_fields, :filter_collection_facet_for_access]
 
@@ -20,7 +20,7 @@ module Morphosource
 
       def return_selected_fields(solr_parameters)
         if !@blacklight_params[:return_all_fields]
-          solr_parameters[:fl] = 'id,has_model_ssim,title_tesim,thumbnail_path_ss,part_tesim,physical_object_title_ssim,taxonomy_ssim,human_readable_media_type_tesim,date_uploaded_dtsi,fileset_accessibility_ssim'
+          solr_parameters[:fl] = 'id,has_model_ssim,title_tesim,thumbnail_path_ss,part_tesim,physical_object_title_ssim,taxonomy_ssim,human_readable_media_type_tesim,date_uploaded_dtsi,fileset_accessibility_ssim,short_description_ssim'
         end
       end
 

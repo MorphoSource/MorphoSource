@@ -110,14 +110,7 @@ class Media < Morphosource::Works::Base
   end
 
   def human_readable_media_type
-    case media_type.first
-    when "CTImageSeries"
-      ["CT Image Series"]
-    when "PhotogrammetryImageSeries"
-      ["Photogrammetry Image Series"]
-    else
-      media_type
-    end
+    [Morphosource::MediaTypesService.short_term(media_type&.first) || "Unknown Type"]
   end
 
   def modality
@@ -141,13 +134,16 @@ class Media < Morphosource::Works::Base
 
     file_visibilities = []
 
-    file_sets.each do |file|
-      if file.embargo&.active?
-        file_visibilities << Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_EMBARGO
-      elsif file.lease&.active?
-        file_visibilities << Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_LEASE
-      else
-        file_visibilities << file.visibility
+    # check to make sure the media is not destroyed before indexing is done
+    if file_sets&.first&.parent.present? 
+      file_sets.each do |file|
+        if file.embargo&.active?
+          file_visibilities << Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_EMBARGO
+        elsif file.lease&.active?
+          file_visibilities << Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_LEASE
+        else
+          file_visibilities << file.visibility
+        end
       end
     end
     # order unique visibilities in the order that they appear on the work form.

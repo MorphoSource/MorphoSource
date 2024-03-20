@@ -5,7 +5,7 @@ module Hyrax
     include DisplaysMesh
     include DisplaysVolume
 
-    delegate :mesh?, :volume?, to: :solr_document
+    delegate :archive?, :mesh?, :volume?, to: :solr_document
     
   end
 end

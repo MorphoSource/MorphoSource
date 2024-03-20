@@ -98,11 +98,15 @@ class FileSet < ActiveFedora::Base
     :normals_format,
     :has_uv_space,
     :vertex_color,
+    :centroid_method,
+    :blender_version,
+    :gltf_inspect_version,
     to: :characterization_proxy
   )
 
   # for zip archive contents
   delegate(
+    :contents_all_files,
     :contents_mime_type,
     :contents_file_name,
     :contents_file_size,

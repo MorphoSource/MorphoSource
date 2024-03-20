@@ -39,6 +39,7 @@ $( document ).ready(function() {
           $('.restored-message').addClass('show').removeClass('hide');
           // clear stored data to start fresh when reloading the page
           localStorage.removeItem("batchSubmissionFormData");
+          showAlert = true;
         } 
       }
 
@@ -168,7 +169,13 @@ $( document ).ready(function() {
           okToSubmit = false;
           if (showAlert) $(".select-device").addClass('text-alert');
         } else {
-          $(".select-device").removeClass('text-alert');        
+          if ($('select[name="batch_submission[device_id]"]').val() == null ||
+            $('select[name="batch_submission[device_id]"]').val() == '') {
+            okToSubmit = false;
+            if (showAlert) $(".select-device").addClass('text-alert');
+          } else {
+            $(".select-device").removeClass('text-alert');        
+          }
         }
         if ($('select[name="batch_submission[modality]"]').val() == "") {
           okToSubmit = false;
@@ -229,6 +236,7 @@ $( document ).ready(function() {
         let deviceOrgId = formData["batch_submission[device_organization_search]"];
         let deviceOrgIndex = objectOrgsData.findIndex(item => item.id === deviceOrgId);
         let deviceId = formData["batch_submission[device_id]"];
+        console.log('>>> deviceId=' + deviceId);
         prevBsData = { 
           organization: objectOrgsData[orgIndex],
           device_organization: deviceOrgsData[deviceOrgIndex],

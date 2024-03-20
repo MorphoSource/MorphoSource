@@ -173,6 +173,15 @@ body.showcase2 {
     border: 0; 
   }
 
+  .showcase-label {
+    display: flex;
+    align-items: center;
+
+    label {
+      margin-bottom: 0;
+    }
+  }
+
   .showcase-label, .showcase-value,
   .content-block-lg .row > div,
   .content-block .row > div {

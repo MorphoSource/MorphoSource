@@ -42,7 +42,7 @@ module Hyrax
           return false unless
             valid_membership?(env, collection_ids: attributes_collection.map { |_, attributes| attributes['id'] })
 
-          attributes_collection = attributes_collection.sort_by { |i, _| i.to_i }.map { |_, attributes| attributes }
+            attributes_collection = attributes_collection.sort_by { |i, _| i.to_i }.map { |_, attributes| attributes }
           # checking for existing works to avoid rewriting/loading works that are already attached
           existing_collections = env.curation_concern.member_of_collection_ids
           attributes_collection.each do |attributes|
@@ -107,15 +107,16 @@ module Hyrax
         def add(env, id)
           collection = Collection.find(id)
           collection.reindex_extent = Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
-
           return unless can_deposit_to_collection?(env, collection)
 
           env.curation_concern.member_of_collections << collection
 
           # apply the collection's permission template when updating media
-          # the permission template is applied by Hyrax to works created in a collection by
+          # collections that are added through member_of_collections_attributes are processed here.
+          # the permission template is applied by Hyrax to works with a collection_id value by:
           # /app/actors/hyrax/actors/apply_permission_template_actor.rb
-          if env.curation_concern.persisted?
+
+          if collection.media_inherit_permissions?
             Hyrax::PermissionTemplateApplicator.apply(collection.permission_template).to(model: env.curation_concern)
           end
         end
@@ -156,9 +157,7 @@ module Hyrax
 
         # Extact a singleton collection id from the collection attributes and save it in env.  Later in the actor stack,
         # in apply_permission_template_actor.rb, `env.attributes[:collection_id]` will be used to apply the
-        # permissions of the collection to the created work.  With one and only one collection, the work is seen as
-        # being created directly in that collection.  The permissions will not be applied to the work if the collection
-        # type is configured not to allow that or if the work is being created in more than one collection.
+        # permissions of the collection to the created work.
         #
         # @param env [Hyrax::Actors::Enviornment]
         #

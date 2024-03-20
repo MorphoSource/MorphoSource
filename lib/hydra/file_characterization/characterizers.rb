@@ -30,3 +30,4 @@ end
 require 'hydra/file_characterization/characterizers/fits'
 require 'hydra/file_characterization/characterizers/ffprobe'
 require 'hydra/file_characterization/characterizers/blender'
+require 'hydra/file_characterization/characterizers/gltf_inspect'

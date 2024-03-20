@@ -10,6 +10,13 @@ module Hyrax
         else
           if contributor?
             can :create_any, ::Collection
+            can :manage, ::Collection do |collection|
+              Hyrax::Collections::PermissionsService.can_deposit_in_collection?(ability: self, collection_id: collection.id)
+            end
+          elsif registered_user?
+            can :manage, ::MediaList
+            cannot [:manage], ::SequentialSectionList
+            cannot [:manage_any], ::SequentialSectionList
           end
 
           # TODO: Consider moving some of these up under contributor?

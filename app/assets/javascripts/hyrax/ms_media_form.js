@@ -263,7 +263,7 @@ $( document ).ready(function() {
   });
 
   if ($('form[id*="edit_media"]').length) { // if edit media form page
-    
+
     $('#tab-media-details[class!="active"] a').on('click', function(){
       var uvIframe = document.getElementById("uv-iframe");
       if (this.ariaExpanded == "false" && uvIframe) {        
@@ -271,49 +271,9 @@ $( document ).ready(function() {
       }
     })
 
-    function updateMediaTitle() {
-      var parts = $('[name="media[part][]"]').map(function(){
-        if ($(this).val() != '')
-          return $(this).val();
-      }).get().join(', ');
-      if (parts == '') {
-        parts = 'Element Unspecified';
-      }
-      parts = toTitleCase(parts);
-      var mediaType = $('[name="media[media_type]"]').val();
-      mediaType = '[' + mediaType + ']';
-      if ($('[name="imaging_event[ie_modality]"]').length)
-        var ie_modality = $('[name="imaging_event[ie_modality]"]').val();
-      else if ($('.showcase-value.imaging_event_modality').length)
-        var ie_modality = $('.showcase-value.imaging_event_modality').html();
-      else
-        var ie_modality = 'modality_undefined';
-      ie_modality = '[' + modalityAbbrev(ie_modality) + ']';
-      var title = parts + ' ' + mediaType + ' ' + ie_modality;
-      $('#showcase-title').text(title);
-    }
-
-    function updateDevice(organization, instutition) {
-      var organization_institution = $('#organization-title-value').text();
-      //console.log('in updateDevice, organization_institution ', organization_institution);
-      var organization_institution = organization + ' (' + instutition + ')';
-      $('#device-organization-institution-value').text(organization_institution);
-    }
-
     setupTooltip();
     removeLastRepeatable();
     adjust_form_media_type();
-
-    // update anything else after selecting a device.  remove later if not needed
-    //$('#select_device [data-behavior="add-relationship"]').click(function() {
-    //  var device_id = $('#device-id').text();
-    //  updateDevice('aaa', 'bb');
-    //})
-
-    // Change title on the fly when corresponding fields are updated
-    $('.form-group').on('change', '[name="media[media_type]"], input.media_part, [name="imaging_event[ie_modality]"]', function(){
-        updateMediaTitle();
-    });
 
     // when switching tab, show/hide content
     $('.nav-tabs > li').click(function() {
@@ -468,35 +428,6 @@ $( document ).ready(function() {
     $('#btn-select-media.has-processing-event-false').click(function() {
       // display a modal to prompt the user to fill in the processing event form
       $('#modal-select-parent-media-new-processing-event').modal();
-    })
-
-    // when selecting an organization or device, hide the new work form if any
-    $('[data-behavior="add-relationship"]').click(function() {
-      var addButtonId = $(this).attr('id');
-      //console.log(addButtonId + ' clicked...')
-      if (addButtonId == 'btn-add-parent-media') {
-        // close the modal, immediately save the processing event form, then refresh the page
-        if ($(this).data('hasProcessingEvent') == true) {
-          $('#modal-select-parent-media').modal('hide');
-          disablePageAndSave(".btn-save-media");
-          $("form#related_form_processing_event").submitRelatedWork(reloadPage);
-        } else if ($(this).data('hasProcessingEvent') == false) {
-          $('#modal-select-parent-media-new-processing-event').modal('hide');
-          $('.new-processing-event-wrapper').show();
-          $('.selected_parent_media').show();
-          /*
-          var isFormValid = buildProcessingActivity(); // populate the PA field before saving PE
-          if (isFormValid) {
-            disablePageAndSave(".btn-save-media");
-            $("form#new_processing_event").submitRelatedWork(reloadPage);
-          }
-          */
-        }
-      } else {
-        var newWorkDiv = '#embedded_div_new_' + addButtonId.split('btn-add-')[1];
-        $(newWorkDiv).hide();
-        closeLinkedContent(newWorkDiv);
-      }
     })
 
     // when page is loaded, show/hide content based on which tab is active

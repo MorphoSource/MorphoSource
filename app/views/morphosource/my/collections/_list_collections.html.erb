@@ -26,6 +26,9 @@ todo: data-colls-hash takes additional time and might not be needed.  Can be rem
      <% end %>
     </div>
   </td>
+  <% if @collections_type == "media_lists" %>
+    <td><%= collection_presenter.list_type %></td>
+  <% end %>
   <td><%= collection_presenter.total_items %></td>
   <%#= collection_presenter.total_viewable_items %>
   <td class="date"><%= collection_presenter.modified_date.try(:to_formatted_s, :standard) %> </td>

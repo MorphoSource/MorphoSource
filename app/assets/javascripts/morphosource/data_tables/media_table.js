@@ -4,7 +4,7 @@ var createMediaTable = function(selector) {
     responsive: {
       details: {
         display: $.fn.dataTable.Responsive.display.childRowImmediate,
-        type: ''
+        type: 'inline'
       }
     },
     //order: [[ 2, "asc" ]],  // if sorting is needed, we might need to sort the same way in gallery view

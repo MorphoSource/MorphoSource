@@ -36,7 +36,7 @@ RECAPTCHA_SECRET_KEY=
 
 All of these fields should be completed to provide basic authentication credentials for your instance. Since the Docker instance will be creating a Postgres database, a Fedora/FCRepo repository, and the MorphoSource web application, the various usernames and passwords can be anything you choose. The `MS_INIT_USR` should be in the format of an email address, but even a fake email like `admin@email.com` can work. 
 
-You'll also need to create Recaptcha keys for your server hostname. Julie can provide Recaptcha keys for "localhost" dev environments to MorphoSource team members. We are working to make this optional and not mandatory for MorphoSource in the near future, but for the moment it is required.
+You'll also need to create Recaptcha keys for your server hostname if you wish to download files from the repository instance. Julie can provide Recaptcha keys for "localhost" dev environments to MorphoSource team members. We are working to make this optional and not mandatory for MorphoSource in the near future, but for the moment it is required.
 
 ### Environment Variables
 

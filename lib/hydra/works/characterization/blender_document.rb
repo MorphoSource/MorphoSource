@@ -36,6 +36,16 @@ module Hydra::Works::Characterization
       ng_xml.css("blender > identification > identity").map { |n| n['mimetype'].split(',').first }
     end
 
+    # t.blender_version(proxy: [:identification, :identity, :tool, :blender_version])
+    def blender_version
+      ng_xml.css("blender > identification > identity > tool").map { |n| n['blender_version'] }
+    end
+
+    # t.gltf_inspect_version(proxy: [:identification, :identity, :tool, :gltf_inspect_version])
+    def gltf_inspect_version
+      ng_xml.css("blender > identification > identity > tool").map { |n| n['gltf_inspect_version'] }
+    end
+
     # @!group file
 
     # t.file_size(proxy: [:fileinfo, :file_size])

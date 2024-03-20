@@ -13,7 +13,11 @@
           <th>ID</th>
           <th><%= sortable_table_header('Part', 'part_ssi') %></th>
           <th><%= sortable_table_header('Object', 'physical_object_title_ssi') %></th>
-          <th><%= sortable_table_header('Taxonomy', 'taxonomy_ssi') %></th>
+          <% if response_includes_specimens?(@response) %>
+            <th><%= sortable_table_header('Taxonomy', 'taxonomy_ssi') %></th>
+          <% else %>
+            <th><%= sortable_table_header('Description', 'short_description_ssi') %></th>
+          <% end %>
           <th><%= sortable_table_header('Type', 'human_readable_media_type_ssi') %></th>
           <th><%= sortable_table_header('Date Added', 'date_uploaded_dtsi') %></th>
           <th style="padding: 8px 0px 8px 0px;"><%= sortable_table_header('Publication Status', 'publication_status_ssi') %></th>

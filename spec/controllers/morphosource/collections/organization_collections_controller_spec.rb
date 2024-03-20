@@ -239,7 +239,7 @@ RSpec.describe Morphosource::Collections::OrganizationCollectionsController, typ
 
     describe 'object type' do
       subject { facet_fields["object_type"] }
-      it 'has an object typefacet' do
+      it 'has an object type facet' do
         expect(subject.label).to eq("Object Type")
       end
     end

@@ -25,7 +25,7 @@ class MediaIndexer < Morphosource::WorkIndexer
 
       # Data manager name and email
       owner = media_owner
-      solr_doc['user_with_ownership_name_tesim'] = owner&.name || "Unknown User"
+      solr_doc['user_with_ownership_name_tesim'] = owner&.name || "Unknown User or Organization"
       solr_doc['user_with_ownership_name_ssim'] = owner&.name || "Unknown User"
       solr_doc['user_with_ownership_email_tesim'] = owner&.email
       solr_doc['user_with_ownership_email_ssim'] = owner&.email

@@ -10,7 +10,7 @@
   </thead>
   <tbody>
     <% outgoing_proxy_deposits.each do |req| %>
-      <% unless req.receiving_user.blank? %>
+      <% unless req.receiving_user_id.blank? %>
         <tr>
           <td> <%= show_transfer_request_title(req) %> </td>
           <td data-sort="<%= req.created_at.getutc.iso8601(5) %>">

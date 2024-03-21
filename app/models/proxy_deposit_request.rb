@@ -97,12 +97,7 @@ class ProxyDepositRequest < ActiveRecord::Base
   end
 
   def receiving_organization
-    case receiving_user
-    when User
-      nil
-    when OrganizationCollection
-      receiving_user
-    end
+    receiving_user if receiving_user.is_a?(OrganizationCollection)
   end
 
   private

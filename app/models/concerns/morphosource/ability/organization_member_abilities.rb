@@ -60,19 +60,23 @@ module Morphosource
         # Proxy Deposits
 
         can :transfer, String do |id|
-          user_is_media_organization_manager?(id)
+          admin? || user_is_media_organization_manager?(id)
         end
 
         can :accept, ProxyDepositRequest do |request|
-          return false unless request.status == "pending"
-
-          user_is_media_organization_manager?(request.work_id)
+          unless request.status == "pending"
+            false
+          else
+            user_is_media_organization_manager?(request.work_id)
+          end
         end
 
         can :reject, ProxyDepositRequest do |request|
-          return false unless request.status == "pending"
-
-          user_is_media_organization_manager?(request.work_id)
+          unless request.status == "pending"
+            false
+          else
+            user_is_media_organization_manager?(request.work_id)
+          end
         end
       end
 

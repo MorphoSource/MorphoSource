@@ -14,7 +14,7 @@ module Morphosource
     def proxy_deposit_abilities
       if Flipflop.transfer_works?
         can :transfer, String do |id|
-          user_is_data_manager?(id)
+          admin? || user_is_data_manager?(id)
         end
       end
 
@@ -24,6 +24,11 @@ module Morphosource
       can :reject, ProxyDepositRequest, receiving_user_id: current_user.id, status: 'pending'
       # a user who sent a proxy deposit request can cancel it if it's pending.
       can :destroy, ProxyDepositRequest, sending_user_id: current_user.id, status: 'pending'
+
+      return unless admin?
+        can :accept, ProxyDepositRequest
+        can :reject, ProxyDepositRequest
+        can :destroy, ProxyDepositRequest
     end
 
     def contributor?

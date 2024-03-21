@@ -14,10 +14,10 @@ module Hyrax
 
       if page_is_project?
         @collection_list_type = "project"
-        @collection_list_type_id = 2
+        @collection_list_type_id = Morphosource::CollectionTypesService.project_collection_type_id
       elsif page_is_team?
         @collection_list_type = "team"
-        @collection_list_type_id = 1
+        @collection_list_type_id = Morphosource::CollectionTypesService.team_collection_type_id
       else
         @collection_list_type = "collection"
       end

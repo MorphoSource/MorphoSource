@@ -70,22 +70,23 @@ class OrganizationCollection < Collection
   def self.polymorphic_name
     "OrganizationCollection"
   end
+  
   private
 
-    def create_organization_project
-      project = example_organization_project
-      project.create_collection_groups
-      Morphosource::Collections::PermissionsCreateService.create_default(collection: project)
-      project.member_of_collections << self
-      project.save!
-      project
-    end
+  def create_organization_project
+    project = example_organization_project
+    project.create_collection_groups
+    Morphosource::Collections::PermissionsCreateService.create_default(collection: project)
+    project.member_of_collections << self
+    project.save!
+    project
+  end
 
-    # Create a starter project for the organization
-    def example_organization_project
-      project_collection_type = Hyrax::CollectionType.where({:title => 'Project'})&.first
-      project_title = [I18n.t('morphosource.dashboard.collections.organization_collection.example_project.title', title: title.first)]
-      description = [I18n.t('morphosource.dashboard.collections.organization_collection.example_project.description')]
-      project = Collection.create(title: project_title, collection_type_gid: project_collection_type.gid, description: description, visibility: 'restricted', depositor: depositor)
-    end
+  # Create a starter project for the organization
+  def example_organization_project
+    project_collection_type = Hyrax::CollectionType.where({:title => 'Project'})&.first
+    project_title = [I18n.t('morphosource.dashboard.collections.organization_collection.example_project.title', title: title.first)]
+    description = [I18n.t('morphosource.dashboard.collections.organization_collection.example_project.description')]
+    project = Collection.create(title: project_title, collection_type_gid: project_collection_type.gid, description: description, visibility: 'restricted', depositor: depositor)
+  end
 end

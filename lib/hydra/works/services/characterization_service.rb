@@ -32,6 +32,16 @@ module Hydra::Works
       store_metadata(terms)
     end
 
+    # Get given source into form that can be passed to Hydra::FileCharacterization
+    # Use Hydra::FileCharacterization to extract metadata (an OM XML document)
+    # Get the terms (and their values) from the extracted metadata and returns terms
+    # Does not store anything on object
+    def characterize_without_storing
+      content = source_to_content
+      extracted_md = extract_metadata(content)
+      terms = parse_metadata(extracted_md)
+    end
+
     protected
 
       # @return content of object if source is nil; otherwise, return a File or the source

@@ -72,6 +72,7 @@ class CollectionRolesController < ApplicationController
 
   def update_subcollections
     find_subcollections
+    byebug
     update_child_groups unless @subcollection_docs.empty?
     reset_collection_role_values
   end
@@ -230,6 +231,6 @@ class CollectionRolesController < ApplicationController
   # CollectionsControllerBehavior methods
   def find_subcollections
     presenter
-    member_subcollections
+    @subcollection_docs = Morphosource::SolrService.new.get_docs("has_model_ssim:Collection AND member_of_collection_ids_ssim:#{@collection.id}")
   end
 end

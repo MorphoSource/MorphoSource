@@ -11,8 +11,8 @@
         <div class="row showcase2-row media-showcase">
           <div class="col-xs-12">
             <div class="content-block">
-              <%= @presenter.attribute_to_html(:file_label_basename, label: "Archive file name", render_as: :showcase_default, include_empty: true, show_hint: true) %>
-              <%= @presenter.attribute_to_html(:archive_representative_file_label_basename, label: "Representative file name", render_as: :showcase_default, include_empty: true, show_hint: true) %>
+              <%= @presenter.attribute_to_html(:file_label_basename, label: "Archive file name", render_as: :showcase_default, include_empty: true, show_hint: true, css_classes: 'break-all') %>
+              <%= @presenter.attribute_to_html(:archive_representative_file_label_basename, label: "Representative file name", render_as: :showcase_default, include_empty: true, show_hint: true, css_classes: 'break-all') %>
               <%= @presenter.attribute_to_html(:archive_representative_file_type, label: "Representative file format", render_as: :showcase_default, include_empty: true, show_hint: true) %>
               <%= @presenter.attribute_to_html(:accepted_file_count, label: "Number of recognized media files", render_as: :showcase_default, include_empty: true, show_hint: true) %>
             </div>

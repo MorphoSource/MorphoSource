@@ -72,7 +72,6 @@ class CollectionRolesController < ApplicationController
 
   def update_subcollections
     find_subcollections
-    byebug
     update_child_groups unless @subcollection_docs.empty?
     reset_collection_role_values
   end

@@ -3,13 +3,13 @@ module Hydra::Works::Characterization
     attr_accessor :ng_xml
 
     PROXIED_TERMS = %i(
-      format_label  file_mime_type
+      format_label  file_mime_type blender_version gltf_inspect_version
 
       file_size filename original_checksum rights_basis copyright_basis copyright_note
       well_formed valid filestatus_message
 
       point_count face_count bounding_box_x bounding_box_y bounding_box_z
-      centroid_x centroid_y centroid_z edges_per_face color_format normals_format 
+      centroid_x centroid_y centroid_z centroid_method edges_per_face color_format normals_format 
       has_uv_space vertex_color
     ).freeze
 
@@ -38,12 +38,12 @@ module Hydra::Works::Characterization
 
     # t.blender_version(proxy: [:identification, :identity, :tool, :blender_version])
     def blender_version
-      ng_xml.css("blender > identification > identity > tool").map { |n| n['blender_version'] }
+      ng_xml.css("blender > identification > identity > tool").first.at("blenderVersion").text
     end
 
     # t.gltf_inspect_version(proxy: [:identification, :identity, :tool, :gltf_inspect_version])
     def gltf_inspect_version
-      ng_xml.css("blender > identification > identity > tool").map { |n| n['gltf_inspect_version'] }
+      ng_xml.css("blender > identification > identity > tool").first.at("gltfInspectVersion").text
     end
 
     # @!group file
@@ -134,6 +134,11 @@ module Hydra::Works::Characterization
     # t.centroid_z(proxy: [:metadata, :mesh, :centroid, :centroid_z])
     def centroid_z
       ng_xml.css("blender > metadata > mesh > centroid > centroidZ").map(&:text)
+    end
+
+    # t.centroid_method(proxy: [:metadata, :mesh, :centroid, :centroid_method])
+    def centroid_method
+      ng_xml.css("blender > metadata > mesh > centroid > centroidMethod").map(&:text)
     end
 
     # t.edges_per_face(proxy: [:metadata, :mesh, :edges_per_face])

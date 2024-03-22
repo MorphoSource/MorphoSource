@@ -12,9 +12,15 @@ class ContentDepositorChangeEventJob < ContentEventJob
   # @param [TrueClass,FalseClass] reset (false) if true, reset the access controls. This revokes edit access from the depositor
   def perform(work, user, reset = false, sending_user = nil)
     @reset = reset
-    @new_owner = user
-    @sending_user = sending_user
+    @new_owner = select_user(user)
+    @sending_user = select_user(sending_user)
     super(work, user)
+  end
+
+  def select_user(user)
+    return user if user.is_a?(User)
+
+    User.find_by(id: user) || SolrDocument.where("id" => user).first
   end
 
   def action

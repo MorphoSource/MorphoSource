@@ -12,7 +12,7 @@ module Hyrax
         attr_accessor :parents, :pathnames, :ancestors, :depth, :id
 
         def initialize(id:, scope:)
-          query_builder = Hyrax::CollectionSearchBuilder.new(scope).where(id: id)
+          query_builder = Morphosource::CollectionSearchBuilder.new(scope).where(id: id)
           query = Hyrax::Collections::NestedCollectionQueryService.clean_lucene_error(builder: query_builder)
           response = scope.repository.search(query)
           collection_doc = response.documents.first

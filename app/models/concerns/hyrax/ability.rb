@@ -35,7 +35,7 @@ module Hyrax
                              :solr_document_abilities,
                              :trophy_abilities,
                              :temporary_link_abilities,
-                             :organizational_member_abilities]
+                             :organization_member_abilities]
     end
 
     # Samvera doesn't use download user/groups, so make it an alias to read

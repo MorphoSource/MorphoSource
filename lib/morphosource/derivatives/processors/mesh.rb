@@ -43,10 +43,8 @@ module Morphosource::Derivatives::Processors
       @draco_glb_path = File.join(tmp_dir_path, draco_glb_name)
 
       begin
-        if File.extname(source_path).downcase == '.zip'
-          extract_mesh_zip
-        elsif File.extname(source_path).downcase == '.tar'
-          extract_mesh_tar
+        if File.extname(source_path).downcase == '.zip' || File.extname(source_path).downcase == '.tar'
+          extract_mesh_archive
         end
         create_tmp_nondraco_glb
         create_tmp_draco_glb
@@ -62,33 +60,13 @@ module Morphosource::Derivatives::Processors
       @derivatives_tmp_path = Hyrax.config.derivatives_tmp_path
     end
 
-    def extract_mesh_tar
-      File.open(source_path, 'rb') do |file|
-        Archive::Tar::Minitar::Reader.open(file) do |tar|
-          tar.each_entry do |entry|
-            next if entry.name.start_with?('PaxHeader')
-            next if File.basename(entry.name).start_with?('.')
-            fpath = File.join(tmp_dir_path, entry.name)
-            unless File.exist?(fpath)
-              File.new(fpath, 'wb')
-              File.open(fpath, 'wb') do |output_file|
-                output_file.write(entry.read)
-              end
-              @source_path = fpath if acceptable_archive_mesh_formats.include? File.extname(entry.name).downcase 
-            end
-          end
-        end
-      end
-    end
-
-    def extract_mesh_zip
-      Zip::File.open(source_path) do |zip_file|
-        zip_file.each do |f|
-          next if File.basename(f.name).start_with?('.')
-          fpath = File.join(tmp_dir_path, f.name)
-          zip_file.extract(f.name, fpath) unless File.exist?(fpath)
-          @source_path = fpath if acceptable_archive_mesh_formats.include? File.extname(f.name).downcase 
-        end
+    def extract_mesh_archive
+      extracted_files = Morphosource::FileUtils::ArchiveService.new(source_path).extract_archive(tmp_dir_path)
+      new_sources = extracted_files.select { |f| acceptable_archive_mesh_formats.include?(File.extname(f).downcase) }
+      if new_sources.present?
+        @source_path = new_sources.sort_by { |f| acceptable_archive_mesh_formats.index(File.extname(f).downcase)}.first
+      else
+        raise "Mesh archive does not contain a recognizable mesh file"
       end
     end
 

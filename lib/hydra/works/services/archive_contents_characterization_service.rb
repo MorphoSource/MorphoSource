@@ -27,11 +27,7 @@ module Hydra::Works
 
     def characterize
       # Peek inside of archives
-      if File.extname(@source).downcase == ".tar"
-        @all_files, @content, @file_name, @accepted_file_count = tar_to_content
-      else
-        @all_files, @content, @file_name, @accepted_file_count = zip_to_content
-      end
+      @all_files, @content, @file_name, @accepted_file_count = archive_to_content
       raise "Error characterizing #{source}: no representative file found" if file_name == nil
 
       # Extract metadata
@@ -76,54 +72,26 @@ module Hydra::Works
     # @!endgroup
     # @!group Archive file handling
 
-    # Gets representative zip file as content.
+    # Gets representative archive file as content.
     # Unlike Morphosource::Works::CharacterizationService, expects source to be a string.
-    def zip_to_content
-      all_files_flat = []
-      rep_f = nil
-      zip_accepted_file_count = 0
-
-      Zip::File.open(source) do |zip_file|
-        zip_file.each do |f|
-          next if File.basename(f.name).start_with?('.')
-          all_files_flat << f.name
-          zip_accepted_file_count = zip_accepted_file_count + 1 if f_priority(f)
-          if ( !rep_f && f_priority(f) ) || ( f_priority(f) && f_priority(f) < f_priority(rep_f) )
-            rep_f = f
-          end
-        end
-
-        rep_f = zip_file.first if !rep_f.presence
-        all_files = nest_paths(all_files_flat)
-        return all_files, rep_f&.get_input_stream, rep_f&.name, zip_accepted_file_count
-      end
-    end
-
-    def tar_to_content
+    def archive_to_content
       all_files_flat = []
       rep_f = nil
       rep_f_content = nil
-      tar_accepted_file_count = 0
+      accepted_file_count = 0
 
-      Archive::Tar::Minitar.open(source) do |tar|
-        tar.each do |f|
-          next if !f.file? || File.basename(f.name).start_with?('.')
-
-          all_files_flat << f.name
-          tar_accepted_file_count = tar_accepted_file_count + 1 if f_priority(f) 
-          if ( !rep_f && f_priority(f) ) || ( f_priority(f) && f_priority(f) < f_priority(rep_f) )
-            rep_f = f
-            rep_f_content = rep_f.read
-          end
+      Morphosource::FileUtils::ArchiveService.new(source).each_file do |f|
+        all_files_flat << f.name
+        accepted_file_count = accepted_file_count + 1 if f_priority(f)
+        if ( !rep_f && f_priority(f) ) || ( f_priority(f) && f_priority(f) < f_priority(rep_f) )
+          rep_f = f
+          rep_f_content = rep_f.respond_to?(:get_input_stream) ? rep_f.get_input_stream : rep_f.read
         end
-
-        if !rep_f.presence
-          rep_f = zip_file.first 
-          rep_f_content = rep_f.read
-        end
-        all_files = nest_paths(all_files_flat)
-        return all_files, rep_f_content, rep_f&.name, tar_accepted_file_count
       end
+
+      all_files = nest_paths(all_files_flat)
+
+      return all_files, rep_f_content, rep_f&.name, accepted_file_count
     end
 
     def f_priority(f)
@@ -151,61 +119,14 @@ module Hydra::Works
     def extract_representative_content_and_others
       @tmp_dir_path = Rails.root.join(Hyrax.config.derivatives_tmp_path, SecureRandom.uuid)
       Dir.mkdir tmp_dir_path unless File.exist? tmp_dir_path
-      content_path = nil
 
-      case File.extname(source).downcase
-      when '.zip'
-        content_path = extract_representative_content_and_others_zip
-      when '.tar'
-        content_path = extract_representative_content_and_others_tar
-      else
-        raise "Archive file extension not valid"
-      end
-
+      extracted_files = Morphosource::FileUtils::ArchiveService.new(source).extract_archive(tmp_dir_path)
+      content_path = extracted_files.find { |f| f.include? file_name } # representative file in extracted files
       if content_path
         return open(content_path)
       else
-        raise "Previously identified representative file not found in archive when extracting files for characterization"
+        raise "Previously identified representative file (#{file_name}) not found in archive when extracting files"
       end
-    end
-
-    def extract_representative_content_and_others_zip
-      content_path = nil 
-      Zip::File.open(source) do |zip_file|
-        zip_file.each do |f|
-          next if File.basename(f.name).start_with?('.')
-
-          f_path = File.join(tmp_dir_path, f.name)
-          zip_file.extract(f.name, f_path)
-          
-          if f.name == file_name
-            content_path = f_path
-          end
-        end
-      end
-      return content_path
-    end
-
-    def extract_representative_content_and_others_tar
-      content_path = nil
-      File.open(source, 'rb') do |file|
-        Archive::Tar::Minitar::Reader.open(file) do |tar|
-          tar.each do |f|
-            next if !f.file? || File.basename(f.name).start_with?('.')
-
-            f_path = File.join(tmp_dir_path, f.name)
-            File.new(f_path, 'wb')
-            File.open(f_path, 'wb') do |output_file|
-              output_file.write(f.read)
-            end
-
-            if f.name == file_name
-              content_path = f_path
-            end
-          end
-        end
-      end
-      return content_path
     end
 
     # @!endgroup

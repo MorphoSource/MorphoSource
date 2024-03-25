@@ -160,12 +160,26 @@ module Morphosource::Derivatives::Processors
     def image_dims(f)
       w = nil
       h = nil
-      img = MiniMagick::Image.open(f)
-      if img.valid?
-        w = img.width
-        h = img.height
+      begin
+        img = MiniMagick::Image.open(f)
+        if img.valid?
+          w = img.width
+          h = img.height
+        end
+        img.destroy!
+      rescue MiniMagick::Invalid
+        # ImageMagick doesn't like some DICOMs, try backup method instead
+        w, h = image_dims_characterization(f)
       end
-      img.destroy!
+      return w, h
+    end
+
+    # Backup slower FITS/Characterization-based way to query image dimensions, if imagemagick fails
+    def image_dims_characterization(f)
+      cs = Hydra::Works::CharacterizationService.new(nil, f, {})
+      terms = cs.characterize_without_storing
+      w = Array(terms[:columns])&.first&.to_i || Array(terms[:width])&.first&.to_i
+      h = Array(terms[:rows])&.first&.to_i || Array(terms[:height])&.first&.to_i
       return w, h
     end
 

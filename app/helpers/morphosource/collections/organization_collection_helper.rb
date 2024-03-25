@@ -1,6 +1,6 @@
 module Morphosource
   module Collections
-    module OrganizationHelper
+    module OrganizationCollectionHelper
 
       def device_modalities(modalities)
         modalities.sort.map { |modality| "#{modality_label(modality)}" }.join('</br>').html_safe
@@ -31,7 +31,6 @@ module Morphosource
       def total_viewable_device_imaging_events(id)
         total_viewable_device_media(id).map(&:imaging_event_id).flatten.uniq.count
       end
-
     end
   end
 end

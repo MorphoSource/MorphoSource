@@ -19,7 +19,7 @@ class ProxyDepositRequest < ActiveRecord::Base
 
   public
 
-  belongs_to :receiving_user, class_name: 'User'
+  belongs_to :receiving_user, polymorphic: true
   belongs_to :sending_user, class_name: 'User'
 
   # @param [User] user - the person who needs to take action on the ownership transfer request
@@ -29,11 +29,12 @@ class ProxyDepositRequest < ActiveRecord::Base
   #       this is reasonable. In the view we will render the #to_s of the associated work. So we may as well preload the SOLR document.
   # Replacing deleted_work? with remove_deleted_transfers to avoid loading Fedora media objects
   def self.incoming_for(user:, number_of_days:)
+    ids = user.collections_managed_ids << user.id
     if number_of_days == 'all'
-      transfers = where(receiving_user: user).order('created_at desc')
+      transfers = where(receiving_user_id: ids).order('created_at desc')
       remove_deleted_transfers(transfers)
     else
-      transfers = where(receiving_user: user).where("created_at > ?", number_of_days.to_i.days.ago).order('created_at desc')
+      transfers = where(receiving_user_id: ids).where("created_at > ?", number_of_days.to_i.days.ago).order('created_at desc')
       remove_deleted_transfers(transfers)
     end
   end
@@ -77,7 +78,15 @@ class ProxyDepositRequest < ActiveRecord::Base
   # @param [String] user_key - The key of the user that will receive the transfer
   # @note The HTML form for creating a ProxyDepositRequest requires this method
   def transfer_to=(user_key)
-    self.receiving_user = User.find_by_user_key(user_key)
+    self.receiving_user_id = select_receiving_user(user_key).id # user or organization collection
+  end
+
+  def receiving_user
+    select_receiving_user(receiving_user_id)
+  end
+
+  def select_receiving_user(user_key)
+    @receiving_user ||= (User.find_by_user_key(user_key) || OrganizationCollection.find_by(id: user_key))
   end
 
   # @return [nil, String] nil if we don't have a receiving user, otherwise it returns the receiving_user's user_key
@@ -87,17 +96,27 @@ class ProxyDepositRequest < ActiveRecord::Base
     receiving_user.try(:user_key)
   end
 
+  def receiving_organization
+    receiving_user if receiving_user.is_a?(OrganizationCollection)
+  end
+
   private
 
     def transfer_to_should_be_a_contributor
+      return if receiving_organization
+
       errors.add(:transfer_to, "must have contributor access") unless receiving_user.contributor?
     end
 
     def transfer_to_should_be_a_valid_username
+      return if receiving_organization
+
       errors.add(:transfer_to, "must be an existing user") unless receiving_user
     end
 
     def sending_user_should_not_be_receiving_user
+      return if receiving_organization
+
       errors.add(:transfer_to, 'specify a different user to receive the work') if receiving_user && receiving_user.user_key == sending_user.user_key
     end
 

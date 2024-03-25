@@ -3,8 +3,9 @@ module Morphosource
     class NestCollectionsController < Hyrax::Dashboard::NestCollectionsController
 
       # taken from the method create_collection_under
-      # create and link a NEW Project under this collection (a team), with this collection as parent
+      # create and link a NEW Project under this collection (a team or organization), with this collection as parent
       def create_collection_under
+        authorize! :edit, params["parent_id"]
         @form = build_create_collection_form
         if @form.validate_add
           redirect_to new_project_path(parent_id: @form.parent)

@@ -21,9 +21,26 @@ module Morphosource
       def institution_name
         self['institution_name_ssim']
       end
+      alias department institution_name
 
       def recordset_id
         self['recordset_id_ssim']
+      end
+
+      # user methods for when the organization collection is standing in for a data owner
+
+      def display_name
+        self['display_name_ssi']
+      end
+      alias name display_name
+
+      def user_key
+        self['id']
+      end
+      alias ms_id user_key
+
+      def proxy_deposit_requests
+        ProxyDepositRequest.where(receiving_user_id: id)
       end
 
     end

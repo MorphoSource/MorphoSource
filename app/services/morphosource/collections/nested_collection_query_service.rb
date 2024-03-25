@@ -9,7 +9,7 @@ module Morphosource
       def self.available_project_collections(parent:, scope:, limit_to_id: nil)
         return [] unless parent.try(:nestable?)
         return [] unless scope.can?(:edit, parent)
-        return [] unless parent.team?
+        return [] unless type_has_projects?(parent)
         # projects can't have child collections
         results = query_solr(collection: parent, access: :edit, scope: scope, limit_to_id: limit_to_id, nest_direction: :as_child).documents
         results
@@ -30,6 +30,10 @@ module Morphosource
         scope.repository.search(query)
       end
       private_class_method :query_solr
+
+      def self.type_has_projects?(parent)
+        parent.team? || parent.organization_collection?
+      end
 
     end
   end

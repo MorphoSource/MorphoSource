@@ -6,14 +6,14 @@ module Morphosource
     # @param [TrueClass, FalseClass] reset
     def self.call(work, user, reset)
       # user is the new media owner
-      work.edit_users += [user]
+      work.edit_users += [user] unless user_is_organization?(user)
       if reset == "true" || reset == true
         # remove edit access from old owner and grant read access
         work.edit_users -= [work.user_with_ownership]
         work.read_users += [work.user_with_ownership]
       end
       work.file_sets.each do |f|
-        f.edit_users += [user]
+        f.edit_users += [user] unless user_is_organization?(user)
         if reset == "true" || reset == true
           # remove edit access from old depositor and grant read access
           f.edit_users -= [work.user_with_ownership]
@@ -21,9 +21,21 @@ module Morphosource
         end
         f.save!
       end
-      work.apply_owner_metadata(user)
+      if user_is_organization?(user)
+        apply_organization_metadata(work, user)
+      else
+        work.apply_owner_metadata(user)
+      end
       work.save!
       work
+    end
+
+    def self.user_is_organization?(user)
+      @org_user ||= user.is_a?(OrganizationCollection)
+    end
+
+    def self.apply_organization_metadata(work, organization)
+      work.owner = organization.id
     end
   end
 end

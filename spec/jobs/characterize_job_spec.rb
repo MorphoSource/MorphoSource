@@ -300,8 +300,8 @@ RSpec.describe CharacterizeJob do
     end
 
     context 'archive deposits' do
-      describe 'DCM characterization' do
-        let(:file_path_string) {fixture_path + '/dcm_stack.zip'}
+      describe 'DCM (ZIP) characterization' do
+        let(:file_path_string) {fixture_path + '/dcm_stack/dcm_stack.zip'}
         let(:dcm_file) { File.open(file_path_string) }
     
         before do
@@ -316,6 +316,8 @@ RSpec.describe CharacterizeJob do
           expect(subject.mime_type).to eq("application/zip")
           expect(subject.contents_mime_type.first).to eq("application/dicom")
           expect(subject.contents_accepted_file_count.first).to eq("518")
+          expect(JSON.parse(subject.contents_all_files)).to be_a(Array)
+          expect(JSON.parse(subject.contents_all_files).length).to be > 0
           expect(subject.pixel_spacing.first).to eq("0.592047\\0.59091")
           expect(subject.modality.first).to eq("OT")
           expect(subject[:secondary_capture_device_manufacturer_tesim].first).to eq("Thermo Fisher Scientific")
@@ -323,7 +325,32 @@ RSpec.describe CharacterizeJob do
         end
       end
 
-      describe 'OBJ with textures characterization' do
+      describe 'DCM (TAR) characterization' do
+        let(:file_path_string) {fixture_path + '/dcm_stack/dcm_stack.tar'}
+        let(:dcm_file) { File.open(file_path_string) }
+    
+        before do
+          Hydra::Works::AddFileToFileSet.call(file_set, dcm_file, :original_file)
+          described_class.perform_now(file_set, file_set.original_file.id, file_path_string)
+        end
+    
+        # find the solr doc, then verify the metadata
+        subject { SolrDocument.find(file_set.id) }
+    
+        it "has dicom attributes in the metadata" do
+          expect(subject.mime_type).to eq("application/x-tar")
+          expect(subject.contents_mime_type.first).to eq("application/dicom")
+          expect(subject.contents_accepted_file_count.first).to eq("518")
+          expect(JSON.parse(subject.contents_all_files)).to be_a(Array)
+          expect(JSON.parse(subject.contents_all_files).length).to be > 0
+          expect(subject.pixel_spacing.first).to eq("0.592047\\0.59091")
+          expect(subject.modality.first).to eq("OT")
+          expect(subject[:secondary_capture_device_manufacturer_tesim].first).to eq("Thermo Fisher Scientific")
+          expect(subject[:secondary_capture_device_software_vers_tesim].first).to eq("Avizo")
+        end
+      end
+
+      describe 'OBJ with textures (ZIP) characterization' do
         let(:file_path_string) {fixture_path + '/whale/whale-mpc-677-150k-4096-obj.zip'}
         let(:zip_file) { File.open(file_path_string) }
 
@@ -339,6 +366,8 @@ RSpec.describe CharacterizeJob do
           # mesh details
           expect(subject.mime_type).to eq("application/zip")
           expect(subject.contents_mime_type.first).to eq("text/prs.wavefront-obj")
+          expect(JSON.parse(subject.contents_all_files)).to be_a(Array)
+          expect(JSON.parse(subject.contents_all_files).length).to be > 0
           expect(subject[:point_count_tesim].first).to eq("75818")
           expect(subject[:face_count_tesim].first).to eq("149999")
           expect(subject[:edges_per_face_tesim].first).to eq("3")
@@ -354,7 +383,40 @@ RSpec.describe CharacterizeJob do
         end
       end
 
-      describe 'GLTF characterization' do
+      describe 'OBJ with textures (TAR) characterization' do
+        let(:file_path_string) {fixture_path + '/whale/whale-mpc-677-150k-4096-obj.tar'}
+        let(:zip_file) { File.open(file_path_string) }
+
+        before do
+          Hydra::Works::AddFileToFileSet.call(file_set, zip_file, :original_file)
+          described_class.perform_now(file_set, file_set.original_file.id, file_path_string)
+        end
+    
+        # find the solr doc, then verify the metadata
+        subject { SolrDocument.find(file_set.id) }
+    
+        it "has OBJ attributes in the metadata" do
+          # mesh details
+          expect(subject.mime_type).to eq("application/x-tar")
+          expect(subject.contents_mime_type.first).to eq("text/prs.wavefront-obj")
+          expect(JSON.parse(subject.contents_all_files)).to be_a(Array)
+          expect(JSON.parse(subject.contents_all_files).length).to be > 0
+          expect(subject[:point_count_tesim].first).to eq("75818")
+          expect(subject[:face_count_tesim].first).to eq("149999")
+          expect(subject[:edges_per_face_tesim].first).to eq("3")
+          expect(subject[:color_format_tesim]&.first.present?).to be false
+          expect(subject[:normals_format_tesim]&.first.present?).to be false
+          expect(subject[:has_uv_space_tesim].first).to eq("True")
+          expect(subject[:vertex_color_tesim].first).to eq("False")
+
+          # method and tool details
+          expect(subject[:centroid_method_tesim].first).to eq "Vertex Mean"
+          expect(subject[:blender_version_tesim]&.first.present?).to be true
+          expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be false
+        end
+      end
+
+      describe 'GLTF (ZIP) characterization' do
         let(:file_path_string) {fixture_path + '/whale/whale-mpc-677-150k-4096-gltf.zip'}
         let(:zip_file) { File.open(file_path_string) }
 
@@ -370,6 +432,41 @@ RSpec.describe CharacterizeJob do
           # mesh details
           expect(subject.mime_type).to eq("application/zip")
           expect(subject.contents_mime_type.first).to eq("model/gltf+json")
+          expect(JSON.parse(subject.contents_all_files)).to be_a(Array)
+          expect(JSON.parse(subject.contents_all_files).length).to be > 0
+          expect(subject[:point_count_tesim].first).to eq("86317")
+          expect(subject[:face_count_tesim].first).to eq("149999")
+          expect(subject[:edges_per_face_tesim].first).to eq("3")
+          expect(subject[:color_format_tesim]&.first.present?).to be false
+          expect(subject[:normals_format_tesim].first).to eq("vertex normals")
+          expect(subject[:has_uv_space_tesim].first).to eq("True")
+          expect(subject[:vertex_color_tesim].first).to eq("False")
+
+          # method and tool details
+          expect(subject[:centroid_method_tesim].first).to eq "Bounding Box"
+          expect(subject[:blender_version_tesim]&.first.present?).to be false
+          expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be true
+        end
+      end
+
+      describe 'GLTF (TAR) characterization' do
+        let(:file_path_string) {fixture_path + '/whale/whale-mpc-677-150k-4096-gltf.tar'}
+        let(:zip_file) { File.open(file_path_string) }
+
+        before do
+          Hydra::Works::AddFileToFileSet.call(file_set, zip_file, :original_file)
+          described_class.perform_now(file_set, file_set.original_file.id, file_path_string)
+        end
+    
+        # find the solr doc, then verify the metadata
+        subject { SolrDocument.find(file_set.id) }
+    
+        it "has GLTF attributes in the metadata" do
+          # mesh details
+          expect(subject.mime_type).to eq("application/x-tar")
+          expect(subject.contents_mime_type.first).to eq("model/gltf+json")
+          expect(JSON.parse(subject.contents_all_files)).to be_a(Array)
+          expect(JSON.parse(subject.contents_all_files).length).to be > 0
           expect(subject[:point_count_tesim].first).to eq("86317")
           expect(subject[:face_count_tesim].first).to eq("149999")
           expect(subject[:edges_per_face_tesim].first).to eq("3")

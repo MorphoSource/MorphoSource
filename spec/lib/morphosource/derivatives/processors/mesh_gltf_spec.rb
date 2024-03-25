@@ -71,7 +71,7 @@ describe Morphosource::Derivatives::Processors::MeshGltf do
 				end
 			end
 
-			describe "complex mesh GLTF (multi-file) format" do
+			describe "complex mesh GLTF (multi-file ZIP) format" do
 				let(:file_name) { File.join(fixture_path, 'whale/whale-mpc-677-150k-4096-gltf.zip') }
 
 				it "produces the derivative mesh with a non-zero filesize" do
@@ -81,7 +81,7 @@ describe Morphosource::Derivatives::Processors::MeshGltf do
 				end
 			end
 
-      describe "complex mesh GLTF (multi-file) format in meter scale" do
+      describe "complex mesh GLTF (multi-file ZIP) format in meter scale" do
 				let(:file_name) { File.join(fixture_path, 'whale/whale-mpc-677-150k-4096-gltf.zip') }
         let(:directives) { { label: :glb, format: 'glb', unit: 'm', url: URI("file://#{derivative_path}").to_s } }
 
@@ -92,9 +92,19 @@ describe Morphosource::Derivatives::Processors::MeshGltf do
 				end
 			end
 
-      describe "complex mesh GLTF (multi-file) format with no scale" do
+      describe "complex mesh GLTF (multi-file ZIP) format with no scale" do
 				let(:file_name) { File.join(fixture_path, 'whale/whale-mpc-677-150k-4096-gltf.zip') }
         let(:directives) { { label: :glb, format: 'glb', unit: nil, url: URI("file://#{derivative_path}").to_s } }
+
+				it "produces the derivative mesh with a non-zero filesize" do
+					subject.process
+					expect(File.exists?(derivative_path)).to be true
+					expect(File.size(derivative_path)).to be > 0
+				end
+			end
+
+			describe "complex mesh GLTF (multi-file TAR) format" do
+				let(:file_name) { File.join(fixture_path, 'whale/whale-mpc-677-150k-4096-gltf.tar') }
 
 				it "produces the derivative mesh with a non-zero filesize" do
 					subject.process

@@ -47,9 +47,7 @@ module Morphosource::Derivatives::Processors
       @z_spacing = (directives.fetch(:z_spacing, 0).presence || 0).to_f
       @slice_thickness = (directives.fetch(:slice_thickness, 0).presence || 0).to_f
       if z_spacing == 0 && slice_thickness == 0
-        puts('first if hit')
         if x_spacing && y_spacing
-          puts('second if')
           @z_spacing = x_spacing
         else
           @z_spacing = 1
@@ -91,31 +89,11 @@ module Morphosource::Derivatives::Processors
     end
 
     def extract_images
-      case File.extname(source_path).downcase
-      when '.zip'
-        Zip::File.open(source_path) do |zip_file|
-          img_coll.each do |f|
-            f_path = File.join(input_path, File.basename(f))
-            zip_file.extract(f, f_path)
-          end
-        end
-      when '.tar'
-        File.open(source_path, 'rb') do |file|
-          Archive::Tar::Minitar::Reader.open(file) do |tar|
-            tar.each_entry do |entry|
-              if img_coll.include? entry.name
-                f_path = File.join(input_path, File.basename(entry.name))
-                File.new(f_path, 'wb')
-                File.open(f_path, 'wb') do |output_file|
-                  output_file.write(entry.read)
-                end
-              end
-            end
-          end
-        end
-      else
-        raise "Archive file extension not valid"
-      end
+      Morphosource::FileUtils::ArchiveService.new(source_path).extract_archive(
+        input_path,
+        img_coll,
+        false
+      )
     end
 
     def uncompress_dcm

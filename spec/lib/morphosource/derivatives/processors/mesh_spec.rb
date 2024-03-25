@@ -80,8 +80,18 @@ describe Morphosource::Derivatives::Processors::Mesh do
 				end
 			end
 
-			describe "OBJ (multi-file) format" do
+			describe "OBJ (multi-file ZIP) format" do
 				let(:file_name) { File.join(fixture_path, 'whale/whale-mpc-677-150k-4096-obj.zip') }
+
+				it "produces the derivative mesh with a non-zero filesize" do
+					subject.process
+					expect(File.exists?(derivative_path)).to be true
+					expect(File.size(derivative_path)).to be > 0
+				end
+			end
+
+			describe "OBJ (multi-file TAR) format" do
+				let(:file_name) { File.join(fixture_path, 'whale/whale-mpc-677-150k-4096-obj.tar') }
 
 				it "produces the derivative mesh with a non-zero filesize" do
 					subject.process

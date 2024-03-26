@@ -37,6 +37,10 @@ module Morphosource
         index.as :stored_searchable
       end
 
+      property :ark, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/biologicalSpecimenARK") do |index|
+        index.as :stored_searchable
+      end
+
       id_blank = proc { |attributes| attributes[:id].blank? }
 
       class_attribute :controlled_properties

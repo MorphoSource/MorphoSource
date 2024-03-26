@@ -35,7 +35,7 @@ module Hyrax
                              :solr_document_abilities,
                              :trophy_abilities,
                              :temporary_link_abilities,
-                             :organizational_member_abilities]
+                             :organization_member_abilities]
     end
 
     # Samvera doesn't use download user/groups, so make it an alias to read
@@ -114,12 +114,6 @@ module Hyrax
       end
 
       def proxy_deposit_abilities
-        if Flipflop.transfer_works?
-          can :transfer, String do |id|
-            user_is_depositor?(id)
-          end
-        end
-
         can :create, ProxyDepositRequest if Flipflop.proxy_deposit? && registered_user?
 
         can :accept, ProxyDepositRequest, receiving_user_id: current_user.id, status: 'pending'

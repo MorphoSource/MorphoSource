@@ -41,6 +41,8 @@ class ContentDepositorChangeEventJob < ContentEventJob
     if @sending_user.present?
       @sending_user.log_profile_event(event)
     end
-    @new_owner.log_event(event)
+    if @new_owner.is_a? User
+      @new_owner.log_event(event)
+    end
   end
 end

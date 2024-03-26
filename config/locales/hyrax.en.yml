@@ -268,11 +268,11 @@ en:
             label: 'Select existing'
           create_new_media_in:
             label: 'Upload new'
-          add_project_to_Team:
+          add_project_to_team:
             label: 'Add project to team'
             select_label: 'Select project'
             button_label: 'Add project'
-          create_new_project_in_Team:
+          create_new_project_in_team:
             label: 'Create new project in team'
           delete_Team:
             label: 'Delete team'
@@ -286,6 +286,12 @@ en:
           delete_Sequential Section List:
             label: 'Delete list'
             confirmation: 'Delete this list?'
+          add_project_to_organization:
+            label: 'Add project to organization'
+            select_label: 'Select project'
+            button_label: 'Add project'
+          create_new_project_in_organization:
+            label: 'Create new project in organization'
           delete_Organization:
             label: 'Delete organization'
             confirmation: 'Delete this organization?'

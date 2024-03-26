@@ -539,7 +539,6 @@ module MorphosourceHelper
     return false unless path.present?
     return (Dir.exist?(Hyrax.config.sftp_share_root + path) or Dir.exist?(path))
   end
-
 end
 
 class Array

@@ -200,7 +200,7 @@ class Collection < ActiveFedora::Base
   end
 
   def remove_team_access_grants(work)
-    return unless team? || project?  
+    return unless team? || project?
     work.edit_groups -= [managers_group.name, editors_group.name]
     work.read_groups -= [viewers_group.name]
     work.download_groups -= [downloaders_group.name]
@@ -274,6 +274,20 @@ class Collection < ActiveFedora::Base
   def self.exists?(conditions)
     conditions = { id: conditions } if conditions.is_a? String
     super(conditions)
+  end
+
+  # Finds the first record matching the specified conditions, or nil if no record found.
+  # Similar to ActiveRecord find_by method.
+  #
+  # Collection.find_by(id: "123456789")
+  # Collection.find_by("human_readable_type_tesim" => "Project")
+  # Collection.find_by( [ "human_readable_type_tesim:Project", "id:123456789" ] )
+  # Collection.find_by( { ""human_readable_type_tesim" => "Project", id: "123456789" } )
+  #
+  # @param [Hash, String, Array] One or more conditions, using Solr field names
+  # @return [::Collection, nil] First matching record object or nil if none found
+  def self.find_by(arg, *args)
+    where(arg, *args).take
   end
 
   private

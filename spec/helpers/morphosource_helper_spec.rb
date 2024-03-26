@@ -400,4 +400,47 @@ RSpec.describe MorphosourceHelper, type: :helper do
       end
     end
   end
+
+  describe 'data_manager_display' do
+    context 'data manager is a User' do
+      let(:data_manager) { User.create(email: 'user@email.com', password: 'password') }
+      context 'data manager has a display name' do
+        before do
+          data_manager.display_name = 'Test User'
+          data_manager.save!
+        end
+        it 'returns the display name' do
+          expect(helper.data_manager_display(data_manager.id)).to eq('Test User')
+        end
+      end
+      context 'data manager does not have a display name' do
+        it 'returns the email address' do
+          expect(helper.data_manager_display(data_manager.id)).to eq(data_manager.email)
+        end
+      end
+    end
+    context 'data manager is an OrganizationCollection' do
+      let(:data_manager) { OrganizationCollection.new(id: '123') }
+      context 'manager has a display name' do
+
+        before do
+          data_manager.title = ['Test Organization']
+          data_manager.institution_name = ['Test Institution']
+          ActiveFedora::SolrService.add(data_manager.to_solr, softCommit: true)
+        end
+
+        it 'returns the display name' do
+          expect(helper.data_manager_display(data_manager.id)).to eq(data_manager.display_name)
+        end
+      end
+
+      context 'manager does not have a display name' do
+        before { ActiveFedora::SolrService.add(data_manager.to_solr, softCommit: true) }
+
+        it 'returns the title' do
+          expect(helper.data_manager_display(data_manager.id)).to eq(data_manager.title.first)
+        end
+      end
+    end
+  end
 end

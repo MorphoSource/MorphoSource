@@ -20,6 +20,7 @@ class SolrDocument
   include Morphosource::Solr::Media
   include Morphosource::Solr::MediaList
   include Morphosource::Solr::Organization
+  include Morphosource::Solr::OrganizationCollection
   include Morphosource::Solr::Permissions
   include Morphosource::Solr::PhysicalObject
   include Morphosource::Solr::ProcessingEvent
@@ -31,14 +32,14 @@ class SolrDocument
   #
   # @param query [Hash, String] Query statement(s), can be a single string or multiple hash queries (combined with AND)
   # @param opts  [Hash] Optional Solr configuration parameters, such as :rows or :page
-  # 
+  #
   # @return [Array<SolrDocument>] Array of queried SolrDocument instances
   def self.where(query = {}, opts: {})
     q = query.instance_of?(String) ? query : query.map { |k, v| "#{k}:#{v}" }.join(" AND ")
 
     default_params = { rows: 1000 }
     params = default_params.merge(q: q).merge(opts)
-    
+
     repository.search(params).documents
   end
 

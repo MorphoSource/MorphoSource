@@ -444,5 +444,10 @@ module Morphosource
       @includes_specimens ||= response["facet_counts"]["facet_fields"]["media_physical_object_type_ssim"].include? "Biological Specimen"
     end
 
+    # takes either a Collection or SolrDocument
+    def collection_managers(collection)
+      managers = Role.find_by(name: "#{collection.id}_managers")&.users
+      managers.sort.map { |manager| link_to manager.name, hyrax.user_path(manager) }.join('</br>').html_safe
+    end
   end
 end

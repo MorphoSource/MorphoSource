@@ -5,6 +5,7 @@
       <th>Media</th>
       <th>Date</th>
       <th>From</th>
+      <th>To</th>
       <th class="comment">Comments</th>
       <th style="text-align: center;">Status</th>
     </tr>
@@ -20,7 +21,9 @@
           <%= req.created_at.to_formatted_s(:long_ordinal) %>
         </relative-time>
       </td>
+
       <td><%= link_to req.sending_user.name, hyrax.user_path(req.sending_user) %></td>
+      <td><%= link_to_receiving_user(req.receiving_user_id) %></td>
       <td><%= req.organization_transfer ? req.sender_comment.html_safe : req.sender_comment %></td>
       <td>
         <% if req.pending? %>

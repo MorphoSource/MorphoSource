@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Morphosource::Collections::OrganizationHelper, type: :helper do
+RSpec.describe Morphosource::Collections::OrganizationCollectionHelper, type: :helper do
   include Rails.application.routes.url_helpers
 
   describe 'device_modalities' do

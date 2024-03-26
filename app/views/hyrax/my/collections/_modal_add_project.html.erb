@@ -3,7 +3,7 @@
     <div class="modal-content">
       <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-label="<%= t('hyrax.dashboard.heading_actions.close') %>"><span aria-hidden="true">&times;</span></button>
-        <h4 class="modal-title" id="add-subcollection-label"><%= t('hyrax.dashboard.collections.actions.add_project_to_Team.label') %></h4>
+        <h4 class="modal-title" id="add-subcollection-label"><%= t("hyrax.dashboard.collections.actions.add_project_to_#{@collection.collection_type.machine_id}.label") %></h4>
       </div>
       <div class="modal-body">
         <%= form_tag(hyrax.dashboard_create_nest_collection_under_path(id), method: :post, id: 'modal-form', :class => "form-horizontal") do %>

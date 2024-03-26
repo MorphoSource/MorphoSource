@@ -11,7 +11,9 @@ en:
             new: 'New Organization'
             view: 'View Organization'
             collection_update_success: ' was successfully updated.'
-          members:
+          example_project:
+            title: "%{title}'s Example Media Project"
+            description: This is an example of an organization project. Projects can be used to create curated collections of media that are managed by the organization. Collection managers can delete this project or create additional projects. Organization members will automatically be given roles in the project corresponding to their role in the organization. It is possible to share media added to the project with users outside of the organization by adding them as project members.
             roles:
               contributor: 'manager'
               non-contributor: 'viewer'

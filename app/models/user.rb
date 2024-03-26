@@ -9,6 +9,7 @@ class User < ApplicationRecord
   has_many :temporary_media_access_links
   has_many :temporary_collection_access_links
 
+
   has_secure_token
 
   paginates_per 10
@@ -114,6 +115,10 @@ class User < ApplicationRecord
 
   def registered?
     groups.include? 'registered'
+  end
+
+  def organization_collection?
+    false
   end
 
   # Mailboxer (the notification system) needs the User object to respond to this method
@@ -279,7 +284,7 @@ class User < ApplicationRecord
 
   # finds collections for which user belongs to "_managers" role
   def collections_managed
-    ids = roles.map{|r| r.name.chomp("_managers") if r.name.include? "managers"}.compact
+    ids = collections_managed_ids
     if ids.present?
       Morphosource::SolrService.new
         .get_docs(nil, fq: ["id:(#{ids.join(' OR ').upcase})"], fl: ["id"])
@@ -294,6 +299,10 @@ class User < ApplicationRecord
     else
       return []
     end
+  end
+
+  def collections_managed_ids
+    manager_groups.map{ |g| g.chomp("_managers") }
   end
 
   # finds collection ids for which user belongs to different role

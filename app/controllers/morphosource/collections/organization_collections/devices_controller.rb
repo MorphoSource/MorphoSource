@@ -4,7 +4,7 @@ module Morphosource
       class DevicesController < Morphosource::Collections::PhysicalObjectsController
 
         include Morphosource::Collections::OrganizationCollectionsControllerBehavior
-        include Morphosource::Collections::OrganizationHelper
+        include Morphosource::Collections::OrganizationCollectionHelper
 
         # restrict to admins
         before_action :authorize_admin

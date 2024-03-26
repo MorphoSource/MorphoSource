@@ -78,7 +78,7 @@ class CollectionRolesController < ApplicationController
 
   def update_child_groups
     @parent = @collection
-    child_ids = @subcollection_docs.map(&:id)
+    child_ids = @subcollection_docs.map { |doc| doc['id'] }
     child_ids.each do |id|
       update_child_collection(id)
     end
@@ -230,6 +230,6 @@ class CollectionRolesController < ApplicationController
   # CollectionsControllerBehavior methods
   def find_subcollections
     presenter
-    member_subcollections
+    @subcollection_docs = Morphosource::SolrService.new.get_docs("has_model_ssim:Collection AND member_of_collection_ids_ssim:#{@collection.id}")
   end
 end

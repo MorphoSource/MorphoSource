@@ -236,6 +236,13 @@ RSpec.describe Morphosource::Collections::OrganizationCollectionsController, typ
         expect(subject.label).to eq("Data Uploader")
       end
     end
+
+    describe 'object type' do
+      subject { facet_fields["object_type"] }
+      it 'has an object type facet' do
+        expect(subject.label).to eq("Object Type")
+      end
+    end
   end
 
   describe 'search_action_url' do

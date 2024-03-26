@@ -4,9 +4,15 @@ module Hyrax
 
       def user_link(user)
         markup = ''
-        ms_id = user.ms_id
-        display_text = user.name_or_email
-        url = "/users/" + ms_id
+        if user.is_a?(User)
+          ms_id = user.ms_id
+          display_text = user.name_or_email
+          url = "/users/" + ms_id
+        else
+          id = user.id
+          display_text = user.title.first
+          url = "/organizations/" + id
+        end
         link = link_to(display_text, "#{url}")
         link.html_safe
       end
@@ -17,14 +23,12 @@ module Hyrax
           markup = ''
           return markup if value.blank?
 
-          user = ::User.find_by_user_key(value)
+          user = ::User.find_by_user_key(value) || ::SolrDocument.where("id" => value).first
           if user.present?
             link = user_link(user)
           else
-            return markup
+            markup
           end
-          markup = "<span class='showcase-link'>#{link}</span>"
-          markup.html_safe
         end
     end
   end

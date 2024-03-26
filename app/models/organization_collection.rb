@@ -6,6 +6,7 @@ class OrganizationCollection < Collection
   include Morphosource::LocationMetadata
 
   after_create :create_collection_groups
+  after_create :create_organization_project
 
   self.indexer = OrganizationCollectionIndexer
 
@@ -44,5 +45,48 @@ class OrganizationCollection < Collection
 
   def attachment(field_name)
     Morphosource::AttachmentService.get(self, field_name)
+  end
+
+  def name
+    (institution_name + title).join(' - ')
+  end
+  alias display_name name
+
+  def email
+    managers.map(&:email)
+  end
+
+  def proxy_deposit_requests
+    ProxyDepositRequest.where(receiving_user_id: id)
+  end
+
+  # used by ProxyDepositRequest
+  def self.primary_key
+    "id"
+  end
+
+  # used by ProxyDepositRequest
+  # goes in receiving_user_type
+  def self.polymorphic_name
+    "OrganizationCollection"
+  end
+  
+  private
+
+  def create_organization_project
+    project = example_organization_project
+    project.create_collection_groups
+    Morphosource::Collections::PermissionsCreateService.create_default(collection: project)
+    project.member_of_collections << self
+    project.save!
+    project
+  end
+
+  # Create a starter project for the organization
+  def example_organization_project
+    project_collection_type = Hyrax::CollectionType.where({:title => 'Project'})&.first
+    project_title = [I18n.t('morphosource.dashboard.collections.organization_collection.example_project.title', title: title.first)]
+    description = [I18n.t('morphosource.dashboard.collections.organization_collection.example_project.description')]
+    project = Collection.create(title: project_title, collection_type_gid: project_collection_type.gid, description: description, visibility: 'restricted', depositor: depositor)
   end
 end

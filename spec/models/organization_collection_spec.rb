@@ -64,15 +64,16 @@ RSpec.describe OrganizationCollection, type: :model do
 
   describe '#create_organization_project' do
     let(:organization)  { FactoryBot.create(:organization_collection, title: ['factory bot organization'], depositor: user.ms_id)}
-     it 'is called when a new organization collection is created' do
-      expect_any_instance_of(OrganizationCollection).to receive(:create_organization_project)
-      OrganizationCollection.create(id: 'test', title: ['organization'], depositor: user.ms_id)
-     end
-     it 'creates a project with the correct metadata' do
-        project = organization.send(:create_organization_project)
-       expect(project.title).to eq([I18n.t('morphosource.dashboard.collections.organization_collection.example_project.title', title: organization.title.first)])
-       expect(project.description).to eq([I18n.t('morphosource.dashboard.collections.organization_collection.example_project.description')])
-        expect(project.visibility).to eq('restricted')
+    it 'is called when a new organization collection is created' do
+      org = OrganizationCollection.new(title: ['organization'], depositor: user.ms_id)
+      expect(org).to receive(:create_organization_project)
+      org.save!
+    end
+    it 'creates a project with the correct metadata' do
+      project = organization.send(:create_organization_project)
+      expect(project.title).to eq([I18n.t('morphosource.dashboard.collections.organization_collection.example_project.title', title: organization.title.first)])
+      expect(project.description).to eq([I18n.t('morphosource.dashboard.collections.organization_collection.example_project.description')])
+      expect(project.visibility).to eq('restricted')
       expect(project.depositor).to eq(user.ms_id)
       expect(organization.child_projects).to include(project)
     end
@@ -92,6 +93,4 @@ RSpec.describe OrganizationCollection, type: :model do
       expect(organization.managers).to include(user)
     end
   end
-
-
 end

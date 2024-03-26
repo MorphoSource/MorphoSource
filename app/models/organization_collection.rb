@@ -70,7 +70,7 @@ class OrganizationCollection < Collection
   def self.polymorphic_name
     "OrganizationCollection"
   end
-  
+
   private
 
   def create_organization_project

@@ -60,10 +60,16 @@ module Hyrax
           users = ::User
         end
 
+        search_only_active_users = only_active || (
+          current_user&.admin? && 
+          params[:only_active].present? && 
+          params[:only_active] == 'true'
+        )
+
         clause = query.blank? ? nil : "%" + query.downcase + "%"
         base = users.where(*base_query)
         base = base.where("email like lower(?) OR lower(display_name) like lower(?)", clause, clause) if clause.present?
-        base = base.where(active: true) if only_active
+        base = base.where(active: true) if search_only_active_users
         base = base.registered
             .where("#{Hydra.config.user_key_field} not in (?)",
                    [::User.batch_user_key, ::User.audit_user_key])

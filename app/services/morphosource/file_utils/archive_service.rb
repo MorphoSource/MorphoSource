@@ -5,12 +5,20 @@ module Morphosource
       attr_reader :file, :all_contents_files, :all_contents_file_count, 
         :matching_contents_file_count, :matching_contents_file_groups
 
+      #
+      # @param [String] file Archive file path
+      #
       def initialize(file)
         @file = file
       end
 
       # @!group Archive reading
 
+      #
+      # Read archive file, yielding block for working with archive
+      #
+      # @param &block Code block interacting with archive
+      #
       def read_archive(&block)
         if zip?
           read_zip(&block)
@@ -19,6 +27,11 @@ module Morphosource
         end
       end
 
+      #
+      # Read ZIP archive, yielding block for working with archive
+      #
+      # @param &block Code block interacting with archive
+      #
       def read_zip(&block)
         archive_type = :zip
         Zip::File.open(file) do |zip|
@@ -26,6 +39,11 @@ module Morphosource
         end
       end
 
+      #
+      # Read TAR archive, yielding block for working with archive
+      #
+      # @param &block Code block interacting with archive
+      #
       def read_tar(&block)
         archive_type = :tar
         Archive::Tar::Minitar.open(file) do |tar|
@@ -36,6 +54,15 @@ module Morphosource
       # @!endgroup
       # @!group Archive extraction
     
+      #
+      # Extract archive files to destination, optionally preserving directory structure 
+      #
+      # @param [String] extract_dest Folder destination, where to extract files
+      # @param [Array<String>] files_to_extract Optional, if provided, only listed files will be extracted
+      # @param [Boolean] preserve_dir_structure Preserve directory structure from archive? If not, extract all files to destination root
+      #
+      # @return [Array<String>] List of files extracted with file paths
+      #
       def extract_archive(extract_dest, files_to_extract = [], preserve_dir_structure = true)
         raise "Destination to extract files is not a valid directory" if !Dir.exist?(extract_dest)
         if zip?
@@ -45,6 +72,15 @@ module Morphosource
         end
       end
 
+      #
+      # Extract ZIP archive files to destination, optionally preserving directory structure 
+      #
+      # @param [String] extract_dest Folder destination, where to extract files
+      # @param [Array<String>] files_to_extract Optional, if provided, only listed files will be extracted
+      # @param [Boolean] preserve_dir_structure Preserve directory structure from archive? If not, extract all files to destination root
+      #
+      # @return [Array<String>] List of files extracted with file paths
+      #
       def extract_zip(extract_dest, files_to_extract = [], preserve_dir_structure = true)
         files_extracted = []
         read_zip do |zip, _|
@@ -62,6 +98,15 @@ module Morphosource
         return files_extracted
       end
 
+      #
+      # Extract TAR archive files to destination, optionally preserving directory structure 
+      #
+      # @param [String] extract_dest Folder destination, where to extract files
+      # @param [Array<String>] files_to_extract Optional, if provided, only listed files will be extracted
+      # @param [Boolean] preserve_dir_structure Preserve directory structure from archive? If not, extract all files to destination root
+      #
+      # @return [Array<String>] List of files extracted with file paths
+      #
       def extract_tar(extract_dest, files_to_extract = [], preserve_dir_structure = true)
         files_extracted = []
         read_tar do |tar, _|
@@ -78,6 +123,13 @@ module Morphosource
         return files_extracted
       end
 
+      #
+      # Extract single file from archive to destination folder, optionally preserving directory structure
+      #
+      # @param [String] extract_dest Folder destination, where to extract file
+      # @param [String] file_name Name of file to be extracted, should include archive dir path (if present)
+      # @param [Boolean] preserve_dir_structure Preserve directory structure from archive? If not, extract to destination root
+      #
       def extract_single_file(extract_dest, file_name, preserve_dir_structure = true)
         f_subpath = preserve_dir_structure ? file_name : File.basename(file_name)
         f_path = File.join(extract_dest, f_subpath)
@@ -96,7 +148,12 @@ module Morphosource
         end
       end
 
-      # Given file data, write to file path, creating directories as needed
+      #
+      # Write file data to file path, creating directories if needed. Useful for working with TARs.
+      #
+      # @param f_data File byte data
+      # @param [String] f_path File path to write data to
+      #
       def tar_write_entry(f_data, f_path)
         # Create dir(s) if needed
         dir_path = File.dirname(f_path)
@@ -113,7 +170,13 @@ module Morphosource
       # @!endgroup
       # @!group Utility methods
 
-      # returns either an IO stream (zip) or file data (tar)
+      #
+      # Read single file from archive, returning either an input stream or file byte data
+      #
+      # @param [String] file_name File name of file within archive to read, must include archive dir path if present
+      #
+      # @return Rubyzip entry input stream (for ZIP) or file byte data (for TAR)
+      #
       def get_contents_file(file_name)
         read_archive do |archive, archive_type|
           if archive_type == :zip
@@ -129,7 +192,11 @@ module Morphosource
         end
       end
 
-      # iterate through archive files, ignoring relative paths
+      #
+      # Iterate through archive files, yielding block for interacting with each files
+      #
+      # @param &block Code block for working with each archive file
+      #
       def each_file(&block)
         read_archive do |archive, archive_type|
           archive.each do |f|
@@ -138,11 +205,16 @@ module Morphosource
           end
         end
       end
-
-      # return largest group of same-type files in same location, with min num of files cut-off
-      # file_exts: acceptable file types for finding
-      # cutoff: this many or more files are required for group to be discovered
-      # cutoff_exception_exts: files of these exts will be reported even if fewer than cutoff
+    
+      #
+      # Return largest group of files of same type in same dir location, with minimum number of files cut-off
+      #
+      # @param [Array<String>] file_exts File extensions, limits types allowed in group, must be lowercase
+      # @param [Integer] cutoff This many or more files are required to be in a group for group to be recognized
+      # @param [Array<String>] cutoff_exception_exts File extensions where groups will be recognized even if fewer than cutoff
+      #
+      # @return [Array(Array<String>,String)] Array of largest file group with file names, and file extension of that group
+      #
       def largest_file_group(file_exts, cutoff: 20, cutoff_exception_exts: [])
         group_files_by_type_and_location(file_exts)
 
@@ -161,8 +233,12 @@ module Morphosource
           return [], nil
         end
       end
-
-      # given a list of file formats, return hash of groups of files of same format in same locations
+      
+      #
+      # Iterates through archive files, grouping files by file extension and directory location
+      #
+      # @param [Array<String>] file_exts File extensions, only files of matching types will be grouped
+      #
       def group_files_by_type_and_location(file_exts)
         file_exts = file_exts.map(&:downcase)
 
@@ -189,14 +265,28 @@ module Morphosource
         @all_contents_files_count = all_files.length
       end
 
+      #
+      # File extension of archive file
+      #
+      # @return [String] File extension
+      #
       def archive_ext
         File.extname(file).downcase
       end
 
+      #
+      # Is Archive TAR format, based on file extension
+      #
+      # @return [Boolean] Whether Archive is TAR or not
+      #
       def tar?
         archive_ext == ".tar"
       end
 
+      #
+      # Is Archive ZIP format, based on file extension
+      #
+      # @return [Boolean] Whether Archive is ZIP or not
       def zip?
         archive_ext == ".zip"
       end

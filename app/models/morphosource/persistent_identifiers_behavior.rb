@@ -3,12 +3,16 @@ module Morphosource
 
     def ark_resource_type
       # Valid ARK resource types:
-      # 'Audiovisual', 'Collection', 'DataPaper', 'Dataset', 'Event', 'Image',
-      # 'InteractiveResource', 'Model', 'PhysicalObject', 'Service', 'Software',
-      # 'Sound', 'Text', 'Workflow', 'Other'
+      #
+      # 'Audiovisual', 'Book', 'BookChapter', 'Collection', 'ComputationalNotebook', 'ConferencePaper',
+      # 'ConferenceProceeding', 'DataPaper', 'Dataset', 'Dissertation', 'Event', 'Image', 'InteractiveResource',
+      # 'Instrument', 'Journal', 'JournalArticle', 'Model', 'OutputManagementPlan', 'PeerReview', 'PhysicalObject',
+      # 'Preprint', 'Report', 'Service', 'Software', 'Sound', 'Standard', 'StudyRegistration', 'Text', 'Workflow', 
+      # 'Other'
+      #      
       # These are defined in resourceTypeGeneral in the DataCite Metadata Schema:
-      # http://schema.datacite.org/meta/kernel-4.3/
-
+      # http://schema.datacite.org/meta/kernel-4.5/
+      # https://datacite-metadata-schema.readthedocs.io/_/downloads/en/4.5/pdf/
       case self.class.to_s
       when 'Media'
         ark_resource_type_mappings = {
@@ -23,8 +27,13 @@ module Morphosource
           return self.media_type.first
         end
       when 'Device'
-        return 'Software'  # ?? what should be the correct ark resource type here?
+        return 'Instrument'
+      when 'BiologicalSpecimen' || 'CulturalHeritageObject'
+        return 'PhysicalObject'
+      when 'OrganizationCollection'
+        return 'Service'
       else
+        return 'Unknown'
       end
     end
 

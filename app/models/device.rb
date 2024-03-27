@@ -2,7 +2,11 @@
 #  `rails generate hyrax:work Device`
 class Device < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
+  include Morphosource::PersistentIdentifiersBehavior
   validates_with Morphosource::ParentChildValidator
+  after_create :mint_ark
+  after_update :update_ark_status
+  after_destroy :delete_ark_if_reserved
 
   self.indexer = DeviceIndexer
   # Change this to restrict which works can be added as a child.

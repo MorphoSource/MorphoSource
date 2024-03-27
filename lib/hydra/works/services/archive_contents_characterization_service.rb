@@ -72,26 +72,40 @@ module Hydra::Works
     # @!endgroup
     # @!group Archive file handling
 
+
     # Gets representative archive file as content.
     # Unlike Morphosource::Works::CharacterizationService, expects source to be a string.
     def archive_to_content
-      all_files_flat = []
-      rep_f = nil
-      rep_f_content = nil
-      accepted_file_count = 0
+      representative_file_name = nil
+      representative_file_io = nil
 
-      Morphosource::FileUtils::ArchiveService.new(source).each_file do |f|
-        all_files_flat << f.name
-        accepted_file_count = accepted_file_count + 1 if f_priority(f)
-        if ( !rep_f && f_priority(f) ) || ( f_priority(f) && f_priority(f) < f_priority(rep_f) )
-          rep_f = f
-          rep_f_content = rep_f.respond_to?(:get_input_stream) ? rep_f.get_input_stream : rep_f.read
-        end
+      archive_service = Morphosource::FileUtils::ArchiveService.new(source)
+      
+      # First, try to find a group of >20 image files with most preferred file extension
+      file_group, ext = archive_service.largest_file_group(
+        image_formats, 
+        cutoff: 20,
+        cutoff_exception_exts: ['.dcm', '.dicom']
+      )
+
+      if file_group.present?
+        representative_file_name = file_group[file_group.count/2] # take from middle of group for image series
+      else
+        representative_file_name = archive_service.all_contents_files
+          .select { |f| file_type_priorities.include?(File.extname(f).downcase) }
+          .sort_by { |f| file_type_priorities.index(File.extname(f).downcase)}
+          .first
       end
 
-      all_files = nest_paths(all_files_flat)
+      # get io stream for representative file
+      if representative_file_name.present?
+        representative_file_io = archive_service.get_contents_file(representative_file_name)
+      end
 
-      return all_files, rep_f_content, rep_f&.name, accepted_file_count
+      return archive_service.all_contents_files, 
+        representative_file_io, 
+        representative_file_name, 
+        archive_service.matching_contents_file_count
     end
 
     def f_priority(f)
@@ -102,8 +116,16 @@ module Hydra::Works
       f.name[0] == '.'
     end
 
+    def mesh_formats
+    ['.glb', '.gltf', '.obj', '.ply', '.stl', '.wrl', '.x3d']
+    end
+
+    def image_formats
+      ['.dcm', '.dicom', '.tiff', '.tif', '.bmp', '.png', '.jpeg', '.jpg', '.svg', '.dng', '.nef', '.crw', '.cr2', '.cr3', '.iiq', '.arw', '.raw', '.rw2', '.ima', '']
+    end
+
     def file_type_priorities
-      ['.dcm', '.dicom', '.glb', '.gltf', '.obj', '.ply', '.stl', '.wrl', '.x3d', '.tiff', '.tif', '.bmp', '.png', '.jpeg', '.jpg', '.svg', '.dng', '.nef', '.crw', '.cr2', '.cr3', '.iiq', '.arw', '.raw', '.rw2']
+      mesh_formats + image_formats
     end
 
     # Recursively nest a flat list of file paths, returning an array of file name strings or nested hashes

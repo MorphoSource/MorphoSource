@@ -366,6 +366,7 @@ RSpec.describe CharacterizeJob do
           # mesh details
           expect(subject.mime_type).to eq("application/zip")
           expect(subject.contents_mime_type.first).to eq("text/prs.wavefront-obj")
+          expect(subject.contents_accepted_file_count.first).to eq("4")
           expect(JSON.parse(subject.contents_all_files)).to be_a(Array)
           expect(JSON.parse(subject.contents_all_files).length).to be > 0
           expect(subject[:point_count_tesim].first).to eq("75818")
@@ -399,6 +400,7 @@ RSpec.describe CharacterizeJob do
           # mesh details
           expect(subject.mime_type).to eq("application/x-tar")
           expect(subject.contents_mime_type.first).to eq("text/prs.wavefront-obj")
+          expect(subject.contents_accepted_file_count.first).to eq("4")
           expect(JSON.parse(subject.contents_all_files)).to be_a(Array)
           expect(JSON.parse(subject.contents_all_files).length).to be > 0
           expect(subject[:point_count_tesim].first).to eq("75818")
@@ -432,6 +434,7 @@ RSpec.describe CharacterizeJob do
           # mesh details
           expect(subject.mime_type).to eq("application/zip")
           expect(subject.contents_mime_type.first).to eq("model/gltf+json")
+          expect(subject.contents_accepted_file_count.first).to eq("4")
           expect(JSON.parse(subject.contents_all_files)).to be_a(Array)
           expect(JSON.parse(subject.contents_all_files).length).to be > 0
           expect(subject[:point_count_tesim].first).to eq("86317")
@@ -465,6 +468,7 @@ RSpec.describe CharacterizeJob do
           # mesh details
           expect(subject.mime_type).to eq("application/x-tar")
           expect(subject.contents_mime_type.first).to eq("model/gltf+json")
+          expect(subject.contents_accepted_file_count.first).to eq("4")
           expect(JSON.parse(subject.contents_all_files)).to be_a(Array)
           expect(JSON.parse(subject.contents_all_files).length).to be > 0
           expect(subject[:point_count_tesim].first).to eq("86317")

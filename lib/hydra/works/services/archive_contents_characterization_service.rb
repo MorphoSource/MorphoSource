@@ -78,6 +78,7 @@ module Hydra::Works
     def archive_to_content
       representative_file_name = nil
       representative_file_io = nil
+      recognized_file_count = 0
 
       archive_service = Morphosource::FileUtils::ArchiveService.new(source)
       
@@ -90,11 +91,15 @@ module Hydra::Works
 
       if file_group.present?
         representative_file_name = file_group[file_group.count/2] # take from middle of group for image series
+        recognized_file_count = file_group.count
       else
-        representative_file_name = archive_service.all_contents_files
+        matching_files = archive_service.all_contents_files
           .select { |f| file_type_priorities.include?(File.extname(f).downcase) }
+        
+        representative_file_name = matching_files
           .sort_by { |f| file_type_priorities.index(File.extname(f).downcase)}
           .first
+        recognized_file_count = matching_files.count
       end
 
       # get io stream for representative file
@@ -105,7 +110,7 @@ module Hydra::Works
       return archive_service.all_contents_files, 
         representative_file_io, 
         representative_file_name, 
-        archive_service.matching_contents_file_count
+        recognized_file_count
     end
 
     def f_priority(f)

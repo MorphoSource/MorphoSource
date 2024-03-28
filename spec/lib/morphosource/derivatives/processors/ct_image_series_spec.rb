@@ -61,8 +61,8 @@ describe Morphosource::Derivatives::Processors::CTImageSeries do
   
         it "produces the derivative dcm" do
           subject.process
-					expect(File.exists?(derivative_path)).to be true
-					expect(File.size(derivative_path)).to be > 0
+	  expect(File.exists?(derivative_path)).to be true
+	  expect(File.size(derivative_path)).to be > 0
         end
       end
     end

@@ -122,7 +122,7 @@ module Hydra::Works
     end
 
     def mesh_formats
-    ['.glb', '.gltf', '.obj', '.ply', '.stl', '.wrl', '.x3d']
+      ['.glb', '.gltf', '.obj', '.ply', '.stl', '.wrl', '.x3d']
     end
 
     def image_formats

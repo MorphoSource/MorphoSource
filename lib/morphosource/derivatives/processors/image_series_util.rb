@@ -16,7 +16,7 @@ module Morphosource::Derivatives::Processors
     end
 
     def locate_images
-      Morphosource::FileUtils::ArchiveService.new(source_path)
+      Morphosource::Files::ArchiveService.new(source_path)
         .largest_file_group(
           acceptable_image_formats, 
           cutoff: 20, 

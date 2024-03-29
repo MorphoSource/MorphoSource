@@ -80,7 +80,7 @@ module Hydra::Works
       representative_file_io = nil
       recognized_file_count = 0
 
-      archive_service = Morphosource::FileUtils::ArchiveService.new(source)
+      archive_service = Morphosource::Files::ArchiveService.new(source)
       
       # First, try to find a group of >20 image files with most preferred file extension
       file_group, ext = archive_service.largest_file_group(
@@ -147,7 +147,7 @@ module Hydra::Works
       @tmp_dir_path = Rails.root.join(Hyrax.config.derivatives_tmp_path, SecureRandom.uuid)
       Dir.mkdir tmp_dir_path unless File.exist? tmp_dir_path
 
-      extracted_files = Morphosource::FileUtils::ArchiveService.new(source).extract_archive(tmp_dir_path)
+      extracted_files = Morphosource::Files::ArchiveService.new(source).extract_archive(tmp_dir_path)
       content_path = extracted_files.find { |f| f.include? file_name } # representative file in extracted files
       if content_path
         return open(content_path)

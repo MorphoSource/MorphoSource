@@ -89,7 +89,7 @@ module Morphosource::Derivatives::Processors
     end
 
     def extract_images
-      Morphosource::FileUtils::ArchiveService.new(source_path).extract_archive(
+      Morphosource::Files::ArchiveService.new(source_path).extract_archive(
         input_path,
         img_coll,
         false

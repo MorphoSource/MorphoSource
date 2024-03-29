@@ -46,7 +46,7 @@ module Morphosource::Derivatives::Processors
       img = img_coll[img_coll.count/2]
       img_path = File.join(tmp_dir_path, File.basename(img))
 
-      Morphosource::FileUtils::ArchiveService.new(source_path).extract_archive(
+      Morphosource::Files::ArchiveService.new(source_path).extract_archive(
         tmp_dir_path,
         [img],
         false

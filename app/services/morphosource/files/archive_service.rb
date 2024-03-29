@@ -1,5 +1,5 @@
 module Morphosource
-  module FileUtils
+  module Files
     # Identifies and extracts archive files across multiple archive file formats
     class ArchiveService
       attr_reader :file, :all_contents_files, :all_contents_file_count, 
@@ -158,7 +158,7 @@ module Morphosource
         # Create dir(s) if needed
         dir_path = File.dirname(f_path)
         unless File.directory?(dir_path)
-          ::FileUtils.mkdir_p(dir_path)
+          FileUtils.mkdir_p(dir_path)
         end
 
         File.new(f_path, 'wb')

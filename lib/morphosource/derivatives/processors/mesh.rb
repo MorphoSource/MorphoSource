@@ -61,7 +61,7 @@ module Morphosource::Derivatives::Processors
     end
 
     def extract_mesh_archive
-      extracted_files = Morphosource::FileUtils::ArchiveService.new(source_path).extract_archive(tmp_dir_path)
+      extracted_files = Morphosource::Files::ArchiveService.new(source_path).extract_archive(tmp_dir_path)
       new_sources = extracted_files.select { |f| acceptable_archive_mesh_formats.include?(File.extname(f).downcase) }
       if new_sources.present?
         @source_path = new_sources.sort_by { |f| acceptable_archive_mesh_formats.index(File.extname(f).downcase)}.first

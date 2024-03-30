@@ -249,7 +249,10 @@ Hyrax.config do |config|
   # config.iiif_image_size_default = '600,'
 
   # Fields to display in the IIIF metadata section; default is the required fields
-  # config.iiif_metadata_fields = Hyrax::Forms::WorkForm.required_fields
+  config.iiif_metadata_fields = [:title, :part, :physical_object_title, :taxonomies_titles, 
+    :media_organization, :human_readable_media_type, :human_readable_modality,
+    :depositor_name, :rights_holder, :rights_statement, :license, :funding
+  ]
 
   ### General configuration ###
 

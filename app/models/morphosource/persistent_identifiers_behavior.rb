@@ -3,16 +3,15 @@ module Morphosource
 
     def ark_resource_type
       # Valid ARK resource types:
-      #
-      # 'Audiovisual', 'Book', 'BookChapter', 'Collection', 'ComputationalNotebook', 'ConferencePaper',
-      # 'ConferenceProceeding', 'DataPaper', 'Dataset', 'Dissertation', 'Event', 'Image', 'InteractiveResource',
-      # 'Instrument', 'Journal', 'JournalArticle', 'Model', 'OutputManagementPlan', 'PeerReview', 'PhysicalObject',
-      # 'Preprint', 'Report', 'Service', 'Software', 'Sound', 'Standard', 'StudyRegistration', 'Text', 'Workflow', 
-      # 'Other'
-      #      
+      # 'Audiovisual', 'Collection', 'DataPaper', 'Dataset', 'Event', 'Image',
+      # 'InteractiveResource', 'Model', 'PhysicalObject', 'Service', 'Software',
+      # 'Sound', 'Text', 'Workflow', 'Other'
       # These are defined in resourceTypeGeneral in the DataCite Metadata Schema:
-      # http://schema.datacite.org/meta/kernel-4.5/
+      # http://schema.datacite.org/meta/kernel-4.3/
+      #
+      # todo: kernel 4.5 is out, which added Instrument resource type:
       # https://datacite-metadata-schema.readthedocs.io/_/downloads/en/4.5/pdf/
+      # but the ezid-client gem might not support it yet
       case self.class.to_s
       when 'Media'
         ark_resource_type_mappings = {
@@ -27,13 +26,13 @@ module Morphosource
           return self.media_type.first
         end
       when 'Device'
-        return 'Instrument'
+        return 'Software'
       when 'BiologicalSpecimen' || 'CulturalHeritageObject'
         return 'PhysicalObject'
       when 'OrganizationCollection'
         return 'Service'
       else
-        return 'Unknown'
+        return 'Other'
       end
     end
 
@@ -46,11 +45,9 @@ module Morphosource
         if visibility_changed
           ark_identifier = Ezid::Identifier.find(self.ark.first)
           if %w{reserved unavailable}.include?(ark_identifier.status) && public_visibilities.include?(self_visibility)
-  byebug
             ark_identifier.status = 'public'
             ark_identifier.save
           elsif (ark_identifier.status == 'public') && (!public_visibilities.include?(self_visibility))
-  byebug
             ark_identifier.status = 'unavailable'
             ark_identifier.save
           end
@@ -92,6 +89,11 @@ module Morphosource
         Rails.application.routes.url_helpers.media_showcase_url(:host => ENV['EZID_TARGET_HOST'], id: self.id)
       when 'Device'
         Rails.application.routes.url_helpers.hyrax_device_url(:host => ENV['EZID_TARGET_HOST'], id: self.id)
+      when 'BiologicalSpecimen'
+        Rails.application.routes.url_helpers.specimen_showcase_url(:host => ENV['EZID_TARGET_HOST'], id: self.id)        
+byebug
+      else
+byebug        
       end
     end
 
@@ -108,7 +110,6 @@ module Morphosource
         # DataCite metadata expects creator in the form Lastname, Firstname
         datacite_creator = [depositor_user_name_components.drop(1).join(' '),depositor_user_name_components.first].join(', ')
         ark_status = public_visibilities.include?(self_visibility) ? 'public' : 'reserved'
-  byebug
         ark_metadata = {'_status' => ark_status,
                         '_target' => datacite_target_url,
                         '_profile' => 'datacite',
@@ -120,7 +121,7 @@ module Morphosource
                         'datacite.resourcetypegeneral' => self.ark_resource_type
         }
         requested_ark = "#{ENV['EZID_DEFAULT_SHOULDER']}/#{self.id.sub(/^0*/,'')}"
-
+byebug
         minted_ark = Ezid::Identifier.create(requested_ark, ark_metadata)
   byebug
         unless minted_ark.nil?

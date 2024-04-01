@@ -71,9 +71,39 @@ module Hyrax
       metadata_fields.map do |field_name|
         {
           'label' => I18n.t("blacklight.search.fields.show.#{field_name}"),
-          'value' => Array(send(field_name)).map { |value| scrub(value.to_s) }.compact.presence || ['--']
+          'value' => field_to_value(field_name)
         }
       end
+    end
+
+    def field_to_value(field_name)
+      if special_fields.key? field_name
+        [ special_fields[field_name].call ]
+      else
+        Array(send(field_name)).map { |value| scrub(value.to_s) }.compact.presence || ['--']
+      end
+    end
+
+    def special_fields
+      {
+        :title => -> do 
+          "<a href='#{Rails.application.routes.url_helpers.media_showcase_url(id, host: hostname)}'>MorphoSource Media #{id}: #{title&.first}</a>"
+        end,
+        :license => -> do
+          if license.present?
+            "<a href='#{license&.first}'>#{Hyrax::LicenseService.new.label(license&.first) {}}</a>"
+          else 
+            "--"
+          end
+        end,
+        :rights_statement => -> do
+          if rights_statement.present?
+            "<a href='#{rights_statement&.first}'>#{Hyrax::RightsStatementService.new.label(rights_statement&.first) {}}</a>"
+          else 
+            "--"
+          end
+        end
+      }
     end
 
     ##
@@ -292,7 +322,13 @@ module Hyrax
       end
 
       def metadata_fields
-        Hyrax.config.iiif_metadata_fields
+        Hyrax.config.iiif_metadata_fields.select do |field_name|
+          !exclude_fields_if_blank.include?(field_name) || send(field_name).present?
+        end
+      end
+
+      def exclude_fields_if_blank
+        [:taxonomies_titles]
       end
 
       def scrub(value)

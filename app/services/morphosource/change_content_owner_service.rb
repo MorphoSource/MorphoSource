@@ -5,37 +5,31 @@ module Morphosource
     # @param [User] user
     # @param [TrueClass, FalseClass] reset
     def self.call(work, user, reset)
-      # user is the new media owner
-      work.edit_users += [user] unless user_is_organization?(user)
-      if reset == "true" || reset == true
-        # remove edit access from old owner and grant read access
-        work.edit_users -= [work.user_with_ownership]
-        work.read_users += [work.user_with_ownership]
-      end
-      work.file_sets.each do |f|
-        f.edit_users += [user] unless user_is_organization?(user)
-        if reset == "true" || reset == true
-          # remove edit access from old depositor and grant read access
-          f.edit_users -= [work.user_with_ownership]
-          f.read_users += [work.user_with_ownership]
-        end
+      @work = work
+      @user = user
+      @reset = ActiveModel::Type::Boolean.new.cast(reset)
+      update_new_owner_access
+    end
+
+    def self.update_new_owner_access
+      update_old_owner_access(@work)
+      @work.file_sets.each do |f|
+        update_old_owner_access(f)
         f.save!
       end
-      if user_is_organization?(user)
-        apply_organization_metadata(work, user)
-      else
-        work.apply_owner_metadata(user)
-      end
-      work.save!
-      work
+      # assigns either user.ms_id or organization_collection.id
+      @work.owner = @user.try(:user_key) || @user.id
+      @work.save!
+      @work
     end
 
-    def self.user_is_organization?(user)
-      @org_user ||= user.is_a?(OrganizationCollection)
-    end
+    # work here will be @work or a file set
+    def self.update_old_owner_access(work)
+      work.edit_users += [@user] if @user.is_a?(User)
+      return unless @reset
 
-    def self.apply_organization_metadata(work, organization)
-      work.owner = organization.id
+      work.edit_users -= [@work.user_with_ownership]
+      work.read_users += [@work.user_with_ownership]
     end
   end
 end

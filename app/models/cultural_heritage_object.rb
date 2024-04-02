@@ -1,8 +1,11 @@
 class CulturalHeritageObject < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
   include ::Morphosource::PhysicalObjectBehavior
+  include Morphosource::PersistentIdentifiersBehavior
   validates_with Morphosource::ParentChildValidator
-  after_update :reindex_media
+  after_update :reindex_media, :update_ark_status
+  after_create :mint_ark
+  after_destroy :delete_ark_if_reserved
 
   self.indexer = CulturalHeritageObjectIndexer
   # Change this to restrict which works can be added as a child.
@@ -18,8 +21,6 @@ class CulturalHeritageObject < Morphosource::Works::Base
   # This must be included at the end, because it finalizes the metadata
   # schema (by adding accepts_nested_attributes)
   include Morphosource::CulturalHeritageObjectMetadata
-
-
 
   def taxonomies # TODO remove later after refactoring media_indexer
     []

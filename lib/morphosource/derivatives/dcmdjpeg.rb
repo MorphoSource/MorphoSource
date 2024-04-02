@@ -14,21 +14,30 @@ module Morphosource::Derivatives
         raise Morphosource::Derivatives::DcmdjpegError.new("Source directory: #{source_path} does not exist.")
       end
 
-      internal_call # to do add some output/post-process controls
+      internal_call
     end
 
     protected
-      def internal_call
-        Dir.foreach(source_path) do |f|
-          next if File.extname(f).downcase != '.dcm' && File.extname(f).downcase != '.dicom'
-            @file_path = File.join(source_path, f)
-            @file_out_path = File.join(out_path, f)
-            process_file
-        end
+    
+    def internal_call
+      Dir.foreach(source_path) do |f|
+        next if File.extname(f).downcase != '.dcm' && File.extname(f).downcase != '.dicom'
+          @file_path = File.join(source_path, f)
+          @file_out_path = File.join(out_path, f)
+          output = process_file
+          post_process(output)
       end
+    end
 
-      def command
-        "dcmdjpeg '#{file_path}' '#{file_out_path}'"
+    def command
+      "dcmdjpeg '#{file_path}' '#{file_out_path}'"
+    end
+
+    # Check for produced derivative file, otherwise raise Dcmdjpeg response as error
+    def post_process(raw_output)
+      if !File.exists?(file_out_path) || (File.size(file_out_path) == 0)
+        raise Morphosource::Derivatives::DcmdjpegError.new("File not successfully created by derivative tool.\nTool command: \"#{command}\"\nTool output:\n\"#{raw_output}\"")
       end
+    end
   end
 end

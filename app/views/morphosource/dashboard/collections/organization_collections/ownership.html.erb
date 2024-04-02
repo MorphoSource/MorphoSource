@@ -1,0 +1,112 @@
+<% provide :page_title, 
+  construct_page_title(
+    t('hyrax.dashboard.collections.edit.header', 
+    type_title: @collection.collection_type.title, 
+    title: @collection.title.first)
+  ) 
+%>
+
+<!-- create simple_form here to include update button above nav tabs -->
+<%= simple_form_for @form, url: collection_form_url(@form), wrapper: :showcase_default, html: { class: 'editor' } do |f| %>
+  <div class="row" style="margin-top:30px;">
+    <div class="col-md-12">
+      <%= render 'hyrax/base/flash_msg' %>
+      <% content_for :body_css_classes do %>showcase showcase-edit teams ms-collection-edit<% end %>
+
+      <div class="col-xs-9 title team-title">
+        <div>
+          <span class="fa fa-edit" aria-hidden="true"></span>
+          <h1 style="margin-bottom:20px;"><%= @collection.title.first %>
+            <%= @presenter.collection_type_badge %>
+            <%= @presenter.id_badge %>
+            <%= @presenter.permission_badge %>
+          </h1>
+        </div>
+        <div>
+          <%= f.submit t(:'hyrax.collection.select_form.update'), class: 'btn btn-primary', onclick: "confirmation_needed = false;", id: "update_submit", name: "update_collection" %>
+          <%= link_to "Public View", collection_media_path(@collection), class: 'btn btn-primary' %>
+        </div>
+      </div>
+
+      <div class="panel panel-default tabs teams" id="collection-edit-controls">
+        <%= render 'nav_tabs' %>
+        <div class="row tab-action-buttons">
+          <div class="float-right"></div>
+      </div>
+
+      <div class="col-xs-12 mt-1">
+        <%= t("hyrax.organization.dashboard.ownership.introduction", org_name: @collection.title.first)%>
+      </div>
+
+      <div class="col-xs-6 organization-collection-ownership-stats">
+        <h2 style="margin-top: 30px;"><%= t("hyrax.organization.dashboard.ownership.stats.title").upcase %></h2>
+
+        <% render_options = { include_empty: true, work_type: "organization", label_width: 8, value_width: 4 } %>
+
+        <% if @collection.is_object_organization? %>
+          <%= Hyrax::Renderers::ShowcaseDefaultAttributeRenderer.new(:object_media_count, @media_count, render_options).render %>
+          <div class="row mb-1 csv-export-link"><div class="col-xs-8">
+             <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.media_object"), media_export_csv_url(@collection) %>
+          </div></div>
+         
+        <% end %>
+        <% if @collection.is_device_organization? %>
+          <%= Hyrax::Renderers::ShowcaseDefaultAttributeRenderer.new(:device_media_count, @device_media_count, render_options).render %>
+          <div class="row mb-1 csv-export-link"><div class="col-xs-8">
+            <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.media_device"), device_media_export_csv_url(@collection) %>
+          </div></div>
+        <% end %>
+
+        <%= Hyrax::Renderers::ShowcaseDefaultAttributeRenderer.new(:specimen_count, @specimen_count, render_options).render %>
+        <div class="row mb-1 csv-export-link"><div class="col-xs-8">
+          <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.objects_bso"), specimens_export_csv_url(@collection) %>
+        </div></div>
+        <%= Hyrax::Renderers::ShowcaseDefaultAttributeRenderer.new(:cho_count, @cho_count, render_options).render %>
+        <div class="row mb-1 csv-export-link"><div class="col-xs-8">
+          <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.objects_cho"), chos_export_csv_url(@collection) %>
+        </div></div>
+
+        <% if @collection.is_device_organization? %>
+          <%= Hyrax::Renderers::ShowcaseDefaultAttributeRenderer.new(:device_count, @device_count, render_options).render %>
+          <div class="row mb-1 csv-export-link"><div class="col-xs-8">
+            <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.devices"), devices_export_csv_url(@collection) %>
+          </div></div>
+        <% end %>
+
+        <%= Hyrax::Renderers::ShowcaseDefaultAttributeRenderer.new(:managed_media_count, @managed_media_count, render_options).render %>
+        <div class="row mb-1 csv-export-link"><div class="col-xs-8">
+          <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.media_managed"), media_export_csv_url(@collection) %>
+        </div></div>
+
+        <%= Hyrax::Renderers::ShowcaseDefaultAttributeRenderer.new(:unmanaged_media_transferable_count, @unmanaged_media_transferable_count, render_options).render %>
+        <%= Hyrax::Renderers::ShowcaseDefaultAttributeRenderer.new(:unmanaged_media_untransferable_count, @unmanaged_media_untransferable_count, render_options).render %>
+        <div class="row mb-1 csv-export-link"><div class="col-xs-8">
+          <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.media_transfer_status"), main_app.team_media_organization_transfer_status_path(request.parameters.merge(id: @collection.id, :format => :csv, :per_page => 1000000)) %>
+        </div></div>
+      </div>
+
+      <div class="col-xs-6 organization-collection-ownership-reminders">
+        <h2 style="margin-top: 30px;"><%= t("hyrax.organization.dashboard.ownership.reminders.title").upcase %></h2>
+
+        <ul>
+          <% if @collection.is_object_organization? %>
+            <li class="mb-1"><%= t("hyrax.organization.dashboard.ownership.reminders.r1") %></li>
+          <% end %>
+
+          <% if @collection.is_device_organization? %>
+            <li class="mb-1"><%= t("hyrax.organization.dashboard.ownership.reminders.r2") %></li>
+          <% end %>
+
+          <li class="mb-1"><%= t("hyrax.organization.dashboard.ownership.reminders.r3") %></li>
+
+          <% if @collection.is_object_organization? %>
+            <li class="mb-1"><%= t("hyrax.organization.dashboard.ownership.reminders.r4") %></li>
+            <li class="mb-1"><%= t("hyrax.organization.dashboard.ownership.reminders.r5").html_safe %></li>
+          <% elsif @collection.is_device_organization? %>
+            <li class="mb-1"><%= t("hyrax.organization.dashboard.ownership.reminders.r6").html_safe %></li>
+          <% end %>
+        </ul>
+    </div>
+  </div>
+<% end %> <!-- end simple_form_for -->
+

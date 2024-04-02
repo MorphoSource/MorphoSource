@@ -49,6 +49,14 @@ class OrganizationCollection < Collection
     Morphosource::AttachmentService.get(self, field_name)
   end
 
+  def is_device_organization?
+    ["Scanning Facility", "Collection and Scanning Facility"].include?(organization_type&.first)
+  end
+
+  def is_object_organization?
+    ["Museum, Department, or Lab Collection", "Collection and Scanning Facility"].include?(organization_type&.first)
+  end
+
   def name
     (institution_name + title).join(' - ')
   end

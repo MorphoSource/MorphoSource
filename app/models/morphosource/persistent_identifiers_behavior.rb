@@ -25,14 +25,11 @@ module Morphosource
         else
           return self.media_type.first
         end
-      when 'Device'
-        return 'Software'
       when 'BiologicalSpecimen', 'CulturalHeritageObject'
         return 'PhysicalObject'
-      when 'OrganizationCollection'
+      when 'Device', 'OrganizationCollection'
         return 'Service'
       else
-byebug
         return 'Other'
       end
     end

@@ -9,7 +9,7 @@ module Morphosource
       # These are defined in resourceTypeGeneral in the DataCite Metadata Schema:
       # http://schema.datacite.org/meta/kernel-4.3/
       #
-      # todo: kernel 4.5 is out, which added Instrument resource type:
+      # todo: kernel 4.5 is out, which added more resource types, including Instrument:
       # https://datacite-metadata-schema.readthedocs.io/_/downloads/en/4.5/pdf/
       # but the ezid-client gem might not support it yet
       case self.class.to_s
@@ -27,11 +27,12 @@ module Morphosource
         end
       when 'Device'
         return 'Software'
-      when 'BiologicalSpecimen' || 'CulturalHeritageObject'
+      when 'BiologicalSpecimen', 'CulturalHeritageObject'
         return 'PhysicalObject'
       when 'OrganizationCollection'
         return 'Service'
       else
+byebug
         return 'Other'
       end
     end
@@ -91,7 +92,8 @@ module Morphosource
         Rails.application.routes.url_helpers.hyrax_device_url(:host => ENV['EZID_TARGET_HOST'], id: self.id)
       when 'BiologicalSpecimen'
         Rails.application.routes.url_helpers.specimen_showcase_url(:host => ENV['EZID_TARGET_HOST'], id: self.id)        
-byebug
+      when 'CulturalHeritageObject'
+        Rails.application.routes.url_helpers.cho_showcase_url(:host => ENV['EZID_TARGET_HOST'], id: self.id)        
       else
 byebug        
       end
@@ -121,7 +123,6 @@ byebug
                         'datacite.resourcetypegeneral' => self.ark_resource_type
         }
         requested_ark = "#{ENV['EZID_DEFAULT_SHOULDER']}/#{self.id.sub(/^0*/,'')}"
-byebug
         minted_ark = Ezid::Identifier.create(requested_ark, ark_metadata)
   byebug
         unless minted_ark.nil?
@@ -135,10 +136,10 @@ byebug
     private
     
       def delete_ark_if_reserved
+byebug 
         unless self.ark.empty?
           ark_identifier = Ezid::Identifier.find(self.ark.first)
           if ark_identifier.status == 'reserved'
-byebug 
             ark_identifier.delete
           end
         end

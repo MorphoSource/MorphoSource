@@ -6,6 +6,7 @@ class OrganizationCollectionIndexer < Hyrax::CollectionWithBasicMetadataIndexer
       solr_doc['generic_type_sim'] = ['Collection']
       solr_doc['title_ssi'] = object.title.first
       solr_doc['display_name_ssi'] = object.display_name
+      solr_doc['ark_ssim'] = object.ark
     end
   end
 end

@@ -8,10 +8,6 @@ module Morphosource
       # 'Sound', 'Text', 'Workflow', 'Other'
       # These are defined in resourceTypeGeneral in the DataCite Metadata Schema:
       # http://schema.datacite.org/meta/kernel-4.3/
-      #
-      # todo: kernel 4.5 is out, which added more resource types, including Instrument:
-      # https://datacite-metadata-schema.readthedocs.io/_/downloads/en/4.5/pdf/
-      # but the ezid-client gem might not support it yet
       case self.class.to_s
       when 'Media'
         ark_resource_type_mappings = {
@@ -91,8 +87,8 @@ module Morphosource
         Rails.application.routes.url_helpers.specimen_showcase_url(:host => ENV['EZID_TARGET_HOST'], id: self.id)        
       when 'CulturalHeritageObject'
         Rails.application.routes.url_helpers.cho_showcase_url(:host => ENV['EZID_TARGET_HOST'], id: self.id)        
-      else
-byebug        
+      when 'OrganizationCollection'
+        Rails.application.routes.url_helpers.organization_collection_url(:host => ENV['EZID_TARGET_HOST'], id: self.id)
       end
     end
 
@@ -121,7 +117,6 @@ byebug
         }
         requested_ark = "#{ENV['EZID_DEFAULT_SHOULDER']}/#{self.id.sub(/^0*/,'')}"
         minted_ark = Ezid::Identifier.create(requested_ark, ark_metadata)
-  byebug
         unless minted_ark.nil?
           self.ark = [minted_ark.id]
           self.save
@@ -133,7 +128,6 @@ byebug
     private
     
       def delete_ark_if_reserved
-byebug 
         unless self.ark.empty?
           ark_identifier = Ezid::Identifier.find(self.ark.first)
           if ark_identifier.status == 'reserved'

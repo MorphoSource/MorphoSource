@@ -43,8 +43,9 @@ build_job:
     - bundle version
     - node -v
     - psql --version
-    - $FITS_PATH -v
     - $BLENDER_PATH/blender -v
+    - $FIJI_PATH/Fiji.app/ImageJ-linux64 --help
+    - $FITS_PATH -v
     - img2dcm --version
     - dcmdjpeg --version
     - gltf-pipeline --version

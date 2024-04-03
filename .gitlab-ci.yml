@@ -44,7 +44,7 @@ build_job:
     - node -v
     - psql --version
     - $BLENDER_PATH/blender -v
-    - $FIJI_PATH/Fiji.app/ImageJ-linux64 --help
+    - $FIJI_PATH/Fiji.app/ImageJ-linux64 --info
     - $FITS_PATH -v
     - img2dcm --version
     - dcmdjpeg --version

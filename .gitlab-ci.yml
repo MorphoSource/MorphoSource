@@ -46,6 +46,7 @@ build_job:
     - $BLENDER_PATH/blender -v
     - $FIJI_PATH/Fiji.app/ImageJ-linux64 --info
     - $FITS_PATH -v
+    - $MORPHOSOURCE_PYTHON --version
     - img2dcm --version
     - dcmdjpeg --version
     - gltf-pipeline --version

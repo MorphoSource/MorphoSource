@@ -93,6 +93,7 @@ module Morphosource
     end
 
     def mint_ark
+      return if Rails.env.test? # avoid ARK creation in test environment
       if self.ark.empty?
         %w{DEFAULT_SHOULDER USER PASSWORD TARGET_HOST}.each do |required_env_variable|
           if ENV["EZID_#{required_env_variable}"].blank?

@@ -39,6 +39,7 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['depositor_email_tesim'] = depositor_email
       solr_doc['depositor_email_ssim'] = depositor_email
 
+      solr_doc['ark_tesim'] = object.ark
       solr_doc['ark_ssim'] = object.ark
       solr_doc['doi_ssim'] = object.doi
       solr_doc['remote_manifest_url_ssi'] = object.remote_manifest_url

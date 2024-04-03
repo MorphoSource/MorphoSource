@@ -34,6 +34,8 @@ module Morphosource
         
         # related media ids
         solr_doc['related_media_ids_ssim'] = related_media_ids
+
+        solr_doc['ark_ssim'] = object.ark
       end
     end
 

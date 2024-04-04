@@ -517,9 +517,8 @@ class SubmissionsController < ApplicationController
   def get_organization_media_transfer
     if (
       @submission.organization_id.present? &&
-      Organization.exists?(@submission.organization_id) &&
-      (org = Organization.find(@submission.organization_id)).present? &&
-      org.data_manager.present?
+      (org = find_organization(@submission.organization_id)).present? &&
+      (org.organization_collection? || org.data_manager.present?)
     )
       transfer_media_immediately? ? :immediate : :publication
     else
@@ -782,7 +781,7 @@ class SubmissionsController < ApplicationController
         organization = parent.organizations.first
       end
     elsif organization_id.present? && organization_id != 'new'
-      organization = Organization.find(organization_id)
+      organization = find_organization(organization_id)
     elsif biological_specimen_id.present? && biological_specimen_id != 'new'
       specimen = BiologicalSpecimen.find(biological_specimen_id)
       if specimen.organizations.present?
@@ -840,5 +839,9 @@ class SubmissionsController < ApplicationController
   def object_organizations_search_builder
     @object_organizations_search_builder ||=
       self.object_organizations_search_builder_class.new(self).rows(999999)
+  end
+
+  def find_organization(id)
+    @organization ||= Organization.where(id: id)&.first || OrganizationCollection.where(id: id)&.first
   end
 end

@@ -188,8 +188,14 @@ module Morphosource
           nil
         end
 
+<<<<<<< HEAD
         def media_owner_id(media)
           @media_owner_id ||= ( solr_document(media)&.to_h || {} )['owner_ssim']&.first
+=======
+        def user_is_media_organization_manager?(document_id)
+          organization_id = SolrDocument.find(document_id)['media_organization_id_ssim']&.first
+          user_is_manager_of_organization?(organization_id)
+>>>>>>> 1e448547a (organizational transfers for organization collections work)
         end
 
         def user_is_media_organization_manager?(media_id)

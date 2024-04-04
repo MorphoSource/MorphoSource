@@ -44,7 +44,9 @@
   <!-- Media ownership transfer non-interactive -->
   <div class="form-group row mt-2">
     <div class="col-xs-6 showcase-label">
-      <label class="control-label select optional" for="media_preview_mode">Media ownership transfer</label>
+      <label class="control-label select optional" for="media_preview_mode">
+        <%= t('simple_form.labels.defaults.media_ownership_transfer') %>
+      </label>
       <i class="material-icons tooltip-icon" data-original-title="" title="">
         <p class="hint hide">
           <%= t('simple_form.hints.defaults.media_ownership_transfer') %>
@@ -52,13 +54,13 @@
       </i>
     </div>
     <div class="col-xs-6 showcase-value">
-      <%= @collection.media_ownership_transfer == 'true' ? 'Enabled' : 'Not enabled' %>
+      <%= t("hyrax.organization.permissions.media_ownership_transfer.status.#{@collection.media_ownership_transfer}") %>
     </div>
   </div>
 
   <div class="form-group row">
   <div class="col-xs-12 showcase-value">
-    <%= t("hyrax.organization.permissions.media_ownership_transfer") %>
+    <%= t("hyrax.organization.permissions.media_ownership_transfer.text") %>
   </div>
   </div>
 <% end %>

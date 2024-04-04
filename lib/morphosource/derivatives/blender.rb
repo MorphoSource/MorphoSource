@@ -18,7 +18,7 @@ module Morphosource::Derivatives
         raise Morphosource::Derivatives::BlenderError.new("Source file: #{source_path} does not exist.")
       end
 
-      internal_call # to do add some output/post-process controls
+      internal_call
     end
 
     def tool_path

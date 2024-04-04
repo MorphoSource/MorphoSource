@@ -33,44 +33,37 @@ module Morphosource::Derivatives
     end
 
     protected
-      def imagej_macro
-        # Deprecated, no longer used
-        erb_src = File.join(__dir__, 'imagej_macro.txt.erb')
-        txt_dst = File.join(tmp_dir_path, File.basename(erb_src, '.erb'))
-        File.open(txt_dst, 'w') do |f|
-          f.write(ERB.new(File.read(erb_src)).result(binding))
-        end
-        @macro_path = txt_dst
-      end
 
-      def cleanup_tmp_files
-        # Deprecated, no longer used
-        FileUtils.remove_dir tmp_dir_path
-      end
+    def script_path
+      File.join(__dir__, 'imagej_script.js')
+    end
 
-      def script_path
-        File.join(__dir__, 'imagej_script.js')
-      end
+    def script_parameters
+      "input_path=\"#{dir_wrap(input_path)}\",output_path=\"#{dir_wrap(output_path)}\",linear_scale_factor=#{linear_scale_factor}"
+    end
 
-      def script_parameters
-        "input_path=\"#{dir_wrap(input_path)}\",output_path=\"#{dir_wrap(output_path)}\",linear_scale_factor=#{linear_scale_factor}"
-      end
+    def dir_wrap(d)
+      # ensure dir path ends with trailing '/'
+      File.join(d, '')
+    end
 
-      def dir_wrap(d)
-        # ensure dir path ends with trailing '/'
-        File.join(d, '')
+    def command_path
+      if custom_fiji_executable_path.present?
+        custom_fiji_executable_path
+      else
+        "#{tool_path}/Fiji.app/ImageJ-linux64 --ij2 --headless --console --run"
       end
+    end
 
-      def command_path
-        if custom_fiji_executable_path.present?
-          custom_fiji_executable_path
-        else
-          "#{tool_path}/Fiji.app/ImageJ-linux64 --ij2 --headless --console --run"
-        end
-      end
+    def command
+      "#{command_path} #{script_path} '#{script_parameters}'"
+    end
 
-      def command
-        "#{command_path} #{script_path} '#{script_parameters}'"
+    # Check for produced derivative files, otherwise raise Fiji response as error
+    def post_process(raw_output)
+      if Dir[File.join(output_path, '**', '*')].count { |file| File.file?(file) } == 0
+        raise Morphosource::Derivatives::FijiError.new("File not successfully created by derivative tool.\nTool command: \"#{command}\"\nTool output:\n\"#{raw_output}\"")
       end
+    end
   end
 end

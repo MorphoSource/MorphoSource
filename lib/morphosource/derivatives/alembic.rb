@@ -21,7 +21,7 @@ module Morphosource::Derivatives
         raise Morphosource::Derivatives::AlembicError.new("Source directory: #{source_path} does not exist.")
       end
 
-      internal_call # to do add some output/post-process controls
+      internal_call
     end
 
     def tool_path
@@ -29,14 +29,22 @@ module Morphosource::Derivatives
     end
 
     protected
-      def command
-        cmd = "#{tool_path} vendor/alembic/transmute.py -- -i '#{source_path}' -o '#{out_path}' " +
-          ( x ? "-x #{x} " : "") +
-          ( y ? "-y #{y} " : "") +
-          ( z ? "-s #{z} " : "") +
-          ( thickness ? "-t #{thickness} " : "")
-        puts(cmd)
-        cmd
+    
+    def command
+      cmd = "#{tool_path} vendor/alembic/transmute.py -- -i '#{source_path}' -o '#{out_path}' " +
+        ( x ? "-x #{x} " : "") +
+        ( y ? "-y #{y} " : "") +
+        ( z ? "-s #{z} " : "") +
+        ( thickness ? "-t #{thickness} " : "")
+      puts(cmd)
+      cmd
+    end
+
+    # Check for produced derivative file, otherwise raise Alembic response as error
+    def post_process(raw_output)
+      if !File.exists?(out_path) || (File.size(out_path) == 0)
+        raise Morphosource::Derivatives::AlembicError.new("File not successfully created by derivative tool.\nTool command: \"#{command}\"\nTool output:\n\"#{raw_output}\"")
       end
+    end
   end
 end

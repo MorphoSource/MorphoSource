@@ -7,9 +7,12 @@ RSpec.describe DeviceIndexer do
   describe 'generate_solr_document' do
     before do
       device.creator = ['creator']
+      device.ark = ["ark:/12345/m4/678910"]
     end
-    it 'indexes creator' do
+    it 'indexes device fields' do
       expect(subject["creator_ssim"]).to match_array(device.creator)
+      expect(subject['ark_ssim']).to match_array(device.ark)
+      expect(subject['ark_tesim']).to match_array(device.ark)
     end
   end
 

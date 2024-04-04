@@ -4,6 +4,7 @@ class OrganizationCollection < Collection
   include Morphosource::OrganizationMetadata
   include Morphosource::PermissionsDefaultsMetadata
   include Morphosource::LocationMetadata
+  include Morphosource::OrganizationBehavior
 
   after_create :create_collection_groups
   after_create :create_organization_project
@@ -59,6 +60,8 @@ class OrganizationCollection < Collection
   def proxy_deposit_requests
     ProxyDepositRequest.where(receiving_user_id: id)
   end
+
+  def team; end
 
   # used by ProxyDepositRequest
   def self.primary_key

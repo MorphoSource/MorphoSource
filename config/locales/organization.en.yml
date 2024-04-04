@@ -2,13 +2,12 @@ en:
   blacklight:
     search:
       fields:
-        organization:
-          show:
-            device_media_count: Media imaged by organization devices
-            object_media_count: Media representing organization objects
-            specimen_count: Biological specimen objects linked to organization
-            cho_count: Cultural heritage objects linked to organization
-            device_count: Devices linked to organization
+        show:
+          device_media_count: Media imaged by organization devices
+          object_media_count: Media representing organization objects
+          org_specimen_count: Biological specimen objects linked to organization
+          org_cho_count: Cultural heritage objects linked to organization
+          org_device_count: Devices linked to organization
 
   hyrax:
     icons:
@@ -27,7 +26,7 @@ en:
           projects: Projects
         ownership:
           introduction: On this page you can see the ownership and management status of media records and other records associated with %{org_name}. In time this will be expanded to provide you with tools to help you more effectively manage media, so keep an eye on this space. For now, you can see the current management status of media and some reminders of how organization-based media ownership works on MorphoSource. 
-          reminders: 
+          reminders:
             r1: As a manager member of an object-holding organization, you have view (not edit) access to all media contributed by any user that represents an object associated with your organization.
             r2: As a manager member of a device facility organization, you have view (not edit) access to all media contributed by any user that was imaged by a device associated with your organization. 
             r3: Your organization can become the data manager for media. As an manager member of the organization, you have edit access to media where your organization is the media data manager.
@@ -44,8 +43,13 @@ en:
               media_transfer_status: Export CSV of object media with transfer status
               objects_bso: Export CSV of biological specimen objects
               objects_cho: Export CSV of cultural heritage objects
-
             title: Ownership Summary
+      show:
+        facets:
+          transfer:
+            managed: Managed by Organization
+            ready: Transfer Request Pending or Will Be Generated
+            unready: Not Available for Automated Transfer
       permissions:
         media_preview: By default, all media display an interactive and embeddable 3D/2D preview. Data contributors can optionally disable the interactive preview, replacing it with a small 2D media thumbnail. Organizations with appropriate use cases can enforce interactive previews or 2D thumbnails.
         media_ownership_transfer:

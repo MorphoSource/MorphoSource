@@ -45,7 +45,7 @@ module Morphosource
           %{
             has_model_ssim:Media AND 
             media_organization_id_ssim:#{collection.id} AND
-            -user_with_ownership_ssi:#{@collection.id} AND
+            -owner_ssim:#{@collection.id} AND
             organization_transfer_on_publish_bsi:true
           }
         )
@@ -56,7 +56,7 @@ module Morphosource
           %{
             has_model_ssim:Media AND 
             media_organization_id_ssim:#{collection.id} AND
-            -user_with_ownership_ssi:#{@collection.id} AND
+            -owner_ssim:#{@collection.id} AND
             organization_transfer_on_publish_bsi:false
           }
         )

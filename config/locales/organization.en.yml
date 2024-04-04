@@ -9,6 +9,7 @@ en:
     organization:
       permissions:
         media_preview: By default, all media display an interactive and embeddable 3D/2D preview. Data contributors can optionally disable the interactive preview, replacing it with a small 2D media thumbnail. Organizations with appropriate use cases can enforce interactive previews or 2D thumbnails.
+        media_ownership_transfer: Opt in to automated transfer of media ownership to this organization. When enabled, contributors depositing media representing organization-managed objects will be given a choice between transferring ownership of the media immediately upon deposit or waiting until publication of the media.
         permissions_enforcement_mode: Organization permissions are typically enforced via recommendation. Values become the default for newly contributed media and contributors are encouraged not to change them unless extenuating circumstances exist. Organizations with relevant policies can enforce permissions via requirement, mandating that all contributors follow all permissions settings.
         contact_us: If your organization meets the use case(s) to modify the choices above for <b>Media preview mode</b> or <b>Permissions enforcement mode</b>, please <a href="mailto:morphosource@duke.edu">contact us</a>.
   simple_form:

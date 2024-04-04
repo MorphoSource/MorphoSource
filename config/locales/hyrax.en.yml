@@ -372,6 +372,7 @@ en:
         download_permission: Media publication status, can be private, published with open download (any user can download), or published with restricted download (users must request to download)
         download_reviewer: Users that receive and decide requests to download Media if published with Restricted Download, defaults to data manager if not specified
         license: Applicable Creative Commons license governing use and reuse
+        media_ownership_transfer: Opt in to automated management transfer
         permissions_enforcement_mode: Whether organization default permission values are recommended or required to be used by new media contributors
         publisher: Entity responsible for making the resource available
         preview_mode: Whether media can be previewed with interactive 3D/2D preview or restricted to small 2D thumbnail, Interactive/Embeddable generally recommended

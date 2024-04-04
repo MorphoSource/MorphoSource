@@ -13,6 +13,16 @@ RSpec.describe Hyrax::Actors::DeviceActor do
 
   describe '#create' do
 
+    context 'the device does not have an organization' do
+      let(:attributes)  { {} }
+
+      it 'creates the device' do
+        expect {
+          Hyrax::CurationConcern.actor.create(env)
+        }.to change { Device.count }.from(0).to(1)
+      end
+    end
+
     context 'adding the device to an organization work' do
       let(:attributes)  { { work_parents_attributes: { '0' => { id: org_work.id, _destroy: 'false' } } } }
 

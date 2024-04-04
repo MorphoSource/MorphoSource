@@ -57,17 +57,17 @@
           </div></div>
         <% end %>
 
-        <%= Hyrax::Renderers::ShowcaseDefaultAttributeRenderer.new(:specimen_count, @specimen_count, render_options).render %>
+        <%= Hyrax::Renderers::ShowcaseDefaultAttributeRenderer.new(:org_specimen_count, @specimen_count, render_options).render %>
         <div class="row mb-1 csv-export-link"><div class="col-xs-8">
           <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.objects_bso"), specimens_export_csv_url(@collection) %>
         </div></div>
-        <%= Hyrax::Renderers::ShowcaseDefaultAttributeRenderer.new(:cho_count, @cho_count, render_options).render %>
+        <%= Hyrax::Renderers::ShowcaseDefaultAttributeRenderer.new(:org_cho_count, @cho_count, render_options).render %>
         <div class="row mb-1 csv-export-link"><div class="col-xs-8">
           <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.objects_cho"), chos_export_csv_url(@collection) %>
         </div></div>
 
         <% if @collection.is_device_organization? %>
-          <%= Hyrax::Renderers::ShowcaseDefaultAttributeRenderer.new(:device_count, @device_count, render_options).render %>
+          <%= Hyrax::Renderers::ShowcaseDefaultAttributeRenderer.new(:org_device_count, @device_count, render_options).render %>
           <div class="row mb-1 csv-export-link"><div class="col-xs-8">
             <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.devices"), devices_export_csv_url(@collection) %>
           </div></div>

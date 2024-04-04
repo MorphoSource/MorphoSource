@@ -261,14 +261,14 @@ Rails.application.routes.draw do
       get 'organizations/:id/about', to: 'organization_collections#about', as: 'organization_about'
 
       # Object media CSV exports
-      get 'organizations/:id/media_export', to: 'organization_collections#media_export_with_intersections_facet', as: 'organization_media_export'
-      get 'organizations/:id/media_download_counts', to: 'organization_collections#media_download_counts_with_intersections_facet', as: 'organization_media_download_counts'
+      get 'organizations/:id/media_export', to: 'organization_collections#media_export', as: 'organization_media_export'
+      get 'organizations/:id/media_download_counts', to: 'organization_collections#media_download_counts', as: 'organization_media_download_counts'
       get 'organizations/:id/media_downloads', to: 'organization_collections#media_downloads', as: 'organization_media_downloads'
       get 'organizations/:id/media_requests', to: 'organization_collections#media_requests', as: 'organization_media_requests'
 
       # Device media CSV exports
-      get 'organizations/:id/device_media_export', to: 'organization_collections/device_media#media_export_with_intersections_facet', as: 'organization_device_media_export'
-      get 'organizations/:id/device_media_download_counts', to: 'organization_collections/device_media#media_download_counts_with_intersections_facet', as: 'organization_device_media_download_counts'
+      get 'organizations/:id/device_media_export', to: 'organization_collections/device_media#media_export', as: 'organization_device_media_export'
+      get 'organizations/:id/device_media_download_counts', to: 'organization_collections/device_media#media_download_counts', as: 'organization_device_media_download_counts'
       get 'organizations/:id/device_media_downloads', to: 'organization_collections/device_media#media_downloads', as: 'organization_device_media_downloads'
       get 'organizations/:id/device_media_requests', to: 'organization_collections/device_media#media_requests', as: 'organization_device_media_requests'
 

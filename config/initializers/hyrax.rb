@@ -51,7 +51,7 @@ Hyrax.config do |config|
   # This image should be placed in app/assets/images/ or in public/.
   # If image is in public/, it should be listed with a slash before the filename ("/image.png").
   # If image is in app/assets/images, no slash is needed ("image.png"), but assets will need to be pre-compiled.
-  config.logo_image = ENV['LOGO_IMAGE'].presence  || 'skeleton_head_default_80px.png'
+  config.logo_image = ENV['LOGO_IMAGE'].presence  || 'skeleton_head_blue_80px.png'
 
   # ID of a media work to be used as the front page preview
   config.front_page_media = Rails.env.production? ? '000009951' : nil

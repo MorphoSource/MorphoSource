@@ -5,7 +5,7 @@
 <% end %>
 
 <div class="col-md-12 ownership-transfer">
-  <div class="panel panel-default tabs" role="main">
+  <div class="panel panel-default panel-borders tabs" role="main">
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
       <li role="presentation" id="tab-received" class="active">
@@ -24,13 +24,12 @@
     <div class="tab-content">
 
       <div role="tabpanel" class="tab-pane active" id="received">
-        <div class="form-tab-content">
-
+        <div class="form-tab-content" style="margin: 15px;">
           <div class="row">
             <div class="col-md-12">
               <div class="panel panel-default">
-                <div class="row">
-                  <div class="pull-left" style="padding-left: 30px;">
+                <div class="row row-no-gutters no-horizontal-padding">
+                  <div class="pull-left">
                     <button type="button" class="btn btn-sm btn-primary dropdown-toggle" id="batch-decision-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled="disabled" style="max-width: unset;">
                       Decide selected transfers <span class="caret"></span>
                     </button>
@@ -55,7 +54,7 @@
                     <% end %>
                   </div>
                 </div>
-                <div class="panel-body">
+                <div class="mt-1">
                   <%= form_tag main_app.transfers_batch_decide_path, method: :put, id: 'batch-transfer-decide', style: 'max-width: unset;' do %>
                     <%= @presenter.render_received_transfers %>
                   <% end %>
@@ -69,7 +68,6 @@
 
       <div role="tabpanel" class="tab-pane" id="sent">
         <div class="form-tab-content">
-
           <div class="row">
             <div class="col-md-12">
               <div class="panel panel-default">
@@ -84,7 +82,6 @@
               </div>
             </div>
           </div>
-
         </div>
       </div>
 

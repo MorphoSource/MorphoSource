@@ -2,7 +2,11 @@ module Morphosource
   module Dashboard
     module Collections
       class OrganizationCollectionsController < Morphosource::Dashboard::CollectionsController
-        skip_load_and_authorize_resource only: [:edit, :update, :new, :members, :create, :details, :permissions], instance_name: :organization_collection
+      include Morphosource::Collections::OrganizationCollectionsControllerBehavior
+
+        skip_load_and_authorize_resource only: [
+          :create, :details, :edit, :members, :new, :ownership, :permissions, :update
+        ], instance_name: :organization_collection
 
         before_action :redirect_to_collection_type, only: []
         before_action :build_breadcrumbs, only: []
@@ -23,6 +27,14 @@ module Morphosource
 
         def members
           @tab = :members
+          presenter
+          form
+        end
+
+        def ownership
+          @tab = :ownership
+          query_collection_counts
+          query_media_management_counts
           presenter
           form
         end

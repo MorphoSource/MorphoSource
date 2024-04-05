@@ -1,12 +1,12 @@
 <% provide :page_title, construct_page_title( t('hyrax.dashboard.collections.edit.header', type_title: @collection.collection_type.title, title: @collection.title.first) ) %>
 
 <!-- create simple_form here to include update button above nav tabs -->
-  <div class="row" style="margin-top:30px;">
-    <div class="col-md-12">
+  <div style="margin-top:30px;">
+    <div>
       <%= render 'hyrax/base/flash_msg' %>
       <% content_for :body_css_classes do %>showcase showcase-edit teams ms-collection-edit<% end %>
 
-      <div class="col-xs-9 title team-title">
+      <div class="col-xs-9 no-horizontal-padding title team-title">
         <div>
           <span class="fa fa-edit" aria-hidden="true"></span>
           <h1 style="margin-bottom:20px;"><%= @collection.title.first %>
@@ -20,7 +20,7 @@
         </div>
       </div>
       <br>
-      <div class="panel panel-default tabs teams" id="collection-edit-controls">
+      <div class="panel panel-default panel-borders tabs teams" id="collection-edit-controls">
         <%= render 'nav_tabs' %>
         <%= render 'morphosource/dashboard/collections/members/form' %>
       </div>

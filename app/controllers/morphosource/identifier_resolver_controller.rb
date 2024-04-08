@@ -2,25 +2,14 @@
 module Morphosource
   class IdentifierResolverController < ApplicationController
     def resolve_ark
-byebug  
       if !ark_path_valid?
         redirect_to '/', alert: 'ARK path is not valid or application is not configured to resolve ARKs.' and return
       end
 
-      if !ark_work_id_valid?
-        redirect_to '/', alert: 'Media ID is not valid or media is unavailable.' and return
-      end
-
-      if ark_path_valid? && resolved_path.present?
-
-
-        
-
+      if resolved_path.present?
         redirect_to resolved_path and return
-        
-        
-
-        #redirect_to main_app.media_showcase_path(ms2_id) and return
+      else
+        redirect_to '/', alert: 'Work ID is not valid or work is unavailable.' and return
       end
     end
 
@@ -54,22 +43,27 @@ byebug
       @ark_shoulder_split ||= ( ENV['EZID_DEFAULT_SHOULDER'] || '' ).split('/')
     end
 
-#    def ark_work_id_valid?
-#      @work_id = path_split[2][/\d+/]
-#      @work_id.present? && Media.exists?(ms2_id)
-#    end
-
     def resolved_path
-byebug
-      @work_id = path_split[2][/\d+/]
-byebug
-      if @work_id.present?
-        if (work = ActiveFedora::Base.find(ms2_id)).present?
-byebug
-          return "work_path_here"
+      @resolved_path ||= begin
+        @work_id = path_split[2][/\d+/]
+        if @work_id.present?
+          if (work = ActiveFedora::Base.find(ms2_id)).present?
+            case work.class.to_s
+            when 'Media'
+              return main_app.media_showcase_path(id: ms2_id)
+            when 'Device'
+              return main_app.hyrax_device_path(id: ms2_id)
+            when 'BiologicalSpecimen'
+              return main_app.specimen_showcase_path(id: ms2_id)        
+            when 'CulturalHeritageObject'
+              return main_app.cho_showcase_path(id: ms2_id)        
+            when 'OrganizationCollection'
+              return main_app.organization_collection_path(id: ms2_id)
+            end
+          end
         end
+        nil
       end
-      return nil
     end
 
     # doi methods    
@@ -90,7 +84,6 @@ byebug
       @work_id = path_split[1][/\d+/]
       @work_id.present? && Media.exists?(ms2_id)
     end
-
 
     # common utility methods
     def path_split

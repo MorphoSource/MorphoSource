@@ -39,8 +39,11 @@ module SubmissionsControllerBehavior
     # Get devices and add devices with .organization_id relationship to device orgs select2 data
     @devices = Device.all_solr
     @devices_with_ids = @devices.map do |d|
+      org_devices = []
       if (organization_id = d['organization_id_ssim']&.first).present?
-        org_devices = @device_organizations_hash[organization_id][:devices]
+        if @device_organizations_hash.present? && @device_organizations_hash[organization_id].present?
+          org_devices = @device_organizations_hash[organization_id][:devices]
+        end
         org_devices << d['id'] unless org_devices.include?(d['id'])
       end
 

@@ -4,9 +4,13 @@ class OrganizationCollection < Collection
   include Morphosource::OrganizationMetadata
   include Morphosource::PermissionsDefaultsMetadata
   include Morphosource::LocationMetadata
+  include Morphosource::PersistentIdentifiersBehavior
 
   after_create :create_collection_groups
   after_create :create_organization_project
+  after_update :update_ark_status
+  after_create :mint_ark
+  after_destroy :delete_ark_if_reserved
 
   self.indexer = OrganizationCollectionIndexer
 

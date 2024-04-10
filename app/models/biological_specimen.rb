@@ -3,13 +3,16 @@ class BiologicalSpecimen < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
   include Morphosource::PhysicalObjectBehavior
   include Morphosource::BiologicalSpecimenIdigbioUpdateBehavior
+  include Morphosource::PersistentIdentifiersBehavior
   validates_with Morphosource::ParentChildValidator
   before_create :controlled_value_filter, :date_filter, :set_idigbio_link_origin_when_create
   before_update do
     controlled_value_filter
     date_filter
   end
-  after_update :reindex_media
+  after_update :reindex_media, :update_ark_status
+  after_create :mint_ark
+  after_destroy :delete_ark_if_reserved
 
   self.indexer = BiologicalSpecimenIndexer
   # Change this to restrict which works can be added as a child.

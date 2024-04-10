@@ -1,5 +1,54 @@
 body.dashboard {
-  padding-top: 55px;
+  background-color: #fff;
+  padding-top: 0;
+
+  &.ms-collection-edit .panel#collection-edit-controls {
+    margin-left: 0;
+    margin-right: 0;
+
+    .panel {
+      margin-left: 0;
+      margin-right: 0;
+
+      &.panel-default {
+        border: none;
+      }
+
+      .panel-body {
+        padding-top: 0;
+        padding-left: 5px;
+      }
+    }  
+  }
+
+  &.profile .panel-body {
+    padding: 0;
+  }
+
+  .collections-wrapper {
+    padding-top: 10px; 
+
+    .collections-panel-wrapper.panel {
+      width: unset;
+    }
+  }
+  
+  .main-content {
+    background-color: #fff;
+  }
+
+  .ownership-transfer {
+    .panel {
+      float: unset;
+      width: unset;
+    }
+  }
+
+  .sidebar {
+    // Sidebar should adjust for 55px masthead height
+    min-height: calc(100vh - 55px);
+  }
+
 }
 
 .landing-header {
@@ -149,7 +198,7 @@ body.dashboard {
 }
 
 .collection-description {
-  padding: 10px 0 15px 10px;
+  padding: 10px 0 15px 0;
   max-width: 85%;
 }
 

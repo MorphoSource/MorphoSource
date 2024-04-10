@@ -2,11 +2,10 @@
 <% provide :page_title, t("hyrax.admin.sidebar.#{@collection_list_type}s") %>
 <% icon_class = @collection_list_type == 'team' ? "fa-users" : "fa-folder-open" %>
 <% provide :page_header do %>
-  <div class="col-xs-9 title">
-
+  <div class="col-xs-9 no-horizontal-padding title">
     <h1><span class="fa <%= icon_class %>" aria-hidden="true"></span> <%= t("hyrax.admin.sidebar." + @collection_list_type.pluralize) %></h1>
   </div>
-  <div class="col-xs-3 show-actions text-right">
+  <div class="col-xs-3 no-horizontal-padding show-actions text-right">
     <% if can?(:create_any, Collection) && @collection_type_list_presenter.any? %>
     <% if @collection_list_type == 'team' %>
       <%= link_to('New Team', main_app.new_team_path, class: 'btn btn-primary') %>
@@ -24,9 +23,9 @@
   <% end %>
 
 <% end %>
-<div class="collections-wrapper">
+<div class="col-xs-12 collections-wrapper">
   <%# Collections list %>
-  <div class="panel panel-default collections-panel-wrapper">
+  <div class="panel panel-default panel-borders collections-panel-wrapper">
     <div class="panel-body">
       <h2 class="sr-only">Collections listing</h2>
       <%= render 'search_header' %>

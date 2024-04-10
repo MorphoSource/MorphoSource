@@ -3,34 +3,36 @@
 <% provide :page_title, t("morphosource.dashboard.my.#{@collections_type}.page_title") %>
 
 <% provide :page_header do %>
-<div class="row">
-  <div class="col-xs-9 title">
-    <h1>
-      <span class="fa <%= @collections_type == "organizations"? 'fa-landmark' : 'fa-list'  %>" aria-hidden="true"></span> <%= t("morphosource.dashboard.my.#{@collections_type}.page_title") %>
-    </h1>
+  <div class="row no-horizontal-padding row-no-gutters">
+    <div class="col-xs-9 title">
+      <h1>
+        <span class="fa <%= @collections_type == "organizations"? 'fa-landmark' : 'fa-list'  %>" aria-hidden="true"></span> <%= t("morphosource.dashboard.my.#{@collections_type}.page_title") %>
+      </h1>
+    </div>
+    <div class="col-xs-3 no-horizontal-padding show-actions text-right">
+      <% if (@collections_type == "media_lists" && current_user.registered?) || can?(:create_any, Collection) %>
+        <% # link directly to create collection form with type %>
+        <%= link_to(t("morphosource.dashboard.my.#{@collections_type}.action.new"), new_collection_url(@collections_type), class: 'btn btn-primary') %>
+      <% end %>
+    </div>
   </div>
-  <div class="col-xs-3 show-actions text-right">
-    <% if (@collections_type == "media_lists" && current_user.registered?) || can?(:create_any, Collection) %>
-      <% # link directly to create collection form with type %>
-      <%= link_to(t("morphosource.dashboard.my.#{@collections_type}.action.new"), new_collection_url(@collections_type), class: 'btn btn-primary') %>
+
+  <div class="row no-horizontal-padding row-no-gutters">
+    <div class="collection-description">
+      <%= t("morphosource.glossary.#{@collections_type}") %>
+    </div>
+    <% @collection_counts.each do |membership, count| %>
+      <% if @collections_type == "organizations" %>
+        <%= render 'morphosource/my/collections/organizations/membership_count', membership: membership, count: count %>
+      <% else %>
+        <%= render 'membership_count', membership: membership, count: count %>
+      <% end %>
     <% end %>
   </div>
-</div>
-<div class="row">
-  <div class="collection-description">
-    <%= t("morphosource.glossary.#{@collections_type}") %>
-  </div>
-  <% @collection_counts.each do |membership, count| %>
-    <% if @collections_type == "organizations" %>
-      <%= render 'morphosource/my/collections/organizations/membership_count', membership: membership, count: count %>
-    <% else %>
-      <%= render 'membership_count', membership: membership, count: count %>
-    <% end %>
-  <% end %>
 <% end %>
-</div>
-<div class="collections-wrapper">
-  <div class="panel panel-default collections-panel-wrapper">
+
+<div class="col-xs-12 collections-wrapper">
+  <div class="panel panel-default panel-borders collections-panel-wrapper">
     <div class="panel-heading">
       <span class="count-display"><%= I18n.t("morphosource.dashboard.my.#{@collections_type}.count", total_count: @response.total_count).html_safe %></span>
     </div>
@@ -44,5 +46,4 @@
 
   <!-- Render Modals -->
   <%= render 'modal_delete_collection' %>
-
 </div><!-- /collections-wrapper -->

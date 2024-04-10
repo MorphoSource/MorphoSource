@@ -17,7 +17,7 @@
   </ol>
 </nav>
 
-<div class="row">
+<div class="row no-horizontal-padding">
   <div class="col-xs-12 main-header">
     <h1>
       <% if @cart %>
@@ -32,11 +32,13 @@
   </div>
 </div>
 
-<div class="panel-body">
-  <h2 class="sr-only">Works listing</h2>
-  <%= render 'batch_actions' %>
-  <%= render 'morphosource/itemtable/document_list' %>
-  <%= render 'morphosource/itemtable/results_pagination' %>
+<div class="panel">
+  <div class="panel-body">
+    <h2 class="sr-only">Works listing</h2>
+    <%= render 'batch_actions' %>
+    <%= render 'morphosource/itemtable/document_list' %>
+    <%= render 'morphosource/itemtable/results_pagination' %>
+  </div>
 </div>
 
 <%= render 'morphosource/my/modals/page_modal' %>

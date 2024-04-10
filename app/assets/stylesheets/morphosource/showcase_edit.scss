@@ -271,24 +271,20 @@ input[type=checkbox].disabled {
     min-width: 80px;
   }
 
-  /*
-  .list-filters {
-    .dropdown-menu {
-      background-color: transparent;
-    }
-    .dropdown-toggle {
-      background-color: transparent;
-    }
-    .btn {
-      color: $font-color;
-    }
-  } */
-
   .panel {
     border: none;
     margin-left: -15px;
     margin-right: -15px;
-    // width: unset; TODO for upcoming UI overhaul
+  }
+
+  // Hyrax .dashboard .panel has borders, showcase-edit overwrites this, this allows to put back in
+  .panel-borders {
+    border: 1px solid #dedede;
+  }
+
+  .panel-borders.tabs {
+    margin-top: 0 !important;
+    padding-top: 44px !important;
   }
 
   .panel-full-width .panel {
@@ -317,11 +313,6 @@ input[type=checkbox].disabled {
   .nav-tabs.sub-nav {
     padding-top: 2px;
   }
-
-  /*
-  .listing li:not(.processing_activity_items) {
-    width: 200px !important;
-  } */
 
   .processing_activity_items {
     .field-controls {

@@ -11,7 +11,7 @@ module SubmissionsControllerBehavior
     @device_organizations = repository.search(device_organizations_search_builder.query)["response"]["docs"]
     @device_organizations_hash = @device_organizations.map do |o|
       [
-        o['id'], 
+        o['id'],
         {
           id: o['id'],
           text: "#{[o['institution_name_tesim']&.first, o['title_tesim']&.first].compact.join(', ')} (#{o['institution_code_tesim']&.join('/')}:#{o['collection_code_tesim']&.join('/')})",
@@ -34,8 +34,8 @@ module SubmissionsControllerBehavior
         }
       ]
     end.to_h
-    
-    
+
+
     # Get devices and add devices with .organization_id relationship to device orgs select2 data
     @devices = Device.all_solr
     @devices_with_ids = @devices.map do |d|
@@ -45,7 +45,7 @@ module SubmissionsControllerBehavior
       end
 
       [
-        d['id'], 
+        d['id'],
         {
           id: d['id'],
           text: [d['creator_tesim']&.first, d['title_tesim']&.first].compact.join(' '),
@@ -121,5 +121,36 @@ module SubmissionsControllerBehavior
         data_manager: o['data_manager_tesim']&.first
       }
     end
+  end
+
+  # Methods related to transferring media to organization control
+
+  def organization_media_transfer
+    @organization_media_transfer ||= get_organization_media_transfer
+  end
+
+  def get_organization_media_transfer
+    return unless find_organization.present?
+
+    if ((@organization.organization_collection? &&
+        @organization.media_ownership_transfer?) ||
+        @organization.data_manager.present?
+    )
+      transfer_media_immediately? ? :immediate : :publication
+    else
+      nil
+    end
+  end
+
+  def transfer_media_immediately?
+    transfer = params.dig(:media, :transfer_management)
+    visibility = params.dig(:batch_submission, :media, :visibility) || params.dig(:media, :visibility)
+
+    transfer == 'immediate' || ['open', 'restricted_download'].include?(visibility)
+  end
+
+  def find_organization
+    id = @submission&.organization_id || params['organization_id']
+    @organization ||= Organization.where(id: id)&.first || OrganizationCollection.where(id: id)&.first
   end
 end

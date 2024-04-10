@@ -83,6 +83,9 @@ class Organization < Morphosource::Works::Base
     Collection.find(team_id.first)
   end
 
+  # for compatibility with organization collections
+  def media_ownership_transfer; end
+
   # TODO: investigate why this doesn't work w/ index_related_works
   def record_original_team
     return nil if !team_id_changed?

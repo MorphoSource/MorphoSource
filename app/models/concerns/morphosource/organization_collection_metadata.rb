@@ -8,7 +8,7 @@ module Morphosource
       # media ownership transfer
       property :media_ownership_transfer, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/mediaOwnershipTransfer"), multiple: false
 
-      property :ark, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/organizationCollectionARK") do |index|
+      property :ark, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/ark") do |index|
         index.as :stored_searchable
       end
     end

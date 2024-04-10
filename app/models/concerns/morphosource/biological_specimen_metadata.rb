@@ -37,7 +37,7 @@ module Morphosource
         index.as :stored_searchable
       end
 
-      property :ark, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/biologicalSpecimenARK") do |index|
+      property :ark, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/ark") do |index|
         index.as :stored_searchable
       end
 

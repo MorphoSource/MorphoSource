@@ -13,7 +13,7 @@ module Morphosource
         index.as :stored_searchable, :symbol
       end
 
-      property :ark, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/deviceARK") do |index|
+      property :ark, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/ark") do |index|
         index.as :stored_searchable
       end
     end

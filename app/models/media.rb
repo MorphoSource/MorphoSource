@@ -569,7 +569,7 @@ class Media < Morphosource::Works::Base
 
   def transfer_media_to_organization_collection(org)
     # check that organization has a valid data manager
-    if User.find_by_user_key(org&.data_manager&.first).present?
+    if org.managers&.first.present?
       if self.organization_transfer_on_publish
         self.organization_transfer_on_publish = false
         self.save!

@@ -510,27 +510,6 @@ class SubmissionsController < ApplicationController
     work.transfer_media_to_organization
   end
 
-  def organization_media_transfer
-    @organization_media_transfer ||= get_organization_media_transfer
-  end
-
-  def get_organization_media_transfer
-    if (
-      @submission.organization_id.present? &&
-      (org = find_organization(@submission.organization_id)).present? &&
-      (org.organization_collection? || org.data_manager.present?)
-    )
-      transfer_media_immediately? ? :immediate : :publication
-    else
-      nil
-    end
-  end
-
-  def transfer_media_immediately?
-    ( params.dig(:media, :transfer_management) == 'immediate' ) ||
-      ['open', 'restricted_download'].include?(params.dig(:media, :visibility))
-  end
-
   # Utility functions
 
   def to_id(work)
@@ -839,9 +818,5 @@ class SubmissionsController < ApplicationController
   def object_organizations_search_builder
     @object_organizations_search_builder ||=
       self.object_organizations_search_builder_class.new(self).rows(999999)
-  end
-
-  def find_organization(id)
-    @organization ||= Organization.where(id: id)&.first || OrganizationCollection.where(id: id)&.first
   end
 end

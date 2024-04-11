@@ -47,6 +47,7 @@ module Morphosource
                                       :institution_name,
                                       :license,
                                       :license_blank,
+                                      :media_ownership_transfer,
                                       :morphosource_use_agreement_type,
                                       :organization_type,
                                       :permissions_enforcement_mode,

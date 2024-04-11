@@ -60,14 +60,14 @@ module Morphosource
         # Proxy Deposits
 
         can :transfer, String do |id|
-          admin? || user_is_media_organization_manager?(id)
+          admin? || user_manages_media_through_organization?(id)
         end
 
         can :accept, ProxyDepositRequest do |request|
           unless request.status == "pending"
             false
           else
-            user_is_media_organization_manager?(request.work_id)
+            user_is_manager_of_organization?(request.receiving_user_id)
           end
         end
 
@@ -75,7 +75,7 @@ module Morphosource
           unless request.status == "pending"
             false
           else
-            user_is_media_organization_manager?(request.work_id)
+            user_is_manager_of_organization?(request.receiving_user_id)
           end
         end
       end
@@ -158,9 +158,11 @@ module Morphosource
           nil
         end
 
-        def user_is_media_organization_manager?(document_id)
-          organization_id = SolrDocument.find(document_id)['media_organization_id_ssim']&.first
-          user_is_manager_of_organization?(organization_id)
+        def user_manages_media_through_organization?(media_id)
+          return unless media = solr_document(media_id)
+
+          owner_id = media['owner_ssim']&.first
+          user_is_manager_of_organization?(owner_id)
         end
 
         def user_is_manager_of_organization?(id)

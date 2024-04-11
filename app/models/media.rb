@@ -1,7 +1,6 @@
 class Media < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
   include Morphosource::MediaBehavior
-  include Morphosource::PersistentIdentifiersBehavior
   validates_with Morphosource::ParentChildValidator
   before_create :controlled_value_filter, :date_filter
   after_create :mint_ark
@@ -349,6 +348,82 @@ class Media < Morphosource::Works::Base
   # Persistent identifier methods
   #
 
+  def ark_resource_type
+    # Valid ARK resource types:
+    # 'Audiovisual', 'Collection', 'DataPaper', 'Dataset', 'Event', 'Image',
+    # 'InteractiveResource', 'Model', 'PhysicalObject', 'Service', 'Software',
+    # 'Sound', 'Text', 'Workflow', 'Other'
+    # These are defined in resourceTypeGeneral in the DataCite Metadata Schema:
+    # http://schema.datacite.org/meta/kernel-4.3/
+    ark_resource_type_mappings = {
+      'Video' => 'Audiovisual',
+      'Mesh' => 'Image',
+      'CTImageSeries' => 'Collection',
+      'PhotogrammetryImageSeries' => 'Collection'
+    }
+    if ark_resource_type_mappings.key?(self.media_type.first)
+      return ark_resource_type_mappings[self.media_type.first]
+    else
+      return self.media_type.first
+    end
+  end
+
+  # possible ARK status changes:
+  # - reserved->public
+  # - public->unavailable
+  # - unavailable->public
+  def update_ark_status
+    unless self.ark.empty?
+      if self.fileset_accessibility_changed?
+        ark_identifier = Ezid::Identifier.find(self.ark.first)
+        file_visibility = self.fileset_accessibility.first
+        public_visibilities = %w{open restricted_download preview_only hidden}
+        if %w{reserved unavailable}.include?(ark_identifier.status) && public_visibilities.include?(file_visibility)
+          ark_identifier.status = 'public'
+          ark_identifier.save
+        elsif (ark_identifier.status == 'public') && (!public_visibilities.include?(file_visibility))
+          ark_identifier.status = 'unavailable'
+          ark_identifier.save
+        end
+      end
+    end
+  end
+
+  def mint_ark
+    if self.ark.empty?
+      %w{DEFAULT_SHOULDER USER PASSWORD TARGET_HOST}.each do |required_env_variable|
+        if ENV["EZID_#{required_env_variable}"].blank?
+          Rails.logger.error("Error minting ARK: #{required_env_variable} environment variable not set")
+          return true
+        end
+      end
+      depositor_user = User.find_by(ms_id: self.depositor)
+      depositor_user_name_components = depositor_user.display_name.split(' ')
+      # DataCite metadata expects creator in the form Lastname, Firstname
+      datacite_creator = [depositor_user_name_components.drop(1).join(' '),depositor_user_name_components.first].join(', ')
+      public_visibilities = %w{open restricted_download preview_only hidden}
+      ark_status = public_visibilities.include?(self.fileset_accessibility) ? 'public' : 'reserved'
+      ark_metadata = {'_status' => ark_status,
+                      '_target' => Rails.application.routes.url_helpers.media_showcase_url(:host => ENV['EZID_TARGET_HOST'], id: self.id),
+                      '_profile' => 'datacite',
+                      'datacite.identifiertype' => 'ARK',
+                      'datacite.creator' => datacite_creator,
+                      'datacite.publisher' => 'MorphoSource.org',
+                      'datacite.title' => self.title.first,
+                      'datacite.publicationyear' => Time.now.year.to_s,
+                      'datacite.resourcetypegeneral' => self.ark_resource_type
+      }
+      requested_ark = "#{ENV['EZID_DEFAULT_SHOULDER']}/#{self.id.sub(/^0*/,'')}"
+
+      minted_ark = Ezid::Identifier.create(requested_ark, ark_metadata)
+      unless minted_ark.nil?
+        self.ark = [minted_ark.id]
+        self.save
+      end
+      return true
+    end
+  end
+
   def mint_doi(target_url)
     if self.doi.empty?
       depositor_user = User.find_by(ms_id: self.user_with_ownership)
@@ -447,26 +522,19 @@ class Media < Morphosource::Works::Base
     temporary_links.where('expires_at > ?', DateTime.now)
   end
 
+  def owner_class
+    User.find_by(ms_id: self.owner)&.class || OrganizationCollection.find_by(id: self.owner)&.class
+  end
+
   #
   # Organization media transfer
   #
 
-  # TODO: Refactor when organization collections have been implemented on production.
-  def transfer_media_to_organization
-    org = organizations&.first
-    case org
-    when Organization
-      transfer_media_to_organizational_team(org)
-    when OrganizationCollection
-      transfer_media_to_organization_collection(org)
-    end
-  end
-
-  # TODO: Remove when organization collections have been implemented on production
-  # Create request to transfer ownership of media and/or move media to organization team or collection
+  # Create request to transfer ownership of media and/or move media to organization team
   # generally, don't use this for where media data manager == org data manager,
   # but the method can handle this circumstance for use in developer console, etc
-  def transfer_media_to_organizational_team(org)
+  def transfer_media_to_organization
+    org = organizations&.first
     if (
       org.present? &&
       (new_manager_id = org&.data_manager&.first).present? &&
@@ -484,24 +552,10 @@ class Media < Morphosource::Works::Base
         # create transfer, when accepted it will move media to team
         create_new_organization_transfer_request(new_manager)
       end
+
+
     else
       message = "Failed to transfer management of media #{id} to organization #{org&.id} with data manager #{org&.data_manager}"
-
-      Rails.logger.fatal message
-      raise message
-    end
-  end
-
-  def transfer_media_to_organization_collection(org)
-    # check that organization has a valid data manager
-    if org.managers&.first.present?
-      if self.organization_transfer_on_publish
-        self.organization_transfer_on_publish = false
-        self.save!
-      end
-      create_new_organization_transfer_request(org)
-    else
-      message = "Failed to transfer management of media #{id} to organization #{org&.id}"
 
       Rails.logger.fatal message
       raise message
@@ -554,6 +608,15 @@ class Media < Morphosource::Works::Base
     def prevent_doi_deletion
       unless self.doi.empty?
         throw(:abort)
+      end
+    end
+
+    def delete_ark_if_reserved
+      unless self.ark.empty?
+        ark_identifier = Ezid::Identifier.find(self.ark.first)
+        if ark_identifier.status == 'reserved'
+          ark_identifier.delete
+        end
       end
     end
 

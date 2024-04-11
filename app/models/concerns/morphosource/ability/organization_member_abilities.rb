@@ -151,7 +151,7 @@ module Morphosource
 
           # get the combination of organization_groups and manager/editor groups whose name includes the media's owner.
           groups = organization_groups(media) + organization_owner_groups(media)
-          groups.select{ |group| (group.include?("managers") || group.include?("editors")) }.uniq
+          groups.select { |group| group.include?("managers") || group.include?("editors") }.uniq
         end
 
         # If the media has an owner, return an array of organization role names

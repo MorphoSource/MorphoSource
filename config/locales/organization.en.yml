@@ -1,4 +1,16 @@
 en:
+  blacklight:
+    search:
+      fields:
+        show:
+          device_media_count: Number of device media
+          managed_media_count: Number of media managed by organization
+          object_media_count: Number of object media
+          org_cho_count: Number of cultural heritage objects
+          org_device_count: Number of devices
+          org_specimen_count: Number of biological specimen objects
+          transfer_ready_media: Number of media with transfer pending or forthcoming
+          transfer_unready_media: Number of media unavailable for automated transfer
   hyrax:
     icons:
       organization:     'fa fa-file-text-o'
@@ -7,8 +19,46 @@ en:
         description:        "Organization works"
         name:               "Organization"
     organization:
+      dashboard:
+        nav_tabs:
+          details: Details
+          members: Members
+          ownership: Ownership
+          permissions: Permissions
+          projects: Projects
+        ownership:
+          introduction: On this page you can see the ownership and management status of media records and other records associated with %{org_name}. In time this will be expanded to provide you with tools to help you more effectively manage media, so keep an eye on this space. For now, you can see the current management status of media and some reminders of how organization-based media ownership works on MorphoSource. 
+          reminders:
+            r1: As a manager member of an object-holding organization, you have view (not edit) access to all media contributed by any user that represents an object associated with your organization.
+            r2: As a manager member of a device facility organization, you have view (not edit) access to all media contributed by any user that was imaged by a device associated with your organization. 
+            r3: Your organization can become the data manager for media. As an manager member of the organization, you have edit access to media where your organization is the media data manager.
+            r4: If your organization has opted into the automated data transfer workflow, you will have the option to have your organization become the data manager for all media contributed by users after the point in time when you opted into the data transfer workflow. For a given media contributed after this point in time, a data transfer request will be generated either immediately on media submission or when the media is published at a later date. The original contributor of the media decides between these two options during media submission. 
+            r5: If your organization does not opt into the automated data transfer workflow, or for media contributed prior to when your organization opted in, these media retain their original data manager. If you would like to seek to obtain data manager status over these media, we can help you reach out to contributors for this purpose, please <a href="mailto:morphosource@duke.edu">contact us</a>.
+            r6: If you would like your organization to obtain data manager status over media for which your organization is not the data manager, we can help you reach out to contributors for this purpose, please <a href="mailto:morphosource@duke.edu">contact us</a>.
+            title: Management Reminders
+          stats:
+            export:
+              devices: Export CSV of devices
+              media_device: Export CSV of device media
+              media_managed: Export CSV of managed media
+              media_object: Export CSV of object media
+              media_transfer_status: Export CSV of object media with transfer status
+              objects_bso: Export CSV of biological specimen objects
+              objects_cho: Export CSV of cultural heritage objects
+            title: Record Counts with Ownership Summary
+      show:
+        facets:
+          transfer:
+            managed: Managed by Organization
+            ready: Transfer Request Pending or Will Be Generated
+            unready: Not Available for Automated Transfer
       permissions:
         media_preview: By default, all media display an interactive and embeddable 3D/2D preview. Data contributors can optionally disable the interactive preview, replacing it with a small 2D media thumbnail. Organizations with appropriate use cases can enforce interactive previews or 2D thumbnails.
+        media_ownership_transfer:
+          text: Opt in to automated transfer of media ownership to this organization. When enabled, contributors depositing media representing organization-managed objects will be given a choice between transferring ownership of the media immediately upon deposit or waiting until publication of the media.
+          status:
+            true: "Enabled"
+            false: "Not enabled"
         permissions_enforcement_mode: Organization permissions are typically enforced via recommendation. Values become the default for newly contributed media and contributors are encouraged not to change them unless extenuating circumstances exist. Organizations with relevant policies can enforce permissions via requirement, mandating that all contributors follow all permissions settings.
         contact_us: If your organization meets the use case(s) to modify the choices above for <b>Media preview mode</b> or <b>Permissions enforcement mode</b>, please <a href="mailto:morphosource@duke.edu">contact us</a>.
   simple_form:
@@ -25,9 +75,17 @@ en:
         description: Description/Notes
     hints:
       organization:
-        institution_name: The name of the larger museum, university, or corporation this organization belongs to.
-        title: The name of the collection, laboratory, department, or other autonomous organization that manages a collection of physical objects.
-        institution_code: The code used in the first part of the organization's Darwin Core triplet for specimens. Probably used by multiple organizations in an institution.
         collection_code: The code used in the second part of the organization's Darwin Core triplet for specimens. Used to differentiate specimens in one collection from specimens in other collections.
+        device_media_count: Total number of media imaged by organization devices, you have view access to these
+        institution_code: The code used in the first part of the organization's Darwin Core triplet for specimens. Probably used by multiple organizations in an institution.
+        institution_name: The name of the larger museum, university, or corporation this organization belongs to.
+        managed_media_count: Total number of media where organization is the media data manager, you have edit access to these
+        object_media_count: Total number of media representing organization objects, you have view access to these
+        org_cho_count: Total number of cultural heritage objects linked to organization, you can edit these
+        org_device_count: Total number of devices linked to organization, you can edit these
+        org_specimen_count: Total number of biological specimen objects linked to organization, you can edit these
         related_url: The website(s) associated with the organization.
+        title: The name of the collection, laboratory, department, or other autonomous organization that manages a collection of physical objects.
+        transfer_ready_media: Total number of media where an automated transfer request is currently pending or where a request will be generated on media publication
+        transfer_unready_media: Total number of media that are not available for automated transfer, probably due to pre-dating organization opting in to automated transfer workflow
         value_blank_check: If this is selected, users contributing media will be recommended or required to leave this field blank. You may not add a value to this field if this is selected.

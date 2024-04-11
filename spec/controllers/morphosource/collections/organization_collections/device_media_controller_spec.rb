@@ -22,9 +22,9 @@ RSpec.describe Morphosource::Collections::OrganizationCollections::DeviceMediaCo
         it 'responds with a 200' do
           get :show, params: params
           expect(response.status).to eq(200)
-          get :media_export_with_intersections_facet, params: params, format: :csv
+          get :media_export, params: params, format: :csv
           expect(response.status).to eq(200)
-          get :media_download_counts_with_intersections_facet, params: params, format: :csv
+          get :media_download_counts, params: params, format: :csv
           expect(response.status).to eq(200)
           get :media_downloads, params: params, format: :csv
           expect(response.status).to eq(200)
@@ -39,9 +39,9 @@ RSpec.describe Morphosource::Collections::OrganizationCollections::DeviceMediaCo
         it 'redirects to root' do
           get :show, params: params
           expect(response.status).to eq(302)
-          get :media_export_with_intersections_facet, params: params
+          get :media_export, params: params
           expect(response.status).to eq(302)
-          get :media_download_counts_with_intersections_facet, params: params
+          get :media_download_counts, params: params
           expect(response.status).to eq(302)
           get :media_downloads, params: params, format: :csv
           expect(response.status).to eq(302)
@@ -64,9 +64,9 @@ RSpec.describe Morphosource::Collections::OrganizationCollections::DeviceMediaCo
         it 'responds with a 200' do
           get :show, params: params
           expect(response.status).to eq(200)
-          get :media_export_with_intersections_facet, params: params, format: :csv
+          get :media_export, params: params, format: :csv
           expect(response.status).to eq(200)
-          get :media_download_counts_with_intersections_facet, params: params, format: :csv
+          get :media_download_counts, params: params, format: :csv
           expect(response.status).to eq(200)
           get :media_downloads, params: params, format: :csv
           expect(response.status).to eq(200)
@@ -87,9 +87,9 @@ RSpec.describe Morphosource::Collections::OrganizationCollections::DeviceMediaCo
           let(:user)  { depositor }
 
           it 'responds with a 200' do
-            get :media_export_with_intersections_facet, params: params, format: :csv
+            get :media_export, params: params, format: :csv
             expect(response.status).to eq(200)
-            get :media_download_counts_with_intersections_facet, params: params, format: :csv
+            get :media_download_counts, params: params, format: :csv
             expect(response.status).to eq(200)
             get :media_downloads, params: params, format: :csv
             expect(response.status).to eq(200)
@@ -102,9 +102,9 @@ RSpec.describe Morphosource::Collections::OrganizationCollections::DeviceMediaCo
           let(:user)  { FactoryBot.create(:contributor) }
 
           it 'responds with a 403' do
-            get :media_export_with_intersections_facet, params: params
+            get :media_export, params: params
             expect(response.status).to eq(403)
-            get :media_download_counts_with_intersections_facet, params: params
+            get :media_download_counts, params: params
             expect(response.status).to eq(403)
             get :media_downloads, params: params, format: :csv
             expect(response.status).to eq(403)

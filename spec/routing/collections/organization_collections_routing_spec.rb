@@ -124,12 +124,12 @@ RSpec.describe 'csv exports', type: :routing do
   end
 
   it 'has a media_export route' do
-    route = { controller: 'morphosource/collections/organization_collections', action: 'media_export_with_intersections_facet', id: id }
+    route = { controller: 'morphosource/collections/organization_collections', action: 'media_export', id: id }
     expect(:get => "/organizations/#{id}/media_export").to route_to(route)
   end
 
   it 'has a media_download_counts route' do
-    route = { controller: 'morphosource/collections/organization_collections', action: 'media_download_counts_with_intersections_facet', id: id }
+    route = { controller: 'morphosource/collections/organization_collections', action: 'media_download_counts', id: id }
     expect(:get => "/organizations/#{id}/media_download_counts").to route_to(route)
   end
 

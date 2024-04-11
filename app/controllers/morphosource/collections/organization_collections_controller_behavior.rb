@@ -30,6 +30,43 @@ module Morphosource
         @device_count ||= organization_device_count
       end
 
+      def managed_media_count
+        ActiveFedora::SolrService.count(
+          %{
+            has_model_ssim:Media AND 
+            media_organization_id_ssim:#{collection.id} AND
+            user_with_ownership_ssi:#{@collection.id}
+          }
+        )
+      end
+
+      def unmanaged_media_transferable_count
+        ActiveFedora::SolrService.count(
+          %{
+            has_model_ssim:Media AND 
+            media_organization_id_ssim:#{collection.id} AND
+            -owner_ssim:#{@collection.id} AND
+            organization_transfer_on_publish_bsi:true
+          }
+        )
+      end
+
+      def unmanaged_media_untransferable_count
+        ActiveFedora::SolrService.count(
+          %{
+            has_model_ssim:Media AND 
+            media_organization_id_ssim:#{collection.id} AND
+            -owner_ssim:#{@collection.id} AND
+            organization_transfer_on_publish_bsi:false
+          }
+        )
+      end
+
+      def query_media_management_counts
+        @managed_media_count ||= managed_media_count
+        @unmanaged_media_transferable_count ||= unmanaged_media_transferable_count
+        @unmanaged_media_untransferable_count ||= unmanaged_media_untransferable_count
+      end
     end
   end
 end

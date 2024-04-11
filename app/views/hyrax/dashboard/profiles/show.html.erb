@@ -1,7 +1,9 @@
 <% content_for :body_css_classes do %>showcase profile<% end %>
 
 <% provide :page_header do %>
-  <h1><span class="fa fa-id-card" aria-hidden="true"></span> <%= t("hyrax.admin.sidebar.profile") %></h1>
+  <div class="col-xs-6 no-horizontal-padding">
+    <h1><span class="fa fa-id-card" aria-hidden="true"></span> <%= t("hyrax.admin.sidebar.profile") %></h1>
+  </div>
   <% if can? :edit, current_user %>
     <div class="pull-right">
       <% if @user == current_user || current_user.admin? %>
@@ -39,7 +41,7 @@
 </div>
 
 <% if can? :edit, current_user %>
-  <div class="landing panel" style="border: none;">
+  <div class="landing panel panel-default">
     <div class="panel-body">
       <div class="list-group">
         <div class="list-group-item">

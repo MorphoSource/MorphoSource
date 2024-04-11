@@ -12,6 +12,11 @@ module Morphosource
         main_app.send("#{collection_type}_members_path", collection)
       end
 
+      # Only functional for organization collections!
+      def ownership_tab_url(collection)
+        organization_ownership_path(collection)
+      end
+
       def permissions_tab_url(collection)
         organization_permissions_path(collection)
       end

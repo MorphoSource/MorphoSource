@@ -37,9 +37,9 @@ RSpec.describe Morphosource::Collections::OrganizationCollectionsController, typ
           expect(response.status).to eq(200)
           get :about, params: params
           expect(response.status).to eq(200)
-          get :media_export_with_intersections_facet, params: params, format: :csv
+          get :media_export, params: params, format: :csv
           expect(response.status).to eq(200)
-          get :media_download_counts_with_intersections_facet, params: params, format: :csv
+          get :media_download_counts, params: params, format: :csv
           expect(response.status).to eq(200)
           get :media_downloads, params: params, format: :csv
           expect(response.status).to eq(200)
@@ -56,9 +56,9 @@ RSpec.describe Morphosource::Collections::OrganizationCollectionsController, typ
           expect(response.status).to eq(302)
           get :about, params: params
           expect(response.status).to eq(302)
-          get :media_export_with_intersections_facet, params: params
+          get :media_export, params: params
           expect(response.status).to eq(302)
-          get :media_download_counts_with_intersections_facet, params: params
+          get :media_download_counts, params: params
           expect(response.status).to eq(302)
           get :media_downloads, params: params, format: :csv
           expect(response.status).to eq(302)
@@ -83,9 +83,9 @@ RSpec.describe Morphosource::Collections::OrganizationCollectionsController, typ
           expect(response.status).to eq(200)
           get :about, params: params
           expect(response.status).to eq(200)
-          get :media_export_with_intersections_facet, params: params, format: :csv
+          get :media_export, params: params, format: :csv
           expect(response.status).to eq(200)
-          get :media_download_counts_with_intersections_facet, params: params, format: :csv
+          get :media_download_counts, params: params, format: :csv
           expect(response.status).to eq(200)
           get :media_downloads, params: params, format: :csv
           expect(response.status).to eq(200)
@@ -108,9 +108,9 @@ RSpec.describe Morphosource::Collections::OrganizationCollectionsController, typ
           let(:user)  { depositor }
 
           it 'responds with a 200' do
-            get :media_export_with_intersections_facet, params: params, format: :csv
+            get :media_export, params: params, format: :csv
             expect(response.status).to eq(200)
-            get :media_download_counts_with_intersections_facet, params: params, format: :csv
+            get :media_download_counts, params: params, format: :csv
             expect(response.status).to eq(200)
             get :media_downloads, params: params, format: :csv
             expect(response.status).to eq(200)
@@ -123,9 +123,9 @@ RSpec.describe Morphosource::Collections::OrganizationCollectionsController, typ
           let(:user)  { FactoryBot.create(:contributor) }
 
           it 'responds with a 403' do
-            get :media_export_with_intersections_facet, params: params
+            get :media_export, params: params
             expect(response.status).to eq(403)
-            get :media_download_counts_with_intersections_facet, params: params
+            get :media_download_counts, params: params
             expect(response.status).to eq(403)
             get :media_downloads, params: params, format: :csv
             expect(response.status).to eq(403)
@@ -150,11 +150,8 @@ RSpec.describe Morphosource::Collections::OrganizationCollectionsController, typ
   end
 
   describe 'configure_facets' do
-    let(:facet_fields)  { described_class.blacklight_config.facet_fields}
-
-    before do
-      described_class.configure_facets
-    end
+    let(:controller_instance) { described_class.new }
+    let(:facet_fields) { controller_instance.blacklight_config.facet_fields }
 
     describe 'publication_status' do
       subject { facet_fields["publication_status"]}
@@ -167,13 +164,6 @@ RSpec.describe Morphosource::Collections::OrganizationCollectionsController, typ
       subject { facet_fields["media_type"]}
       it 'has a media_type facet' do
         expect(subject.label).to eq("Media Type")
-      end
-    end
-
-    describe 'organization' do
-      subject { facet_fields["organization"]}
-      it 'has a organization facet' do
-        expect(subject.label).to eq("Organization")
       end
     end
 
@@ -241,6 +231,39 @@ RSpec.describe Morphosource::Collections::OrganizationCollectionsController, typ
       subject { facet_fields["object_type"] }
       it 'has an object type facet' do
         expect(subject.label).to eq("Object Type")
+      end
+    end
+
+    describe 'transfer status' do
+      subject { facet_fields["transfer"] }
+
+      let(:organization)  { FactoryBot.create(:organization_collection, visibility: 'open', depositor: user.ms_id) }
+      let(:user)          { FactoryBot.create(:admin) }
+
+      context 'with admin user' do
+        before do
+          allow(controller_instance).to receive(:current_user) { user }
+          controller_instance.instance_variable_set(:@curation_concern, organization)
+          controller_instance.create_transfer_facet
+        end
+
+        it 'has a transfer status facet' do
+          expect(subject.label).to eq("Transfer Status")
+        end
+      end
+
+      context 'with non-admin user' do
+        let(:user)          { FactoryBot.create(:user) }
+
+        before do
+          allow(controller_instance).to receive(:current_user) { user }
+          controller_instance.instance_variable_set(:@curation_concern, organization)
+          controller_instance.create_transfer_facet
+        end
+
+        it 'has a transfer status facet' do
+          expect(subject).to be nil
+        end
       end
     end
   end

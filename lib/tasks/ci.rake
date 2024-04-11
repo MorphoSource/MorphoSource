@@ -4,9 +4,9 @@ begin
   namespace :ci do
     RSpec::Core::RakeTask.new(:spec, :tag) do |t, task_args|
       if ENV['RSPEC_FAIL_FAST']
-        t.rspec_opts = "--tag #{task_args[:tag]} --fail-fast"
+        t.rspec_opts = "--tag #{task_args[:tag]} --fail-fast --format documentation"
       else
-        t.rspec_opts = "--tag #{task_args[:tag]}"
+        t.rspec_opts = "--tag #{task_args[:tag]} --format documentation"
       end
     end
 

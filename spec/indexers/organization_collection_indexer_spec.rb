@@ -41,6 +41,7 @@ RSpec.describe OrganizationCollectionIndexer do
                                                                         rights_statement: ['http://rightsstatements.org/vocab/InC/1.0/'],
                                                                         rights_statement_blank: ['0'],
                                                                         state_province: ['Massachusetts'],
+                                                                        ark: ["ark:/12345/m4/678910"],
                                                                         title: ['organization collection']) }
 
 
@@ -103,5 +104,7 @@ RSpec.describe OrganizationCollectionIndexer do
     expect(solr_document['title_ssi']).to eq(organization.title.first)
     expect(solr_document['title_tesim']).to match_array(organization.title)
     expect(solr_document['visibility_ssi']).to eq(organization.visibility)
+    expect(solr_document['ark_ssim']).to match_array(organization.ark)
+    expect(solr_document['ark_tesim']).to match_array(organization.ark)
   end
 end

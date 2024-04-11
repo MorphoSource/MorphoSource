@@ -192,6 +192,14 @@ module Morphosource
           @media_owner_id ||= solr_document(media)&.to_h&.dig('owner_ssim')&.first
         end
 
+        def media_owner_type(media)
+          @media_owner_type ||= solr_document(media)&.to_h&.dig('owner_type_ssi')&.first
+        end
+
+        def owner_is_organization?(media)
+          media_owner_type(media) == 'OrganizationCollection'
+        end
+
         def user_is_media_organization_manager?(media_id)
           return false if media_id.blank?
 

@@ -31,8 +31,10 @@ module Morphosource
           form
         end
 
+        # Compared to other routes, have to duplicate some logic from show page endpoints
         def ownership
           @tab = :ownership
+          @object_ids = collection_object_ids
           query_collection_counts
           query_media_management_counts
           presenter

@@ -73,7 +73,7 @@
 </div>
 
 <% if current_user.admin? %>
-  <div class="form-group row admin-preview-mode-container">
+  <div class="form-group xadmin-preview-mode-container">
     <h2>Admin Settings</h2>
     <% unless @collection.organization_collection? %>
       <%= render_edit_field_partial('data_manager', f: f, placeholder: 'No preference') %>

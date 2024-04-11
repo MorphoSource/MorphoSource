@@ -1,137 +1,134 @@
 <div id="details" class="tab-pane active">
   <div class="panel panel-default labels">
-    <div class="panel-body">
-        <div class="row">
-          <div class="col-sm-6">
-            <div class="content-block">
-              <h2>GENERAL DETAILS</h2>
-              <% if @current_user.admin? %>
-                <%= f.input 'title', label: 'Name', input_html: { class: 'form-control' } %>
-                <%= render_edit_field_partial('organization_type', f: f) %>
-                <%= render_edit_field_partial('institution_name', f: f) %>
-                <%= render_edit_field_partial('institution_code', f: f) %>
-                <%= render_edit_field_partial('collection_code', f: f) %>
-                <%= render_edit_field_partial('recordset_id', f: f) %>
-              <% else %>
-                <div class="row">
-                  <div class="col-xs-6 showcase-label">
-                    <%= t('simple_form.labels.organization_collection.title') %>
-                    <i class="material-icons tooltip-icon" data-original-title="" title="">
-                      <p class="hint hide"><%= t('simple_form.hints.organization_collection.title') %> </p>
-                    </i>
-                  </div>
-                  <div class="col-xs-6 showcase-value "><%= @presenter.title&.first %></div>
+    <%# Instead of panel-body div, use container-fluid to support row with cols %>
+    <div class="container-fluid mb-1">
+      <div class="row no-horizontal-padding">
+        <div class="col-sm-6">
+          <div class="content-block">
+            <h2>GENERAL DETAILS</h2>
+            <% if @current_user.admin? %>
+              <%= f.input 'title', label: 'Name', input_html: { class: 'form-control' } %>
+              <%= render_edit_field_partial('organization_type', f: f) %>
+              <%= render_edit_field_partial('institution_name', f: f) %>
+              <%= render_edit_field_partial('institution_code', f: f) %>
+              <%= render_edit_field_partial('collection_code', f: f) %>
+              <%= render_edit_field_partial('recordset_id', f: f) %>
+            <% else %>
+              <div class="row">
+                <div class="col-xs-6 showcase-label">
+                  <%= t('simple_form.labels.organization_collection.title') %>
+                  <i class="material-icons tooltip-icon" data-original-title="" title="">
+                    <p class="hint hide"><%= t('simple_form.hints.organization_collection.title') %> </p>
+                  </i>
                 </div>
-                <div class="row">
-                  <div class="col-xs-6 showcase-label">
-                    <%= t('simple_form.labels.organization_collection.organization_type') %>
-                    <i class="material-icons tooltip-icon" data-original-title="" title="">
-                      <p class="hint hide"><%= t('simple_form.hints.organization_collection.organization_type') %> </p>
-                    </i>
-                  </div>
-                  <div class="col-xs-6 showcase-value "><%= @presenter.organization_type&.first %></div>
+                <div class="col-xs-6 showcase-value "><%= @presenter.title&.first %></div>
+              </div>
+              <div class="row">
+                <div class="col-xs-6 showcase-label">
+                  <%= t('simple_form.labels.organization_collection.organization_type') %>
+                  <i class="material-icons tooltip-icon" data-original-title="" title="">
+                    <p class="hint hide"><%= t('simple_form.hints.organization_collection.organization_type') %> </p>
+                  </i>
                 </div>
-                <div class="row">
-                  <div class="col-xs-6 showcase-label">
-                    <%= t('simple_form.labels.organization_collection.institution_name') %>
-                    <i class="material-icons tooltip-icon" data-original-title="" title="">
-                      <p class="hint hide"><%= t('simple_form.hints.organization_collection.institution_name') %> </p>
-                    </i>
-                  </div>
-                  <div class="col-xs-6 showcase-value "><%= @presenter.institution_name&.first %></div>
+                <div class="col-xs-6 showcase-value "><%= @presenter.organization_type&.first %></div>
+              </div>
+              <div class="row">
+                <div class="col-xs-6 showcase-label">
+                  <%= t('simple_form.labels.organization_collection.institution_name') %>
+                  <i class="material-icons tooltip-icon" data-original-title="" title="">
+                    <p class="hint hide"><%= t('simple_form.hints.organization_collection.institution_name') %> </p>
+                  </i>
                 </div>
-                <div class="row">
-                  <div class="col-xs-6 showcase-label">
-                    <%= t('simple_form.labels.organization_collection.institution_code') %>
-                    <i class="material-icons tooltip-icon" data-original-title="" title="">
-                      <p class="hint hide"><%= t('simple_form.hints.organization_collection.institution_code') %> </p>
-                    </i>
-                  </div>
-                  <div class="col-xs-6 showcase-value "><%= @presenter.institution_code&.join('; ') %></div>
+                <div class="col-xs-6 showcase-value "><%= @presenter.institution_name&.first %></div>
+              </div>
+              <div class="row">
+                <div class="col-xs-6 showcase-label">
+                  <%= t('simple_form.labels.organization_collection.institution_code') %>
+                  <i class="material-icons tooltip-icon" data-original-title="" title="">
+                    <p class="hint hide"><%= t('simple_form.hints.organization_collection.institution_code') %> </p>
+                  </i>
                 </div>
-                <div class="row">
-                  <div class="col-xs-6 showcase-label">
-                    <%= t('simple_form.labels.organization_collection.collection_code') %>
-                    <i class="material-icons tooltip-icon" data-original-title="" title="">
-                      <p class="hint hide"><%= t('simple_form.hints.organization_collection.collection_code') %> </p>
-                    </i>
-                  </div>
-                  <div class="col-xs-6 showcase-value "><%= @presenter.collection_code&.join('; ') %></div>
+                <div class="col-xs-6 showcase-value "><%= @presenter.institution_code&.join('; ') %></div>
+              </div>
+              <div class="row">
+                <div class="col-xs-6 showcase-label">
+                  <%= t('simple_form.labels.organization_collection.collection_code') %>
+                  <i class="material-icons tooltip-icon" data-original-title="" title="">
+                    <p class="hint hide"><%= t('simple_form.hints.organization_collection.collection_code') %> </p>
+                  </i>
                 </div>
-                <div class="row">
-                  <div class="col-xs-6 showcase-label">
-                    <%= t('simple_form.labels.organization_collection.recordset_id') %>
-                    <i class="material-icons tooltip-icon" data-original-title="" title="">
-                      <p class="hint hide"><%= t('simple_form.hints.organization_collection.recordset_id') %> </p>
-                    </i>
-                  </div>
-                  <div class="col-xs-6 showcase-value "><%= @presenter.recordset_id&.join('; ') %></div>
+                <div class="col-xs-6 showcase-value "><%= @presenter.collection_code&.join('; ') %></div>
+              </div>
+              <div class="row">
+                <div class="col-xs-6 showcase-label">
+                  <%= t('simple_form.labels.organization_collection.recordset_id') %>
+                  <i class="material-icons tooltip-icon" data-original-title="" title="">
+                    <p class="hint hide"><%= t('simple_form.hints.organization_collection.recordset_id') %> </p>
+                  </i>
                 </div>
-              <% end %>
-              <%= render_edit_field_partial('description', f: f) %>
-              <%= render_edit_field_partial('related_url', f: f) %>
-              <%= render_edit_field_partial('contact_person', f: f) %>
-              <%= render_edit_field_partial('address', f: f) %>
-              <%= render_edit_field_partial('city', f: f) %>
-              <%= render_edit_field_partial('state_province', f: f) %>
-              <%= render_edit_field_partial('postal_code', f: f) %>
-              <%= render_edit_field_partial('country', f: f) %>
-            </div>
-          </div>
-
-          <div class="col-sm-6">
-            <div class="content-block">
-              <h2>THUMBNAIL</h2>
-              <p>Select a media managed by this team to serve as the project thumbnail in lists and search results.</p>
-              <% if f.object.persisted? %>
-                <%# we're loading these values dynamically to speed page load %>
-                <%= f.input :representative_id, label: 'Media ID for Thumbnail', hint: 'Media IDs can be viewed in the Media tab', input_html: { data: { text: f.object.representative_id } } %>
-              <% end %>
-            </div>
-            <div class="content-block">
-              <% if @form.persisted? %>
-                <% if @collection.brandable? %>
-                  <%= render 'morphosource/dashboard/collections/details/branding', f: f %>
-                <% end %>
-              <% end %>
-            </div>
-
-            <% if current_user.admin? %>
-              <div class="content-block">
-                <div class="form-group row admin-preview-mode-container">
-                  <h2>Admin Settings</h2>
-                  <%= link_to t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.label'),
-                  hyrax.dashboard_collection_path(@presenter),
-                  title: t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.label'),
-                  id: 'delete-organization',
-                  class: 'btn btn-danger btn-delete-collection',
-                  data: { confirm: t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.confirmation'),
-                          method: :delete } %>
-                </div>
+                <div class="col-xs-6 showcase-value "><%= @presenter.recordset_id&.join('; ') %></div>
               </div>
             <% end %>
+            <%= render_edit_field_partial('description', f: f) %>
+            <%= render_edit_field_partial('related_url', f: f) %>
+            <%= render_edit_field_partial('contact_person', f: f) %>
+            <%= render_edit_field_partial('address', f: f) %>
+            <%= render_edit_field_partial('city', f: f) %>
+            <%= render_edit_field_partial('state_province', f: f) %>
+            <%= render_edit_field_partial('postal_code', f: f) %>
+            <%= render_edit_field_partial('country', f: f) %>
           </div>
         </div>
 
+        <div class="col-sm-6">
+          <div class="content-block">
+            <h2>THUMBNAIL</h2>
+            <p>Select a media managed by this team to serve as the project thumbnail in lists and search results.</p>
+            <% if f.object.persisted? %>
+              <%# we're loading these values dynamically to speed page load %>
+              <%= f.input :representative_id, label: 'Media ID for Thumbnail', hint: 'Media IDs can be viewed in the Media tab', input_html: { data: { text: f.object.representative_id } } %>
+            <% end %>
+          </div>
+          <div class="content-block">
+            <% if @form.persisted? %>
+              <% if @collection.brandable? %>
+                <%= render 'morphosource/dashboard/collections/details/branding', f: f %>
+              <% end %>
+            <% end %>
+          </div>
 
-
-        <%# The following form fields might be needed.  Move them outside of the partial,
-         or remove them if not needed %>
-        <%= hidden_field_tag :type, params[:type] %>
-        <%= hidden_field_tag :visibility, 'open' %>
-        <%= hidden_field_tag :stay_on_edit, true %>
-        <%= hidden_field_tag :collection_type_gid, @collection.collection_type_gid %>
-        <!-- parent_id may be passed from the nested collections controller to allow a subcollection relationship to be added as collection is created -->
-        <% if params[:parent_id].present? %>
-          <%= hidden_field_tag :parent_id, params[:parent_id] %>
-        <% end %>
-        <% if params[:batch_document_ids].present? %>
-          <% params[:batch_document_ids].each do |batch_item| %>
-            <input type="hidden" name="batch_document_ids[]" value="<%= batch_item %>" />
+          <% if current_user.admin? %>
+            <div class="content-block">
+              <div class="form-group row admin-preview-mode-container">
+                <h2>Admin Settings</h2>
+                <%= link_to t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.label'),
+                hyrax.dashboard_collection_path(@presenter),
+                title: t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.label'),
+                id: 'delete-organization',
+                class: 'btn btn-danger btn-delete-collection',
+                data: { confirm: t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.confirmation'),
+                        method: :delete } %>
+              </div>
+            </div>
           <% end %>
+        </div>
+      </div>
+
+      <%# The following form fields might be needed.  Move them outside of the partial,
+        or remove them if not needed %>
+      <%= hidden_field_tag :type, params[:type] %>
+      <%= hidden_field_tag :visibility, 'open' %>
+      <%= hidden_field_tag :stay_on_edit, true %>
+      <%= hidden_field_tag :collection_type_gid, @collection.collection_type_gid %>
+      <!-- parent_id may be passed from the nested collections controller to allow a subcollection relationship to be added as collection is created -->
+      <% if params[:parent_id].present? %>
+        <%= hidden_field_tag :parent_id, params[:parent_id] %>
+      <% end %>
+      <% if params[:batch_document_ids].present? %>
+        <% params[:batch_document_ids].each do |batch_item| %>
+          <input type="hidden" name="batch_document_ids[]" value="<%= batch_item %>" />
         <% end %>
-
-
+      <% end %>
     </div>
   </div>
 </div>

@@ -211,6 +211,7 @@ RSpec.describe MediaIndexer do
       expect(subject['organization_transfer_on_publish_bsi']).to eq(media.organization_transfer_on_publish)
       expect(subject['orientation_tesim']).to match_array(media.orientation)
       expect(subject['owner_ssim']).to match_array([media.owner])
+      expect(subject['owner_type_ssi']).to eq(owner.class.to_s)
       expect(subject['part_ssi']).to eq(media.part&.first&.downcase)
       expect(subject['part_tesim']).to match_array(media.part)
       expect(subject['permits_3d_use_tesim']).to match_array(media.permits_3d_use)

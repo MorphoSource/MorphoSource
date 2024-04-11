@@ -65,16 +65,16 @@ class Media < Morphosource::Works::Base
       status = "Problematic"
       details = issues.join('; ')
     end
-        
+
     if (health = RemoteFileHealth.where(media: self.id)&.first).present?
-      health.update({ 
+      health.update({
         status: status,
         details: details
       })
       health.touch
     else
-      RemoteFileHealth.create({ 
-        media: self.id, 
+      RemoteFileHealth.create({
+        media: self.id,
         status: status,
         details: details
       })
@@ -135,7 +135,7 @@ class Media < Morphosource::Works::Base
     file_visibilities = []
 
     # check to make sure the media is not destroyed before indexing is done
-    if file_sets&.first&.parent.present? 
+    if file_sets&.first&.parent.present?
       file_sets.each do |file|
         if file.embargo&.active?
           file_visibilities << Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_EMBARGO
@@ -187,6 +187,10 @@ class Media < Morphosource::Works::Base
       raise ValueError "No publication status ID #{status} found in publication statuses authority"
     end
 
+  end
+
+  def owner_class
+    User.find_by(ms_id: self.owner)&.class || OrganizationCollection.find_by(id: self.owner)&.class
   end
 
   #

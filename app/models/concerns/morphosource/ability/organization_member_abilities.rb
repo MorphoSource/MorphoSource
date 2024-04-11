@@ -60,14 +60,14 @@ module Morphosource
         # Proxy Deposits
 
         can :transfer, String do |id|
-          admin? || user_is_media_organization_manager?(id)
+          admin? || user_manages_media_through_organization?(id)
         end
 
         can :accept, ProxyDepositRequest do |request|
           unless request.status == "pending"
             false
           else
-            user_is_media_organization_manager?(request.work_id)
+            user_is_manager_of_organization?(request.receiving_user_id)
           end
         end
 
@@ -75,7 +75,7 @@ module Morphosource
           unless request.status == "pending"
             false
           else
-            user_is_media_organization_manager?(request.work_id)
+            user_is_manager_of_organization?(request.receiving_user_id)
           end
         end
       end
@@ -132,10 +132,10 @@ module Morphosource
         # return an array of organization role names corresponding to organization_fields
         # ex: ['000012345_managers', '000012345_editors', '000012345_depositors', '000012345_downloaders', '000012345_viewers']
         def determine_organization_groups(media)
-          return [] unless document = solr_document(media)
+          return [] unless media = solr_document(media)
 
           # get the ids of the media's physical object organization and scanning organization
-          media_organization_ids = organization_fields.map{ |field| document[field]&.first }.compact.uniq
+          media_organization_ids = organization_fields.map{ |field| media[field]&.first }.compact.uniq
 
           groups = media_organization_ids.each_with_object([]) do |id, groups|
             OrganizationCollection::DEFAULT_GROUP_ROLES.each {|role| groups << "#{id}_#{role}"}
@@ -144,31 +144,31 @@ module Morphosource
         end
 
         def organization_edit_groups(media)
-          return [] unless document = solr_document(media)
+          return [] unless media = solr_document(media)
 
-          owner_id = media['owner_ssim']&.first
-          return unless owner_id.present?
+          return [] unless organization_owner_id(media)
 
           # get the combination of organization_groups and manager/editor groups whose name includes the media's owner.
           groups = organization_groups(media) + organization_owner_groups(media)
-          groups.select { |group| group.include?("managers") || group.include?("editors") }.uniq
+          groups.select{ |group| (group.include?("managers") || group.include?("editors")) }.uniq
         end
 
         # If the media has an owner, return an array of organization role names
         # ex: ['000012345_managers', '000012345_editors', '000012345_depositors', '000012345_downloaders', '000012345_viewers']
         def organization_owner_groups(media)
-          @org_owner_id ||= organization_owner_id(media['owner_ssim']&.first)
-          return [] unless @org_owner_id.present?
+          return [] unless organization_owner_id(media)
 
-          @org_owner_groups ||= OrganizationCollection::DEFAULT_GROUP_ROLES.each_with_object([]) {|role, groups| groups << "#{@org_owner_id}_#{role}"}
+          @organization_owner_groups ||= OrganizationCollection::DEFAULT_GROUP_ROLES.each_with_object([]) {|role, groups| groups << "#{@organization_owner_id}_#{role}"}
         end
 
         # if the media is owned by an organization collection, return the collection id.
         # otherwise return nil
-        def organization_owner_id(media_owner)
-          return if media_owner.blank?
+        def organization_owner_id(media)
+          @organization_owner_id ||= owner_is_organization?(media) ? media_owner_id(media) : nil
+        end
 
-          OrganizationCollection.exists?(media_owner) ? media_owner : nil
+        def media_owner_id(media)
+          @media_owner_id ||= media['owner_ssim']&.first
         end
 
         def solr_document(obj)
@@ -188,14 +188,24 @@ module Morphosource
           nil
         end
 
-        def media_owner_id(media)
-          @media_owner_id ||= ( solr_document(media)&.to_h || {} )['owner_ssim']&.first
+        def media_owner_type(media)
+          @media_owner_type ||= (solr_document(media)&.to_h || {})['owner_type_ssi']
         end
 
-        def user_is_media_organization_manager?(media_id)
-          return false if media_id.blank?
+        def owner_is_organization?(media)
+          media_owner_type(media) == 'OrganizationCollection'
+        end
 
-          current_user.groups.include? "#{media_owner_id(media_id)}_managers"
+        def user_manages_media_through_organization?(media_id)
+          return unless media = solr_document(media_id)
+
+          user_is_manager_of_organization?(organization_owner_id(media))
+        end
+
+        def user_is_manager_of_organization?(organization_id)
+          return false if organization_id.nil?
+
+          current_user.groups.include? "#{organization_id}_managers"
         end
 
     end

@@ -21,6 +21,7 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['download_access_person_ssim'] = object.download_users
       solr_doc['download_reviewer_ssim'] = object.download_reviewer
       solr_doc['owner_ssim'] = object.owner
+      solr_doc['owner_type_ssi'] = object.owner_class.to_s
       solr_doc['user_with_ownership_ssi'] = object.user_with_ownership
 
       # Data manager name and email

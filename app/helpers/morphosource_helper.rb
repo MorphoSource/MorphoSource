@@ -490,7 +490,9 @@ module MorphosourceHelper
   def group_title_link(id)
     collection = Collection.find(id)
     if collection.present?
-      if collection.project?
+      if collection.organization_collection?
+        source = 'Organization: ' + '<a href="/organizations/' + collection.id + '">' + collection.title.first + '</a>'
+      elsif collection.project?
         source = 'Project: ' + '<a href="/projects/' + collection.id + '">' + collection.title.first + '</a>'
       elsif collection.team?
         source = 'Team: ' + '<a href="/teams/' + collection.id + '">' + collection.title.first + '</a>'

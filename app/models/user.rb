@@ -217,15 +217,18 @@ class User < ApplicationRecord
     return (white_list.include? uri.host)
   end
 
-  # This returns allowed domains from all teams the user has depositor and above access to
+  # This returns allowed domains from organizations (Org Collection or legacy org-linked team) that
+  # the user has depositor and above access to
   def allowed_domains
     return {} unless self.remote_file_submitter?
     domains = {}
     ids = roles.map{ |r| r.name.gsub(/(_managers|_editors|_depositors)/, "") if r.name.match(/(_managers|_editors|_depositors)/) }.compact
     ids.each do |id|
-      if Collection.exists?(id)
-        c = Collection.find(id)
-        if c.organization.present? && c.can_submit_remote_files? && c.allowed_remote_source.present?
+      if (c = ActiveFedora::Base.find(id)).present?
+        unless (c.class == OrganizationCollection) || (c.class == Collection && c.organization.present?)
+          next
+        end
+        if c.can_submit_remote_files? && c.allowed_remote_source.present?
           domains[id] = c.allowed_remote_source
         end
       end

@@ -15,7 +15,7 @@ module Morphosource
 
       before_action :load_organization, only: [:show, :facet, :about,
         :media_projects, :media_organization_transfer_status]
-      before_action :create_transfer_facet, only: [:show, :facet, :about,
+      before_action :create_extra_facets, only: [:show, :facet, :about,
         :media_export, :media_download_counts, :media_projects, :media_organization_transfer_status]
 
       class_attribute :collection_type
@@ -44,8 +44,15 @@ module Morphosource
       end
       configure_facets
 
+      def create_extra_facets
+        create_access_facet
+        create_transfer_facet if current_user&.can? :edit, @curation_concern
+      end
+
       # Media search facet for whether media is owned by organization, in transfer system, or out
       def create_transfer_facet
+        return unless current_user&.can? :edit, @curation_concern
+
         config = repository.blacklight_config
         return if config.facet_fields["transfer"].present?
 

@@ -1,9 +1,9 @@
 <div id="details" class="tab-pane active">
   <div class="panel panel-default labels">
-    <div class="panel-body">
+    <div class="container-fluid mb-1">
       <%= simple_form_for @form, url: collection_form_url(@form), wrapper: :showcase_default, html: { class: 'editor' } do |f| %>
 
-        <div class="row">
+        <div class="row no-horizontal-padding">
           <%= render 'morphosource/dashboard/collections/details/action_buttons', f: f %>
           <div class="col-sm-6">
             <div class="content-block">

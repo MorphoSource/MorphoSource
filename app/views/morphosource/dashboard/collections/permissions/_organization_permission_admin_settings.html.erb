@@ -52,7 +52,7 @@
 </div>
 
 <% if current_user.admin? %>
-  <div class="form-group row admin-preview-mode-container">
+  <div class="form-group xadmin-preview-mode-container">
     <h2>Admin Settings</h2>
     <%= render_edit_field_partial('data_manager', f: f, placeholder: 'No preference') %>
     <%= render_edit_field_partial('preview_mode', f: f, blank_label: 'No preference') %>

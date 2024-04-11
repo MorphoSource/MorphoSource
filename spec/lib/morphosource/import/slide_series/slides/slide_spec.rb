@@ -202,16 +202,20 @@ RSpec.describe Morphosource::Import::SlideSeries::Slides::Slide do
   describe 'validate_technical_metadata' do
     let(:short_description) { 'MCZ_SC-3793_slide-1' }
     let(:slide_json)        { { 'http://purl.org/dc/terms/description' => short_description } }
-    context 'empty array' do
-      let(:metadata)  { [] }
-      it 'raises an error' do
-        expect { subject.validate_technical_metadata(metadata) }.to raise_error(StandardError, "Technical metadata for slide #{short_description} is empty.")
+    context 'empty metadata' do
+      let(:metadata)  { [{},{}] }
+      it 'sets metadata blank' do
+        subject.validate_technical_metadata(metadata)
+        expect(subject.instance_variable_get(:@metadata_blank)).to be(true)
+      end
+      it 'returns a blank array' do
+        expect(subject.validate_technical_metadata(metadata)).to eq([])
       end
     end
     context 'metadata is present' do
       let(:metadata) { [{ 'metadata' => 'metadata' }, { 'metadata' => 'metadata ' }] }
       it 'does not raise error' do
-        expect(subject.validate_technical_metadata(metadata)).to be(nil)
+        expect(subject.validate_technical_metadata(metadata)).to match_array(metadata)
       end
     end
   end

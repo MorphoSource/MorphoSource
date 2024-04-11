@@ -48,8 +48,8 @@ module Morphosource
             @slide = slide_class.new(slide_json)
             @imaging_event = create_new_imaging_event
             @media = create_new_media
-            characterize_file
-            create_thumbnail
+            characterize_file unless @slide.metadata_blank?
+            create_thumbnail unless @slide.metadata_blank?
             normalize_media if normalize_permissions
             @collection.add_member_objects(@media)
           end
@@ -176,11 +176,19 @@ module Morphosource
           # add media to imaging event
           attributes.merge!(work_parents_attributes: { '0' => { 'id' => @imaging_event.id, '_destroy' => 'false' } } )
 
-          # provide file name
-          attributes.merge!('remote_manifest_info' => { 'file_name' => @slide.file_name.first, 'mime_type_of_remote' => @slide.mime_type } )
+          if @slide.metadata_blank?
+            add_note_to_attributes(attributes)
+          else
+            # provide file name
+            attributes.merge!('remote_manifest_info' => { 'file_name' => @slide.file_name.first, 'mime_type_of_remote' => @slide.mime_type } )
+          end
 
           Hyrax::CurationConcern.actor.create(Hyrax::Actors::Environment.new(media, ::Ability.new(manager), attributes))
           media
+        end
+
+        def add_note_to_attributes(attributes)
+          attributes[:short_description] = ["File not available at time of import."]
         end
 
         # characterize file

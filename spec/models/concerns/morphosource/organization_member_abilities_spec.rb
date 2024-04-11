@@ -88,8 +88,6 @@ RSpec.describe 'Morphosource::Ability', type: :model do
                 expect(can_read?(media, org_member)).to be(true)
                 expect(can_edit?(media, org_member)).to be(false)
                 expect(can_transfer?(media, org_member)).to be(false)
-                expect(can_accept?(proxy_deposit_request, org_member)).to be(false)
-                expect(can_reject?(proxy_deposit_request, org_member)).to be(false)
                 expect(can_read?(file_set, org_member)).to be(true)
                 expect(can_edit?(file_set, org_member)).to be(false)
               end

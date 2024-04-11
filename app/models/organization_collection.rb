@@ -5,10 +5,15 @@ class OrganizationCollection < Collection
   include Morphosource::PermissionsDefaultsMetadata
   include Morphosource::LocationMetadata
   include Morphosource::OrganizationBehavior
-
+  include Morphosource::PersistentIdentifiersBehavior
+  
+  before_save :convert_media_ownership_transfer
   after_create :create_collection_groups
   after_create :create_organization_project
-  before_save :convert_media_ownership_transfer
+  after_update :update_ark_status
+  after_create :mint_ark
+  after_destroy :delete_ark_if_reserved
+
 
   self.indexer = OrganizationCollectionIndexer
 
@@ -47,6 +52,14 @@ class OrganizationCollection < Collection
 
   def attachment(field_name)
     Morphosource::AttachmentService.get(self, field_name)
+  end
+
+  def is_device_organization?
+    ["Scanning Facility", "Collection and Scanning Facility"].include?(organization_type&.first)
+  end
+
+  def is_object_organization?
+    ["Museum, Department, or Lab Collection", "Collection and Scanning Facility"].include?(organization_type&.first)
   end
 
   def name

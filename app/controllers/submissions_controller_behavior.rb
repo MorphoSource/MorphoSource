@@ -40,8 +40,11 @@ module SubmissionsControllerBehavior
     @devices = Device.all_solr
     @devices_with_ids = @devices.map do |d|
       if (organization_id = d['organization_id_ssim']&.first).present?
-        org_devices = @device_organizations_hash[organization_id][:devices]
-        org_devices << d['id'] unless org_devices.include?(d['id'])
+        org_devices = @device_organizations_hash.dig(organization_id, :devices)
+        if !org_devices.nil?
+          org_devices << d['id'] unless org_devices.include?(d['id'])
+          @device_organizations_hash[organization_id][:devices] = org_devices
+        end
       end
 
       [

@@ -33,6 +33,7 @@ module Blacklight
           location: "based_near_tesim",
           related_url: "related_url_tesim",
           visibility: "visibility_ssi",
+          ark: "ark_tesim",
           date_uploaded: "date_uploaded_dtsi",
           date_modified: "date_modified_dtsi",
         }
@@ -139,6 +140,7 @@ module Blacklight
           occurrence_id: "occurrence_id_tesim",
           idigbio_uuid: "idigbio_uuid_tesim",
           idigbio_recordset_id: "idigbio_recordset_id_tesim",
+          ark: "ark_tesim",
           type: "human_readable_type_tesim",
           vouchered: "vouchered_tesim",
           taxonomy_name: "taxonomy_tesim",
@@ -157,6 +159,7 @@ module Blacklight
           model: "title_ssi",
           modalities: 'modality_tesim',
           description: 'description_tesim',
+          ark: "ark_tesim",
           date_uploaded: "date_uploaded_dtsi",
           date_modified: "date_modified_dtsi"
         }

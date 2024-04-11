@@ -4,13 +4,16 @@ class OrganizationCollection < Collection
   include Morphosource::OrganizationMetadata
   include Morphosource::PermissionsDefaultsMetadata
   include Morphosource::LocationMetadata
+  include Morphosource::OrganizationBehavior
   include Morphosource::PersistentIdentifiersBehavior
-
+  
+  before_save :convert_media_ownership_transfer
   after_create :create_collection_groups
   after_create :create_organization_project
   after_update :update_ark_status
   after_create :mint_ark
   after_destroy :delete_ark_if_reserved
+
 
   self.indexer = OrganizationCollectionIndexer
 
@@ -72,6 +75,13 @@ class OrganizationCollection < Collection
     ProxyDepositRequest.where(receiving_user_id: id)
   end
 
+  def team; end
+
+  # return false for nil value
+  def media_ownership_transfer?
+    media_ownership_transfer ? true : false
+  end
+
   # used by ProxyDepositRequest
   def self.primary_key
     "id"
@@ -100,5 +110,10 @@ class OrganizationCollection < Collection
     project_title = [I18n.t('morphosource.dashboard.collections.organization_collection.example_project.title', title: title.first)]
     description = [I18n.t('morphosource.dashboard.collections.organization_collection.example_project.description')]
     project = Collection.create(title: project_title, collection_type_gid: project_collection_type.gid, description: description, visibility: 'restricted', depositor: depositor)
+  end
+
+  # converts form values 'true' or 'false' to boolean
+  def convert_media_ownership_transfer
+    self.media_ownership_transfer = ActiveModel::Type::Boolean.new.cast(self.media_ownership_transfer)
   end
 end

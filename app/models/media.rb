@@ -66,16 +66,16 @@ class Media < Morphosource::Works::Base
       status = "Problematic"
       details = issues.join('; ')
     end
-        
+
     if (health = RemoteFileHealth.where(media: self.id)&.first).present?
-      health.update({ 
+      health.update({
         status: status,
         details: details
       })
       health.touch
     else
-      RemoteFileHealth.create({ 
-        media: self.id, 
+      RemoteFileHealth.create({
+        media: self.id,
         status: status,
         details: details
       })
@@ -136,7 +136,7 @@ class Media < Morphosource::Works::Base
     file_visibilities = []
 
     # check to make sure the media is not destroyed before indexing is done
-    if file_sets&.first&.parent.present? 
+    if file_sets&.first&.parent.present?
       file_sets.each do |file|
         if file.embargo&.active?
           file_visibilities << Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_EMBARGO
@@ -451,11 +451,22 @@ class Media < Morphosource::Works::Base
   # Organization media transfer
   #
 
-  # Create request to transfer ownership of media and/or move media to organization team
-  # generally, don't use this for where media data manager == org data manager,
-  # but the method can handle this circumstance for use in developer console, etc
+  # TODO: Refactor when organization collections have been implemented on production.
   def transfer_media_to_organization
     org = organizations&.first
+    case org
+    when Organization
+      transfer_media_to_organizational_team(org)
+    when OrganizationCollection
+      transfer_media_to_organization_collection(org)
+    end
+  end
+
+  # TODO: Remove when organization collections have been implemented on production
+  # Create request to transfer ownership of media and/or move media to organization team or collection
+  # generally, don't use this for where media data manager == org data manager,
+  # but the method can handle this circumstance for use in developer console, etc
+  def transfer_media_to_organizational_team(org)
     if (
       org.present? &&
       (new_manager_id = org&.data_manager&.first).present? &&
@@ -473,10 +484,24 @@ class Media < Morphosource::Works::Base
         # create transfer, when accepted it will move media to team
         create_new_organization_transfer_request(new_manager)
       end
-
-
     else
       message = "Failed to transfer management of media #{id} to organization #{org&.id} with data manager #{org&.data_manager}"
+
+      Rails.logger.fatal message
+      raise message
+    end
+  end
+
+  def transfer_media_to_organization_collection(org)
+    # check that organization has a valid data manager
+    if org.managers&.first.present?
+      if self.organization_transfer_on_publish
+        self.organization_transfer_on_publish = false
+        self.save!
+      end
+      create_new_organization_transfer_request(org)
+    else
+      message = "Failed to transfer management of media #{id} to organization #{org&.id}"
 
       Rails.logger.fatal message
       raise message

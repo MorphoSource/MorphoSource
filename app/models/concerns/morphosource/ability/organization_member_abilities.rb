@@ -159,8 +159,8 @@ module Morphosource
         end
 
         def user_is_media_organization_manager?(document_id)
-          owner_id = SolrDocument.find(document_id)['user_with_ownership_ssi']
-          user_is_manager_of_organization?(owner_id)
+          organization_id = SolrDocument.find(document_id)['media_organization_id_ssim']&.first
+          user_is_manager_of_organization?(organization_id)
         end
 
         def user_is_manager_of_organization?(id)

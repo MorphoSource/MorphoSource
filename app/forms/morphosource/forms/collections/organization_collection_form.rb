@@ -21,6 +21,7 @@ module Morphosource
                        :institution_code,
                        :institution_name,
                        :license_blank,
+                       :media_ownership_transfer,
                        :morphosource_use_agreement_type,
                        :organization_type,
                        :permissions_enforcement_mode,

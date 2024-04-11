@@ -189,7 +189,7 @@ module Morphosource
         end
 
         def media_owner_id(media)
-          @media_owner_id ||= solr_document(media)&.to_h&.dig('owner_ssim')&.first
+          @media_owner_id ||= ( solr_document(media)&.to_h || {} )['owner_ssim']&.first
         end
 
         def user_is_media_organization_manager?(media_id)

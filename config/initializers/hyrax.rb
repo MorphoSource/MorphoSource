@@ -47,11 +47,17 @@ Hyrax.config do |config|
   # Title for UI header and front page tab title
   config.site_title = ENV['SITE_TITLE'].presence || 'MorphoSource'
 
-  # Logo displayed in UI header and in dashboard welcome message
+  # Logo displayed in UI header
   # This image should be placed in app/assets/images/ or in public/.
   # If image is in public/, it should be listed with a slash before the filename ("/image.png").
   # If image is in app/assets/images, no slash is needed ("image.png"), but assets will need to be pre-compiled.
-  config.logo_image = ENV['LOGO_IMAGE'].presence  || 'skeleton_head_blue_80px.png'
+  # Logo image is commonly displayed on blue backgrounds and should contrast appropriately
+  config.logo_image = ENV['LOGO_IMAGE'].presence || 'skeleton_head_default_80px.png'
+
+  # Alternate logo displayed in dashboard welcome messahe
+  # Similar rules to placement and specification as for config.logo_image
+  # Logo image alternate is displayed on white background and should contrast appropriately
+  config.logo_image_alternate = ENV['LOGO_IMAGE_ALTERNATE'].presence || 'skeleton_head_blue_80px.png'
 
   # ID of a media work to be used as the front page preview
   config.front_page_media = Rails.env.production? ? '000009951' : nil

@@ -1,11 +1,9 @@
 module Hyrax
 
   class BrowseOrganizationsController < My::WorksController
-    include Browse::BrowseOrganizationsHelper
+    before_action :authenticate_user!, except: [:index]  
 
     with_themed_layout 'morphosource_1_column'
-
-    before_action :authenticate_user!, except: [:index]      
 
     def search_builder_class
       Morphosource::OrganizationsSearchBuilder
@@ -17,10 +15,33 @@ module Hyrax
       get_organization_count_by_type
 
       respond_to do |format|
-      format.html {}
+        format.html {}
       end
     end
 
+    def browse_service
+      @browse_service ||= Morphosource::BrowseService.new
+    end
+  
+    def get_organization_count_by_type
+      @org_type_and_count ||= begin
+        facet_array = @response.dig("facet_counts", "facet_fields", Solrizer.solr_name('organization_type', :facetable))
+        if facet_array.present?
+          Hash[*facet_array]
+        else
+          {}
+        end
+      end
+    end
+  
+    def total_collections
+      return @document_list.map { |org| org["team_id_tesim"] }.compact.length
+    end
+
+    def org_type_and_count
+      @org_type_and_count
+    end
+    helper_method :org_type_and_count
 
     private
 

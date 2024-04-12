@@ -6,7 +6,7 @@ if Flipflop.assign_admin_set? %>
 <% end %>
 
 
-<h2><%= t('.add_sharing') %></h2>
+<h2><%= t('.media_access_and_sharing') %></h2>
 
 <% depositor = f.object.depositor %>
 <% manager = f.object.user_with_ownership %>
@@ -17,22 +17,28 @@ if Flipflop.assign_admin_set? %>
   <span id="permissions_error_text"></span>
 </div>
 
-<p class="sr-only">Use the add button to give access to one <%= t('hyrax.account_label') %> at a time (it will be added to the list below).
+<div>
+  Users with edit access can edit, download, and view this media. Users with download access can download and view this media. Users with view access can view but not download this media. 
+</div>
+
+<div class="sr-only">Use the add button to give access to one <%= t('hyrax.account_label') %> at a time (it will be added to the list below).
   Select the user, by name or <%= t('hyrax.account_label') %>. Then select the access level you wish to grant and click on Add this
   <%= t('hyrax.account_label') %> to complete adding the permission.
-</p>
+</div>
 
-<fieldset class="form-group row permission-add-user">
-  <legend class="col-sm-4 permissions-add-user-label">
+<fieldset class="form-group row permission-add-user mb-2" style="display: flex; align-items: center;">
+  <div class="permissions-add-user-label">
     Add Individual User:
-  </legend>
-  <div class="col-sm-4 form-inline">
+  </div>
+  <div class="form-inline" style="width: 300px; margin-right: 10px;">
     <label for="new_user_name_skel" class="sr-only"><%= t('hyrax.account_label') %> (without the <%= t('hyrax.directory.suffix') %> part)</label>
     <%= text_field_tag 'new_user_name_skel', nil %>
     <label for="new_user_permission_skel" class="sr-only">Access type to grant</label>
   </div>
-  <div class="col-sm-4 form-inline">
+  <div class="form-inline" style="margin-right: 10px;">
     <%= select_tag 'new_user_permission_skel', options_for_select(Hyrax.config.ms_permission_options), class: 'form-control' %>
+  </div>
+  <div class="form-inline">
     <button class="btn btn-sm btn-primary" id="add_new_user_skel">
       <span>Add<span class="sr-only"> this <%= t('hyrax.account_label') %></span></span>
     </button>
@@ -40,62 +46,71 @@ if Flipflop.assign_admin_set? %>
   </div>
 </fieldset>
 
-<h2><%= t('.currently_sharing') %></h2>
 
 <% individual_list, group_list = grouped_access_list(f) %>
-<% if group_list.count > 0 %>
-  <p>This media belongs to one or more projects or teams. It is shared with the members of those projects or teams. To modify the access each project or team member has to this media, see the project or team edit page.</p>
-<% end %>
-
-<section class="section-collection-sharing">
-
+<section class="section-collection-sharing mb-2">
   <table id="share-datatable" class="table">
-    <tr>
-      <td>Data manager</td>
-      <td><%= data_manager_display(manager) %></td>
-      <td></td>
-      <td></td>
-    </tr>
-    <tr id="file_permissions">
-      <input type="hidden" id="selected-individual-email" name="selected-individual-email" value="" />
-      <%# this tr is needed for adding new individual user access %>
-      <td></td>
-      <td></td>
-      <td></td>
-      <td></td>
-    </tr>
-
-    <% individual_list.each do |permission_fields| %>
+    <thead>
       <tr>
-        <td>
-          Individual
-        <td>
-          <%= permission_fields.label :agent_name, class: "fw-normal" do %>
-            <%= user_display(permission_fields.object.agent_name) %>
-          <% end %>
-        </td>
-        <td>
-          <%= permission_fields.select :access, Hyrax.config.ms_permission_levels, {}, class: 'form-control select_perm' %>
-        </td>
-        <td>
-          <button class="btn btn-sm remove_perm" data-index="<%= permission_fields.index %>">Remove access</button>
-        </td>
+        <th style="padding-left: 0">Current Sharing</th>
+        <th>User</th>
+        <th>Access</th>
+        <th>Action</th>
       </tr>
-      <%= permission_fields.hidden_field :id %>
-      <%= permission_fields.hidden_field :type %>
-      <%= permission_fields.hidden_field :agent_name %>
-    <% end %>
-
-    <% group_list.each do |group, users| %>
+    </thead>
+    <tbody>
       <tr>
-        <td><%= group_title_link(group) %></td>
-        <td><%= users %></td>
+        <td style="padding-left: 0">Data manager</td>
+        <td><%= data_manager_display(manager) %></td>
+        <td>Edit access</td>
+        <td></td>
+      </tr>
+      <tr id="file_permissions">
+        <input type="hidden" id="selected-individual-email" name="selected-individual-email" value="" />
+        <%# this tr is needed for adding new individual user access %>
+        <td style="padding-left: 0"></td>
+        <td></td>
         <td></td>
         <td></td>
       </tr>
-    <% end %>
+
+      <% individual_list.each do |permission_fields| %>
+        <tr>
+          <td style="padding-left: 0">
+            Individual
+          <td>
+            <%= permission_fields.label :agent_name, class: "fw-normal" do %>
+              <%= user_display(permission_fields.object.agent_name) %>
+            <% end %>
+          </td>
+          <td>
+            <%= permission_fields.select :access, Hyrax.config.ms_permission_levels, {}, class: 'form-control select_perm' %>
+          </td>
+          <td>
+            <button class="btn btn-sm btn-danger remove_perm" data-index="<%= permission_fields.index %>">Remove access</button>
+          </td>
+        </tr>
+        <%= permission_fields.hidden_field :id %>
+        <%= permission_fields.hidden_field :type %>
+        <%= permission_fields.hidden_field :agent_name %>
+      <% end %>
+
+      <% group_list.each do |group_id, group_data| %>
+        <% ( group_data[:users] || {} ).each_with_index do |(role_category, users), idx| %>
+          <tr>
+            <td style="padding-left: 0"><%= group_title_link(group_id) if idx == 0 %></td>
+            <td><%= users %></td>
+            <td><%= group_user_access_desc(role_category, group_data[:access_override]) %></td>
+            <td></td>
+          </tr>
+        <% end %>
+      <% end %>
+    </tbody>
   </table>
 
+  <% if group_list.count > 0 %>
+    <div class="mt-2">This media belongs to one or more projects or teams. It is shared with the members of those projects or teams. To modify the access each project or team member has to this media, see the project or team edit page.</div>
+  <% end %>
 </section>
 
 <div>
@@ -103,11 +118,11 @@ if Flipflop.assign_admin_set? %>
 
   <div>
     <div>
-      <p>You can use this section to generate a temporary link to grant view access to this media record to someone, even if they don't have a MorphoSource account. This link will allow that user to view this record, but not download the media file associated with it. You can set how long until this link expires.</p>
-      <div class="row" style="margin-left: unset; padding-left: 10px;">
+      <div>You can use this section to generate a temporary link to grant view access to this media record to someone, even if they don't have a MorphoSource account. This link will allow that user to view this record, but not download the media file associated with it. You can set how long until this link expires.</div>
+      <div class="row row-no-gutters mb-2">
         <span style="margin-right: 10px;"><b>Create Temporary Link Valid Until: </b></span>
         <%= f.date_field :temporary_link_expires_at, value: Date.today + 3.months, class: 'datepicker form-control', style: 'width: 150px; display: inline; margin-right: 10px;', max: '9999-12-31', min: Date.today + 1.day %>
-        <%= link_to "Generate", main_app.temporary_media_access_link_create_url(f.object, expires_at: Date.today + 3.months), method: :post, id: 'generate-temporary-media-access-link', class: 'btn btn-primary' %>
+        <%= link_to "Generate", main_app.temporary_media_access_link_create_url(f.object, expires_at: Date.today + 3.months), method: :post, id: 'generate-temporary-media-access-link', class: 'btn btn-sm btn-primary' %>
       </div>
     </div>
 
@@ -115,7 +130,7 @@ if Flipflop.assign_admin_set? %>
       <div>
         <div class="row" style="margin-left: unset; padding-left: 10px;">
         <section class="section-collection-sharing">
-          <table class="table">
+          <table class="table" style="margin-left: -10px">
             <thead>
               <tr>
                 <th style="padding-left: 0">Active Temporary Access Links</th>
@@ -152,7 +167,7 @@ if Flipflop.assign_admin_set? %>
         </div>
       </div>
     <% else %>
-      <p>There are no active temporary access links for this media.</p>
+      <div>There are no active temporary access links for this media.</div>
     <% end %>
   </div>
 </div>
@@ -163,7 +178,7 @@ if Flipflop.assign_admin_set? %>
   <td>Individual</td>
   <td>{%= o.email %}<span class="hidden">{%= o.name %}</span></td>
   <td>{%= o.accessLabel %}</td>
-  <td><button class="btn btn-sm">Remove access</button></td>
+  <td><button class="btn btn-sm btn-danger">Remove access</button></td>
 </tr>
 </script>
 

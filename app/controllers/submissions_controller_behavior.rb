@@ -152,8 +152,8 @@ module SubmissionsControllerBehavior
     transfer == 'immediate' || ['open', 'restricted_download'].include?(visibility)
   end
 
-  def find_organization
-    id = @submission&.organization_id || params['organization_id']
+  def find_organization(id=nil)
+    id = @submission&.organization_id || params['organization_id'] unless id.present?
     @organization ||= Organization.where(id: id)&.first || OrganizationCollection.where(id: id)&.first
   end
 end

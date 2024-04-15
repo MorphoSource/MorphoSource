@@ -122,7 +122,7 @@ module Morphosource
         end
 
         def file_set_media_id(file_set)
-          @media_id ||= SolrDocument.where("file_set_ids_ssim:#{file_set.id}")&.first['id']
+          @media_id ||= ( SolrDocument.where("file_set_ids_ssim:#{file_set.id}")&.first || {} )['id']
         end
 
         def organization_groups(media)

@@ -1,5 +1,4 @@
 module Morphosource
-
   class OrganizationsSearchBuilder < ::SearchBuilder
     include Hyrax::FilterByType
 
@@ -15,11 +14,13 @@ module Morphosource
 
     # This overrides the models in FilterByType
     def models
-      [::Organization]
+      [::Organization, ::OrganizationCollection]
     end
 
     def show_only_organizations(solr_parameters)
       solr_parameters[:fq] ||= ["#{solrize('visibility', :stored_sortable)}:open"]
+      solr_parameters[:"facet.field"] ||= []
+      solr_parameters[:"facet.field"] << "organization_type_sim"
       solr_parameters[:rows] = 999999
     end
 

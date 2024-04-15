@@ -11,18 +11,6 @@ module Morphosource
       @solr = solr_service.new
     end
 
-    def organization_facets
-      facet_fields = [
-        Solrizer.solr_name('organization_type', :facetable)
-      ]
-      params = {
-        fl: 'id',
-        fq: ["has_model_ssim:Organization"]
-      }
-      solr.get_facet_fields(nil, facet_fields, params)
-      return solr.facet_fields(facet_fields)
-    end
-
     def total_media_and_po_by_org(organization_id)
       doc = SolrDocument.find(organization_id)
       qry = "media_organization_id_ssim:#{organization_id} OR media_device_facility_organization_id_ssim:#{organization_id}"

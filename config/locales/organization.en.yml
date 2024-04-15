@@ -27,12 +27,12 @@ en:
           permissions: Permissions
           projects: Projects
         ownership:
-          introduction: On this page you can see the ownership and management status of media records and other records associated with %{org_name}. In time this will be expanded to provide you with tools to help you more effectively manage media, so keep an eye on this space. For now, you can see the current management status of media and some reminders of how organization-based media ownership works on MorphoSource. 
+          introduction: On this page you can see the ownership and management status of media records and other records associated with %{org_name}. In time this will be expanded to provide you with tools to help you more effectively manage media, so keep an eye on this space. For now, you can see the current management status of media and some reminders of how organization-based media ownership works on MorphoSource.
           reminders:
             r1: As a manager member of an object-holding organization, you have view (not edit) access to all media contributed by any user that represents an object associated with your organization.
-            r2: As a manager member of a device facility organization, you have view (not edit) access to all media contributed by any user that was imaged by a device associated with your organization. 
+            r2: As a manager member of a device facility organization, you have view (not edit) access to all media contributed by any user that was imaged by a device associated with your organization.
             r3: Your organization can become the data manager for media. As an manager member of the organization, you have edit access to media where your organization is the media data manager.
-            r4: If your organization has opted into the automated data transfer workflow, you will have the option to have your organization become the data manager for all media contributed by users after the point in time when you opted into the data transfer workflow. For a given media contributed after this point in time, a data transfer request will be generated either immediately on media submission or when the media is published at a later date. The original contributor of the media decides between these two options during media submission. 
+            r4: If your organization has opted into the automated data transfer workflow, you will have the option to have your organization become the data manager for all media contributed by users after the point in time when you opted into the data transfer workflow. For a given media contributed after this point in time, a data transfer request will be generated either immediately on media submission or when the media is published at a later date. The original contributor of the media decides between these two options during media submission.
             r5: If your organization does not opt into the automated data transfer workflow, or for media contributed prior to when your organization opted in, these media retain their original data manager. If you would like to seek to obtain data manager status over these media, we can help you reach out to contributors for this purpose, please <a href="mailto:morphosource@duke.edu">contact us</a>.
             r6: If you would like your organization to obtain data manager status over media for which your organization is not the data manager, we can help you reach out to contributors for this purpose, please <a href="mailto:morphosource@duke.edu">contact us</a>.
             title: Management Reminders
@@ -60,7 +60,7 @@ en:
             true: "Enabled"
             false: "Not enabled"
         permissions_enforcement_mode: Organization permissions are typically enforced via recommendation. Values become the default for newly contributed media and contributors are encouraged not to change them unless extenuating circumstances exist. Organizations with relevant policies can enforce permissions via requirement, mandating that all contributors follow all permissions settings.
-        contact_us: If your organization meets the use case(s) to modify the choices above for <b>Media preview mode</b> or <b>Permissions enforcement mode</b>, please <a href="mailto:morphosource@duke.edu">contact us</a>.
+        contact_us: If your organization meets the use case(s) to modify the choices above for <b>Media preview mode</b>, <b>Permissions enforcement mode</b>, or <b>Media ownership transfer</b> please <a href="mailto:morphosource@duke.edu">contact us</a>.
   simple_form:
     labels:
       organization:

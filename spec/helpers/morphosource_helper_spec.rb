@@ -410,12 +410,12 @@ RSpec.describe MorphosourceHelper, type: :helper do
           data_manager.save!
         end
         it 'returns the display name' do
-          expect(helper.data_manager_display(data_manager.id)).to eq('Test User')
+          expect(helper.data_manager_display(data_manager.user_key)).to eq('Test User')
         end
       end
       context 'data manager does not have a display name' do
         it 'returns the email address' do
-          expect(helper.data_manager_display(data_manager.id)).to eq(data_manager.email)
+          expect(helper.data_manager_display(data_manager.user_key)).to eq(data_manager.email)
         end
       end
     end

@@ -18,10 +18,6 @@ module Hyrax
         format.html {}
       end
     end
-
-    def browse_service
-      @browse_service ||= Morphosource::BrowseService.new
-    end
   
     def get_organization_count_by_type
       @org_type_and_count ||= begin

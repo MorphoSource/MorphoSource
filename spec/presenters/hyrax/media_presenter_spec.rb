@@ -278,7 +278,7 @@ RSpec.describe Hyrax::MediaPresenter do
       context "with remote file" do
         before do
           allow(media_document).to receive(:is_remote_backed).and_return(true)
-          allow(media_document).to receive(:remote_origin_url).and_return("http://www.url.com/file.zip")
+          allow(media_document).to receive(:remote_origin_url).and_return(["http://www.url.com/file.zip"])
         end
 
         it "returns nothing for file origin" do

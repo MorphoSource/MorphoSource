@@ -3,7 +3,6 @@ module Morphosource
     module OrganizationCollections
       # Media that were created using a device that belongs to the organization
       class DeviceMediaController < Morphosource::Collections::OrganizationCollectionsController
-        skip_before_action :create_transfer_facet
         skip_load_and_authorize_resource only: [:show, :about, :facet, :media_export, :media_downloads, :media_download_counts, :media_requests, :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet], instance_name: :collection
 
         # restrict to admins
@@ -14,6 +13,10 @@ module Morphosource
         end
 
         self.presenter_class = Morphosource::Collections::OrganizationPresenter
+
+        def create_extra_facets
+          create_access_facet
+        end
 
         private
 

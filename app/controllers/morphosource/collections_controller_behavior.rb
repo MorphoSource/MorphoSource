@@ -167,24 +167,25 @@ module Morphosource
       end
 
       def create_access_facet
-        # TODO: Keep this? facet should be ok for all logged in users.
-        return  unless current_user&.can? :edit, @collection
-
-        groups = current_user.groups - ['admin']
+        return unless current_user.present?
+        id = current_user.ms_id
+        g = current_user.groups
+        g_or = g.join(' OR ')
 
         config = repository.blacklight_config
-        config.add_facet_field 'access_level', label: 'Access', query: {
+        return if config.facet_fields['access'].present?
+        config.add_facet_field 'access', label: 'Access', query: {
           edit: {
             label: 'Edit',
-            fq: "(edit_access_group_ssim:(#{groups.join(' OR ')}) OR (edit_access_person_ssim:#{current_user.ms_id}))" },
+            fq: "(edit_access_group_ssim:(#{g_or}) OR (edit_access_person_ssim:#{id}))" },
           # media where current user has download access
           download: {
             label: 'Download',
-            fq: "(download_access_group_ssim:(#{groups.join(' OR ')}) OR (download_access_person_ssim:#{current_user.ms_id}) NOT edit_access_person_ssim:#{current_user.ms_id} NOT edit_access_group_ssim:(#{groups.join(' OR ')}))" },
+            fq: "(download_access_group_ssim:(#{g_or}) OR (download_access_person_ssim:#{id}) NOT edit_access_person_ssim:#{id} NOT edit_access_group_ssim:(#{g_or}))" },
           # media where current user has read access
           view: {
             label: 'View',
-            fq: "(read_access_group_ssim:(#{(['public'] + groups).join(' OR ')}) OR (read_access_person_ssim:#{current_user.ms_id}) NOT edit_access_person_ssim:#{current_user.ms_id} NOT edit_access_group_ssim:(#{groups.join(' OR ')}) NOT download_access_group_ssim:(#{groups.join(' OR ')}) NOT download_access_person_ssim:#{current_user.ms_id})"}
+            fq: "(read_access_group_ssim:(#{(['public'] + g).join(' OR ')}) OR (read_access_person_ssim:#{id}) NOT edit_access_person_ssim:#{id} NOT edit_access_group_ssim:(#{g_or}) NOT download_access_group_ssim:(#{g_or}) NOT download_access_person_ssim:#{id})"}
           }
         end
 

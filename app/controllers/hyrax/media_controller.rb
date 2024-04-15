@@ -21,7 +21,7 @@ module Hyrax
 
     self.temporary_access_link_class = TemporaryMediaAccessLink
 
-    skip_authorize_resource only: [:showcase, :thumbnail]
+    skip_authorize_resource only: [:showcase, :modal_file_archive_contents, :thumbnail]
 
     before_action :validate_individual_access, only: [:update]
     before_action :save_individual_access, only: [:update]

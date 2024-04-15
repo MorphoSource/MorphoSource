@@ -10,30 +10,30 @@ module Hyrax
     include MorphosourceHelper
     include MediaFinderHelper
 
-    # Attributes from device solr document 
-    delegate :device_organization_title, :device_organization_institution_name, 
+    # Attributes from device solr document
+    delegate :device_organization_title, :device_organization_institution_name,
       to: :device, allow_nil: true
 
     # Attributes from device solr document with device prefix (device_$)
-    delegate :creator, :description, :id, :modality, :title, 
-      to: :device, prefix: true, allow_nil: true 
+    delegate :creator, :description, :id, :modality, :title,
+      to: :device, prefix: true, allow_nil: true
 
     # Attributes from imaging event solr document
-    delegate :acquisition_type, :amperage, :background_removal, :detector_configuration, 
-      :detector_pixels_x, :detector_pixels_y, :detector_pixel_size_x, :detector_pixel_size_y, 
-      :detector_type, :exposure_time, :flux_normalization, :focal_length_type, :frame_averaging, 
-      :ie_filter, :ie_modality, :lens_make, :lens_model, :light_source, :optical_magnification, 
-      :phase_contrast, :pixel_spacing_calibration, :power, :projections, :rotation_number, 
-      :shading_correction, :slide_type, :source_detector_distance, :source_object_distance, 
+    delegate :acquisition_type, :amperage, :background_removal, :detector_configuration,
+      :detector_pixels_x, :detector_pixels_y, :detector_pixel_size_x, :detector_pixel_size_y,
+      :detector_type, :exposure_time, :flux_normalization, :focal_length_type, :frame_averaging,
+      :ie_filter, :ie_modality, :lens_make, :lens_model, :light_source, :optical_magnification,
+      :phase_contrast, :pixel_spacing_calibration, :power, :projections, :rotation_number,
+      :shading_correction, :slide_type, :source_detector_distance, :source_object_distance,
       :surrounding_material, :voltage, :xray_tube_type, :target_material, :target_type,
       to: :imaging_event, allow_nil: true
 
     # Attributes from imaging event solr document with prefix (imaging_event_$)
-    delegate :creator, :date_created, :software, :description, 
+    delegate :creator, :date_created, :software, :description,
       to: :imaging_event, prefix: true, allow_nil: true
 
     # Attributes from physical object solr document (biological specimen or cultural heritage object)
-    delegate :catalog_number, :cho_type, :collection_code, :idigbio_uuid, :institution_code, 
+    delegate :catalog_number, :cho_type, :collection_code, :idigbio_uuid, :institution_code,
       :material, :occurrence_id, :short_title, :vouchered,
       to: :physical_object, allow_nil: true
 
@@ -42,25 +42,25 @@ module Hyrax
       to: :physical_object, prefix: true, allow_nil: true
 
     # Attributes from FileSet solr document
-    delegate :"archive?", :bits_allocated, :bits_per_sample, 
-      :bounding_box_x, :bounding_box_y, :bounding_box_z, 
+    delegate :"archive?", :bits_allocated, :bits_per_sample,
+      :bounding_box_x, :bounding_box_y, :bounding_box_z,
       :centroid_x, :centroid_y, :centroid_z, :centroid_method, :columns,
-      :contents_accepted_file_count, :contents_file_name, :contents_mime_type, 
-      :color_format, :color_space, :compression, :face_count, 
-      :has_uv_space, :height, :normals_format, :original_file_id, :point_count, :rows, :vertex_color, 
+      :contents_accepted_file_count, :contents_file_name, :contents_mime_type,
+      :color_format, :color_space, :compression, :face_count,
+      :has_uv_space, :height, :normals_format, :original_file_id, :point_count, :rows, :vertex_color,
       :width,
       to: :representative_presenter, allow_nil: true
 
     # Attributes from Media solr document
-    delegate :access_control_id, :agreement_uri, :ark, :cite_as, :depositor, :description, :doi, 
-      :download_reviewer, :fileset_accessibility, :fileset_visibility, :funding, 
-      :human_readable_media_type, :identifier, :imaging_event_id, :is_remote_backed, :map_type, 
-      :media_organization_id, :media_organization, :media_type, :morphosource_use_agreement_type, 
-      :number_of_images_in_set, :organization_transfer_on_publish, :orientation, :part, 
-      :permits_3d_use, :permits_commercial_use, :physical_object_id, :physical_object_type, 
-      :preview_mode, :publication_status_label, :related_url, :remote_manifest_url, 
-      :remote_origin_url, :required_archival_of_published_derivatives, :rights_holder, :scale_bar, 
-      :series_type, :short_description, :side, :slice_thickness, :taxonomies_titles, :unit, 
+    delegate :access_control_id, :agreement_uri, :ark, :cite_as, :depositor, :description, :doi,
+      :download_reviewer, :fileset_accessibility, :fileset_visibility, :funding,
+      :human_readable_media_type, :identifier, :imaging_event_id, :is_remote_backed, :map_type,
+      :media_organization_id, :media_organization, :media_type, :morphosource_use_agreement_type,
+      :number_of_images_in_set, :organization_transfer_on_publish, :orientation, :part,
+      :permits_3d_use, :permits_commercial_use, :physical_object_id, :physical_object_type,
+      :preview_mode, :publication_status_label, :related_url, :remote_manifest_url,
+      :remote_origin_url, :required_archival_of_published_derivatives, :rights_holder, :scale_bar,
+      :series_type, :short_description, :side, :slice_thickness, :taxonomies_titles, :unit,
       :user_with_ownership, :x_spacing, :y_spacing, :z_spacing,
       to: :solr_document
 
@@ -74,7 +74,7 @@ module Hyrax
     #                                  the GraphExporter knows what URLs to draw.
     def initialize(solr_document, current_ability, request = nil)
       # File status used by controller and other methods to detect when file has recently been added
-      @file_status = ""   
+      @file_status = ""
       super(solr_document, current_ability, request)
     end
 
@@ -219,9 +219,9 @@ module Hyrax
     # @return [Boolean] Universal Viewer ready or not
     #
     def universal_viewer?
-      representative_id.present? && 
-        representative_presenter.present? && 
-        Hyrax.config.iiif_image_server? && 
+      representative_id.present? &&
+        representative_presenter.present? &&
+        Hyrax.config.iiif_image_server? &&
         universal_viewable_ready?
     end
 
@@ -269,7 +269,7 @@ module Hyrax
 
     #
     # Count of files in a single location of accepted file type for archive ZIP/TAR file.
-    # For Volumetric Image Series, this expresses the number of images in the primary series of the archive. 
+    # For Volumetric Image Series, this expresses the number of images in the primary series of the archive.
     #
     # @return [String] Human-readable formatted numeric string for number of files
     #
@@ -283,7 +283,7 @@ module Hyrax
     def archive_files
       @archive_files ||= begin
         if (
-          archive? && 
+          archive? &&
           representative_presenter&.contents_all_files.present? &&
           (all_files = JSON.parse(representative_presenter&.contents_all_files)).present? &&
           all_files.is_a?(Array)
@@ -305,7 +305,7 @@ module Hyrax
         representative_presenter&.contents_mime_type&.first || representative_presenter&.mime_type || "unknown"
       end
     end
-    
+
     #
     # File type label from mime type of either FileSet binary file itself or a representive file in an archive file
     #
@@ -384,7 +384,7 @@ module Hyrax
     # @return [String] For local files, filename; for remote files, remote URL
     #
     def file_label
-      is_remote_backed ? ( remote_origin_url || "" ) : ( representative_presenter&.label || "" )
+      is_remote_backed ? ( remote_origin_url&.first || "" ) : ( representative_presenter&.label || "" )
     end
 
     #
@@ -539,7 +539,7 @@ module Hyrax
           if work&.has_model&.first == "ProcessingEvent" && idx > 0
             # Child is media, either this presenter instance or next parent work solr data
             child = ( idx == (all_parent_works.count - 1) ) ? self : all_parent_works[idx + 1]
-            
+
             # Parent is media or imaging event
             parent = all_parent_works[idx - 1]
             parent_is_media = parent&.has_model&.first == "Media"
@@ -582,7 +582,7 @@ module Hyrax
     end
 
     # This should be the last processing event in the data array, but we check to make sure
-    
+
     #
     # Processing Event that produced this Media. Processing Event immediately upstream from Media.
     #
@@ -616,7 +616,7 @@ module Hyrax
     end
 
     ### METHODS FINDING OTHER WORKS RELATED TO MEDIA UPSTREAM OR DOWNSTREAM IN TREE HIERARCHY ###
-    
+
     #
     # Find all "parent" works upstream from Media in hierarchy. By default, limit of 50 works above
     # will be found.
@@ -685,7 +685,7 @@ module Hyrax
     end
 
     #
-    # Find direct next-generation "child" Media works downstream from Media in hierarchy. 
+    # Find direct next-generation "child" Media works downstream from Media in hierarchy.
     #
     # @return [Array<SolrDocument>] Array of SolrDocuments of child Media works
     #
@@ -695,7 +695,7 @@ module Hyrax
 
     #
     # Find direct next-generation "child" Media works downstream from Media in hierarchy, filtered
-    # to Media current user can view. 
+    # to Media current user can view.
     #
     # @return [Array<SolrDocument>] Array of SolrDocuments of child Media works
     #
@@ -720,7 +720,7 @@ module Hyrax
     def related_media
       return [] unless imaging_event_id&.first.present?
       ::SolrDocument.where(
-        "imaging_event_id_tesim" => imaging_event_id&.first, 
+        "imaging_event_id_tesim" => imaging_event_id&.first,
         "has_model_ssim" => "Media",
         "-id" => id
       )
@@ -823,7 +823,7 @@ module Hyrax
       return nil unless top_parent_media.present?
       has_absentee_parent ? "Derived" : "Raw"
     end
-    
+
     ### METHODS TO FIND SOLR DOCUMENTS FOR NON-MEDIA RELATED WORKS ###
 
     #
@@ -875,8 +875,8 @@ module Hyrax
       end
     end
 
-    ### VIEW PRESENTATION METHODS ###    
-    
+    ### VIEW PRESENTATION METHODS ###
+
     #
     # Long link name label string: "$ModelName $ID: $Title"
     #

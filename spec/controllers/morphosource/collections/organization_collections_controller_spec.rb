@@ -240,13 +240,30 @@ RSpec.describe Morphosource::Collections::OrganizationCollectionsController, typ
       let(:organization)  { FactoryBot.create(:organization_collection, visibility: 'open', depositor: user.ms_id) }
       let(:user)          { FactoryBot.create(:admin) }
 
-      before do
-        controller_instance.instance_variable_set(:@curation_concern, organization)
-        controller_instance.create_transfer_facet
+      context 'with admin user' do
+        before do
+          allow(controller_instance).to receive(:current_user) { user }
+          controller_instance.instance_variable_set(:@curation_concern, organization)
+          controller_instance.create_transfer_facet
+        end
+
+        it 'has a transfer status facet' do
+          expect(subject.label).to eq("Transfer Status")
+        end
       end
 
-      it 'has a transfer status facet' do
-        expect(subject.label).to eq("Transfer Status")
+      context 'with non-admin user' do
+        let(:user)          { FactoryBot.create(:user) }
+
+        before do
+          allow(controller_instance).to receive(:current_user) { user }
+          controller_instance.instance_variable_set(:@curation_concern, organization)
+          controller_instance.create_transfer_facet
+        end
+
+        it 'has a transfer status facet' do
+          expect(subject).to be nil
+        end
       end
     end
   end

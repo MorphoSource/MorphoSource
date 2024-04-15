@@ -24,35 +24,35 @@
 
       <div class="panel panel-default panel-borders tabs teams" id="collection-edit-controls">
         <%= render 'nav_tabs' %>
-        <div class="row tab-action-buttons">
-          <div class="float-right"></div>
-        </div>
+        
+        <%# Instead of panel-body div, use container-fluid to support row with cols %>
+        <div class="container-fluid mb-1">
+          <div class="row no-horizontal-padding">
+            <div class="col-sm-12">
+              <h2 style="margin-top: 15px;">ORGANIZATION PERMISSION DEFAULTS</h2>
+            </div>
 
-        <div class="panel-body">
-          <div class="col-sm-12">
-            <h2 style="margin-top: 0;">ORGANIZATION PERMISSION DEFAULTS</h2>
-          </div>
+            <!-- left column -->
+            <div class="col-sm-6">
+              <%= render 'morphosource/dashboard/collections/permissions/organization_permission_defaults', f: f %>
+            </div>
 
-          <!-- left column -->
-          <div class="col-sm-6">
-            <%= render 'morphosource/dashboard/collections/permissions/organization_permission_defaults', f: f %>
-          </div>
+            <!-- right column -->
+            <div class="col-sm-6">
+              <%= render 'morphosource/dashboard/collections/permissions/organization_permission_admin_settings', f: f %>
 
-          <!-- right column -->
-          <div class="col-sm-6" style="padding-left:25px;">
-            <%= render 'morphosource/dashboard/collections/permissions/organization_permission_admin_settings', f: f %>
+              <% end %> <!-- end simple_form_for before creating new form in remote_file_permissions -->
 
-            <% end %> <!-- end simple_form_for before creating new form in remote_file_permissions -->
-
-            <% if current_user.admin? %>
-              <div class="form-group row">
-                <div class="block-fill block-padding">
-                  <h2 class="mt-0">Remote File Submission Settings</h2>
-                  <%= render 'morphosource/dashboard/collections/permissions/remote_file_permissions' %>
+              <% if current_user.admin? %>
+                <div class="form-group">
+                  <div class="block-fill block-padding">
+                    <h2 class="mt-0">Remote File Submission Settings</h2>
+                    <%= render 'morphosource/dashboard/collections/permissions/remote_file_permissions' %>
+                  </div>
                 </div>
-              </div>
-            <% end %>
-          </div><!-- /right column -->
+              <% end %>
+            </div><!-- /right column -->
+          </div>
         </div>
       </div>    
     </div>

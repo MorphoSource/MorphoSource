@@ -132,37 +132,122 @@ class ProxyDepositRequest < ActiveRecord::Base
   public
 
   def send_request_transfer_message
-    if updated_at == created_at
-      send_request_transfer_message_as_part_of_create
-      send_org_transfer_message_as_part_of_create if organization_transfer
+    if updated_at == created_at # on initial request creation
+      if organization_transfer
+        # Message transfer sender and recipient
+        send_org_transfer_message_to_receivers
+        send_org_transfer_message_to_sender
+      else
+        # Only message transfer recipient
+        send_request_transfer_create_message(receiving_user)
+      end
     else
-      send_request_transfer_message_as_part_of_update
+      send_request_transfer_update_message
     end
   end
 
   private
 
-    def send_request_transfer_message_as_part_of_create
-      transfer_link = "<a href='http://#{host_name}/dashboard/transfers'>Transfers of Ownership</a>"
-      message = "#{user_email_link([sending_user])} has requested to transfer the ownership of #{message_content} to you.  Please view, accept or reject this request in your #{transfer_link} dashboard."
-      message += "<p>Comment: #{sender_comment}</p>" if sender_comment.present?
-      deliver_message(email_sender, receiving_user, message.html_safe, "You have a media transfer request")
-    end
+  def send_org_transfer_message_to_receivers
+      # Organizaton collection or legacy organization?
+      if receiving_user.is_a? OrganizationCollection
+        receiving_user.managers.each { |manager| send_org_transfer_message_to_receiver(manager) }
+      else
+        send_org_transfer_message_to_receiver(receiving_user)
+      end
+  end
 
-    def send_request_transfer_message_as_part_of_update
-      message = "Your request to transfer ownership of #{message_content} to #{user_email_link([receiving_user])} has been #{status}."
-      message += "<p>Please contact #{user_email_link([receiving_user])} if you have a question related to this request.</p>"
-      deliver_message(email_sender, sending_user, message.html_safe, "Media transfer request #{status}")
-    end
+  def send_org_transfer_message_to_receiver(recipient)
+    message = I18n.t("hyrax.transfers.message.org_transfer_receiver", 
+      message_content: message_content, organization_content: organization_content, 
+      transfer_link: transfers_dashboard_link, user_link: user_link(sending_user)
+    ).html_safe
+    message += "<p>Comment: #{sender_comment}</p>" if sender_comment.present?
+    
+    deliver_message(
+      email_sender, 
+      recipient, 
+      message.html_safe, 
+      I18n.t("hyrax.transfers.message.org_transfer_receiver_subject")
+    )
+  end
 
-    def send_org_transfer_message_as_part_of_create
-      message = "A request to transfer ownership of #{message_content} to organization data manager #{user_email_link([receiving_user])} has been generated. The organization data manager will decide to accept or reject this request. For more details, see our <a href='https://wiki.duke.edu/display/MD/Organization+Ownership+Transfers' target='_blank'>documentation</a>."
-      deliver_message(email_sender, sending_user, message.html_safe, "Organization media transfer request generated")
-    end
+  def send_org_transfer_message_to_sender
+    message = I18n.t("hyrax.transfers.message.org_transfer_sender", 
+      message_content: message_content, organization_link: organization_link
+    ).html_safe
+    
+    deliver_message(
+      email_sender, 
+      sending_user, 
+      message.html_safe,
+      I18n.t("hyrax.transfers.message.org_transfer_sender_subject")
+    )
+  end
 
-    def message_content
-      "<b><a href='http://#{host_name}/media/#{work.id}'>Media #{work.id}: #{work.title.first}</a></b>"
-    end
+  def send_request_transfer_create_message(recipient)
+    message = I18n.t("hyrax.transfers.message.transfer_create", 
+      message_content: message_content, transfer_link: transfers_dashboard_link, 
+      user_link: user_link(sending_user)
+    ).html_safe
+    message += "<p>Comment: #{sender_comment}</p>" if sender_comment.present?
+    
+    deliver_message(
+      email_sender, 
+      recipient, 
+      message.html_safe, 
+      I18n.t("hyrax.transfers.message.transfer_create_subject")
+    )
+  end
+
+  def send_request_transfer_update_message
+    receiver_link = receiving_user.is_a?(OrganizationCollection) ? organization_link : user_link(receiving_user)
+    
+    message = I18n.t("hyrax.transfers.message.transfer_update_p1", 
+      message_content: message_content, status: status, receiver_link: receiver_link
+    ).html_safe
+    message_p2 = I18n.t("hyrax.transfers.message.transfer_update_p2", receiver_link: receiver_link).html_safe
+    message += "<p>#{message_p2}</p>".html_safe
+
+    deliver_message(
+      email_sender, 
+      sending_user, 
+      message.html_safe, 
+      I18n.t("hyrax.transfers.message.transfer_update_subject", status: status)
+    )
+  end
+
+  def message_content
+    tag.b link_to(
+      "Media #{work.id}: #{work.title.first}",
+      Rails.application.routes.url_helpers.media_showcase_url(work, host: host_name)
+    )
+  end
+
+  def organization_content
+    "organization#{receiving_user.is_a?(OrganizationCollection) ? " (#{organization_link})" : ""}"
+  end
+
+  def organization_link
+    link_to(
+      receiving_user.name, 
+      Rails.application.routes.url_helpers.organization_url(receiving_user, host: host_name)
+    )
+  end
+
+  def transfers_dashboard_link
+    link_to(
+      "Ownership Transfers",
+      Hyrax::Engine.routes.url_helpers.transfers_url(host: host_name)
+    )
+  end
+
+  def user_link(user)
+    link_to(
+      user.name_or_email,
+      Hyrax::Engine.routes.url_helpers.user_url(user, host: host_name)
+    )
+  end
 
   public
 

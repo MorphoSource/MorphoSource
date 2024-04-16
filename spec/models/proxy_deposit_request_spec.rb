@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe ProxyDepositRequest do
-  let!(:user5)          { User.create(id: '5', email: "purple@email.com", password: "password", display_name: "Mickey Mouse") }
-  let!(:user6)          { User.create(id: '6', email: "blue@email.com", password: "password", display_name: "Donald Duck") }
+  let(:user5)          { FactoryBot.create(:user, id: '5', email: "purple@email.com", password: "password", display_name: "Mickey Mouse") }
+  let(:user6)          { FactoryBot.create(:user, id: '6', email: "blue@email.com", password: "password", display_name: "Donald Duck") }
 
   describe "instance" do
     subject { described_class.new }
@@ -22,10 +22,161 @@ RSpec.describe ProxyDepositRequest do
     end
   end
 
+  describe 'create' do
+    let(:work)                { FactoryBot.create(:media) }
+    let(:email_dispatch_user) { FactoryBot.create(:user) }
+    let(:sending_user)        { FactoryBot.create(:contributor, email: "sender@email.com", display_name: "Sender") }
+    let(:receiving_user)      { FactoryBot.create(:contributor, email: "receiver@email.com", display_name: "Receiver") }
+
+    context 'transfer to individual' do
+      subject { described_class.new(work_id: work.id, sending_user: sending_user, receiving_user: receiving_user) }
+
+      before do
+        allow(subject).to receive(:deliver_message).and_return(true)
+        allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
+        subject.save
+      end
+
+      it 'creates successfully and has correct attributes' do
+        expect(subject.id).not_to be_nil
+        expect(subject.work_id).to eq work.id
+        expect(subject.sending_user_id).to eq sending_user.id.to_s
+        expect(subject.receiving_user_id).to eq receiving_user.id.to_s
+      end 
+
+      it 'generates a message sent to the transfer receiver' do          
+        expect(subject).to have_received(:deliver_message).with(
+          email_dispatch_user,
+          receiving_user,
+          "<a href=\"http://localhost/users/#{sending_user.user_key}\">Sender</a> has requested to transfer the ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to you. Please accept or reject this request in your <a href=\"http://localhost/dashboard/transfers\">Ownership Transfers</a> dashboard.",
+          "You have a media transfer request"
+        )
+      end
+    end
+
+    context 'transfer to organization' do
+      let(:org_manager_1) { FactoryBot.create(:contributor, email: "org_manager_1@email.com", display_name: "Org Manager 1") }
+      let(:organization)   { FactoryBot.create(:organization_collection, depositor: org_manager_1.ms_id) }
+
+      subject { described_class.new(work_id: work.id, sending_user: sending_user, receiving_user: organization, organization_transfer: true) }
+
+      before do
+        allow(subject).to receive(:deliver_message).and_return(true)
+        # allow(org_manager_1).to receive(:groups).and_return(["#{organization.id}_managers"])
+        allow(subject).to receive(:email_sender).and_return(email_dispatch_user)   
+      end
+
+      it 'creates successfully and has correct attributes' do
+        subject.save
+        expect(subject.id).not_to be_nil
+        expect(subject.work_id).to eq work.id
+        expect(subject.sending_user_id).to eq sending_user.id.to_s
+        expect(subject.receiving_user_id).to eq organization.id
+      end 
+
+      context 'with one org manager' do
+        it 'generates the correct message sent to the org manager' do
+          allow(subject).to receive(:send_org_transfer_message_to_sender).and_return(nil)
+          subject.save
+
+          expect(subject).to have_received(:deliver_message).with(
+            email_dispatch_user,
+            org_manager_1,
+            "<a href=\"http://localhost/users/#{sending_user.user_key}\">Sender</a> has requested to transfer the ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to your managed organization (<a href=\"http://localhost/organizations/#{organization.id}\">#{organization.title.first}</a>). It is your choice whether to accept or reject this request. If you accept the request, your organization will become the data manager for this media. When accepting the request, you may choose to allow the original depositor to retain edit access to the media. Please accept or reject this request in your <a href=\"http://localhost/dashboard/transfers\">Ownership Transfers</a> dashboard. For more details, see our <a href='https://wiki.duke.edu/display/MD/Organization+Ownership+Transfers' target='_blank'>documentation</a>.",
+            "You have a media transfer request"
+          )
+        end
+
+        it 'generates the correct message sent to the media depositor' do
+          allow(subject).to receive(:send_org_transfer_message_to_receiver).and_return(nil)
+          subject.save
+
+          expect(subject).to have_received(:deliver_message).once.ordered.with(
+            email_dispatch_user,
+            sending_user,
+            "A request to transfer ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to organization <a href=\"http://localhost/organizations/#{organization.id}\">#{organization.title.first}</a> has been generated. The organization manager(s) will decide to accept or reject this request. For more details, see our <a href='https://wiki.duke.edu/display/MD/Organization+Ownership+Transfers' target='_blank'>documentation</a>.",
+            "Organization media transfer request generated"
+          )
+        end
+      end
+
+      context 'with two org managers' do
+        let(:org_manager_2) { FactoryBot.create(:contributor, email: "org_manager_2@email.com", display_name: "Org Manager 2") }
+
+        it 'generates two messages, one for each data manager' do
+          allow_any_instance_of(OrganizationCollection).to receive(:managers).and_return([org_manager_1, org_manager_2])
+          allow(subject).to receive(:send_org_transfer_message_to_sender).and_return(nil)
+          subject.save
+          expect(subject).to have_received(:deliver_message).exactly(2).times
+        end
+      end
+    end
+  end
+
+  describe 'update' do
+    let(:work)                { FactoryBot.create(:media) }
+    let(:email_dispatch_user) { FactoryBot.create(:user) }
+    let(:sending_user)        { FactoryBot.create(:contributor, email: "sender@email.com", display_name: "Sender") }
+    let(:receiving_user)      { FactoryBot.create(:contributor, email: "receiver@email.com", display_name: "Receiver") }
+
+    context 'transfer to individual' do
+      subject { described_class.create(work_id: work.id, sending_user: sending_user, receiving_user: receiving_user) }
+
+      before do
+        allow(subject).to receive(:deliver_message).and_return(true)
+        allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
+        subject.transfer!
+      end
+
+      it 'successfully transfers media to individual receiver and is marked as accepted' do
+        expect(subject.status).to eq 'accepted'
+        work.reload
+        expect(work.owner).to eq receiving_user.user_key
+      end
+
+      it 'generates correct message sent to the media depositor' do
+        expect(subject).to have_received(:deliver_message).with(
+          email_dispatch_user,
+          sending_user,
+          "Your request to transfer ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to <a href=\"http://localhost/users/#{receiving_user.user_key}\">Receiver</a> has been accepted.<p>Please contact <a href=\"http://localhost/users/#{receiving_user.user_key}\">Receiver</a> if you have a question related to this request.</p>",
+          "Media transfer request accepted"
+        )
+      end 
+    end
+
+    context 'transfer to organization' do
+      let(:org_manager_1) { FactoryBot.create(:contributor, email: "org_manager_1@email.com", display_name: "Org Manager 1") }
+      let(:organization)   { FactoryBot.create(:organization_collection, depositor: org_manager_1.ms_id) }
+
+      subject { described_class.create(work_id: work.id, sending_user: sending_user, receiving_user: organization, organization_transfer: true) }
+
+      before do
+        allow(subject).to receive(:deliver_message).and_return(true)
+        allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
+        subject.transfer!
+      end
+
+      it 'successfully transfers media to organization and is marked as accepted' do
+        expect(subject.status).to eq 'accepted'
+        work.reload
+        expect(work.owner).to eq organization.id
+      end
+
+      it 'generates correct message sent to the media depositor' do
+        expect(subject).to have_received(:deliver_message).with(
+          email_dispatch_user,
+          sending_user,
+          "Your request to transfer ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to <a href=\"http://localhost/organizations/#{organization.id}\">#{organization.title.first}</a> has been accepted.<p>Please contact <a href=\"http://localhost/organizations/#{organization.id}\">#{organization.title.first}</a> if you have a question related to this request.</p>",
+          "Media transfer request accepted"
+        )
+      end
+    end
+  end
+
   describe 'remove_deleted_transfers' do
-    let(:media1)  { Media.create(title: ['media1']) }
-    let(:media2)  { Media.create(title: ['media2']) }
-    let(:media3)  { Media.create(title: ['media3']) }
+    let(:media1)  { FactoryBot.create(:media, title: ['media1']) }
+    let(:media2)  { FactoryBot.create(:media, title: ['media2']) }
+    let(:media3)  { FactoryBot.create(:media, title: ['media3']) }
     let(:media)   { [media1, media2, media3] }
 
     let!(:contributor_role)  { Role.create(name: "contributor") }
@@ -51,7 +202,7 @@ RSpec.describe ProxyDepositRequest do
     end
 
     context 'some request media are missing' do
-      let(:deleted_media) { Media.create(title: ['deleted media']) }
+      let(:deleted_media) { FactoryBot.create(:media, title: ['deleted media']) }
       before do
         ProxyDepositRequest.create(
           work_id: deleted_media.id, sending_user_id: user5.id, receiving_user_id: user6.id, status: "pending", sender_comment: "test")

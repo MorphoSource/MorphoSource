@@ -5,18 +5,72 @@ module Hyrax
   class DevicesController < ApplicationController
     # Adds Hyrax behaviors to the controller.
     include Hyrax::WorksControllerBehavior
-    include Hyrax::BreadcrumbsForWorks
     include Hyrax::ChildWorkRedirect
+
+    before_action :find_organization, only: [:new, :create, :edit, :update]
+    before_action :authorize_admin, only: [:new, :create]
+
     self.curation_concern_type = ::Device
     with_themed_layout 'morphosource_1_column'
 
     # Use this line if you want to use a custom presenter
     self.show_presenter = Hyrax::DevicePresenter
 
-    # Update work index after initial creation to ensure index reflects organization metadata
+    def new
+      @curation_concern.visibility = 'open' # default all new devices to open
+      @curation_concern.organization_id = assign_organization_id
+      super
+    end
+
+    private
+
+    # get the organization id:
+    # from organization_id when new,
+    # from work_parents_attributes when create or update,
+    # from the device solr record on edit
+    def find_organization
+      organization_id = params["organization_id"] ||
+                        params.dig("device","work_parents_attributes")&.permit!&.to_h&.values&.first&.dig("id") ||
+                        params.dig("device", "organization_id")&.first ||
+                        ::SolrDocument.where("id" => params['id'])&.first&.to_h&.dig("organization_id_ssim")&.first
+      @organization = ::SolrDocument.where("id" => organization_id)&.first
+    end
+
+    # for new device records when coming from an organization collection
+    def assign_organization_id
+      params["organization_id"].present? ? [params["organization_id"]] : []
+    end
+
     def after_create_response
       curation_concern.update_index if curation_concern.id.present?
-      super
+      respond_to do |wants|
+        wants.html do
+          flash[:notice] = view_context.t('hyrax.works.create.after_create_html', application_name: view_context.application_name)
+          if @organization.present? && @organization.organization_collection?
+            redirect_to main_app.organization_devices_path(@organization)
+          else
+            redirect_to [main_app, curation_concern]
+          end
+        end
+        wants.json { render :show, status: :created, location: polymorphic_path([main_app, curation_concern]) }
+      end
+    end
+
+    def after_update_response
+      respond_to do |wants|
+        wants.html do
+          if @organization.present? && @organization.organization_collection?
+            redirect_to main_app.organization_devices_path(@organization)
+          else
+            redirect_to [main_app, curation_concern], notice: "Work \"#{curation_concern}\" successfully updated."
+          end
+        end
+        wants.json { render :show, status: :ok, location: polymorphic_path([main_app, curation_concern]) }
+      end
+    end
+
+    def authorize_admin
+      redirect_to root_path and return unless current_user&.admin?
     end
   end
 end

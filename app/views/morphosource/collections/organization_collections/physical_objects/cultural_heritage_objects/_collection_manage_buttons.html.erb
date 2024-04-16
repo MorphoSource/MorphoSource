@@ -26,5 +26,16 @@
         </li>
       </ul>
     </div>
+    <% if current_user&.admin? %>
+      <div class="collection-manage-button-wrapper">
+        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Add <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu">
+          <li>
+            <a class="btn btn-sm btn-primary" href=<%= main_app.new_hyrax_device_path(:organization_id => @presenter) %>><%= t('hyrax.organization.show.manage_buttons.new_device') %></a>
+          </li>
+        </ul>
+      </div>
+    <% end %>
   <% end %>
 </div>

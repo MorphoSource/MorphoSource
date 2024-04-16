@@ -1,0 +1,17 @@
+<fieldset style="margin-bottom:10px;">
+  <legend class="legend-save-work" style="font-weight:bold; font-size:14px;">Publication Status</legend>
+  <ul id="publication-options" class="visibility">
+    <li class="radio">
+      <label>
+        <%= f.radio_button :visibility, Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC %>
+        <%= visibility_badge(Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC) %>
+      </label>
+    </li>
+    <li class="radio">
+      <label>
+        <%= f.radio_button :visibility, Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE %>
+        <%= visibility_badge(Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE) %>
+      </label>
+    </li>
+  </ul>
+</fieldset>

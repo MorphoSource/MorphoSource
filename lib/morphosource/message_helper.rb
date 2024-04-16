@@ -10,12 +10,12 @@ module Morphosource
     end
 
     def user_email_link(users)
-      list = []
-      users.each do |user|
-        raise "Unexpected OrganizationCollection in place of User" if user.is_a? OrganizationCollection
-        list << "<a href='mailto:#{user.email}'>#{user.name_or_email}</a>"
-      end
-      return list.to_sentence.html_safe
+      Array(users).map do |user|
+        link_to(
+          user.name,
+          Hyrax::Engine.routes.url_helpers.user_url(user, host: host_name)
+        )
+      end.compact.to_sentence.html_safe
     end
 
 	  def deliver_message(sender, recipients, message, subject)

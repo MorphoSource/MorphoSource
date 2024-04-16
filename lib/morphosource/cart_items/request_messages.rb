@@ -1,27 +1,7 @@
 module Morphosource
   module CartItems
     module RequestMessages
-
-      def host_name
-        @host_name ||= Hyrax.config.host_name
-      end
-
-      def email_sender
-        @email_sender ||= User.where(email: Hyrax.config.contact_email)&.first
-      end
-
-      def user_email_link(users)
-        users = [users] if users.kind_of?(User)
-        list = []
-        users.each do |user|
-          if user.display_name.present?
-            list << "#{user.display_name} (<a href='mailto:#{user.email}'>#{user.email}</a>)"
-          else
-            list << "<a href='mailto:#{user.email}'>#{user.email}</a>"
-          end
-        end
-        return list.to_sentence.html_safe
-      end
+      include Morphosource::MessageHelper
 
       def max_for_details
         @max_for_details ||= Hyrax.config.max_for_download_request_details
@@ -64,16 +44,6 @@ module Morphosource
         end
         return content.html_safe
       end
-
-      def deliver(sender, recipients, message, subject)
-        begin
-          Hyrax::MessengerService.deliver(sender, recipients, message, subject)
-          # arguments passed to messenger_service: (sender, recipients, body, subject, *args)
-        rescue => e
-          Rails.logger.debug "Error sending message. Exception: #{ e.message }.  Make sure sender account in MS and HOST_NAME in environment is setup correctly."
-        end
-      end
-
     end
   end
 end

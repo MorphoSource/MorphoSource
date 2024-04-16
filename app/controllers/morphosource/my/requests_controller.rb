@@ -66,7 +66,7 @@ module Morphosource
           message_to_requestor += " #{items.count} media. Since more than #{max_for_details} media have been requested, the individual media are not detailed in this message. "
         end
         message_to_requestor += "<p>You can view pending requests in your <a href='http://#{host_name}/dashboard/my/requests'>My Requests</a> dashboard.</p>"
-        deliver(email_sender, requestor, message_to_requestor, "You have sent a download request")
+        deliver_message(email_sender, requestor, message_to_requestor, "You have sent a download request")
       end
 
       def send_request_message_to_reviewer(reviewer_id, items)
@@ -83,7 +83,7 @@ module Morphosource
         end
         message_to_reviewer += "<p>Please review this request in your <a href='http://#{host_name}/dashboard/my/request_manager'>Manage Requests</a> dashboard.</p>"
         message_to_reviewer += "<p>Do Not Reply to this email. If you have questions for the user, please contact them at the email provided.</p>"
-        deliver(email_sender, reviewer, message_to_reviewer, "You have a download request to review")
+        deliver_message(email_sender, reviewer, message_to_reviewer, "You have a download request to review")
       end
 
       def send_requestor_action_message(item, action)
@@ -100,7 +100,7 @@ module Morphosource
             message_to_reviewer += "<p>The request has been removed from your <a href='http://#{host_name}/dashboard/my/request_manager'>Manage Requests</a> dashboard.  You can view canceled requests in your <a href='http://#{host_name}/dashboard/my/previous_requests'>Previous Requests</a> page.</p>"
           end
           "<p>Please contact #{user_email_link(requestor)} if you have a question related to this request.</p>"
-          deliver(email_sender, reviewer_list, message_to_reviewer, "User has #{action} a download request")
+          deliver_message(email_sender, reviewer_list, message_to_reviewer, "User has #{action} a download request")
         end
       end
 

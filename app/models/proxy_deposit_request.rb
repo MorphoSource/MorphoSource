@@ -160,7 +160,7 @@ class ProxyDepositRequest < ActiveRecord::Base
   def send_org_transfer_message_to_receiver(recipient)
     message = I18n.t("hyrax.transfers.message.org_transfer_receiver", 
       message_content: message_content, organization_content: organization_content, 
-      transfer_link: transfers_dashboard_link, user_link: user_link(sending_user)
+      transfer_link: transfers_dashboard_link, user_link: user_email_link(sending_user)
     ).html_safe
     message += "<p>Comment: #{sender_comment}</p>" if sender_comment.present?
     
@@ -188,7 +188,7 @@ class ProxyDepositRequest < ActiveRecord::Base
   def send_request_transfer_create_message(recipient)
     message = I18n.t("hyrax.transfers.message.transfer_create", 
       message_content: message_content, transfer_link: transfers_dashboard_link, 
-      user_link: user_link(sending_user)
+      user_link: user_email_link(sending_user)
     ).html_safe
     message += "<p>Comment: #{sender_comment}</p>" if sender_comment.present?
     
@@ -201,7 +201,7 @@ class ProxyDepositRequest < ActiveRecord::Base
   end
 
   def send_request_transfer_update_message
-    receiver_link = receiving_user.is_a?(OrganizationCollection) ? organization_link : user_link(receiving_user)
+    receiver_link = receiving_user.is_a?(OrganizationCollection) ? organization_link : user_email_link(receiving_user)
     
     message = I18n.t("hyrax.transfers.message.transfer_update_p1", 
       message_content: message_content, status: status, receiver_link: receiver_link
@@ -239,13 +239,6 @@ class ProxyDepositRequest < ActiveRecord::Base
     link_to(
       "Ownership Transfers",
       Hyrax::Engine.routes.url_helpers.transfers_url(host: host_name)
-    )
-  end
-
-  def user_link(user)
-    link_to(
-      user.name_or_email,
-      Hyrax::Engine.routes.url_helpers.user_url(user, host: host_name)
     )
   end
 

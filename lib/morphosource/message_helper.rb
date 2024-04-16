@@ -11,7 +11,7 @@ module Morphosource
 
     def user_email_link(users)
       Array(users).map do |user|
-        link_to(
+        ActionController::Base.helpers.link_to(
           user.name,
           Hyrax::Engine.routes.url_helpers.user_url(user, host: host_name)
         )

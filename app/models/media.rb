@@ -190,6 +190,10 @@ class Media < Morphosource::Works::Base
 
   end
 
+  def owner_class
+    User.find_by(ms_id: self.owner)&.class || OrganizationCollection.find_by(id: self.owner)&.class
+  end
+
   #
   # Methods for related works and related work attributes
   #

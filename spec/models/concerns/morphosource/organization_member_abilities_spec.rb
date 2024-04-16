@@ -128,6 +128,40 @@ RSpec.describe 'Morphosource::Ability', type: :model do
                 expect(can_edit?(file_set, member)).to be(false)
               end
             end
+
+            context 'edge case - the media is owned by the organization but is not otherwise associated with the organization' do
+              let(:another_organization)  { FactoryBot.create(:organization_collection, depositor: depositor.ms_id) }
+              let(:specimen)              { FactoryBot.create(:biological_specimen, organization_id: [another_organization.id]) }
+
+              it 'returns the correct permissions for each member' do
+                # manager can read, edit, transfer, accept, reject
+                expect(can_read?(media, org_manager)).to be(true)
+                expect(can_edit?(media, org_manager)).to be(true)
+                expect(can_transfer?(media, org_manager)).to be(true)
+                expect(can_accept?(proxy_deposit_request, org_manager)).to be(true)
+                expect(can_reject?(proxy_deposit_request, org_manager)).to be(true)
+                expect(can_read?(file_set, org_manager)).to be(true)
+                expect(can_edit?(file_set, org_manager)).to be(true)
+                # editor can read & edit, cannot transfer, accept, reject
+                expect(can_read?(media, org_editor)).to be(true)
+                expect(can_edit?(media, org_editor)).to be(true)
+                expect(can_transfer?(media, org_editor)).to be(false)
+                expect(can_accept?(proxy_deposit_request, org_editor)).to be(false)
+                expect(can_reject?(proxy_deposit_request, org_editor)).to be(false)
+                expect(can_read?(file_set, org_editor)).to be(true)
+                expect(can_edit?(file_set, org_editor)).to be(true)
+                # depositor, downloader, and viewer can read, cannot edit, transfer, accept, reject
+                [org_depositor, org_downloader, org_viewer].each do |member|
+                  expect(can_read?(media, member)).to be(true)
+                  expect(can_edit?(media, member)).to be(false)
+                  expect(can_transfer?(media, member)).to be(false)
+                  expect(can_accept?(proxy_deposit_request, member)).to be(false)
+                  expect(can_reject?(proxy_deposit_request, member)).to be(false)
+                  expect(can_read?(file_set, member)).to be(true)
+                  expect(can_edit?(file_set, member)).to be(false)
+                end
+              end
+            end
           end
         end
 
@@ -141,11 +175,11 @@ RSpec.describe 'Morphosource::Ability', type: :model do
             organizational_team.viewers_group.save!
           end
 
-          it 'returns true for media and file sets' do
+          it 'returns false for media and file sets' do
             # media
-            expect(can_read?(media)).to be(true)
+            expect(can_read?(media)).to be(false)
             # file set
-            expect(can_read?(file_set)).to be(true)
+            expect(can_read?(file_set)).to be(false)
           end
         end
       end

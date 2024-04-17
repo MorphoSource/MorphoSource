@@ -6,7 +6,7 @@ class OrganizationCollection < Collection
   include Morphosource::LocationMetadata
   include Morphosource::OrganizationBehavior
   include Morphosource::PersistentIdentifiersBehavior
-  
+
   before_save :convert_media_ownership_transfer
   after_create :create_collection_groups
   after_create :create_organization_project
@@ -80,6 +80,10 @@ class OrganizationCollection < Collection
   # return false for nil value
   def media_ownership_transfer?
     media_ownership_transfer ? true : false
+  end
+
+  def data_manager
+    managers&.map(&:user_key) || []
   end
 
   # used by ProxyDepositRequest

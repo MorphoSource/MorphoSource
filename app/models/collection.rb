@@ -15,9 +15,11 @@ class Collection < ActiveFedora::Base
   after_destroy :reindex_collection_members
   after_destroy :destroy_default_groups, if: :type_assigns_groups?
 
-  # editors group grants members ability to edit works in the collection, but not to edit collection metadata or grant permissions
   DEFAULT_GROUP_ROLES = %w[managers editors depositors downloaders viewers].freeze
+  # editors group grants members ability to edit works in the collection, but not to edit collection metadata or grant permissions
   EDIT_GROUP_ROLES = %w[managers editors].freeze
+  # all groups except depositors grant ability to read works in the collection
+  READ_GROUP_ROLES = %w[managers editors downloaders viewers].freeze
 
   def presenter_class
     team? ? Morphosource::Collections::TeamPresenter : Morphosource::Collections::ProjectPresenter

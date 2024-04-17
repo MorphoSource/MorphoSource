@@ -77,20 +77,21 @@
             %>
             </div></div>
 
-            <%# TODO: Only show these if org has opted into transfer workflow %>
-            <%= Hyrax::Renderers::ShowcaseLinkAttributeRenderer.new(
-              :transfer_ready_media, 
-              @unmanaged_media_transferable_count, 
-              render_options.merge(link: main_app.organization_path(@collection.id, "f.transfer" => :ready))
-            ).render %>
-            <%= Hyrax::Renderers::ShowcaseLinkAttributeRenderer.new(
-              :transfer_unready_media, 
-              @unmanaged_media_untransferable_count, 
-              render_options.merge(link: main_app.organization_path(@collection.id, "f.transfer" => :unready))
-            ).render %>
-            <div class="row mb-1 csv-export-link"><div class="col-xs-8">
-              <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.media_transfer_status"), main_app.team_media_organization_transfer_status_path(request.parameters.merge(id: @collection.id, :format => :csv, :per_page => 1000000)) %>
-            </div></div>
+            <% if @collection&.media_ownership_transfer %>
+              <%= Hyrax::Renderers::ShowcaseLinkAttributeRenderer.new(
+                :transfer_ready_media, 
+                @unmanaged_media_transferable_count, 
+                render_options.merge(link: main_app.organization_path(@collection.id, "f.transfer" => :ready))
+              ).render %>
+              <%= Hyrax::Renderers::ShowcaseLinkAttributeRenderer.new(
+                :transfer_unready_media, 
+                @unmanaged_media_untransferable_count, 
+                render_options.merge(link: main_app.organization_path(@collection.id, "f.transfer" => :unready))
+              ).render %>
+              <div class="row mb-1 csv-export-link"><div class="col-xs-8">
+                <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.media_transfer_status"), main_app.team_media_organization_transfer_status_path(request.parameters.merge(id: @collection.id, :format => :csv, :per_page => 1000000)) %>
+              </div></div>
+            <% end %>
 
             <% show_both_object_counts = ( @specimen_count == 0 && @cho_count == 0 ) %>
             <% if @specimen_count > 0 || show_both_object_counts %>

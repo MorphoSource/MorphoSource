@@ -224,12 +224,15 @@ class User < ApplicationRecord
     domains = {}
     ids = roles.map{ |r| r.name.gsub(/(_managers|_editors|_depositors)/, "") if r.name.match(/(_managers|_editors|_depositors)/) }.compact
     ids.each do |id|
-      if (c = ActiveFedora::Base.find(id)).present?
-        unless (c.class == OrganizationCollection) || (c.class == Collection && c.organization.present?)
-          next
+      if (org = OrganizationCollection.where(id: id)&.first).present?
+        if org.can_submit_remote_files? && org.allowed_remote_source.present?
+          domains[id] = org.allowed_remote_source
         end
-        if c.can_submit_remote_files? && c.allowed_remote_source.present?
-          domains[id] = c.allowed_remote_source
+      elsif (c = Collection.where(id: id)&.first).present? 
+        if c.team? && c.organization.present?
+          if c.can_submit_remote_files? && c.allowed_remote_source.present?
+            domains[id] = c.allowed_remote_source
+          end
         end
       end
     end

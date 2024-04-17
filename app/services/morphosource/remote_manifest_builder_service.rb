@@ -40,8 +40,8 @@ module Morphosource
                     "body": {
                       id: media.remote_manifest_url,
                       "type": "Image",
-                      "width": file_set&.width&.first&.to_i,
-                      "height": file_set&.height&.first&.to_i,
+                      "width": file_set&.width&.to_i,
+                      "height": file_set&.height&.to_i,
                       "format": "image/jpeg",
                       "label": {
                         "@none": [

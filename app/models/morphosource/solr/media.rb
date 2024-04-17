@@ -52,6 +52,10 @@ module Morphosource
         self['fileset_accessibility_ssim']
       end
 
+      def file_sets
+        self["file_set_ids_ssim"]&.map{ |id| SolrDocument.find(id) } || []
+      end
+
       def human_readable_media_type
         self[Solrizer.solr_name('human_readable_media_type', :stored_searchable)].first
       end

@@ -6,10 +6,8 @@ require 'rails_helper'
 RSpec.describe 'Morphosource::Ability', type: :model do
   let(:user)                  { FactoryBot.create(:contributor) }
   let(:ability)               { Ability.new(user) }
-  let(:media)                 { FactoryBot.create(:media) }
-  let(:file_set)              { FactoryBot.create(:file_set) }
   let(:sending_user)          { FactoryBot.create(:contributor) }
-  let(:proxy_deposit_request) { ProxyDepositRequest.create(receiving_user_id: organization.id, sending_user_id: sending_user.id, work_id: media.id, status: 'pending' ) }
+  let(:proxy_deposit_request) { ProxyDepositRequest.new(receiving_user_id: organization.id, sending_user_id: sending_user.id, work_id: media.id, status: 'pending' ) }
   let(:depositor)             { FactoryBot.create(:contributor) }
   let(:organization)          { FactoryBot.create(:organization_collection, depositor: depositor.ms_id) }
 
@@ -20,13 +18,15 @@ RSpec.describe 'Morphosource::Ability', type: :model do
   let(:org_viewer)            { FactoryBot.create(:registered_user) }
 
   let(:org_members)           { [org_manager, org_editor, org_depositor, org_downloader, org_viewer] }
+  let(:org_read_members)      { [org_manager, org_editor, org_downloader, org_viewer] }
 
-  before do
-    # add fileset to media
-    media.ordered_members << file_set
-    media.save!
-  end
-
+  let(:file_set)               { FactoryBot.create(:file_set_document) }
+  let(:media)                 { FactoryBot.create(:media_document, 
+                                  file_set_ids_ssim: [file_set.id], 
+                                  member_ids_ssim: [file_set.id],
+                                  media_organization_id_ssim: [organization.id],
+                              )}
+  
   describe 'organization_member_abilities' do
     context 'the work does not exist' do
       let(:nonexistent_id) { '123' }
@@ -37,11 +37,9 @@ RSpec.describe 'Morphosource::Ability', type: :model do
       end
     end
 
-    context 'the work is private' do
-      context 'the user is not a member of the media organization' do
+    context 'the work is private and is associated with org through object' do
+      context 'the user is not a member of the media object organization' do
         before do
-          media.owner = organization.id
-          media.save!
           allow(user).to receive(:groups).and_return([])
         end
 
@@ -60,16 +58,6 @@ RSpec.describe 'Morphosource::Ability', type: :model do
       end
 
       context 'the user is a member of the media organization' do
-        let(:specimen)      { FactoryBot.create(:biological_specimen, organization_id: [organization.id]) }
-        let(:device)        { FactoryBot.create(:device) }
-        let(:imaging_event) { FactoryBot.create(:imaging_event, device_id: [device.id], ie_modality: device.modality, physical_object_id: [specimen.id]) }
-
-        before do
-          imaging_event.ordered_members << media
-          imaging_event.save!
-          media.save!
-        end
-
         context 'the organization is a collection' do
           before do
             # add organization users to groups
@@ -82,9 +70,9 @@ RSpec.describe 'Morphosource::Ability', type: :model do
           end
 
           context 'the organization is not the data owner' do
-            # all organization members can read org media and file sets
-            it 'returns the correct permissions for each user' do
-              org_members.each do |org_member|
+            # all non-depositor organization members can read org media and file sets
+            it 'managers, editors, downloaders, and viewers can read but not edit the media' do
+              org_read_members.each do |org_member|
                 expect(can_read?(media, org_member)).to be(true)
                 expect(can_edit?(media, org_member)).to be(false)
                 expect(can_transfer?(media, org_member)).to be(false)
@@ -92,15 +80,27 @@ RSpec.describe 'Morphosource::Ability', type: :model do
                 expect(can_edit?(file_set, org_member)).to be(false)
               end
             end
+
+            # depositor organization members can not read org media and file sets
+            it 'depositors can not read or edit the media' do
+              expect(can_read?(media, org_depositor)).to be(false)
+              expect(can_edit?(media, org_depositor)).to be(false)
+              expect(can_transfer?(media, org_depositor)).to be(false)
+              expect(can_read?(file_set, org_depositor)).to be(false)
+              expect(can_edit?(file_set, org_depositor)).to be(false)
+            end
           end
 
           context 'the organization is the data owner' do
-            before do
-              media.owner = organization.id
-              media.save!
-            end
+            let(:media) { FactoryBot.create(:media_document, 
+                          file_set_ids_ssim: [file_set.id], 
+                          member_ids_ssim: [file_set.id],
+                          media_organization_id_ssim: [organization.id],
+                          owner_ssim: [organization.id],
+                          owner_type_ssi: 'OrganizationCollection'
+                        )}
 
-            it 'returns the correct permissions for each member' do
+            it 'returns the correct permissions for manager member' do
               # manager can read, edit, transfer, accept, reject
               expect(can_read?(media, org_manager)).to be(true)
               expect(can_edit?(media, org_manager)).to be(true)
@@ -109,6 +109,9 @@ RSpec.describe 'Morphosource::Ability', type: :model do
               expect(can_reject?(proxy_deposit_request, org_manager)).to be(true)
               expect(can_read?(file_set, org_manager)).to be(true)
               expect(can_edit?(file_set, org_manager)).to be(true)
+            end
+
+            it 'returns the correct permissions for editor member' do
               # editor can read & edit, cannot transfer, accept, reject
               expect(can_read?(media, org_editor)).to be(true)
               expect(can_edit?(media, org_editor)).to be(true)
@@ -117,15 +120,103 @@ RSpec.describe 'Morphosource::Ability', type: :model do
               expect(can_reject?(proxy_deposit_request, org_editor)).to be(false)
               expect(can_read?(file_set, org_editor)).to be(true)
               expect(can_edit?(file_set, org_editor)).to be(true)
-              # depositor, downloader, and viewer can read, cannot edit, transfer, accept, reject
-              [org_depositor, org_downloader, org_viewer].each do |member|
-                expect(can_read?(media, member)).to be(true)
-                expect(can_edit?(media, member)).to be(false)
-                expect(can_transfer?(media, member)).to be(false)
-                expect(can_accept?(proxy_deposit_request, member)).to be(false)
-                expect(can_reject?(proxy_deposit_request, member)).to be(false)
-                expect(can_read?(file_set, member)).to be(true)
-                expect(can_edit?(file_set, member)).to be(false)
+            end
+
+            it 'returns the correct permissions for depositor member' do
+              # depositor can't do anything
+              expect(can_read?(media, org_depositor)).to be(false)
+              expect(can_edit?(media, org_depositor)).to be(false)
+              expect(can_transfer?(media, org_depositor)).to be(false)
+              expect(can_accept?(proxy_deposit_request, org_depositor)).to be(false)
+              expect(can_reject?(proxy_deposit_request, org_depositor)).to be(false)
+              expect(can_read?(file_set, org_depositor)).to be(false)
+              expect(can_edit?(file_set, org_depositor)).to be(false)
+            end
+
+            it 'returns the correct permissions for downloader' do
+              # downloader, and viewer can read, cannot edit, transfer, accept, reject
+              expect(can_read?(media, org_downloader)).to be(true)
+              expect(can_edit?(media, org_downloader)).to be(false)
+              expect(can_transfer?(media, org_downloader)).to be(false)
+              expect(can_accept?(proxy_deposit_request, org_downloader)).to be(false)
+              expect(can_reject?(proxy_deposit_request, org_downloader)).to be(false)
+              expect(can_read?(file_set, org_downloader)).to be(true)
+              expect(can_edit?(file_set, org_downloader)).to be(false)
+            end
+
+            it 'returns the correct permissions for viewer' do
+              # downloader, and viewer can read, cannot edit, transfer, accept, reject
+              expect(can_read?(media, org_viewer)).to be(true)
+              expect(can_edit?(media, org_viewer)).to be(false)
+              expect(can_transfer?(media, org_viewer)).to be(false)
+              expect(can_accept?(proxy_deposit_request, org_viewer)).to be(false)
+              expect(can_reject?(proxy_deposit_request, org_viewer)).to be(false)
+              expect(can_read?(file_set, org_viewer)).to be(true)
+              expect(can_edit?(file_set, org_viewer)).to be(false)
+            end
+
+            context 'edge case - the media is owned by the organization but is not otherwise associated with the organization' do
+              let(:media) { FactoryBot.create(:media_document, 
+                          file_set_ids_ssim: [file_set.id], 
+                          member_ids_ssim: [file_set.id],
+                          media_organization_id_ssim: ["123456789"],
+                          owner_ssim: [organization.id],
+                          owner_type_ssi: 'OrganizationCollection'
+                        )}
+              
+              it 'returns the correct permissions for manager member' do
+                # manager can read, edit, transfer, accept, reject
+                expect(can_read?(media, org_manager)).to be(true)
+                expect(can_edit?(media, org_manager)).to be(true)
+                expect(can_transfer?(media, org_manager)).to be(true)
+                expect(can_accept?(proxy_deposit_request, org_manager)).to be(true)
+                expect(can_reject?(proxy_deposit_request, org_manager)).to be(true)
+                expect(can_read?(file_set, org_manager)).to be(true)
+                expect(can_edit?(file_set, org_manager)).to be(true)
+              end
+  
+              it 'returns the correct permissions for editor member' do
+                # editor can read & edit, cannot transfer, accept, reject
+                expect(can_read?(media, org_editor)).to be(true)
+                expect(can_edit?(media, org_editor)).to be(true)
+                expect(can_transfer?(media, org_editor)).to be(false)
+                expect(can_accept?(proxy_deposit_request, org_editor)).to be(false)
+                expect(can_reject?(proxy_deposit_request, org_editor)).to be(false)
+                expect(can_read?(file_set, org_editor)).to be(true)
+                expect(can_edit?(file_set, org_editor)).to be(true)
+              end
+  
+              it 'returns the correct permissions for depositor member' do
+                # depositor can't do anything
+                expect(can_read?(media, org_depositor)).to be(false)
+                expect(can_edit?(media, org_depositor)).to be(false)
+                expect(can_transfer?(media, org_depositor)).to be(false)
+                expect(can_accept?(proxy_deposit_request, org_depositor)).to be(false)
+                expect(can_reject?(proxy_deposit_request, org_depositor)).to be(false)
+                expect(can_read?(file_set, org_depositor)).to be(false)
+                expect(can_edit?(file_set, org_depositor)).to be(false)
+              end
+  
+              it 'returns the correct permissions for downloader' do
+                # downloader, and viewer can read, cannot edit, transfer, accept, reject
+                expect(can_read?(media, org_downloader)).to be(true)
+                expect(can_edit?(media, org_downloader)).to be(false)
+                expect(can_transfer?(media, org_downloader)).to be(false)
+                expect(can_accept?(proxy_deposit_request, org_downloader)).to be(false)
+                expect(can_reject?(proxy_deposit_request, org_downloader)).to be(false)
+                expect(can_read?(file_set, org_downloader)).to be(true)
+                expect(can_edit?(file_set, org_downloader)).to be(false)
+              end
+  
+              it 'returns the correct permissions for viewer' do
+                # downloader, and viewer can read, cannot edit, transfer, accept, reject
+                expect(can_read?(media, org_viewer)).to be(true)
+                expect(can_edit?(media, org_viewer)).to be(false)
+                expect(can_transfer?(media, org_viewer)).to be(false)
+                expect(can_accept?(proxy_deposit_request, org_viewer)).to be(false)
+                expect(can_reject?(proxy_deposit_request, org_viewer)).to be(false)
+                expect(can_read?(file_set, org_viewer)).to be(true)
+                expect(can_edit?(file_set, org_viewer)).to be(false)
               end
             end
           end
@@ -141,14 +232,70 @@ RSpec.describe 'Morphosource::Ability', type: :model do
             organizational_team.viewers_group.save!
           end
 
-          it 'returns true for media and file sets' do
+          it 'returns false for media and file sets' do
             # media
-            expect(can_read?(media)).to be(true)
+            expect(can_read?(media)).to be(false)
             # file set
-            expect(can_read?(file_set)).to be(true)
+            expect(can_read?(file_set)).to be(false)
           end
         end
       end
+    end
+
+    # This was added due to a very specific bug noticed affecting subsequent ability reads for different media
+    context 'with multiple works, both associated with org, one org managed and one not' do
+      let(:org_media_unmanaged) { 
+        FactoryBot.create(:media_document, 
+          file_set_ids_ssim: [file_set.id], 
+          member_ids_ssim: [file_set.id],
+          media_organization_id_ssim: [organization.id],
+        )
+      }
+
+      # change ID to prevent collision with other file set
+      let(:file_set_managed) { FactoryBot.create(:file_set_document, id: "987654329") }
+      let(:org_media_managed) { 
+        FactoryBot.create(:media_document, 
+          file_set_ids_ssim: [file_set_managed.id], 
+          member_ids_ssim: [file_set_managed.id],
+          media_organization_id_ssim: [organization.id],
+          owner_ssim: [organization.id],
+          owner_type_ssi: 'OrganizationCollection'
+        )
+      }
+
+      before do
+        # add organization users to groups
+        organization.managers << org_manager
+        organization.editors << org_editor
+        organization.depositors << org_depositor
+        organization.downloaders << org_downloader
+        organization.viewers << org_viewer
+        organization.user_groups.each(&:save)
+      end
+
+      it 'returns the correct permissions for manager member for both media' do
+        # manager can read, edit, transfer, accept, reject managed media
+        expect(can_read?(org_media_managed, org_manager)).to be(true)
+        expect(can_edit?(org_media_managed, org_manager)).to be(true)
+        expect(can_transfer?(org_media_managed, org_manager)).to be(true)
+        expect(can_read?(file_set_managed, org_manager)).to be(true)
+        expect(can_edit?(file_set_managed, org_manager)).to be(true)
+
+        # manager can read, but not edit, transfer, accept, reject unmanaged media
+        expect(can_read?(org_media_unmanaged, org_manager)).to be(true)
+        expect(can_edit?(org_media_unmanaged, org_manager)).to be(false)
+        expect(can_transfer?(org_media_unmanaged, org_manager)).to be(false)
+        expect(can_read?(file_set, org_manager)).to be(true)
+        expect(can_edit?(file_set, org_manager)).to be(false)
+
+        # check managed media again to ensure things are working regardless of order
+        expect(can_read?(org_media_managed, org_manager)).to be(true)
+        expect(can_edit?(org_media_managed, org_manager)).to be(true)
+        expect(can_transfer?(org_media_managed, org_manager)).to be(true)
+        expect(can_read?(file_set_managed, org_manager)).to be(true)
+        expect(can_edit?(file_set_managed, org_manager)).to be(true)
+      end 
     end
   end
 end

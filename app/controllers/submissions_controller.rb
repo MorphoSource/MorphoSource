@@ -760,7 +760,7 @@ class SubmissionsController < ApplicationController
         organization = parent.organizations.first
       end
     elsif organization_id.present? && organization_id != 'new'
-      organization = find_organization(organization_id)
+      organization = find_organization
     elsif biological_specimen_id.present? && biological_specimen_id != 'new'
       specimen = BiologicalSpecimen.find(biological_specimen_id)
       if specimen.organizations.present?

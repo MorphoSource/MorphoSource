@@ -46,7 +46,7 @@ module Morphosource
 
       def create_extra_facets
         create_access_facet
-        create_transfer_facet if current_user&.can? :edit, @curation_concern
+        create_transfer_facet if current_user&.can?(:edit, @curation_concern) && @curation_concern.media_ownership_transfer
       end
 
       # Media search facet for whether media is owned by organization, in transfer system, or out

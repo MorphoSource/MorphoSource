@@ -785,7 +785,15 @@ module Hyrax
     attr_writer :logo_image
     def logo_image
       # Default image is 80x80 pixels and is located in app/assets/images/, it is displayed at 40x40 and 60x60
+      # This image is displayed on blue backgrounds and should contrast appropriately
       @logo_image ||= nil
+    end
+
+    attr_writer :logo_image_alternate
+    def logo_image_alternate
+      # Default image is 80x80 pixels and is located in app/assets/images/, it is displayed at 40x40 and 60x60
+      # This image is displayed on white or gray backgrounds and should contrast appropriately
+      @logo_image_alternate ||= nil
     end
 
     attr_writer :site_title

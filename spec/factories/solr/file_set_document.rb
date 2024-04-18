@@ -32,7 +32,7 @@ FILE_SET_DOC_ATTRIBUTES = {
 
 FactoryBot.define do
   factory :file_set_document, class: "SolrDocument" do
-    initialize_with { new(FILE_SET_DOC_ATTRIBUTES) }
+    initialize_with { new(FILE_SET_DOC_ATTRIBUTES.merge(attributes)) }
     to_create { |instance| ActiveFedora::SolrService.add(instance.to_h, softCommit: true)}
   end
 end

@@ -27,87 +27,427 @@ RSpec.describe ProxyDepositRequest do
     let(:email_dispatch_user) { FactoryBot.create(:user) }
     let(:sending_user)        { FactoryBot.create(:contributor, email: "sender@email.com", display_name: "Sender") }
     let(:receiving_user)      { FactoryBot.create(:contributor, email: "receiver@email.com", display_name: "Receiver") }
+    let(:org_manager_1)       { FactoryBot.create(:contributor, email: "org_manager_1@email.com", display_name: "Org Manager 1") }
+    let(:organization)        { FactoryBot.create(:organization_collection, depositor: org_manager_1.ms_id) }
+    let(:org_manager_2)       { FactoryBot.create(:contributor, email: "org_manager_2@email.com", display_name: "Org Manager 2") }
+    let(:organization2)       { FactoryBot.create(:organization_collection, depositor: org_manager_2.ms_id) }
 
-    context 'transfer to individual' do
-      subject { described_class.new(work_id: work.id, sending_user: sending_user, receiving_user: receiving_user) }
+    context 'created with user instances' do
+      context 'individual to individual' do
+        subject { described_class.create(work_id: work.id, sending_user: sending_user, receiving_user: receiving_user) }
 
-      before do
-        allow(subject).to receive(:deliver_message).and_return(true)
-        allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
-        subject.save
+        it 'creates successfully and has correct attributes' do
+          expect(subject.id).not_to be_nil
+          expect(subject.work_id).to eq work.id
+          expect(subject.sending_user.id).to eq sending_user.id
+          expect(subject.sending_user_id).to eq sending_user.id.to_s
+          expect(subject.sending_user_type).to eq "User"
+          expect(subject.receiving_user.id).to eq receiving_user.id
+          expect(subject.receiving_user_id).to eq receiving_user.id.to_s
+          expect(subject.receiving_user_type).to eq "User"
+        end 
       end
 
-      it 'creates successfully and has correct attributes' do
-        expect(subject.id).not_to be_nil
-        expect(subject.work_id).to eq work.id
-        expect(subject.sending_user_id).to eq sending_user.id.to_s
-        expect(subject.receiving_user_id).to eq receiving_user.id.to_s
-      end 
+      context 'individual to organization' do
+        subject { described_class.create(work_id: work.id, sending_user: sending_user, receiving_user: organization) }
 
-      it 'generates a message sent to the transfer receiver' do          
-        expect(subject).to have_received(:deliver_message).with(
-          email_dispatch_user,
-          receiving_user,
-          "<a href=\"http://localhost/users/#{sending_user.user_key}\">Sender</a> has requested to transfer the ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to you. Please accept or reject this request in your <a href=\"http://localhost/dashboard/transfers\">Ownership Transfers</a> dashboard.",
-          "You have a media transfer request"
-        )
+        it 'creates successfully and has correct attributes' do
+          expect(subject.id).not_to be_nil
+          expect(subject.work_id).to eq work.id
+          expect(subject.sending_user.id).to eq sending_user.id
+          expect(subject.sending_user_id).to eq sending_user.id.to_s
+          expect(subject.sending_user_type).to eq "User"
+          expect(subject.receiving_user.id).to eq organization.id
+          expect(subject.receiving_user_id).to eq organization.id.to_s
+          expect(subject.receiving_user_type).to eq "OrganizationCollection"
+        end 
+      end
+
+      context 'organization to individual' do
+        subject { described_class.create(work_id: work.id, sending_user: organization, receiving_user: receiving_user) }
+
+        it 'creates successfully and has correct attributes' do
+          expect(subject.id).not_to be_nil
+          expect(subject.work_id).to eq work.id
+          expect(subject.sending_user.id).to eq organization.id
+          expect(subject.sending_user_id).to eq organization.id.to_s
+          expect(subject.sending_user_type).to eq "OrganizationCollection"
+          expect(subject.receiving_user.id).to eq receiving_user.id
+          expect(subject.receiving_user_id).to eq receiving_user.id.to_s
+          expect(subject.receiving_user_type).to eq "User"
+        end 
+      end
+
+      context 'organization to organization' do
+        subject { described_class.create(work_id: work.id, sending_user: organization, receiving_user: organization2) }
+
+        it 'creates successfully and has correct attributes' do
+          expect(subject.id).not_to be_nil
+          expect(subject.work_id).to eq work.id
+          expect(subject.sending_user.id).to eq organization.id
+          expect(subject.sending_user_id).to eq organization.id.to_s
+          expect(subject.sending_user_type).to eq "OrganizationCollection"
+          expect(subject.receiving_user.id).to eq organization2.id
+          expect(subject.receiving_user_id).to eq organization2.id.to_s
+          expect(subject.receiving_user_type).to eq "OrganizationCollection"
+        end 
       end
     end
 
-    context 'transfer to organization' do
-      let(:org_manager_1) { FactoryBot.create(:contributor, email: "org_manager_1@email.com", display_name: "Org Manager 1") }
-      let(:organization)   { FactoryBot.create(:organization_collection, depositor: org_manager_1.ms_id) }
+    context 'created with user IDs' do
+      context 'individual to individual' do
+        subject { described_class.create(work_id: work.id, sending_user_id: sending_user.id, receiving_user_id: receiving_user.id) }
 
-      subject { described_class.new(work_id: work.id, sending_user: sending_user, receiving_user: organization, organization_transfer: true) }
-
-      before do
-        allow(subject).to receive(:deliver_message).and_return(true)
-        # allow(org_manager_1).to receive(:groups).and_return(["#{organization.id}_managers"])
-        allow(subject).to receive(:email_sender).and_return(email_dispatch_user)   
+        it 'creates successfully and has correct attributes' do
+          expect(subject.id).not_to be_nil
+          expect(subject.work_id).to eq work.id
+          expect(subject.sending_user.id).to eq sending_user.id
+          expect(subject.sending_user_id).to eq sending_user.id.to_s
+          expect(subject.sending_user_type).to eq "User"
+          expect(subject.receiving_user.id).to eq receiving_user.id
+          expect(subject.receiving_user_id).to eq receiving_user.id.to_s
+          expect(subject.receiving_user_type).to eq "User"
+        end 
       end
 
-      it 'creates successfully and has correct attributes' do
-        subject.save
-        expect(subject.id).not_to be_nil
-        expect(subject.work_id).to eq work.id
-        expect(subject.sending_user_id).to eq sending_user.id.to_s
-        expect(subject.receiving_user_id).to eq organization.id
-      end 
+      context 'individual to organization' do
+        subject { described_class.create(work_id: work.id, sending_user_id: sending_user.id, receiving_user_id: organization.id) }
 
-      context 'with one org manager' do
-        it 'generates the correct message sent to the org manager' do
-          allow(subject).to receive(:send_org_transfer_message_to_sender).and_return(nil)
-          subject.save
+        it 'creates successfully and has correct attributes' do
+          expect(subject.id).not_to be_nil
+          expect(subject.work_id).to eq work.id
+          expect(subject.sending_user.id).to eq sending_user.id
+          expect(subject.sending_user_id).to eq sending_user.id.to_s
+          expect(subject.sending_user_type).to eq "User"
+          expect(subject.receiving_user.id).to eq organization.id
+          expect(subject.receiving_user_id).to eq organization.id.to_s
+          expect(subject.receiving_user_type).to eq "OrganizationCollection"
+        end 
+      end
 
-          expect(subject).to have_received(:deliver_message).with(
-            email_dispatch_user,
-            org_manager_1,
-            "<a href=\"http://localhost/users/#{sending_user.user_key}\">Sender</a> has requested to transfer the ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to your managed organization (<a href=\"http://localhost/organizations/#{organization.id}\">#{organization.title.first}</a>). It is your choice whether to accept or reject this request. If you accept the request, your organization will become the data manager for this media. When accepting the request, you may choose to allow the original depositor to retain edit access to the media. Please accept or reject this request in your <a href=\"http://localhost/dashboard/transfers\">Ownership Transfers</a> dashboard. For more details, see our <a href='https://wiki.duke.edu/display/MD/Organization+Ownership+Transfers' target='_blank'>documentation</a>.",
-            "You have a media transfer request"
-          )
+      context 'organization to individual' do
+        subject { described_class.create(work_id: work.id, sending_user_id: organization.id, receiving_user_id: receiving_user.id) }
+
+        it 'creates successfully and has correct attributes' do
+          expect(subject.id).not_to be_nil
+          expect(subject.work_id).to eq work.id
+          expect(subject.sending_user.id).to eq organization.id
+          expect(subject.sending_user_id).to eq organization.id.to_s
+          expect(subject.sending_user_type).to eq "OrganizationCollection"
+          expect(subject.receiving_user.id).to eq receiving_user.id
+          expect(subject.receiving_user_id).to eq receiving_user.id.to_s
+          expect(subject.receiving_user_type).to eq "User"
+        end 
+      end
+
+      context 'organization to organization' do
+        subject { described_class.create(work_id: work.id, sending_user_id: organization.id, receiving_user_id: organization2.id) }
+
+        it 'creates successfully and has correct attributes' do
+          expect(subject.id).not_to be_nil
+          expect(subject.work_id).to eq work.id
+          expect(subject.sending_user.id).to eq organization.id
+          expect(subject.sending_user_id).to eq organization.id.to_s
+          expect(subject.sending_user_type).to eq "OrganizationCollection"
+          expect(subject.receiving_user.id).to eq organization2.id
+          expect(subject.receiving_user_id).to eq organization2.id.to_s
+          expect(subject.receiving_user_type).to eq "OrganizationCollection"
+        end 
+      end
+    end
+  end
+
+  describe 'save' do
+    let(:work)                { FactoryBot.create(:media) }
+    let(:email_dispatch_user) { FactoryBot.create(:user) }
+    let(:sending_user)        { FactoryBot.create(:contributor, email: "sender@email.com", display_name: "Sender") }
+    let(:receiving_user)      { FactoryBot.create(:contributor, email: "receiver@email.com", display_name: "Receiver") }
+    let(:org_manager_1)       { FactoryBot.create(:contributor, email: "org_manager_1@email.com", display_name: "Org Manager 1") }
+    let(:organization)        { FactoryBot.create(:organization_collection, depositor: org_manager_1.ms_id) }
+    let(:org_manager_2)       { FactoryBot.create(:contributor, email: "org_manager_2@email.com", display_name: "Org Manager 2") }
+    let(:organization2)       { FactoryBot.create(:organization_collection, depositor: org_manager_2.ms_id) }
+    let(:org_manager_3)       { FactoryBot.create(:contributor, email: "org_manager_3@email.com", display_name: "Org Manager 3") }
+    let(:org_manager_4)       { FactoryBot.create(:contributor, email: "org_manager_4@email.com", display_name: "Org Manager 4") }
+
+    context 'message generation' do
+      context 'for standard transfer' do
+        context 'from individual to individual' do
+          subject { described_class.new(work_id: work.id, sending_user_id: sending_user.id, receiving_user_id: receiving_user.id) }
+
+          before do
+            allow(subject).to receive(:deliver_message).and_return(true)
+            allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
+            subject.save
+          end
+
+          it 'generates a message sent to the transfer receiver' do          
+            expect(subject).to have_received(:deliver_message).with(
+              email_dispatch_user,
+              receiving_user,
+              "<a href=\"http://localhost/users/#{sending_user.user_key}\">Sender</a> has requested to transfer the ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to you. Please accept or reject this request in your <a href=\"http://localhost/dashboard/transfers\">Ownership Transfers</a> dashboard.",
+              "You have a media transfer request"
+            )
+          end
         end
 
-        it 'generates the correct message sent to the media depositor' do
-          allow(subject).to receive(:send_org_transfer_message_to_receiver).and_return(nil)
-          subject.save
+        context 'from individual to organization with one manager' do
+          subject { described_class.new(work_id: work.id, sending_user_id: sending_user.id, receiving_user_id: organization.id) }
 
-          expect(subject).to have_received(:deliver_message).once.ordered.with(
-            email_dispatch_user,
-            sending_user,
-            "A request to transfer ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to organization <a href=\"http://localhost/organizations/#{organization.id}\">#{organization.title.first}</a> has been generated. The organization manager(s) will decide to accept or reject this request. For more details, see our <a href='https://wiki.duke.edu/display/MD/Organization+Ownership+Transfers' target='_blank'>documentation</a>.",
-            "Organization media transfer request generated"
-          )
+          before do
+            allow(subject).to receive(:deliver_message).and_return(true)
+            allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
+            subject.save
+          end
+
+          it 'generates a message sent to the transfer receiver org manager' do          
+            expect(subject).to have_received(:deliver_message).with(
+              email_dispatch_user,
+              org_manager_1,
+              "<a href=\"http://localhost/users/#{sending_user.user_key}\">Sender</a> has requested to transfer the ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to you. Please accept or reject this request in your <a href=\"http://localhost/dashboard/transfers\">Ownership Transfers</a> dashboard.",
+              "You have a media transfer request"
+            )
+          end
+        end
+
+        context 'from individual to organization with two managers' do
+          subject { described_class.new(work_id: work.id, sending_user_id: sending_user.id, receiving_user_id: organization.id) }
+
+          before do
+            allow_any_instance_of(OrganizationCollection).to receive(:managers).and_return([org_manager_1, org_manager_3])
+            allow(subject).to receive(:deliver_message).and_return(true)
+            allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
+            subject.save
+          end
+
+          it 'generates two messages, one for each org manager' do           
+            expect(subject).to have_received(:deliver_message).exactly(2).times
+          end
+        end
+
+        context 'from organization to individual' do
+          subject { described_class.new(work_id: work.id, sending_user_id: organization2.id, receiving_user_id: receiving_user.id) }
+
+          before do
+            allow(subject).to receive(:deliver_message).and_return(true)
+            allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
+            subject.save
+          end
+
+          it 'generates a message sent to the transfer receiver' do          
+            expect(subject).to have_received(:deliver_message).with(
+              email_dispatch_user,
+              receiving_user,
+              "<a href=\"http://localhost/organizations/#{organization2.id}\">#{organization2.name}</a> has requested to transfer the ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to you. Please accept or reject this request in your <a href=\"http://localhost/dashboard/transfers\">Ownership Transfers</a> dashboard.",
+              "You have a media transfer request"
+            )
+          end
+        end
+
+        context 'from organization to organization with one manager' do
+          subject { described_class.new(work_id: work.id, sending_user_id: organization2.id, receiving_user_id: organization.id) }
+
+          before do
+            allow(subject).to receive(:deliver_message).and_return(true)
+            allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
+            subject.save
+          end
+
+          it 'generates a message sent to the transfer receiver org manager' do          
+            expect(subject).to have_received(:deliver_message).with(
+              email_dispatch_user,
+              org_manager_1,
+              "<a href=\"http://localhost/organizations/#{organization2.id}\">#{organization2.name}</a> has requested to transfer the ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to you. Please accept or reject this request in your <a href=\"http://localhost/dashboard/transfers\">Ownership Transfers</a> dashboard.",
+              "You have a media transfer request"
+            )
+          end
+        end
+
+        context 'from organization to organization with two managers' do
+          subject { described_class.new(work_id: work.id, sending_user_id: organization2.id, receiving_user_id: organization.id) }
+
+          before do
+            allow_any_instance_of(OrganizationCollection).to receive(:managers).and_return([org_manager_1, org_manager_3])
+            allow(subject).to receive(:deliver_message).and_return(true)
+            allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
+            subject.save
+          end
+
+          it 'generates two messages, one for each org manager' do           
+            expect(subject).to have_received(:deliver_message).exactly(2).times
+          end
         end
       end
 
-      context 'with two org managers' do
-        let(:org_manager_2) { FactoryBot.create(:contributor, email: "org_manager_2@email.com", display_name: "Org Manager 2") }
+      context 'for automated organization transfer' do
+        context 'from individual to organization with one manager' do
+          subject { described_class.new(work_id: work.id, sending_user_id: sending_user.id, receiving_user_id: organization.id, organization_transfer: true) }
 
-        it 'generates two messages, one for each data manager' do
-          allow_any_instance_of(OrganizationCollection).to receive(:managers).and_return([org_manager_1, org_manager_2])
-          allow(subject).to receive(:send_org_transfer_message_to_sender).and_return(nil)
-          subject.save
-          expect(subject).to have_received(:deliver_message).exactly(2).times
+          before do
+            allow(subject).to receive(:deliver_message).and_return(true)
+            allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
+          end
+
+          it 'generates the correct message sent to the org manager' do
+            allow(subject).to receive(:send_org_transfer_message_to_sender).and_return(nil)
+            subject.save
+
+            expect(subject).to have_received(:deliver_message).with(
+              email_dispatch_user,
+              org_manager_1,
+              "<a href=\"http://localhost/users/#{sending_user.user_key}\">Sender</a> has requested to transfer the ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to your managed organization (<a href=\"http://localhost/organizations/#{organization.id}\">#{organization.title.first}</a>). It is your choice whether to accept or reject this request. If you accept the request, your organization will become the data manager for this media. When accepting the request, you may choose to allow the original depositor to retain edit access to the media. Please accept or reject this request in your <a href=\"http://localhost/dashboard/transfers\">Ownership Transfers</a> dashboard. For more details, see our <a href='https://wiki.duke.edu/display/MD/Organization+Ownership+Transfers' target='_blank'>documentation</a>.",
+              "You have a media transfer request"
+            )
+          end
+
+          it 'generates the correct message sent to the media depositor' do
+            allow(subject).to receive(:send_org_transfer_message_to_receiver).and_return(nil)
+            subject.save
+
+            expect(subject).to have_received(:deliver_message).with(
+              email_dispatch_user,
+              sending_user,
+              "A request to transfer ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to organization <a href=\"http://localhost/organizations/#{organization.id}\">#{organization.title.first}</a> has been generated. The organization manager(s) will decide to accept or reject this request. For more details, see our <a href='https://wiki.duke.edu/display/MD/Organization+Ownership+Transfers' target='_blank'>documentation</a>.",
+              "Organization media transfer request generated"
+            )
+          end
+        end
+
+        context 'from individual to organization with two data managers' do
+          subject { described_class.new(work_id: work.id, sending_user_id: sending_user.id, receiving_user_id: organization.id, organization_transfer: true) }
+
+          before do
+            allow_any_instance_of(OrganizationCollection).to receive(:managers).and_return([org_manager_1, org_manager_3])
+            allow(subject).to receive(:send_org_transfer_message_to_sender).and_return(nil)
+            allow(subject).to receive(:deliver_message).and_return(true)
+            allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
+            subject.save
+          end
+
+          it 'generates two messages, one for each manager' do
+            expect(subject).to have_received(:deliver_message).exactly(2).times
+          end
+        end
+
+        context 'from organization with one manager to organization with one manager' do
+          subject { described_class.new(work_id: work.id, sending_user_id: organization2.id, receiving_user_id: organization.id, organization_transfer: true) }
+
+          before do
+            allow(subject).to receive(:deliver_message).and_return(true)
+            allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
+          end
+
+          it 'generates the correct message sent to the receiving org manager' do
+            allow(subject).to receive(:send_org_transfer_message_to_sender).and_return(nil)
+            subject.save
+
+            expect(subject).to have_received(:deliver_message).with(
+              email_dispatch_user,
+              org_manager_1,
+              "<a href=\"http://localhost/organizations/#{organization2.id}\">#{organization2.name}</a> has requested to transfer the ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to your managed organization (<a href=\"http://localhost/organizations/#{organization.id}\">#{organization.title.first}</a>). It is your choice whether to accept or reject this request. If you accept the request, your organization will become the data manager for this media. When accepting the request, you may choose to allow the original depositor to retain edit access to the media. Please accept or reject this request in your <a href=\"http://localhost/dashboard/transfers\">Ownership Transfers</a> dashboard. For more details, see our <a href='https://wiki.duke.edu/display/MD/Organization+Ownership+Transfers' target='_blank'>documentation</a>.",
+              "You have a media transfer request"
+            )
+          end
+
+          it 'generates the correct message sent to the sending org manager' do
+            allow(subject).to receive(:send_org_transfer_message_to_receiver).and_return(nil)
+            subject.save
+
+            expect(subject).to have_received(:deliver_message).with(
+              email_dispatch_user,
+              org_manager_2,
+              "A request to transfer ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to organization <a href=\"http://localhost/organizations/#{organization.id}\">#{organization.title.first}</a> has been generated. The organization manager(s) will decide to accept or reject this request. For more details, see our <a href='https://wiki.duke.edu/display/MD/Organization+Ownership+Transfers' target='_blank'>documentation</a>.",
+              "Organization media transfer request generated"
+            )
+          end
+        end
+
+        context 'from organization with two managers to organization with one manager' do
+          subject { described_class.new(work_id: work.id, sending_user_id: organization2.id, receiving_user_id: organization.id, organization_transfer: true) }
+
+          before do
+            organization2.managers << org_manager_3
+            organization2.save
+            
+            allow(subject).to receive(:deliver_message).and_return(true)
+            allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
+            
+          end
+
+          it 'generates three messages in total' do
+            subject.save
+            expect(subject).to have_received(:deliver_message).exactly(3).times
+          end
+
+          it 'generates two messages to sending org managers, one for each manager' do
+            allow(subject).to receive(:send_org_transfer_message_to_receiver).and_return(nil)
+            subject.save
+            expect(subject).to have_received(:deliver_message).exactly(2).times
+          end
+
+          it 'generates one messages to receiving org manager' do
+            allow(subject).to receive(:send_org_transfer_message_to_sender).and_return(nil)
+            subject.save
+            expect(subject).to have_received(:deliver_message).exactly(1).times
+          end
+        end
+
+        context 'from organization with one manager to organization with two managers' do
+          subject { described_class.new(work_id: work.id, sending_user_id: organization2.id, receiving_user_id: organization.id, organization_transfer: true) }
+
+          before do
+            organization.managers << org_manager_3
+            organization.save
+            allow(subject).to receive(:deliver_message).and_return(true)
+            allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
+          end
+
+          it 'generates three messages in total' do
+            subject.save
+            expect(subject).to have_received(:deliver_message).exactly(3).times
+          end
+
+          it 'generates one message to sending org manager' do
+            allow(subject).to receive(:send_org_transfer_message_to_receiver).and_return(nil)
+            subject.save
+            expect(subject).to have_received(:deliver_message).exactly(1).times
+          end
+
+          it 'generates two messages to receiving org managers, one for each manager' do
+            allow(subject).to receive(:send_org_transfer_message_to_sender).and_return(nil)
+            subject.save
+            expect(subject).to have_received(:deliver_message).exactly(2).times
+          end
+        end
+
+        context 'from organization with two managers to organization with two managers' do
+          subject { described_class.new(work_id: work.id, sending_user_id: organization2.id, receiving_user_id: organization.id, organization_transfer: true) }
+
+          before do
+            organization.managers << org_manager_3
+            organization.save
+            organization2.managers << org_manager_4
+            organization.save
+            allow(subject).to receive(:deliver_message).and_return(true)
+            allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
+            
+          end
+
+          it 'generates four messages in total' do
+            subject.save
+            expect(subject).to have_received(:deliver_message).exactly(4).times
+          end
+
+          it 'generates two messages to sending org managers, one for each manager' do
+            allow(subject).to receive(:send_org_transfer_message_to_receiver).and_return(nil)
+            subject.save
+            expect(subject).to have_received(:deliver_message).exactly(2).times
+          end
+
+          it 'generates two messages to receiving org managers, one for each manager' do
+            allow(subject).to receive(:send_org_transfer_message_to_sender).and_return(nil)
+            subject.save
+            expect(subject).to have_received(:deliver_message).exactly(2).times
+          end
         end
       end
     end
@@ -118,57 +458,155 @@ RSpec.describe ProxyDepositRequest do
     let(:email_dispatch_user) { FactoryBot.create(:user) }
     let(:sending_user)        { FactoryBot.create(:contributor, email: "sender@email.com", display_name: "Sender") }
     let(:receiving_user)      { FactoryBot.create(:contributor, email: "receiver@email.com", display_name: "Receiver") }
+    let(:org_manager_1)       { FactoryBot.create(:contributor, email: "org_manager_1@email.com", display_name: "Org Manager 1") }
+    let(:organization)        { FactoryBot.create(:organization_collection, depositor: org_manager_1.ms_id) }
+    let(:org_manager_2)       { FactoryBot.create(:contributor, email: "org_manager_2@email.com", display_name: "Org Manager 2") }
+    let(:organization2)       { FactoryBot.create(:organization_collection, depositor: org_manager_2.ms_id) }
+    let(:org_manager_3)       { FactoryBot.create(:contributor, email: "org_manager_3@email.com", display_name: "Org Manager 3") }
 
-    context 'transfer to individual' do
-      subject { described_class.create(work_id: work.id, sending_user: sending_user, receiving_user: receiving_user) }
+    context 'for standard or automated organization transfer' do
+      context 'individual to individual' do
+        subject { described_class.create(work_id: work.id, sending_user_id: sending_user.id, receiving_user_id: receiving_user.id) }
 
-      before do
-        allow(subject).to receive(:deliver_message).and_return(true)
-        allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
-        subject.transfer!
+        before do
+          allow(subject).to receive(:deliver_message).and_return(true)
+          allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
+          subject.transfer!
+        end
+
+        it 'successfully transfers media to individual receiver and is marked as accepted' do
+          expect(subject.status).to eq 'accepted'
+          work.reload
+          expect(work.owner).to eq receiving_user.user_key
+        end
+
+        it 'generates correct message sent to the sender individual' do
+          expect(subject).to have_received(:deliver_message).with(
+            email_dispatch_user,
+            sending_user,
+            "Your request to transfer ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to <a href=\"http://localhost/users/#{receiving_user.user_key}\">Receiver</a> has been accepted.<p>Please contact <a href=\"http://localhost/users/#{receiving_user.user_key}\">Receiver</a> if you have a question related to this request.</p>",
+            "Media transfer request accepted"
+          )
+        end 
       end
 
-      it 'successfully transfers media to individual receiver and is marked as accepted' do
-        expect(subject.status).to eq 'accepted'
-        work.reload
-        expect(work.owner).to eq receiving_user.user_key
+      context 'individual to organization' do
+        subject { described_class.create(work_id: work.id, sending_user_id: sending_user.id, receiving_user_id: organization.id) }
+
+        before do
+          allow(subject).to receive(:deliver_message).and_return(true)
+          allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
+          subject.transfer!
+        end
+
+        it 'successfully transfers media to organization receiver and is marked as accepted' do
+          expect(subject.status).to eq 'accepted'
+          work.reload
+          expect(work.owner).to eq organization.id
+        end
+
+        it 'generates correct message sent to the sender individual' do
+          expect(subject).to have_received(:deliver_message).with(
+            email_dispatch_user,
+            sending_user,
+            "Your request to transfer ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to <a href=\"http://localhost/organizations/#{organization.id}\">#{organization.name}</a> has been accepted.<p>Please contact <a href=\"http://localhost/organizations/#{organization.id}\">#{organization.name}</a> if you have a question related to this request.</p>",
+            "Media transfer request accepted"
+          )
+        end 
       end
 
-      it 'generates correct message sent to the media depositor' do
-        expect(subject).to have_received(:deliver_message).with(
-          email_dispatch_user,
-          sending_user,
-          "Your request to transfer ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to <a href=\"http://localhost/users/#{receiving_user.user_key}\">Receiver</a> has been accepted.<p>Please contact <a href=\"http://localhost/users/#{receiving_user.user_key}\">Receiver</a> if you have a question related to this request.</p>",
-          "Media transfer request accepted"
-        )
-      end 
-    end
+      context 'organization with one data manager to individual' do
+        subject { described_class.create(work_id: work.id, sending_user_id: organization2.id, receiving_user_id: receiving_user.id) }
 
-    context 'transfer to organization' do
-      let(:org_manager_1) { FactoryBot.create(:contributor, email: "org_manager_1@email.com", display_name: "Org Manager 1") }
-      let(:organization)   { FactoryBot.create(:organization_collection, depositor: org_manager_1.ms_id) }
+        before do
+          allow(subject).to receive(:deliver_message).and_return(true)
+          allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
+          subject.transfer!
+        end
 
-      subject { described_class.create(work_id: work.id, sending_user: sending_user, receiving_user: organization, organization_transfer: true) }
+        it 'successfully transfers media to individual receiver and is marked as accepted' do
+          expect(subject.status).to eq 'accepted'
+          work.reload
+          expect(work.owner).to eq receiving_user.user_key
+        end
 
-      before do
-        allow(subject).to receive(:deliver_message).and_return(true)
-        allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
-        subject.transfer!
+        it 'generates correct message sent to the sender org manager' do
+          expect(subject).to have_received(:deliver_message).with(
+            email_dispatch_user,
+            org_manager_2,
+            "Your request to transfer ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to <a href=\"http://localhost/users/#{receiving_user.user_key}\">Receiver</a> has been accepted.<p>Please contact <a href=\"http://localhost/users/#{receiving_user.user_key}\">Receiver</a> if you have a question related to this request.</p>",
+            "Media transfer request accepted"
+          )
+        end 
       end
 
-      it 'successfully transfers media to organization and is marked as accepted' do
-        expect(subject.status).to eq 'accepted'
-        work.reload
-        expect(work.owner).to eq organization.id
+      context 'organization with two data managers to individual' do
+        subject { described_class.create(work_id: work.id, sending_user_id: organization2.id, receiving_user_id: receiving_user.id) }
+
+        before do
+          organization2.managers << org_manager_3
+          organization2.save!
+          allow(subject).to receive(:deliver_message).and_return(true)
+          allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
+          subject.transfer!
+        end
+
+        it 'successfully transfers media to individual receiver and is marked as accepted' do
+          expect(subject.status).to eq 'accepted'
+          work.reload
+          expect(work.owner).to eq receiving_user.user_key
+        end
+
+        it 'generates two messages sent to the sender org managers, one for each manager' do
+          expect(subject).to have_received(:deliver_message).exactly(2).times
+        end 
       end
 
-      it 'generates correct message sent to the media depositor' do
-        expect(subject).to have_received(:deliver_message).with(
-          email_dispatch_user,
-          sending_user,
-          "Your request to transfer ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to <a href=\"http://localhost/organizations/#{organization.id}\">#{organization.title.first}</a> has been accepted.<p>Please contact <a href=\"http://localhost/organizations/#{organization.id}\">#{organization.title.first}</a> if you have a question related to this request.</p>",
-          "Media transfer request accepted"
-        )
+      context 'organization with one data manager to organization' do
+        subject { described_class.create(work_id: work.id, sending_user_id: organization2.id, receiving_user_id: organization.id) }
+
+        before do
+          allow(subject).to receive(:deliver_message).and_return(true)
+          allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
+          subject.transfer!
+        end
+
+        it 'successfully transfers media to organization receiver and is marked as accepted' do
+          expect(subject.status).to eq 'accepted'
+          work.reload
+          expect(work.owner).to eq organization.user_key
+        end
+
+        it 'generates correct message sent to the sender org manager' do
+          expect(subject).to have_received(:deliver_message).with(
+            email_dispatch_user,
+            org_manager_2,
+            "Your request to transfer ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to <a href=\"http://localhost/organizations/#{organization.id}\">#{organization.name}</a> has been accepted.<p>Please contact <a href=\"http://localhost/organizations/#{organization.id}\">#{organization.name}</a> if you have a question related to this request.</p>",
+            "Media transfer request accepted"
+          )
+        end 
+      end
+
+      context 'organization with two data managers to organization' do
+        subject { described_class.create(work_id: work.id, sending_user_id: organization2.id, receiving_user_id: organization.id) }
+
+        before do
+          organization2.managers << org_manager_3
+          organization2.save!
+          allow(subject).to receive(:deliver_message).and_return(true)
+          allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
+          subject.transfer!
+        end
+
+        it 'successfully transfers media to organization receiver and is marked as accepted' do
+          expect(subject.status).to eq 'accepted'
+          work.reload
+          expect(work.owner).to eq organization.user_key
+        end
+
+        it 'generates two messages sent to the sender org managers, one for each manager' do
+          expect(subject).to have_received(:deliver_message).exactly(2).times
+        end 
       end
     end
   end

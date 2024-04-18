@@ -20,7 +20,7 @@ class ProxyDepositRequest < ActiveRecord::Base
   public
 
   belongs_to :receiving_user, polymorphic: true
-  belongs_to :sending_user, class_name: 'User'
+  belongs_to :sending_user, polymorphic: true
 
   # @param [User] user - the person who needs to take action on the ownership transfer request
   # @param [number_of_days] - for pulling either all transfers, or just x number of days
@@ -75,92 +75,116 @@ class ProxyDepositRequest < ActiveRecord::Base
 
   after_save :send_request_transfer_message
 
-  # @param [String] user_key - The key of the user that will receive the transfer
+  # @param [String] id - ID of the user that will receive the transfer
   # @note The HTML form for creating a ProxyDepositRequest requires this method
-  def transfer_to=(user_key)
-    self.receiving_user_id = select_receiving_user(user_key).id # user or organization collection
+  def transfer_to=(id)
+    self.receiving_user_id = select_receiving_user(id).id # user or organization collection
   end
 
   def receiving_user
     select_receiving_user(receiving_user_id)
   end
 
-  def select_receiving_user(user_key)
-    @receiving_user ||= (User.find_by(id: user_key) || OrganizationCollection.find_by(id: user_key))
+  def select_receiving_user(id)
+    @receiving_user ||= (User.find_by(id: id) || OrganizationCollection.find_by(id: id))
   end
 
-  # @return [nil, String] nil if we don't have a receiving user, otherwise it returns the receiving_user's user_key
+  def sending_user
+    select_sending_user(sending_user_id)
+  end
+
+  def select_sending_user(id)
+    @sending_user ||= (User.find_by(id: id) || OrganizationCollection.find_by(id: id))
+  end
+
+  # @return [nil, String] nil if we don't have a receiving user, otherwise it returns the receiving_user's ID
   # @note The HTML form for creating a ProxyDepositRequest requires this method
-  # @see User#user_key
   def transfer_to
-    receiving_user.try(:user_key)
+    receiving_user.try(:id)
   end
 
   def receiving_organization
     receiving_user if receiving_user.is_a?(OrganizationCollection)
   end
 
+  # custom setter, sets user and type from ID, allows object creation from user ID
+  def sending_user_id=(value)
+    self.sending_user = select_sending_user(value)
+    super(value)
+  end
+
+  # custom setter, sets user and type from ID, allows object creation from user ID
+  def receiving_user_id=(value) 
+    self.receiving_user = select_receiving_user(value)
+    super(value)
+  end
+
   private
 
-    def transfer_to_should_be_a_contributor
-      return if receiving_organization
+  def transfer_to_should_be_a_contributor
+    return if receiving_organization
 
-      errors.add(:transfer_to, "must have contributor access") unless receiving_user.contributor?
-    end
+    errors.add(:transfer_to, "must have contributor access") unless receiving_user.contributor?
+  end
 
-    def transfer_to_should_be_a_valid_username
-      return if receiving_organization
+  def transfer_to_should_be_a_valid_username
+    return if receiving_organization
 
-      errors.add(:transfer_to, "must be an existing user") unless receiving_user
-    end
+    errors.add(:transfer_to, "must be an existing user") unless receiving_user
+  end
 
-    def sending_user_should_not_be_receiving_user
-      return if receiving_organization
+  def sending_user_should_not_be_receiving_user
+    return if receiving_organization
 
-      errors.add(:transfer_to, 'specify a different user to receive the work') if receiving_user && receiving_user.user_key == sending_user.user_key
-    end
+    errors.add(:transfer_to, 'specify a different user to receive the work') if receiving_user && receiving_user.id == sending_user.id
+  end
 
-    def should_not_be_already_part_of_a_transfer
-      transfers = ProxyDepositRequest.where(work_id: work_id, status: PENDING)
-      errors.add(:open_transfer, 'must close open transfer on the work before creating a new one') unless transfers.blank? || (transfers.count == 1 && transfers[0].id == id)
-    end
+  def should_not_be_already_part_of_a_transfer
+    transfers = ProxyDepositRequest.where(work_id: work_id, status: PENDING)
+    errors.add(:open_transfer, 'must close open transfer on the work before creating a new one') unless transfers.blank? || (transfers.count == 1 && transfers[0].id == id)
+  end
 
-    def should_not_cancel_if_organization_transfer
-      errors.add(:organization_transfer, 'sending user can not cancel an organization transfer') if ( status == CANCELED && organization_transfer && !@force_update )
-    end
+  def should_not_cancel_if_organization_transfer
+    errors.add(:organization_transfer, 'sending user can not cancel an organization transfer') if ( status == CANCELED && organization_transfer && !@force_update )
+  end
 
   public
 
   def send_request_transfer_message
     if updated_at == created_at # on initial request creation
       if organization_transfer
-        # Message transfer sender and recipient
-        send_org_transfer_message_to_receivers
-        send_org_transfer_message_to_sender
+        # Automated organization transfer, message transfer sender(s) and recipient(s)
+        send_transfer_message_to_users(sending_user, :send_org_transfer_message_to_sender)
+        send_transfer_message_to_users(receiving_user, :send_org_transfer_message_to_receiver)
       else
-        # Only message transfer recipient
-        send_request_transfer_create_message(receiving_user)
+        # Standard transfer, only message transfer recipient(s)
+        send_transfer_message_to_users(receiving_user, :send_standard_transfer_create_message)
       end
     else
-      send_request_transfer_update_message
+      # Transfer status update, message transfer senders to notify
+      send_transfer_message_to_users(sending_user, :send_transfer_update_message)
     end
   end
 
   private
 
-  def send_org_transfer_message_to_receivers
-      # Organizaton collection or legacy organization?
-      if receiving_user.is_a? OrganizationCollection
-        receiving_user.managers.each { |manager| send_org_transfer_message_to_receiver(manager) }
-      else
-        send_org_transfer_message_to_receiver(receiving_user)
-      end
+  # Send a message to single user (for User) or org managers (for OrganizationCollection)
+  def send_transfer_message_to_users(user_or_org, message_callback)
+    recipients = []
+
+    if user_or_org.is_a? OrganizationCollection
+      recipients.concat user_or_org.managers
+    elsif user_or_org.is_a? User
+      recipients << user_or_org
+    end
+
+    recipients.each { |recipient| send(message_callback, recipient) }
   end
 
   def send_org_transfer_message_to_receiver(recipient)
     message = I18n.t("hyrax.transfers.message.org_transfer_receiver", 
       message_content: message_content, organization_content: organization_content, 
-      transfer_link: transfers_dashboard_link, user_link: user_email_link(sending_user)
+      transfer_link: transfers_dashboard_link, user_link: user_or_org_email_link(sending_user)
     ).html_safe
     message += "<p>Comment: #{sender_comment}</p>" if sender_comment.present?
     
@@ -172,23 +196,23 @@ class ProxyDepositRequest < ActiveRecord::Base
     )
   end
 
-  def send_org_transfer_message_to_sender
+  def send_org_transfer_message_to_sender(recipient)
     message = I18n.t("hyrax.transfers.message.org_transfer_sender", 
       message_content: message_content, organization_link: organization_link
     ).html_safe
     
     deliver_message(
       email_sender, 
-      sending_user, 
+      recipient, 
       message.html_safe,
       I18n.t("hyrax.transfers.message.org_transfer_sender_subject")
     )
   end
 
-  def send_request_transfer_create_message(recipient)
+  def send_standard_transfer_create_message(recipient)
     message = I18n.t("hyrax.transfers.message.transfer_create", 
       message_content: message_content, transfer_link: transfers_dashboard_link, 
-      user_link: user_email_link(sending_user)
+      user_link: user_or_org_email_link(sending_user)
     ).html_safe
     message += "<p>Comment: #{sender_comment}</p>" if sender_comment.present?
     
@@ -200,8 +224,8 @@ class ProxyDepositRequest < ActiveRecord::Base
     )
   end
 
-  def send_request_transfer_update_message
-    receiver_link = receiving_user.is_a?(OrganizationCollection) ? organization_link : user_email_link(receiving_user)
+  def send_transfer_update_message(recipient)
+    receiver_link = user_or_org_email_link(receiving_user)
     
     message = I18n.t("hyrax.transfers.message.transfer_update_p1", 
       message_content: message_content, status: status, receiver_link: receiver_link
@@ -211,7 +235,7 @@ class ProxyDepositRequest < ActiveRecord::Base
 
     deliver_message(
       email_sender, 
-      sending_user, 
+      recipient, 
       message.html_safe, 
       I18n.t("hyrax.transfers.message.transfer_update_subject", status: status)
     )

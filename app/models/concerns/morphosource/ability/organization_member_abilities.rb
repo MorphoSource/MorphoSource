@@ -176,9 +176,7 @@ module Morphosource
 
       def solr_document(obj)
         case obj
-        when FileSet
-          return SolrDocument.find(obj.id)
-        when Media
+        when FileSet, Media, BiologicalSpecimen, CulturalHeritageObject
           return SolrDocument.find(obj.id)
         when SolrDocument
           return obj

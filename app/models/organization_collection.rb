@@ -1,5 +1,4 @@
 class OrganizationCollection < Collection
-
   include Morphosource::OrganizationCollectionMetadata
   include Morphosource::OrganizationMetadata
   include Morphosource::PermissionsDefaultsMetadata
@@ -7,13 +6,15 @@ class OrganizationCollection < Collection
   include Morphosource::OrganizationBehavior
   include Morphosource::PersistentIdentifiersBehavior
 
+  has_many :proxy_deposit_requests, as: :receiving_user
+  has_many :proxy_deposit_requests, as: :sending_user
+
   before_save :convert_media_ownership_transfer
   after_create :create_collection_groups
   after_create :create_organization_project
   after_update :update_ark_status
   after_create :mint_ark
   after_destroy :delete_ark_if_reserved
-
 
   self.indexer = OrganizationCollectionIndexer
 

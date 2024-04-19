@@ -43,8 +43,8 @@ class ContentDepositorChangeEventJob < ContentEventJob
 
   # overriding default to log the event to the depositor instead of their profile
   def log_user_event(owner)
-    # log the event to the proxy depositor's profile
-    if @sending_user.present?
+    # log the event to the proxy depositor's profile if sending user is a User (and not an org collection)
+    if @sending_user.present? && @sending_user.is_a?(User)
       @sending_user.log_profile_event(event)
     end
     if @new_owner.is_a? User

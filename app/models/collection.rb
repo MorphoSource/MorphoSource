@@ -55,7 +55,7 @@ class Collection < ActiveFedora::Base
   # managers, depositors, editors, downloaders, and viewers methods
   DEFAULT_GROUP_ROLES.each do |role|
     define_method(role) do
-      Role.find_by(name: id.concat("_#{role}")).users
+      Role.find_by(name: id.concat("_#{role}"))&.users || []
     end
   end
 

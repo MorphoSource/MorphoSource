@@ -574,7 +574,7 @@ RSpec.describe ProxyDepositRequest do
         it 'successfully transfers media to organization receiver and is marked as accepted' do
           expect(subject.status).to eq 'accepted'
           work.reload
-          expect(work.owner).to eq organization.user_key
+          expect(work.owner).to eq organization.id
         end
 
         it 'generates correct message sent to the sender org manager' do
@@ -601,7 +601,7 @@ RSpec.describe ProxyDepositRequest do
         it 'successfully transfers media to organization receiver and is marked as accepted' do
           expect(subject.status).to eq 'accepted'
           work.reload
-          expect(work.owner).to eq organization.user_key
+          expect(work.owner).to eq organization.id
         end
 
         it 'generates two messages sent to the sender org managers, one for each manager' do

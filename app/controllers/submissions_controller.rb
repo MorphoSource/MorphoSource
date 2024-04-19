@@ -147,11 +147,20 @@ class SubmissionsController < ApplicationController
       organization_alert_message = alert(organization)
       organization_title = organization.title
       organization_id = organization.id
-      organization_team_id = organization.team&.id
-      organization_team_can_submit_remote_files = organization.team&.can_submit_remote_files
+      if organization.organization_collection?
+        organization_model = 'OrganizationCollection'      
+        organization_team_id = nil
+        organization_team_can_submit_remote_files = organization.can_submit_remote_files
+        organization_data_manager = organization_id
+        organization_data_manager_name = organization_title
+      else
+        organization_model = 'Organization'      
+        organization_team_id = organization.team&.id
+        organization_team_can_submit_remote_files = organization.team&.can_submit_remote_files
+        organization_data_manager = organization.data_manager&.first
+        organization_data_manager_name = User.find_by_user_key(organization_data_manager)&.name_or_email      
+      end
       organization_permissions_mode = organization.permissions_enforcement_mode&.first || 'Recommend'
-      organization_data_manager = organization.data_manager&.first
-      organization_data_manager_name = User.find_by_user_key(organization_data_manager)&.name_or_email
     else
       status = 'FAIL'
       message = 'Organization does not exist'
@@ -170,6 +179,7 @@ class SubmissionsController < ApplicationController
       message: message,
       default_fields: default_fields,
       organization_alert_message: organization_alert_message,
+      organization_model: organization_model,
       organization_title: organization_title,
       organization_id: organization_id,
       organization_team_id: organization_team_id,

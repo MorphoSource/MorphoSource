@@ -327,7 +327,7 @@ class BatchSubmissionsController < ApplicationController
         if val.match(/^https?:\/\//).present?
           # remote file upload
           if !current_user.can_submit_remote_file?(val, params['organization_id'])
-            error_msg = "media.media_file: The remote file path is invalid or not allowed. Please make sure you have remote file submitter permissions and that the domain for the remote file is allowed."
+            error_msg = "media.media_file: The remote file path is invalid or not allowed. Please make sure you have remote file submitter permissions, organization member permissions, and that the domain for the remote file is allowed."
           else
             rf = MorphosourceHelper::RemoteFileInfo.new(val)
             error_msg = "media.media_file: " + rf.message if rf.message.present?

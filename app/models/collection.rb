@@ -85,6 +85,7 @@ class Collection < ActiveFedora::Base
 
   # TODO: Alias this to organization_collection when migration
   # from works to collections is complete.
+  # NB: Be very careful doing this as this method is used to differentiate work vs coll elsewhere
   def organization?
     false
   end

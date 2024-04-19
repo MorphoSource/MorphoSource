@@ -135,9 +135,9 @@ module SubmissionsControllerBehavior
   def get_organization_media_transfer
     return unless find_organization.present?
 
-    if ((@organization.organization_collection? &&
-        @organization.media_ownership_transfer?) ||
-        @organization.data_manager.present?
+    if (
+      (@organization.organization_collection? && @organization.media_ownership_transfer?) ||
+      (@organization.organization? && @organization.data_manager.present?)
     )
       transfer_media_immediately? ? :immediate : :publication
     else

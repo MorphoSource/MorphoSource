@@ -4,6 +4,10 @@ RSpec.describe ProxyDepositRequest do
   let(:user5)          { FactoryBot.create(:user, id: '5', email: "purple@email.com", password: "password", display_name: "Mickey Mouse") }
   let(:user6)          { FactoryBot.create(:user, id: '6', email: "blue@email.com", password: "password", display_name: "Donald Duck") }
 
+  before do
+    allow(Hyrax.config).to receive(:host_name) { "test.host" }
+  end
+
   describe "instance" do
     subject { described_class.new }
 
@@ -184,7 +188,7 @@ RSpec.describe ProxyDepositRequest do
             expect(subject).to have_received(:deliver_message).with(
               email_dispatch_user,
               receiving_user,
-              "<a href=\"http://localhost/users/#{sending_user.user_key}\">Sender</a> has requested to transfer the ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to you. Please accept or reject this request in your <a href=\"http://localhost/dashboard/transfers\">Ownership Transfers</a> dashboard.",
+              "<a href=\"http://test.host/users/#{sending_user.user_key}\">Sender</a> has requested to transfer the ownership of <b><a href=\"http://test.host/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to you. Please accept or reject this request in your <a href=\"http://test.host/dashboard/transfers\">Ownership Transfers</a> dashboard.",
               "You have a media transfer request"
             )
           end
@@ -203,7 +207,7 @@ RSpec.describe ProxyDepositRequest do
             expect(subject).to have_received(:deliver_message).with(
               email_dispatch_user,
               org_manager_1,
-              "<a href=\"http://localhost/users/#{sending_user.user_key}\">Sender</a> has requested to transfer the ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to you. Please accept or reject this request in your <a href=\"http://localhost/dashboard/transfers\">Ownership Transfers</a> dashboard.",
+              "<a href=\"http://test.host/users/#{sending_user.user_key}\">Sender</a> has requested to transfer the ownership of <b><a href=\"http://test.host/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to you. Please accept or reject this request in your <a href=\"http://test.host/dashboard/transfers\">Ownership Transfers</a> dashboard.",
               "You have a media transfer request"
             )
           end
@@ -237,7 +241,7 @@ RSpec.describe ProxyDepositRequest do
             expect(subject).to have_received(:deliver_message).with(
               email_dispatch_user,
               receiving_user,
-              "<a href=\"http://localhost/organizations/#{organization2.id}\">#{organization2.name}</a> has requested to transfer the ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to you. Please accept or reject this request in your <a href=\"http://localhost/dashboard/transfers\">Ownership Transfers</a> dashboard.",
+              "<a href=\"http://test.host/organizations/#{organization2.id}\">#{organization2.name}</a> has requested to transfer the ownership of <b><a href=\"http://test.host/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to you. Please accept or reject this request in your <a href=\"http://test.host/dashboard/transfers\">Ownership Transfers</a> dashboard.",
               "You have a media transfer request"
             )
           end
@@ -256,7 +260,7 @@ RSpec.describe ProxyDepositRequest do
             expect(subject).to have_received(:deliver_message).with(
               email_dispatch_user,
               org_manager_1,
-              "<a href=\"http://localhost/organizations/#{organization2.id}\">#{organization2.name}</a> has requested to transfer the ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to you. Please accept or reject this request in your <a href=\"http://localhost/dashboard/transfers\">Ownership Transfers</a> dashboard.",
+              "<a href=\"http://test.host/organizations/#{organization2.id}\">#{organization2.name}</a> has requested to transfer the ownership of <b><a href=\"http://test.host/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to you. Please accept or reject this request in your <a href=\"http://test.host/dashboard/transfers\">Ownership Transfers</a> dashboard.",
               "You have a media transfer request"
             )
           end
@@ -294,7 +298,7 @@ RSpec.describe ProxyDepositRequest do
             expect(subject).to have_received(:deliver_message).with(
               email_dispatch_user,
               org_manager_1,
-              "<a href=\"http://localhost/users/#{sending_user.user_key}\">Sender</a> has requested to transfer the ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to your managed organization (<a href=\"http://localhost/organizations/#{organization.id}\">#{organization.title.first}</a>). It is your choice whether to accept or reject this request. If you accept the request, your organization will become the data manager for this media. When accepting the request, you may choose to allow the original depositor to retain edit access to the media. Please accept or reject this request in your <a href=\"http://localhost/dashboard/transfers\">Ownership Transfers</a> dashboard. For more details, see our <a href='https://wiki.duke.edu/display/MD/Organization+Ownership+Transfers' target='_blank'>documentation</a>.",
+              "<a href=\"http://test.host/users/#{sending_user.user_key}\">Sender</a> has requested to transfer the ownership of <b><a href=\"http://test.host/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to your managed organization (<a href=\"http://test.host/organizations/#{organization.id}\">#{organization.title.first}</a>). It is your choice whether to accept or reject this request. If you accept the request, your organization will become the data manager for this media. When accepting the request, you may choose to allow the original depositor to retain edit access to the media. Please accept or reject this request in your <a href=\"http://test.host/dashboard/transfers\">Ownership Transfers</a> dashboard. For more details, see our <a href='https://wiki.duke.edu/display/MD/Organization+Ownership+Transfers' target='_blank'>documentation</a>.",
               "You have a media transfer request"
             )
           end
@@ -306,7 +310,7 @@ RSpec.describe ProxyDepositRequest do
             expect(subject).to have_received(:deliver_message).with(
               email_dispatch_user,
               sending_user,
-              "A request to transfer ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to organization <a href=\"http://localhost/organizations/#{organization.id}\">#{organization.title.first}</a> has been generated. The organization manager(s) will decide to accept or reject this request. For more details, see our <a href='https://wiki.duke.edu/display/MD/Organization+Ownership+Transfers' target='_blank'>documentation</a>.",
+              "A request to transfer ownership of <b><a href=\"http://test.host/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to organization <a href=\"http://test.host/organizations/#{organization.id}\">#{organization.title.first}</a> has been generated. The organization manager(s) will decide to accept or reject this request. For more details, see our <a href='https://wiki.duke.edu/display/MD/Organization+Ownership+Transfers' target='_blank'>documentation</a>.",
               "Organization media transfer request generated"
             )
           end
@@ -343,7 +347,7 @@ RSpec.describe ProxyDepositRequest do
             expect(subject).to have_received(:deliver_message).with(
               email_dispatch_user,
               org_manager_1,
-              "<a href=\"http://localhost/organizations/#{organization2.id}\">#{organization2.name}</a> has requested to transfer the ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to your managed organization (<a href=\"http://localhost/organizations/#{organization.id}\">#{organization.title.first}</a>). It is your choice whether to accept or reject this request. If you accept the request, your organization will become the data manager for this media. When accepting the request, you may choose to allow the original depositor to retain edit access to the media. Please accept or reject this request in your <a href=\"http://localhost/dashboard/transfers\">Ownership Transfers</a> dashboard. For more details, see our <a href='https://wiki.duke.edu/display/MD/Organization+Ownership+Transfers' target='_blank'>documentation</a>.",
+              "<a href=\"http://test.host/organizations/#{organization2.id}\">#{organization2.name}</a> has requested to transfer the ownership of <b><a href=\"http://test.host/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to your managed organization (<a href=\"http://test.host/organizations/#{organization.id}\">#{organization.title.first}</a>). It is your choice whether to accept or reject this request. If you accept the request, your organization will become the data manager for this media. When accepting the request, you may choose to allow the original depositor to retain edit access to the media. Please accept or reject this request in your <a href=\"http://test.host/dashboard/transfers\">Ownership Transfers</a> dashboard. For more details, see our <a href='https://wiki.duke.edu/display/MD/Organization+Ownership+Transfers' target='_blank'>documentation</a>.",
               "You have a media transfer request"
             )
           end
@@ -355,7 +359,7 @@ RSpec.describe ProxyDepositRequest do
             expect(subject).to have_received(:deliver_message).with(
               email_dispatch_user,
               org_manager_2,
-              "A request to transfer ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to organization <a href=\"http://localhost/organizations/#{organization.id}\">#{organization.title.first}</a> has been generated. The organization manager(s) will decide to accept or reject this request. For more details, see our <a href='https://wiki.duke.edu/display/MD/Organization+Ownership+Transfers' target='_blank'>documentation</a>.",
+              "A request to transfer ownership of <b><a href=\"http://test.host/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to organization <a href=\"http://test.host/organizations/#{organization.id}\">#{organization.title.first}</a> has been generated. The organization manager(s) will decide to accept or reject this request. For more details, see our <a href='https://wiki.duke.edu/display/MD/Organization+Ownership+Transfers' target='_blank'>documentation</a>.",
               "Organization media transfer request generated"
             )
           end
@@ -484,7 +488,7 @@ RSpec.describe ProxyDepositRequest do
           expect(subject).to have_received(:deliver_message).with(
             email_dispatch_user,
             sending_user,
-            "Your request to transfer ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to <a href=\"http://localhost/users/#{receiving_user.user_key}\">Receiver</a> has been accepted.<p>Please contact <a href=\"http://localhost/users/#{receiving_user.user_key}\">Receiver</a> if you have a question related to this request.</p>",
+            "Your request to transfer ownership of <b><a href=\"http://test.host/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to <a href=\"http://test.host/users/#{receiving_user.user_key}\">Receiver</a> has been accepted.<p>Please contact <a href=\"http://test.host/users/#{receiving_user.user_key}\">Receiver</a> if you have a question related to this request.</p>",
             "Media transfer request accepted"
           )
         end 
@@ -509,7 +513,7 @@ RSpec.describe ProxyDepositRequest do
           expect(subject).to have_received(:deliver_message).with(
             email_dispatch_user,
             sending_user,
-            "Your request to transfer ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to <a href=\"http://localhost/organizations/#{organization.id}\">#{organization.name}</a> has been accepted.<p>Please contact <a href=\"http://localhost/organizations/#{organization.id}\">#{organization.name}</a> if you have a question related to this request.</p>",
+            "Your request to transfer ownership of <b><a href=\"http://test.host/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to <a href=\"http://test.host/organizations/#{organization.id}\">#{organization.name}</a> has been accepted.<p>Please contact <a href=\"http://test.host/organizations/#{organization.id}\">#{organization.name}</a> if you have a question related to this request.</p>",
             "Media transfer request accepted"
           )
         end 
@@ -534,7 +538,7 @@ RSpec.describe ProxyDepositRequest do
           expect(subject).to have_received(:deliver_message).with(
             email_dispatch_user,
             org_manager_2,
-            "Your request to transfer ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to <a href=\"http://localhost/users/#{receiving_user.user_key}\">Receiver</a> has been accepted.<p>Please contact <a href=\"http://localhost/users/#{receiving_user.user_key}\">Receiver</a> if you have a question related to this request.</p>",
+            "Your request to transfer ownership of <b><a href=\"http://test.host/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to <a href=\"http://test.host/users/#{receiving_user.user_key}\">Receiver</a> has been accepted.<p>Please contact <a href=\"http://test.host/users/#{receiving_user.user_key}\">Receiver</a> if you have a question related to this request.</p>",
             "Media transfer request accepted"
           )
         end 
@@ -581,7 +585,7 @@ RSpec.describe ProxyDepositRequest do
           expect(subject).to have_received(:deliver_message).with(
             email_dispatch_user,
             org_manager_2,
-            "Your request to transfer ownership of <b><a href=\"http://localhost/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to <a href=\"http://localhost/organizations/#{organization.id}\">#{organization.name}</a> has been accepted.<p>Please contact <a href=\"http://localhost/organizations/#{organization.id}\">#{organization.name}</a> if you have a question related to this request.</p>",
+            "Your request to transfer ownership of <b><a href=\"http://test.host/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to <a href=\"http://test.host/organizations/#{organization.id}\">#{organization.name}</a> has been accepted.<p>Please contact <a href=\"http://test.host/organizations/#{organization.id}\">#{organization.name}</a> if you have a question related to this request.</p>",
             "Media transfer request accepted"
           )
         end 

@@ -10,9 +10,9 @@ module Hyrax
         end
         markup << %(<div class='row'>)
 
-        labelContent = options[:label].present? ? options[:label] : label
-        hintContent  = options[:show_hint] ? hint : ""
-        markup << %(<div class='col-xs-6 showcase-label'>#{labelContent}#{hintContent}</div>)
+        label_content = options[:label].present? ? options[:label] : label
+        hint_content  = options[:show_hint] ? hint : ""
+        markup << %(<div class='col-xs-6 showcase-label'>#{label_content}#{hint_content}</div>)
 
         attributes = microdata_object_attributes(field).merge(class: "attribute attribute-#{field}")
         markup << %(<div class='col-xs-6 showcase-value #{css_classes}'>)

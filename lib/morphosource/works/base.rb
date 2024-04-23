@@ -109,8 +109,9 @@ module Morphosource
         self.class == Device
       end
 
+      # return either the user ms_id or the organization collection id
       def user_with_ownership
-        User.find_by(ms_id: owner)&.ms_id || depositor
+        User.find_by(ms_id: owner)&.ms_id || SolrDocument.where("id" => owner)&.first&.id || depositor
       end
 
       def attachment(field_name)

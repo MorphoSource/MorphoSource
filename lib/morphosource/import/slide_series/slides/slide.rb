@@ -136,11 +136,13 @@ module Morphosource
 
           def validate_technical_metadata(metadata)
             metadata.reject!(&:blank?)
-            if metadata.blank?
-              raise StandardError.new "Technical metadata for slide #{short_description.first} is empty."
-            end
+            @metadata_blank = true if metadata.blank?
+            metadata
           end
 
+          def metadata_blank?
+            @metadata_blank || nil
+          end
         end
       end
     end

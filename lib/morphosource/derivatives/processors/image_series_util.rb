@@ -16,61 +16,12 @@ module Morphosource::Derivatives::Processors
     end
 
     def locate_images
-      # get all image files and locations in zip
-      img_locs = {}
-
-      case File.extname(source_path).downcase
-      when '.zip'
-        Zip::File.open(source_path) do |zip_file|
-          zip_file.each do |f|
-            next if File.basename(f.name).start_with?('.')
-            ext = File.extname(f.name).downcase
-            if acceptable_image_formats.include? ext
-              loc = File.dirname(f.name)
-              if !img_locs.key?(ext)
-                img_locs[ext] = {}
-              end
-              if !img_locs[ext].key?(loc)
-                img_locs[ext][loc] = []
-              end
-              img_locs[ext][loc] << f.name
-            end
-          end
-        end      
-      when '.tar'
-        Archive::Tar::Minitar.open(source_path) do |tar|
-          tar.each do |entry|
-            next if entry.name.start_with?('PaxHeader')
-            next if !entry.file? || File.basename(entry.name).start_with?('.')
-            ext = File.extname(entry.name).downcase
-            if acceptable_image_formats.include?(ext)
-              loc = File.dirname(entry.name)
-              img_locs[ext] ||= {}
-              img_locs[ext][loc] ||= []
-              img_locs[ext][loc] << entry.name
-            end
-          end
-        end
-      else
-        raise "Archive file extension not valid"
-      end
-      
-      # sort image collections by extension and location
-      coll_by_ext = {}
-      img_locs.each do |k, v|
-        max = v.max_by { |sub_k, sub_v| sub_v.length }
-        coll_by_ext[k] = max[1] if (max[1].length > 19 || k.downcase == '.dcm' || k.downcase == '.dicom')
-      end
-
-      # return largest group of most preferred file type
-      acceptable_image_formats.each do |ext|
-        if coll_by_ext.key?(ext)
-          return coll_by_ext[ext], ext
-        end
-      end
-
-      # case where acceptable image collection not found
-      return [], nil
+      Morphosource::Files::ArchiveService.new(source_path)
+        .largest_file_group(
+          acceptable_image_formats, 
+          cutoff: 20, 
+          cutoff_exception_exts: ['.dcm', '.dicom']
+        )
     end
   end
 end

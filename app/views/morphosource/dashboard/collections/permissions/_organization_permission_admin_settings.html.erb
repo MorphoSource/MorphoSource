@@ -1,7 +1,3 @@
-<div class="mb-2">
-  <%= render_edit_field_partial('agreement_uri', f: f, placeholder: 'No preference') %>
-</div>
-
 <!-- Media preview non-interactive -->
 <div class="form-group row mt-2">
   <div class="col-xs-6 showcase-label">
@@ -44,6 +40,31 @@
   </div>
 </div>
 
+<% if @collection.organization_collection? %>
+  <!-- Media ownership transfer non-interactive -->
+  <div class="form-group row mt-2">
+    <div class="col-xs-6 showcase-label">
+      <label class="control-label select optional" for="media_preview_mode">
+        <%= t('simple_form.labels.defaults.media_ownership_transfer') %>
+      </label>
+      <i class="material-icons tooltip-icon" data-original-title="" title="">
+        <p class="hint hide">
+          <%= t('simple_form.hints.defaults.media_ownership_transfer') %>
+        </p>
+      </i>
+    </div>
+    <div class="col-xs-6 showcase-value">
+      <%= t("hyrax.organization.permissions.media_ownership_transfer.status.#{@collection.media_ownership_transfer?}") %>
+    </div>
+  </div>
+
+  <div class="form-group row">
+  <div class="col-xs-12 showcase-value">
+    <%= t("hyrax.organization.permissions.media_ownership_transfer.text") %>
+  </div>
+  </div>
+<% end %>
+
 <!-- Contact us text pertaining to both media preview mode and permissions enforcement mode -->
 <div class="form-group row mt-1" style="font-style: italic;">
   <div class="col-xs-12 showcase-value">
@@ -52,10 +73,15 @@
 </div>
 
 <% if current_user.admin? %>
-  <div class="form-group row admin-preview-mode-container">
+  <div class="form-group xadmin-preview-mode-container">
     <h2>Admin Settings</h2>
-    <%= render_edit_field_partial('data_manager', f: f, placeholder: 'No preference') %>
+    <% unless @collection.organization_collection? %>
+      <%= render_edit_field_partial('data_manager', f: f, placeholder: 'No preference') %>
+    <% end %>
     <%= render_edit_field_partial('preview_mode', f: f, blank_label: 'No preference') %>
     <%= render_edit_field_partial('permissions_enforcement_mode', f: f) %>
+    <% if @collection.organization_collection? %>
+      <%= render_edit_field_partial('media_ownership_transfer', f: f) %>
+    <% end %>
   </div>
 <% end %>

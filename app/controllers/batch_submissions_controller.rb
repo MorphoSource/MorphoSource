@@ -3,8 +3,9 @@ require 'roo'
 class BatchSubmissionsController < ApplicationController
   include BatchSubmissionTools::Ms2Batch::BatchSubmissionHelper
   include Hyrax::WorksControllerBehavior
+  include SubmissionsControllerBehavior
 
-  load_and_authorize_resource 
+  load_and_authorize_resource
   with_themed_layout 'morphosource_dashboard'
   before_action :instantiate_work_forms, only: [:new]
   before_action :check_batch_submission_access, only: [:index, :new, :submit, :ingest]
@@ -24,7 +25,7 @@ class BatchSubmissionsController < ApplicationController
   def instantiate_work_forms
     @media_form = Hyrax::WorkFormService.build(Media.new, current_ability, self)
   end
-  
+
   def index
     last_job = current_user.last_batch_submission_job
     if last_job.present?
@@ -39,7 +40,7 @@ class BatchSubmissionsController < ApplicationController
     exceptions = []
     1.upto(Resque::Failure.count) do |idx|
       job = Resque::Failure.all(idx)
-      if job.present? 
+      if job.present?
         begin
           if job['payload']['args'][0]['job_id'] == last_job.job_id
             failure_found_indexes << idx
@@ -69,91 +70,7 @@ class BatchSubmissionsController < ApplicationController
       work_data: work_data
     })
 
-    @device_organizations = repository.search(device_organizations_search_builder.query)["response"]["docs"]
-    @object_organizations = repository.search(object_organizations_search_builder.query)["response"]["docs"]
-
-    @device_organizations_select2 = @device_organizations.map do |o|
-      {
-        id: o['id'],
-        text: "#{[o['institution_name_tesim']&.first, o['title_tesim']&.first].compact.join(', ')} (#{o['institution_code_tesim']&.join('/')}:#{o['collection_code_tesim']&.join('/')})",
-        organization_type: o['organization_type_tesim']&.first,
-        institution_name: o['institution_name_tesim']&.first,
-        title: o['title_tesim']&.first,
-        institution_code: o['institution_code_tesim']&.join(', '),
-        collection_code: o['collection_code_tesim']&.join(', '),
-        recordset_id: o['recordset_id_tesim']&.join(', '),
-        related_url: o['related_url_tesim']&.first,
-        address: o['address_tesim']&.first,
-        city: o['city_tesim']&.first,
-        state_province: o['state_province_tesim']&.first,
-        country: o['country_tesim']&.first,
-        postal_code: o['postal_code_tesim']&.first,
-        description: o['description_tesim']&.first,
-        contact_person: o['contact_person_tesim']&.first,
-        devices: o['member_ids_ssim']
-      }
-    end
-
-    @object_organizations_select2 = @object_organizations.map do |o|
-      {
-        id: o['id'],
-        text: "#{[o['institution_name_tesim']&.first, o['title_tesim']&.first].compact.join(', ')} (#{o['institution_code_tesim']&.join('/')}:#{o['collection_code_tesim']&.join('/')})",
-        organization_type: o['organization_type_tesim']&.first,
-        institution_name: o['institution_name_tesim']&.first,
-        title: o['title_tesim']&.first,
-        institution_code: o['institution_code_tesim']&.join(', '),
-        collection_code: o['collection_code_tesim']&.join(', '),
-        recordset_id: o['recordset_id_tesim']&.join(', '),
-        related_url: o['related_url_tesim']&.first,
-        address: o['address_tesim']&.first,
-        city: o['city_tesim']&.first,
-        state_province: o['state_province_tesim']&.first,
-        country: o['country_tesim']&.first,
-        postal_code: o['postal_code_tesim']&.first,
-        description: o['description_tesim']&.first,
-        contact_person: o['contact_person_tesim']&.first,
-        devices: o['member_ids_ssim']
-      }
-    end
-
-    if Hyrax.config.null_organization_id.present? && Organization.exists?(Hyrax.config.null_organization_id)
-      o = Organization.find(Hyrax.config.null_organization_id)
-      @null_organization = {
-        id: o.id,
-        text: "#{[o.institution_name&.first, o.title&.first].compact.join(', ')} (#{o.institution_code&.join('/')}:#{o.collection_code&.join('/')})",
-        organization_type: o.organization_type&.first,
-        institution_name: o.institution_name&.first,
-        title: o.title&.first,
-        institution_code: o.institution_code&.join(', '),
-        collection_code: o.collection_code&.join(', '),
-        related_url: o.related_url&.first,
-        address: o.address&.first,
-        city: o.city&.first,
-        state_province: o.state_province&.first,
-        country: o.country&.first,
-        postal_code: o.postal_code&.first,
-        description: o.description&.first,
-        contact_person: o.contact_person&.first,
-        devices: o.member_ids
-      }
-    else
-      @null_organization = {}
-    end
-
-    @devices = Device.all_solr
-    @devices_with_ids = @devices.map do |d|
-      [d['id'], {
-        id: d['id'],
-        text: [d['creator_tesim']&.first, d['title_tesim']&.first].compact.join(' '),
-        title: d['title_tesim']&.first,
-        creator: d['creator_tesim']&.first,
-        modality: d['modality_tesim']&.join(','),
-        description: d['description_tesim']&.first
-      }]
-    end.to_h
-    if !current_user.admin?
-      @devices_with_ids.delete(Hyrax.config.unknown_ct_scanner)
-    end
+    get_organizations_and_devices
 
     if params[:collection] && Collection.exists?(params[:collection])
       @batch_submission.collection_id = params[:collection]
@@ -205,16 +122,16 @@ class BatchSubmissionsController < ApplicationController
     media_ownership_fields = request.params["batch_submission"]["media"]
     media_ownership_fields["organization_transfer_on_publish"] = true if ( organization_media_transfer == :publication )
     @manifest_object = BatchSubmissionTools::Ms2Batch::Manifest.new(
-      input_path:input_path, 
-      media_path:media_path, 
-      admin_user:admin_user, 
-      depositor:depositor, 
-      on_behalf_of:on_behalf_of, 
-      collection_ids:collection_ids, 
-      fund_code_id:fund_code_id, 
+      input_path:input_path,
+      media_path:media_path,
+      admin_user:admin_user,
+      depositor:depositor,
+      on_behalf_of:on_behalf_of,
+      collection_ids:collection_ids,
+      fund_code_id:fund_code_id,
       organization_id:organization_id,
       organization_transfer_immediately:( organization_media_transfer == :immediate ),
-      device_id:device_id, 
+      device_id:device_id,
       media_ownership_fields:media_ownership_fields,
       modality:modality).to_h
   end
@@ -222,17 +139,17 @@ class BatchSubmissionsController < ApplicationController
   def ingest
     redirect_to ({:action=>'index'}), :notice => "Your submission job has started.  You can check the job status below."
   end
-  
+
   def start_ingest_job
     job = ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_later(@request_manifest_object, current_user)
     main_job = BackgroundJob.create({ job_id: job.job_id, job_class: job.class.to_s, status: job.status.status.to_s, user_id: current_user.user_key, created_objects: {} })
-    # rename the manifest tmp file with job id for locating easier 
+    # rename the manifest tmp file with job id for locating easier
     if (manifest_tmp_file = @request_manifest_object["summary"]["manifest_tmp_file"]).present?
       if File.exists?(manifest_tmp_file)
         new_file = Rails.root.join(Dir.tmpdir, 'manifest_' + job.job_id + File.extname(manifest_tmp_file)).to_s
         File.rename(manifest_tmp_file, new_file)
       end
-    end    
+    end
   end
 
   def initial_error_message
@@ -243,7 +160,7 @@ class BatchSubmissionsController < ApplicationController
       return "The number of rows has exceeded the maximum."
     end
     field_names.each_with_index do |fname, idx|
-      if fname != @xlsx.excelx_value(7, idx + 3) 
+      if fname != @xlsx.excelx_value(7, idx + 3)
         return "Invalid field name in row 7, column " +  (idx + 3).to_s + " (expecting " + fname + ").  Please check the file or download the blank submission manifest again."
       end
     end
@@ -260,8 +177,8 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def parse_manifest
-    # field names is on row 7 
-    # field values start from row 8, column 3 (column 1 and 2 can be skipped)   
+    # field names is on row 7
+    # field values start from row 8, column 3 (column 1 and 2 can be skipped)
     general_error_msg = ""
     general_warning_msg = ""
     error_rows = {}
@@ -277,19 +194,19 @@ class BatchSubmissionsController < ApplicationController
     @media_order = { @mo_idx => [] }
 
     if initial_error_message.present?
-      render 'validation_fail', locals: { 
-        general_error_msg: initial_error_message, 
-        error_rows: error_rows, 
-        error_messages: error_messages, 
-        error_cell_numbers: error_cell_numbers, 
-        warn_rows: warn_rows, 
-        warn_messages: warn_messages, 
-        warn_cell_numbers: warn_cell_numbers, 
-        field_names: field_names, 
+      render 'validation_fail', locals: {
+        general_error_msg: initial_error_message,
+        error_rows: error_rows,
+        error_messages: error_messages,
+        error_cell_numbers: error_cell_numbers,
+        warn_rows: warn_rows,
+        warn_messages: warn_messages,
+        warn_cell_numbers: warn_cell_numbers,
+        field_names: field_names,
         row_count: 0 }
-    else      
-      @xlsx.each_row_streaming(offset: 7, pad_cells: true) do |row| 
-        data_row = row.drop(2) 
+    else
+      @xlsx.each_row_streaming(offset: 7, pad_cells: true) do |row|
+        data_row = row.drop(2)
         if empty_row?(data_row)
           skipped_row_count += 1
         else
@@ -317,9 +234,9 @@ class BatchSubmissionsController < ApplicationController
               break # skip the rest of the cells
             end
           end # /looping cells
-          error_messages[row_index] = row_cell_errors 
+          error_messages[row_index] = row_cell_errors
           error_cell_numbers[row_index] = error_row_cell_numbers
-          warn_messages[row_index] = row_cell_warnings 
+          warn_messages[row_index] = row_cell_warnings
           warn_cell_numbers[row_index] = warn_row_cell_numbers
         end
         row_index = row_index + 1
@@ -327,42 +244,42 @@ class BatchSubmissionsController < ApplicationController
       row_count = row_index - 8 - skipped_row_count
       if error_rows.count > 0
         general_error_msg = "There are validation errors.  Please check the details below."
-        render 'validation_fail', locals: { 
-          general_error_msg: general_error_msg, 
-          error_rows: error_rows, 
-          error_messages: error_messages, 
-          error_cell_numbers: error_cell_numbers, 
-          warn_rows: warn_rows, 
-          warn_messages: warn_messages, 
-          warn_cell_numbers: warn_cell_numbers, 
-          field_names: field_names, 
+        render 'validation_fail', locals: {
+          general_error_msg: general_error_msg,
+          error_rows: error_rows,
+          error_messages: error_messages,
+          error_cell_numbers: error_cell_numbers,
+          warn_rows: warn_rows,
+          warn_messages: warn_messages,
+          warn_cell_numbers: warn_cell_numbers,
+          field_names: field_names,
           row_count: row_count
         }
       else
         begin
           create_manifest_object
-          render 'validation_success', locals: { 
+          render 'validation_success', locals: {
             manifest_object: @manifest_object,
-            warn_rows: warn_rows, 
-            warn_messages: warn_messages, 
-            warn_cell_numbers: warn_cell_numbers, 
-            field_names: field_names, 
+            warn_rows: warn_rows,
+            warn_messages: warn_messages,
+            warn_cell_numbers: warn_cell_numbers,
+            field_names: field_names,
             row_count: row_count
           }
         rescue Exception => e
-          render 'validation_fail', locals: { 
-            general_error_msg: e.message, 
-            error_rows: error_rows, 
-            error_messages: error_messages, 
-            error_cell_numbers: error_cell_numbers, 
-            warn_rows: warn_rows, 
-            warn_messages: warn_messages, 
-            warn_cell_numbers: warn_cell_numbers, 
-            field_names: field_names, 
+          render 'validation_fail', locals: {
+            general_error_msg: e.message,
+            error_rows: error_rows,
+            error_messages: error_messages,
+            error_cell_numbers: error_cell_numbers,
+            warn_rows: warn_rows,
+            warn_messages: warn_messages,
+            warn_cell_numbers: warn_cell_numbers,
+            field_names: field_names,
             row_count: row_count
           }
         end
-      end    
+      end
 
     end
   end
@@ -410,7 +327,7 @@ class BatchSubmissionsController < ApplicationController
         if val.match(/^https?:\/\//).present?
           # remote file upload
           if !current_user.can_submit_remote_file?(val, params['organization_id'])
-            error_msg = "media.media_file: The remote file path is invalid or not allowed. Please make sure you have remote file submitter permissions and that the domain for the remote file is allowed."
+            error_msg = "media.media_file: The remote file path is invalid or not allowed. Please make sure you have remote file submitter permissions, organization member permissions, and that the domain for the remote file is allowed."
           else
             rf = MorphosourceHelper::RemoteFileInfo.new(val)
             error_msg = "media.media_file: " + rf.message if rf.message.present?
@@ -418,7 +335,7 @@ class BatchSubmissionsController < ApplicationController
             if rf.file_ext.present? && !valid_file_type?(rf.file_ext, cell_value(current_row, field_column("media.media_type")))
               accepted_formats = accepted_file_formats(cell_value(current_row, field_column("media.media_type")))
               warn_msg += "The file format returned by the media.media_file URL is " + (rf.file_ext || "unknown") + " and it does not match an accepted format: " + accepted_formats.join(', ')
-            end            
+            end
           end
         else
           # local file upload
@@ -451,7 +368,7 @@ class BatchSubmissionsController < ApplicationController
     when "media.media_type"
       if valid_media_types.ignore_case_include? val
         val = valid_media_types.ignore_case_included_value val
-        if val.downcase != "other" 
+        if val.downcase != "other"
           # check if media_type value +  pre-selected modality is a permitted combination
           if @submission_yaml['status'][val][@modality_selected] == 'none'
           error_msg = "media.media_type: The combination of media type #{val} and pre-selected modality #{@modality_selected} is not permitted.  Please provide a different media type or select a different modality. "
@@ -462,7 +379,7 @@ class BatchSubmissionsController < ApplicationController
       end
     when "media.parent_file"
       # IF value is present, another row must contain this value in media.media_file
-      if val.present? 
+      if val.present?
         if cell_value(current_row, field_column("media.parent_ms_id")).present?
           error_msg = "A value can be present in media.parent_file or media.parent_ms_id, but not in both."
         elsif cell_value(current_row, field_column("media.raw_or_derived")) == "Raw"
@@ -474,9 +391,9 @@ class BatchSubmissionsController < ApplicationController
 
             if parent_media_found_row + 1 == current_row
               error_msg = "media.parent_file #{val} cannot be media.media_file in the same row."
-            else              
+            else
               @parent_media_row = parent_media_found_row + 1
-              # start building a list, look for the parent of the parent 
+              # start building a list, look for the parent of the parent
               # until found a duplicate, or no more parent
               parent_chain = [current_row, @parent_media_row]
               this_row = @parent_media_row
@@ -491,14 +408,14 @@ class BatchSubmissionsController < ApplicationController
                       duplicate_found = true
                       error_msg = "media.parent_file #{val} has invalid parent(s) (found in row #{next_parent_row}).  Please check and make sure each parent_file is pointing to the correct row."
                     else
-                      parent_chain << next_parent_row 
-                      this_row = next_parent_row 
+                      parent_chain << next_parent_row
+                      this_row = next_parent_row
                     end
                   else
                     #byebug # should not be here since parent file must exists in another column (check validation rule)
                   end
                 else
-                  no_parent = true                  
+                  no_parent = true
                 end
               end # /until
             end
@@ -560,13 +477,13 @@ class BatchSubmissionsController < ApplicationController
           error_msg = "biological_specimen.ms_id: Existing biological specimen #{val} not found."
         end
         ignored_values = []
-        if cell_value(current_row, field_column("biological_specimen.idigbio_uuid")).present? 
+        if cell_value(current_row, field_column("biological_specimen.idigbio_uuid")).present?
           ignored_values << "biological_specimen.idigbio_uuid"
         end
-        if cell_value(current_row, field_column("biological_specimen.occurrence_id")).present? 
+        if cell_value(current_row, field_column("biological_specimen.occurrence_id")).present?
           ignored_values << "biological_specimen.occurrence_id"
         end
-        if cell_value(current_row, field_column("biological_specimen.institution_code")).present? 
+        if cell_value(current_row, field_column("biological_specimen.institution_code")).present?
           ignored_values << "biological_specimen.institution_code"
         end
         if cell_value(current_row, field_column("biological_specimen.collection_code")).present?
@@ -584,7 +501,7 @@ class BatchSubmissionsController < ApplicationController
            !cell_value(current_row, field_column("biological_specimen.institution_code")).present? &&
            !cell_value(current_row, field_column("biological_specimen.collection_code")).present? &&
            !cell_value(current_row, field_column("biological_specimen.catalog_number")).present?
-        
+
           error_msg = "One of the following must have a value: biological_specimen.ms_id, biological_specimen.idigbio_uuid, biological_specimen.occurrence_id, biological_specimen.institution_code, biological_specimen.collection_code, and biological_specimen.catalog_number."
         end
       end
@@ -594,7 +511,7 @@ class BatchSubmissionsController < ApplicationController
         if idb_result[:status] == :success && idb_result[:data].present?
           idb = idb_result[:data]
 
-          # If the pre-selected organization has a recordset_id, specimen matching UUID via iDigBio API must have a 
+          # If the pre-selected organization has a recordset_id, specimen matching UUID via iDigBio API must have a
           # recordset_id matching the recordset_id of the pre-selected organization
           organization_recordset_id = @params["organization_recordset_id"]
           if organization_recordset_id.present?
@@ -602,9 +519,9 @@ class BatchSubmissionsController < ApplicationController
             unless organization_recordset_id.upcase.split(', ').include? idb_recordset.upcase
               error_msg += "Specimen in iDigBio has recordset id #{idb_recordset} which does not match the pre-selected organization's recordset id: #{organization_recordset_id}. "
             end
-          end 
+          end
 
-          # If the pre-selected organization has existing institution codes, specimen matching UUID via iDigBio API 
+          # If the pre-selected organization has existing institution codes, specimen matching UUID via iDigBio API
           # must have iDigBio-supplied institution code matching pre-selected organization (case-insensitive)
           organization_institution_code = @params["organization_institution_code"]
           if organization_institution_code.present?
@@ -631,23 +548,23 @@ class BatchSubmissionsController < ApplicationController
     when /^imaging_event\.(.*)$/
       case $1
       when /^(ct|photogrammetry|photography)\.(.*)$/
-        # handle modality specific fields 
+        # handle modality specific fields
         field_modality = $1
         if val.present?
           if field_modality.downcase == modality_mapped(@modality_selected).downcase
             error_msg = error_by_type(field_name, val)
           else
-            # no need to check the values if they should not be present 
+            # no need to check the values if they should not be present
             error_msg = "#{field_name}: Value should not be present when modality #{@modality_selected} is pre-selected."
           end
-        end  
+        end
       else
-        # handle non-modality specific fields 
+        # handle non-modality specific fields
         error_msg = error_by_type(field_name, val)
       end
     when /^(biological_specimen|taxonomy|processing_event)\.(.*)$/
       # note that specific *.* fields should be handled above already
-      if val.present?        
+      if val.present?
         error_msg = error_by_type(field_name, val)
       end
     end
@@ -722,7 +639,7 @@ class BatchSubmissionsController < ApplicationController
         error_msg = "#{field_name}: Please enter a valid integer."
       end
     when "date"
-      unless (is_date? val) || (val == '') 
+      unless (is_date? val) || (val == '')
         error_msg = "#{field_name}: Please enter a valid date in YYYY-MM-DD or MM-DD-YYYY format."
       end
     end
@@ -841,9 +758,9 @@ class BatchSubmissionsController < ApplicationController
     }
   end
 
-  def field_column(field) 
+  def field_column(field)
     # this returns the actual column number of a field (by adding first 2 columns and "0")
-    field_names.index(field) + 3 
+    field_names.index(field) + 3
   end
 
   def valid_values_for(field)
@@ -923,7 +840,7 @@ class BatchSubmissionsController < ApplicationController
 
   def field_to_reject_for_media_type?(media_type, field)
     case media_type
-    when 'CTImageSeries'  
+    when 'CTImageSeries'
       ['map_type'].include? field
     when 'PhotogrammetryImageSeries'
       ['x_spacing', 'y_spacing', 'z_spacing', 'slice_thickness', 'unit', 'map_type'].include? field
@@ -933,7 +850,7 @@ class BatchSubmissionsController < ApplicationController
       ['series_type', 'x_spacing', 'y_spacing', 'z_spacing', 'slice_thickness', 'unit', 'map_type'].include? field
     end
   end
-  
+
   def modality_mapped(m)
     case m
     when 'MicroNanoXRayComputedTomography'
@@ -981,31 +898,6 @@ class BatchSubmissionsController < ApplicationController
     end
   end
 
-  # Methods related to transferring media to organization control
-
-  def organization_media_transfer
-    @organization_media_transfer ||= get_organization_media_transfer
-  end
-
-  def get_organization_media_transfer
-    if (
-      params['organization_id'].present? && 
-      Organization.exists?(params['organization_id']) && 
-      (org = Organization.find(params['organization_id'])).present? &&
-      org.data_manager.present?
-    )
-      transfer_media_immediately? ? :immediate : :publication
-    else
-      nil
-    end
-  end
-
-  def transfer_media_immediately?
-    ( params.dig(:media, :transfer_management) == 'immediate' ) ||     
-      ['open', 'restricted_download'].include?(params.dig(:batch_submission, :media, :visibility)) 
-  end
-
-
   private
 
     def cell_value(row_num, col_num)
@@ -1024,7 +916,7 @@ class BatchSubmissionsController < ApplicationController
           flash[:error] = 'The file uploaded is invalid.  Please upload a file in this format: ' + Morphosource.manifest_formats.join(',')
           return redirect_to main_app.new_batch_submission_path
         end
-      else 
+      else
         flash[:error] = 'The manifest file is missing. '
         return redirect_to main_app.new_batch_submission_path
       end
@@ -1039,7 +931,7 @@ class BatchSubmissionsController < ApplicationController
         user_set_path = current_user.sftp_share
         if !user_set_path.present?
           "NOT_FOUND"
-        elsif Dir.exist?(Hyrax.config.sftp_share_root + user_set_path) 
+        elsif Dir.exist?(Hyrax.config.sftp_share_root + user_set_path)
           File.join(Hyrax.config.sftp_share_root, user_set_path, '/')
         elsif Dir.exist?(user_set_path)
           unless user_set_path.match(/^\//)
@@ -1085,12 +977,12 @@ class BatchSubmissionsController < ApplicationController
     end
 
     def device_organizations_search_builder
-      @device_organizations_search_builder ||= 
+      @device_organizations_search_builder ||=
         self.device_organizations_search_builder_class.new(self).rows(999999)
     end
-  
+
     def object_organizations_search_builder
-      @object_organizations_search_builder ||= 
+      @object_organizations_search_builder ||=
         self.object_organizations_search_builder_class.new(self).rows(999999)
     end
 end

@@ -14,12 +14,15 @@ module Hyrax
         end
         markup << %(<div class='row'>)
 
-        labelContent = options[:label].present? ? options[:label] : label
-        hintContent  = options[:show_hint] ? hint : ""
-        markup << %(<div class='col-xs-6 showcase-label'>#{labelContent}#{hintContent}</div>)
+        label_width = options[:label_width].presence || 6
+        value_width = options[:value_width].presence || 6
+
+        label_content = options[:label].present? ? options[:label] : label
+        hint_content  = options[:show_hint] ? hint : ""
+        markup << %(<div class='col-xs-#{label_width} showcase-label'>#{label_content}#{hint_content}</div>)
 
         attributes = microdata_object_attributes(field).merge(class: "attribute attribute-#{field}")
-        markup << %(<div class='col-xs-6 showcase-value #{css_classes}'>)
+        markup << %(<div class='col-xs-#{value_width} showcase-value #{css_classes}'>)
         if values_blank?
           if options[:text_if_empty].present?
             markup << options[:text_if_empty]

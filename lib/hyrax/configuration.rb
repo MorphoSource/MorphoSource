@@ -1120,6 +1120,210 @@ module Hyrax
       @footer_resources ||= resources.select { |doc| doc["footer"] }
     end
 
+    # Enable IIIF image service. This is required to use the
+    # IIIF viewer enabled show page
+    #
+    # If you have run the hyrax:riiif generator, an embedded riiif service
+    # will be used to deliver images via IIIF. If you have not, you will
+    # need to configure the following other configuration values to work
+    # with your image server.
+    #
+    # @see config.iiif_image_url_builder
+    # @see config.iiif_info_url_builder
+    # @see config.iiif_image_compliance_level_uri
+    # @see config.iiif_image_size_default
+    #
+    # @note Default is false
+    #
+    # @return [Boolean] true to enable, false to disable
+    def iiif_image_server?
+      return @iiif_image_server unless @iiif_image_server.nil?
+      @iiif_image_server = false
+    end
+    attr_writer :iiif_image_server
+
+    # URL that resolves to an image provided by a IIIF image server
+    #
+    # @return [#call] lambda/proc that generates a URL to an image
+    def iiif_image_url_builder
+      @iiif_image_url_builder ||= ->(file_id, base_url, _size) { "#{base_url}/downloads/#{file_id.split('/').first}" }
+    end
+    attr_writer :iiif_image_url_builder
+
+    # URL that resolves to an info.json file provided by a IIIF image server
+    #
+    # @return [#call] lambda/proc that generates a URL to image info
+    def iiif_info_url_builder
+      @iiif_info_url_builder ||= ->(_file_id, _base_url) { '' }
+    end
+    attr_writer :iiif_info_url_builder
+
+    # URL that indicates your IIIF image server compliance level
+    #
+    # @return [String] valid IIIF image compliance level URI
+    def iiif_image_compliance_level_uri
+      @iiif_image_compliance_level_uri ||= 'http://iiif.io/api/image/2/level2.json'
+    end
+    attr_writer :iiif_image_compliance_level_uri
+
+    # IIIF image size default
+    #
+    # @return [#String] valid IIIF image size parameter
+    def iiif_image_size_default
+      @iiif_image_size_default ||= '600,'
+    end
+    attr_writer :iiif_image_size_default
+
+    # IIIF metadata - fields to display in the metadata section
+    #
+    # @return [#Array] fields
+    def iiif_metadata_fields
+      @iiif_metadata_fields ||= Hyrax::Forms::WorkForm.required_fields
+    end
+    attr_writer :iiif_metadata_fields
+
+    # Should a button with "Share my work" show on the front page to users who are not logged in?
+    attr_writer :display_share_button_when_not_logged_in
+    def display_share_button_when_not_logged_in?
+      return true if @display_share_button_when_not_logged_in.nil?
+      @display_share_button_when_not_logged_in
+    end
+
+    attr_writer :google_analytics_id
+    def google_analytics_id
+      @google_analytics_id ||= nil
+    end
+    alias google_analytics_id? google_analytics_id
+
+    # Defaulting analytic start date to whenever the file was uploaded by leaving it blank
+    attr_writer :analytic_start_date
+    attr_reader :analytic_start_date
+
+    attr_writer :permission_levels
+    def permission_levels
+      @permission_levels ||= { "View/Download" => "read",
+                               "Edit access" => "edit" }
+    end
+
+    attr_writer :owner_permission_levels
+    def owner_permission_levels
+      @owner_permission_levels ||= { "Edit access" => "edit" }
+    end
+
+    attr_writer :permission_options
+    def permission_options
+      @permission_options ||= { "Choose Access" => "none",
+                                "View/Download" => "read",
+                                "Edit" => "edit" }
+    end
+
+    attr_writer :ms_permission_levels
+    def ms_permission_levels
+      @ms_permission_levels ||= { "View access" => "read",
+                               "Download access" => "download",
+                               "Edit access" => "edit" }
+    end
+
+    attr_writer :ms_permission_options
+    def ms_permission_options
+      @ms_permission_options ||= { "Choose Access" => "none",
+                                "View" => "read",
+                                "Download" => "download",
+                                "Edit" => "edit" }
+    end
+
+    attr_writer :translate_uri_to_id
+
+    def translate_uri_to_id
+      @translate_uri_to_id ||= lambda do |uri|
+        baseparts = 2 + [(::Noid::Rails.config.template.gsub(/\.[rsz]/, '').length.to_f / 2).ceil, 4].min
+        uri.to_s.sub("#{ActiveFedora.fedora.host}#{ActiveFedora.fedora.base_path}", '').split('/', baseparts).last
+      end
+    end
+
+    attr_writer :translate_id_to_uri
+    def translate_id_to_uri
+      @translate_id_to_uri ||= lambda do |id|
+        "#{ActiveFedora.fedora.host}#{ActiveFedora.fedora.base_path}/#{::Noid::Rails.treeify(id)}"
+      end
+    end
+
+    attr_writer :contact_email
+    def contact_email
+      @contact_email ||= "repo-admin@example.org"
+    end
+
+    attr_writer :system_report_recipients
+    def system_report_recipients
+      @system_report_recipients ||= ""
+    end
+
+    attr_writer :override_mail_recipient
+    def override_mail_recipient
+      @override_mail_recipient ||= ""
+    end
+
+    attr_writer :subject_prefix
+    def subject_prefix
+      @subject_prefix ||= "Contact form:"
+    end
+
+    attr_writer :extract_full_text
+    def extract_full_text?
+      return @extract_full_text unless @extract_full_text.nil?
+      @extract_full_text = true
+    end
+
+    attr_writer :uploader
+    def uploader
+      @uploader ||= if Rails.env.development?
+                      # use sequential uploads in development to avoid database locking problems with sqlite3.
+                      default_uploader_config.merge(limitConcurrentUploads: 1, sequentialUploads: true)
+                    else
+                      default_uploader_config
+                    end
+    end
+
+    # Site-wide branding fields (can customize logo and title for non-MorphoSource instances)
+
+    # DEPRECATED, not used in this application
+    attr_writer :banner_image
+    def banner_image
+      # This image can be used for free and without attribution. See here for source and license: https://github.com/samvera/hyrax/issues/1551#issuecomment-326624909
+      @banner_image ||= 'https://user-images.githubusercontent.com/101482/29949206-ffa60d2c-8e67-11e7-988d-4910b8787d56.jpg'
+    end
+
+    attr_writer :logo_image
+    def logo_image
+      # Default image is 80x80 pixels and is located in app/assets/images/, it is displayed at 40x40 and 60x60
+      # This image is displayed on blue backgrounds and should contrast appropriately
+      @logo_image ||= nil
+    end
+
+    attr_writer :logo_image_alternate
+    def logo_image_alternate
+      # Default image is 80x80 pixels and is located in app/assets/images/, it is displayed at 40x40 and 60x60
+      # This image is displayed on white or gray backgrounds and should contrast appropriately
+      @logo_image_alternate ||= nil
+    end
+
+    attr_writer :site_title
+    def site_title
+      # Will fall back to "MorphoSource" where not otherwise provided
+      @site_title ||= nil
+    end
+
+    attr_writer :default_site_title
+    def default_site_title
+      @default_site_title ||= 'MorphoSource'
+    end
+
+    # Try to display site announcements? Required github_access_token for GH discussions board
+    attr_writer :site_announcements
+    def site_announcements
+      @site_announcements ||= false
+    end
+
     # Packrat API fields (if not using Duke Packrat Storage, these fields are unnecessary)
     attr_writer :packrat_api_endpoint_client_id
     def packrat_api_endpoint_client_id

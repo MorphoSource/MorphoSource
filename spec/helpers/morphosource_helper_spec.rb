@@ -348,10 +348,10 @@ RSpec.describe MorphosourceHelper, type: :helper do
     let(:group_editor)      { User.create(email: 'group_editor@email.com', password: 'password') }
     let(:group_manager)     { User.create(email: 'group_manager@email.com', password: 'password') }
 
-    let(:viewer_group)      { Role.create(name: 'viewer_group') }
-    let(:downloader_group)  { Role.create(name: 'downloader_group') }
-    let(:editor_group)      { Role.create(name: 'editor_group') }
-    let(:manager_group)     { Role.create(name: 'manager_group') }
+    let(:viewer_group)      { Role.create(name: 'group_viewer') }
+    let(:downloader_group)  { Role.create(name: 'group_downloader') }
+    let(:editor_group)      { Role.create(name: 'group_editor') }
+    let(:manager_group)     { Role.create(name: 'group_manager') }
 
     let(:groups)            { [viewer_group, downloader_group, editor_group, manager_group] }
 
@@ -377,12 +377,22 @@ RSpec.describe MorphosourceHelper, type: :helper do
       end
 
       it 'returns a list of users and access' do
-        helper.simple_form_for media, url: '' do |f|
+        helper.simple_form_for Hyrax::MediaForm.new(media, nil, nil), url: '' do |f|
           individual_list, group_list = helper.grouped_access_list(f)
           # owner is data manager, so is excluded
           # depositor is included in individual list
           expect(individual_list.map{|p| [p.object.agent_name, p.object.access]}).to match_array([[depositor.ms_id, "edit"],[editor.ms_id, "edit"], [viewer.ms_id, "read"]])
-          expect(group_list).to eq({"downloader"=>"#{group_downloader.email} (group)", "editor"=>"#{group_editor.email} (group)", "manager"=>"#{group_manager.email} (group)", "viewer"=>"#{group_viewer.email} (group)"})
+          expect(group_list).to eq({
+            "group" => {
+              :access_override=>nil, 
+              :users=>{
+                "downloader" => "group_downloader@email.com (downloader)",
+                "editor" => "group_editor@email.com (editor)",
+                "manager" => "group_manager@email.com (manager)",
+                "viewer" => "group_viewer@email.com (viewer)"
+              }
+            }
+          })
         end
       end
     end
@@ -391,11 +401,21 @@ RSpec.describe MorphosourceHelper, type: :helper do
       let(:media) { Media.create(title: ['title'], depositor: depositor.ms_id) }
 
       it 'returns a list of users and access' do
-        helper.simple_form_for media, url: '' do |f|
+        helper.simple_form_for Hyrax::MediaForm.new(media, nil, nil), url: '' do |f|
           individual_list, group_list = helper.grouped_access_list(f)
           # depositor is data manager and is excluded
           expect(individual_list.map{|p| [p.object.agent_name, p.object.access]}).to match_array([[editor.ms_id, "edit"], [viewer.ms_id, "read"]])
-          expect(group_list).to eq({"downloader"=>"#{group_downloader.email} (group)", "editor"=>"#{group_editor.email} (group)", "manager"=>"#{group_manager.email} (group)", "viewer"=>"#{group_viewer.email} (group)"})
+          expect(group_list).to eq({
+            "group" => {
+              :access_override=>nil, 
+              :users=>{
+                "downloader" => "group_downloader@email.com (downloader)",
+                "editor" => "group_editor@email.com (editor)",
+                "manager" => "group_manager@email.com (manager)",
+                "viewer" => "group_viewer@email.com (viewer)"
+              }
+            }
+          })
         end
       end
     end
@@ -410,12 +430,12 @@ RSpec.describe MorphosourceHelper, type: :helper do
           data_manager.save!
         end
         it 'returns the display name' do
-          expect(helper.data_manager_display(data_manager.id)).to eq('Test User')
+          expect(helper.data_manager_display(data_manager.user_key)).to eq('Test User')
         end
       end
       context 'data manager does not have a display name' do
         it 'returns the email address' do
-          expect(helper.data_manager_display(data_manager.id)).to eq(data_manager.email)
+          expect(helper.data_manager_display(data_manager.user_key)).to eq(data_manager.email)
         end
       end
     end

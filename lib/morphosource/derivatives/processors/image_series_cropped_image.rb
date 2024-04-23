@@ -45,29 +45,18 @@ module Morphosource::Derivatives::Processors
     def extract_image_for_thumbnail
       img = img_coll[img_coll.count/2]
       img_path = File.join(tmp_dir_path, File.basename(img))
-      case File.extname(source_path).downcase
-      when '.zip'
-        Zip::File.open(source_path) do |zip_file|
-          zip_file.extract(img, img_path)
-        end
-      when '.tar'
-        File.open(source_path, 'rb') do |file|
-          Archive::Tar::Minitar::Reader.open(file) do |tar|
-            tar.each_entry do |entry|
-              if entry.name == img
-                File.new(img_path, 'wb')
-                File.open(img_path, 'wb') do |output_file|
-                  output_file.write(entry.read)
-                end
-                break
-              end
-            end
-          end
-        end
+
+      Morphosource::Files::ArchiveService.new(source_path).extract_archive(
+        tmp_dir_path,
+        [img],
+        false
+      )
+
+      if File.exists?(img_path)
+        @source_path = img_path
       else
-        raise "Archive file extension not valid"
+        raise "Thumbnail target file (#{img}) not found in archive when extracting files"
       end
-      @source_path = img_path
     end
 
     def convert_dicom_image

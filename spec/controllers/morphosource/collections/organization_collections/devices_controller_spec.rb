@@ -14,7 +14,7 @@ RSpec.describe Morphosource::Collections::OrganizationCollections::DevicesContro
 
   describe 'OrganizationHelper' do
     it 'is included' do
-      expect(described_class.ancestors).to include(Morphosource::Collections::OrganizationHelper)
+      expect(described_class.ancestors).to include(Morphosource::Collections::OrganizationCollectionHelper)
     end
   end
 

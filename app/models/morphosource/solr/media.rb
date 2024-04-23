@@ -36,6 +36,10 @@ module Morphosource
                             remote_origin_url
                             remote_manifest_url].freeze
 
+      def depositor_name
+        self['depositor_name_tesim']
+      end
+
       def download_reviewer
         self['download_reviewer_ssim']
       end
@@ -48,8 +52,16 @@ module Morphosource
         self['fileset_accessibility_ssim']
       end
 
+      def file_sets
+        self["file_set_ids_ssim"]&.map{ |id| SolrDocument.find(id) } || []
+      end
+
       def human_readable_media_type
         self[ActiveFedora.index_field_mapper.solr_name('human_readable_media_type', :stored_searchable)].first
+      end
+
+      def human_readable_modality
+        self['human_readable_modality_tesim']
       end
 
       def is_remote_backed
@@ -67,6 +79,10 @@ module Morphosource
 
       def physical_object_ids
         self['physical_object_id_ssim']
+      end
+
+      def physical_object_title
+        self['physical_object_title_tesim']
       end
 
       def physical_object_type

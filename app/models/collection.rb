@@ -15,9 +15,11 @@ class Collection < ActiveFedora::Base
   after_destroy :reindex_collection_members
   after_destroy :destroy_default_groups, if: :type_assigns_groups?
 
-  # editors group grants members ability to edit works in the collection, but not to edit collection metadata or grant permissions
   DEFAULT_GROUP_ROLES = %w[managers editors depositors downloaders viewers].freeze
+  # editors group grants members ability to edit works in the collection, but not to edit collection metadata or grant permissions
   EDIT_GROUP_ROLES = %w[managers editors].freeze
+  # all groups except depositors grant ability to read works in the collection
+  READ_GROUP_ROLES = %w[managers editors downloaders viewers].freeze
 
   def presenter_class
     team? ? Morphosource::Collections::TeamPresenter : Morphosource::Collections::ProjectPresenter
@@ -38,14 +40,14 @@ class Collection < ActiveFedora::Base
   # managers_group, depositors_group, editors_group, downloaders_group, and viewers_group methods
   DEFAULT_GROUP_ROLES.each do |role|
     define_method("#{role}_group") do
-      Role.find_by(name: id.concat("_#{role}"))
+      Role.find_by(name: id&.concat("_#{role}"))
     end
   end
 
   # managers, depositors, editors, downloaders, and viewers methods
   DEFAULT_GROUP_ROLES.each do |role|
     define_method(role) do
-      Role.find_by(name: id.concat("_#{role}")).users
+      Role.find_by(name: id&.concat("_#{role}"))&.users || []
     end
   end
 
@@ -75,6 +77,7 @@ class Collection < ActiveFedora::Base
 
   # TODO: Alias this to organization_collection when migration
   # from works to collections is complete.
+  # NB: Be very careful doing this as this method is used to differentiate work vs coll elsewhere
   def organization?
     false
   end

@@ -3,7 +3,8 @@ module Morphosource
     module PhysicalObject
 
       # properties shared by biological specimens and cultural heritage objects
-      PHYSICAL_OBJECT_PROPERTIES = %w[bibliographic_citation
+      PHYSICAL_OBJECT_PROPERTIES = %w[ark
+                                      bibliographic_citation
                                       catalog_number
                                       context
                                       current_location

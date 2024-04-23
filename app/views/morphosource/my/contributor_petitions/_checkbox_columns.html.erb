@@ -1,34 +1,36 @@
-<div class="checkbox-list" style="display: flex; flex-direction: row;">
+<div style="display: flex; flex-direction: row;">
   <% current_demographics = @petition.user_demographics || [] %>
   <div class="profile-column">
     <% values.each_with_index do |value, i| %>
       <% if (i + 1) <= ((values.count + 1)/2.0).round %>
-        <%= f.check_box field, 
-          { 
-            multiple: true, 
-            checked: (current_demographics.include? value)
-          }, 
-          value, 
-          false 
-        %>
-        <%= f.label(field.to_sym, value) %>
-        <br/>
+        <div>
+          <%= f.check_box field, 
+            { 
+              multiple: true, 
+              checked: (current_demographics.include? value)
+            }, 
+            value, 
+            false 
+          %>
+          <%= f.label(field.to_sym, value) %>
+        </div>
       <% end %>
     <% end %>
   </div>
   <div class="profile-column" style="margin-left: 20px;">
     <% values.each_with_index do |value, i| %>
       <% if (i + 1) > ((values.count + 1)/2.0).round %>
-        <%= f.check_box field, 
-          { 
-            multiple: true, 
-            checked: (current_demographics.include? value)
-          }, 
-          value, 
-          false 
-        %>
-        <%= f.label(field.to_sym, value) %>
-        <br/>
+        <div>
+          <%= f.check_box field, 
+            { 
+              multiple: true, 
+              checked: (current_demographics.include? value)
+            }, 
+            value, 
+            false 
+          %>
+          <%= f.label(field.to_sym, value) %>
+        </div>
       <% end %>
     <% end %>
     <%= f.label 'Other: ' %>

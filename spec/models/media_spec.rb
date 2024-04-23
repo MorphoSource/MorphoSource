@@ -522,5 +522,28 @@ RSpec.describe Media do
         end
       end
     end
+
+    describe 'owner_class' do
+      let(:media)         { FactoryBot.build(:media, owner: owner) }
+
+      context 'owner is a user' do
+        let(:owner) { FactoryBot.create(:contributor).ms_id }
+
+        it { expect(media.owner_class).to eq(User) }
+      end
+
+      context 'owner is an organization collection' do
+        let(:depositor) { FactoryBot.create(:contributor) }
+        let(:owner)     { FactoryBot.create(:organization_collection, depositor: depositor.ms_id).id }
+
+        it { expect(media.owner_class).to eq(OrganizationCollection) }
+      end
+
+      context 'owner is nil' do
+        let(:owner) { nil }
+
+        it { expect(media.owner_class).to be(nil) }
+      end
+    end
   end
 end

@@ -29,7 +29,7 @@ module Hyrax
   
     def get_organization_count_by_type
       @org_type_and_count ||= begin
-        facet_array = @response.dig("facet_counts", "facet_fields", Solrizer.solr_name('organization_type', :facetable))
+        facet_array = @response.dig("facet_counts", "facet_fields", "organization_type_sim")
         if facet_array.present?
           Hash[*facet_array]
         else

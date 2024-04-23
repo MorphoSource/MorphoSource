@@ -186,7 +186,7 @@ class ProxyDepositRequest < ActiveRecord::Base
       message_content: message_content, organization_content: organization_content, 
       transfer_link: transfers_dashboard_link, user_link: user_or_org_email_link(sending_user)
     ).html_safe
-    message += "<p>Comment: #{sender_comment}</p>" if sender_comment.present?
+    message += "<p>Comment: #{ActionController::Base.helpers.sanitize(sender_comment)}</p>".html_safe if sender_comment.present?
     
     deliver_message(
       email_sender, 
@@ -197,8 +197,15 @@ class ProxyDepositRequest < ActiveRecord::Base
   end
 
   def send_org_transfer_message_to_sender(recipient)
+    receiving_user_link = ""
+    if receiving_user.is_a? OrganizationCollection
+      receiving_user_link = organization_content
+    else # legacy organization scenario, receiving_user is a User
+      receiving_user_link = "organization data manager #{user_or_org_email_link(receiving_user)}"
+    end
+
     message = I18n.t("hyrax.transfers.message.org_transfer_sender", 
-      message_content: message_content, organization_link: organization_link
+      message_content: message_content, receiving_user_link: receiving_user_link
     ).html_safe
     
     deliver_message(
@@ -214,7 +221,7 @@ class ProxyDepositRequest < ActiveRecord::Base
       message_content: message_content, transfer_link: transfers_dashboard_link, 
       user_link: user_or_org_email_link(sending_user)
     ).html_safe
-    message += "<p>Comment: #{sender_comment}</p>" if sender_comment.present?
+    message += "<p>Comment: #{ActionController::Base.helpers.sanitize(sender_comment)}</p>".html_safe if sender_comment.present?
     
     deliver_message(
       email_sender, 

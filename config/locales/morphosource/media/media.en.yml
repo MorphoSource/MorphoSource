@@ -16,4 +16,4 @@ en:
       alert:
         browse_everything: New media file is being downloaded from the cloud, this file will not be available until download and processing are complete.
       organization_transfer:
-        transfer_message: This is an organization media transfer from the original media contributor to the receiving organization data manager. For more details, see our <a href="https://wiki.duke.edu/display/MD/Organization+Ownership+Transfers" target="_blank">documentation</a>.
+        transfer_message: This is an organization media transfer from the original media contributor to the receiving organization data manager. For more details, see our <a href="https://duke.atlassian.net/wiki/spaces/MD/pages/35423461/Organization+Ownership+Transfers" target="_blank">documentation</a>.

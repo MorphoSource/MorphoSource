@@ -476,10 +476,11 @@ module MorphosourceHelper
         individual_list << permission_fields if !role_name.include?('_')
       else
         group_id, role_category = role_name.split('_', 2)
+        access = permission_fields.object.access # read or edit
         next if role_category == 'depositors' # depositors have no collection-level access to works
-        
+
         group_list[group_id] ||= { 
-          access_override: nil,
+          access_override: (access == "read") ? access : nil,
           users: {}
         }
         group_list[group_id][:users][role_category] = user_list.join(', ')
@@ -490,7 +491,7 @@ module MorphosourceHelper
     if (org = f&.object&.model&.organizations&.first).present? && (org.class == OrganizationCollection)
       # If the org does not manage the media, all org members only have view access
       group_list[org.id] ||= { 
-        access_override: (manager != org.id) ? "view" : nil,
+        access_override: (manager != org.id) ? "read" : nil,
         users: {}
       }
 
@@ -526,7 +527,7 @@ module MorphosourceHelper
       case access_override
       when 'edit'
         'Edit access'
-      when 'view'
+      when 'read'
         'View access'
       else
         'Unknown access'

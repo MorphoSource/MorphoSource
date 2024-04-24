@@ -10,6 +10,7 @@
       <%= f.input :part, as: :multi_value %>
       <%= render_edit_field_partial('side', f: f) %>
       <%= f.input :orientation, as: :multi_value %>
+      <%= f.input :short_title, label: 'Custom Title', placeholder: @presenter.generated_title %>
       <%= f.input :short_description %>
       <%= render_edit_field_partial('description', f: f) %>
       <%= f.input :creator, as: :multi_value %>

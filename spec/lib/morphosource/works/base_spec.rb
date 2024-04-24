@@ -48,11 +48,22 @@ RSpec.describe Morphosource::Works::Base do
       media1.depositor = depositor.ms_id
     end
     context 'work has an owner' do
-      before do
-        media1.owner = owner.ms_id
+      context 'owner is a user' do
+        before do
+          media1.owner = owner.ms_id
+        end
+        it 'returns the owner' do
+          expect(subject).to eq(owner.ms_id)
+        end
       end
-      it 'returns the owner' do
-        expect(subject).to eq(owner.ms_id)
+      context 'owner is an organization collection' do
+        let(:owner) { FactoryBot.create(:organization_collection, depositor: depositor.ms_id) }
+        before do
+          media1.owner = owner.id
+        end
+        it 'returns the owner' do
+          expect(subject).to eq(owner.id)
+        end
       end
     end
     context 'work does not have an owner' do

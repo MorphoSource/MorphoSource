@@ -2,7 +2,7 @@
 document.addEventListener("share-tab-loaded", function(event) {
 
   var transferToSelect = $('#proxy_deposit_request_transfer_to');
-  transferToSelect.userSearch();
+  transferToSelect.dataManagerSearch(); // returns a list of users & organization collections
 
   $('#btn-transfer-submit').click(function() {
     if (transferToSelect.val().length == 0) {
@@ -266,8 +266,8 @@ $( document ).ready(function() {
 
     $('#tab-media-details[class!="active"] a').on('click', function(){
       var uvIframe = document.getElementById("uv-iframe");
-      if (this.ariaExpanded == "false" && uvIframe) {        
-        uvIframe.contentDocument.location.reload(true);        
+      if (this.ariaExpanded == "false" && uvIframe) {
+        uvIframe.contentDocument.location.reload(true);
       }
     })
 
@@ -290,8 +290,8 @@ $( document ).ready(function() {
 
     // select2-associated select physical object button
     $('#btn-select-physical-object').click(function() {
-      var po = $('#s2id_imaging_event_find_physical_object').select2('data');      
-      if (po != null) {        
+      var po = $('#s2id_imaging_event_find_physical_object').select2('data');
+      if (po != null) {
         if (po.id != $("#physical-object-id-value").val()) {
           // if different po selected, display a modal to prompt the user to confirm to save the media
           $('#modal-select-physical-object').modal();
@@ -299,7 +299,7 @@ $( document ).ready(function() {
           // reset the selection
           $('#s2id_imaging_event_find_physical_object').select2("val", "");
         }
-      } 
+      }
     });
 
     $('#modal-select-physical-object').on('hidden.bs.modal', function (e) {
@@ -689,7 +689,7 @@ var setMediaLocalRemoteEvent = function() {
 
 var noFileCheck = function() {
   if (skipNoFileCheck) {
-    return true;  
+    return true;
   } else if (fileOrigin == "local") {
     if ($('.attribute-filename').length > 0) {
       // there is existing file associated with media

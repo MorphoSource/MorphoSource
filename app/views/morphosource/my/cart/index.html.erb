@@ -9,7 +9,7 @@
   </ol>
 </nav>
 
-<div class="row">
+<div class="row no-horizontal-padding">
   <div class="col-xs-12 main-header">
     <h1>
       <span class="fa fa-shopping-cart" aria-hidden="true"></span>
@@ -19,22 +19,26 @@
   </div>
 </div>
 
-<div class="panel-body cart-page">
-  <h2 class="sr-only">Works listing</h2>
-  <%= render 'morphosource/my/cart/batch_actions' %>
-  <%= render 'morphosource/my/cart/downloadable_list' %>
-  <%= render 'morphosource/my/cart/results_pagination' %>
+<div class="panel">
+  <div class="panel-body cart-page">
+    <h2 class="sr-only">Works listing</h2>
+    <%= render 'morphosource/my/cart/batch_actions' %>
+    <%= render 'morphosource/my/cart/downloadable_list' %>
+    <%= render 'morphosource/my/cart/results_pagination' %>
+  </div>
 </div>
 
-<h2>
-    <span class="fa fa-minus-circle" aria-hidden="true"></span>
+<div><b>
+    <span class="fa fa-minus-circle" aria-hidden="true" style="color: #555;"></span>
     Restricted Items ( <%= @restricted_count %> )
-</h2>
-<div class="panel-body">
-  <h2 class="sr-only">Works listing</h2>
-  <%= render 'morphosource/my/cart/batch_request_actions' %>
-  <%= render 'morphosource/my/cart/requestable_list' %>
-  <%= render 'morphosource/my/cart/requestable_results_pagination' %>
+</b></div>
+<div class="panel">
+  <div class="panel-body">
+    <h2 class="sr-only">Works listing</h2>
+    <%= render 'morphosource/my/cart/batch_request_actions' %>
+    <%= render 'morphosource/my/cart/requestable_list' %>
+    <%= render 'morphosource/my/cart/requestable_results_pagination' %>
+  </div>
 </div>
 
 <%= render 'morphosource/my/modals/page_modal' %>

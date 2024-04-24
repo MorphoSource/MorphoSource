@@ -10,6 +10,7 @@ module Morphosource
                                                aat_period_label
                                                aat_type
                                                aat_type_label
+                                               ark
                                                cho_attribute
                                                cho_type
                                                material

@@ -18,9 +18,9 @@ en:
         edit:
           header: Edit %{type_title}
         organization:
-          info: For more information on organizational teams, please read <a href="https://wiki.duke.edu/pages/viewpage.action?pageId=266569096">What is an Organizational Management Team?</a>
+          info: For more information on organizational teams, please read <a href="https://duke.atlassian.net/wiki/spaces/MD/pages/35422980/What+is+an+Organizational+Management+Team">What is an Organizational Management Team?</a>
         permissions:
-          info: Use these fields to specify default recommended permissions settings for newly contributed media. For more details on these fields and how they should be used, consult our documentation on <a href="https://wiki.duke.edu/display/MD/Media+Ownership%2C+Management%2C+and+Reuse+Permissions" target="_blank">Media Ownership, Management, and Reuse Permissions</a>.
+          info: Use these fields to specify default recommended permissions settings for newly contributed media. For more details on these fields and how they should be used, consult our documentation on <a href="https://duke.atlassian.net/wiki/spaces/MD/pages/35422501/Media+Ownership+Management+and+Reuse+Permissions" target="_blank">Media Ownership, Management, and Reuse Permissions</a>.
         media_lists:
           action:
             new:

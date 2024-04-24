@@ -2,7 +2,11 @@ module Morphosource
   module Dashboard
     module Collections
       class OrganizationCollectionsController < Morphosource::Dashboard::CollectionsController
-        skip_load_and_authorize_resource only: [:edit, :update, :new, :members, :create, :details, :permissions], instance_name: :organization_collection
+      include Morphosource::Collections::OrganizationCollectionsControllerBehavior
+
+        skip_load_and_authorize_resource only: [
+          :create, :details, :edit, :members, :new, :ownership, :permissions, :update
+        ], instance_name: :organization_collection
 
         before_action :redirect_to_collection_type, only: []
         before_action :build_breadcrumbs, only: []
@@ -27,6 +31,16 @@ module Morphosource
           form
         end
 
+        # Compared to other routes, have to duplicate some logic from show page endpoints
+        def ownership
+          @tab = :ownership
+          @object_ids = collection_object_ids
+          query_collection_counts
+          query_media_management_counts
+          presenter
+          form
+        end
+
         def permissions
           @tab = :permissions
           presenter
@@ -47,12 +61,6 @@ module Morphosource
 
           def collection_class
             OrganizationCollection
-          end
-
-          # member subcollections will be addressed by MR-1554
-          # send a blank array so page doesn't break
-          def member_subcollections
-            []
           end
 
           def permissions_path

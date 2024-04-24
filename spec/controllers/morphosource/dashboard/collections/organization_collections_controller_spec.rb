@@ -9,6 +9,7 @@ RSpec.describe Morphosource::Dashboard::Collections::OrganizationCollectionsCont
   let(:user)          { depositor }
 
   before do
+    Hyrax::PermissionTemplate.find_or_create_by!(source_id: organization.id)
     sign_in user
   end
 
@@ -44,7 +45,7 @@ RSpec.describe Morphosource::Dashboard::Collections::OrganizationCollectionsCont
 
     context 'user is not an admin' do
       it 'responds with a redirect to root' do
-      get :edit, params: params
+        get :edit, params: params
         expect(response.status).to redirect_to(root_path)
         get :members, params: params
         expect(response.status).to redirect_to(root_path)

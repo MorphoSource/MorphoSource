@@ -463,27 +463,45 @@ module MorphosourceHelper
 
   def grouped_access_list(f)
     manager = f.object.user_with_ownership
-    groups = []
     individual_list = []
-    access_user_list = {}
+    group_list = {}
+
+    # User and group based access
     f.fields_for :permissions do |permission_fields|
       role_name = permission_fields.object.agent_name
       user_list = user_list_by_role(role_name)
       # skip the public, registered, and depositor perms as they are displayed first at the top
       next if ( ['admin', 'public', 'registered', manager].include? role_name.downcase )
       if user_list.empty?
-        unless role_name.include? '_'
-          individual_list << permission_fields
-        end
+        individual_list << permission_fields if !role_name.include?('_')
       else
-        groups << role_name.split('_').first
-        access_user_list[role_name] = user_list.join(', ')
+        group_id, role_category = role_name.split('_', 2)
+        access = permission_fields.object.access # read or edit
+        next if role_category == 'depositors' # depositors have no collection-level access to works
+
+        group_list[group_id] ||= { 
+          access_override: (access == "read") ? access : nil,
+          users: {}
+        }
+        group_list[group_id][:users][role_category] = user_list.join(', ')
       end
     end
-    group_list = {}
-    groups.uniq.each do |g|
-      group_list[g] = access_user_list.select { |k,v| k.include? g }.values.join(', ')
+
+    # Organization collection based access
+    if (org = f&.object&.model&.organizations&.first).present? && (org.class == OrganizationCollection)
+      # If the org does not manage the media, all org members only have view access
+      group_list[org.id] ||= { 
+        access_override: (manager != org.id) ? "read" : nil,
+        users: {}
+      }
+
+      org.user_groups.each do |role, hash|
+        role_category = role.name.split('_', 2)[1]
+        next if role.users.count == 0 || role_category == 'depositors'
+        group_list[org.id][:users][role_category] = role.users.map { |u| "#{u.name_or_email} (#{role_category.singularize})"}.join(', ')
+      end
     end
+
     return individual_list, group_list
   end
 
@@ -491,12 +509,12 @@ module MorphosourceHelper
     collection = Collection.find(id)
     if collection.present?
       if collection.project?
-        source = 'Project: ' + '<a href="/projects/' + collection.id + '">' + collection.title.first + '</a>'
+        source = link_to "Project #{collection.id}: #{collection.title&.first}", main_app.project_path(collection)
       elsif collection.team?
-        source = 'Team: ' + '<a href="/teams/' + collection.id + '">' + collection.title.first + '</a>'
-        if collection.organization_name.present?
-          source += ' (' + collection.organization_name.first + ')'
-        end
+        org_name = collection.organization_name.present? ? " (#{collection.organization_name.first})" : ""
+        source = link_to "Team #{collection.id}: #{collection.title&.first}#{org_name}", main_app.team_path(collection)
+      elsif collection.organization_collection?
+        source = link_to "Organization #{collection.id}: #{collection.name}", main_app.organization_path(collection)
       else
         source = "(unknown)"
       end
@@ -504,14 +522,36 @@ module MorphosourceHelper
     return source.html_safe
   end
 
+  def group_user_access_desc(role_category, access_override = nil)
+    if access_override
+      case access_override
+      when 'edit'
+        'Edit access'
+      when 'read'
+        'View access'
+      else
+        'Unknown access'
+      end
+    else
+      case role_category
+      when 'managers'
+        'Edit access'
+      when 'editors'
+        'Edit access'
+      when 'downloaders'
+        'Download access'
+      when 'viewers'
+        'View access'
+      else
+        'Unknown access'
+      end
+    end  
+  end
+
   def user_list_by_role(access)
     list = []
     Role.find_by(name: access)&.users&.each do |u|
-      if u.display_name
-        user_display = u.display_name
-      else
-        user_display = u.email
-      end
+      user_display = u.name_or_email
       if access.split('_').length == 2
         user_display += " (" + access.split('_')[1].singularize + ")"
       end
@@ -539,7 +579,6 @@ module MorphosourceHelper
     return false unless path.present?
     return (Dir.exist?(Hyrax.config.sftp_share_root + path) or Dir.exist?(path))
   end
-
 end
 
 class Array

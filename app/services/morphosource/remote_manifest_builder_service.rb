@@ -11,7 +11,7 @@ module Morphosource
     def self.manifest_for(media)
       manifest_path = Rails.application.routes.url_helpers.manifest_hyrax_media_path(media)
       label = media.title
-      file_set = media.file_sets.first
+      file_set = media.file_sets&.first
       {
         "@context": [
           @json_context,
@@ -40,8 +40,8 @@ module Morphosource
                     "body": {
                       id: media.remote_manifest_url,
                       "type": "Image",
-                      "width": file_set.width&.first&.to_i,
-                      "height": file_set.height&.first&.to_i,
+                      "width": file_set&.width&.to_i,
+                      "height": file_set&.height&.to_i,
                       "format": "image/jpeg",
                       "label": {
                         "@none": [

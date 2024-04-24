@@ -58,8 +58,13 @@ input[type=checkbox].disabled {
     text-align: center;
   }
 
+  .permission-add-user.row {
+    margin-left: -15px;
+    margin-right: -15px;
+  }
+
   .permissions-add-user-label, .permissions-add-group-label {
-    padding: 7px 4px;
+    padding: 7px 15px;
   }
 
   .attachment-input .hint {
@@ -271,23 +276,20 @@ input[type=checkbox].disabled {
     min-width: 80px;
   }
 
-  /*
-  .list-filters {
-    .dropdown-menu {
-      background-color: transparent;
-    }
-    .dropdown-toggle {
-      background-color: transparent;
-    }
-    .btn {
-      color: $font-color;
-    }
-  } */
-
   .panel {
     border: none;
     margin-left: -15px;
     margin-right: -15px;
+  }
+
+  // Hyrax .dashboard .panel has borders, showcase-edit overwrites this, this allows to put back in
+  .panel-borders {
+    border: 1px solid #dedede;
+  }
+
+  .panel-borders.tabs {
+    margin-top: 0 !important;
+    padding-top: 44px !important;
   }
 
   .panel-full-width .panel {
@@ -316,11 +318,6 @@ input[type=checkbox].disabled {
   .nav-tabs.sub-nav {
     padding-top: 2px;
   }
-
-  /*
-  .listing li:not(.processing_activity_items) {
-    width: 200px !important;
-  } */
 
   .processing_activity_items {
     .field-controls {
@@ -568,6 +565,13 @@ input[type=checkbox].disabled {
     }
   }
 
+  // Media edit page share tab transfer media ownership section
+  form#new_proxy_deposit_request {
+    p {
+      padding-left: 0;
+    }
+  }
+
 } /* / .showcase-edit */
 
 
@@ -580,6 +584,9 @@ input[type=checkbox].disabled {
 
 /* styles for dashboard collection edit page */
 .dashboard.ms-collection-edit {
+  .material-icons.tooltip-icon {
+    font-size: 14px;
+  }
 
   .title {
     padding-left:0;
@@ -608,6 +615,15 @@ input[type=checkbox].disabled {
       font-size: 48px;
       float: left;
       margin-right: 8px;
+    }
+  }
+
+  .showcase-label {
+    display: flex;
+    align-items: center;
+
+    label {
+      margin-bottom: 0;
     }
   }
 
@@ -650,8 +666,9 @@ input[type=checkbox].disabled {
     padding-left: 0;
     padding-right: 0;
     h2 {
-      margin-left: 10px;
+      margin-left: 0;
       margin-right: 0;
+      margin-top: 15px;
     }
   }
 
@@ -730,6 +747,23 @@ input[type=checkbox].disabled {
 
     label {
       vertical-align: middle;
+    }
+  }
+
+  .organization-collection-ownership-reminders {
+    ul {
+      padding-inline-start: 25px;
+    }
+  }
+
+  .organization-collection-ownership-stats {
+    .showcase-label {
+      font-weight: normal;
+    }
+
+    .showcase-value {
+      text-align: right;
+      padding-right: 15px;
     }
   }
 }

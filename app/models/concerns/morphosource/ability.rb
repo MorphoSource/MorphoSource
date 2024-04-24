@@ -14,7 +14,7 @@ module Morphosource
     def proxy_deposit_abilities
       if Flipflop.transfer_works?
         can :transfer, String do |id|
-          user_is_data_manager?(id)
+          admin? || user_is_data_manager?(id)
         end
       end
 
@@ -24,6 +24,11 @@ module Morphosource
       can :reject, ProxyDepositRequest, receiving_user_id: current_user.id, status: 'pending'
       # a user who sent a proxy deposit request can cancel it if it's pending.
       can :destroy, ProxyDepositRequest, sending_user_id: current_user.id, status: 'pending'
+
+      return unless admin?
+        can :accept, ProxyDepositRequest
+        can :reject, ProxyDepositRequest
+        can :destroy, ProxyDepositRequest
     end
 
     def contributor?
@@ -136,7 +141,9 @@ module Morphosource
       # Returns true if the current user is the manager of the specified work
       # @param document_id [String] the id of the document.
       def user_is_data_manager?(document_id)
-        SolrDocument.find(document_id).user_with_ownership.first == current_user.user_key
+        return false unless current_user
+
+        SolrDocument.find(document_id).user_with_ownership&.first == current_user.user_key
       end
 
   end

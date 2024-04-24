@@ -53,6 +53,21 @@ module Morphosource
           params.dig(snake_case_collection_class, :representative_id)
         end
 
+        def member_subcollections
+          subcollections = Morphosource::SolrService.new.get_docs("has_model_ssim:Collection AND member_of_collection_ids_ssim:#{@collection.id}")
+          # add media count to each subcollection solr hit
+          subcollection_media_counts = project_media_counts
+          subcollections.each { |doc| doc.merge!({"media_count" => subcollection_media_counts[doc['id']]}) }
+        end
+
+        # return a hash of project id => media count
+        def project_media_counts
+          self.blacklight_config["facet_fields"] = {}
+          self.blacklight_config.add_facet_field "project", field: "member_of_project_ids_ssim"
+          search_builder = Morphosource::Catalog::MediaCatalogSearchBuilder.new(self)
+          response = Blacklight::Solr::Repository.new(MediaCatalogController.new.blacklight_config).search(search_builder.query)
+          Hash[*response["facet_counts"]["facet_fields"]["member_of_project_ids_ssim"]]
+        end
     end
   end
 end

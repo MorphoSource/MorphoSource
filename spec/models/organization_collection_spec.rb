@@ -3,6 +3,10 @@ require 'rails_helper'
 
 RSpec.describe OrganizationCollection, type: :model do
 
+  # NB: create_organization_project callback is disabled in the organization_collection factory
+
+  let(:user)  { FactoryBot.create(:contributor) }
+
   it "is valid with valid attributes" do
     subject.address = ['26 Oxford Street']
     subject.agreement_uri = ['https://mcz.harvard.edu/permissions-copyright']
@@ -58,8 +62,19 @@ RSpec.describe OrganizationCollection, type: :model do
     it { expect(subject.search_builder_class).to eq(Morphosource::Collections::MediaSearchBuilder) }
   end
 
+  describe '#create_organization_project' do
+    let(:organization)  { FactoryBot.create(:organization_collection, title: ['factory bot organization'], depositor: user.ms_id)}
+    it 'creates a project with the correct metadata' do
+      project = organization.send(:create_organization_project)
+      expect(project.title).to eq([I18n.t('morphosource.dashboard.collections.organization_collection.example_project.title', title: organization.title.first)])
+      expect(project.description).to eq([I18n.t('morphosource.dashboard.collections.organization_collection.example_project.description')])
+      expect(project.visibility).to eq('restricted')
+      expect(project.depositor).to eq(user.ms_id)
+      expect(organization.child_projects).to include(project)
+    end
+  end
+
   describe '#create_collection_groups' do
-    let(:user)  { FactoryBot.create(:contributor) }
     let!(:organization) { FactoryBot.create(:organization_collection, depositor: user.ms_id) }
 
     it 'assigns them names with the collection id' do

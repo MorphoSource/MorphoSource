@@ -122,6 +122,91 @@ RSpec.describe SubmissionsController, type: :controller do
 
     end
 
+    context 'check organization collection remote file permissions' do
+      let(:depositor)          { FactoryBot.build(:contributor) }
+      let(:org)                 { OrganizationCollection.create(
+                                  title: ['org'], 
+                                  depositor: user.ms_id, 
+                                  institution_code: ['DEF'], 
+                                  can_submit_remote_files: "No", 
+                                  allowed_remote_source: "www.morphosource.org") }
+
+      let(:params1) { { u: "https://www.morphosource.org/banner_image.png", o: org.id } }
+      let(:params2) { { u: "https://www.notallowed.org/banner_image.png", o: org.id } }
+
+      before do
+        remote_file_submitters.users << depositor
+        remote_file_submitters.save
+        sign_in depositor
+      end
+
+      context 'org cannot submit remote files' do
+        it 'returns error' do
+          post :validate_remote_file_ajax, params: params2, xhr: true
+          expect(JSON.parse(response.body)).to include_json(
+            "status"=>"error",
+            "http_code"=>"",
+            "message"=>"The path is invalid or not allowed.  Please make sure you have the permissions and the domain is allowed.",
+            "resp_file_ext"=>""
+          )
+        end
+      end
+
+      context 'domain not allowed, with organization member permissions' do
+        before do
+          org.can_submit_remote_files = "Yes"
+          org.save
+          org.create_collection_groups
+          org.depositors << depositor
+          org.depositors_group.save
+        end
+        it 'returns error' do
+          post :validate_remote_file_ajax, params: params2, xhr: true
+          expect(JSON.parse(response.body)).to include_json(
+            "status"=>"error",
+            "http_code"=>"",
+            "message"=>"The path is invalid or not allowed.  Please make sure you have the permissions and the domain is allowed.",
+            "resp_file_ext"=>""
+          )
+        end
+      end
+
+      context 'domain allowed, without organization member permissions' do
+        before do
+          org.can_submit_remote_files = "Yes"
+          org.save
+        end
+        it 'returns success' do
+          post :validate_remote_file_ajax, params: params1, xhr: true
+          expect(JSON.parse(response.body)).to include_json(
+            "status"=>"error",
+            "http_code"=>"",
+            "message"=>"The path is invalid or not allowed.  Please make sure you have the permissions and the domain is allowed.",
+            "resp_file_ext"=>""
+          )
+        end
+      end
+
+      context 'domain allowed, with organization member permissions' do
+        before do
+          org.can_submit_remote_files = "Yes"
+          org.save
+          org.create_collection_groups
+          org.depositors << depositor
+          org.depositors_group.save
+        end
+        it 'returns success' do
+          post :validate_remote_file_ajax, params: params1, xhr: true
+          expect(JSON.parse(response.body)).to include_json(
+            "status"=>"success",
+            "http_code"=>200,
+            "message"=>"",
+            "resp_file_ext"=>".png"
+          )
+        end
+      end
+    end
+
   end
 
   describe '#organization_default_media_fields' do

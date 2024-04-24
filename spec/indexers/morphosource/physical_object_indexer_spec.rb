@@ -2,7 +2,7 @@
 require 'rails_helper'
 
 RSpec.describe Morphosource::PhysicalObjectIndexer do
-  let(:specimen)          { BiologicalSpecimen.create(title: ['Specimen'], vouchered: ['Yes'], organization_id: [organization.id]) }
+  let(:specimen)          { BiologicalSpecimen.create(title: ['Specimen'], vouchered: ['Yes'], organization_id: [organization.id], ark: ["ark:/12345/m4/678910"]) }
   let(:media)             { Media.create(title: ['title'], media_type: ['Image'], keyword: ['red', 'blue', 'yellow'], visibility: 'open') }
   let(:device)            { Device.create(title: ['device'], modality: ['Photogrammetry']) }
   let(:imaging_event)     { ImagingEvent.create(title: ['title'], device_id: [device.id], physical_object_id: [specimen.id], ie_modality: device.modality) }
@@ -35,6 +35,11 @@ RSpec.describe Morphosource::PhysicalObjectIndexer do
       expect(subject['public_media_keyword_ssim']).to match_array(media.keyword)
 
       expect(subject['related_media_ids_ssim']).to eq([media.id])
+    end
+
+    it 'indexes ARK fields' do
+      expect(subject['ark_ssim']).to match_array(specimen.ark)
+      expect(subject['ark_tesim']).to match_array(specimen.ark)
     end
 
     describe 'organization fields' do

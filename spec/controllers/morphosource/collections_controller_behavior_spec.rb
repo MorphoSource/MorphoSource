@@ -21,7 +21,7 @@ RSpec.describe Morphosource::CollectionsControllerBehavior, type: :controller do
 
   it 'has an access facet' do
     subject.send(:create_access_facet)
-    access_facet = subject.blacklight_config.facet_fields["access_level"]
+    access_facet = subject.blacklight_config.facet_fields["access"]
     expect(access_facet.label).to eq("Access")
   end
 
@@ -227,7 +227,7 @@ RSpec.describe Morphosource::CollectionsControllerBehavior, type: :controller do
   end
 
   def access_facet
-    subject.blacklight_config.facet_fields["access_level"]
+    subject.blacklight_config.facet_fields["access"]
   end
 
   def filter(access_level)
@@ -248,6 +248,6 @@ RSpec.describe Morphosource::CollectionsControllerBehavior, type: :controller do
   end
 
   def remove_access_facet
-    subject.blacklight_config.facet_fields.delete('access_level')
+    subject.blacklight_config.facet_fields.delete('access')
   end
 end

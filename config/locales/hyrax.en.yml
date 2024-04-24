@@ -86,6 +86,16 @@ en:
       new:
         confirm: Are you sure you want to transfer ownership of this media to another user?  Click Ok to transfer or Cancel to return to the transfer screen.
         header: Transfer Ownership
+      message:
+        org_transfer_receiver: "%{user_link} has requested to transfer the ownership of %{message_content} to your managed %{organization_content}. It is your choice whether to accept or reject this request. If you accept the request, your organization will become the data manager for this media. When accepting the request, you may choose to allow the original depositor to retain edit access to the media. Please accept or reject this request in your %{transfer_link} dashboard. For more details, see our <a href='https://duke.atlassian.net/wiki/spaces/MD/pages/35423461/Organization+Ownership+Transfers' target='_blank'>documentation</a>."
+        org_transfer_receiver_subject: You have a media transfer request
+        org_transfer_sender: A request to transfer ownership of %{message_content} to %{receiving_user_link} has been generated. The organization manager(s) will decide to accept or reject this request. For more details, see our <a href='https://duke.atlassian.net/wiki/spaces/MD/pages/35423461/Organization+Ownership+Transfers' target='_blank'>documentation</a>.
+        org_transfer_sender_subject: Organization media transfer request generated
+        transfer_create: "%{user_link} has requested to transfer the ownership of %{message_content} to you. Please accept or reject this request in your %{transfer_link} dashboard."
+        transfer_create_subject: You have a media transfer request
+        transfer_update_p1: Your request to transfer ownership of %{message_content} to %{receiver_link} has been %{status}.
+        transfer_update_p2: Please contact %{receiver_link} if you have a question related to this request.
+        transfer_update_subject: Media transfer request %{status}
     browse:
       title:
         categories: Browse Categories
@@ -106,7 +116,7 @@ en:
           header:
             "MorphoSource is a repository for media (3D and 2D) that represent physical objects. There are many ways to browse media and physical objects in the repository. It is also possible to search the repository using the search bar above, and to explore the data holdings using category facets associated with search results."
         organizations:
-          "Organizations represent institutions, departments, collections, facilities, labs, and other groups that manage, house, and curate physical objects or imaging devices. An organization describes whatever bureaucratic entity is responsible for setting policies for access to physical objects or devices. Typically, organizations are collections or departments within an institution, but in some cases they can also be an entire larger institution or a specific smaller lab within a collection or department. A user team can be linked to an organization, enabling some level of access control over physical objects housed in that organization. Please contact the MorphoSource admins to discuss linking your user team to an organization."
+          "Organizations represent institutions, departments, collections, facilities, labs, and other groups that manage, house, and curate physical objects or imaging devices. An organization describes whatever bureaucratic entity is responsible for setting policies for access to physical objects or devices. Typically, organizations are collections or departments within an institution, but in some cases they can also be an entire larger institution or a specific smaller lab within a collection or department. Users affiliated with the collection, institution, or other entity associated with an organization can directly manage that organization, enabling some level of access control over physical objects or imaging devices connected to the organization. Please contact the MorphoSource admins to discuss managing an organization."
         physical_object_types:
           "Media represent physical objects. Physical objects are divided into two categories, described below."
         biological_specimen_objects:
@@ -268,11 +278,11 @@ en:
             label: 'Select existing'
           create_new_media_in:
             label: 'Upload new'
-          add_project_to_Team:
+          add_project_to_team:
             label: 'Add project to team'
             select_label: 'Select project'
             button_label: 'Add project'
-          create_new_project_in_Team:
+          create_new_project_in_team:
             label: 'Create new project in team'
           delete_Team:
             label: 'Delete team'
@@ -286,6 +296,12 @@ en:
           delete_Sequential Section List:
             label: 'Delete list'
             confirmation: 'Delete this list?'
+          add_project_to_organization:
+            label: 'Add project to organization'
+            select_label: 'Select project'
+            button_label: 'Add project'
+          create_new_project_in_organization:
+            label: 'Create new project in organization'
           delete_Organization:
             label: 'Delete organization'
             confirmation: 'Delete this organization?'
@@ -366,6 +382,7 @@ en:
         download_permission: Media publication status, can be private, published with open download (any user can download), or published with restricted download (users must request to download)
         download_reviewer: Users that receive and decide requests to download Media if published with Restricted Download, defaults to data manager if not specified
         license: Applicable Creative Commons license governing use and reuse
+        media_ownership_transfer: Opt in to automated management transfer
         permissions_enforcement_mode: Whether organization default permission values are recommended or required to be used by new media contributors
         publisher: Entity responsible for making the resource available
         preview_mode: Whether media can be previewed with interactive 3D/2D preview or restricted to small 2D thumbnail, Interactive/Embeddable generally recommended
@@ -383,6 +400,7 @@ en:
         download_reviewer: Download reviewer
         rights_statement: Copyright statement
         license: License
+        media_ownership_transfer: Media ownership transfer
         morphosource_use_agreement_type: MorphoSource use agreement type
         permits_commercial_use: Permits commercial use
         permits_3d_use: Permits 3D use

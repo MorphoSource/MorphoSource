@@ -261,14 +261,14 @@ Rails.application.routes.draw do
       get 'organizations/:id/about', to: 'organization_collections#about', as: 'organization_about'
 
       # Object media CSV exports
-      get 'organizations/:id/media_export', to: 'organization_collections#media_export_with_intersections_facet', as: 'organization_media_export'
-      get 'organizations/:id/media_download_counts', to: 'organization_collections#media_download_counts_with_intersections_facet', as: 'organization_media_download_counts'
+      get 'organizations/:id/media_export', to: 'organization_collections#media_export', as: 'organization_media_export'
+      get 'organizations/:id/media_download_counts', to: 'organization_collections#media_download_counts', as: 'organization_media_download_counts'
       get 'organizations/:id/media_downloads', to: 'organization_collections#media_downloads', as: 'organization_media_downloads'
       get 'organizations/:id/media_requests', to: 'organization_collections#media_requests', as: 'organization_media_requests'
 
       # Device media CSV exports
-      get 'organizations/:id/device_media_export', to: 'organization_collections/device_media#media_export_with_intersections_facet', as: 'organization_device_media_export'
-      get 'organizations/:id/device_media_download_counts', to: 'organization_collections/device_media#media_download_counts_with_intersections_facet', as: 'organization_device_media_download_counts'
+      get 'organizations/:id/device_media_export', to: 'organization_collections/device_media#media_export', as: 'organization_device_media_export'
+      get 'organizations/:id/device_media_download_counts', to: 'organization_collections/device_media#media_download_counts', as: 'organization_device_media_download_counts'
       get 'organizations/:id/device_media_downloads', to: 'organization_collections/device_media#media_downloads', as: 'organization_device_media_downloads'
       get 'organizations/:id/device_media_requests', to: 'organization_collections/device_media#media_requests', as: 'organization_device_media_requests'
 
@@ -393,6 +393,7 @@ Rails.application.routes.draw do
         get 'organizations/:id/edit', to: redirect('dashboard/organizations/%{id}')
         get 'organizations/:id/files', to: 'organization_collections#files'
         get 'organizations/:id/members', to: 'organization_collections#members', as: 'organization_members'
+        get 'organizations/:id/ownership', to: 'organization_collections#ownership', as: 'organization_ownership'
         get 'organizations/:id/permissions', to: 'organization_collections#permissions', as: 'organization_permissions'
         get 'organizations/:id/projects', to: 'organization_collections#projects', as: 'organization_projects'
         post 'organizations', to: 'organization_collections#create'
@@ -634,6 +635,9 @@ Rails.application.routes.draw do
   post '/batch_submissions', to: 'batch_submissions#submit'
   post '/batch_submissions/ingest', to: 'batch_submissions#ingest'
   get '/batch_submissions/result', to: 'batch_submissions#result', as: 'batch_submissions_result'
+
+  ### DATA MANAGER SEARCH ###
+  get '/data-managers', to: 'morphosource/data_managers#index', as: 'data_managers', constraints: { format: 'json' }
 
   ### DOCS ###
   resources :docs do

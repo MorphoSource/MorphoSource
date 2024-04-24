@@ -211,6 +211,7 @@ RSpec.describe MediaIndexer do
       expect(subject['organization_transfer_on_publish_bsi']).to eq(media.organization_transfer_on_publish)
       expect(subject['orientation_tesim']).to match_array(media.orientation)
       expect(subject['owner_ssim']).to match_array([media.owner])
+      expect(subject['owner_type_ssi']).to eq(owner.class.to_s)
       expect(subject['part_ssi']).to eq(media.part&.first&.downcase)
       expect(subject['part_tesim']).to match_array(media.part)
       expect(subject['permits_3d_use_tesim']).to match_array(media.permits_3d_use)
@@ -352,5 +353,32 @@ RSpec.describe MediaIndexer do
   def add_ordered_members(parent, child)
     parent.ordered_members << child
     parent.save!
+  end
+
+  describe 'media_owner' do
+    let(:depositor) { FactoryBot.create(:contributor) }
+    let(:media)     { Media.new(depositor: depositor.ms_id) }
+
+    context 'media has a depositor only' do
+      it 'indexes depositor as owner' do
+        expect(described_class.new(media).media_owner).to eq(depositor)
+      end
+    end
+    context 'media has a depositor and an owner' do
+      context 'owner is a user' do
+        let(:owner)     { FactoryBot.create(:contributor) }
+        before { media.owner = owner.ms_id }
+        it 'indexes owner as owner' do
+          expect(described_class.new(media).media_owner).to eq(owner)
+        end
+      end
+      context 'owner is an organization' do
+        let(:owner)     { FactoryBot.create(:organization_collection, depositor: depositor.ms_id) }
+        before { media.owner = owner.id }
+        it 'indexes depositor as owner' do
+          expect(described_class.new(media).media_owner).to eq(owner)
+        end
+      end
+    end
   end
 end

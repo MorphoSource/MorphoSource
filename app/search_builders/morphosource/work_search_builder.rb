@@ -4,6 +4,8 @@ module Morphosource
   # workflow), then it checks to see if the current_user has any workflow role
   # on the given work.
   class WorkSearchBuilder < Hyrax::WorkSearchBuilder
+    # organization collection members can access that organization's media
+    include Morphosource::OrganizationalAccessBehavior
 
     # override Hydra::AccessControlsEnforcement to include 'download'
     def discovery_permissions

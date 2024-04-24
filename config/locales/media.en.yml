@@ -9,7 +9,8 @@ en:
           centroid_location: Centroid coordinates
           cite_as: Cite as
           color_format: Color information format
-          depositor: Data uploaded by
+          depositor: &depositor Data uploaded by
+          depositor_name: *depositor
           description: Full description
           device_and_facility: Device
           direct_parent: Derived directly from
@@ -20,6 +21,7 @@ en:
           funding: Funding attribution
           has_uv_space: UV coordinates
           human_readable_media_type: Media type
+          human_readable_modality: Media imaging modality
           identifier: External identifier
           imaging_event_modality: Modality
           license: Creative Commons license
@@ -37,7 +39,9 @@ en:
           related_url: External media URL
           rights_holder: IP holder
           rights_statement: Copyright statement
-          taxonomy_title: Object taxonomy
+          taxonomy_title: &taxonomy_title Object taxonomy
+          taxonomies_titles: *taxonomy_title
+          title: Title
           user_with_ownership: Data managed by
           work_id: Media ID
           x_spacing: X pixel spacing

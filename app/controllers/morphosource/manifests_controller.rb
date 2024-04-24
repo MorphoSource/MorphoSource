@@ -70,7 +70,7 @@ module Morphosource
       end
 
       def media_from_access_control(access_control_id)
-        Media.where(accessControl_ssim: access_control_id)&.first
+        SolrDocument.where({ "accessControl_ssim" => access_control_id, "has_model_ssim" => "Media" })&.first
       end
 
       def iiif_manifest_builder

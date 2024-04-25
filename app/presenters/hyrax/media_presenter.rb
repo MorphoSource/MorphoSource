@@ -81,15 +81,6 @@ module Hyrax
     ### MEDIA FIELDS AND METHODS ###
 
     #
-    # Generated media title
-    #
-    # @return [String] Generated title
-    #
-    def generated_title
-      return 'Media ' + id + ': ' + (part.present? ? part.join(", ").titleize : "Element Unspecified")
-    end
-
-    #
     # Media custom agreement attachment file (PDF, DOCX, or TXT) URL
     #
     # @return [Array<String>] Media custom agreement attachment file (PDF, DOCX, or TXT) URL

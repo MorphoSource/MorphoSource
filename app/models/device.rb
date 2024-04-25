@@ -37,8 +37,10 @@ class Device < Morphosource::Works::Base
 
   def update_organization_access
     # if the organization_id has changed, remove the old org groups
-    if ( attribute_changed?(:organization_id) &&
-         old_organization_id = attribute_was(:organization_id)&.first )
+    if (
+      attribute_changed?(:organization_id) &&
+      old_organization_id = attribute_was(:organization_id)&.first
+    )
       self.edit_groups -= ["#{old_organization_id}_managers", "#{old_organization_id}_editors"]
     end
     # add the current organization groups

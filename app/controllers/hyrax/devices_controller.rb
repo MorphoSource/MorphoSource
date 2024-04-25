@@ -7,8 +7,9 @@ module Hyrax
     include Hyrax::WorksControllerBehavior
     include Hyrax::ChildWorkRedirect
 
+    before_action :authorize_admin, only: [:new, :create, :show]
     before_action :find_organization, only: [:new, :create, :edit, :update]
-    before_action :authorize_admin, only: [:new, :create]
+    before_action :authorize_organization, only: [:new, :create, :update]
 
     self.curation_concern_type = ::Device
     with_themed_layout 'morphosource_1_column'
@@ -17,8 +18,8 @@ module Hyrax
     self.show_presenter = Hyrax::DevicePresenter
 
     def new
-      @curation_concern.visibility = 'open' # default all new devices to open
       @curation_concern.organization_id = assign_organization_id
+      @curation_concern.visibility = 'open' # default all new devices to open
       super
     end
 
@@ -37,8 +38,9 @@ module Hyrax
     end
 
     # for new device records when coming from an organization collection
+    # only admins are allowed to create devices without organizations
     def assign_organization_id
-      params["organization_id"].present? ? [params["organization_id"]] : []
+      @organization.present? ? [@organization.id] : []
     end
 
     def after_create_response
@@ -71,6 +73,18 @@ module Hyrax
 
     def authorize_admin
       redirect_to root_path and return unless current_user&.admin?
+    end
+
+    def authorize_organization
+      return true if current_user&.admin?
+      raise CanCan::AccessDenied unless organization_editor?
+    end
+
+    def organization_editor?
+      return false unless @organization.present?
+
+      organization_groups = ["#{@organization.id}_managers", "#{@organization.id}_editors"]
+     (organization_groups & current_user&.groups).any?
     end
   end
 end

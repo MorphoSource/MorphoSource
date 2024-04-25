@@ -14,27 +14,36 @@ module Morphosource
           if organization_id_changed?
             index_related(media)
           end
+        when Device
+          return unless Hyrax.config.index_related_works
+          if (
+            organization_id_changed? ||
+            title_changed? ||
+            creator_changed?
+          )
+            index_related(media)
+          end
         when ImagingEvent
           return unless Hyrax.config.index_related_works
           if ie_modality_changed?
             index_related(media)
           end
           if physical_object_id_changed?
-            old_objects = 
-              BiologicalSpecimen.where(related_media_ids_ssim: media.map(&:id)) + 
-              CulturalHeritageObject.where(related_media_ids_ssim: media.map(&:id)) - 
+            old_objects =
+              BiologicalSpecimen.where(related_media_ids_ssim: media.map(&:id)) +
+              CulturalHeritageObject.where(related_media_ids_ssim: media.map(&:id)) -
               objects
             index_related(media + objects + old_objects) # a bit inefficient but getting old values is a nightmare and order of index updates is important
           end
         when Media
           return unless Hyrax.config.index_related_works
           if (
-            visibility_changed? || 
+            visibility_changed? ||
             fileset_accessibility_changed? ||
             media_type_changed? ||
             keyword_changed? ||
             member_of_public_collection_ids_changed?
-          ) 
+          )
             index_related(objects)
           end
           if related_media_ids_changed?

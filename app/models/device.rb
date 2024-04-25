@@ -25,6 +25,14 @@ class Device < Morphosource::Works::Base
     organization_id.present? ? ActiveFedora::Base.find(organization_id.first) : member_of.select { |m| m.class == Organization || m.class == OrganizationCollection }&.first
   end
 
+  def media_docs
+    Morphosource::SolrService.new.get_docs("has_model_ssim:Media AND media_device_id_ssim:#{id}")
+  end
+
+  def media
+    Media.where("media_device_id_ssim" => id)
+  end
+
   private
 
   def update_organization_access

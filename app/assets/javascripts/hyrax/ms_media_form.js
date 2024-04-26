@@ -21,6 +21,13 @@ $( document ).ready(function() {
   if ( $('form[id*="edit_media"]').length ||
        $('form[id*="new_media"]').length ) {
 
+    $(document).on('change', 'input[name="media[part][]"]', function() {
+      setCustomTitlePlaceholder();
+    });
+    $(document).on('click', 'button.remove', function() {
+      setCustomTitlePlaceholder();
+    });
+
     IsImagingEventOK = false;
     IsProcessingEventOK = false;
 
@@ -156,6 +163,30 @@ $( document ).ready(function() {
       $(scaleBarGroup).hide(); // hide the field label and add button
 
     } // /setupScaleBar
+
+    function setCustomTitlePlaceholder() {
+//
+//need to set media id here
+//
+//<input type="hidden" name="media_id" id="media_id" value="000200280">
+
+
+      var id = "";
+      var mediaParts = $('input[name="media[part][]"]').map(function() {
+        return $(this).val();
+      }).toArray();
+      var joinedParts = mediaParts.join(', ');
+      if (joinedParts == '') {
+        joinedParts = "Element Unspecified";
+      } else {
+//        joinedParts = joinedParts.
+      }
+
+
+//      var title = 'Media ' + id + ': ' + (part.present? ? part.join(", ").titleize : "Element Unspecified")
+
+      $('#media_short_title').attr('placeholder', 'Media ' + id + ': ' + joinedParts);
+    }
 
     function adjust_form_media_type() {
       $('.media_type_block').hide();

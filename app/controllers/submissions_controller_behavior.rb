@@ -92,7 +92,7 @@ module SubmissionsControllerBehavior
       # Catch any device.organization_id relationships to null organization
       ( @devices_with_ids || {} ).select do |id, attributes|
         if attributes[:organization_id] == o.id
-          @null_organization[:devices] << id unless @null_organization[:devices].includes?(id)
+          @null_organization[:devices] << id unless @null_organization[:devices].include?(id)
         end
       end
     else

@@ -1,0 +1,39 @@
+apiVersion: v2
+appVersion: 5.0.0
+dependencies:
+- condition: fcrepo.enabled
+  name: fcrepo
+  repository: oci://ghcr.io/samvera
+  version: 2.0.0
+- condition: memcached.enabled
+  name: memcached
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 6.6.0
+- condition: minio.enabled
+  name: minio
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 12.8.0
+- condition: postgresql.enabled
+  name: postgresql
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 12.9.0
+- condition: redis.enabled
+  name: redis
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 17.16.0
+- condition: solr.enabled
+  name: solr
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 8.0.0
+- condition: nginx.enabled
+  name: nginx
+  repository: oci://registry-1.docker.io/bitnamicharts
+  version: 15.2.0
+- condition: fits.enabled
+  name: fits
+  repository: https://samvera-labs.github.io/fits-charts
+  version: 0.2.0
+description: An open-source, Samvera-powered digital repository system
+name: hyrax
+type: application
+version: 3.6.0

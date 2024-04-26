@@ -1,0 +1,211 @@
+apiVersion: v1
+entries:
+  fcrepo:
+  - apiVersion: v2
+    appVersion: 4.7.5
+    created: "2024-02-12T08:56:00.37807638-08:00"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: oci://registry-1.docker.io/bitnamicharts
+      version: 14.0.4
+    description: Fedora Commons Repository 4
+    digest: a2098c2a14918fb471380521749c1410be908afbd365ad64c7a6d92005c60481
+    name: fcrepo
+    type: application
+    urls:
+    - https://samvera-labs.github.io/fcrepo-charts/fcrepo-2.0.0.tgz
+    version: 2.0.0
+  - apiVersion: v2
+    appVersion: 4.7.5
+    created: "2024-02-12T08:56:00.37288665-08:00"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 9.3.3
+    description: Fedora Commons Repository 4
+    digest: 510e426344d737cbdaf38bdf51412e7bc0c5c03f082db8e95a795f78e331af7c
+    name: fcrepo
+    type: application
+    urls:
+    - https://samvera-labs.github.io/fcrepo-charts/fcrepo-0.8.1.tgz
+    version: 0.8.1
+  - apiVersion: v2
+    appVersion: 4.7.5
+    created: "2024-02-12T08:56:00.369847274-08:00"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 9.3.3
+    description: Fedora Commons Repository 4
+    digest: 84cc897a6eb864c33de0b6bcb12d5509589599eb3a28321cf93afa0ae0004504
+    name: fcrepo
+    type: application
+    urls:
+    - https://samvera-labs.github.io/fcrepo-charts/fcrepo-0.6.1.tgz
+    version: 0.6.1
+  - apiVersion: v2
+    appVersion: 4.7.5
+    created: "2024-02-12T08:56:00.367048167-08:00"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 9.3.3
+    description: Fedora Commons Repository 4
+    digest: a63880132731eba728a2938a7a7afc4b16c3e40095b98dae19daef16b1afb3f2
+    name: fcrepo
+    type: application
+    urls:
+    - https://samvera-labs.github.io/fcrepo-charts/fcrepo-0.6.0.tgz
+    version: 0.6.0
+  - apiVersion: v2
+    appVersion: 4.7.5
+    created: "2024-02-12T08:56:00.364073933-08:00"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 9.3.3
+    description: Fedora Commons Repository 4
+    digest: b75fb3f5b46d12ede7b0ec56e91b2fdde07ac5925f5ae0c60f438b7465bac3ba
+    name: fcrepo
+    type: application
+    urls:
+    - https://samvera-labs.github.io/fcrepo-charts/fcrepo-0.5.5.tgz
+    version: 0.5.5
+  - apiVersion: v2
+    appVersion: 4.7.5
+    created: "2024-02-12T08:56:00.361096213-08:00"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 9.3.3
+    description: Fedora Commons Repository 4
+    digest: 8d401c6e3ecdd0ebf47644ea8bad107462891ec0217565986febe2b6d12fd0cb
+    name: fcrepo
+    type: application
+    urls:
+    - https://samvera-labs.github.io/fcrepo-charts/fcrepo-0.5.4.tgz
+    version: 0.5.4
+  - apiVersion: v2
+    appVersion: 4.7.5
+    created: "2024-02-12T08:56:00.342794968-08:00"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 9.3.3
+    description: Fedora Commons Repository 4
+    digest: 320a005b0e1954b53d5e567c0fcfe20c1ebc7d683329f652b8a157e7d0a4878e
+    name: fcrepo
+    type: application
+    urls:
+    - https://samvera-labs.github.io/fcrepo-charts/fcrepo-0.5.3.tgz
+    version: 0.5.3
+  - apiVersion: v2
+    appVersion: 4.7.5
+    created: "2024-02-12T08:56:00.326437615-08:00"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 9.3.3
+    description: Fedora Commons Repository 4
+    digest: 12a6e54ae825d95451b35709dada3937e63d7581221faa5dde46bd121b5c61a8
+    name: fcrepo
+    type: application
+    urls:
+    - https://samvera-labs.github.io/fcrepo-charts/fcrepo-0.5.2.tgz
+    version: 0.5.2
+  - apiVersion: v2
+    appVersion: 4.7.5
+    created: "2024-02-12T08:56:00.31713599-08:00"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 9.3.3
+    description: Fedora Commons Repository 4
+    digest: 971444f3b23d7cb4c961b404838e3398f5b84465b661b4bf87bfefbb1990944e
+    name: fcrepo
+    type: application
+    urls:
+    - https://samvera-labs.github.io/fcrepo-charts/fcrepo-0.5.1.tgz
+    version: 0.5.1
+  - apiVersion: v2
+    appVersion: 4.7.5
+    created: "2024-02-12T08:56:00.312227845-08:00"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 9.3.3
+    description: Fedora Commons Repository 4
+    digest: 8eb263e7c994aee8ec890a13cc2e21e846bb12fe51d0de67faa1305817fed248
+    name: fcrepo
+    type: application
+    urls:
+    - https://samvera-labs.github.io/fcrepo-charts/fcrepo-0.5.0.tgz
+    version: 0.5.0
+  - apiVersion: v2
+    appVersion: "4.7"
+    created: "2024-02-12T08:56:00.307986635-08:00"
+    dependencies:
+    - condition: postgresql.enabled
+      name: postgresql
+      repository: https://charts.bitnami.com/bitnami
+      version: 9.3.3
+    description: Fedora Commons Repository 4
+    digest: d4f5bd00e6b6dd717af0d7da07875d36fd6dc905c614354c5a9fde1b30b5eecf
+    name: fcrepo
+    type: application
+    urls:
+    - https://samvera-labs.github.io/fcrepo-charts/fcrepo-0.4.1.tgz
+    version: 0.4.1
+  postgresql:
+  - annotations:
+      category: Database
+      images: |
+        - name: os-shell
+          image: docker.io/bitnami/os-shell:11-debian-11-r96
+        - name: postgres-exporter
+          image: docker.io/bitnami/postgres-exporter:0.15.0-debian-11-r9
+        - name: postgresql
+          image: docker.io/bitnami/postgresql:16.2.0-debian-11-r1
+      licenses: Apache-2.0
+    apiVersion: v2
+    appVersion: 16.2.0
+    created: "2024-02-12T08:56:00.384293739-08:00"
+    dependencies:
+    - name: common
+      repository: oci://registry-1.docker.io/bitnamicharts
+      tags:
+      - bitnami-common
+      version: 2.x.x
+    description: PostgreSQL (Postgres) is an open source object-relational database
+      known for reliability and data integrity. ACID-compliant, it supports foreign
+      keys, joins, views, triggers and stored procedures.
+    digest: 0934d1d9a2c8013bb33b0746beefcc1b33a22d2acd96445b14620870a1d0cda8
+    home: https://bitnami.com
+    icon: https://bitnami.com/assets/stacks/postgresql/img/postgresql-stack-220x234.png
+    keywords:
+    - postgresql
+    - postgres
+    - database
+    - sql
+    - replication
+    - cluster
+    maintainers:
+    - name: VMware, Inc.
+      url: https://github.com/bitnami/charts
+    name: postgresql
+    sources:
+    - https://github.com/bitnami/charts/tree/main/bitnami/postgresql
+    urls:
+    - https://samvera-labs.github.io/fcrepo-charts/charts/postgresql-14.0.4.tgz
+    version: 14.0.4
+generated: "2024-02-12T08:56:00.304777312-08:00"

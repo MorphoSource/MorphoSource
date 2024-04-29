@@ -1,8 +1,6 @@
+### MS BASE STAGE (ALL TARGETS START HERE) ###
 ARG RUBY_VERSION=2.7.4
 FROM ruby:$RUBY_VERSION-bullseye as msbase
-
-# ARG DATABASE_APK_PACKAGE="postgresql-dev"
-# ARG EXTRA_APK_PACKAGES="git"
 
 RUN apt update && \
   apt install -y \
@@ -17,11 +15,13 @@ RUN apt update && \
   $DATABASE_APK_PACKAGE \
   $EXTRA_APK_PACKAGES
 
-RUN addgroup --system --gid 501 app && \
-  adduser --system --gid 501 --uid 1001 --home /app app
+RUN adduser --system --gid 0 --uid 1001 --home /app app
 USER app
 
 RUN mkdir -p /app/samvera/hyrax-webapp
+# For K8s OpenShift, ensure all files and directories are readable and executable by group 0
+RUN chgrp -R 0 /app/samvera/hyrax-webapp && \
+    chmod -R g+rwX /app/samvera/hyrax-webapp
 WORKDIR /app/samvera/hyrax-webapp
 
 ENV PATH="/app/samvera/hyrax-webapp/bin:$PATH"
@@ -32,10 +32,12 @@ ENV RAILS_SERVE_STATIC_FILES="1"
 # RUN gem update bundler
 ENV BUNDLE_GEMFILE="./Gemfile"
 ENV BUNDLER_VERSION='2.0.2'
+ENV HOME="/app/samvera/hyrax-webapp"
 RUN gem install bundler -v 2.0.2
 
 ENTRYPOINT ["hyrax-entrypoint.sh"]
-CMD ["bundle", "exec", "puma", "-v", "-b", "tcp://0.0.0.0:3000"]
+CMD bundle && bundle exec puma -v -b tcp://0.0.0.0:3000
+# CMD ["bundle", "exec", "puma", "-v", "-b", "tcp://0.0.0.0:3000"]
 
 ### MS TOOLS STAGE ###
 FROM msbase as mstools
@@ -155,10 +157,16 @@ FROM msbase as morphosource
 ARG APP_PATH=.
 ARG BUNDLE_WITHOUT
 
-COPY --chown=1001:501 $APP_PATH/Gemfile /app/samvera/hyrax-webapp/Gemfile
-COPY --chown=1001:501 $APP_PATH/Gemfile.lock /app/samvera/hyrax-webapp/Gemfile.lock
+COPY --chown=1001:0 $APP_PATH/Gemfile /app/samvera/hyrax-webapp/Gemfile
+COPY --chown=1001:0 $APP_PATH/Gemfile.lock /app/samvera/hyrax-webapp/Gemfile.lock
 RUN bundle install --jobs "$(nproc)"
 # RUN RAILS_ENV=production SECRET_KEY_BASE=`bin/rake secret` DB_ADAPTER=nulldb DATABASE_URL='postgresql://fake' bundle exec rails assets:precompile
 # TODO enable production if necessary
 
-COPY --chown=1001:501 $APP_PATH /app/samvera/hyrax-webapp
+COPY --chown=1001:0 $APP_PATH /app/samvera/hyrax-webapp
+
+# Set directories as executable for writeability
+RUN chmod -R g+rwX /app/samvera/hyrax-webapp/tmp
+RUN chmod -R g+rwX /app/samvera/hyrax-webapp/log
+RUN chmod -R g+rwX /app/samvera/hyrax-webapp/uploads
+RUN chmod -R g+rwX /app/samvera/hyrax-webapp/derivatives

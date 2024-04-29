@@ -5,10 +5,13 @@
 replicaCount: 1
 
 image:
-  repository: ghcr.io/samvera/hyrax/dassie
+  repository: docker.io/juliewinchester/morphosource
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: ""
+  tag: "0.0.1"
+
+imagePullSecrets:
+  - name: dockerregcred
 
 # use true to skip loading Hyrax engine database seed file
 skipHyraxEngineSeed: false
@@ -128,7 +131,6 @@ leaseRelease:
   enabled: true
   schedule: "0 0 * * *"
 
-imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
 

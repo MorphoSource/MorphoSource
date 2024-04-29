@@ -21,6 +21,7 @@ $( document ).ready(function() {
   if ( $('form[id*="edit_media"]').length ||
        $('form[id*="new_media"]').length ) {
 
+    setCustomTitlePlaceholder();
     $(document).on('change', 'input[name="media[part][]"]', function() {
       setCustomTitlePlaceholder();
     });
@@ -165,27 +166,21 @@ $( document ).ready(function() {
     } // /setupScaleBar
 
     function setCustomTitlePlaceholder() {
-//
-//need to set media id here
-//
-//<input type="hidden" name="media_id" id="media_id" value="000200280">
-
-
-      var id = "";
-      var mediaParts = $('input[name="media[part][]"]').map(function() {
+      if ($('form[id*="edit_media"]').length) {
+        var id = $('#media_id').val();
+      } else {
+        var id = "<ID>";
+      }
+      var parts = $('input[name="media[part][]"]').map(function() {
         return $(this).val();
       }).toArray();
-      var joinedParts = mediaParts.join(', ');
-      if (joinedParts == '') {
-        joinedParts = "Element Unspecified";
+      var partsTitle = parts.join(', ');
+      if (partsTitle == '') {
+        partsTitle = "Element Unspecified";
       } else {
-//        joinedParts = joinedParts.
+        partsTitle = toTitleCase(partsTitle);
       }
-
-
-//      var title = 'Media ' + id + ': ' + (part.present? ? part.join(", ").titleize : "Element Unspecified")
-
-      $('#media_short_title').attr('placeholder', 'Media ' + id + ': ' + joinedParts);
+      $('#media_short_title').attr('placeholder', 'Media ' + id + ': ' + partsTitle);
     }
 
     function adjust_form_media_type() {

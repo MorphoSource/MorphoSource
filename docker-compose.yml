@@ -183,7 +183,7 @@ services:
       - "solr-precreate hydra-development /core_config"
     volumes:
       - solr_home:/opt/solr/server/solr/mycores
-      - ./solr/config:/core_config/conf
+      - ./solr/conf:/core_config/conf
     networks:
       - morphosource
 

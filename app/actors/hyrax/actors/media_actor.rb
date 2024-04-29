@@ -10,9 +10,7 @@ module Hyrax
         env.attributes['title'] = [ generated_title(env) ]
         env.attributes['keyword'] = split_keywords(env)
         add_team_access(env)
-        apply_creation_data_to_curation_concern(env)
-        apply_save_data_to_curation_concern(env)
-        save(env) && update_title(env) && next_actor.create(env) && run_callbacks(:after_create_concern, env)
+        super
       end
 
       def update(env)

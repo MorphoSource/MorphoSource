@@ -4,7 +4,7 @@ class Media < Morphosource::Works::Base
   include Morphosource::PersistentIdentifiersBehavior
   validates_with Morphosource::ParentChildValidator
   before_create :controlled_value_filter, :date_filter
-  after_create :mint_ark
+  after_create :mint_ark, :add_id_to_title
   before_update :record_original_member_of_public_collection_ids, :record_original_related_media_ids, :controlled_value_filter, :date_filter
   before_validation :normalize_download_reviewer
   after_update :update_ark_status, :update_cartitem_reviewer, :check_for_organization_transfer
@@ -550,9 +550,8 @@ class Media < Morphosource::Works::Base
   private
 
     def add_id_to_title
-      unless self.title && self.id && self.title.first.to_s.start_with?("M#{self.id.to_s}: ")
-        self.title.set("M#{self.id.to_s}: #{self.title.first.to_s}")
-      end
+      new_title = self.title.first.gsub(/Media :/, "Media #{self.id}:") 
+      self.update(title: [new_title])
     end
 
     def prevent_doi_deletion

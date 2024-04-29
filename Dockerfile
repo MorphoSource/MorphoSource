@@ -12,6 +12,7 @@ RUN apt update && \
   perl \
   tzdata \
   yarnpkg \
+  zip \
   $DATABASE_APK_PACKAGE \
   $EXTRA_APK_PACKAGES
 
@@ -166,7 +167,4 @@ RUN bundle install --jobs "$(nproc)"
 COPY --chown=1001:0 $APP_PATH /app/samvera/hyrax-webapp
 
 # Set directories as executable for writeability
-RUN chmod -R g+rwX /app/samvera/hyrax-webapp/tmp
-RUN chmod -R g+rwX /app/samvera/hyrax-webapp/log
-RUN chmod -R g+rwX /app/samvera/hyrax-webapp/uploads
-RUN chmod -R g+rwX /app/samvera/hyrax-webapp/derivatives
+RUN chmod -R g+rwX /app/samvera/hyrax-webapp

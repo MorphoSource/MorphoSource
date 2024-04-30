@@ -49,7 +49,7 @@ module Hyrax
       curation_concern.update_index if curation_concern.id.present?
       respond_to do |wants|
         wants.html do
-          flash[:notice] = view_context.t('hyrax.works.create.after_create_html', application_name: view_context.application_name)
+          flash[:notice] = t('hyrax.devices.create.after_create_html', device_name: "#{curation_concern.creator.first} #{curation_concern.title.first}")
           if @organization.present? && @organization.organization_collection?
             redirect_to main_app.organization_devices_path(@organization)
           else

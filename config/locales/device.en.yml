@@ -7,6 +7,8 @@ en:
         description:        "Device works"
         name:               "Device"
     devices:
+      create:
+        after_create_html: 'A new device: %{device_name} has been added to your organization.'
       form_parent_work_relationships:
           actions:
             remove: Remove from this work

@@ -20,10 +20,10 @@ module Morphosource
 
       can :create, ProxyDepositRequest if (Flipflop.proxy_deposit? || Flipflop.transfer_works?) && registered_user?
 
-      can :accept, ProxyDepositRequest, receiving_user_id: current_user.id, status: 'pending'
-      can :reject, ProxyDepositRequest, receiving_user_id: current_user.id, status: 'pending'
+      can :accept, ProxyDepositRequest, receiving_user_id: current_user.id.to_s, status: 'pending'
+      can :reject, ProxyDepositRequest, receiving_user_id: current_user.id.to_s, status: 'pending'
       # a user who sent a proxy deposit request can cancel it if it's pending.
-      can :destroy, ProxyDepositRequest, sending_user_id: current_user.id, status: 'pending'
+      can :destroy, ProxyDepositRequest, sending_user_id: current_user.id.to_s, status: 'pending'
 
       return unless admin?
         can :accept, ProxyDepositRequest

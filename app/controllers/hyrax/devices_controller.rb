@@ -86,7 +86,7 @@ module Hyrax
       return false unless @organization.present?
 
       organization_groups = ["#{@organization.id}_managers", "#{@organization.id}_editors"]
-     (organization_groups & current_user&.groups).any?
+      (organization_groups & current_user&.groups).any?
     end
   end
 end

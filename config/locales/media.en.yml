@@ -173,11 +173,12 @@ en:
   transfer:
     media:
       header: Transfer Media Ownership
-      description: Use this form to request transfer of the media to another user.  After receiving a transfer request, the recipient will have options to retain or remove your access to the media.
+      description: Use this form to request transfer of the media to another user or organization.  After receiving a transfer request, the recipient will have options to retain or remove your access to the media.
       transfer_to:
-        label: 'Select a user for transfering the media ownership to:'
-        confirm: Are you sure you want to transfer ownership of this media to another user?  Click Ok to transfer or Cancel to return to the transfer screen.
+        label: 'Select a user or organization for transferring the media ownership to:'
+        placeholder: 'Search for a user or organization'
+        confirm: Are you sure you want to transfer ownership of this media to another user or organization?  Click Ok to transfer or Cancel to return to the transfer screen.
       comment:
-        label: 'Comment to be sent to the user:'
+        label: 'Comment to be sent to the user or organization:'
   value_null:
     part: "Element unspecified"

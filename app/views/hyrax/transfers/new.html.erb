@@ -1,13 +1,11 @@
 <div class="col-sm-12">
   <div class="content-block">
-		<% byebug %>
 		<h2><%= t('transfer.media.header') %></h2>
 		<span class="sr-only"><%= t(:'.sr_only_description', work_title: @proxy_deposit_request.to_s) %></span>
 		<%= simple_form_for @proxy_deposit_request,
 		             url: hyrax.work_transfers_path(@work) do |f| %>
 			<p><%= t('transfer.media.description') %></p>
-		  <%= f.input :transfer_to, label: t('transfer.media.transfer_to.label'),
-		        placeholder: t(:'.placeholder') %>
+		  <%= f.input :transfer_to, label: t('transfer.media.transfer_to.label'), placeholder: t('transfer.media.transfer_to.placeholder') %>
 		  <%= f.input :sender_comment, label:  t('transfer.media.comment.label')%>
 
 		  <div class="form-actions">

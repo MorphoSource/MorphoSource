@@ -5,7 +5,7 @@
   $.fn.dataManagerSearch = function() {
     return this.each(function() {
       $(this).select2( {
-        placeholder: $(this).attr("value") || "Search for a user or organization",
+        placeholder: "Search for a user or organization",
         minimumInputLength: 2,
         id: function(object) {
           return object.user_key;

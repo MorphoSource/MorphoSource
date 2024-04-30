@@ -66,7 +66,7 @@ module Hyrax
           if @organization.present? && @organization.organization_collection?
             redirect_to main_app.organization_devices_path(@organization)
           else
-            redirect_to [main_app, curation_concern], notice: "Work \"#{curation_concern}\" successfully updated."
+            redirect_to [main_app, curation_concern], notice: "Device \"#{curation_concern}\" successfully updated."
           end
         end
         wants.json { render :show, status: :ok, location: polymorphic_path([main_app, curation_concern]) }

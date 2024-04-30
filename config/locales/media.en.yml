@@ -56,22 +56,22 @@ en:
         name:               "Media"
   showcase:
     sections:
-      collections: 
+      collections:
         content:
           none: No collections found.
         labels:
           base: In Collections
       preview: Media Display
-      related_media: 
+      related_media:
         content:
           none: No related media found.
         hints:
           base: Media produced from the same original imaging that created Media %{id} (this media). Includes all media associated with this media through an imaging and processing workflow.
           top_parent: The first media in the imaging and processing workflow that produced Media %{id} (this media). The media closest to what was produced from original imaging or the media with the least amount of derived processing.
-          direct_parent: The media that was processed to create Media %{id} (this media). The media immediately preceding this media in the imaging and processing workflow. 
+          direct_parent: The media that was processed to create Media %{id} (this media). The media immediately preceding this media in the imaging and processing workflow.
           top_direct_parent: The media that was processed to create Media %{id} (this media). The media immediately preceding this media in the imaging and processing workflow. Also the media closest to what was produced from original imaging or the media with the least amount of derived processing.
           child: Derived media that were created from processing Media %{id} (this media). The media immediately below this media in the imaging and processing workflow.
-          other: Other media associated with the original imaging that produced Media %{id} (this media) excluding those listed above. For example, could include derived media produced from children of this media (grandchildren) or other derived media produced from the top parent of this media (sibling or cousin). 
+          other: Other media associated with the original imaging that produced Media %{id} (this media) excluding those listed above. For example, could include derived media produced from children of this media (grandchildren) or other derived media produced from the top parent of this media (sibling or cousin).
         labels:
           base: Related Media (%{num})
           top_parent: Parent Media (Top)
@@ -84,7 +84,7 @@ en:
           none: No tags found.
         labels:
           base: Tags
-      
+
   simple_form:
     labels:
       media:
@@ -137,7 +137,7 @@ en:
         file_size: Size of uploaded file
         file_types: File format of uploaded file and, if file is an archive, one or more identified media files within archive
         funding: Grants, organizations, or individuals who funded creation of Media
-        has_uv_space: Whether or not a mapping exists to project a 3D object's surface to a 2D image for texture mapping and is present with the 3D object 
+        has_uv_space: Whether or not a mapping exists to project a 3D object's surface to a 2D image for texture mapping and is present with the 3D object
         human_readable_media_type: &human_readable_media_type Type, nature, or classification of Media, the general or high-level type of all file data
         identifier: Identifier for Media applied by an external non-MorphoSource entity, such an ARK, DOI, GUID, or other identifier format
         image_height: Height in pixels and/or number of rows of image data
@@ -170,5 +170,14 @@ en:
         x_spacing: The distance from the center of one pixel to the center of an adjacent pixel on the X axis
         y_spacing: The distance from the center of one pixel to the center of an adjacent pixel on the Y axis
         z_spacing: The distance between adjacent slices, measured from center to center on the Z axis
+  transfer:
+    media:
+      header: Transfer Media Ownership
+      description: Use this form to request transfer of the media to another user.  After receiving a transfer request, the recipient will have options to retain or remove your access to the media.
+      transfer_to:
+        label: 'Select a user for transfering the media ownership to:'
+        confirm: Are you sure you want to transfer ownership of this media to another user?  Click Ok to transfer or Cancel to return to the transfer screen.
+      comment:
+        label: 'Comment to be sent to the user:'
   value_null:
     part: "Element unspecified"

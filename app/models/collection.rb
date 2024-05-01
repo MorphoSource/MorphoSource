@@ -300,6 +300,10 @@ class Collection < ActiveFedora::Base
     where(arg, *args).take
   end
 
+  def can_manage_devices?
+    false
+  end
+
   private
 
     def add_depositor_to_managers

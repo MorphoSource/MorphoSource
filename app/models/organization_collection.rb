@@ -98,6 +98,10 @@ class OrganizationCollection < Collection
     "OrganizationCollection"
   end
 
+  def can_manage_devices?
+    organization_type&.first&.include?("Scanning Facility") || false
+  end
+
   private
 
   def create_organization_project

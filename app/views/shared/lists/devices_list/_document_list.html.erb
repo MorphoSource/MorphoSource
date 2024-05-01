@@ -10,9 +10,16 @@
     <th>Total Imaging Events</th>
     <th>Total Media</th>
     <th>Date Added</th>
+    <% if @current_user&.can? :edit, @collection %>
+      <th></th>
+    <% end %>
   </tr>
   </thead>
   <tbody>
-    <%= render partial: 'shared/lists/devices_list/document_list_row', collection: @document_list, as: :document %>
+    <% if @current_user&.can? :edit, @collection %>
+      <%= render partial: 'shared/lists/devices_list/edit_document_list_row', collection: @document_list, as: :document %>
+    <% else %>
+      <%= render partial: 'shared/lists/devices_list/document_list_row', collection: @document_list, as: :document %>
+    <% end %>
   </tbody>
 </table>

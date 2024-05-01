@@ -7,9 +7,12 @@ en:
         description:        "Device works"
         name:               "Device"
     devices:
+      create:
+        after_create_html: 'A new device: %{device_name} has been added to your organization.'
       form_parent_work_relationships:
           actions:
             remove: Remove from this work
+            add: Add to Organization
           attach_new_work: Deposit new work as child of this work
           caption: This device currently belongs to these organizations
           confirm:
@@ -24,4 +27,12 @@ en:
       device:
         title: Model
         creator: Manufacturer
+        description: Description
+        modality: Modality
+    hints:
+      device:
+        title: "The model of the device. Example: D800"
+        creator: "The manufacturer of the device. Example: Nikon"
+        description: "A description or notes about the device."
+        modality: "The modality of the device. A device may have more than one modality."
 

@@ -52,7 +52,42 @@ module Hyrax
           else
             part = env.curation_concern.part.presence || ''
           end
-          return 'Media ' + id + ': ' + (part.present? ? part.join(", ").titleize : "Element Unspecified")
+
+          if attrs.key?('media_type')
+            media_type = attrs['media_type']&.first.presence || ''
+          else
+            media_type = env.curation_concern.media_type&.first.presence || ''
+          end
+
+          # get the modality from the parent imaging event
+          ie_modality = []
+
+          if attrs['work_parents_attributes'].present?
+            # Adding or changing parents
+            attrs['work_parents_attributes'].each do |key, wp|
+              work_parent = Morphosource::Works::Base.find(wp['id'])
+              if work_parent.class.to_s == 'ImagingEvent'
+                ie_modality << work_parent.ie_modality&.first
+              elsif work_parent.class.to_s == 'ProcessingEvent'
+                ie = work_parent.imaging_event
+                ie_modality << ie.ie_modality&.first if ie.present?
+              end
+            end
+          elsif id.present? && Media.exists?(id)
+            # Updating work, not updating parents
+            imaging_event = Media.find(id).imaging_event
+            ie_modality << imaging_event.ie_modality&.first if imaging_event.present?
+          else
+            ie_modality = []
+          end
+
+          # Final formatting and backup values
+          parts = part.presence || ['Element unspecified']
+          modality_abbrevs = ie_modality.map { |m| Morphosource::ModalitiesService.abbreviation(m) }
+
+          parts.sort.join(', ').titleize +
+            (media_type.presence ? ' [' + media_type.to_s + ']' : '') +
+            (modality_abbrevs.presence ? ' [' + modality_abbrevs.join('/')+ ']' : ' [Etc]')
         end
       end
 

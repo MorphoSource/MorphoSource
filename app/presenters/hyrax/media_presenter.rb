@@ -81,6 +81,19 @@ module Hyrax
     ### MEDIA FIELDS AND METHODS ###
 
     #
+    # Generated media title
+    #
+    # @return [String] Generated title
+    #
+    def generated_title
+      if solr_document.short_title.present?
+        return 'Media ' + id + ': ' + solr_document.title.first
+      else
+        return 'Media ' + id + ': ' + (part.present? ? part.join(", ").titleize : "Element Unspecified")
+      end
+    end
+
+    #
     # Media custom agreement attachment file (PDF, DOCX, or TXT) URL
     #
     # @return [Array<String>] Media custom agreement attachment file (PDF, DOCX, or TXT) URL

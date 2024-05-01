@@ -231,6 +231,8 @@ RSpec.describe Hyrax::Actors::MediaActor do
     end
 
     describe 'one modality' do
+
+
       describe 'no part' do
         let(:attrs) { { 'part' => [], 'work_parents_attributes' => [ work_parents_attributes.first ] } }
         let(:expected_title) { "Element Unspecified [#{modality_labels.first}]" }
@@ -246,6 +248,22 @@ RSpec.describe Hyrax::Actors::MediaActor do
         let(:attrs) { { 'work_parents_attributes' => [ work_parents_attributes.first ],
                         'part' => part_attr } }
         let(:expected_title) { "#{part_attr.sort.join(', ').titleize} [#{modality_labels.first}]"}
+        specify { expect(subject.generated_title(env)).to eq(expected_title)}
+      end
+      describe 'custom title, case sensitive not checked' do
+        let(:attrs) { { 'work_parents_attributes' => [ work_parents_attributes.first ],
+                        'part' => [ part_attr.first ],
+                        'short_title' => ['custom Title ABC'],
+                        'custom_title_case_sensitive' => ['0'] } }
+        let(:expected_title) { "#{attrs['short_title'].first.titleize}"}
+        specify { expect(subject.generated_title(env)).to eq(expected_title)}
+      end
+      describe 'custom title, case sensitive checked' do
+        let(:attrs) { { 'work_parents_attributes' => [ work_parents_attributes.first ],
+                        'part' => [ part_attr.first ],
+                        'short_title' => ['custom Title ABC'],
+                        'custom_title_case_sensitive' => ['1'] } }
+        let(:expected_title) { "#{attrs['short_title'].first}"}
         specify { expect(subject.generated_title(env)).to eq(expected_title)}
       end
     end

@@ -6,8 +6,8 @@ document.addEventListener("share-tab-loaded", function(event) {
 
   $('#btn-transfer-submit').click(function() {
     if (transferToSelect.val().length == 0) {
-      alert('Please select a user');
-    } else if (confirm('Are you sure you want to transfer ownership of this work to another user? Click Ok to transfer or Cancel to return to the transfer screen')) {
+      alert('Please select a user or organization');
+    } else if (confirm('Are you sure you want to transfer ownership of this work to another user or organization? Click Ok to transfer or Cancel to return to the transfer screen')) {
         disablePage();
         $('#new_proxy_deposit_request').submit();
     }

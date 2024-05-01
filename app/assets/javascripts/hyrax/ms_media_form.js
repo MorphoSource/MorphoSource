@@ -28,6 +28,9 @@ $( document ).ready(function() {
     $(document).on('click', 'button.remove', function() {
       setCustomTitlePlaceholder();
     });
+    $(document).on('change', 'select#imaging_event_ie_modality', function() {
+      setCustomTitlePlaceholder();
+    });
 
     IsImagingEventOK = false;
     IsProcessingEventOK = false;
@@ -79,6 +82,7 @@ $( document ).ready(function() {
 
     $(document).on('change', '#media_media_type', function() {
       adjust_form_media_type();
+      setCustomTitlePlaceholder();
     });
 
     setMediaLocalRemoteEvent();
@@ -166,21 +170,27 @@ $( document ).ready(function() {
     } // /setupScaleBar
 
     function setCustomTitlePlaceholder() {
-      if ($('form[id*="edit_media"]').length) {
-        var id = $('#media_id').val();
-      } else {
-        var id = "<ID>";
-      }
       var parts = $('input[name="media[part][]"]').map(function() {
         return $(this).val();
       }).toArray();
-      var partsTitle = parts.join(', ');
-      if (partsTitle == '') {
-        partsTitle = "Element Unspecified";
+      var title = parts.join(', ');
+      if (title == '') {
+        title = "Element Unspecified";
       } else {
-        partsTitle = toTitleCase(partsTitle);
+        title = toTitleCase(title);
       }
-      $('#media_short_title').attr('placeholder', 'Media ' + id + ': ' + partsTitle);
+      var mediaTypeSelect = $('#media_media_type');
+      if (mediaTypeSelect.length) {
+        title += ' [' + mediaTypeSelect.val() + ']';
+      }
+      var modalitySelect = $('#imaging_event_ie_modality'); // from the select input when IE is editable
+      var modalityDiv = $('.ie_modality_value'); // from the hidden div when IE is not editable
+      if (modalityDiv.length) {
+        title += ' [' + modalityAbbrev(modalityDiv.text()) + ']';
+      } else if (modalitySelect.length) {
+        title += ' [' + modalityAbbrev(modalitySelect.val()) + ']';
+      }
+      $('#media_short_title').attr('placeholder', title);
     }
 
     function adjust_form_media_type() {

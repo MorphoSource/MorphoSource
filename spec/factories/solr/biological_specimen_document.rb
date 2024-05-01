@@ -19,7 +19,7 @@ BIOLOGICAL_SPECIMEN_DOC_ATTRIBUTES = {
 
 FactoryBot.define do
   factory :biological_specimen_document, class: "SolrDocument" do
-    initialize_with { new(BIOLOGICAL_SPECIMEN_DOC_ATTRIBUTES) }
+    initialize_with { new(BIOLOGICAL_SPECIMEN_DOC_ATTRIBUTES.merge(attributes)) }
     to_create { |instance| ActiveFedora::SolrService.add(instance.to_h, softCommit: true)}
   end
 end

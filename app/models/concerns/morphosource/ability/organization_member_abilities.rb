@@ -1,6 +1,8 @@
 module Morphosource
   module Ability
     module OrganizationMemberAbilities
+      include PhysicalObjects
+
       # View Media and FileSets through organization membership
       def organization_member_abilities
 
@@ -20,12 +22,22 @@ module Morphosource
           has_organizational_edit_access_to_fileset? obj
         end
 
+        can :read, [::BiologicalSpecimen, ::CulturalHeritageObject] do |obj|
+          has_organizational_access_to_physical_object? obj
+        end
+
+        can :edit, [::BiologicalSpecimen, ::CulturalHeritageObject] do |obj|
+          has_organizational_edit_access_to_physical_object? obj
+        end
+
         can :read, ::SolrDocument do |obj|
           case obj.has_model&.first
           when 'Media'
             has_organizational_access_to_media? obj
           when 'FileSet'
             has_organizational_access_to_fileset? obj
+          when 'BiologicalSpecimen', 'CulturalHeritageObject'
+            has_organizational_access_to_physical_object? obj
           else
             false
           end
@@ -37,6 +49,8 @@ module Morphosource
             has_organizational_edit_access_to_media? obj
           when 'FileSet'
             has_organizational_edit_access_to_fileset? obj
+          when 'BiologicalSpecimen', 'CulturalHeritageObject'
+            has_organizational_edit_access_to_physical_object? obj
           else
             false
           end
@@ -162,9 +176,7 @@ module Morphosource
 
       def solr_document(obj)
         case obj
-        when FileSet
-          return SolrDocument.find(obj.id)
-        when Media
+        when FileSet, Media, BiologicalSpecimen, CulturalHeritageObject
           return SolrDocument.find(obj.id)
         when SolrDocument
           return obj

@@ -54,7 +54,11 @@ provide :page_title, construct_page_title(@presenter.title)
 
     <div class="col-xs-12 col-sm-4 col-md-4 btn-wrapper">
     <% if can?(:edit, @presenter.solr_document) %>
-      <%= render 'collection_manage_buttons' %>
+      <% if @collection.organization_collection? %>
+        <%= render 'morphosource/collections/organization_collections/about/collection_manage_buttons' %>
+      <% else %>
+        <%= render 'collection_manage_buttons' %>
+      <% end %>
     <% end %>
   </div>
 

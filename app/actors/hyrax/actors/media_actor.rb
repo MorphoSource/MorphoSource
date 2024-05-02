@@ -20,15 +20,6 @@ module Hyrax
         super
       end
 
-      def update_title(env)
-        # update title with generated title after media is created (when media ID is available)
-        if env.curation_concern.title != [ generated_title(env) ]
-          env.curation_concern.title = [ generated_title(env) ]
-          env.curation_concern.save
-        end
-        return true
-      end
-
       def generated_title(env)
         attrs = env.attributes
         if attrs.key?('short_title') && (short_title = attrs['short_title']).present?

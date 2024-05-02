@@ -230,7 +230,7 @@ class User < ApplicationRecord
         if org.can_submit_remote_files? && org.allowed_remote_source.present?
           domains[id] = org.allowed_remote_source
         end
-      elsif (c = Collection.where(id: id)&.first).present? 
+      elsif (c = Collection.where(id: id)&.first).present?
         if c.team? && c.organization.present?
           if c.can_submit_remote_files? && c.allowed_remote_source.present?
             domains[id] = c.allowed_remote_source
@@ -394,6 +394,15 @@ class User < ApplicationRecord
 
   def viewer_groups
     groups.select{|g| g.include?("_viewers")}
+  end
+
+  def collections_managed_solr
+    filter = ["(id:(#{self.collections_managed_ids.join(' OR ')}))"]
+    Morphosource::SolrService.new.get_docs('', fq: filter)
+  end
+
+  def organizations_managed_solr
+    collections_managed_solr.select{|doc| doc['has_model_ssim'] == ['OrganizationCollection']}
   end
 
   private

@@ -10,7 +10,10 @@
     </div>
   </div>
   <div id="media-ownership-fields">
-    
+
+    <%= render_edit_field_partial('owner', f: f) %>
+
+
     <div class="mb-2">
       <div class="row media_download_permission">
         <div class="col-xs-6 showcase-label">
@@ -63,7 +66,7 @@
       <%= render_edit_field_partial('rights_statement', f: f) %>
       <%= render_edit_field_partial('license', f: f) %>
     </div>
-    
+
     <div class="mb-2">
       <%= render_edit_field_partial('morphosource_use_agreement_type', f: f) %>
       <%= render_edit_field_partial('permits_commercial_use', f: f) %>

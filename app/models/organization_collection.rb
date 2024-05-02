@@ -6,9 +6,6 @@ class OrganizationCollection < Collection
   include Morphosource::OrganizationBehavior
   include Morphosource::PersistentIdentifiersBehavior
 
-  has_many :proxy_deposit_requests, as: :receiving_user
-  has_many :proxy_deposit_requests, as: :sending_user
-
   before_save :convert_media_ownership_transfer
   after_create :create_collection_groups
   after_create :create_organization_project

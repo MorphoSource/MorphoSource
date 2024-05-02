@@ -111,7 +111,8 @@ module Morphosource
 
       # return either the user ms_id or the organization collection id
       def user_with_ownership
-        User.find_by(ms_id: owner)&.ms_id || SolrDocument.where("id" => owner)&.first&.id || depositor
+        return depositor unless owner.present? 
+        User.find_by(ms_id: owner)&.ms_id || SolrDocument.where("id" => owner)&.first&.id
       end
 
       def attachment(field_name)

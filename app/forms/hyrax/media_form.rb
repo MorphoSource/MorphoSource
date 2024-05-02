@@ -53,6 +53,7 @@ module Hyrax
       :member_of_collection_ids,
       :admin_set_id,
       # permissions
+      :owner,
       :download_reviewer,
       :agreement_uri,
       :license,

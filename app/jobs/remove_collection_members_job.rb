@@ -1,4 +1,4 @@
-class AddCollectionMembersJob < Hyrax::ApplicationJob
+class RemoveCollectionMembersJob < Hyrax::ApplicationJob
   queue_as Hyrax.config.update_medium_queue_name
 
   # @param [String] collection_id ID string of collection
@@ -16,10 +16,10 @@ class AddCollectionMembersJob < Hyrax::ApplicationJob
 
     if member_ids.count > 1
       member_ids.each do |member_id|
-        AddCollectionMembersJob.perform_later(collection_id, member_id)
+        RemoveCollectionMembersJob.perform_later(collection_id, member_id)
       end
     else
-      c.add_member_objects member_ids
+      c.remove_member_objects member_ids
     end
   end
 end

@@ -1,21 +1,22 @@
 module Morphosource
   module Works
     module IndexRelatedWorks
+      attr_accessor :skip_index_related_works # disable related work indexing per object
 
       def index_related_works
         case self
         when BiologicalSpecimen
-          return unless Hyrax.config.index_related_works
+          return unless do_index_related?
           if organization_id_changed? || taxonomy_id_changed?
             index_related(media)
           end
         when CulturalHeritageObject
-          return unless Hyrax.config.index_related_works
+          return unless do_index_related?
           if organization_id_changed?
             index_related(media)
           end
         when Device
-          return unless Hyrax.config.index_related_works
+          return unless do_index_related?
           if (
             organization_id_changed? ||
             title_changed? ||
@@ -24,7 +25,7 @@ module Morphosource
             index_related(media)
           end
         when ImagingEvent
-          return unless Hyrax.config.index_related_works
+          return unless do_index_related?
           if ie_modality_changed?
             index_related(media)
           end
@@ -36,7 +37,7 @@ module Morphosource
             index_related(media + objects + old_objects) # a bit inefficient but getting old values is a nightmare and order of index updates is important
           end
         when Media
-          return unless Hyrax.config.index_related_works
+          return unless do_index_related?
           if (
             visibility_changed? ||
             fileset_accessibility_changed? ||
@@ -65,13 +66,17 @@ module Morphosource
             index_related_collections(team&.child_projects)
           end
         when Taxonomy
-          return unless Hyrax.config.index_related_works
+          return unless do_index_related?
           index_related(objects)
           index_related(media)
         end
       end
 
       private
+
+        def do_index_related?
+          Hyrax.config.index_related_works && !skip_index_related_works
+        end
 
         def index_related(works)
           return if works.blank? || works.first.blank?

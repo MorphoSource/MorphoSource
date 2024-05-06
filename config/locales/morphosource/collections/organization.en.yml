@@ -53,3 +53,6 @@ en:
           about:
             label: ABOUT
             hint: Further information about this organization
+        subcollections:
+          header:
+            title: organization projects

@@ -104,7 +104,7 @@ RSpec.describe Morphosource::Collections::OrganizationCollections::DevicesContro
   end
 
   describe 'media_count_search_builder_class' do
-    it {expect(subject.media_count_search_builder_class).to eq(Morphosource::Collections::OrganizationCollections::DeviceMediaSearchBuilder) }
+    it {expect(subject.media_count_search_builder_class).to eq(Morphosource::Collections::OrganizationCollections::OrganizationMediaSearchBuilder) }
   end
 
   describe 'presenter_class' do

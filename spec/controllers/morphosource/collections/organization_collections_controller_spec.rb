@@ -16,7 +16,7 @@ RSpec.describe Morphosource::Collections::OrganizationCollectionsController, typ
   end
 
   describe 'collection access' do
-    let(:depositor)     { User.create(email: 'depositor@email.com', password: 'password') }
+    let(:depositor)     { FactoryBot.create(:contributor) }
     let!(:organization) { FactoryBot.create(:organization_collection, visibility: 'open', depositor: depositor.ms_id) }
 
     before do
@@ -25,55 +25,8 @@ RSpec.describe Morphosource::Collections::OrganizationCollectionsController, typ
       Morphosource::Collections::PermissionsCreateService.create_default(collection: organization)
     end
 
-    # TODO: Remove admin-only restriction tests when organization collections go live on production
-    describe 'temporary admin-only restriction' do
-      let(:params)  { { id: organization.id } }
-
-      context 'user is an admin' do
-        let(:user) { FactoryBot.create(:admin) }
-
-        it 'responds with a 200' do
-          get :show, params: params
-          expect(response.status).to eq(200)
-          get :about, params: params
-          expect(response.status).to eq(200)
-          get :media_export, params: params, format: :csv
-          expect(response.status).to eq(200)
-          get :media_download_counts, params: params, format: :csv
-          expect(response.status).to eq(200)
-          get :media_downloads, params: params, format: :csv
-          expect(response.status).to eq(200)
-          get :media_requests, params: params, format: :csv
-          expect(response.status).to eq(200)
-        end
-      end
-
-      context 'user is not an admin' do
-        let(:user)  { FactoryBot.create(:registered_user) }
-
-        it 'redirects to root' do
-          get :show, params: params
-          expect(response.status).to eq(302)
-          get :about, params: params
-          expect(response.status).to eq(302)
-          get :media_export, params: params
-          expect(response.status).to eq(302)
-          get :media_download_counts, params: params
-          expect(response.status).to eq(302)
-          get :media_downloads, params: params, format: :csv
-          expect(response.status).to eq(302)
-          get :media_requests, params: params, format: :csv
-          expect(response.status).to eq(302)
-        end
-      end
-    end
-
     describe 'collection access' do
       let(:params)  { { id: organization.id } }
-
-      before do
-        allow(controller).to receive(:authorize_admin).and_return(true)
-      end
 
       context 'user is an admin' do
         let(:user) { FactoryBot.create(:admin) }

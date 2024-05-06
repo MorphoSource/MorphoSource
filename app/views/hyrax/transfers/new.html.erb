@@ -1,18 +1,16 @@
 <div class="col-sm-12">
   <div class="content-block">
-
-		<h2>Transfer Media Ownership</h2>
+		<h2><%= t('transfer.media.header') %></h2>
 		<span class="sr-only"><%= t(:'.sr_only_description', work_title: @proxy_deposit_request.to_s) %></span>
 		<%= simple_form_for @proxy_deposit_request,
 		             url: hyrax.work_transfers_path(@work) do |f| %>
-			<p>Use this form to request transfer of the media to another user.  After receiving a transfer request, the recipient will have options to retain or remove your access to the media.</p>
-		  <%= f.input :transfer_to, label: 'Select a user for transfering the media ownership to:',
-		        placeholder: t(:'.placeholder') %>
-		  <%= f.input :sender_comment, label: 'Comment to be sent to the user:' %>
+			<p><%= t('transfer.media.description') %></p>
+		  <%= f.input :transfer_to, label: t('transfer.media.transfer_to.label'), placeholder: t('transfer.media.transfer_to.placeholder') %>
+		  <%= f.input :sender_comment, label:  t('transfer.media.comment.label')%>
 
 		  <div class="form-actions">
 		    <%#= f.submit class: 'btn btn-primary', value: 'Request Transfer (old)', data: { confirm: t('.confirm') } %>
-				<input type="button" id="btn-transfer-submit" name="commit" value="Request Transfer" class="btn btn-primary" data-confirm="Are you sure you want to transfer ownership of this media to another user?  Click Ok to transfer or Cancel to return to the transfer screen." data-disable-with="Submitting...">
+				<input type="button" id="btn-transfer-submit" name="commit" value="Request Transfer" class="btn btn-primary" data-confirm=<%= t('transfer.media.transfer_to.confirm') %> data-disable-with="Submitting...">
 		  </div>
 		<% end %>
 

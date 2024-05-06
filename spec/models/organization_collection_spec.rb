@@ -88,4 +88,28 @@ RSpec.describe OrganizationCollection, type: :model do
       expect(organization.managers).to include(user)
     end
   end
+
+  describe '#can_manage_devices?' do
+    let!(:organization) { FactoryBot.create(:organization_collection, depositor: user.ms_id, organization_type: organization_type) }
+
+    context 'organization_type is not set' do
+      let(:organization_type) { [] }
+      it { expect(organization.can_manage_devices?).to be(false) }
+    end
+
+    context 'organization_type is ["Museum, Department, or Lab Collection"]' do
+      let(:organization_type) { ["Museum, Department, or Lab Collection"] }
+      it { expect(organization.can_manage_devices?).to be(false) }
+    end
+
+    context 'organization_type is ["Scanning Facility"]' do
+      let(:organization_type) { ["Scanning Facility"] }
+      it { expect(organization.can_manage_devices?).to be(true) }
+    end
+
+    context 'organization_type is ["Collection and Scanning Facility"]' do
+      let(:organization_type) { ["Collection and Scanning Facility"] }
+      it { expect(organization.can_manage_devices?).to be(true) }
+    end
+  end
 end

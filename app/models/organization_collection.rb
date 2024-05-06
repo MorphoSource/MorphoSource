@@ -6,9 +6,6 @@ class OrganizationCollection < Collection
   include Morphosource::OrganizationBehavior
   include Morphosource::PersistentIdentifiersBehavior
 
-  has_many :proxy_deposit_requests, as: :receiving_user
-  has_many :proxy_deposit_requests, as: :sending_user
-
   before_save :convert_media_ownership_transfer
   after_create :create_collection_groups
   after_create :create_organization_project
@@ -96,6 +93,10 @@ class OrganizationCollection < Collection
   # goes in receiving_user_type
   def self.polymorphic_name
     "OrganizationCollection"
+  end
+
+  def can_manage_devices?
+    organization_type&.first&.include?("Scanning Facility") || false
   end
 
   private

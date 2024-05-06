@@ -19,39 +19,8 @@ RSpec.describe Morphosource::Collections::OrganizationCollections::PhysicalObjec
       Morphosource::Collections::PermissionsCreateService.create_default(collection: organization)
     end
 
-    # TODO: Remove admin-only restriction tests when organization collections go live on production
-    describe 'temporary admin-only restriction' do
-      let(:params)  { { id: organization.id } }
-
-      context 'user is an admin' do
-        let(:user) { FactoryBot.create(:admin) }
-
-        it 'responds with a 200' do
-          get :show, params: params
-          expect(response.status).to eq(200)
-          get :objects_export, params: params, format: :csv
-          expect(response.status).to eq(200)
-        end
-      end
-
-      context 'user is not an admin' do
-        let(:user)  { FactoryBot.create(:registered_user) }
-
-        it 'redirects to root' do
-          get :show, params: params
-          expect(response.status).to eq(302)
-          get :objects_export, params: params, format: :csv
-          expect(response.status).to eq(302)
-        end
-      end
-    end
-
     describe 'collection access' do
       let(:params)  { { id: organization.id } }
-
-      before do
-        allow(controller).to receive(:authorize_admin).and_return(true)
-      end
 
       context 'user is an admin' do
         let(:user) { FactoryBot.create(:admin) }

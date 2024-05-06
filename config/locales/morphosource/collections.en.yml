@@ -6,3 +6,6 @@ en:
       edit:
         temporary_access:
           description: You can use this section to generate a temporary link to share this %{collection_type} and the media contained in it with someone, even if they don't have a MorphoSource account. This link will allow that user to view this %{collection_type} and the media in the %{collection_type}, but not download any media file(s) associated with the media records. You can set how long until this link expires.
+      subcollections:
+        header:
+          title: team projects

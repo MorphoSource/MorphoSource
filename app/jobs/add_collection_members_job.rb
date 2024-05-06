@@ -14,6 +14,12 @@ class AddCollectionMembersJob < Hyrax::ApplicationJob
     member_ids = Array(member_ids).select { |m_id| Media.exists?(m_id) }
     return false if !member_ids.present?
 
-    c.add_member_objects member_ids
+    if member_ids.count > 1
+      member_ids.each do |member_id|
+        AddCollectionMembersJob.perform_later(collection_id, member_id)
+      end
+    else
+      c.add_member_objects member_ids
+    end
   end
 end

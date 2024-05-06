@@ -16,7 +16,7 @@ module Morphosource
         end
 
         def media_count_search_builder_class
-          Morphosource::Collections::OrganizationCollections::DeviceMediaSearchBuilder
+          Morphosource::Collections::OrganizationCollections::OrganizationMediaSearchBuilder
         end
 
         self.presenter_class = Morphosource::Collections::OrganizationPresenter

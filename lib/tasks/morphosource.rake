@@ -449,6 +449,23 @@ namespace :morphosource do
     end
   end
 
+  desc 'Mint ARK on specified model, one job per work'
+  task :mint_work_by_model, [:model] => :environment do |task, args|
+    class_eval <<-RUBY
+    def model
+      #{args[:model]}
+    end
+    RUBY
+    if model.present?
+      model.find_each do |o|
+        Rails.logger.info ("Minting: #{args[:model]} id:#{o.id}")
+        MintWorkArkJob.perform_later(o.id)
+      end
+    else
+      Rails.logger.warn("No valid model specified.")
+    end
+  end
+
   desc 'Run InheritPermissionsJob on all media'
   task :inherit_permissions_on_media => :environment do
     Media.find_each do |m|

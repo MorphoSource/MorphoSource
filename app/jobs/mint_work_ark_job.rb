@@ -9,7 +9,7 @@ class MintWorkArkJob < Hyrax::ApplicationJob
       work = ActiveFedora::Base.find(work_id)
       # check for work.class here?
       if work.ark.present?
-        Rails.logger.error("ark for #{work_id} exists already")
+        Rails.logger.error("ARK for #{work_id} exists already")
       else
         work.mint_ark
       end

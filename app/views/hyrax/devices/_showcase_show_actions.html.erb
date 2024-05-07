@@ -1,0 +1,7 @@
+<div>
+  <% if presenter.editor? %>
+    <div class="btn-group">
+      <%= link_to "Edit", edit_polymorphic_path([main_app, presenter]), class: 'btn btn-wide btn-primary' %>
+    </div>
+  <% end %>
+</div>

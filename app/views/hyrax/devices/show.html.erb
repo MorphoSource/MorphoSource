@@ -1,49 +1,17 @@
-<% provide :page_title, construct_page_title(@presenter.title.first) %>
+<% content_for :body_css_classes do %>showcase showcase2<% end %>
+<% content_for :content_css_classes do %>fixed-width<% end %>
 
-<%#= render 'shared/citations' %>
+<div class="object-showcase">
+  <%= render @presenter.showcase_work_title_partial, presenter: @presenter %>
 
-<div class="row work-type">
-  <div class="col-xs-12">
-    <%= render 'work_type', presenter: @presenter %>
-    <div class="pull-right">
-      <% if @presenter.model_name.name == "Media" %>
-        <%= render 'hyrax/base/media_cart_actions', presenter: @presenter %>
-      <% end %>
-    </div>
-  </div>
-  <div class="col-xs-12">&nbsp;</div>
-  <div itemscope itemtype="http://schema.org/CreativeWork" class="col-xs-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
-        <%= render 'work_title', presenter: @presenter %>
-      </div>
-      <div class="panel-body">
-        <div class="row">
-          <%= render 'workflow_actions_widget', presenter: @presenter %>
-          <% if @presenter.universal_viewer? %>
-            <div class="col-sm-12">
-              <%#= render 'representative_media', presenter: @presenter, viewer: true %>
-            </div>
-          <% end %>
-          <div class="col-sm-3 text-center">
-            <%#= render 'representative_media', presenter: @presenter, viewer: false unless @presenter.universal_viewer? %>
-            <%#= render 'citations', presenter: @presenter %>
-            <%#= render 'social_media' %>
-          </div>
-          <div class="col-sm-9">
-            <%= render 'work_description', presenter: @presenter %>
-            <%= render 'metadata', presenter: @presenter %>
-          </div>
-          <div class="col-sm-12">
-            <%= render 'relationships', presenter: @presenter %>
-            <%= render 'parents', presenter: @presenter %>
-            <%= render 'items', presenter: @presenter %>
-            <%# TODO: we may consider adding these partials in the future %>
-            <%# = render 'sharing_with', presenter: @presenter %>
-            <%# = render 'user_activity', presenter: @presenter %>
-          </div>
-        </div>
+  <div class="row showcase2-row object-content-blocks-wrapper">
+
+    <div class="media-order-2 content-block-wrapper">
+      <div class="content-block">
+        <%#= render @presenter.showcase_general_details_partial, presenter: @presenter %>
       </div>
     </div>
-  </div>
-</div>
+
+
+  </div> <!-- object-content-blocks-wrapper -->
+</div> <!--object-showcase -->

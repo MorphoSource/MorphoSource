@@ -7,15 +7,27 @@ module Hyrax
     include Hyrax::WorksControllerBehavior
     include Hyrax::ChildWorkRedirect
 
-    before_action :authorize_admin, only: [:new, :create, :show]
+    before_action :authorize_admin, only: [:new, :create]
     before_action :find_organization, only: [:new, :create, :edit, :update]
     before_action :authorize_organization, only: [:new, :create, :update]
 
+    skip_authorize_resource only: :show
+
     self.curation_concern_type = ::Device
-    with_themed_layout 'morphosource_1_column'
+    with_themed_layout :decide_layout
 
     # Use this line if you want to use a custom presenter
     self.show_presenter = Hyrax::DevicePresenter
+
+    def decide_layout
+      layout = case action_name
+               when 'show'
+                 'morphosource_2_columns'
+               else
+                 'morphosource_1_column'
+               end
+      File.join(theme, layout)
+    end
 
     def new
       @curation_concern.organization_id = assign_organization_id

@@ -12,6 +12,10 @@ module Morphosource
 
       before_action :load_organization, only: [:show, :facet, :about,
         :media_projects, :media_organization_transfer_status]
+
+      # must go after load_organization
+      before_action :redirect_organization_type, only: [:show]
+
       before_action :create_extra_facets, only: [:show, :facet, :about,
         :media_export, :media_download_counts, :media_projects, :media_organization_transfer_status]
 
@@ -96,6 +100,11 @@ module Morphosource
           args.merge!(request.params)
           main_app.organization_media_facet_path(@collection.id, args)
         end
+
+        def redirect_organization_type
+          redirect_to organization_device_media_path(@collection) if @collection.organization_type&.first == "Scanning Facility"
+        end
+
     end
   end
 end

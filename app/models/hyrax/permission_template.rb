@@ -13,6 +13,8 @@ module Hyrax
     has_many :access_grants, class_name: 'Hyrax::PermissionTemplateAccess', dependent: :destroy
     accepts_nested_attributes_for :access_grants, reject_if: :all_blank
 
+    before_create :update_source_type
+
     # @api public
     # Retrieve the agent_ids associated with the given agent_type and access
     # @param [String] agent_type
@@ -152,6 +154,11 @@ module Hyrax
       def check_fixed_date_requirements(date)
         return true unless release_fixed_date? && release_date.present?
         date == release_date
+      end
+
+      def update_source_type
+        return unless type = collection.collection_type.machine_id
+        self.source_type = type
       end
   end
 end

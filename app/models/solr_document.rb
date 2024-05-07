@@ -35,7 +35,15 @@ class SolrDocument
   #
   # @return [Array<SolrDocument>] Array of queried SolrDocument instances
   def self.where(query = {}, opts: {})
-    q = query.instance_of?(String) ? query : query.map { |k, v| "#{k}:#{v}" }.join(" AND ")
+    if query.instance_of?(String)
+      q = query
+    else
+      # can't search solr for blank values, need to use "-field:*"" for that
+      exclude_values = ["", [], {}, nil] # all .present? falsy values except false itself
+      query = query.reject { |k, v| exclude_values.include?(v) }
+      return [] if !query.present?
+      q = query.map { |k, v| "#{k}:#{v}" }.join(" AND ")
+    end
 
     default_params = { rows: 1000 }
     params = default_params.merge(q: q).merge(opts)

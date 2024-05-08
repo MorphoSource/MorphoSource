@@ -1,10 +1,10 @@
 <% content_for :body_css_classes do %>showcase showcase2<% end %>
 <% content_for :content_css_classes do %>fixed-width<% end %>
 
-<div class="object-showcase">
+<div class="device-showcase">
   <%= render @presenter.showcase_work_title_partial, presenter: @presenter %>
 
-  <div class="row showcase2-row object-content-blocks-wrapper">
+  <div class="row showcase2-row device-content-blocks-wrapper">
 
     <div class="media-order-2 content-block-wrapper">
       <div class="content-block">
@@ -12,6 +12,12 @@
       </div>
     </div>
 
+    <!-- second column start -->
+    <div class="media-order-1 content-block-wrapper">
+      <div class="content-block">
+        <%= render @presenter.showcase_media_items_partial, presenter: @presenter %>
+      </div>
+    </div>
 
-  </div> <!-- object-content-blocks-wrapper -->
-</div> <!--object-showcase -->
+  </div> <!-- device-content-blocks-wrapper -->
+</div> <!--device-showcase -->

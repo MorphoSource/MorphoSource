@@ -1487,12 +1487,13 @@ nav#masthead {
   }
 }
 
-/* specimen and cho specific */
+/* specimen, cho, device specific */
 .showcase {
-  .object-showcase {
+  .object-showcase, .device-showcase {
 
     @media (min-width: 768px) {
-      .object-content-blocks-wrapper {
+      .object-content-blocks-wrapper,
+      .device-content-blocks-wrapper {
         column-count: 2;
         column-width: 200px;
       }
@@ -1510,7 +1511,8 @@ nav#masthead {
     }
 
     @media (max-width: 767px) {
-      .object-content-blocks-wrapper {
+      .object-content-blocks-wrapper,
+      .device-content-blocks-wrapper {
         display: flex;
         flex-direction: column;
         max-width: 100%;

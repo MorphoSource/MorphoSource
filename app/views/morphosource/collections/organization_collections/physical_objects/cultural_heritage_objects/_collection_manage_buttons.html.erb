@@ -26,7 +26,7 @@
         </li>
       </ul>
     </div>
-    <% if current_user&.admin? && @collection.can_manage_devices? %>
+    <% if @collection.can_manage_devices? %>
       <div class="collection-manage-button-wrapper">
         <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Add <span class="caret"></span>
         </button>

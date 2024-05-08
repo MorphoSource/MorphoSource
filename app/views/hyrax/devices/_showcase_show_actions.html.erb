@@ -1,7 +1,8 @@
 <div>
   <% if presenter.editor? %>
     <div class="btn-group">
-      <%= link_to "Edit", edit_polymorphic_path([main_app, presenter]), class: 'btn btn-wide btn-primary' %>
+      <%= link_to "Edit", edit_polymorphic_path([main_app, presenter]), class: 'btn btn-primary' %>
+      <%= link_to "Delete", [main_app, @presenter], class: 'btn btn-danger', data: { confirm: "Delete this #{@presenter.human_readable_type}?" }, method: :delete %>
     </div>
   <% end %>
 </div>

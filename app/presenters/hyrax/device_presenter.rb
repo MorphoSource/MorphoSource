@@ -4,15 +4,15 @@ module Hyrax
   class DevicePresenter < Hyrax::WorkShowPresenter
     include Morphosource::PresenterMethods
 
-    delegate :modality, :ark, to: :solr_document
+    delegate :modality, :ark, :organization_id, to: :solr_document
 
     #
     # Modality (return one more more values)
     #
-    # @return [String] modality
+    # @return [Array] modality
     #
     def device_modality
-      @device_modality ||= modality.map{ |m| Morphosource::ModalitiesService.new.label(m) }.join(', ')
+      @device_modality ||= modality.map{ |m| Morphosource::ModalitiesService.new.label(m) }
     end
 
     # methods for showcase partials

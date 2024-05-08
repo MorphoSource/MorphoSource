@@ -67,15 +67,18 @@ provide :page_title, construct_page_title(@presenter.title)
 
   </div><!-- /row -->
 
+  <!-- Collection description -->
+  <% if @presenter.description.present? %>
+    <div class="row mb-1">
+      <p><%= @presenter.description&.first %></p>
+    </div>
+  <% end %>
+
   <!-- Subcollections -->
   <% if @presenter.collection_type_is_nestable? && @subcollection_count > 0 %>
-      <div class="hyc-blacklight hyc-bl-title">
-        <h4>TEAM PROJECTS</h4>
-      </div>
-      <div class="hyc-blacklight hyc-bl-results">
-        <%= render 'subcollection_list', collection: @subcollection_docs %>
-      </div>
+    <%= render 'subcollections' %>
   <% end %>
+
 
   <div class="panel panel-default tabs" role="main">
     <!-- Nav tabs -->

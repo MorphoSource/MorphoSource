@@ -1,5 +1,5 @@
 <tr id="document_<%= document.id %>">
-  <td><%= document.id %>
+  <td><%= link_to document.id, hyrax_device_path(document.id) %></td>
   <td><%= document['creator_tesim']&.first %></td>
   <td class="break-all"><%= document['title_ssi'] %></td>
   <td><%= device_modalities(document['modality_tesim']) %></td>

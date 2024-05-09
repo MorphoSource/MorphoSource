@@ -51,19 +51,21 @@ RSpec.describe Hyrax::DevicesController do
           organization.managers << user
         end
 
+        it 'renders the view' do
+          get :new, params: { organization_id: organization.id }
+          expect(response.status).to eq(200)
+        end
+
         it 'does not render the view' do
-          get :new, params: params
-          expect(response.status).to eq(302)
-          expect(response).to redirect_to(root_path)
           get :show, params: params
           expect(response.status).to eq(302)
           expect(response).to redirect_to(root_path)
         end
 
-        it 'does not create the device' do
+        it 'creates the device' do
           post :create, params: new_params
           expect(response.status).to eq(302)
-          expect(response).to redirect_to(root_path)
+          expect(response).to redirect_to(main_app.organization_devices_path(organization, locale: 'en'))
         end
       end
     end

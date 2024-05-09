@@ -17,6 +17,7 @@ module Hyrax
 
     def related_media_ids
       @related_media_ids ||= begin
+["000200216", "000200212"]
 #        solr_document.related_media_ids || []
       end
     end

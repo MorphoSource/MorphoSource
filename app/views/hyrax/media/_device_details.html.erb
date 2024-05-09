@@ -20,10 +20,7 @@
             <div class="col-xs-6 showcase-label">Model</div>
             <div class="col-xs-6 showcase-value" id="device-title-value"><%= presenter.device_title&.first %></div>
         </div>
-        <div class="row">
-            <div class="col-xs-6 showcase-label">Manufacturer</div>
-            <div class="col-xs-6 showcase-value" id="device-creator-value"><%= presenter.device_creator&.first %></div>
-        </div>
+        <%= presenter.attribute_to_html(:device_id, label: 'Manufacturer', css_id: 'device-creator-value', render_as: :showcase_page_link, include_empty: true) %>
         <div class="row">
             <div class="col-xs-6 showcase-label">Modality</div>
             <div class="col-xs-6 showcase-value break-all" id="device-modality-value" data-modality-id="<%= presenter.device_modality&.join(", ") %>"><%= presenter.device_modality_labels %></div>

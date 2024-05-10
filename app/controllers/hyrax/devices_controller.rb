@@ -20,7 +20,7 @@ module Hyrax
     self.show_presenter = Hyrax::DevicePresenter
 
     configure_blacklight do |config|
-      config.max_per_page = 20
+      config.max_per_page = 1000000
     end
 
     def decide_layout

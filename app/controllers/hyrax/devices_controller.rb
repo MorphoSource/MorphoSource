@@ -19,6 +19,10 @@ module Hyrax
     # Use this line if you want to use a custom presenter
     self.show_presenter = Hyrax::DevicePresenter
 
+    configure_blacklight do |config|
+      config.max_per_page = 20
+    end
+
     def decide_layout
       layout = case action_name
                when 'show'
@@ -29,6 +33,11 @@ module Hyrax
       File.join(theme, layout)
     end
 
+    def show
+      @device_media_ids = viewable_device_media_ids
+      super
+    end
+
     def new
       @curation_concern.organization_id = assign_organization_id
       @curation_concern.visibility = 'open' # default all new devices to open
@@ -36,6 +45,14 @@ module Hyrax
     end
 
     private
+
+    def viewable_device_media_ids
+      device_media = Morphosource::DeviceMediaSearchService.new(self, params['id']).search_results
+      return [] unless device_media.present?
+      ids = device_media.map{|d| d.id}
+      return ids if current_ability.current_user.admin?
+      return ids.select { |id| current_ability.can?(:read, id) }
+    end
 
     # get the organization id:
     # from organization_id when new,

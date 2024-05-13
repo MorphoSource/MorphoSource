@@ -200,6 +200,7 @@ class SubmissionsController < ApplicationController
   end
 
   def create
+    byebug
     clear_session_submission_settings
     reinstantiate_submission
 

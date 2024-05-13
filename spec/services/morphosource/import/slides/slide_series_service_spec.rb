@@ -121,10 +121,10 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
       allow_any_instance_of(described_class).to receive(:occurrence_json).and_return(occurrence_json)
     end
     it 'calls methods to create a new media record and add it to the collection' do
-      expect_any_instance_of(described_class).to receive(:create_new_imaging_event)
-      expect_any_instance_of(described_class).to receive(:create_new_media)
-      expect_any_instance_of(described_class).to receive(:characterize_file)
-      expect_any_instance_of(described_class).to receive(:create_thumbnail)
+      expect(subject).to receive(:create_new_imaging_event)
+      expect(subject).to receive(:create_new_media)
+      expect(subject).to receive(:characterize_file)
+      expect(subject).to receive(:create_thumbnail)
       expect_any_instance_of(SequentialSectionList).to receive(:add_member_objects)
       subject.call
     end

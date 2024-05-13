@@ -8,7 +8,7 @@ $( document ).ready(function() {
     var observer = new MutationObserver(function(mutations) {
       mutations.forEach(function(mutation) {
         if (mutation.type == "attributes") {
-          $('form').submit();
+          $('form#search-form-header').trigger("submit");
         }
       });
     });

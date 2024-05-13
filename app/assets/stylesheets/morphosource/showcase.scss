@@ -1538,6 +1538,11 @@ nav#masthead {
   }
 }
 
+@media (min-width: 768px) {
+  .showcase .device-showcase .media-order-1 {
+    overflow: hidden;
+  }
+}
 /* unauthorized/not found specific */
 .showcase .error {
   div.block {

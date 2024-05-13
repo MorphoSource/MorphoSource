@@ -12,7 +12,7 @@ items_to_show_initially = 6
       <%= render partial: @presenter.showcase_media_items_member_partial, collection: members, as: :showcase_media_items_member, :locals => {:media_count => media_count, :items_per_row => items_per_row, :items_to_show_initially => items_to_show_initially} %>
 
       <% if media_count > items_to_show_initially %>
-        <div class="text-center"><a href="">See more</a></div>
+        <div class="text-center">( <%= link_to "See more...", main_app.media_search_path({ 'f.device': @presenter.id }) %> )</div>
         </div><!-- closing the collapse-block-media-items-member div -->
       <% end %>
 

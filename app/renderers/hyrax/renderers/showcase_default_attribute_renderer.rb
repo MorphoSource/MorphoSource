@@ -13,7 +13,7 @@ module Hyrax
           css_classes << options[:css_classes]
         end
         if options[:css_id]
-          id_attribute = "id='#{options[:css_id]}'"
+          id_attribute = " id='#{options[:css_id]}'"
         else
           id_attribute = ''
         end
@@ -28,7 +28,7 @@ module Hyrax
         markup << %(<div class='col-xs-#{label_width} showcase-label'>#{label_content}#{hint_content}</div>)
 
         attributes = microdata_object_attributes(field).merge(class: "attribute attribute-#{field}")
-        markup << %(<div #{id_attribute} class='col-xs-#{value_width} showcase-value #{css_classes}'>)
+        markup << %(<div#{id_attribute} class='col-xs-#{value_width} showcase-value #{css_classes}'>)
         if values_blank?
           if options[:text_if_empty].present?
             markup << options[:text_if_empty]

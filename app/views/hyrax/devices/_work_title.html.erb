@@ -2,9 +2,9 @@
   <div>
     <div id="showcase-title">
       <div>
-        <%= presenter.title&.first || "Missing Title" %>
+        <%= presenter.creator&.first %> <%= presenter.title&.first %>
       </div>
-      <div><%= presenter.id_badge %>
+      <div><%= presenter.work_type_badge %> <%= presenter.id_badge %>
     </div>
   </div>
 </div>

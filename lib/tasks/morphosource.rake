@@ -19,36 +19,53 @@ namespace :morphosource do
 
   desc 'MorphoSource Setup'
   task :setup  => :environment do
-    # default admin set
+    Rails.logger.info('Create default admin set')
     Rake::Task["hyrax:default_admin_set:create"].invoke
-    # team and project collection types
+
+    Rails.logger.info('Create team and project collection types')
     Rake::Task['morphosource:create_collection_types'].invoke
-    # admin role
+
+    Rails.logger.info('Create admin role')
     Rake::Task['morphosource:create_admin_role'].invoke
-    # remote file submitter role
+
+    Rails.logger.info('Create remote file submitter role')
     Rake::Task['morphosource:create_remote_file_submitter_role'].invoke
-    # batch submission contributor role
+
+    Rails.logger.info('Create batch submission contributor role')
     Rake::Task['morphosource:create_batch_submission_contributor_role'].invoke
-    # contributor role
+
+    Rails.logger.info('Create contributor role')
     Rake::Task['morphosource:create_contributor_role'].invoke
-    # charge api role
+
+    Rails.logger.info('Create charge api role')
     Rake::Task['morphosource:create_charge_api_role'].invoke
   end
 
   desc 'MorphoSource Docker Setup'
   task :docker_setup => :environment do
     Rails.logger.info('Setup DB')
+
+    Rails.logger.info('db:create')
     Rake::Task['db:create'].invoke
+
+    Rails.logger.info('morphosource:db_schema_load_if_needed')
     Rake::Task['morphosource:db_schema_load_if_needed'].invoke
+
+    Rails.logger.info('db:migrate')
     Rake::Task['db:migrate'].invoke
+
     Rails.logger.info('Clear cache')
     Rake::Task['tmp:cache:clear'].invoke
+
     Rails.logger.info('Load workflow')
     Rake::Task['hyrax:workflow:load'].invoke
+
     Rails.logger.info('Setup MorphoSource app')
     Rake::Task['morphosource:setup'].invoke
+
     Rails.logger.info('Create initial users')
     Rake::Task['morphosource:create_production_users'].invoke
+
     Rails.logger.info('Initiate dev caching')
     Rake::Task['morphosource:dev_cache_on'].invoke
   end

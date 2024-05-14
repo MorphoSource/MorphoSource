@@ -8,7 +8,7 @@ image:
   repository: docker.io/juliewinchester/morphosource
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: "0.0.5"
+  tag: 0.0.20
 
 imagePullSecrets:
   - name: dockerregcred
@@ -82,21 +82,21 @@ brandingVolume:
   # the name of an existing volume claim; must be an ReadWriteMany volume
   existingClaim: ""
   size: 2Gi
-  storageClass: ""
+  storageClass: "nfs-client"
 
 derivativesVolume:
   enabled: true
   # the name of an existing volume claim; must be an ReadWriteMany volume
   existingClaim: ""
   size: 10Gi
-  storageClass: ""
+  storageClass: "nfs-client"
 
 uploadsVolume:
   enabled: true
   # the name of an existing volume claim; must be an ReadWriteMany volume
   existingClaim: ""
   size: 20Gi
-  storageClass: ""
+  storageClass: "nfs-client"
 
 # additional volumes and volume mounts, evaluated as a template, e.g.
 #
@@ -159,7 +159,7 @@ securityContext: {}
 
 service:
   type: ClusterIP
-  port: 80
+  port: 3000
 
 ingress:
   enabled: false
@@ -174,7 +174,7 @@ ingress:
   tls: []
 
 livenessProbe:
-  enabled: true
+  enabled: false
   # path: "/healthz"
   # initialDelaySeconds: 0
   # periodSeconds: 10
@@ -183,7 +183,7 @@ livenessProbe:
   # successThreshold: 1
 
 readinessProbe:
-  enabled: true
+  enabled: false
   # path: "/healthz"
   # initialDelaySeconds: 5
   # periodSeconds: 10
@@ -197,9 +197,9 @@ worker:
   enabled: true
   replicaCount: 3
   image:
-    repository: ghcr.io/samvera/hyrax/dassie-worker
+    repository: docker.io/juliewinchester/morphosource
     pullPolicy: IfNotPresent
-    tag: ""
+    tag: 0.0.20
   extraInitContainers: []
   extraVolumeMounts: []
   extraVolumes: []
@@ -238,7 +238,7 @@ externalFits:
   url: "" # existing FITS servlet endpoint
 
 fits:
-  enabled: true
+  enabled: false
   servicePort: 8080
   subPath: /fits
 
@@ -283,7 +283,7 @@ postgresql:
 ## Nginx proxy is used to keep puma from having to serve static assets
 ## and to act as an auth proxy for Cantelope
 nginx:
-  enabled: true
+  enabled: false
   image:
     repository: bitnami/nginx
     tag: 1.23.0-debian-11-r1
@@ -468,7 +468,7 @@ global:
       username: hyrax
       password: hyrax_pass
   # This is th name of the running rails server pod
-  hyraxHostName: hyrax
+  hyraxHostName: morphosource-hyrax
 
 nodeSelector: {}
 

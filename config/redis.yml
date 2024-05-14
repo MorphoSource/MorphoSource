@@ -1,9 +1,11 @@
 development:
   host: <%= ENV['REDIS_HOST'] || 'localhost' %>
   port: 6379
+  password: <%= ENV['REDIS_PASSWORD'] %>
 test:
   host: <%= ENV['REDIS_HOST'] || 'localhost' %>
   port: 6379
 production:
   host: <%= ENV['REDIS_HOST'] || 'localhost' %>
   port: 6379
+  password: <%= ENV['REDIS_PASSWORD'] %>

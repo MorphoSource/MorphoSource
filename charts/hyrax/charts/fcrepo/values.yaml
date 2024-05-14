@@ -12,7 +12,7 @@ storage: {}
 image:
   repository: docker.io/juliewinchester/fcrepo4
   pullPolicy: IfNotPresent
-  tag: 0.0.2
+  tag: 0.0.3
 
 imagePullSecrets: []
 nameOverride: ""

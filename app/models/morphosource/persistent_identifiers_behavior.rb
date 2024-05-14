@@ -23,7 +23,9 @@ module Morphosource
         end
       when 'BiologicalSpecimen', 'CulturalHeritageObject'
         return 'PhysicalObject'
-      when 'Device', 'OrganizationCollection'
+      when 'Device'
+        return 'Instrument'
+      when 'OrganizationCollection'
         return 'Service'
       else
         return 'Other'

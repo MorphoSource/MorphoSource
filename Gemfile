@@ -114,4 +114,4 @@ group :test do
   gem 'timecop'
 end
 
-gem "ezid-client", "~> 1.9.4"
+gem "ezid-client", "~> 1.11.0"

@@ -29,6 +29,8 @@ data:
   RACK_ENV: development
   RAILS_ENV: development
   {{- if .Values.redis.enabled }}
+  RAILS_RESQUE_REDIS: {{ template "hyrax.redis.host" . }}:6379
+  RAILS_RESQUE_REDIS_PASSWORD: {{ .Values.redis.auth.password }}
   REDIS_HOST: {{ template "hyrax.redis.host" . }}
   {{- end }}
   FCREPO_HOST: {{ template "hyrax.fcrepo.host" . }}

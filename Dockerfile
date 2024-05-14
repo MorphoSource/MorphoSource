@@ -2,8 +2,11 @@
 ARG RUBY_VERSION=2.7.4
 FROM ruby:$RUBY_VERSION-bullseye as msbase
 
+ARG RAILS_ROOT=/app/samvera/hyrax-webapp
+ENV BUNDLE_APP_CONFIG="$RAILS_ROOT/.bundle"
+
 RUN apt update && \
-  apt install -y \
+  apt install -y --no-install-recommends \
   libcurl4 \
   imagemagick \
   netcat \
@@ -14,7 +17,8 @@ RUN apt update && \
   yarnpkg \
   zip \
   $DATABASE_APK_PACKAGE \
-  $EXTRA_APK_PACKAGES
+  $EXTRA_APK_PACKAGES && \
+  rm -rf /var/lib/apt/lists/*
 
 RUN adduser --system --gid 0 --uid 1001 --home /app app
 USER app
@@ -160,7 +164,8 @@ ARG BUNDLE_WITHOUT
 
 COPY --chown=1001:0 $APP_PATH/Gemfile /app/samvera/hyrax-webapp/Gemfile
 COPY --chown=1001:0 $APP_PATH/Gemfile.lock /app/samvera/hyrax-webapp/Gemfile.lock
-RUN bundle install --jobs "$(nproc)"
+RUN bundle config --global && \
+  bundle install --jobs "$(nproc)" --path=vendor/bundle
 # RUN RAILS_ENV=production SECRET_KEY_BASE=`bin/rake secret` DB_ADAPTER=nulldb DATABASE_URL='postgresql://fake' bundle exec rails assets:precompile
 # TODO enable production if necessary
 
@@ -168,3 +173,47 @@ COPY --chown=1001:0 $APP_PATH /app/samvera/hyrax-webapp
 
 # Set directories as executable for writeability
 RUN chmod -R g+rwX /app/samvera/hyrax-webapp
+
+### MORPHOSOURCE-SMALL STAGE ###
+ARG RUBY_VERSION=2.7.4
+FROM ruby:$RUBY_VERSION-bullseye as morphosource-small
+
+ARG RAILS_ROOT=/app/samvera/hyrax-webapp
+ENV BUNDLE_APP_CONFIG="$RAILS_ROOT/.bundle"
+
+RUN apt update && \
+  apt install -y --no-install-recommends \
+  libcurl4 \
+  imagemagick \
+  netcat \
+  nodejs \
+  npm \
+  perl \
+  tzdata \
+  yarnpkg \
+  zip \
+  $DATABASE_APK_PACKAGE \
+  $EXTRA_APK_PACKAGES && \
+  rm -rf /var/lib/apt/lists/*
+
+RUN adduser --system --gid 0 --uid 1001 --home /app app
+USER app
+
+WORKDIR $RAILS_ROOT
+
+ENV PATH="/app/samvera/hyrax-webapp/bin:$PATH"
+ENV LD_LIBRARY_PATH="/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64:/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64/server:$LD_LIBRARY_PATH"
+ENV RAILS_ROOT="/app/samvera/hyrax-webapp"
+ENV RAILS_SERVE_STATIC_FILES="1"
+
+COPY --from=morphosource $RAILS_ROOT $RAILS_ROOT
+
+# RUN gem update bundler
+ENV BUNDLE_GEMFILE="./Gemfile"
+ENV BUNDLER_VERSION='2.0.2'
+ENV HOME="/app/samvera/hyrax-webapp"
+RUN gem install bundler -v 2.0.2
+
+ENTRYPOINT ["hyrax-entrypoint.sh"]
+#CMD tail -f /dev/null
+CMD bundle && bundle exec puma -v -b tcp://0.0.0.0:3000

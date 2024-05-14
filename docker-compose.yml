@@ -8,10 +8,9 @@ services:
       args:
         - EXTRA_APK_PACKAGES=git less
     container_name: app
-    command: sh -c 'bundle && bundle exec puma -v -b tcp://0.0.0.0:3000'
     stdin_open: true
     tty: true
-    user: app
+    user: "101292838:0"
     env_file:
       - ./vendor/docker/credentials.env
       - ./vendor/docker/docker-compose.env
@@ -26,6 +25,8 @@ services:
       - 3000:3000
     volumes:
       - .:/app/samvera/hyrax-webapp
+      - /app/samvera/hyrax-webapp/vendor/bundle
+      - /app/samvera/hyrax-webapp/.bundle/
       - hyrax-derivatives:/app/samvera/hyrax-webapp/derivatives
       - hyrax-uploads:/app/samvera/hyrax-webapp/uploads
       - rails-tmp:/app/samvera/hyrax-webapp/tmp
@@ -35,10 +36,9 @@ services:
   app_worker:
     build:
       context: .
-      target: msworker
+      target: ms-worker
     container_name: app_worker
-    command: sh -c 'bundle && QUEUE=* bundle exec rails resque:workers'
-    user: app
+    user: "101292838:0"
     env_file:
       - ./vendor/docker/credentials.env
       - ./vendor/docker/docker-compose.env
@@ -51,6 +51,8 @@ services:
       - solr
     volumes:
       - .:/app/samvera/hyrax-webapp
+      - /app/samvera/hyrax-webapp/vendor/bundle
+      - /app/samvera/hyrax-webapp/.bundle/
       - hyrax-derivatives:/app/samvera/hyrax-webapp/derivatives
       - hyrax-uploads:/app/samvera/hyrax-webapp/uploads
       - rails-tmp:/app/samvera/hyrax-webapp/tmp
@@ -60,10 +62,10 @@ services:
   app_test:
     build:
       context: .
-      target: msworker
+      target: ms-worker
     container_name: app_test
     command: sh -c 'rm -rf /app/samvera/hyrax-webapp/tmp/* && bundle && bundle exec rake hydra:test_server'
-    user: app
+    user: "101292838:0"
     env_file:
       - ./vendor/docker/credentials.env
       - ./vendor/docker/docker-compose.env
@@ -77,6 +79,8 @@ services:
       - test
     volumes:
       - .:/app/samvera/hyrax-webapp
+      - /app/samvera/hyrax-webapp/vendor/bundle
+      - /app/samvera/hyrax-webapp/.bundle/
       - test-derivatives:/app/samvera/hyrax-webapp/derivatives
       - test-uploads:/app/samvera/hyrax-webapp/uploads
       - test-public:/app/samvera/hyrax-webapp/public
@@ -91,7 +95,7 @@ services:
       args:
         - EXTRA_APK_PACKAGES=git less
     container_name: db_migrate
-    user: app
+    user: "101292838:0"
     env_file:
       - ./vendor/docker/credentials.env
       - ./vendor/docker/docker-compose.env
@@ -102,6 +106,8 @@ services:
       - solr
     volumes:
       - .:/app/samvera/hyrax-webapp
+      - /app/samvera/hyrax-webapp/vendor/bundle
+      - /app/samvera/hyrax-webapp/.bundle/
       - rails-tmp:/app/samvera/hyrax-webapp/tmp
     networks:
       - morphosource
@@ -109,11 +115,11 @@ services:
   db_migrate_test:
     build:
       context: .
-      target: morphosource
+      target: ms-worker
       args:
         - EXTRA_APK_PACKAGES=git less
     container_name: db_migrate_test
-    user: app
+    user: "101292838:0"
     env_file:
       - ./vendor/docker/credentials.env
       - ./vendor/docker/docker-compose.env
@@ -128,6 +134,8 @@ services:
       - test
     volumes:
       - .:/app/samvera/hyrax-webapp
+      - /app/samvera/hyrax-webapp/vendor/bundle
+      - /app/samvera/hyrax-webapp/.bundle/
       - test-tmp:/app/samvera/hyrax-webapp/tmp
     networks:
       - morphosource

@@ -1,6 +1,6 @@
-### MS BASE STAGE (ALL TARGETS START HERE) ###
+### MORPHOSOURCE-BUILD STAGE (BUILDS APP FILES FOR LATER COPYING) ###
 ARG RUBY_VERSION=2.7.4
-FROM ruby:$RUBY_VERSION-bullseye as msbase
+FROM ruby:$RUBY_VERSION-bullseye as morphosource-build
 
 ARG RAILS_ROOT=/app/samvera/hyrax-webapp
 ENV BUNDLE_APP_CONFIG="$RAILS_ROOT/.bundle"
@@ -18,34 +18,92 @@ RUN apt update && \
   zip \
   $DATABASE_APK_PACKAGE \
   $EXTRA_APK_PACKAGES && \
-  rm -rf /var/lib/apt/lists/*
+  rm -rf /var/lib/apt/lists/* 
 
 RUN adduser --system --gid 0 --uid 1001 --home /app app
 USER app
 
-RUN mkdir -p /app/samvera/hyrax-webapp
+RUN mkdir -p $RAILS_ROOT
 # For K8s OpenShift, ensure all files and directories are readable and executable by group 0
-RUN chgrp -R 0 /app/samvera/hyrax-webapp && \
-    chmod -R g+rwX /app/samvera/hyrax-webapp
-WORKDIR /app/samvera/hyrax-webapp
+RUN chgrp -R 0 $RAILS_ROOT && \
+    chmod -R g+rwX $RAILS_ROOT
+WORKDIR $RAILS_ROOT
 
-ENV PATH="/app/samvera/hyrax-webapp/bin:$PATH"
+ENV PATH="$RAILS_ROOT/bin:$PATH"
 ENV LD_LIBRARY_PATH="/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64:/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64/server:$LD_LIBRARY_PATH"
-ENV RAILS_ROOT="/app/samvera/hyrax-webapp"
+ENV RAILS_ROOT=$RAILS_ROOT
 ENV RAILS_SERVE_STATIC_FILES="1"
 
 # RUN gem update bundler
 ENV BUNDLE_GEMFILE="./Gemfile"
 ENV BUNDLER_VERSION='2.0.2'
-ENV HOME="/app/samvera/hyrax-webapp"
+ENV HOME=$RAILS_ROOT
+RUN gem install bundler -v 2.0.2
+
+ARG APP_PATH=.
+ARG BUNDLE_WITHOUT
+
+COPY --chown=1001:0 $APP_PATH/Gemfile $RAILS_ROOT/Gemfile
+COPY --chown=1001:0 $APP_PATH/Gemfile.lock $RAILS_ROOT/Gemfile.lock
+RUN bundle config --global && \
+  bundle install --jobs "$(nproc)" --path=vendor/bundle
+# RUN RAILS_ENV=production SECRET_KEY_BASE=`bin/rake secret` DB_ADAPTER=nulldb DATABASE_URL='postgresql://fake' bundle exec rails assets:precompile
+# TODO enable production if necessary
+
+COPY --chown=1001:0 $APP_PATH $RAILS_ROOT
+
+# Set directories as executable for writeability
+RUN chmod -R g+rwX $RAILS_ROOT
+
+### MORPHOSOURCE STAGE ###
+# To decrease container size, this stage does not inherit from build stage but just copies files from it
+
+ARG RUBY_VERSION=2.7.4
+FROM ruby:$RUBY_VERSION-bullseye as morphosource
+
+ARG RAILS_ROOT=/app/samvera/hyrax-webapp
+ENV BUNDLE_APP_CONFIG="$RAILS_ROOT/.bundle"
+
+RUN apt update && \
+  apt install -y --no-install-recommends \
+  libcurl4 \
+  imagemagick \
+  netcat \
+  nodejs \
+  npm \
+  perl \
+  tzdata \
+  yarnpkg \
+  zip && \
+  rm -rf /var/lib/apt/lists/*
+
+RUN adduser --system --gid 0 --uid 1001 --home /app app
+USER app
+
+WORKDIR $RAILS_ROOT
+
+ENV PATH="$RAILS_ROOT/bin:$PATH"
+ENV LD_LIBRARY_PATH="/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64:/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64/server:$LD_LIBRARY_PATH"
+ENV RAILS_ROOT=$RAILS_ROOT
+ENV RAILS_SERVE_STATIC_FILES="1"
+
+COPY --from=morphosource-build $RAILS_ROOT $RAILS_ROOT
+
+# RUN gem update bundler
+ENV BUNDLE_GEMFILE="./Gemfile"
+ENV BUNDLER_VERSION='2.0.2'
+ENV HOME=$RAILS_ROOT
 RUN gem install bundler -v 2.0.2
 
 ENTRYPOINT ["hyrax-entrypoint.sh"]
 CMD bundle && bundle exec puma -v -b tcp://0.0.0.0:3000
-# CMD ["bundle", "exec", "puma", "-v", "-b", "tcp://0.0.0.0:3000"]
 
-### MS TOOLS STAGE ###
-FROM msbase as mstools
+### MS-WORKER STAGE ###
+# To decrease container size, this stage does not inherit from build stage but just copies files from it
+
+FROM morphosource as ms-worker
+
+ENV MALLOC_ARENA_MAX=2
 
 USER root
 # Setup for installing Java 8 on Debian 11
@@ -109,14 +167,6 @@ COPY --chown=1001:501 ./vendor/fits_config/exiftool/exiftool_dicom_to_fits.xslt 
 COPY --chown=1001:501 ./vendor/fits_config/exiftool/exiftool_xslt_map.xml /app/fits/xml/exiftool
 ENV PATH="${PATH}:/app/fits"
 
-# Install Blender 3D mesh derivative tool
-# RUN mkdir -p /app/blender && \
-#   cd /app/blender && \
-#   wget https://download.blender.org/release/Blender2.82/blender-2.82-linux64.tar.xz -O blender.tar.xz && \
-#   tar -Jxvf blender.tar.xz -C /app/blender --strip-components=1 && \
-#   rm blender.tar.xz
-# ENV BLENDER_PATH="/app/blender/"
-
 # Install Fiji 3D CT stack derivative tool
 RUN mkdir -p /app/fiji && \
   cd /app/fiji && \
@@ -126,94 +176,4 @@ RUN mkdir -p /app/fiji && \
   wget https://raw.githubusercontent.com/MorphoSource/fiji-app-pinned/main/ImageJ.sh -O ./Fiji.app/ImageJ.sh && \
   chmod +x ./Fiji.app/ImageJ.sh
 
-# Install DICOM Toolkit (dcmtk) 3D CT stack derivative tool
-# RUN mkdir -p /app/dcmtk && \
-#   cd /app/dcmtk && \
-#   wget https://dicom.offis.de/download/dcmtk/dcmtk364/bin/dcmtk-3.6.4-linux-x86_64-static.tar.bz2 -O dcmtk.tar.bz2 && \
-#   tar -jxvf dcmtk.tar.bz2 -C /app/dcmtk --strip-components=1 && \
-#   rm dcmtk.tar.bz2 && \
-#   chmod -R -c +x /app/dcmtk/bin
-# ENV PATH="${PATH}:/app/dcmtk/bin"
-
-### MS WORKER BASE STAGE ###
-FROM mstools as msworkerbase
-
-ENV MALLOC_ARENA_MAX=2
-
-CMD bundle exec sidekiq
-
-### MS WORKER STAGE ###
-FROM msworkerbase as msworker
-
-ARG APP_PATH=.
-ARG BUNDLE_WITHOUT
-
-COPY --chown=1001:501 $APP_PATH/Gemfile /app/samvera/hyrax-webapp/Gemfile
-COPY --chown=1001:501 $APP_PATH/Gemfile.lock /app/samvera/hyrax-webapp/Gemfile.lock
-RUN bundle install --jobs "$(nproc)"
-# RUN RAILS_ENV=production SECRET_KEY_BASE=`bin/rake secret` DB_ADAPTER=nulldb DATABASE_URL='postgresql://fake' bundle exec rails assets:precompile
-# TODO enable production if necessary
-
-COPY --chown=1001:501 $APP_PATH /app/samvera/hyrax-webapp
-
-### MORPHOSOURCE STAGE ###
-FROM msbase as morphosource
-
-ARG APP_PATH=.
-ARG BUNDLE_WITHOUT
-
-COPY --chown=1001:0 $APP_PATH/Gemfile /app/samvera/hyrax-webapp/Gemfile
-COPY --chown=1001:0 $APP_PATH/Gemfile.lock /app/samvera/hyrax-webapp/Gemfile.lock
-RUN bundle config --global && \
-  bundle install --jobs "$(nproc)" --path=vendor/bundle
-# RUN RAILS_ENV=production SECRET_KEY_BASE=`bin/rake secret` DB_ADAPTER=nulldb DATABASE_URL='postgresql://fake' bundle exec rails assets:precompile
-# TODO enable production if necessary
-
-COPY --chown=1001:0 $APP_PATH /app/samvera/hyrax-webapp
-
-# Set directories as executable for writeability
-RUN chmod -R g+rwX /app/samvera/hyrax-webapp
-
-### MORPHOSOURCE-SMALL STAGE ###
-ARG RUBY_VERSION=2.7.4
-FROM ruby:$RUBY_VERSION-bullseye as morphosource-small
-
-ARG RAILS_ROOT=/app/samvera/hyrax-webapp
-ENV BUNDLE_APP_CONFIG="$RAILS_ROOT/.bundle"
-
-RUN apt update && \
-  apt install -y --no-install-recommends \
-  libcurl4 \
-  imagemagick \
-  netcat \
-  nodejs \
-  npm \
-  perl \
-  tzdata \
-  yarnpkg \
-  zip \
-  $DATABASE_APK_PACKAGE \
-  $EXTRA_APK_PACKAGES && \
-  rm -rf /var/lib/apt/lists/*
-
-RUN adduser --system --gid 0 --uid 1001 --home /app app
-USER app
-
-WORKDIR $RAILS_ROOT
-
-ENV PATH="/app/samvera/hyrax-webapp/bin:$PATH"
-ENV LD_LIBRARY_PATH="/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64:/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64/server:$LD_LIBRARY_PATH"
-ENV RAILS_ROOT="/app/samvera/hyrax-webapp"
-ENV RAILS_SERVE_STATIC_FILES="1"
-
-COPY --from=morphosource $RAILS_ROOT $RAILS_ROOT
-
-# RUN gem update bundler
-ENV BUNDLE_GEMFILE="./Gemfile"
-ENV BUNDLER_VERSION='2.0.2'
-ENV HOME="/app/samvera/hyrax-webapp"
-RUN gem install bundler -v 2.0.2
-
-ENTRYPOINT ["hyrax-entrypoint.sh"]
-#CMD tail -f /dev/null
-CMD bundle && bundle exec puma -v -b tcp://0.0.0.0:3000
+CMD bundle && bundle exec resque-pool -o '' -e ''

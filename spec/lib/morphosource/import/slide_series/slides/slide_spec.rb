@@ -114,10 +114,14 @@ RSpec.describe Morphosource::Import::SlideSeries::Slides::Slide do
     let(:uri) { "https://api.gbif.org/v1/occurrence/#{key}" }
 
     context 'uri is not valid' do
-      let(:key)       { 'nonesense' }
+      let(:key) { 'nonsense' }
       let(:fail_data) do
         { 'message' => '400 Bad Request',
           'request_url' => uri }
+      end
+
+      before do
+        allow(RestClient::Request).to receive(:execute).with(method: 'get', url: uri, timeout: 15).and_raise(RestClient::BadRequest.new nil, 400)
       end
 
       it 'returns an error status' do
@@ -128,6 +132,12 @@ RSpec.describe Morphosource::Import::SlideSeries::Slides::Slide do
     end
 
     context 'request is successful' do
+      let(:response)  { instance_double('RestClient::Response', code: 200, body: "{ \"key\":#{key} }" ) }
+
+      before do
+        allow(RestClient::Request).to receive(:execute).with(method: 'get', url: uri, timeout: 15).and_return(response)
+      end
+
       it 'returns json result' do
         results = subject.json(uri)
         expect(results[:status]).to eq(:success)

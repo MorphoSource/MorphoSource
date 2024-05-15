@@ -99,6 +99,21 @@ class OrganizationCollection < Collection
     organization_type&.first&.include?("Scanning Facility") || false
   end
 
+  def devices_solr
+    return [] if id.nil?
+
+    qry = "organization_id_ssim:#{self.id} AND has_model_ssim:Device"
+    ActiveFedora::SolrService.query(qry, rows: 999999)
+  end
+
+
+  def devices
+    ds = devices_solr
+    return [] if ds.blank?
+    ids = ds.map(&:id).select { |id| Device.exists?(id) }
+    Device.find(ids)
+  end
+
   private
 
   def create_organization_project

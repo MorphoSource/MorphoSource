@@ -36,12 +36,19 @@ build_job:
   tags:
     - build
 
-build_container_job:
+build_image_docker:
   stage: build
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ''
+  services:
+    - name: docker:20.10-dind
   only:
     - k8s
-  script:
+  before_script:
     - echo "$CONTAINER_REGISTRY_TOKEN" | docker login -u juliewinchester --password-stdin
+  script:
     - docker build --target morphosource --tag juliewinchester/morphosource:app-dev-$CI_COMMIT_SHORT_SHA .
     - docker push juliewinchester/morphosource:app-dev-0.0.23 
     - docker build --target ms-worker --tag juliewinchester/morphosource:worker-dev-$CI_COMMIT_SHORT_SHA .

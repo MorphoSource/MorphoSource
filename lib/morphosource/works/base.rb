@@ -111,7 +111,7 @@ module Morphosource
 
       # return either the user ms_id or the organization collection id
       def user_with_ownership
-        return depositor unless owner.present? 
+        return depositor unless owner.present?
         User.find_by(ms_id: owner)&.ms_id || SolrDocument.where("id" => owner)&.first&.id || depositor
       end
 
@@ -124,6 +124,7 @@ module Morphosource
       end
 
       def apply_owner_metadata(owner)
+        byebug
         owner_id = owner.respond_to?(:user_key) ? owner.user_key : owner
 
         if respond_to? :owner

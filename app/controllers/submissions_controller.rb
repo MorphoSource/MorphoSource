@@ -180,7 +180,6 @@ class SubmissionsController < ApplicationController
       status: status,
       message: message,
       default_fields: default_fields,
-      depositor_name: current_user.display_name,
       organization_alert_message: organization_alert_message,
       organization_model: organization_model,
       organization_title: organization_title,
@@ -320,6 +319,7 @@ class SubmissionsController < ApplicationController
       if work == 'media'
         create_thumbnail
         set_new_fund_code if @submission.fund_code.present?
+        byebug
         create_organization_transfer_request(new_work) if ( organization_media_transfer == :immediate )
       end
     end
@@ -328,6 +328,7 @@ class SubmissionsController < ApplicationController
   def prepare_and_create_work(work, params)
     model_params = create_model_params(work, params)
     attributes_for_actor = create_attributes_for_actor(to_model(work), model_params)
+    byebug
     create_work(to_model(work), attributes_for_actor)
   end
 

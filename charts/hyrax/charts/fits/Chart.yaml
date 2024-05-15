@@ -1,6 +1,0 @@
-apiVersion: v2
-appVersion: 1.6.0
-description: File Information Tool Set (FITS)
-name: fits
-type: application
-version: 0.2.0

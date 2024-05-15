@@ -230,7 +230,7 @@ class User < ApplicationRecord
         if org.can_submit_remote_files? && org.allowed_remote_source.present?
           domains[id] = org.allowed_remote_source
         end
-      elsif (c = Collection.where(id: id)&.first).present?
+      elsif (c = Collection.where(id: id)&.first).present? 
         if c.team? && c.organization.present?
           if c.can_submit_remote_files? && c.allowed_remote_source.present?
             domains[id] = c.allowed_remote_source

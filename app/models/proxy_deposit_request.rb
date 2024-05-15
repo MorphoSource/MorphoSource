@@ -114,7 +114,7 @@ class ProxyDepositRequest < ActiveRecord::Base
   end
 
   # custom setter, sets user and type from ID, allows object creation from user ID
-  def receiving_user_id=(value) 
+  def receiving_user_id=(value)
     self.receiving_user = select_receiving_user(value)
     super(value)
   end
@@ -182,16 +182,16 @@ class ProxyDepositRequest < ActiveRecord::Base
   end
 
   def send_org_transfer_message_to_receiver(recipient)
-    message = I18n.t("hyrax.transfers.message.org_transfer_receiver", 
-      message_content: message_content, organization_content: organization_content, 
+    message = I18n.t("hyrax.transfers.message.org_transfer_receiver",
+      message_content: message_content, organization_content: organization_content,
       transfer_link: transfers_dashboard_link, user_link: user_or_org_email_link(sending_user)
     ).html_safe
     message += "<p>Comment: #{ActionController::Base.helpers.sanitize(sender_comment)}</p>".html_safe if sender_comment.present?
-    
+
     deliver_message(
-      email_sender, 
-      recipient, 
-      message.html_safe, 
+      email_sender,
+      recipient,
+      message.html_safe,
       I18n.t("hyrax.transfers.message.org_transfer_receiver_subject")
     )
   end
@@ -204,46 +204,46 @@ class ProxyDepositRequest < ActiveRecord::Base
       receiving_user_link = "organization data manager #{user_or_org_email_link(receiving_user)}"
     end
 
-    message = I18n.t("hyrax.transfers.message.org_transfer_sender", 
+    message = I18n.t("hyrax.transfers.message.org_transfer_sender",
       message_content: message_content, receiving_user_link: receiving_user_link
     ).html_safe
-    
+
     deliver_message(
-      email_sender, 
-      recipient, 
+      email_sender,
+      recipient,
       message.html_safe,
       I18n.t("hyrax.transfers.message.org_transfer_sender_subject")
     )
   end
 
   def send_standard_transfer_create_message(recipient)
-    message = I18n.t("hyrax.transfers.message.transfer_create", 
-      message_content: message_content, transfer_link: transfers_dashboard_link, 
+    message = I18n.t("hyrax.transfers.message.transfer_create",
+      message_content: message_content, transfer_link: transfers_dashboard_link,
       user_link: user_or_org_email_link(sending_user)
     ).html_safe
     message += "<p>Comment: #{ActionController::Base.helpers.sanitize(sender_comment)}</p>".html_safe if sender_comment.present?
-    
+
     deliver_message(
-      email_sender, 
-      recipient, 
-      message.html_safe, 
+      email_sender,
+      recipient,
+      message.html_safe,
       I18n.t("hyrax.transfers.message.transfer_create_subject")
     )
   end
 
   def send_transfer_update_message(recipient)
     receiver_link = user_or_org_email_link(receiving_user)
-    
-    message = I18n.t("hyrax.transfers.message.transfer_update_p1", 
+
+    message = I18n.t("hyrax.transfers.message.transfer_update_p1",
       message_content: message_content, status: status, receiver_link: receiver_link
     ).html_safe
     message_p2 = I18n.t("hyrax.transfers.message.transfer_update_p2", receiver_link: receiver_link).html_safe
     message += "<p>#{message_p2}</p>".html_safe
 
     deliver_message(
-      email_sender, 
-      recipient, 
-      message.html_safe, 
+      email_sender,
+      recipient,
+      message.html_safe,
       I18n.t("hyrax.transfers.message.transfer_update_subject", status: status)
     )
   end
@@ -261,7 +261,7 @@ class ProxyDepositRequest < ActiveRecord::Base
 
   def organization_link
     link_to(
-      receiving_user.name, 
+      receiving_user.name,
       Rails.application.routes.url_helpers.organization_url(receiving_user, host: host_name)
     )
   end

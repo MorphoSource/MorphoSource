@@ -180,7 +180,6 @@ class SubmissionsController < ApplicationController
       status: status,
       message: message,
       default_fields: default_fields,
-      depositor_name: current_user.display_name,
       organization_alert_message: organization_alert_message,
       organization_model: organization_model,
       organization_title: organization_title,

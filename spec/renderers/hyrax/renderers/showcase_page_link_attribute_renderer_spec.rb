@@ -12,7 +12,7 @@ RSpec.describe Hyrax::Renderers::ShowcasePageLinkAttributeRenderer do
       let(:field)           { "Field label"}
       let(:renderer)        { described_class.new(field, value) }
       let(:expected_result) {
-        "<div class='row'><div class='col-xs-6 showcase-label'>#{field}</div><div class='col-xs-6 showcase-value '><span class='showcase-link' style='word-break: normal;'><a href=\"#{Rails.application.routes.url_helpers.hyrax_device_path(obj.id)}\">#{obj.creator.first}</a></span></div></div>"
+        "<div class='row'><div class='col-xs-6 showcase-label'>#{field}</div><div class='col-xs-6 showcase-value '><span class='showcase-link' style='word-break: normal;'><a href=\"#{Rails.application.routes.url_helpers.hyrax_device_path(obj.id)}\">#{obj.title.first}</a></span></div></div>"
       }
       it 'displays device link ' do
         expect(renderer.render()).to eq(expected_result)

@@ -50,6 +50,27 @@ en:
             header: New Organization
           edit:
             header: Edit Organization
+          form_members_table:
+            managers:
+              title: 'Managers'
+              help: Managers of this organization can modify collection metadata, grant other members access, and add and edit organization devices. Managers have edit access to all media managed by the organization and view access to media representing organization objects or imaged using an organization device.
+              empty: No managers have been added.
+            editors:
+              title: 'Editors'
+              help: Editors are given edit and download access to all media managed by the organization and view access to media representing organization objects or imaged using an organization device. Editors can also add and edit organization devices.
+              empty: No editors have been added.
+            depositors:
+              title: 'Depositors'
+              help: Depositors can upload media to be managed by the organization, but are not granted additional access to media associated with the organization.
+              empty: No depositors have been added.
+            downloaders:
+              title: 'Downloaders'
+              help: Downloaders are given view access to all media associated with the organization through organization objects or devices and can download media managed by the organization.
+              empty: No downloaders have been added.
+            viewers:
+              title: 'Viewers'
+              help: Viewers are given view access to all media associated with the organization through organization objects or devices.
+              empty: No viewers have been added.
         projects:
           new:
             header: New Project

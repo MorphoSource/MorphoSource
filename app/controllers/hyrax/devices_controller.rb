@@ -8,7 +8,7 @@ module Hyrax
     include Hyrax::ChildWorkRedirect
 
     before_action :find_organization, only: [:new, :create, :edit, :update]
-    before_action :authorize_organization, only: [:new, :create, :update]
+    before_action :authorize_organization, only: [:new, :create, :edit, :update]
 
     skip_authorize_resource only: :show
 

@@ -26,6 +26,7 @@ en:
         contact_person: Contact Person
         country: Country
         description: Organization Description
+        identifier: External Identifier
         institution_code: Institution Code(s)
         institution_name: Parent Institution Name
         organization_type: Organization Type
@@ -42,6 +43,7 @@ en:
         contact_person: The name of the person to contact for questions about this organization
         country: The country where the organization is located
         description: A description of the organization
+        identifier: An external identifier for the organization
         institution_code: Contact Morphosource admins at morphosource@duke.edu to change the institution code(s)
         institution_name: Contact Morphosource admins at morphosource@duke.edu to change the institution name
         organization_type: Contact Morphosource admins at morphosource@duke.edu to change the organization type

@@ -10,7 +10,12 @@
       </h1>
     </div>
     <div class="col-xs-3 no-horizontal-padding show-actions text-right">
-      <% if (@collections_type == "media_lists" && current_user.registered?) || can?(:create_any, Collection) %>
+      <% if (@collections_type == "organizations") %>
+        <% if current_user.admin? %>
+          <% # link directly to create collection form with type %>
+          <%= link_to(t("morphosource.dashboard.my.#{@collections_type}.action.new"), new_collection_url(@collections_type), class: 'btn btn-primary') %>
+        <% end %>
+      <% elsif (@collections_type == "media_lists" && current_user.registered?) || can?(:create_any, Collection) %>
         <% # link directly to create collection form with type %>
         <%= link_to(t("morphosource.dashboard.my.#{@collections_type}.action.new"), new_collection_url(@collections_type), class: 'btn btn-primary') %>
       <% end %>

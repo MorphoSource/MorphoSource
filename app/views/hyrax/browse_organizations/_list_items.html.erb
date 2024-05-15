@@ -1,9 +1,16 @@
 <tr>
   <td><%= presenter.institution_name&.first %></td>
   <td>
-    <%= link_to Rails.application.routes.url_helpers.hyrax_organization_path(document.id) do %>
-      <span class="sr-only"><%= t("hyrax.dashboard.my.sr.show_label") %></span>
-      <%= presenter.title.first %>
+    <% if presenter.has_model.first == "OrganizationCollection" %>
+      <%= link_to Rails.application.routes.url_helpers.organization_collection_path(document.id) do %>
+        <span class="sr-only"><%= t("hyrax.dashboard.my.sr.show_label") %></span>
+        <%= presenter.title.first %>
+      <% end %>
+    <% else %>
+      <%= link_to Rails.application.routes.url_helpers.hyrax_organization_path(document.id) do %>
+        <span class="sr-only"><%= t("hyrax.dashboard.my.sr.show_label") %></span>
+        <%= presenter.title.first %>
+      <% end %>
     <% end %>
   </td>
   <td><%= presenter.institution_code&.join(', ') %></td>

@@ -12,10 +12,8 @@
   <span class="fa fa-list" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.media_lists') %></span>
 <% end %>
 
-<% if current_user.admin? %>
-  <%= menu.nav_link(Rails.application.routes.url_helpers.my_organizations_path) do %>
-    <span class="fa fa-landmark" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.organizations') %></span>
-  <% end %>
+<%= menu.nav_link(Rails.application.routes.url_helpers.my_organizations_path) do %>
+  <span class="fa fa-landmark" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.organizations') %></span>
 <% end %>
 
 <%= menu.nav_link(Rails.application.routes.url_helpers.my_sequential_section_lists_path) do %>

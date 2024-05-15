@@ -38,6 +38,8 @@ class CatalogController < ApplicationController
     config.show.partials.insert(1, :openseadragon)
     config.search_builder_class = Morphosource::CatalogSearchBuilder
 
+    config.facet_paginator_class = Morphosource::Solr::FacetPaginator
+
     # Show gallery view
     config.view.gallery.partials = [:index_header, :index]
     #config.view.slideshow.partials = [:index]

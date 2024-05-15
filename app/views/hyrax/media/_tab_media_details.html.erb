@@ -5,10 +5,10 @@
 
     <div class="content-block">
       <h2>GENERAL DETAILS</h2>
-      <%= @presenter.attribute_to_html(:work_id, label: "Media ID", render_as: :showcase_default, include_empty: true, html_dl: false, show_hint: true) %>
+      <%= @presenter.attribute_to_html(:work_id, label: t("simple_form.labels.media.media_id"), render_as: :showcase_default, include_empty: true, html_dl: false, show_hint: true) %>
       <%= render_edit_field_partial('media_type', f: f) %>
       <%= f.input :part, as: :multi_value %>
-      <%= f.input :short_title, label: 'Custom Title', placeholder: '' %>
+      <%= f.input :short_title, label: t("simple_form.labels.media.short_title"), placeholder: '' %>
       <%= render_edit_field_partial('custom_title_case_sensitive', f: f) %>
       <%= render_edit_field_partial('side', f: f) %>
       <%= f.input :orientation, as: :multi_value %>
@@ -36,8 +36,8 @@
     <div class="content-block">
       <h2>OWNERSHIP AND PERMISSIONS</h2>
       <%= render 'edit_media_organization_transfer', f: f %>
-      <%= @presenter.attribute_to_html(:user_with_ownership, label: "Data managed by", render_as: :showcase_user_link, include_empty: true, show_hint: true) %>
-      <%= @presenter.attribute_to_html(:depositor, label: "Data uploaded by", render_as: :showcase_user_link, include_empty: false, show_hint: true) %>
+      <%= @presenter.attribute_to_html(:user_with_ownership, label: t("simple_form.labels.media.data_managed_by"), render_as: :showcase_user_link, include_empty: true, show_hint: true) %>
+      <%= @presenter.attribute_to_html(:depositor, label: t("simple_form.labels.media.data_uploaded_by"), render_as: :showcase_user_link, include_empty: false, show_hint: true) %>
       <%= render 'edit_media_permissions', f: f %>
     </div>
 

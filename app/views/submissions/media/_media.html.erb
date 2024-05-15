@@ -75,7 +75,7 @@
             <div class="content-block">
               <%= render_edit_field_partial('media_type', f: f) %>
               <%= f.input :part, label: 'Element or part of the object', as: :multi_value %>
-              <%= f.input :short_title, label: 'Custom Title', placeholder: 'Custome title here' %>
+              <%= f.input :short_title, label: t("simple_form.labels.media.short_title"), placeholder: 'Custom title here' %>
               <%= render_edit_field_partial('custom_title_case_sensitive', f: f) %>
               <%= render_edit_field_partial('side', f: f) %>
               <%= f.input :orientation, as: :multi_value %>

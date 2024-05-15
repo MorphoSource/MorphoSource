@@ -61,7 +61,7 @@ module Hyrax
       :preview_mode, :publication_status_label, :related_url, :remote_manifest_url,
       :remote_origin_url, :required_archival_of_published_derivatives, :rights_holder, :scale_bar,
       :series_type, :short_description, :side, :slice_thickness, :taxonomies_titles, :unit,
-      :user_with_ownership, :x_spacing, :y_spacing, :z_spacing,
+      :user_with_ownership, :x_spacing, :y_spacing, :z_spacing, :short_title,
       to: :solr_document
 
     attr_accessor :file_status
@@ -79,19 +79,6 @@ module Hyrax
     end
 
     ### MEDIA FIELDS AND METHODS ###
-
-    #
-    # Generated media title
-    #
-    # @return [String] Generated title
-    #
-    def generated_title
-      if solr_document.short_title.present?
-        return 'Media ' + id + ': ' + solr_document.title.first
-      else
-        return 'Media ' + id + ': ' + (part.present? ? part.join(", ").titleize : "Element Unspecified")
-      end
-    end
 
     #
     # Media custom agreement attachment file (PDF, DOCX, or TXT) URL

@@ -22,10 +22,22 @@ module Hyrax
 
       def generated_title(env)
         attrs = env.attributes
-        if attrs.key?('short_title') && (short_title = attrs['short_title']).present?
+        if attrs.key?('short_title')
+          short_title = attrs['short_title'].presence || ''
+        else
+          short_title = env.curation_concern.short_title.presence || ''
+        end
+
+        if short_title.present?
           # use custom title provided by user
           if attrs.key?('custom_title_case_sensitive')
-            if attrs['custom_title_case_sensitive'] == ['1']
+            custom_title_case_sensitive = attrs['custom_title_case_sensitive'].presence || ''
+          else
+            custom_title_case_sensitive = env.curation_concern.custom_title_case_sensitive.presence || ''
+          end
+
+          if custom_title_case_sensitive.present?
+            if custom_title_case_sensitive == ['1']
               return short_title.first
             end
           end

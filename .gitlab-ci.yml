@@ -81,6 +81,7 @@ test_until_fail_job:
   except:
     refs: 
       - main
+      - k8s
     variables:
       - $SKIP_TESTS == "true"
   script:

@@ -7,9 +7,9 @@ module Hyrax
     include Hyrax::WorksControllerBehavior
     include Hyrax::ChildWorkRedirect
 
-    before_action :authorize_admin, only: [:new, :create, :show]
+    before_action :authorize_admin, only: [:show]
     before_action :find_organization, only: [:new, :create, :edit, :update]
-    before_action :authorize_organization, only: [:new, :create, :update]
+    before_action :authorize_organization, only: [:new, :create, :edit, :update]
 
     self.curation_concern_type = ::Device
     with_themed_layout 'morphosource_1_column'

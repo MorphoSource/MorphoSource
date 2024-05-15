@@ -5,29 +5,20 @@ module Morphosource
 
       # View Media and FileSets through organization membership
       def organization_member_abilities
+        # Read rules
+
+        return unless registered_user?
 
         can :read, ::Media do |obj|
           has_organizational_access_to_media? obj
-        end
-
-        can :edit, ::Media do |obj|
-          has_organizational_edit_access_to_media? obj
         end
 
         can :read, ::FileSet do |obj|
           has_organizational_access_to_fileset? obj
         end
 
-        can :edit, ::FileSet do |obj|
-          has_organizational_edit_access_to_fileset? obj
-        end
-
         can :read, [::BiologicalSpecimen, ::CulturalHeritageObject] do |obj|
           has_organizational_access_to_physical_object? obj
-        end
-
-        can :edit, [::BiologicalSpecimen, ::CulturalHeritageObject] do |obj|
-          has_organizational_edit_access_to_physical_object? obj
         end
 
         can :read, ::SolrDocument do |obj|
@@ -43,6 +34,29 @@ module Morphosource
           end
         end
 
+        can :read, String do |id|
+          obj = SolrDocument.find(id)
+          can? :read, obj
+        rescue
+          false
+        end
+
+        # Edit rules
+
+        return unless contributor?
+
+        can :edit, ::Media do |obj|
+          has_organizational_edit_access_to_media? obj
+        end
+
+        can :edit, ::FileSet do |obj|
+          has_organizational_edit_access_to_fileset? obj
+        end
+
+        can :edit, [::BiologicalSpecimen, ::CulturalHeritageObject] do |obj|
+          has_organizational_edit_access_to_physical_object? obj
+        end
+
         can :edit, ::SolrDocument do |obj|
           case obj.has_model&.first
           when 'Media'
@@ -55,14 +69,7 @@ module Morphosource
             false
           end
         end
-
-        can :read, String do |id|
-          obj = SolrDocument.find(id)
-          can? :read, obj
-        rescue
-          false
-        end
-
+        
         can :edit, String do |id|
           obj = SolrDocument.find(id)
           can? :edit, obj
@@ -159,7 +166,7 @@ module Morphosource
       end
 
       def user_manages_media_through_organization?(media_id)
-        return unless media = solr_document(media_id)
+        return false unless media = solr_document(media_id)
 
         if (media["owner_type_ssi"] == "OrganizationCollection") && (owner_org_id = media["owner_ssim"]&.first).present?
           user_is_manager_of_organization?(owner_org_id)

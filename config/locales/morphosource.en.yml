@@ -209,6 +209,8 @@ en:
         catalog:
           refine:
             placeholder: "Refine your search"
+        facet:
+          placeholder: "Filter by text contained"
         option:
           media:
             label: "Media"

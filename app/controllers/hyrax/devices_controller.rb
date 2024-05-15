@@ -7,7 +7,6 @@ module Hyrax
     include Hyrax::WorksControllerBehavior
     include Hyrax::ChildWorkRedirect
 
-    before_action :authorize_admin, only: [:new, :create]
     before_action :find_organization, only: [:new, :create, :edit, :update]
     before_action :authorize_organization, only: [:new, :create, :update]
 

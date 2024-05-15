@@ -10,6 +10,9 @@ stages:
 
 build_job:
   stage: build
+  except:
+    refs: 
+      - k8s
   before_script:
     - ruby -v
     - gem install bundler -v 2.0.2
@@ -33,10 +36,26 @@ build_job:
   tags:
     - build
 
+build_container_job:
+  stage: build
+  only:
+    - k8s
+  script:
+    - echo "$CONTAINER_REGISTRY_TOKEN" | docker login -u juliewinchester --password-stdin
+    - docker build --target morphosource --tag juliewinchester/morphosource:app-dev-$CI_COMMIT_SHORT_SHA .
+    - docker push juliewinchester/morphosource:app-dev-0.0.23 
+    - docker build --target ms-worker --tag juliewinchester/morphosource:worker-dev-$CI_COMMIT_SHORT_SHA .
+    - docker push juliewinchester/morphosource:worker-dev-0.0.23 
+  tags:
+    - oit-shared
+
 .test:
   stage: test
   variables:
     RAILS_ENV: test
+  except:
+    refs: 
+      - k8s
   before_script:
     - source $RAILS_DEPLOY_PATH/etc/export-test.env
     - ruby -v
@@ -108,6 +127,9 @@ predeploy_prod:
   stage: deploy
   variables:
     RAKE_COMMAND: sudo -u $RAILS_USER -n -i $RAILS_ROOT/bin/rake -f $RAILS_ROOT/Rakefile
+  except:
+    refs: 
+      - k8s
   script:
     - rsync -rl --delete --exclude-from=EXCLUDE ./ $RAILS_ROOT/
     - $RAKE_COMMAND maintenance:start

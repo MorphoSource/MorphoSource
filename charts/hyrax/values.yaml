@@ -8,7 +8,7 @@ image:
   repository: docker.io/juliewinchester/morphosource
   pullPolicy: IfNotPresent
   # Overrides the image tag whose default is the chart appVersion.
-  tag: 0.0.20
+  tag: app-dev-0.0.23
 
 imagePullSecrets:
   - name: dockerregcred
@@ -174,7 +174,7 @@ ingress:
   tls: []
 
 livenessProbe:
-  enabled: false
+  enabled: true
   # path: "/healthz"
   # initialDelaySeconds: 0
   # periodSeconds: 10
@@ -183,7 +183,7 @@ livenessProbe:
   # successThreshold: 1
 
 readinessProbe:
-  enabled: false
+  enabled: true
   # path: "/healthz"
   # initialDelaySeconds: 5
   # periodSeconds: 10
@@ -199,7 +199,7 @@ worker:
   image:
     repository: docker.io/juliewinchester/morphosource
     pullPolicy: IfNotPresent
-    tag: 0.0.20
+    tag: worker-dev-0.0.23
   extraInitContainers: []
   extraVolumeMounts: []
   extraVolumes: []

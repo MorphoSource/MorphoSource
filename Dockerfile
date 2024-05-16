@@ -1,4 +1,5 @@
 ### MORPHOSOURCE-BUILD STAGE (BUILDS APP FILES FOR LATER COPYING) ###
+
 ARG RUBY_VERSION=2.7.4
 FROM ruby:$RUBY_VERSION-bullseye as morphosource-build
 
@@ -14,7 +15,6 @@ RUN apt update && \
   npm \
   perl \
   tzdata \
-  yarnpkg \
   zip \
   $DATABASE_APK_PACKAGE \
   $EXTRA_APK_PACKAGES && \
@@ -40,26 +40,57 @@ ENV BUNDLER_VERSION='2.0.2'
 ENV HOME=$RAILS_ROOT
 RUN gem install bundler -v 2.0.2
 
+
+
+### MORPHOSOURCE-BUILD-DEV STAGE ####
+
+FROM morphosource-build as morphosource-build-dev
+
 ARG APP_PATH=.
 ARG BUNDLE_WITHOUT
+
+USER app
 
 COPY --chown=1001:0 $APP_PATH/Gemfile $RAILS_ROOT/Gemfile
 COPY --chown=1001:0 $APP_PATH/Gemfile.lock $RAILS_ROOT/Gemfile.lock
 RUN bundle config --global && \
   bundle install --jobs "$(nproc)" --path=vendor/bundle
-# RUN RAILS_ENV=production SECRET_KEY_BASE=`bin/rake secret` DB_ADAPTER=nulldb DATABASE_URL='postgresql://fake' bundle exec rails assets:precompile
-# TODO enable production if necessary
 
 COPY --chown=1001:0 $APP_PATH $RAILS_ROOT
 
 # Set directories as executable for writeability
 RUN chmod -R g+rwX $RAILS_ROOT
 
-### MORPHOSOURCE STAGE ###
-# To decrease container size, this stage does not inherit from build stage but just copies files from it
+
+
+### MORPHOSOURCE-BUILD-PROD STAGE ###
+
+FROM morphosource-build as morphosource-build-prod
+
+ARG APP_PATH=.
+ARG BUNDLE_WITHOUT
+ARG SECRET_KEY_BASE
+
+USER app
+
+COPY --chown=1001:0 $APP_PATH/Gemfile $RAILS_ROOT/Gemfile
+COPY --chown=1001:0 $APP_PATH/Gemfile.lock $RAILS_ROOT/Gemfile.lock
+RUN bundle config --global && \
+  bundle install --jobs "$(nproc)" --path=vendor/bundle
+
+COPY --chown=1001:0 $APP_PATH $RAILS_ROOT
+
+RUN RAILS_ENV=development bundle exec rake assets:precompile
+
+# Set directories as executable for writeability
+RUN chmod -R g+rwX $RAILS_ROOT
+
+
+
+### MORPHOSOURCE-BASE STAGE ###
 
 ARG RUBY_VERSION=2.7.4
-FROM ruby:$RUBY_VERSION-bullseye as morphosource
+FROM ruby:$RUBY_VERSION-bullseye as morphosource-base
 
 ARG RAILS_ROOT=/app/samvera/hyrax-webapp
 ENV BUNDLE_APP_CONFIG="$RAILS_ROOT/.bundle"
@@ -73,7 +104,6 @@ RUN apt update && \
   npm \
   perl \
   tzdata \
-  yarnpkg \
   zip && \
   rm -rf /var/lib/apt/lists/*
 
@@ -87,21 +117,41 @@ ENV LD_LIBRARY_PATH="/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64:/usr/lib/jvm/ja
 ENV RAILS_ROOT=$RAILS_ROOT
 ENV RAILS_SERVE_STATIC_FILES="1"
 
-COPY --from=morphosource-build $RAILS_ROOT $RAILS_ROOT
-
 # RUN gem update bundler
 ENV BUNDLE_GEMFILE="./Gemfile"
 ENV BUNDLER_VERSION='2.0.2'
 ENV HOME=$RAILS_ROOT
 RUN gem install bundler -v 2.0.2
 
+
+
+### MORPHOSOURCE-DEV STAGE
+# To decrease container size, this stage does not inherit from build stage but just copies files from it
+
+FROM morphosource-base as morphosource-dev
+
+COPY --chown=1001:0 --from=morphosource-build-dev $RAILS_ROOT $RAILS_ROOT
+
 ENTRYPOINT ["hyrax-entrypoint.sh"]
 CMD bundle && bundle exec puma -v -b tcp://0.0.0.0:3000
 
-### MS-WORKER STAGE ###
+
+
+### MORPHOSOURCE-PROD STAGE
 # To decrease container size, this stage does not inherit from build stage but just copies files from it
 
-FROM morphosource as ms-worker
+FROM morphosource-base as morphosource-prod
+
+COPY --chown=1001:0 --from=morphosource-build-prod $RAILS_ROOT $RAILS_ROOT
+
+ENTRYPOINT ["hyrax-entrypoint.sh"]
+CMD bundle && bundle exec puma -v -b tcp://0.0.0.0:3000
+
+
+
+### MORPHOSOURCE-WORKER-BASE STAGE ###
+
+FROM morphosource-base as morphosource-worker-base
 
 ENV MALLOC_ARENA_MAX=2
 
@@ -162,9 +212,9 @@ RUN mkdir -p /app/fits && \
   unzip fits.zip && \
   rm fits.zip && \
   chmod a+x /app/fits/fits.sh
-COPY --chown=1001:501 ./vendor/fits_config/fits.xml /app/fits/xml
-COPY --chown=1001:501 ./vendor/fits_config/exiftool/exiftool_dicom_to_fits.xslt /app/fits/xml/exiftool
-COPY --chown=1001:501 ./vendor/fits_config/exiftool/exiftool_xslt_map.xml /app/fits/xml/exiftool
+COPY --chown=1001:0 ./vendor/fits_config/fits.xml /app/fits/xml
+COPY --chown=1001:0 ./vendor/fits_config/exiftool/exiftool_dicom_to_fits.xslt /app/fits/xml/exiftool
+COPY --chown=1001:0 ./vendor/fits_config/exiftool/exiftool_xslt_map.xml /app/fits/xml/exiftool
 ENV PATH="${PATH}:/app/fits"
 
 # Install Fiji 3D CT stack derivative tool
@@ -175,5 +225,25 @@ RUN mkdir -p /app/fiji && \
   rm fiji.zip && \
   wget https://raw.githubusercontent.com/MorphoSource/fiji-app-pinned/main/ImageJ.sh -O ./Fiji.app/ImageJ.sh && \
   chmod +x ./Fiji.app/ImageJ.sh
+
+
+
+### MORPHOSOURCE-WORKER-DEV STAGE
+# To decrease container size, this stage does not inherit from build stage but just copies files from it
+
+FROM morphosource-worker-base as morphosource-worker-dev
+
+COPY --chown=1001:0 --from=morphosource-build-dev $RAILS_ROOT $RAILS_ROOT
+
+CMD bundle && bundle exec resque-pool -o '' -e ''
+
+
+
+### MORPHOSOURCE-WORKER-PROD STAGE
+# To decrease container size, this stage does not inherit from build stage but just copies files from it
+
+FROM morphosource-worker-base as morphosource-worker-prod
+
+COPY --chown=1001:0 --from=morphosource-build-prod $RAILS_ROOT $RAILS_ROOT
 
 CMD bundle && bundle exec resque-pool -o '' -e ''

@@ -212,7 +212,7 @@ RSpec.describe Hyrax::Actors::MediaActor do
     end
   end
 
-  describe '#generated_title' do
+  describe '#get_title' do
     let(:user) { FactoryBot.build(:user) }
     let(:ability) { Ability.new(user) }
     let(:work) { Media.new }
@@ -231,24 +231,22 @@ RSpec.describe Hyrax::Actors::MediaActor do
     end
 
     describe 'one modality' do
-
-
       describe 'no part' do
         let(:attrs) { { 'part' => [], 'work_parents_attributes' => [ work_parents_attributes.first ] } }
         let(:expected_title) { "Element Unspecified [#{modality_labels.first}]" }
-        specify { expect(subject.generated_title(env)).to eq(expected_title)}
+        specify { expect(subject.get_title(env)).to eq(expected_title)}
       end
       describe 'one part' do
         let(:attrs) { { 'work_parents_attributes' => [ work_parents_attributes.first ],
                         'part' => [ part_attr.first ] } }
         let(:expected_title) { "#{part_attr.first.titleize} [#{modality_labels.first}]"}
-        specify { expect(subject.generated_title(env)).to eq(expected_title)}
+        specify { expect(subject.get_title(env)).to eq(expected_title)}
       end
       describe 'more than one part' do
         let(:attrs) { { 'work_parents_attributes' => [ work_parents_attributes.first ],
                         'part' => part_attr } }
         let(:expected_title) { "#{part_attr.sort.join(', ').titleize} [#{modality_labels.first}]"}
-        specify { expect(subject.generated_title(env)).to eq(expected_title)}
+        specify { expect(subject.get_title(env)).to eq(expected_title)}
       end
       describe 'custom title, case sensitive not checked' do
         let(:attrs) { { 'work_parents_attributes' => [ work_parents_attributes.first ],
@@ -256,7 +254,7 @@ RSpec.describe Hyrax::Actors::MediaActor do
                         'short_title' => ['custom Title ABC'],
                         'custom_title_case_sensitive' => ['0'] } }
         let(:expected_title) { "#{attrs['short_title'].first.titleize}"}
-        specify { expect(subject.generated_title(env)).to eq(expected_title)}
+        specify { expect(subject.get_title(env)).to eq(expected_title)}
       end
       describe 'custom title, case sensitive checked' do
         let(:attrs) { { 'work_parents_attributes' => [ work_parents_attributes.first ],
@@ -264,7 +262,7 @@ RSpec.describe Hyrax::Actors::MediaActor do
                         'short_title' => ['custom Title ABC'],
                         'custom_title_case_sensitive' => ['1'] } }
         let(:expected_title) { "#{attrs['short_title'].first}"}
-        specify { expect(subject.generated_title(env)).to eq(expected_title)}
+        specify { expect(subject.get_title(env)).to eq(expected_title)}
       end
     end
 
@@ -273,19 +271,19 @@ RSpec.describe Hyrax::Actors::MediaActor do
         let(:attrs) { { 'work_parents_attributes' => work_parents_attributes_multiple,
                         'part' => [] } }
         let(:expected_title) { "Element Unspecified [#{modality_labels.sort.join('/')}]" }
-        specify { expect(subject.generated_title(env)).to eq(expected_title)}
+        specify { expect(subject.get_title(env)).to eq(expected_title)}
       end
       describe 'one part' do
         let(:attrs) { { 'work_parents_attributes' => work_parents_attributes_multiple,
                         'part' => [ part_attr.first ] } }
         let(:expected_title) { "#{part_attr.first.titleize} [#{modality_labels.sort.join('/')}]" }
-        specify { expect(subject.generated_title(env)).to eq(expected_title)}
+        specify { expect(subject.get_title(env)).to eq(expected_title)}
       end
       describe 'more than one part' do
         let(:attrs) { { 'work_parents_attributes' => work_parents_attributes_multiple,
                         'part' => part_attr } }
         let(:expected_title) { "#{part_attr.sort.join(', ').titleize} [#{modality_labels.sort.join('/')}]"}
-        specify { expect(subject.generated_title(env)).to eq(expected_title)}
+        specify { expect(subject.get_title(env)).to eq(expected_title)}
       end
     end
   end

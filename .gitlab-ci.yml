@@ -51,11 +51,12 @@ build_image_docker:
     - docker pull juliewinchester/morphosource:app-dev || true
   script:
     - docker build --target morphosource-prod --tag juliewinchester/morphosource:app-dev --tag juliewinchester/morphosource:app-dev-$CI_COMMIT_SHORT_SHA  .
+    - docker push juliewinchester/morphosource:app-dev-$CI_COMMIT_SHORT_SHA
+    - docker push juliewinchester/morphosource:app-dev
     - docker build --target morphosource-worker-prod --tag juliewinchester/morphosource:worker-dev --tag juliewinchester/morphosource:worker-dev-$CI_COMMIT_SHORT_SHA  .
     - docker push juliewinchester/morphosource:worker-dev-$CI_COMMIT_SHORT_SHA
     - docker push juliewinchester/morphosource:worker-dev
-    - docker push juliewinchester/morphosource:app-dev-$CI_COMMIT_SHORT_SHA
-    - docker push juliewinchester/morphosource:app-dev
+    
   tags:
     - oit-shared
 

@@ -132,6 +132,41 @@ module Morphosource
       end
     end
 
+    def update_ark_resource_type
+      %w{DEFAULT_SHOULDER USER PASSWORD TARGET_HOST}.each do |required_env_variable|
+        if ENV["EZID_#{required_env_variable}"].blank?
+          Rails.logger.error("Error updating ARK: #{required_env_variable} environment variable not set")
+          return true
+        end
+      end
+      return true unless self.ark.present?
+      begin
+        ark_identifier = Ezid::Identifier.find(self.ark.first)
+      rescue => e
+        Rails.logger.error("Error finding ARK #{self.ark.first} for Work #{self.id}. Exception: #{e.message}")
+      end
+      return true if ark_identifier.nil?
+      if ark_identifier.datacite_resourcetypegeneral != self.ark_resource_type
+        depositor_user = User.find_by(ms_id: self.depositor)
+        depositor_user_name_components = depositor_user.display_name.split(' ')
+        # DataCite metadata expects creator in the form Lastname, Firstname
+        datacite_creator = [depositor_user_name_components.drop(1).join(' '),depositor_user_name_components.first].join(', ')
+        ark_status = public_visibilities.include?(self_visibility) ? 'public' : 'reserved'
+        ark_metadata = {'_status' => ark_status,
+                        '_target' => datacite_target_url,
+                        '_profile' => 'datacite',
+                        'datacite.identifiertype' => 'ARK',
+                        'datacite.creator' => datacite_creator,
+                        'datacite.publisher' => 'MorphoSource.org',
+                        'datacite.title' => self.title.first,
+                        'datacite.publicationyear' => Time.now.year.to_s,
+                        'datacite.resourcetypegeneral' => self.ark_resource_type
+        }
+        ark_identifier.update_metadata(ark_metadata)
+        ark_identifier.modify!
+      end
+    end
+
     private
     
       def delete_ark_if_reserved

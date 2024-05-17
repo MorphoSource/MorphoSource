@@ -132,20 +132,6 @@ module Morphosource
       end
     end
 
-    def update_ark_resource_type
-      unless self.ark.empty?
-        ark_identifier = Ezid::Identifier.find(self.ark.first)
-byebug          
-        if ark_identifier.datacite_resourcetypegeneral != self.ark_resource_type
-#          ark_identifier.datacite_resourcetypegeneral = self.ark_resource_type
-          ark_metadata = { 'datacite.resourcetypegeneral' => self.ark_resource_type }
-byebug          
-          ark_identifier.update_metadata(ark_metadata)
-          ark_identifier.modify!
-        end
-      end
-    end
-
     private
     
       def delete_ark_if_reserved

@@ -5,7 +5,6 @@ module Morphosource
     # @param [User] user
     # @param [TrueClass, FalseClass] reset
     def self.call(work, user, reset)
-      byebug
       @work = work
       @user = user
       @reset = ActiveModel::Type::Boolean.new.cast(reset)

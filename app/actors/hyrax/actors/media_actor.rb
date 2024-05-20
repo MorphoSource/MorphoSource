@@ -10,6 +10,7 @@ module Hyrax
         env.attributes['title'] = [ generated_title(env) ]
         env.attributes['keyword'] = split_keywords(env)
         add_team_access(env)
+        byebug
         super
       end
 
@@ -17,6 +18,7 @@ module Hyrax
         env.attributes['title'] = [ generated_title(env) ]
         env.attributes['keyword'] = split_keywords(env)
         add_team_access(env)
+        byebug
         super
       end
 

@@ -68,7 +68,7 @@ RSpec.describe Hyrax::MediaPresenter do
     context "for biological specimen object" do
       attributes = [
         :catalog_number, :cho_type, :collection_code, :idigbio_uuid, :institution_code,
-        :material, :occurrence_id, :short_title, :vouchered
+        :material, :occurrence_id, :vouchered
       ]
 
       attributes.each do |attribute|

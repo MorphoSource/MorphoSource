@@ -27,12 +27,14 @@ en:
       device:
         title: Model
         creator: Manufacturer
+        identifier: External Identifier
         description: Description
         modality: Modality
     hints:
       device:
         title: "The model of the device. Example: D800"
         creator: "The manufacturer of the device. Example: Nikon"
+        identifier: "An external identifier for the device. Example: 123456"
         description: "A description or notes about the device."
         modality: "The modality of the device. A device may have more than one modality."
 

@@ -5,6 +5,8 @@
 <h3><%= t("hyrax.dashboard.collections.form_members_table.#{access}.title") %></h3>
 <% if @collection.list? %>
   <p><%= t("morphosource.dashboard.collections.media_lists.form_members_table.#{access}.help") %></p>
+<% elsif @collection.organization_collection? %>
+  <p><%= t("morphosource.dashboard.collections.organization_collections.form_members_table.#{access}.help") %></p>
 <% else %>
   <p><%= t("hyrax.dashboard.collections.form_members_table.#{access}.help") %></p>
 <% end %>

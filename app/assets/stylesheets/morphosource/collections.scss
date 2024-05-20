@@ -102,7 +102,7 @@ div.collection-page {
   [class*='col-'] {
     padding: 0;
   }
- 
+
   .gallery-badge {
     a {
       display: inline-block;
@@ -116,7 +116,7 @@ div.collection-page {
       padding-top: 4px;
       padding-bottom: 4px;
     }
-  } 
+  }
 
   .collection.panel-body {
     div#documents.gallery {
@@ -173,5 +173,11 @@ div.collection-page {
     .pagination-container .pagination li:last-child a {
       margin-right: 0;
     }
+  }
+
+  // about tab columns
+  .about .about-column {
+    padding-left: 15px;
+    padding-right: 15px;
   }
 }

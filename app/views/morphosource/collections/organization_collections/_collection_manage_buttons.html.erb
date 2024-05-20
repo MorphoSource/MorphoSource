@@ -1,5 +1,5 @@
 <div class="row collection-manage-buttons pull-right">
-  <% if current_user&.can?(:edit, @presenter.solr_document) %>
+  <% if @can_edit %>
     <div class="collection-manage-button-wrapper">
       <%= link_to "Edit", hyrax.edit_dashboard_collection_path(@presenter), title: "t('hyrax.collection.actions.edit.desc')", class: 'btn btn-primary' %>
     </div>
@@ -28,7 +28,7 @@
         </li>
       </ul>
     </div>
-    <% if current_user&.admin? && @collection.can_manage_devices? %>
+    <% if @collection.can_manage_devices? %>
       <div class="collection-manage-button-wrapper">
         <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Add <span class="caret"></span>
         </button>

@@ -72,12 +72,7 @@ provide :page_title, construct_page_title(@presenter.title)
 
   <!-- Subcollections -->
   <% if @presenter.collection_type_is_nestable? && @subcollection_count > 0 %>
-      <div class="hyc-blacklight hyc-bl-title">
-        <h4>TEAM PROJECTS</h4>
-      </div>
-      <div class="hyc-blacklight hyc-bl-results">
-        <%= render 'subcollection_list', collection: @subcollection_docs %>
-      </div>
+    <%= render 'subcollections' %>
   <% end %>
 
   <div class="panel panel-default tabs" role="main">

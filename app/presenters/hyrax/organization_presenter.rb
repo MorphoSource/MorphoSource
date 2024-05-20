@@ -5,7 +5,7 @@ module Hyrax
 
     attr_reader :total_po, :po_ids_by_org
 
-    delegate :title, :organization_type, :institution_name, :institution_code, :collection_code, :recordset_id, :related_url, :address, :city, :state_province, :postal_code, :country, :contact_person, :team_id, :member_ids, to: :solr_document
+    delegate :title, :organization_type, :institution_name, :institution_code, :collection_code, :recordset_id, :related_url, :address, :city, :state_province, :postal_code, :country, :contact_person, :team_id, :member_ids, :has_model, to: :solr_document
 
     def search_form_url
       Rails.application.routes.url_helpers.show_organization_path(solr_document.id)

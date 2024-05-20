@@ -49,6 +49,8 @@ module Morphosource
 
     def about
       @tab = :about
+      # save abilities so we won't have to check multiple times in views.
+      @can_edit = current_ability.can? :edit, @collection
       presenter
       @object_ids = collection_object_ids
       query_collection_counts

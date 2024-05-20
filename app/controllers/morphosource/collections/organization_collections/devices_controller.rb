@@ -6,9 +6,6 @@ module Morphosource
         include Morphosource::Collections::OrganizationCollectionsControllerBehavior
         include Morphosource::Collections::OrganizationCollectionHelper
 
-        # restrict to admins
-        before_action :authorize_admin
-
         skip_load_and_authorize_resource only: [:show, :about, :facet, :devices_export], instance_name: :collection
 
         def search_builder_class
@@ -16,7 +13,7 @@ module Morphosource
         end
 
         def media_count_search_builder_class
-          Morphosource::Collections::OrganizationCollections::DeviceMediaSearchBuilder
+          Morphosource::Collections::OrganizationCollections::OrganizationMediaSearchBuilder
         end
 
         self.presenter_class = Morphosource::Collections::OrganizationPresenter

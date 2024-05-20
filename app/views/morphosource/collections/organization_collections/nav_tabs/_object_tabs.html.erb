@@ -1,0 +1,12 @@
+<%
+# For object organizations:
+# - always display object media tab
+# - never display the device media tab
+# - never display the devices tab
+# - if no objects OR both object types are present, display both object tabs
+# - if only one object type is present, do not display the other object tab
+%>
+
+<%= render 'morphosource/collections/organization_collections/nav_tabs/tabs/object_media' %>
+<%= render 'morphosource/collections/organization_collections/nav_tabs/tabs/objects' %>
+<%= render 'morphosource/collections/organization_collections/nav_tabs/tabs/about' %>

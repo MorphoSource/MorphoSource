@@ -13,7 +13,7 @@ module Morphosource
         before_action :load_collection
 
         # temporary restriction so only admins can access organization collections
-        before_action :authorize_admin
+        before_action :authorize_admin, only: [:new, :create, :destroy]
 
         self.presenter_class = Morphosource::Collections::OrganizationPresenter
 

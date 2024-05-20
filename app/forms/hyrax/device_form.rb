@@ -18,7 +18,7 @@ module Hyrax
     self.single_valued_fields = [:title, :creator, :description]
 
     def primary_terms
-      [:title, :creator, :modality, :description]
+      [:title, :creator, :modality, :identifier, :description]
     end
 
     def secondary_terms

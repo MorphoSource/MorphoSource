@@ -4,7 +4,11 @@
 <div class="media-title">
   <div>
     <div id="showcase-title">
-      <div>Media <%= presenter.id %>: <%= presenter.part&.join(", ")&.titleize.presence || "Element Unspecified" %></div>
+      <% if presenter.short_title.present? && presenter.title.present? %>
+        <div>Media <%= presenter.id %>: <%= presenter.title.first %></div>
+      <% else %>
+        <div>Media <%= presenter.id %>: <%= presenter.part&.join(", ")&.titleize.presence || "Element Unspecified" %></div>
+      <% end %> 
       <%= presenter.permission_badge %>
     </div>
     <div class="text-muted" style="margin-bottom: 0;">

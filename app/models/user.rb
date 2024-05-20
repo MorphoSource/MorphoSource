@@ -396,15 +396,6 @@ class User < ApplicationRecord
     groups.select{|g| g.include?("_viewers")}
   end
 
-  def collections_managed_solr
-    filter = ["(id:(#{self.collections_managed_ids.join(' OR ')}))"]
-    Morphosource::SolrService.new.get_docs('', fq: filter)
-  end
-
-  def organizations_managed_solr
-    collections_managed_solr.select{|doc| doc['has_model_ssim'] == ['OrganizationCollection']}
-  end
-
   private
 
   # Assigns a random string to be used as the user_key

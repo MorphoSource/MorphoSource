@@ -12,10 +12,14 @@
   <div id="media-ownership-fields">
 
     <div class="row media_owner_wrapper">
-      <div class="col-xs-6 showcase-label">Data Manager</div>
+      <div class="col-xs-6 showcase-label"><%= t('simple_form.labels.submission.owner') %></div>
       <div class="col-xs-6 showcase-value"><%= current_user.display_name %></div>
     </div>
 
+    <div class="row">
+      <div class="col-xs-6 showcase-label"><%= t('simple_form.labels.submission.depositor') %></div>
+      <div class="col-xs-6 showcase-value"><%= current_user.display_name %></div>
+    </div>
 
     <div class="mb-2">
       <div class="row media_download_permission">

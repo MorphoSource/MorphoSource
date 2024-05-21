@@ -75,6 +75,8 @@ en:
         cultural_heritage_object_search_catalog_number: 'Catalog Number'
         cultural_heritage_object_search_short_title: 'Short Title'
         #raw_or_derived_media: 'Is this media raw or derived?'
+        depositor: 'Data Uploader'
         idigbio_id: 'Biological Specimens in IDigBio'
+        owner: 'Data Manager'
         submission_media_type: 'What type of media are you uploading?'
         submission_modality: 'How was this media imaged? In other words, what modality was used?'

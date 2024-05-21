@@ -18,7 +18,7 @@ module Hyrax
           proxy = env.curation_concern.on_behalf_of
           return true if proxy.blank?
 
-          ContentDepositorChangeEventJob.perform_now(env.curation_concern,
+          ContentDepositorChangeEventJob.perform_later(env.curation_concern,
                                                        ::User.find_by_user_key(proxy))
           true
         end

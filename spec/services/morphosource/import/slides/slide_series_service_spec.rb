@@ -8,8 +8,8 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
   let!(:provider)       { providers.first }
   let!(:manager)        { User.create(email: 'manager@email.com', password: 'password', ms_id: provider['manager']) }
   let!(:manager)        { FactoryBot.create(:user, ms_id: provider['manager']) }
-  let!(:organization)   { FactoryBot.create(:organization, id: provider['id']) }
-  let!(:device)         { FactoryBot.create(:device, title: [device_name], modality: ['SequentialSectionScan']) }
+  let!(:organization)   { FactoryBot.create(:organization_collection, id: provider['id'], depositor: manager.ms_id) }
+  let!(:device)         { FactoryBot.create(:device, title: [device_name], modality: ['SequentialSectionScan'], organization_id: [organization.id]) }
 
   let(:collection)      { double('collection') }
   let(:occurrence_key)  { 4003219413 }
@@ -21,6 +21,7 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
   let(:file_name)       { "#{slide_title}.tif" }
   let(:base_uri)        { 'https://iiif.mcz.harvard.edu/iiif/3/3823260/' }
   let(:import_url)      { "#{base_uri}full/max/0/default.tif" }
+
   let(:slide_json) do
     {
       'http://rs.tdwg.org/ac/terms/variant' => 'ac:BestQuality',
@@ -38,6 +39,7 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
       'http://rs.tdwg.org/dwc/terms/scientificName' => 'Raja eglanteria'
     }
   end
+
   let(:occurrence_json) do
     {
       'key' => occurrence_key,
@@ -50,6 +52,7 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
       }
     }
   end
+
   let(:iiif_json) do
     {
       'id' => 'http://iiif.mcz.harvard.edu/iiif/3/3823260',
@@ -58,6 +61,7 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
       'fileSize' => 3325675996
     }
   end
+
   let(:iiif_exif) do
     {
       'fields' => {
@@ -78,31 +82,54 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
     }
   end
 
+  let(:specimen_params) do
+    {
+      :idigbio_uuid => ["839cda9b-ec88-494c-ab0c-1fca327a70d6"],
+      :idigbio_recordset_id => ["271a9ce9-c6d3-4b63-a722-cb0adc48863f"],
+      :vouchered => ["Yes"],
+      :institution_code => ["MCZ"],
+      :collection_code => ["SC"],
+      :catalog_number => ["3793"],
+      :occurrence_id => ["MCZ:SC:3793"],
+      :related_url => ["http://mczbase.mcz.harvard.edu/guid/MCZ:SC:3793"],
+      :creator => ["[no agent data]"],
+      :original_location => ["[no specific locality data]"]
+    }
+  end
+
+  let(:taxonomy_params) do
+    {
+      :taxonomy_kingdom=>["Animalia"],
+      :taxonomy_phylum=>["Chordata"],
+      :taxonomy_class=>["Elasmobranchii"],
+      :taxonomy_order=>["Rajiformes"],
+      :taxonomy_family=>["Rajidae"],
+      :taxonomy_genus=>["Raja"],
+      :gbif_key=>["5216061"],
+      :taxonomy_species=>["eglanteria"]
+    }
+  end
+
+  subject     { described_class.new(occurrence_key) }
   let(:slide) { subject.send(:slide_class).new(slide_json) }
 
+  before do
+    allow_any_instance_of(described_class).to receive(:occurrence_json).and_return(occurrence_json) # response from GBIF
+    allow_any_instance_of(described_class).to receive(:specimen_params_from_occurrence_id).and_return(specimen_params) # response from iDigBio
+    allow_any_instance_of(described_class).to receive(:taxonomy_params_from_gbif).and_return(taxonomy_params) # response from GBIF
+    allow_any_instance_of(Morphosource::Import::SlideSeries::Slides::MczSlide).to receive(:iiif_json).and_return(iiif_json) # response from MCZ
+  end
+
   describe '.call' do
-    let(:params)  { occurrence_key }
-    subject { described_class.call(params) }
+    subject { described_class.call(occurrence_key) }
     before do
-      allow_any_instance_of(described_class).to receive(:occurrence_json).and_return(occurrence_json)
       allow_any_instance_of(described_class).to receive(:collection).and_return(collection)
       allow_any_instance_of(described_class).to receive(:call).and_return(true)
+
     end
     it 'instantiates the service and calls it' do
       expect_any_instance_of(described_class).to receive(:call)
       subject
-    end
-  end
-
-  describe 'occurrence_json'  do
-    subject { described_class.new(occurrence_key) }
-    before do
-      allow_any_instance_of(described_class).to receive(:collection).and_return(collection)
-    end
-    it 'retrieves a record from GBIF' do
-      expect(subject.instance_variable_get(:@occurrence_json)['key']).to eq(occurrence_key)
-    rescue
-      'fail quietly if GBIF API errors'
     end
   end
 
@@ -116,10 +143,6 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
   end
 
   describe 'import_slide_series' do
-    subject { described_class.new(occurrence_key)}
-    before do
-      allow_any_instance_of(described_class).to receive(:occurrence_json).and_return(occurrence_json)
-    end
     it 'calls methods to create a new media record and add it to the collection' do
       expect(subject).to receive(:create_new_imaging_event)
       expect(subject).to receive(:create_new_media)
@@ -131,9 +154,7 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
   end
 
   describe 'find_or_create_specimen' do
-    subject { described_class.new(occurrence_key)}
     before do
-      allow_any_instance_of(described_class).to receive(:occurrence_json).and_return(occurrence_json)
       allow_any_instance_of(described_class).to receive(:collection).and_return(collection)
     end
     context 'specimen exists' do
@@ -157,11 +178,8 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
     let(:doc_id_3)            { '4009' }
     let(:doc_ids)             { [doc_id_1, doc_id_2, doc_id_3] }
 
-    subject { described_class.new(occurrence_key)}
-
     before do
       occurrence_json['occurrenceID'] = occurrence_id
-      allow_any_instance_of(described_class).to receive(:occurrence_json).and_return(occurrence_json)
       # create a record for each doc_id
       doc_ids.each_with_index do |id, i|
         ActiveFedora::SolrService.add( { 'id': i,
@@ -192,9 +210,7 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
   end
 
   describe 'taxonomy' do
-    subject { described_class.new(occurrence_key) }
     before do
-      allow_any_instance_of(described_class).to receive(:occurrence_json).and_return(occurrence_json)
       allow_any_instance_of(described_class).to receive(:collection).and_return(collection)
     end
     context 'taxonomy exists' do
@@ -213,10 +229,6 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
   end
 
   describe 'create_series_collection' do
-    subject { described_class.new(occurrence_key) }
-    before do
-      allow_any_instance_of(described_class).to receive(:occurrence_json).and_return(occurrence_json)
-    end
     it 'creates a sequential section list' do
       list = subject.instance_variable_get(:@collection)
       expect(list.collection_type.title).to eq('Sequential Section List')
@@ -228,14 +240,9 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
   end
 
   describe 'create_new_imaging_event' do
-    subject { described_class.new(occurrence_key) }
-
     before do
-      organization.ordered_members << device
-      organization.save!
       subject.instance_variable_set(:@slide, slide)
       subject.instance_variable_set(:@specimen, double('specimen', id: 'spec123'))
-      allow_any_instance_of(described_class).to receive(:occurrence_json).and_return(occurrence_json)
       allow_any_instance_of(described_class).to receive(:collection).and_return(collection)
       allow(slide).to receive(:validate_technical_metadata).and_return(true)
     end
@@ -250,7 +257,6 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
   end
 
   describe 'create_new_media' do
-    subject { described_class.new(occurrence_key) }
     let!(:reviewer)       { FactoryBot.create(:user, ms_id: provider['download_reviewer']) }
     let!(:imaging_event)  { FactoryBot.create(:imaging_event, device_id: [device.id], ie_modality: device.modality, physical_object_id: [specimen.id]) }
     let!(:specimen)       { FactoryBot.create(:biological_specimen, organization_id: [organization.id]) }
@@ -259,7 +265,6 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
       subject.instance_variable_set(:@slide, slide)
       subject.instance_variable_set(:@specimen, specimen)
       subject.instance_variable_set(:@imaging_event, imaging_event)
-      allow_any_instance_of(described_class).to receive(:occurrence_json).and_return(occurrence_json)
       allow_any_instance_of(described_class).to receive(:collection).and_return(collection)
       allow(slide).to receive(:validate_technical_metadata).and_return(true)
     end
@@ -310,8 +315,6 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
   end
 
   describe 'characterize_file' do
-    subject { described_class.new(occurrence_key)}
-
     let(:media)     { FactoryBot.create(:media) }
     let(:file_set)  { FactoryBot.create(:file_set)}
 
@@ -321,7 +324,6 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
       media.save!
       subject.instance_variable_set(:@slide, slide)
       subject.instance_variable_set(:@media, media)
-      allow_any_instance_of(described_class).to receive(:occurrence_json).and_return(occurrence_json)
       allow_any_instance_of(described_class).to receive(:collection).and_return(collection)
       allow(slide).to receive(:validate_technical_metadata).and_return(true)
       allow(CalculateFileSetCrc32Job).to receive(:perform_later).and_return(true)

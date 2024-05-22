@@ -15,7 +15,7 @@ end
 worker_timeout 3600 # 1 hour timeout, to match Apache timeout
 threads_count = ENV.fetch("RAILS_MAX_THREADS") { 5 }
 threads threads_count, threads_count
-bind 'tcp://127.0.0.1:9292'
+bind 'tcp://0.0.0.0:3000'
 workers ENV.fetch("WEB_CONCURRENCY") { 2 }
 preload_app!
-activate_control_app 'tcp://127.0.0.1:9293', { no_token: true }
+activate_control_app 'tcp://0.0.0.0:9293', { no_token: true }

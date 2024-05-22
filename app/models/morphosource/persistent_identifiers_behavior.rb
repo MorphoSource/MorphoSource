@@ -24,7 +24,9 @@ module Morphosource
       when 'BiologicalSpecimen', 'CulturalHeritageObject'
         return 'PhysicalObject'
       when 'Device'
-        return 'Instrument'
+        # todo: currently getting an error invalid resource type 'Instrument' when the record is "public". 
+        # change this back to "Instrument" when the issue is resolved
+        return 'Service'
       when 'OrganizationCollection'
         return 'Service'
       else

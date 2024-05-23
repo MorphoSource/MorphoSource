@@ -4,7 +4,7 @@ module Hyrax
   class DevicePresenter < Hyrax::WorkShowPresenter
     include Morphosource::PresenterMethods
 
-    delegate :modality, :ark, :device_organization_id, to: :solr_document
+    delegate :modality, :ark, :device_organization_id, :device_organization_title, to: :solr_document
 
     #
     # Modality (return one more more values)
@@ -13,6 +13,23 @@ module Hyrax
     #
     def device_modality
       @device_modality ||= modality.map{ |m| Morphosource::ModalitiesService.new.label(m) }
+    end
+
+    def device_organization_link
+      return '' if !device_organization_id.present?
+      begin
+        doc = ::SolrDocument.find(device_organization_id)
+      rescue Blacklight::Exceptions::RecordNotFound
+        return ''
+      end
+      case doc.has_model
+      when ["Organization"]
+        Rails.application.routes.url_helpers.hyrax_organization_path(device_organization_id)
+      when ["OrganizationCollection"]
+        Rails.application.routes.url_helpers.organization_collection_path(device_organization_id)
+      else
+        ''
+      end
     end
 
     # methods for showcase partials

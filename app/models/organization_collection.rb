@@ -106,12 +106,19 @@ class OrganizationCollection < Collection
     ActiveFedora::SolrService.query(qry, rows: 999999)
   end
 
-
   def devices
     ds = devices_solr
     return [] if ds.blank?
     ids = ds.map(&:id).select { |id| Device.exists?(id) }
     Device.find(ids)
+  end
+
+  # Create manager and viewer roles for each Organization collection
+  def create_collection_groups
+    self.class::DEFAULT_GROUP_ROLES.each do |role|
+      name = id.concat("_#{role}")
+      Role.create(name: name) unless Role.find_by(name: name)
+    end
   end
 
   private

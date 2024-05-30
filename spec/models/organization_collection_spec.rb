@@ -84,8 +84,8 @@ RSpec.describe OrganizationCollection, type: :model do
       end
     end
 
-    it 'adds the depositor to the managers group' do
-      expect(organization.managers).to include(user)
+    it 'does not add the depositor as a manager' do
+      expect(organization.managers).to eq([])
     end
   end
 

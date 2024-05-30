@@ -2,6 +2,7 @@ en:
   morphosource:
     collections:
       view:
+        managed_by: "Managed by: %{managers}"
         temporary_access: You are viewing this MorphoSource %{collection_type} with a temporary access link. This grants you access to view the project as well as all media contained within the project. This does not grant the ability to download file(s) associated with media.
       edit:
         temporary_access:
@@ -9,3 +10,4 @@ en:
       subcollections:
         header:
           title: team projects
+

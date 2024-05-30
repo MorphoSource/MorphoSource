@@ -3,6 +3,7 @@ require 'spec_helper'
 
 RSpec.describe Morphosource::Collections::OrganizationCollections::PhysicalObjects::CulturalHeritageObjectsController, type: :controller do
 
+  let(:main_app)      { Rails.application.routes.url_helpers }
   let(:depositor)     { User.create(email: 'depositor@email.com', password: 'password') }
   let!(:organization) { FactoryBot.create(:organization_collection, visibility: 'open', depositor: depositor.ms_id) }
 
@@ -15,7 +16,6 @@ RSpec.describe Morphosource::Collections::OrganizationCollections::PhysicalObjec
   describe 'collection access' do
     before do
       sign_in user
-      organization.create_collection_groups
       Morphosource::Collections::PermissionsCreateService.create_default(collection: organization)
     end
 
@@ -68,5 +68,13 @@ RSpec.describe Morphosource::Collections::OrganizationCollections::PhysicalObjec
 
   describe 'presenter_class' do
     it {expect(subject.presenter_class).to eq(Morphosource::Collections::OrganizationPresenter) }
+  end
+
+  describe '#search_action_for_dashboard' do
+    before do
+      subject.instance_variable_set(:@collection, organization)
+    end
+
+    it { expect(subject.search_action_for_dashboard).to eq(main_app.organization_chos_path(organization, locale: 'en')) }
   end
 end

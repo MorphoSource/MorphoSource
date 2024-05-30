@@ -19,6 +19,8 @@ module Morphosource
       before_action :create_extra_facets, only: [:show, :facet, :about,
         :media_export, :media_download_counts, :media_projects, :media_organization_transfer_status]
 
+      helper_method :search_action_for_dashboard
+
       class_attribute :collection_type
       self.collection_type = collection_type
       self.presenter_class = Morphosource::Collections::OrganizationPresenter
@@ -82,6 +84,10 @@ module Morphosource
 
       def search_builder_class
         Morphosource::Collections::OrganizationCollections::OrganizationMediaSearchBuilder
+      end
+
+      def search_action_for_dashboard
+        main_app.organization_path
       end
 
       private

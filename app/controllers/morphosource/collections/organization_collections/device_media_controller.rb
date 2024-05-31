@@ -17,6 +17,10 @@ module Morphosource
           create_access_facet
         end
 
+        def search_action_for_dashboard
+          main_app.organization_device_media_path(@collection)
+        end
+
         private
 
           # link for facet filters

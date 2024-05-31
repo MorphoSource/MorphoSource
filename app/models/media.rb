@@ -499,11 +499,19 @@ class Media < Morphosource::Works::Base
   def transfer_media_to_organization_collection(org)
     # check that organization has a valid data manager
     if org.managers&.first.present?
+      # First, is media manager user the same as the new org data manager?
+      owner_user = User.find_by(ms_id: user_with_ownership)
+      proxy_user = User.find_by(ms_id: on_behalf_of)
+      if owner_user.groups.include?("#{org.id}_managers") || proxy_user&.groups&.include?("#{org.id}_managers")
+        # don't create transfer, but add organization as media owner and ensure no further transfers are created
+        self.owner = org_id
+      else
+        create_new_organization_transfer_request(org)
+      end
       if self.organization_transfer_on_publish
         self.organization_transfer_on_publish = false
-        self.save!
       end
-      create_new_organization_transfer_request(org)
+      self.save!
     else
       message = "Failed to transfer management of media #{id} to organization #{org&.id}"
 

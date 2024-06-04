@@ -86,7 +86,7 @@ Hyrax.config do |config|
 
   # Email message sender (for download review notifications, contributor app responses, etc.)
   # Rake task create_production_users will create a user account corresponding to this email
-  config.contact_email = ENV['CONTACT_EMAIL'] || "do.not.reply@morphosource.org"
+  config.contact_email = ENV['CONTACT_EMAIL'] || "morphosource@duke.edu"
 
   # Email address(es) for receiving system reports (e.g duplicate specimens)
   config.system_report_recipients = ENV['SYSTEM_REPORT_RECIPIENTS'] || ""

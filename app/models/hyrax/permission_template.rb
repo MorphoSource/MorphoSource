@@ -157,8 +157,9 @@ module Hyrax
       end
 
       def update_source_type
-        return unless type = collection.collection_type.machine_id
-        self.source_type = type
+        self.source_type = collection&.collection_type&.machine_id
+      rescue
+        self.source_type = self.source_id
       end
   end
 end

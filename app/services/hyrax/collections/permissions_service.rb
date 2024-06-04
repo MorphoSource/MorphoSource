@@ -185,7 +185,8 @@ module Hyrax
       # @return [Boolean] true if the user has permission to deposit into the collection
       # @note Several checks get the user's groups from the user's ability.  The same values can be retrieved directly from a passed in ability.
       def self.can_deposit_in_collection?(collection_id:, ability:)
-        deposit_access_to_collection?(collection_id: collection_id, ability: ability) || edit_works_access_to_collection?(collection_id: collection_id, ability: ability) ||
+        deposit_access_to_collection?(collection_id: collection_id, ability: ability) ||
+        edit_works_access_to_collection?(collection_id: collection_id, ability: ability) ||
         manage_access_to_collection?(collection_id: collection_id, ability: ability)
       end
 
@@ -321,7 +322,7 @@ module Hyrax
       end
 
       def self.template(collection_id)
-        @template&.source_id == collection_id ? @template :  @template = Hyrax::PermissionTemplate.find_by!(source_id: collection_id)
+        @template = Hyrax::PermissionTemplate.find_by!(source_id: collection_id)
       end
     end
   end

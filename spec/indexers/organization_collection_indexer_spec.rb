@@ -45,6 +45,11 @@ RSpec.describe OrganizationCollectionIndexer do
                                                                         title: ['organization collection']) }
 
 
+  before do
+    organization.managers << user
+    organization.managers_group.save
+  end
+
   it 'indexes needed fields' do
     expect(solr_document[:id]).to eq(organization.id)
     expect(solr_document['address_tesim']).to match_array(organization.address)

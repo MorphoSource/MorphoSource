@@ -5,7 +5,7 @@ module Morphosource
       include Morphosource::Collections::OrganizationCollectionsControllerBehavior
 
         skip_load_and_authorize_resource only: [
-          :create, :details, :edit, :members, :new, :ownership, :permissions, :update
+          :create, :details, :edit, :members, :new, :ownership, :permissions, :projects, :update
         ], instance_name: :organization_collection
 
         before_action :redirect_to_collection_type, only: []

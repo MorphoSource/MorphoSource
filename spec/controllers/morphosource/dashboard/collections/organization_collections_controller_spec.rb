@@ -3,7 +3,7 @@ require 'rails_helper'
 
 RSpec.describe Morphosource::Dashboard::Collections::OrganizationCollectionsController, type: :controller do
 
-  let(:depositor)     { FactoryBot.create(:contributor) }
+  let(:depositor)     { User.create(email: 'depositor@email.com', password: 'password') }
   let!(:organization) { FactoryBot.create(:organization_collection, visibility: 'open', depositor: depositor.ms_id) }
   let(:params)        { { id: organization.id } }
   let(:user)          { depositor }
@@ -16,6 +16,10 @@ RSpec.describe Morphosource::Dashboard::Collections::OrganizationCollectionsCont
   describe 'temporary admin-only restriction' do
     context 'user is an admin' do
       let(:user)  { FactoryBot.create(:admin) }
+
+      before do
+        allow(Collection).to receive(:find).and_call_original
+      end
 
       it 'responds with a 200 or a redirect' do
         get :edit, params: params
@@ -44,13 +48,20 @@ RSpec.describe Morphosource::Dashboard::Collections::OrganizationCollectionsCont
     end
 
     context 'user is an organization manager' do
-      it 'responds with a redirect to root' do
+      before do
+        organization.managers << user
+        organization.managers_group.save
+      end
+
+      it 'responds with a redirect or 200' do
         get :edit, params: params
         expect(response.status).to eq(200)
         get :members, params: params
         expect(response.status).to eq(200)
+        byebug
         get :permissions, params: params
         expect(response.status).to eq(200)
+        byebug
         get :projects, params: params
         expect(response.status).to eq(200)
         get :new

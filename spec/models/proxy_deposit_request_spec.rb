@@ -51,7 +51,7 @@ RSpec.describe ProxyDepositRequest do
           expect(subject.receiving_user.id).to eq receiving_user.id
           expect(subject.receiving_user_id).to eq receiving_user.id.to_s
           expect(subject.receiving_user_type).to eq "User"
-        end 
+        end
       end
 
       context 'individual to organization' do
@@ -66,7 +66,7 @@ RSpec.describe ProxyDepositRequest do
           expect(subject.receiving_user.id).to eq organization.id
           expect(subject.receiving_user_id).to eq organization.id.to_s
           expect(subject.receiving_user_type).to eq "OrganizationCollection"
-        end 
+        end
       end
 
       context 'organization to individual' do
@@ -81,7 +81,7 @@ RSpec.describe ProxyDepositRequest do
           expect(subject.receiving_user.id).to eq receiving_user.id
           expect(subject.receiving_user_id).to eq receiving_user.id.to_s
           expect(subject.receiving_user_type).to eq "User"
-        end 
+        end
       end
 
       context 'organization to organization' do
@@ -96,7 +96,7 @@ RSpec.describe ProxyDepositRequest do
           expect(subject.receiving_user.id).to eq organization2.id
           expect(subject.receiving_user_id).to eq organization2.id.to_s
           expect(subject.receiving_user_type).to eq "OrganizationCollection"
-        end 
+        end
       end
     end
 
@@ -113,7 +113,7 @@ RSpec.describe ProxyDepositRequest do
           expect(subject.receiving_user.id).to eq receiving_user.id
           expect(subject.receiving_user_id).to eq receiving_user.id.to_s
           expect(subject.receiving_user_type).to eq "User"
-        end 
+        end
       end
 
       context 'individual to organization' do
@@ -128,7 +128,7 @@ RSpec.describe ProxyDepositRequest do
           expect(subject.receiving_user.id).to eq organization.id
           expect(subject.receiving_user_id).to eq organization.id.to_s
           expect(subject.receiving_user_type).to eq "OrganizationCollection"
-        end 
+        end
       end
 
       context 'organization to individual' do
@@ -143,7 +143,7 @@ RSpec.describe ProxyDepositRequest do
           expect(subject.receiving_user.id).to eq receiving_user.id
           expect(subject.receiving_user_id).to eq receiving_user.id.to_s
           expect(subject.receiving_user_type).to eq "User"
-        end 
+        end
       end
 
       context 'organization to organization' do
@@ -158,7 +158,7 @@ RSpec.describe ProxyDepositRequest do
           expect(subject.receiving_user.id).to eq organization2.id
           expect(subject.receiving_user_id).to eq organization2.id.to_s
           expect(subject.receiving_user_type).to eq "OrganizationCollection"
-        end 
+        end
       end
     end
   end
@@ -186,7 +186,7 @@ RSpec.describe ProxyDepositRequest do
             subject.save
           end
 
-          it 'generates a message sent to the transfer receiver' do          
+          it 'generates a message sent to the transfer receiver' do
             expect(subject).to have_received(:deliver_message).with(
               email_dispatch_user,
               receiving_user,
@@ -200,12 +200,13 @@ RSpec.describe ProxyDepositRequest do
           subject { described_class.new(work_id: work.id, sending_user_id: sending_user.id, receiving_user_id: organization.id, sender_comment: comment) }
 
           before do
+            allow_any_instance_of(OrganizationCollection).to receive(:managers).and_return([org_manager_1])
             allow(subject).to receive(:deliver_message).and_return(true)
             allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
             subject.save
           end
 
-          it 'generates a message sent to the transfer receiver org manager' do          
+          it 'generates a message sent to the transfer receiver org manager' do
             expect(subject).to have_received(:deliver_message).with(
               email_dispatch_user,
               org_manager_1,
@@ -225,7 +226,7 @@ RSpec.describe ProxyDepositRequest do
             subject.save
           end
 
-          it 'generates two messages, one for each org manager' do           
+          it 'generates two messages, one for each org manager' do
             expect(subject).to have_received(:deliver_message).exactly(2).times
           end
         end
@@ -239,7 +240,7 @@ RSpec.describe ProxyDepositRequest do
             subject.save
           end
 
-          it 'generates a message sent to the transfer receiver' do          
+          it 'generates a message sent to the transfer receiver' do
             expect(subject).to have_received(:deliver_message).with(
               email_dispatch_user,
               receiving_user,
@@ -253,12 +254,13 @@ RSpec.describe ProxyDepositRequest do
           subject { described_class.new(work_id: work.id, sending_user_id: organization2.id, receiving_user_id: organization.id, sender_comment: comment) }
 
           before do
+            allow_any_instance_of(OrganizationCollection).to receive(:managers).and_return([org_manager_1])
             allow(subject).to receive(:deliver_message).and_return(true)
             allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
             subject.save
           end
 
-          it 'generates a message sent to the transfer receiver org manager' do          
+          it 'generates a message sent to the transfer receiver org manager' do
             expect(subject).to have_received(:deliver_message).with(
               email_dispatch_user,
               org_manager_1,
@@ -278,7 +280,7 @@ RSpec.describe ProxyDepositRequest do
             subject.save
           end
 
-          it 'generates two messages, one for each org manager' do           
+          it 'generates two messages, one for each org manager' do
             expect(subject).to have_received(:deliver_message).exactly(2).times
           end
         end
@@ -289,6 +291,7 @@ RSpec.describe ProxyDepositRequest do
           subject { described_class.new(work_id: work.id, sending_user_id: sending_user.id, receiving_user_id: organization.id, organization_transfer: true, sender_comment: org_comment) }
 
           before do
+            allow_any_instance_of(OrganizationCollection).to receive(:managers).and_return([org_manager_1])
             allow(subject).to receive(:deliver_message).and_return(true)
             allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
           end
@@ -338,6 +341,10 @@ RSpec.describe ProxyDepositRequest do
           subject { described_class.new(work_id: work.id, sending_user_id: organization2.id, receiving_user_id: organization.id, organization_transfer: true, sender_comment: org_comment) }
 
           before do
+            organization.managers << org_manager_1
+            organization.managers_group.save
+            organization2.managers << org_manager_2
+            organization2.managers_group.save
             allow(subject).to receive(:deliver_message).and_return(true)
             allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
           end
@@ -371,12 +378,15 @@ RSpec.describe ProxyDepositRequest do
           subject { described_class.new(work_id: work.id, sending_user_id: organization2.id, receiving_user_id: organization.id, organization_transfer: true, sender_comment: org_comment) }
 
           before do
-            organization2.managers << org_manager_3
-            organization2.save
-            
+            organization2.managers << org_manager_3 << org_manager_2
+            organization2.managers_group.save
+
+            organization.managers << org_manager_1
+            organization.managers_group.save
+
             allow(subject).to receive(:deliver_message).and_return(true)
             allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
-            
+
           end
 
           it 'generates three messages in total' do
@@ -401,8 +411,10 @@ RSpec.describe ProxyDepositRequest do
           subject { described_class.new(work_id: work.id, sending_user_id: organization2.id, receiving_user_id: organization.id, organization_transfer: true, sender_comment: org_comment) }
 
           before do
-            organization.managers << org_manager_3
-            organization.save
+            organization.managers << org_manager_3 << org_manager_1
+            organization.managers_group.save
+            organization2.managers << org_manager_2
+            organization2.managers_group.save
             allow(subject).to receive(:deliver_message).and_return(true)
             allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
           end
@@ -429,13 +441,13 @@ RSpec.describe ProxyDepositRequest do
           subject { described_class.new(work_id: work.id, sending_user_id: organization2.id, receiving_user_id: organization.id, organization_transfer: true, sender_comment: org_comment) }
 
           before do
-            organization.managers << org_manager_3
+            organization.managers << org_manager_3 << org_manager_1
             organization.save
-            organization2.managers << org_manager_4
+            organization2.managers << org_manager_4 << org_manager_2
             organization.save
             allow(subject).to receive(:deliver_message).and_return(true)
             allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
-            
+
           end
 
           it 'generates four messages in total' do
@@ -493,7 +505,7 @@ RSpec.describe ProxyDepositRequest do
             "Your request to transfer ownership of <b><a href=\"http://test.host/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to <a href=\"http://test.host/users/#{receiving_user.user_key}\">Receiver</a> has been accepted.<p>Please contact <a href=\"http://test.host/users/#{receiving_user.user_key}\">Receiver</a> if you have a question related to this request.</p>",
             "Media transfer request accepted"
           )
-        end 
+        end
       end
 
       context 'individual to organization' do
@@ -518,13 +530,15 @@ RSpec.describe ProxyDepositRequest do
             "Your request to transfer ownership of <b><a href=\"http://test.host/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to <a href=\"http://test.host/organizations/#{organization.id}\">#{organization.name}</a> has been accepted.<p>Please contact <a href=\"http://test.host/organizations/#{organization.id}\">#{organization.name}</a> if you have a question related to this request.</p>",
             "Media transfer request accepted"
           )
-        end 
+        end
       end
 
       context 'organization with one data manager to individual' do
         subject { described_class.create(work_id: work.id, sending_user_id: organization2.id, receiving_user_id: receiving_user.id, sender_comment: comment) }
 
         before do
+          organization2.managers << org_manager_2
+          organization2.managers_group.save
           allow(subject).to receive(:deliver_message).and_return(true)
           allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
           subject.transfer!
@@ -543,14 +557,14 @@ RSpec.describe ProxyDepositRequest do
             "Your request to transfer ownership of <b><a href=\"http://test.host/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to <a href=\"http://test.host/users/#{receiving_user.user_key}\">Receiver</a> has been accepted.<p>Please contact <a href=\"http://test.host/users/#{receiving_user.user_key}\">Receiver</a> if you have a question related to this request.</p>",
             "Media transfer request accepted"
           )
-        end 
+        end
       end
 
       context 'organization with two data managers to individual' do
         subject { described_class.create(work_id: work.id, sending_user_id: organization2.id, receiving_user_id: receiving_user.id, sender_comment: comment) }
 
         before do
-          organization2.managers << org_manager_3
+          organization2.managers << org_manager_3 << org_manager_2
           organization2.save!
           allow(subject).to receive(:deliver_message).and_return(true)
           allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
@@ -565,13 +579,17 @@ RSpec.describe ProxyDepositRequest do
 
         it 'generates two messages sent to the sender org managers, one for each manager' do
           expect(subject).to have_received(:deliver_message).exactly(2).times
-        end 
+        end
       end
 
       context 'organization with one data manager to organization' do
         subject { described_class.create(work_id: work.id, sending_user_id: organization2.id, receiving_user_id: organization.id, sender_comment: comment) }
 
         before do
+          organization2.managers << org_manager_2
+          organization2.managers_group.save
+          organization.managers << org_manager_1
+          organization.managers_group.save
           allow(subject).to receive(:deliver_message).and_return(true)
           allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
           subject.transfer!
@@ -590,15 +608,17 @@ RSpec.describe ProxyDepositRequest do
             "Your request to transfer ownership of <b><a href=\"http://test.host/concern/media/#{work.id}\">Media #{work.id}: example media title</a></b> to <a href=\"http://test.host/organizations/#{organization.id}\">#{organization.name}</a> has been accepted.<p>Please contact <a href=\"http://test.host/organizations/#{organization.id}\">#{organization.name}</a> if you have a question related to this request.</p>",
             "Media transfer request accepted"
           )
-        end 
+        end
       end
 
       context 'organization with two data managers to organization' do
         subject { described_class.create(work_id: work.id, sending_user_id: organization2.id, receiving_user_id: organization.id, sender_comment: comment) }
 
         before do
-          organization2.managers << org_manager_3
-          organization2.save!
+          organization.managers << org_manager_1
+          organization.managers_group.save
+          organization2.managers << org_manager_3 << org_manager_2
+          organization2.managers_group.save
           allow(subject).to receive(:deliver_message).and_return(true)
           allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
           subject.transfer!
@@ -612,7 +632,7 @@ RSpec.describe ProxyDepositRequest do
 
         it 'generates two messages sent to the sender org managers, one for each manager' do
           expect(subject).to have_received(:deliver_message).exactly(2).times
-        end 
+        end
       end
     end
   end

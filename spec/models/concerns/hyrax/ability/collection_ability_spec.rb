@@ -9,6 +9,7 @@ RSpec.describe 'Hyrax::Ability::CollectionAbility' do
   let(:collection_depositor)        { FactoryBot.create(:contributor) }
   let(:registered_user)             { FactoryBot.create(:registered_user) }
   let(:contributor)                 { FactoryBot.create(:contributor) }
+
   let(:admin)                       { FactoryBot.create(:admin) }
 
   let(:new_team)                    { FactoryBot.build(:team) }

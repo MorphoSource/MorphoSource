@@ -526,8 +526,15 @@ RSpec.describe Media do
       end
 
       context 'organization is an organization collection' do
-        let(:organization_depositor)  { FactoryBot.create(:contributor).ms_id }
-        let!(:organization) { FactoryBot.create(:organization_collection, depositor: organization_depositor, media_ownership_transfer: true) }
+        let(:contributor_role)        { Role.create(name: 'contributor') }
+        let(:organization_depositor)  { User.create(email: 'org_depositor@email.com', password: 'password') }
+        let!(:organization)           { FactoryBot.create(:organization_collection, depositor: organization_depositor.ms_id, media_ownership_transfer: true) }
+
+        before do
+          organization_depositor.make_contributor
+          organization.managers << organization_depositor
+          organization.managers_group.save
+        end
 
         context 'conditions are met for transferring media' do
           before do
@@ -538,7 +545,7 @@ RSpec.describe Media do
           end
 
           context 'owner is an organization manager' do
-            let(:organization_depositor)  { depositor.ms_id }
+            let(:organization_depositor)  { depositor }
             context 'media owner and on_behalf_of is blank' do
               it 'does not create a new ProxyDepositRequest' do
                 expect(ProxyDepositRequest.where(work_id: media.id, receiving_user: organization.id, sending_user: depositor.id, organization_transfer: true).count).to eq(0)

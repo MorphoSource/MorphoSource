@@ -9,11 +9,13 @@ RSpec.describe Morphosource::Dashboard::NestCollectionsController, type: :contro
   let(:depositor)     { FactoryBot.create(:contributor) }
   let(:team)          { FactoryBot.create(:team, depositor: depositor.ms_id) }
   let(:organization)  { FactoryBot.create(:organization_collection, depositor: depositor.ms_id)}
+  let!(:contributor_role) { Role.create(name: 'contributor') }
 
   before do
     team.create_collection_groups
     Morphosource::Collections::PermissionsCreateService.create_default(collection: team)
     Morphosource::Collections::PermissionsCreateService.create_default(collection: organization)
+    user.make_contributor
     sign_in user
   end
 

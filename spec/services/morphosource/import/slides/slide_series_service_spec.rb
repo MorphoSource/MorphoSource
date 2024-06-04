@@ -118,6 +118,9 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
     allow_any_instance_of(described_class).to receive(:specimen_params_from_occurrence_id).and_return(specimen_params) # response from iDigBio
     allow_any_instance_of(described_class).to receive(:taxonomy_params_from_gbif).and_return(taxonomy_params) # response from GBIF
     allow_any_instance_of(Morphosource::Import::SlideSeries::Slides::MczSlide).to receive(:iiif_json).and_return(iiif_json) # response from MCZ
+    allow(Collection).to receive(:find).and_call_original
+    # organization.managers << manager
+    # organization.managers_group.save
   end
 
   describe '.call' do

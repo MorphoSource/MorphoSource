@@ -52,6 +52,9 @@ RSpec.describe Morphosource::Collections::NestedCollectionQueryService do
       # subject { described_class.available_project_collections(parent: team, scope: scope) }
 
       before do
+        organization.managers << user
+        organization.managers_group.save
+        allow(Collection).to receive(:find).and_call_original
         collections.each do |collection|
           collection.create_collection_groups
           Morphosource::Collections::PermissionsCreateService.create_default(collection: collection)

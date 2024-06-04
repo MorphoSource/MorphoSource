@@ -39,6 +39,7 @@ RSpec.describe 'Hyrax::Ability::CollectionAbility' do
     end
   end
 
+  # can create MediaList
   context 'when registered user' do
     let(:user)  { FactoryBot.create(:registered_user) }
 
@@ -49,7 +50,7 @@ RSpec.describe 'Hyrax::Ability::CollectionAbility' do
         is_expected.not_to be_able_to(:edit, Hyrax::CollectionType)
         is_expected.not_to be_able_to(:update, Hyrax::CollectionType)
         is_expected.not_to be_able_to(:destroy, Hyrax::CollectionType)
-        is_expected.not_to be_able_to(:create_collection_of_type, Hyrax::CollectionType)
+        is_expected.to be_able_to(:create_collection_of_type, Hyrax::CollectionType)
       end
     end
   end

@@ -504,7 +504,7 @@ class Media < Morphosource::Works::Base
       proxy_user = User.find_by(ms_id: on_behalf_of)
       if owner_user.groups.include?("#{org.id}_managers") || proxy_user&.groups&.include?("#{org.id}_managers")
         # don't create transfer, but add organization as media owner and ensure no further transfers are created
-        self.owner = org_id
+        self.owner = org.id
       else
         create_new_organization_transfer_request(org)
       end

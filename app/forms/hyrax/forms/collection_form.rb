@@ -45,13 +45,11 @@ module Hyrax
       # @param current_ability [Ability] the capabilities of the current user
       # @param repository [Blacklight::Solr::Repository] the solr repository
       def initialize(model, current_ability, repository)
-        byebug
         super(model)
         @scope = ProxyScope.new(current_ability, repository, blacklight_config)
       end
 
       def permission_template
-        byebug
         @permission_template ||= begin
                                    template_model = PermissionTemplate.find_or_create_by(source_id: model.id)
                                    PermissionTemplateForm.new(template_model)

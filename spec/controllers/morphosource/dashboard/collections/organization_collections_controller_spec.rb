@@ -58,10 +58,8 @@ RSpec.describe Morphosource::Dashboard::Collections::OrganizationCollectionsCont
         expect(response.status).to eq(200)
         get :members, params: params
         expect(response.status).to eq(200)
-        byebug
         get :permissions, params: params
         expect(response.status).to eq(200)
-        byebug
         get :projects, params: params
         expect(response.status).to eq(200)
         get :new

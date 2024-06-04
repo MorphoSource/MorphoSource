@@ -13,11 +13,16 @@ module Hyrax
           can :create, ::OrganizationCollection
           can :destroy, OrganizationCollection
         elsif contributor?
-          can :create_any, ::Collection
+          # can :create_any, ::Collection
           can :manage_any, ::Collection if Hyrax::Collections::PermissionsService.can_manage_any_collection?(ability: self)
           can :view_admin_show_any, ::Collection if Hyrax::Collections::PermissionsService.can_view_admin_show_for_any_collection?(ability: self)
 
-          can :create, ::Collection
+          # teams
+          can :create, Collection, collection_type_gid: Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::Teams::SETTINGS).gid
+
+          # projects
+          can :create, Collection, collection_type_gid: Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::Projects::SETTINGS).gid
+
           can [:edit, :update, :destroy], Collection do |collection| # for test by solr_doc, see solr_document_ability.rb
             test_edit(collection.id)
           end

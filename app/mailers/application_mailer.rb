@@ -1,5 +1,5 @@
 class ApplicationMailer < ActionMailer::Base
-  default from: 'morphosource.do.not.reply@duke.edu'
+  default from: 'do.not.reply@morphosource.org'
   layout 'mailer'
 
   def send_email_with_attachment(email_address, subject, body, attachment_path)

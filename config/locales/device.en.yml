@@ -25,6 +25,7 @@ en:
   simple_form:
     labels:
       device:
+        id: Device ID
         title: Model
         creator: Manufacturer
         identifier: External Identifier

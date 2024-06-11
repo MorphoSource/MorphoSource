@@ -15,59 +15,11 @@ RSpec.describe Hyrax::DevicesController do
   describe 'device access' do
     let(:depositor)         { User.create(email: 'depositor@email.com', password: 'password') }
     let!(:collection_type)  { Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::Organizations::SETTINGS)}
-        let!(:organization) { FactoryBot.create(:organization_collection, depositor: depositor.ms_id) }
+    let!(:organization)     { FactoryBot.create(:organization_collection, depositor: depositor.ms_id) }
     let!(:device)           { FactoryBot.create(:device, title: ['device title'], creator: ['device creator'], depositor: depositor.ms_id) }
 
     before do
       sign_in user
-    end
-
-    # TODO: Remove admin-only restriction tests when organization collections go live on production
-    describe 'temporary admin-only restriction' do
-      let(:params)      { { id: device.id } }
-      let(:new_params)  { { organization_id: organization.id, device: { title: 'title', creator: 'creator' } } }
-
-      context 'user is an admin' do
-        let(:user) { FactoryBot.create(:admin) }
-
-        it 'renders the view' do
-          get :new, params: {}
-          expect(response.status).to eq(200)
-          get :show, params: params
-          expect(response.status).to eq(200)
-        end
-
-        it 'creates the device' do
-          post :create, params: new_params
-          expect(response.status).to eq(302)
-          expect(response).to redirect_to(main_app.organization_devices_path(organization, locale: 'en'))
-        end
-      end
-
-      context 'user is a contributor' do
-        let(:user)  { FactoryBot.create(:contributor) }
-
-        before do
-          organization.managers << user
-        end
-
-        it 'renders the view' do
-          get :new, params: { organization_id: organization.id }
-          expect(response.status).to eq(200)
-        end
-
-        it 'does not render the view' do
-          get :show, params: params
-          expect(response.status).to eq(302)
-          expect(response).to redirect_to(root_path)
-        end
-
-        it 'creates the device' do
-          post :create, params: new_params
-          expect(response.status).to eq(302)
-          expect(response).to redirect_to(main_app.organization_devices_path(organization, locale: 'en'))
-        end
-      end
     end
 
     # expected behavior once admin restriction is removed

@@ -413,7 +413,8 @@ module Hyrax
     # @return [String] Combined device name and facility name label
     #
     def device_and_facility
-      @device_and_facility ||= "#{device_label}, #{device_organization_institution}"
+
+      @device_and_facility ||= link_to(device_label, Rails.application.routes.url_helpers.hyrax_device_path(device_id)) + ", #{device_organization_institution}"
     end
 
     #

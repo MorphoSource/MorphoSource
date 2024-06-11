@@ -117,6 +117,14 @@ module MorphosourceHelper
     value.truncate(length)
   end
 
+  def ark_link(id)
+    if id.present?
+      return link_to(id, "//n2t.net/#{id}", target: :blank)
+    else
+      return "Not assigned"
+    end
+  end
+
   def device_selector
     sortable_title_field = Solrizer.solr_name('title', :stored_sortable)
     hits = devices

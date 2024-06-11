@@ -1,5 +1,5 @@
 <tr id="document_<%= document.id %>">
-  <td><%= document.id %>
+  <td><%= link_to document.id, hyrax_device_path(document.id) %></td>
   <td><%= document['creator_tesim']&.first %></td>
   <td class="break-all"><%= document['title_ssi'] %></td>
   <td><%= device_modalities(document['modality_tesim']) %></td>
@@ -11,5 +11,5 @@
   <td>
     <%= link_to(device_media_count, main_app.media_search_path({"f"=>{"media_device_id_ssim"=>["#{document.id}"]}})) %>
   </td>
-  <td><%= document.date_uploaded %></td>
+  <td><%= ark_link(document['ark_tesim']&.first) %></td>
 </tr>

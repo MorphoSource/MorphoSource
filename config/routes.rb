@@ -506,6 +506,7 @@ Rails.application.routes.draw do
       get 'index.php/Detail/MediaDetail/Show/media_id/:id', to: 'ms1#media_group'
       get 'index.php/Detail/MediaDetail/Show/media_file_id/:id', to: 'ms1#media'
       get 'index.php/Detail/ProjectDetail/Show/project_id/:id', to: 'ms1#projects'
+      get 'media/morphosource/images/*prefix/:file', to: 'ms1#media_thumbnail'
     end
   end
 

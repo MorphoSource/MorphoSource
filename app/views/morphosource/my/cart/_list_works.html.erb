@@ -42,7 +42,7 @@
  <td><%= document["taxonomy_tesim"]&.first %></td>
 <% elsif document["media_physical_object_type_ssim"] == ["Cultural Heritage Object"] %>  
  <td class="break-all"><%= link_to document["physical_object_title_ssim"]&.first, main_app.hyrax_cultural_heritage_object_path(document["physical_object_id_ssim"]&.first) %></td>
- <td></td>
+ <td><%= document["short_description_tesim"]&.first %></td>
 <% end %> 
  <td class="date"><%= item.created_at.strftime("%Y-%m-%d") %></td>
   <td><%= date(item,'approved') %></td>

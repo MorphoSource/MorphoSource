@@ -466,6 +466,20 @@ $( document ).ready(function() {
       $('#modal-select-parent-media-new-processing-event').modal();
     })
 
+    // when a parent media is selected
+    $('#btn-add-parent-media').click(function() {
+      // close the modal, immediately save the processing event form, then refresh the page
+      if ($(this).data('hasProcessingEvent') == true) {
+        $('#modal-select-parent-media').modal('hide');
+        disablePageAndSave(".btn-save-media");
+        $("form#related_form_processing_event").submitRelatedWork(reloadPage);
+      } else if ($(this).data('hasProcessingEvent') == false) {
+        $('#modal-select-parent-media-new-processing-event').modal('hide');
+        $('.new-processing-event-wrapper').show();
+        $('.selected_parent_media').show();
+      }
+    })
+
     // when page is loaded, show/hide content based on which tab is active
     $(".related_form").hide();
     var activeTab = $('.nav-tabs > li.active').find("a").attr("aria-controls");

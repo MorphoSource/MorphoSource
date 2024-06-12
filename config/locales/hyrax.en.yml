@@ -272,6 +272,7 @@ en:
           list_type: List type
           visibility: Visibility
           collection_type: collection type
+          taxonomy_or_description: Taxonomy / Description
       collections:
         actions:
           add_media_to:

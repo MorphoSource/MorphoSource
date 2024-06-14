@@ -23,6 +23,7 @@ class ApplicationController < ActionController::Base
       }
       format.html { redirect_to main_app.root_url, notice: "#{t("cancan.not_found.message")}: #{t("cancan.not_found.description")}" }
       format.js   { render nothing: true, status: :not_found }
+      format.any  { redirect_to main_app.root_url, notice: "#{t("cancan.not_found.message")}: #{t("cancan.not_found.description")}" }
     end
   end
 

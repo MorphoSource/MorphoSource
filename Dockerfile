@@ -14,6 +14,7 @@ RUN apt update && \
   nodejs \
   npm \
   perl \
+  rsync \
   tzdata \
   zip \
   $DATABASE_APK_PACKAGE \

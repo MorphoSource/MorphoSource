@@ -24,7 +24,12 @@ module Morphosource
       id = ( params[:file] || "")
         &.split("_")
         &.select { |chunk| chunk.to_i.to_s == chunk }[1]
-      redirect_to "/media/#{pad(id, '')}/thumbnail"
+
+      if id.present?
+        redirect_to "/media/#{pad(id, '')}/thumbnail"
+      else
+        raise CanCan::AccessDenied
+      end
     end
 
     def projects

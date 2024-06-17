@@ -31,7 +31,7 @@
       </div>
     </div>
   </td>
-<% if document["media_physical_object_type_ssim"] == ["Biological Specimen"] %>  
+<% if document["media_physical_object_type_ssim"]&.first == "Biological Specimen" %>  
  <td class="break-all"><%= link_to document["physical_object_title_ssim"]&.first, main_app.hyrax_biological_specimen_path(document["physical_object_id_ssim"]&.first) %></td>
  <td><%= document["taxonomy_tesim"]&.first %></td>
 <% elsif document["media_physical_object_type_ssim"] == ["Cultural Heritage Object"] %>  

@@ -14,23 +14,7 @@ module Morphosource
 
         collection.reindex_extent = Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
         AddCollectionMembersJob.perform_later(collection.id, batch_ids)
-byebug  
-
-# set notice message in after_update
-
         after_update
-
-#        members = collection.add_member_objects batch_ids
-#        update_physical_object_index
-#        messages = members.collect { |member| member.errors.full_messages }.flatten
-#        if messages.size == members.size
-#          after_update_error(messages.uniq.join(', '))
-#        elsif messages.present?
-#          flash[:error] = messages.uniq.join(', ')
-#          after_update
-#        else
-#          after_update
-#        end
       end
 
       def success_return_path

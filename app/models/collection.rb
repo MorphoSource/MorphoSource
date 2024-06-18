@@ -204,6 +204,8 @@ class Collection < ActiveFedora::Base
         remove_team_access_grants(work)
       end
       work.save!
+      object_id = work.physical_object_id
+      ActiveFedora::Base.where(id: object_id).first.try(:update_index) if object_id.present?
       if media_inherit_permissions?
         InheritPermissionsJob.perform_later(work.id)
       end

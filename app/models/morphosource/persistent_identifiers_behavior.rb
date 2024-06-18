@@ -41,13 +41,17 @@ module Morphosource
     def update_ark_status
       unless self.ark.empty?
         if visibility_changed
-          ark_identifier = Ezid::Identifier.find(self.ark.first)
-          if %w{reserved unavailable}.include?(ark_identifier.status) && public_visibilities.include?(self_visibility)
-            ark_identifier.status = 'public'
-            ark_identifier.save
-          elsif (ark_identifier.status == 'public') && (!public_visibilities.include?(self_visibility))
-            ark_identifier.status = 'unavailable'
-            ark_identifier.save
+          begin
+            ark_identifier = Ezid::Identifier.find(self.ark.first)
+            if %w{reserved unavailable}.include?(ark_identifier.status) && public_visibilities.include?(self_visibility)
+              ark_identifier.status = 'public'
+              ark_identifier.save
+            elsif (ark_identifier.status == 'public') && (!public_visibilities.include?(self_visibility))
+              ark_identifier.status = 'unavailable'
+              ark_identifier.save
+            end
+          rescue => e
+            Rails.logger.error("Error finding ARK. Exception: #{e.message}")
           end
         end
       end

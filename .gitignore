@@ -26,9 +26,6 @@
 # Ignore application configuration
 /config/application.yml
 
-# Google Analytics config
-/config/analytics.yml
-
 # Browse Everything providers config
 /config/browse_everything_providers.yml
 

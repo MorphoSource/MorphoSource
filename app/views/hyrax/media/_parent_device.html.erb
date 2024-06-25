@@ -9,10 +9,14 @@ To change these settings, edit the parent media.</p>
 
       <div class="content-block">
         <%= @presenter.attribute_to_html(:device_organization_institution, label: 'Organization', render_as: :showcase_default, include_empty: true, html_dl: false) %>
-        <%= @presenter.attribute_to_html(:device_title, label: 'Model', render_as: :showcase_default, include_empty: true, html_dl: false) %>
+        <%= @presenter.attribute_to_html(
+          :device_label,
+          label: 'Model',
+          link: main_app.hyrax_device_path(presenter.device_id),
+          render_as: :showcase_link, include_empty: false, value_per_line: true) %>
         <%= @presenter.attribute_to_html(:device_creator, label: 'Manufacturer', render_as: :showcase_default, include_empty: true, html_dl: false) %>
         <%= @presenter.attribute_to_html(:imaging_event_modality, label: 'Modality', render_as: :showcase_default, css_classes: 'break-all', include_empty: true, html_dl: false) %>
-        <%= @presenter.attribute_to_html(:device_description, label: 'Description', render_as: :showcase_default, include_empty: true, html_dl: false) %>
+        <%= @presenter.attribute_to_html(:device_description, label: 'Description', render_as: :showcase_default, css_classes: 'break-all', include_empty: true, html_dl: false) %>
       </div>
 
   </div>

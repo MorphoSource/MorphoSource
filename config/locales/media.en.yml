@@ -93,6 +93,8 @@ en:
         centroid_location: Centroid coordinates
         cite_as: Cite as
         color_format: Color information format
+        data_managed_by: Data managed by
+        data_uploaded_by: Data uploaded by
         description: Full description
         doi: MorphoSource DOI
         face_count: Polygons
@@ -100,6 +102,7 @@ en:
         has_uv_space: UV coordinates
         identifier: External identifier
         license: Creative Commons license
+        media_id: Media ID
         media_type: Media type
         normals_format: Normal information format
         part: Object element or part
@@ -109,6 +112,7 @@ en:
         related_url: External media URL
         rights_holder: IP holder
         rights_statement: Copyright statement
+        short_title: Custom title
         x_spacing: X pixel spacing
         y_spacing: Y pixel spacing
         z_spacing: Z pixel spacing
@@ -148,6 +152,7 @@ en:
         media_organization: Organization (collection, institution, department, etc.) responsible for managing object represented by Media
         media_type: *human_readable_media_type
         orientation: Specific orientation (= direction, view angle) of the subject represented in Media
+        owner: User with highest level of management control over Media
         parent_media_count: Number of Media above this Media in the processing workflow, all of which contributed to produce this Media
         part: Portion or product of physical object or organism represented by Media
         physical_object_title: Physical object or organism represented by Media

@@ -265,4 +265,59 @@ http_interactions:
             "QTime":6}}
     http_version: 
   recorded_at: Thu, 23 Jan 2020 21:35:16 GMT
+- request:
+    method: get
+    uri: https://api.gbif.org/v1/species?datasetKey=d7dddbf4-2cf0-4f39-9b2a-bb099caae36c&limit=3&name=Parvisipho%20lewisiana
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - "*/*"
+      User-Agent:
+      - rest-client/2.1.0 (linux aarch64) ruby/2.7.4p191
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Host:
+      - api.gbif.org
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Vary:
+      - Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+      X-Content-Type-Options:
+      - nosniff
+      X-Xss-Protection:
+      - 1; mode=block
+      Pragma:
+      - no-cache
+      Expires:
+      - '0'
+      X-Frame-Options:
+      - DENY
+      Content-Type:
+      - application/json
+      Date:
+      - Fri, 31 May 2024 21:20:53 GMT
+      Cache-Control:
+      - public, max-age=3601
+      X-Varnish:
+      - '820871176'
+      Age:
+      - '0'
+      Via:
+      - 1.1 varnish (Varnish/6.0)
+      Accept-Ranges:
+      - bytes
+      Content-Length:
+      - '55'
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: '{"offset":0,"limit":3,"endOfRecords":true,"results":[]}'
+    http_version: 
+  recorded_at: Fri, 31 May 2024 21:20:53 GMT
 recorded_with: VCR 5.0.0

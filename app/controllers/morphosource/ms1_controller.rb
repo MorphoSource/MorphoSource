@@ -20,6 +20,18 @@ module Morphosource
       redirect_to '/media/' + pad(params[:id], '')
     end
 
+    def media_thumbnail
+      id = ( params[:file] || "")
+        &.split("_")
+        &.select { |chunk| chunk.to_i.to_s == chunk }[1]
+
+      if id.present?
+        redirect_to "/media/#{pad(id, '')}/thumbnail"
+      else
+        raise CanCan::AccessDenied
+      end
+    end
+
     def projects
       redirect_to '/projects/' + pad(params[:id], 'C')
     end

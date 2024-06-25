@@ -27,6 +27,10 @@ RSpec.describe Hyrax::Actors::DeviceActor do
     context 'adding the device to an organization collection' do
       let(:attributes)  { { work_parents_attributes: { '0' => { id: org_collection.id, _destroy: 'false' } } } }
 
+      before do
+        Morphosource::Collections::PermissionsCreateService.create_default(collection: org_collection)
+      end
+
       it 'does not add the organization as a parent' do
         expect {
           Hyrax::CurationConcern.actor.create(env)
@@ -60,6 +64,10 @@ RSpec.describe Hyrax::Actors::DeviceActor do
       let(:attributes)  { { work_parents_attributes: { '0' => { id: org_collection.id, _destroy: 'true' } } } }
 
       before do
+        Morphosource::Collections::PermissionsCreateService.create_default(collection: org_collection)
+      end
+
+      before do
         device.organization_id = [org_collection.id]
         device.save!
       end
@@ -74,6 +82,11 @@ RSpec.describe Hyrax::Actors::DeviceActor do
     context 'adding/removing multiple org works and collections' do
       let(:org_work2)       { FactoryBot.create(:organization, title: ['Organization Work 2']) }
       let(:org_collection2) { FactoryBot.create(:organization_collection, depositor: user.ms_id) }
+
+      before do
+        Morphosource::Collections::PermissionsCreateService.create_default(collection: org_collection)
+        Morphosource::Collections::PermissionsCreateService.create_default(collection: org_collection2)
+      end
 
       # remove org_work and org_collection, add org_work2 and org_collection2
       let(:attributes)      { { work_parents_attributes: { '0' => { id: org_work.id, _destroy: 'true' }, '1' => { id: org_collection.id, _destroy: 'true' }, '2' => { id: org_work2.id, _destroy: 'false' }, '3' => { id: org_collection2.id, _destroy: 'false' } } } }

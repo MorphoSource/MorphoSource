@@ -110,12 +110,10 @@ module Hyrax
           return unless can_deposit_to_collection?(env, collection)
 
           env.curation_concern.member_of_collections << collection
-
           # apply the collection's permission template when updating media
           # collections that are added through member_of_collections_attributes are processed here.
           # the permission template is applied by Hyrax to works with a collection_id value by:
           # /app/actors/hyrax/actors/apply_permission_template_actor.rb
-
           if collection.media_inherit_permissions?
             Hyrax::PermissionTemplateApplicator.apply(collection.permission_template).to(model: env.curation_concern)
           end
@@ -124,8 +122,8 @@ module Hyrax
         # MorphoSource custom methods to allow collections membership in special cases
         def can_deposit_to_collection?(env, collection)
           env.current_ability.can?(:deposit, collection) ||
-            proxy_can_deposit_to_collection?(env, collection) ||
-            proxy_is_team_org_manager?(env, collection)
+          proxy_can_deposit_to_collection?(env, collection) ||
+          proxy_is_team_org_manager?(env, collection)
         end
 
         def proxy_can_deposit_to_collection?(env, collection)

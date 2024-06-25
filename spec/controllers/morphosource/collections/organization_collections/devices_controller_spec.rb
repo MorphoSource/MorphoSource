@@ -2,7 +2,7 @@ require 'rails_helper'
 require 'spec_helper'
 
 RSpec.describe Morphosource::Collections::OrganizationCollections::DevicesController, type: :controller do
-
+  let(:main_app)      { Rails.application.routes.url_helpers }
   let(:depositor)     { User.create(email: 'depositor@email.com', password: 'password') }
   let!(:organization) { FactoryBot.create(:organization_collection, visibility: 'open', depositor: depositor.ms_id) }
 
@@ -21,7 +21,6 @@ RSpec.describe Morphosource::Collections::OrganizationCollections::DevicesContro
   describe 'collection access' do
     before do
       sign_in user
-      organization.create_collection_groups
       Morphosource::Collections::PermissionsCreateService.create_default(collection: organization)
     end
 
@@ -47,8 +46,13 @@ RSpec.describe Morphosource::Collections::OrganizationCollections::DevicesContro
           expect(response.status).to eq(200)
         end
 
-        context 'user is a collection editor' do
+        context 'user is a collection manager' do
           let(:user)  { depositor }
+
+          before do
+            organization.managers << user
+            organization.managers_group.save
+          end
 
           it 'responds with a 200' do
             get :devices_export, params: params, format: :csv
@@ -56,7 +60,7 @@ RSpec.describe Morphosource::Collections::OrganizationCollections::DevicesContro
           end
         end
 
-        context 'user is not a collection editor' do
+        context 'user is not a collection manager' do
           let(:user)  { FactoryBot.create(:contributor) }
 
           it 'responds with a 403' do
@@ -120,18 +124,6 @@ RSpec.describe Morphosource::Collections::OrganizationCollections::DevicesContro
     end
   end
 
-  describe 'search_action_url' do
-    let(:user) { FactoryBot.create(:admin) }
-
-    before do
-      subject.instance_variable_set(:@collection, organization)
-    end
-
-    it 'is organization_devices_path' do
-      expect(subject.send(:search_action_url)).to eq("/organizations/#{organization.id}/devices?locale=en")
-    end
-  end
-
   describe 'search_facet_path' do
     let(:user) { FactoryBot.create(:admin) }
 
@@ -146,5 +138,13 @@ RSpec.describe Morphosource::Collections::OrganizationCollections::DevicesContro
 
   describe 'tab' do
     it {expect(subject.send(:tab)).to eq(:devices) }
+  end
+
+  describe '#search_action_for_dashboard' do
+    before do
+      subject.instance_variable_set(:@collection, organization)
+    end
+
+    it { expect(subject.search_action_for_dashboard).to eq(main_app.organization_devices_path(organization, locale: 'en')) }
   end
 end

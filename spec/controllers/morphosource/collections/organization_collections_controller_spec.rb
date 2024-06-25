@@ -57,8 +57,13 @@ RSpec.describe Morphosource::Collections::OrganizationCollectionsController, typ
           expect(response.status).to eq(200)
         end
 
-        context 'user is a collection editor' do
+        context 'user is a collection manager' do
           let(:user)  { depositor }
+
+          before do
+            organization.managers << user
+            organization.managers_group.save
+          end
 
           it 'responds with a 200' do
             get :media_export, params: params, format: :csv
@@ -72,7 +77,7 @@ RSpec.describe Morphosource::Collections::OrganizationCollectionsController, typ
           end
         end
 
-        context 'user is not a collection editor' do
+        context 'user is not a collection manager' do
           let(:user)  { FactoryBot.create(:contributor) }
 
           it 'responds with a 403' do

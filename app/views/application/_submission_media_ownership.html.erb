@@ -10,7 +10,17 @@
     </div>
   </div>
   <div id="media-ownership-fields">
-    
+
+    <div class="row media_owner_wrapper">
+      <div class="col-xs-6 showcase-label"><%= t('simple_form.labels.submission.owner') %></div>
+      <div class="col-xs-6 showcase-value"><%= current_user.display_name %></div>
+    </div>
+
+    <div class="row">
+      <div class="col-xs-6 showcase-label"><%= t('simple_form.labels.submission.depositor') %></div>
+      <div class="col-xs-6 showcase-value"><%= current_user.display_name %></div>
+    </div>
+
     <div class="mb-2">
       <div class="row media_download_permission">
         <div class="col-xs-6 showcase-label">
@@ -63,7 +73,7 @@
       <%= render_edit_field_partial('rights_statement', f: f) %>
       <%= render_edit_field_partial('license', f: f) %>
     </div>
-    
+
     <div class="mb-2">
       <%= render_edit_field_partial('morphosource_use_agreement_type', f: f) %>
       <%= render_edit_field_partial('permits_commercial_use', f: f) %>

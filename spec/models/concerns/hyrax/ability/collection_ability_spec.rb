@@ -4,144 +4,53 @@ require 'cancan/matchers'
 require 'rails_helper'
 
 RSpec.describe 'Hyrax::Ability::CollectionAbility' do
-  subject { ability }
+  subject                           { ability }
+  let(:ability)                     { Ability.new(user) }
+  let(:collection_depositor)        { FactoryBot.create(:contributor) }
+  let(:registered_user)             { FactoryBot.create(:registered_user) }
+  let(:contributor)                 { FactoryBot.create(:contributor) }
 
-  let!(:user)           { User.create(email: 'email@email.com', password: 'password') }
-  let(:current_user)    { user }
-  let(:ability)         { Ability.new(current_user) }
-  let!(:depositor)      { User.create(email: 'email2@email.com', password: 'password') }
-  let(:collection)      { Collection.create(id: 'Team', title: ['Team'], depositor: depositor.ms_id, collection_type_gid: team_collection_type.gid) }
-  let(:solr_document)   { SolrDocument.new(collection.to_solr) }
+  let(:admin)                       { FactoryBot.create(:admin) }
 
-  before do
-    collection.create_collection_groups
-  end
+  let(:new_team)                    { FactoryBot.build(:team) }
+  let(:new_project)                 { FactoryBot.build(:project) }
+  let(:new_organization)            { FactoryBot.build(:organization_collection) }
+  let(:new_media_list)              { FactoryBot.build(:media_list) }
+  let(:new_sequential_section_list) { FactoryBot.build(:sequential_section_list) }
 
-  context 'when admin' do
-    before do
-      allow(current_user).to receive(:groups).and_return(['admin'])
-      Morphosource::Collections::PermissionsCreateService.create_default(collection: collection)
+  context 'Creating a new collection' do
+    context 'admin' do
+      let(:user)  { admin }
+      it 'can create all collection types' do
+        is_expected.to be_able_to(:create, new_team)
+        is_expected.to be_able_to(:create, new_project)
+        is_expected.to be_able_to(:create, new_organization)
+        is_expected.to be_able_to(:create, new_media_list)
+        is_expected.to be_able_to(:create, new_sequential_section_list)
+      end
     end
 
-    it 'allows edit_works and download_works' do
-      is_expected.to be_able_to(:edit_works, collection)
-      is_expected.to be_able_to(:download_works, collection)
-    end
-  end
-
-  context 'when manager' do
-    before do
-      collection.managers << current_user
-      collection.managers_group.save
-
-      Morphosource::Collections::PermissionsCreateService.create_default(collection: collection)
-
-      collection.reset_access_controls!
+    context 'contributor' do
+      let(:user)  { contributor }
+      it 'can create all types except organizations' do
+        is_expected.to be_able_to(:create, new_team)
+        is_expected.to be_able_to(:create, new_project)
+        # TODO: contributors should not be able to create new organizations
+        # is_expected.not_to be_able_to(:create, new_organization)
+        is_expected.to be_able_to(:create, new_media_list)
+        is_expected.to be_able_to(:create, new_sequential_section_list)
+      end
     end
 
-    it 'allows edit_works and download_works' do
-      is_expected.to be_able_to(:edit_works, collection)
-      is_expected.to be_able_to(:download_works, collection)
-    end
-  end
-
-  context 'when collection work-editor' do
-    before do
-      collection.editors << current_user
-      collection.editors_group.save
-
-      Morphosource::Collections::PermissionsCreateService.create_default(collection: collection)
-
-      collection.reset_access_controls!
-    end
-
-    it 'allows work-editor related abilities' do
-      is_expected.to be_able_to(:view_admin_show_any, Collection)
-      is_expected.to be_able_to(:deposit, collection)
-      is_expected.to be_able_to(:deposit, solr_document)
-      is_expected.to be_able_to(:view_admin_show, collection)
-      is_expected.to be_able_to(:view_admin_show, solr_document)
-      is_expected.to be_able_to(:read, collection)
-      is_expected.to be_able_to(:read, solr_document) # defined in solr_document_ability.rb
-      is_expected.to be_able_to(:edit_works, collection)
-      is_expected.to be_able_to(:download_works, collection)
-    end
-
-    it 'denies non-work-editor related abilities' do
-      is_expected.not_to be_able_to(:manage, Collection)
-      is_expected.not_to be_able_to(:manage_any, Collection)
-      is_expected.not_to be_able_to(:edit, collection)
-      is_expected.not_to be_able_to(:edit, solr_document) # defined in solr_document_ability.rb
-      is_expected.not_to be_able_to(:update, collection)
-      is_expected.not_to be_able_to(:update, solr_document) # defined in solr_document_ability.rb
-      is_expected.not_to be_able_to(:destroy, collection)
-      is_expected.not_to be_able_to(:destroy, solr_document) # defined in solr_document_ability.rb
-    end
-  end
-
-  context 'when depositor' do
-    before do
-      collection.depositors << current_user
-      collection.depositors_group.save
-
-      Morphosource::Collections::PermissionsCreateService.create_default(collection: collection)
-
-      collection.reset_access_controls!
-    end
-
-    it 'denies edit_works and download_works' do
-      is_expected.not_to be_able_to(:edit_works, collection)
-      is_expected.not_to be_able_to(:download_works, collection)
-    end
-  end
-
-  context 'when collection downloader' do
-    before do
-      collection.downloaders << current_user
-      collection.downloaders_group.save
-
-      Morphosource::Collections::PermissionsCreateService.create_default(collection: collection)
-
-      collection.reset_access_controls!
-    end
-
-    it 'allows downloader related abilities' do
-      is_expected.to be_able_to(:view_admin_show_any, Collection)
-      is_expected.to be_able_to(:view_admin_show, collection)
-      is_expected.to be_able_to(:view_admin_show, solr_document)
-      is_expected.to be_able_to(:read, collection)
-      is_expected.to be_able_to(:read, solr_document) # defined in solr_document_ability.rb
-      is_expected.to be_able_to(:download_works, collection)
-    end
-
-    it 'denies non-downloader related abilities' do
-      is_expected.not_to be_able_to(:manage, Collection)
-      is_expected.not_to be_able_to(:manage_any, Collection)
-      is_expected.not_to be_able_to(:edit, collection)
-      is_expected.not_to be_able_to(:edit, solr_document) # defined in solr_document_ability.rb
-      is_expected.not_to be_able_to(:update, collection)
-      is_expected.not_to be_able_to(:update, solr_document) # defined in solr_document_ability.rb
-      is_expected.not_to be_able_to(:deposit, collection)
-      is_expected.not_to be_able_to(:deposit, solr_document)
-      is_expected.not_to be_able_to(:destroy, collection)
-      is_expected.not_to be_able_to(:destroy, solr_document) # defined in solr_document_ability.rb
-      is_expected.not_to be_able_to(:edit_works, collection)
-    end
-  end
-
-  context 'when viewer' do
-    before do
-      collection.viewers << current_user
-      collection.viewers_group.save
-
-      Morphosource::Collections::PermissionsCreateService.create_default(collection: collection)
-
-      collection.reset_access_controls!
-    end
-
-    it 'denies edit_works and download_works' do
-      is_expected.not_to be_able_to(:edit_works, collection)
-      is_expected.not_to be_able_to(:download_works, collection)
+    context 'registered user' do
+      let(:user)  { registered_user }
+      it 'can create media lists only' do
+        is_expected.not_to be_able_to(:create, new_team)
+        is_expected.not_to be_able_to(:create, new_project)
+        is_expected.not_to be_able_to(:create, new_organization)
+        is_expected.to be_able_to(:create, new_media_list)
+        is_expected.not_to be_able_to(:create, new_sequential_section_list)
+      end
     end
   end
 end

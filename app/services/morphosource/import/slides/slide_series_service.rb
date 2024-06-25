@@ -78,7 +78,6 @@ module Morphosource
 
         def taxonomy
           taxonomy_doc = search_for_taxonomy
-
           return Taxonomy.find(taxonomy_doc['id']) if taxonomy_doc.present?
 
           taxonomy = Taxonomy.new
@@ -290,7 +289,7 @@ module Morphosource
           end
 
           def organization
-            @organization ||= Organization.find(provider['id'])
+            @organization ||= (Organization.find_by(id: provider['id']) || OrganizationCollection.find_by(id: provider['id']))
           end
 
           def org_manager_email

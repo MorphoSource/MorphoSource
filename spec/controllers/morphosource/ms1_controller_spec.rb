@@ -25,4 +25,16 @@ RSpec.describe Morphosource::Ms1Controller, type: :controller do
     expect(response).to redirect_to "/projects/0000C1234"
   end
 
+  describe '#media_thumbnail' do
+    it 'redirects from MS1 thumbnail image to MS2 thumbnail route successfully' do
+      # full URL would be /media/morphosource/images/3/1/3/87744_ms_media_files_media_31329_large.jpg 
+      get :media_thumbnail, params: { prefix: '3/1/3', file: '87744_ms_media_files_media_31329_large.jpg' }
+      expect(response).to redirect_to "/media/000031329/thumbnail"
+    end
+
+    it 'redirect to root with 404 message if file name is malformed' do
+      get :media_thumbnail, params: { prefix: '3/1/3', file: 'image.jpg' }
+      expect(response).to redirect_to(root_path)
+    end
+  end
 end

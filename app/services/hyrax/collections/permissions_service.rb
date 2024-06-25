@@ -148,8 +148,8 @@ module Hyrax
         admin_set_ids_for_user(ability: ability, access: [Hyrax::PermissionTemplateAccess::MANAGE,
           Hyrax::PermissionTemplateAccess::EDIT_WORKS,
           Hyrax::PermissionTemplateAccess::DEPOSIT,
-                                                          Hyrax::PermissionTemplateAccess::DOWNLOAD_WORKS,
-                                                          Hyrax::PermissionTemplateAccess::VIEW]).present?
+          Hyrax::PermissionTemplateAccess::DOWNLOAD_WORKS,
+          Hyrax::PermissionTemplateAccess::VIEW]).present?
       end
 
       # @api public
@@ -185,8 +185,9 @@ module Hyrax
       # @return [Boolean] true if the user has permission to deposit into the collection
       # @note Several checks get the user's groups from the user's ability.  The same values can be retrieved directly from a passed in ability.
       def self.can_deposit_in_collection?(collection_id:, ability:)
-        deposit_access_to_collection?(collection_id: collection_id, ability: ability) || edit_works_access_to_collection?(collection_id: collection_id, ability: ability) ||
-          manage_access_to_collection?(collection_id: collection_id, ability: ability)
+        deposit_access_to_collection?(collection_id: collection_id, ability: ability) ||
+        edit_works_access_to_collection?(collection_id: collection_id, ability: ability) ||
+        manage_access_to_collection?(collection_id: collection_id, ability: ability)
       end
 
       # @api public
@@ -254,13 +255,13 @@ module Hyrax
       # Determine if the given user has permissions to edit all works created through the given collection
       def self.can_edit_collection_works?(collection_id:, ability:)
         edit_works_access_to_collection?(collection_id: collection_id, ability: ability) ||
-          manage_access_to_collection?(collection_id: collection_id, ability: ability)
+        (manage_access_to_collection?(collection_id: collection_id, ability: ability) && collection_manages_works?(collection_id: collection_id))
       end
 
       # Determine if the given user has permissions to download all works created through the given collection
       def self.can_download_collection_works?(collection_id:, ability:)
         edit_works_access_to_collection?(collection_id: collection_id, ability: ability) || download_works_access_to_collection?(collection_id: collection_id, ability: ability) ||
-          manage_access_to_collection?(collection_id: collection_id, ability: ability)
+        (manage_access_to_collection?(collection_id: collection_id, ability: ability) && collection_manages_works?(collection_id: collection_id))
       end
 
       # @api private
@@ -289,7 +290,7 @@ module Hyrax
       def self.download_works_access_to_collection?(collection_id:, ability: nil, exclude_groups: [])
         access_to_collection?(collection_id: collection_id, access: 'download', ability: ability, exclude_groups: exclude_groups)
       end
-      private_class_method :edit_works_access_to_collection?
+      private_class_method :download_works_access_to_collection?
 
       # @api private
       #
@@ -303,12 +304,26 @@ module Hyrax
       # @note Several checks get the user's groups from the user's ability.  The same values can be retrieved directly from a passed in ability.
       def self.access_to_collection?(collection_id:, access:, ability:, exclude_groups: [])
         return false unless collection_id
-        template = Hyrax::PermissionTemplate.find_by!(source_id: collection_id)
+        # template = Hyrax::PermissionTemplate.find_by!(source_id: collection_id)
+        template = self.template(collection_id)
         return true if ([ability.current_user.user_key] & template.agent_ids_for(agent_type: 'user', access: access)).present?
         return true if (ability.user_groups & (template.agent_ids_for(agent_type: 'group', access: access) - exclude_groups)).present?
         false
       end
       private_class_method :access_to_collection?
+
+      def self.collection_manages_works?(collection_id: )
+        return false unless collection_id
+        self.managing_collection_types.include? self.template(collection_id).source_type
+      end
+
+      def self.managing_collection_types
+        ['team', 'project', 'organization']
+      end
+
+      def self.template(collection_id)
+        @template = Hyrax::PermissionTemplate.find_by!(source_id: collection_id)
+      end
     end
   end
 end

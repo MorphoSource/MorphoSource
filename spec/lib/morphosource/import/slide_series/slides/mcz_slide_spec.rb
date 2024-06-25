@@ -37,18 +37,13 @@ RSpec.describe Morphosource::Import::SlideSeries::Slides::MczSlide do
       describe 'iiif_base_uri' do
         it { expect(subject.iiif_base_uri).to eq(base_uri) }
       end
-      describe 'get_iiif_json' do
-        it 'returns a iiif json result' do
-          result = subject.get_iiif_json
-          expect(result['id']).to include(identifier)
-        rescue StandardError
-          # fail quietly if mcz server is down.
-        end
-      end
       describe 'identifier' do
         it { expect(subject.identifier).to match_array([identifier]) }
       end
       describe 'remote_origin_url' do
+        before do
+          allow(subject).to receive(:file_name).and_return(['default.tif'])
+        end
         it { expect(subject.remote_origin_url).to eq("#{base_uri}/full/max/0/default.tif") }
       end
       describe 'remote_manifest_url' do

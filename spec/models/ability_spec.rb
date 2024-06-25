@@ -49,10 +49,10 @@ RSpec.describe Ability, type: :model do
     context 'when creating new objects' do
 
       it 'denies registered users and guests, authorizes admins and contributors' do
-        expect(user_ability).not_to be_able_to(:create, ActiveFedora::Base)
-        expect(admin_ability).to be_able_to(:create, ActiveFedora::Base)
-        expect(contributor_ability).to be_able_to(:create, ActiveFedora::Base)
-        expect(guest_ability).not_to be_able_to(:create, ActiveFedora::Base)
+        expect(user_ability).not_to be_able_to(:create, Morphosource::Works::Base)
+        expect(admin_ability).to be_able_to(:create, Morphosource::Works::Base)
+        expect(contributor_ability).to be_able_to(:create, Morphosource::Works::Base)
+        expect(guest_ability).not_to be_able_to(:create, Morphosource::Works::Base)
       end
     end
   end
@@ -176,7 +176,7 @@ RSpec.describe Ability, type: :model do
           expect(guest_ability).not_to be_able_to(:read, project)
 
           expect(admin_ability).to be_able_to(:read, media_list)
-          expect(user_ability).to be_able_to(:read, media_list)
+          expect(user_ability).not_to be_able_to(:read, media_list)
           expect(guest_ability).not_to be_able_to(:read, media_list)
 
           expect(admin_ability).to be_able_to(:read, sequential_section_list)

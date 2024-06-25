@@ -148,17 +148,19 @@ class SubmissionsController < ApplicationController
       organization_title = organization.title
       organization_id = organization.id
       if organization.organization_collection?
-        organization_model = 'OrganizationCollection'      
+        organization_model = 'OrganizationCollection'
         organization_team_id = nil
         organization_team_can_submit_remote_files = organization.can_submit_remote_files
         organization_data_manager = organization_id
         organization_data_manager_name = organization_title
+        organization_media_ownership_transfer = organization.media_ownership_transfer
+        organization_managers = organization.managers&.map(&:ms_id)
       else
-        organization_model = 'Organization'      
+        organization_model = 'Organization'
         organization_team_id = organization.team&.id
         organization_team_can_submit_remote_files = organization.team&.can_submit_remote_files
         organization_data_manager = organization.data_manager&.first
-        organization_data_manager_name = User.find_by_user_key(organization_data_manager)&.name_or_email      
+        organization_data_manager_name = User.find_by_user_key(organization_data_manager)&.name_or_email
       end
       organization_permissions_mode = organization.permissions_enforcement_mode&.first || 'Recommend'
     else
@@ -186,7 +188,9 @@ class SubmissionsController < ApplicationController
       organization_permissions_mode: organization_permissions_mode,
       organization_data_manager: organization_data_manager,
       organization_data_manager_name: organization_data_manager_name,
-      org_team_can_submit_remote_files: organization_team_can_submit_remote_files
+      org_team_can_submit_remote_files: organization_team_can_submit_remote_files,
+      organization_managers: organization_managers,
+      organization_media_ownership_transfer: organization_media_ownership_transfer
     }
     render :json => response_object
   end

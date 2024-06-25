@@ -30,10 +30,11 @@ RSpec.describe SubmissionsController, type: :controller do
   end
 
   describe 'create_work_if_needed' do
-    before do
-      subject.send(:create_work_if_needed, 'media', params)
-    end
+
     context 'organization is an organization work' do
+      before do
+        subject.send(:create_work_if_needed, 'media', params)
+      end
       context 'organization does not have a team' do
         let(:organization)  { FactoryBot.create(:organization) }
         context 'visibility is restricted' do
@@ -154,8 +155,15 @@ RSpec.describe SubmissionsController, type: :controller do
     end
 
     context 'organization is an organization collection' do
+      before do
+        organization.managers << data_manager
+        organization.managers_group.save
+        subject.send(:create_work_if_needed, 'media', params)
+      end
+
       context 'media_ownership_transfer is nil' do
         let(:organization)  { FactoryBot.create(:organization_collection, depositor: data_manager.ms_id) }
+
         context 'visibility is restricted' do
           let(:visibility)  { 'restricted' }
           context 'depositor chooses transfer immediately' do
@@ -229,7 +237,13 @@ RSpec.describe SubmissionsController, type: :controller do
         end
       end
       context 'media_ownership_transfer is true' do
-        let(:organization)  { FactoryBot.create(:organization_collection, depositor: data_manager.ms_id, media_ownership_transfer: true) }
+        let(:organization)  { FactoryBot.create(:organization_collection, id: 'test', depositor: data_manager.ms_id, media_ownership_transfer: true) }
+
+        before do
+          organization.managers << data_manager
+          organization.managers_group.save
+        end
+
         context 'visibility is restricted' do
           let(:visibility)  { 'restricted' }
           context 'depositor chooses transfer immediately' do

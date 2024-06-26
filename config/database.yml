@@ -8,12 +8,12 @@ default: &default
   adapter: postgresql
   encoding: UTF8
   pool: 5
-  username: hydra
-  password: hydra
+  username: <%= ENV['DB_USERNAME'] || 'hydra' %>
+  password: <%= ENV['DB_PASSWORD'] || 'hydra' %>
 
 development:
   <<: *default
-  database: development
+  database: <%= ENV['DB_NAME'] || 'development' %>
   url: <%= "postgresql://#{ ENV['DB_HOST'] || 'localhost' }/" %>
 
 # Warning: The database defined as "test" will be erased and
@@ -27,9 +27,9 @@ test:
 production:
   adapter: postgresql
   encoding: UTF8
-  database: <%= ENV['MORPHOSOURCE_DB_NAME'] %>
+  database: <%= ENV['MORPHOSOURCE_DB_NAME'] || ENV['DB_NAME'] %>
   pool: 5
-  username: <%= ENV['MORPHOSOURCE_DB_USER'] %>
-  password: <%= ENV['MORPHOSOURCE_DB_PASS'] %>
-  url: postgresql://localhost/
+  username: <%= ENV['MORPHOSOURCE_DB_USER'] || ENV['DB_USERNAME'] %>
+  password: <%= ENV['MORPHOSOURCE_DB_PASS'] || ENV['DB_PASSWORD'] %>
+  url: <%= "postgresql://#{ ENV['DB_HOST'] || 'localhost' }/" %>
   

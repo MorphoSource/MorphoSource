@@ -26,9 +26,6 @@
 # Ignore application configuration
 /config/application.yml
 
-# Google Analytics config
-/config/analytics.yml
-
 # Browse Everything providers config
 /config/browse_everything_providers.yml
 
@@ -51,9 +48,6 @@
 
 # Batch import config
 /config/batch_import.yml
-
-# Resque pool config
-/config/resque-pool.yml
 
 # FITS log file
 /fits.log

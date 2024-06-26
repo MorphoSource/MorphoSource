@@ -10,6 +10,9 @@ stages:
 
 build_job:
   stage: build
+  except:
+    refs: 
+      - k8s
   before_script:
     - ruby -v
     - gem install bundler -v 2.0.2
@@ -33,10 +36,37 @@ build_job:
   tags:
     - build
 
+build_image_docker:
+  stage: build
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ''
+  services:
+    - name: docker:20.10-dind
+  only:
+    - k8s
+  before_script:
+    - echo "$CONTAINER_REGISTRY_TOKEN" | docker login -u juliewinchester --password-stdin
+    - docker pull juliewinchester/morphosource:app-dev || true
+  script:
+    - docker build --target morphosource-prod --tag juliewinchester/morphosource:app-dev --tag juliewinchester/morphosource:app-dev-$CI_COMMIT_SHORT_SHA  .
+    - docker push juliewinchester/morphosource:app-dev-$CI_COMMIT_SHORT_SHA
+    - docker push juliewinchester/morphosource:app-dev
+    - docker build --target morphosource-worker-prod --tag juliewinchester/morphosource:worker-dev --tag juliewinchester/morphosource:worker-dev-$CI_COMMIT_SHORT_SHA  .
+    - docker push juliewinchester/morphosource:worker-dev-$CI_COMMIT_SHORT_SHA
+    - docker push juliewinchester/morphosource:worker-dev
+    
+  tags:
+    - oit-shared
+
 .test:
   stage: test
   variables:
     RAILS_ENV: test
+  except:
+    refs: 
+      - k8s
   before_script:
     - source $RAILS_DEPLOY_PATH/etc/export-test.env
     - ruby -v
@@ -62,6 +92,7 @@ test_until_fail_job:
   except:
     refs: 
       - main
+      - k8s
     variables:
       - $SKIP_TESTS == "true"
   script:
@@ -108,6 +139,9 @@ predeploy_prod:
   stage: deploy
   variables:
     RAKE_COMMAND: sudo -u $RAILS_USER -n -i $RAILS_ROOT/bin/rake -f $RAILS_ROOT/Rakefile
+  except:
+    refs: 
+      - k8s
   script:
     - rsync -rl --delete --exclude-from=EXCLUDE ./ $RAILS_ROOT/
     - $RAKE_COMMAND maintenance:start

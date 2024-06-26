@@ -196,7 +196,7 @@ Hyrax.config do |config|
   if blender_in_path.present?
     config.blender_path = blender_in_path.first
   else
-    config.blender_path = ENV.fetch("BLENDER_PATH")
+    config.blender_path = ENV.fetch("BLENDER_PATH", nil)
   end
 
   config.fiji_path = ENV.fetch("FIJI_PATH", "fiji")

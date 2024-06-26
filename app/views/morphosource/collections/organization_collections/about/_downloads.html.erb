@@ -1,0 +1,50 @@
+<div class='statistics'>
+  <h2><%= t('morphosource.collections.view.about.downloads.header.title').upcase %><span><%= render_hint_tag(t("morphosource.collections.view.about.downloads.header.hint")) %></span></h2>
+  <%# media downloads %>
+  <div class="row view-stat">
+    <% if @collection.manages_objects_and_devices? %>
+      <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.downloads.total_downloads') %><span></div>
+    <% else %>
+      <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.downloads.downloads') %><span></div>
+    <% end %>
+    <div class="col-xs-6 showcase-value "><%= @stats.downloads_count %></div>
+  </div>
+  <%# object media downloads, device media downloads %>
+  <% if @collection.manages_objects_and_devices? %>
+    <%# object media downloads %>
+    <div class="row view-stat">
+      <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.downloads.object_media_downloads') %></div>
+      <div class="col-xs-6 showcase-value "><%= @stats.object_media_downloads_count %></div>
+    </div>
+    <%# device media downloads %>
+    <div class="row view-stat">
+      <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.downloads.device_media_downloads') %></div>
+      <div class="col-xs-6 showcase-value "><%= @stats.device_media_downloads_count %></div>
+    </div>
+  <% end %>
+  <% if @stats.top_download&.first&.present? %>
+    <div class="row view-stat">
+      <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.downloads.most_downloaded_media') %></div>
+      <div class="col-xs-6 showcase-value "><%= @stats.top_download&.last %></div>
+    </div>
+    <div class="row view-stat">
+      <%= render 'morphosource/collections/organization_collections/about/top_media', media_id: @stats.top_download&.first %>
+    </div>
+  <% end %>
+  <% if @collection.manages_objects_and_devices? %>
+    <div class="row view-stat">
+      <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.downloads.most_downloaded_object_media') %></div>
+      <div class="col-xs-6 showcase-value "><%= @stats.top_object_media_download&.last %></div>
+    </div>
+    <div class="row view-stat">
+      <%= render 'morphosource/collections/organization_collections/about/top_media', media_id: @stats.top_object_media_download&.first %>
+    </div>
+    <div class="row view-stat">
+      <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.downloads.most_downloaded_device_media') %></div>
+      <div class="col-xs-6 showcase-value "><%= @stats.top_device_media_download&.last %></div>
+    </div>
+    <div class="row view-stat">
+      <%= render 'morphosource/collections/organization_collections/about/top_media', media_id: @stats.top_device_media_download&.first %>
+    </div>
+  <% end %>
+</div>

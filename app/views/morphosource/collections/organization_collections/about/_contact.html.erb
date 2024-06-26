@@ -1,0 +1,16 @@
+<h2>
+  <%= t('morphosource.collections.view.about.contact.header.title').upcase %>
+  <span><%= render_hint_tag(t("morphosource.collections.view.about.contact.header.hint")) %></span>
+</h2>
+<%# address %>
+<%= @presenter.attribute_to_html(:address, label: t('morphosource.collections.view.about.contact.address'), render_as: :showcase_default, include_empty: true, html_dl: false) %>
+<%# city %>
+<%= @presenter.attribute_to_html(:city, label: t('morphosource.collections.view.about.contact.city'), render_as: :showcase_default, include_empty: true, html_dl: false) %>
+<%# state/province %>
+<%= @presenter.attribute_to_html(:state_province, label: t('morphosource.collections.view.about.contact.state_province'), render_as: :showcase_default, include_empty: true, html_dl: false) %>
+<%# postal code %>
+<%= @presenter.attribute_to_html(:postal_code, label: t('morphosource.collections.view.about.contact.postal_code'), render_as: :showcase_default, include_empty: true, html_dl: false) %>
+<%# country %>
+<%= @presenter.attribute_to_html(:country, label: t('morphosource.collections.view.about.contact.country'), render_as: :showcase_default, include_empty: true, html_dl: false) %>
+<%# contact_person %>
+<%= @presenter.attribute_to_html(:contact_person, label: t('morphosource.collections.view.about.contact.contact_person'), render_as: :showcase_default, include_empty: true, html_dl: false) %>

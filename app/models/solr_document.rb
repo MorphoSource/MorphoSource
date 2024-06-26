@@ -47,7 +47,6 @@ class SolrDocument
 
     default_params = { rows: 1000 }
     params = default_params.merge(q: q).merge(opts)
-
     repository.search(params).documents
   end
 

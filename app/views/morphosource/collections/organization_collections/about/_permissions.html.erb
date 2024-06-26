@@ -1,0 +1,59 @@
+<h2 class="header-modal-definitions">
+  <%= t('morphosource.collections.view.about.permissions.header.title').upcase %>
+  <a href='#' data-toggle="modal" data-target="#modal-ownership-and-permissions-definitions">Field Definitions</a>
+</h2>
+<%# media ownership transfer %>
+<%= @presenter.attribute_to_html(:media_ownership_transfer, label: t('morphosource.collections.view.about.permissions.media_ownership_transfer'), render_as: :showcase_media_ownership_transfer, include_empty: true, html_dl: false) %>
+<%# permissions enforcement mode %>
+<%= @presenter.attribute_to_html(:permissions_enforcement_mode, label: t('morphosource.collections.view.about.permissions.permissions_enforcement_mode'), render_as: :showcase_default, include_empty: true, html_dl: false) %>
+<%# license %>
+<%= @presenter.attribute_to_html(:license, label: t('morphosource.collections.view.about.permissions.license'), render_as: :showcase_license_link, include_empty: true) %>
+<%# rights statement %>
+<%= @presenter.attribute_to_html(:rights_statement, label: t('morphosource.collections.view.about.permissions.rights_statement'), render_as: :showcase_rights_statement_link, include_empty: true )%>
+<%# publication status %>
+<div class="row">
+  <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.permissions.download_permission') %></div>
+  <div class="col-xs-6 showcase-value"><%= publication_status_label(@presenter.download_permission&.first) || '--' %></div>
+</div>
+<%# download reviewer %>
+<%= @presenter.attribute_to_html(:download_reviewer, label: t('morphosource.collections.view.about.permissions.download_reviewer'), render_as: :showcase_user_link, include_empty: true) %>
+<%# agreement uri %>
+<%= @presenter.attribute_to_html(
+	:agreement_uri,
+  label: t('morphosource.collections.view.about.permissions.agreement_uri'),
+  render_as: :showcase_agreement_uri_file,
+  include_empty: true,
+  text_if_empty: 'None',
+  attachment_file_url: @presenter.attachment_url)
+%>
+<%# morphosource use agreement type %>
+<%= @presenter.attribute_to_html(:morphosource_use_agreement_type, label: t('morphosource.collections.view.about.permissions.morphosource_use_agreement_type'), render_as: :showcase_default, include_empty: true, html_dl: false) %>
+<%# required archival of published derivatives %>
+<%= @presenter.attribute_to_html(:required_archival_of_published_derivatives, label: t('morphosource.collections.view.about.permissions.required_archival_of_published_derivatives'), render_as: :showcase_required_archival_of_published_derivatives, include_empty: true, html_dl: false) %>
+<%# permits commercial use %>
+<%= @presenter.attribute_to_html(:permits_commercial_use, label: t('morphosource.collections.view.about.permissions.permits_commercial_use'), render_as: :showcase_permits_commercial_use, include_empty: true) %>
+<%# permits 3d use %>
+<%= @presenter.attribute_to_html(:permits_3d_use, label: t('morphosource.collections.view.about.permissions.permits_3d_use'), render_as: :showcase_permits_three_d_use, include_empty: true) %>
+<%# rights holder %>
+<%= @presenter.attribute_to_html(:rights_holder, label: t('morphosource.collections.view.about.permissions.rights_holder'), render_as: :showcase_default, include_empty: true, html_dl: false) %>
+<%# preview mode %>
+<%= @presenter.attribute_to_html(:preview_mode, label: t('morphosource.collections.view.about.permissions.preview_mode'), render_as: :showcase_default, include_empty: true, html_dl: false) %>
+
+<%# Definitions modal %>
+<%# Order of fields should match the order of fields in the main view %>
+<% fields = [
+  :media_ownership_transfer,
+  :permissions_enforcement_mode,
+  :license,
+  :rights_statement,
+  :publication_status_label,
+  :download_reviewer,
+  :agreement_uri,
+  :morphosource_use_agreement_type,
+  :required_archival_of_published_derivatives,
+  :permits_commercial_use,
+  :permits_3d_use,
+  :rights_holder,
+  :preview_mode
+]%>
+<%= render partial: 'morphosource/collections/organization_collections/about/modal_field_definitions', locals: { fields: fields, modal_id: 'modal-ownership-and-permissions-definitions' } %>

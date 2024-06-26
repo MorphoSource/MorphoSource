@@ -87,8 +87,11 @@ provide :page_title, construct_page_title(@presenter.title)
     <!-- <div class="tab-content"> -->
 
       <div class="panel-body">
-
-        <%= render 'morphosource/collections/about/tab_about' %>
+        <% if @presenter.organization_collection? %>
+          <%= render 'morphosource/collections/organization_collections/about/tab_about' %>
+        <% else %>
+          <%= render 'morphosource/collections/about/tab_about' %>
+        <% end %>
 
       </div>
 

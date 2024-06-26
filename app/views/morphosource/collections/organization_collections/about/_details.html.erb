@@ -1,0 +1,20 @@
+<h2>
+  <%= t('morphosource.collections.view.about.details.header.title').upcase %>
+  <span><%= render_hint_tag(t("morphosource.collections.view.about.details.header.hint")) %></span>
+</h2>
+<%# organization title %>
+<%= @presenter.attribute_to_html(:title, label: t('morphosource.collections.view.about.details.organization_name'), render_as: :showcase_default, include_empty: true, html_dl: false) %>
+<%# institution %>
+<%= @presenter.attribute_to_html(:institution_name, label: t('morphosource.collections.view.about.details.institution'), render_as: :showcase_default, include_empty: true, html_dl: false) %>
+<%# organization type %>
+<%= @presenter.attribute_to_html(:organization_type, label: t('morphosource.collections.view.about.details.organization_type'), render_as: :showcase_default, include_empty: true, html_dl: false) %>
+<%# collection managers %>
+<%= @presenter.attribute_to_html(:collection_managers, label: t('morphosource.collections.view.about.details.collection_managers'), render_as: :showcase_default, include_empty: true, html_dl: false) %>
+<%# collection code %>
+<%= @presenter.attribute_to_html(:institution_code, label: t('morphosource.collections.view.about.details.institution_code'), render_as: :showcase_default, include_empty: true, html_dl: false) %>
+<%# collection code %>
+<%= @presenter.attribute_to_html(:collection_code, label: t('morphosource.collections.view.about.details.collection_code'), render_as: :showcase_default, include_empty: true, html_dl: false) %>
+<%# recordset id %>
+<%= @presenter.attribute_to_html(:recordset_id, label: t('morphosource.collections.view.about.details.recordset_id'), render_as: :showcase_default, include_empty: true, html_dl: false) %>
+<%# identifier %>
+<%= @presenter.attribute_to_html(:identifier, label: t('morphosource.collections.view.about.details.identifier'), render_as: :showcase_default, include_empty: true, html_dl: false) %>

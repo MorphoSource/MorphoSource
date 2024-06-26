@@ -30,6 +30,10 @@ class MediaList < Collection
     true
   end
 
+  def media_list?
+    true
+  end
+
   def type_assigns_groups?
     true
   end

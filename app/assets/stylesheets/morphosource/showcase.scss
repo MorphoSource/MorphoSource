@@ -524,13 +524,6 @@ nav#masthead {
     }
   }
 
-  #add-selected-to-cart {
-    font-size: 11px;
-    @media (min-width: 768px) {
-      max-width: 144px;
-    }
-  }
-
   div.filters, div.filter-by {
     background-color: $block-background-color;
     border: 1px solid $block-border-color;
@@ -810,7 +803,12 @@ nav#masthead {
     margin-top: 18px;
   }
 
-  #add-selected-to-cart, .add-selected-to-cart {
+  #add-selected-to-cart, .add-selected-to-cart, #remove-selected-from-collection {
+    font-size: 11px;
+    @media (min-width: 768px) {
+      max-width: 144px;
+    }
+
     .material-icons {
       font-size: 9px;
     }

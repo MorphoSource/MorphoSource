@@ -10,6 +10,7 @@
     <div class="col-xs-12 col-sm-5 col-md-4 batch-action-buttons">
       <div class="row">
           <%= render 'batch_actions' %>
+          <%= render 'batch_remove_media' if @presenter.can_remove_media_from? %>
       </div>
     </div>
   <% else %>

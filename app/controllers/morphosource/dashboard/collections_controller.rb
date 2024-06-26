@@ -73,6 +73,12 @@ module Morphosource
         after_update
       end
 
+      def batch_remove_members_ajax
+        
+byebug
+
+      end
+
 
       def process_member_changes
         case member_params

@@ -353,6 +353,8 @@ Rails.application.routes.draw do
       patch 'dashboard/collections/:id', to: 'collections#update'
       delete 'dashboard/collections/:id', to: 'collections#destroy', as: 'destroy_collection'
       post 'dashboard/collections/:id/remove/:member_id', to: 'collections#remove_member', as: 'collection_remove_member'
+      post 'dashboard/collections/:id/batch_remove', to: 'collections#batch_remove_members_ajax', as: 'collection_batch_remove_member'
+
       # Create project within team
       get 'collections/:parent_id/under', controller: 'nest_collections', action: 'create_collection_under', as: 'create_subcollection_under'
 

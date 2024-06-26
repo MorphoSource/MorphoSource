@@ -14,6 +14,47 @@ $(document).ready(function() {
       $('.sub-collections-wrapper button.add-subcollection').trigger('click');
     });
 
+
+    $('#remove-selected-from-collection').on('click', function (e) {
+
+      selectedMediaIDs = [];
+      $('input[name="batch_work_ids[]"]').each(function() {
+        if ($(this).is(':checked')) {
+          selectedMediaIDs.push($(this).val());
+        }
+      });
+
+console.log('batch', selectedMediaIDs);
+
+      if (confirm(`Removing selected media will not remove it from MorphoSource, only from this collection. Are you sure you want to remove selected media from the collection?`) == false) {
+        e.preventDefault();
+        return false;
+      } else {
+        $.ajax({
+          type: "POST",
+      url: '/dashboard/collections/000200082/batch_remove',
+          dataType: 'json',
+          data: { foo:'bar' },
+          // data: $(this).serialize(), // Serialize the form data
+          success: function(response) {
+            if (response.status === 'success') {
+              // Handle success response
+              alert('Item created successfully!');
+            } else {
+              // Handle error response
+              alert('Error: ' + response.errors.join(', '));
+            }
+          },
+          error: function(xhr, status, error) {
+            alert('AJAX error: ' + error);
+          }
+
+        })
+        return false;
+
+      }
+    });
+
     $('.btn-remove-media').on('click', function (e) {
 
       if ($('.team-remove-media').length) {

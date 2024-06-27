@@ -4,7 +4,7 @@ services:
   app: &app
     build:
       context: .
-      target: morphosource
+      target: morphosource-dev
       args:
         - EXTRA_APK_PACKAGES=git less
     container_name: app
@@ -36,7 +36,7 @@ services:
   app_worker:
     build:
       context: .
-      target: ms-worker
+      target: morphosource-worker-dev
     container_name: app_worker
     user: "101292838:0"
     env_file:
@@ -62,7 +62,7 @@ services:
   app_test:
     build:
       context: .
-      target: ms-worker
+      target: morphosource-worker-dev
     container_name: app_test
     command: sh -c 'rm -rf /app/samvera/hyrax-webapp/tmp/* && bundle && bundle exec rake hydra:test_server'
     user: "101292838:0"
@@ -91,7 +91,7 @@ services:
   db_migrate:
     build:
       context: .
-      target: morphosource
+      target: morphosource-dev
       args:
         - EXTRA_APK_PACKAGES=git less
     container_name: db_migrate
@@ -115,7 +115,7 @@ services:
   db_migrate_test:
     build:
       context: .
-      target: ms-worker
+      target: morphosource-worker-dev
       args:
         - EXTRA_APK_PACKAGES=git less
     container_name: db_migrate_test

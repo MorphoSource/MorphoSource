@@ -1,5 +1,55 @@
-//$(document).on('turbolinks:load', function() {
 $(document).ready(function() {
+
+  if (!$('body').hasClass('organization_collections')) {
+    var collectionId = $('#collection-id').text();
+    $('#remove-selected-from-collection').on('click', function (e) {
+      selectedMediaIDs = [];
+      $('input[name="batch_work_ids[]"]').each(function() {
+        if ($(this).is(':checked')) {
+          selectedMediaIDs.push($(this).val());
+        }
+      });
+      if (confirm(`Removing selected media will not remove them from MorphoSource, only from this collection. Are you sure you want to remove selected media from the collection?`) == false) {
+        e.preventDefault();
+        return false;
+      } else {
+        disablePage();
+        $.ajax({
+          type: "POST",
+          url: '/dashboard/collections/' + collectionId + '/batch_remove',
+          dataType: 'json',
+          data: { remove_ids: selectedMediaIDs },
+          success: function(response) {
+            if (response.status === 'success') {
+              flashNotice('alert-success', 'Media are being removed in the background. You can refresh the page later to see the changes.');
+              $('.batch_add_selector, #select-all-for-download').prop('checked', false);
+              enablePage();
+            } else {
+              flashNotice('alert-warning', 'There is a problem removing selected media. Please try again.');
+              enablePage();
+            }
+          },
+          error: function(xhr, status, error) {
+            flashNotice('alert-warning', 'There is a problem removing selected media. Error: ' + error);
+            enablePage();
+          }
+        })
+        return false;
+      }
+    });
+
+    function flashNotice(alertClass, message) {
+      var notice = `
+        <div class="alert ${alertClass} alert-dismissable" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          ${message}
+        </div>
+      `;
+      $('#collection-id').after(notice);
+    }
+  } // end if (!$('body').hasClass('organization_collections'
 
   if ( $('form[id*="edit_collection"]').length ||
        $('form[id*="edit_media_list"]').length ||
@@ -12,47 +62,6 @@ $(document).ready(function() {
     // Handling Actions dropdown menu clicks
     $('.actions-add-subcollection').on('click', function (e) {
       $('.sub-collections-wrapper button.add-subcollection').trigger('click');
-    });
-
-
-    $('#remove-selected-from-collection').on('click', function (e) {
-
-      selectedMediaIDs = [];
-      $('input[name="batch_work_ids[]"]').each(function() {
-        if ($(this).is(':checked')) {
-          selectedMediaIDs.push($(this).val());
-        }
-      });
-
-console.log('batch', selectedMediaIDs);
-
-      if (confirm(`Removing selected media will not remove it from MorphoSource, only from this collection. Are you sure you want to remove selected media from the collection?`) == false) {
-        e.preventDefault();
-        return false;
-      } else {
-        $.ajax({
-          type: "POST",
-      url: '/dashboard/collections/000200082/batch_remove',
-          dataType: 'json',
-          data: { foo:'bar' },
-          // data: $(this).serialize(), // Serialize the form data
-          success: function(response) {
-            if (response.status === 'success') {
-              // Handle success response
-              alert('Item created successfully!');
-            } else {
-              // Handle error response
-              alert('Error: ' + response.errors.join(', '));
-            }
-          },
-          error: function(xhr, status, error) {
-            alert('AJAX error: ' + error);
-          }
-
-        })
-        return false;
-
-      }
     });
 
     $('.btn-remove-media').on('click', function (e) {

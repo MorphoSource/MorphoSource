@@ -74,9 +74,17 @@ module Morphosource
       end
 
       def batch_remove_members_ajax
-        
-byebug
-
+        remove_ids = params["remove_ids"]        
+        if remove_ids.present?
+  @collection.remove_member_objects(remove_ids)
+          respond_to do |format|
+            format.json { render json: { status: 'success' }, status: :ok }
+          end
+        else
+          respond_to do |format|
+            format.json { render json: { status: 'fail', error: 'Nothing to remove'  }, status: :ok }
+          end
+        end
       end
 
 

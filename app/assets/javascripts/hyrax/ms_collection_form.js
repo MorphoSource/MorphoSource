@@ -22,18 +22,18 @@ $(document).ready(function() {
           success: function(response) {
             if (response.status === 'success') {
               flashNotice('alert-success', 'Media are being removed in the background. You can refresh the page later to see the changes.');
-              $('.batch_add_selector, #select-all-for-download').prop('checked', false);
-              enablePage();
             } else {
               flashNotice('alert-warning', 'There is a problem removing selected media. Please try again.');
-              enablePage();
             }
           },
           error: function(xhr, status, error) {
             flashNotice('alert-warning', 'There is a problem removing selected media. Error: ' + error);
-            enablePage();
           }
-        })
+        }).always(function() {
+          $('.batch_add_selector, #select-all-for-download').prop('checked', false);
+          enablePage();
+          $('html, body').animate({ scrollTop: 0 }, 'fast');
+        });
         return false;
       }
     });

@@ -108,7 +108,10 @@ module Morphosource
         end
 
         def redirect_organization_type
-          redirect_to organization_device_media_path(@collection) if @collection.organization_type&.first == "Scanning Facility"
+          # if the organization has object media, do not redirect to the device media tab
+          return unless @org_media_count == 0
+
+          redirect_to organization_device_media_path(@collection) if @collection.scanning_facility?
         end
 
     end

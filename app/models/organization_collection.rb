@@ -60,6 +60,10 @@ class OrganizationCollection < Collection
     ["Museum, Department, or Lab Collection", "Collection and Scanning Facility"].include?(organization_type&.first)
   end
 
+  def scanning_facility?
+    organization_type&.first == "Scanning Facility"
+  end
+
   def name
     (institution_name + title).join(' - ')
   end

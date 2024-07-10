@@ -1,4 +1,8 @@
+<% if ENV["RESQUE_WORKERS"].present? %>
+<%= JSON.parse(ENV["RESQUE_WORKERS"]).to_yaml %>
+<% else %>
 default,batch_submission_ingest: 1
 default,mass_ingest,update_fast,update_medium,update_slow: 1
 default,update_fast,update_medium,update_slow: 1
 heavy,default: 1
+<% end %>

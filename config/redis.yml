@@ -6,6 +6,4 @@ test:
   host: <%= ENV['REDIS_HOST'] || 'localhost' %>
   port: 6379
 production:
-  host: <%= ENV['REDIS_HOST'] || 'localhost' %>
-  port: 6379
-  password: <%= ENV['REDIS_PASSWORD'] %>
+  url: <%= ENV['REDIS_URL'] || "redis://:#{ ENV["REDIS_PASSWORD"] || "" }@#{ ENV["REDIS_HOST"] || "localhost" }:6379/" %>

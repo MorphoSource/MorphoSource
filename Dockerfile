@@ -134,7 +134,7 @@ FROM morphosource-base as morphosource-dev
 COPY --chown=1001:0 --from=morphosource-build-dev $RAILS_ROOT $RAILS_ROOT
 
 ENTRYPOINT ["hyrax-entrypoint.sh"]
-CMD bundle && bundle exec puma -v -b tcp://0.0.0.0:3000
+CMD ["bundle", "exec", "puma", "-v", "-b", "tcp://0.0.0.0:3000"]
 
 
 
@@ -146,7 +146,7 @@ FROM morphosource-base as morphosource-prod
 COPY --chown=1001:0 --from=morphosource-build-prod $RAILS_ROOT $RAILS_ROOT
 
 ENTRYPOINT ["hyrax-entrypoint.sh"]
-CMD bundle && bundle exec puma -v -b tcp://0.0.0.0:3000
+CMD ["bundle", "exec", "puma", "-v", "-b", "tcp://0.0.0.0:3000"]
 
 
 
@@ -236,7 +236,8 @@ FROM morphosource-worker-base as morphosource-worker-dev
 
 COPY --chown=1001:0 --from=morphosource-build-dev $RAILS_ROOT $RAILS_ROOT
 
-CMD bundle && bundle exec resque-pool -o '' -e ''
+ENTRYPOINT ["hyrax-entrypoint.sh"]
+CMD ["bundle", "exec", "resque-pool"]
 
 
 
@@ -247,4 +248,5 @@ FROM morphosource-worker-base as morphosource-worker-prod
 
 COPY --chown=1001:0 --from=morphosource-build-prod $RAILS_ROOT $RAILS_ROOT
 
-CMD bundle && bundle exec resque-pool -o '' -e ''
+ENTRYPOINT ["hyrax-entrypoint.sh"]
+CMD ["bundle", "exec", "resque-pool"]

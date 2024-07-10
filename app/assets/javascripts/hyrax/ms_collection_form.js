@@ -1,6 +1,6 @@
 $(document).ready(function() {
 
-  if (!$('body').hasClass('organization_collections')) {
+  if ($('body').hasClass('ms-collection') && !$('body').hasClass('organization_collections')) {
     var collectionId = $('#collection-id').text();
     $('#remove-selected-from-collection').on('click', function (e) {
       selectedMediaIDs = [];

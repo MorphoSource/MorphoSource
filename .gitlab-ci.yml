@@ -45,18 +45,17 @@ build_image_docker:
   services:
     - name: docker:20.10-dind
   only:
-    - k8s
+    - dev
   before_script:
-    - echo "$CONTAINER_REGISTRY_TOKEN" | docker login -u juliewinchester --password-stdin
-    - docker pull juliewinchester/morphosource:app-dev || true
+    - echo "$CONTAINER_REGISTRY_TOKEN_GITLAB" | docker login -u containerwrite --password-stdin gitlab-registry.oit.duke.edu
+    #- docker pull juliewinchester/morphosource:app-dev || true
   script:
-    - docker build --target morphosource-prod --tag juliewinchester/morphosource:app-dev --tag juliewinchester/morphosource:app-dev-$CI_COMMIT_SHORT_SHA  .
-    - docker push juliewinchester/morphosource:app-dev-$CI_COMMIT_SHORT_SHA
-    - docker push juliewinchester/morphosource:app-dev
-    - docker build --target morphosource-worker-prod --tag juliewinchester/morphosource:worker-dev --tag juliewinchester/morphosource:worker-dev-$CI_COMMIT_SHORT_SHA  .
-    - docker push juliewinchester/morphosource:worker-dev-$CI_COMMIT_SHORT_SHA
-    - docker push juliewinchester/morphosource:worker-dev
-    
+    - docker build --target morphosource-prod --tag gitlab-registry.oit.duke.edu/morphosource/morphosource:app-dev --tag gitlab-registry.oit.duke.edu/morphosource/morphosource:app-dev-$CI_COMMIT_SHORT_SHA  .
+    - docker push gitlab-registry.oit.duke.edu/morphosource/morphosource:app-dev-$CI_COMMIT_SHORT_SHA
+    - docker push gitlab-registry.oit.duke.edu/morphosource/morphosource:app-dev
+    - docker build --target morphosource-worker-prod --tag gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-dev --tag gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-dev-$CI_COMMIT_SHORT_SHA  .
+    - docker push gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-dev-$CI_COMMIT_SHORT_SHA
+    - docker push gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-dev
   tags:
     - oit-shared
 

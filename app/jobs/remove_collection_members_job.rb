@@ -4,13 +4,16 @@ class RemoveCollectionMembersJob < Hyrax::ApplicationJob
   # @param [String] collection_id ID string of collection
   # @param [Array/String] member_ids Array of work IDs or string of single work ID
   def perform(collection_id, member_ids)
-    if Collection.exists?(collection_id)
+    if SequentialSectionList.exists?(collection_id)
+      c = SequentialSectionList.find(collection_id)
+    elsif MediaList.exists?(collection_id)
+      c = MediaList.find(collection_id)
+    elsif Collection.exists?(collection_id)
       c = Collection.find(collection_id)
-      c.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
     else
       return false
     end
-
+    c.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
     member_ids = Array(member_ids).select { |m_id| Media.exists?(m_id) }
     return false if !member_ids.present?
 
@@ -22,4 +25,5 @@ class RemoveCollectionMembersJob < Hyrax::ApplicationJob
       c.remove_member_objects member_ids
     end
   end
+
 end

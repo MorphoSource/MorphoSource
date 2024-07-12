@@ -36,6 +36,10 @@ module Morphosource
       media_list? || sequential_section_list?
     end
 
+    def can_remove_media_from?
+      (team? || project? || list?)
+    end
+
     def manager_list(managers)
       ml = []
       managers.each do |m|

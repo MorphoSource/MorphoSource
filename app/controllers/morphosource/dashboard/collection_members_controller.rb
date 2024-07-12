@@ -13,30 +13,8 @@ module Morphosource
         return if err_msg.present?
 
         collection.reindex_extent = Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
-        members = collection.add_member_objects batch_ids
-        update_physical_object_index
-        messages = members.collect { |member| member.errors.full_messages }.flatten
-        if messages.size == members.size
-          after_update_error(messages.uniq.join(', '))
-        elsif messages.present?
-          flash[:error] = messages.uniq.join(', ')
-          after_update
-        else
-          after_update
-        end
-      end
-
-      def update_physical_object_index
-        return if params["batch_document_ids"].blank?
-
-        member_ids = params["batch_document_ids"]
-        member_ids.each do |id|
-          member = Media.find(id)
-          object_id = member.physical_object_id
-          next if object_id.blank?
-
-          ActiveFedora::Base.where(id: object_id).first.try(:update_index)
-        end
+        AddCollectionMembersJob.perform_later(collection.id, batch_ids)
+        after_update
       end
 
       def success_return_path

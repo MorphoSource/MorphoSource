@@ -191,6 +191,8 @@ class Collection < ActiveFedora::Base
         else
           member.save!
         end
+        object_id = member.physical_object_id&.first
+        UpdateWorkIndexJob.perform_later(object_id) if object_id.present?
       end
       member
     end
@@ -204,6 +206,8 @@ class Collection < ActiveFedora::Base
         remove_team_access_grants(work)
       end
       work.save!
+      object_id = work.physical_object_id&.first
+      UpdateWorkIndexJob.perform_later(object_id) if object_id.present?
       if media_inherit_permissions?
         InheritPermissionsJob.perform_later(work.id)
       end

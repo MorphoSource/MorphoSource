@@ -45,7 +45,7 @@ module Morphosource
 
         def add_facet_paging_to_solr(solr_params)
           super
-        byebug    
+
           return unless facet.present?
           facet_config = blacklight_config.facet_fields[facet]
           contains = blacklight_params[request_keys[:contains]]

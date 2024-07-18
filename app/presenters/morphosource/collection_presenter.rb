@@ -31,6 +31,7 @@ module Morphosource
     def organization?
       self.class == Morphosource::Collections::OrganizationPresenter
     end
+    alias organization_collection? organization?
 
     def list?
       media_list? || sequential_section_list?

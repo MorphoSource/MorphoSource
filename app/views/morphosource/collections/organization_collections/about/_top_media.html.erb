@@ -1,0 +1,60 @@
+<div class="top-media">
+  <% if media = SolrDocument.where("id" => media_id)&.first %>
+    <div class="top-media-card">
+      <% if can? :read, media %>
+        <% # media thumbnail %>
+        <div class="media-thumbnail thumbnail-sm">
+          <%= render_thumbnail_tag media %>
+        </div>
+        <% # media info %>
+        <div class="media-item-title">
+          <% # media link %>
+          <div><%= link_to "Media #{media.id}: #{media.part&.first || "Element Unspecified"}", main_app.media_showcase_path(media) %></div>
+          <% # media type and publication status %>
+          <div class="text-muted">
+            <div class="text-muted-item">
+              <%= media.media_type&.first || "Unknown Type" %>
+            </div>
+            <div class="text-muted-item">·</div>
+            <div class="text-muted-item">
+              <%= media.publication_status_label %>
+            </div>
+          </div>
+          <% # object link %>
+          <% # Biological Specimen %>
+          <% if media.physical_object_type == "Biological Specimen" %>
+            <div class="text-muted">
+              <div class="text-muted-item">
+                <% if object_id = media['physical_object_id_ssim']&.first %>
+                  <%= link_to (media.physical_objects&.first&.title&.first || "Unknown Object"), main_app.specimen_showcase_path(media.physical_object_id&.first) %>
+                  <div class="text-muted">
+                    <div class="text-muted-item">
+                      <%= media.taxonomies_titles&.first || "" %>
+                    </div>
+                  </div>
+                <% else %>
+                  <%= "Unknown Object" %>
+                <% end %>
+              </div>
+            </div>
+          <% else %>
+            <% # Cultural Heritage Object %>
+            <div class="text-muted">
+              <div class="text-muted-item">
+                <% if object_id = media['physical_object_id_ssim']&.first %>
+                  <%= link_to (media.physical_objects&.first&.title&.first || "Unknown Object"), main_app.cho_showcase_path(media.physical_object_id&.first) %>
+                <% else %>
+                  <%= "Unknown Object" %>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <% # Media isn't readable with by current user %>
+        <div class="media-thumbnail thumbnail-sm"><%= render_default_thumbnail %></div>
+        <div><span class="no-access-media-label">Private media inaccessible with current permissions<span></div>
+      <% end %>
+    </div>
+  <% end %>
+</div>

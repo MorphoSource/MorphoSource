@@ -48,6 +48,10 @@ class OrganizationCollection < Collection
     self
   end
 
+  def organization_collection?
+    true
+  end
+
   def attachment(field_name)
     Morphosource::AttachmentService.get(self, field_name)
   end
@@ -55,9 +59,15 @@ class OrganizationCollection < Collection
   def is_device_organization?
     ["Scanning Facility", "Collection and Scanning Facility"].include?(organization_type&.first)
   end
+  alias manages_devices? is_device_organization?
 
   def is_object_organization?
     ["Museum, Department, or Lab Collection", "Collection and Scanning Facility"].include?(organization_type&.first)
+  end
+  alias manages_objects? is_object_organization?
+
+  def manages_objects_and_devices?
+    organization_type&.first == "Collection and Scanning Facility"
   end
 
   def scanning_facility?

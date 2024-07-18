@@ -22,6 +22,7 @@
 
 .byebug_history
 .env
+.irb_history
 
 # Ignore application configuration
 /config/application.yml
@@ -62,7 +63,7 @@
 
 /derivatives
 
-#ignore banners and logos added to collections 
+#ignore banners and logos added to collections
 /public/branding
 
 # ---------------------------------------------------

@@ -151,6 +151,7 @@ RSpec.describe MediaIndexer do
       expect(subject['download_reviewer_tesim']).to match_array(media.download_reviewer)
       expect(subject['edit_access_group_ssim']).to match_array(['admin', team.managers_group.name, team.editors_group.name, project.managers_group.name, project.editors_group.name])
       expect(subject['edit_access_person_ssim']).to match_array([media.depositor])
+      expect(subject['file_set_ids_ssim']).to match_array(media.file_set_ids)
       expect(subject['file_set_visibilities_ssim']).to match_array([media.visibility])
       expect(subject['fileset_accessibility_ssim']).to match_array(media.fileset_accessibility)
       expect(subject['fileset_accessibility_tesim']).to match_array(media.fileset_accessibility)

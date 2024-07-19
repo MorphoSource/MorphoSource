@@ -42,6 +42,10 @@ class SequentialSectionList < MediaList
     [["Sequential Section Scan", "SequentialSectionScan"]]
   end
 
+  def media_list?
+    false
+  end
+
   def sequential_section_list?
     true
   end

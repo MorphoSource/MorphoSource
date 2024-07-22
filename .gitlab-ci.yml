@@ -16,8 +16,6 @@ stages:
     DOCKER_TLS_CERTDIR: ''
   services:
     - name: docker:27-dind
-  only:
-    - dev-k8s
   before_script:
     - echo "$CONTAINER_REGISTRY_TOKEN_GITLAB" | docker login -u containerwrite --password-stdin gitlab-registry.oit.duke.edu
   tags:
@@ -37,7 +35,6 @@ build_worker:
     - docker push gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA
     - docker push gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-$CI_COMMIT_BRANCH
 
-
 test:
   stage: test
   variables:
@@ -50,8 +47,8 @@ test:
       - $SKIP_TESTS == "true"
   services:
     - name: docker:20.10-dind
-  only:
-    - dev-k8s
+  needs:
+    - build_worker
   before_script:
     - echo "$CONTAINER_REGISTRY_TOKEN_GITLAB" | docker login -u containerwrite --password-stdin gitlab-registry.oit.duke.edu
   script:
@@ -97,7 +94,7 @@ deploy_dev:
   extends: .deploy
   only:
     refs:
-      - dev-k8s
+      - dev
   before_script:
     - if [ "$MIGRATE_DB" == "true" ]; then K8S_STRATEGY="Recreate"; fi
     - if [ "$MIGRATE_DB" == "true" ]; then K8S_RUN_DB_MIGRATE="true"; fi

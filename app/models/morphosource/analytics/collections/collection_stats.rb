@@ -22,7 +22,8 @@ module Morphosource
         # returns media solr documents associated with this collection through an object
         def object_media
           @object_media ||= SolrDocument.where( { "has_model_ssim" => "Media",
-                                                  "media_organization_id_ssim" => @id } )
+                                                  "media_organization_id_ssim" => @id },
+                                                  opts: {rows: 999999 } )
         end
 
         # returns media ids associated with this collection through an object
@@ -39,7 +40,7 @@ module Morphosource
         def device_media_ids
           @device_media_ids ||= SolrDocument.where( { "has_model_ssim" => "Media",
                                                       "media_device_facility_organization_id_ssim" => @id },
-                                                      opts: {fl: 'id'} ).map { |d| d['id'] }
+                                                      opts: {fl: 'id', rows: 999999 } ).map { |d| d['id'] }
         end
 
         # returns the count of media imaged by a device managed by this organization
@@ -65,13 +66,15 @@ module Morphosource
         # returns the total count of devices managed by this organization
         def device_count
           @device_count ||= SolrDocument.where( { "has_model_ssim" => "Device",
-                                                  "organization_id_ssim" => @id } ).count
+                                                  "organization_id_ssim" => @id },
+                                                  opts: {rows: 999999 } ).count
         end
 
         # returns the total count of projects in this organization
         def project_count
           @project_count ||= SolrDocument.where( { "has_model_ssim" => "Collection",
-                                                  "member_of_collection_ids_ssim" => @id } ).count
+                                                  "member_of_collection_ids_ssim" => @id },
+                                                  opts: {rows: 999999 } ).count
         end
 
         # returns a hash of media ids and their download counts

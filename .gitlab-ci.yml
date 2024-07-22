@@ -8,7 +8,7 @@ stages:
   - predeploy
   - deploy
 
-build:
+.build:
   stage: build
   variables:
     DOCKER_HOST: tcp://docker:2375/
@@ -20,15 +20,23 @@ build:
     - dev-k8s
   before_script:
     - echo "$CONTAINER_REGISTRY_TOKEN_GITLAB" | docker login -u containerwrite --password-stdin gitlab-registry.oit.duke.edu
+  tags:
+    - oit-shared
+
+build_app:
+  extends: .build
   script:
     - docker build --target morphosource-prod --tag gitlab-registry.oit.duke.edu/morphosource/morphosource:app-$CI_COMMIT_BRANCH --tag gitlab-registry.oit.duke.edu/morphosource/morphosource:app-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA  .
     - docker push gitlab-registry.oit.duke.edu/morphosource/morphosource:app-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA
     - docker push gitlab-registry.oit.duke.edu/morphosource/morphosource:app-$CI_COMMIT_BRANCH
+
+build_worker:
+  extends: .build
+  script:
     - docker build --target morphosource-worker-prod --tag gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-$CI_COMMIT_BRANCH --tag gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA  .
     - docker push gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA
     - docker push gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-$CI_COMMIT_BRANCH
-  tags:
-    - oit-shared
+
 
 test:
   stage: test
@@ -75,7 +83,7 @@ test:
 #   tags:
 #     - production
 
-.deploy_container:
+.deploy:
   stage: deploy
   variables:
     K8S_STRATEGY: RollingUpdate
@@ -85,8 +93,8 @@ test:
   tags:
     - oit-shared
 
-deploy_container_dev:
-  extends: .deploy_container
+deploy_dev:
+  extends: .deploy
   only:
     refs:
       - dev-k8s
@@ -101,8 +109,8 @@ deploy_container_dev:
     - git clone https://$GITLAB_CI_REPO_READ_USER:$GITLAB_CI_REPO_READ_TOKEN@gitlab.oit.duke.edu/morphosource/helm-chart.git .
     - helm upgrade morphosource charts/hyrax -f charts/hyrax/values.yaml -f charts/hyrax/values.dev.yaml --set image.tagPrefix=app-dev- --set image.tagVersion=$CI_COMMIT_SHORT_SHA --set strategyType=$K8S_STRATEGY --set runDbMigrate=$K8S_RUN_DB_MIGRATE
 
-deploy_container_prod:
-  extends: .deploy_container
+deploy_prod:
+  extends: .deploy
   only:
     refs:
       - main

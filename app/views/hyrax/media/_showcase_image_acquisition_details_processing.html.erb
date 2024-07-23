@@ -5,7 +5,7 @@
     </div>
 
     <div class="row">
-      <div style="padding-left: 15px; padding-right: 15px;">       
+      <div style="padding-left: 15px; padding-right: 15px;">
         <% if !parent.present? %>
           Raw media (undeposited)
         <% else %>
@@ -46,23 +46,23 @@
             <a href='#' data-toggle="modal" data-target="#modal-image-acquisition-details-processing-definitions">Field Definitions</a>
           </h2>
             <%= Hyrax::Renderers::ShowcaseDefaultAttributeRenderer.new(
-              :creator, 
-              creator, 
+              :creator,
+              creator,
               { include_empty: true, work_type: "processing_event" }
             ).render %>
             <%= Hyrax::Renderers::ShowcaseDateAttributeRenderer.new(
-              :date_created, 
-              date_created, 
+              :date_created,
+              date_created,
               { include_empty: true, work_type: "processing_event" }
             ).render %>
             <%= Hyrax::Renderers::ShowcaseDefaultAttributeRenderer.new(
-              :software, 
-              software, 
+              :software,
+              @presenter.processing_events_data&.first&.dig(:software),
               { include_empty: true, work_type: "processing_event" }
             ).render %>
             <%= Hyrax::Renderers::ShowcaseDefaultAttributeRenderer.new(
-              :description, 
-              description, 
+              :description,
+              description,
               { include_empty: true, work_type: "processing_event" }
             ).render %>
             <div class="row">
@@ -78,7 +78,7 @@
         </div>
         <div class="content-block" style="margin-bottom: 30px">
           <% if processing_activity_items.present? %>
-            <!--div id="collapse-block-image-acquisition-processing-activities" class="panel-collapse collapse collapse-block" -->    
+            <!--div id="collapse-block-image-acquisition-processing-activities" class="panel-collapse collapse collapse-block" -->
             <% processing_activity_items.map do |item| %>
               <h4>Processing Activity <%= item["Step"] %>: </b><%= item["Type"] %> </h4>
               <div class="row indent">
@@ -113,7 +113,7 @@
                     <span class="no-access-media-label">Private media inaccessible with current permissions<span>
                   <% end %>
                 </div>
-            </div>              
+            </div>
           <% end %>
         </div>
       </div>

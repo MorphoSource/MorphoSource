@@ -99,6 +99,16 @@ describe Morphosource::Derivatives::Processors::Mesh do
           expect(File.size(derivative_path)).to be > 0
         end
       end
+
+      describe "ZIP (DEFLATE64 ZIP) format" do
+        let(:file_name) { File.join(fixture_path, 'bunny/bunny_deflate64.zip') }
+
+        it "produces the derivative mesh with a non-zero filesize" do
+          subject.process
+          expect(File.exists?(derivative_path)).to be true
+          expect(File.size(derivative_path)).to be > 0
+        end
+      end
     end
   end
 end

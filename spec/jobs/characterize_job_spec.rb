@@ -485,6 +485,44 @@ RSpec.describe CharacterizeJob do
           expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be true
         end
       end
+
+      describe 'PLY (DEFLATE64 ZIP) characterization' do
+        let(:file_path_string) {fixture_path + '/bunny/bunny_deflate64.zip'}
+        let(:zip_file) { File.open(file_path_string) }
+    
+        before do
+          Hydra::Works::AddFileToFileSet.call(file_set, zip_file, :original_file)
+          described_class.perform_now(file_set, file_set.original_file.id, file_path_string)
+        end
+    
+        # find the solr doc, then verify the metadata
+        subject { SolrDocument.find(file_set.id) }
+    
+        it "has PLY attributes in the metadata" do
+          expect(subject.mime_type).to eq("application/zip")
+          expect(subject.contents_mime_type.first).to eq("application/ply")
+
+          # mesh details
+          expect(subject[:point_count_tesim].first).to eq("35947")
+          expect(subject[:face_count_tesim].first).to eq("69451")
+          expect(subject[:edges_per_face_tesim].first).to eq("3")
+          expect(subject[:bounding_box_x_tesim].first).to eq("0.1556989997625351")
+          expect(subject[:bounding_box_y_tesim].first).to eq("0.15433360636234283")
+          expect(subject[:bounding_box_z_tesim].first).to eq("0.1206732988357544")
+          expect(subject[:color_format_tesim]&.first.present?).to be false
+          expect(subject[:normals_format_tesim]&.first.present?).to be false
+          expect(subject[:has_uv_space_tesim].first).to eq("False")
+          expect(subject[:vertex_color_tesim].first).to eq("False")
+          expect(subject[:centroid_x_tesim].first).to eq("-0.026759909997859")
+          expect(subject[:centroid_y_tesim].first).to eq("0.09521605980032478")
+          expect(subject[:centroid_z_tesim].first).to eq("0.00894711457962819")
+
+          # method and tool details
+          expect(subject[:centroid_method_tesim].first).to eq "Vertex Mean"
+          expect(subject[:blender_version_tesim]&.first.present?).to be true
+          expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be false
+        end
+      end
     end
   end
 end

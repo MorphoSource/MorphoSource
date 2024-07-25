@@ -34,8 +34,16 @@ module Morphosource
       #
       def read_zip(&block)
         archive_type = :zip
-        Zip::File.open(file) do |zip|
-          yield(zip, archive_type) if block_given?
+        begin
+          Zip::File.open(file) do |zip|
+            yield(zip, archive_type) if block_given?
+          end
+        rescue Zip::CompressionMethodError
+          # Create or find a non-DEFLATE64 temp file copy
+          temp_file = Morphosource::ZipDeflate64.non_deflate_64_temp_file(file)
+          Zip::File.open(temp_file) do |zip|
+            yield(zip, archive_type) if block_given?
+          end
         end
       end
 
@@ -156,6 +164,9 @@ module Morphosource
       # @param [String] f_path File path to write data to
       #
       def zip_write_entry(zip, f_data, f_path)
+        # Remove file if already exists
+        FileUtils.rm(f_path) if File.exists?(f_path)
+
         # Create dir(s) if needed
         dir_path = File.dirname(f_path)
         unless File.directory?(dir_path)
@@ -172,6 +183,9 @@ module Morphosource
       # @param [String] f_path File path to write data to
       #
       def tar_write_entry(f_data, f_path)
+        # Remove file if already exists
+        FileUtils.rm(f_path) if File.exists?(f_path)
+        
         # Create dir(s) if needed
         dir_path = File.dirname(f_path)
         unless File.directory?(dir_path)

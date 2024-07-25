@@ -165,6 +165,10 @@ RUN echo "deb https://packages.adoptium.net/artifactory/deb \
   $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" \
   | tee /etc/apt/sources.list.d/adoptium.list
 
+# Add bullseye-backports to get 7zip package
+RUN echo "deb http://deb.debian.org/debian bullseye-backports main" \
+  > /etc/apt/sources.list.d/backports.list
+
 # Install additional system packages related to tools
 RUN apt update && \
   apt install -y \
@@ -175,7 +179,8 @@ RUN apt update && \
   firefox-esr \
   libglu1-mesa \
   python3 \
-  python3-pip
+  python3-pip \
+  7zip
 
 # Update node/npm
 RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && \

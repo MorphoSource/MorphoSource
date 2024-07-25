@@ -857,10 +857,12 @@ namespace :morphosource do
   task :get_new_slides => :environment do
     occurrence_keys = Morphosource::Import::Slides::GetNewSlidesService.call
     puts "#{occurrence_keys.count} job(s) queued to import records for GBIF occurrence keys: #{occurrence_keys}"
-    ApplicationMailer.send_email(
-      Hyrax.config.system_report_recipients,
-      "GetNewSlidesService called: #{occurrence_keys.count} job(s) queued",
-      "#{occurrence_keys.count} job(s) queued to import records for GBIF occurrence keys: #{occurrence_keys} at #{Time.now.strftime("%m-%d-%Y_%H-%M")}").deliver_now
+    if Hyrax.config.system_report_recipients.present?
+      ApplicationMailer.send_email(
+        Hyrax.config.system_report_recipients,
+        "GetNewSlidesService called: #{occurrence_keys.count} job(s) queued",
+        "#{occurrence_keys.count} job(s) queued to import records for GBIF occurrence keys: #{occurrence_keys} at #{Time.now.strftime("%m-%d-%Y_%H-%M")}").deliver_now
+    end
   end
 
   desc "Create MCZ slide import records"

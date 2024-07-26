@@ -31,8 +31,8 @@ RSpec.describe 'Morphosource::Ability', type: :model do
     context 'the work does not exist' do
       let(:nonexistent_id) { '123' }
 
-      it 'returns false' do
-        expect(ability.can? :read, nonexistent_id).to be(false)
+      it 'returns error or false' do
+        expect{ability.can? :read, nonexistent_id }.to raise_error(Blacklight::Exceptions::RecordNotFound)
         expect(ability.can? :read, nil).to be(false)
       end
     end

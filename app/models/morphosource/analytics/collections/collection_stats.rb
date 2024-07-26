@@ -25,10 +25,10 @@ module Morphosource
         # returns the count of media associated with this collection through an object or a device
         def media_count
           if @media_ids
-            @media_ids.count
+            @media_count ||= @media_ids.count
           else
-            ActiveFedora::SolrService.count("media_organization_id_ssim:#{@id} OR media_device_facility_organization_id_ssim:#{@id}",
-                                            opts: { rows: 999_999 } )
+            @media_count ||= ActiveFedora::SolrService.count("media_organization_id_ssim:#{@id} OR media_device_facility_organization_id_ssim:#{@id}",
+                                                             opts: { rows: 999_999 } )
           end
         end
 
@@ -42,9 +42,9 @@ module Morphosource
         # returns the count of media associated with this collection through an object
         def object_media_count
           if @object_media_ids
-            @object_media_ids.count
+            @object_media_count ||= @object_media_ids.count
           else
-            ActiveFedora::SolrService.count("has_model_ssim:Media AND media_organization_id_ssim:#{@id}", opts: { rows: 999_999 })
+            @object_media_count ||= ActiveFedora::SolrService.count("has_model_ssim:Media AND media_organization_id_ssim:#{@id}", opts: { rows: 999_999 })
           end
         end
 
@@ -58,10 +58,10 @@ module Morphosource
         # returns the count of media imaged by a device managed by this organization
         def device_media_count
           if @device_media_ids
-            @device_media_ids.count
+            @device_media_count ||= @device_media_ids.count
           else
-            ActiveFedora::SolrService.count("has_model_ssim:Media AND media_device_facility_organization_id_ssim:#{@id}",
-                                            opts: { rows: 999_999 } )
+            @device_media_count ||= ActiveFedora::SolrService.count("has_model_ssim:Media AND media_device_facility_organization_id_ssim:#{@id}",
+                                                                    opts: { rows: 999_999 } )
           end
         end
 
@@ -125,7 +125,7 @@ module Morphosource
 
         # returns the total download count for all media
         def downloads_count
-          downloads.map { |view| view.last }.sum
+          @downloads_count ||= downloads.map { |view| view.last }.sum
         end
 
         # returns an array containing the top downloaded media id and its download count

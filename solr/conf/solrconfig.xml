@@ -162,7 +162,8 @@
         download_access_group_ssim,
         download_access_person_ssim,
         depositor_ti,
-        embargo_release_date_dtsi
+        embargo_release_date_dtsi,
+        fileset_accessibility_ssim,
         inheritable_access_ssim,
         inheritable_discover_access_group_ssim,inheritable_discover_access_person_ssim,
         inheritable_read_access_group_ssim,inheritable_read_access_person_ssim,

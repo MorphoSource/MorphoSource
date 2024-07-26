@@ -9,105 +9,110 @@ module Morphosource
           @id = collection.is_a?(String) ? collection : collection.id
         end
 
-        # returns the total count of media associated with this collection through an object or a device
+        # returns the ids of media associated with this collection through an object or a device
         def media_ids
-          @media_ids ||= (object_media_ids + device_media_ids).uniq
+          if @object_media_ids && @device_media_ids
+            @media_ids ||= (@object_media_ids + @device_media_ids).uniq
+          else
+            @media_ids ||= Morphosource::SolrService.new.get_docs("media_organization_id_ssim:#{@id} OR media_device_facility_organization_id_ssim:#{@id}",
+                                                                  fl: 'id',
+                                                                  qt: 'standard',
+                                                                  rows: 999_999 )
+                                                                  .map { |d| d['id'] }
+          end
         end
 
         # returns the count of media associated with this collection through an object or a device
         def media_count
-          media_ids.count
+          if @media_ids
+            @media_ids.count
+          else
+            ActiveFedora::SolrService.count("media_organization_id_ssim:#{@id} OR media_device_facility_organization_id_ssim:#{@id}",
+                                            opts: { rows: 999_999 } )
+          end
         end
 
         # returns media ids associated with this collection through an object
         def object_media_ids
-          @object_media_ids ||= SolrDocument.where( { "has_model_ssim" => "Media",
-                                                      "media_organization_id_ssim" => @id },
-                                                      opts: { fl: 'id', rows: 999999 } ).map(&:id)
+          @object_media_ids ||= Morphosource::SolrService.new.get_docs("has_model_ssim:Media AND media_organization_id_ssim:#{@id}",
+                                                                       fl: 'id', qt: 'standard', rows: 999_999 )
+                                                                       .map { |d| d['id'] }
         end
 
         # returns the count of media associated with this collection through an object
         def object_media_count
-          object_media_ids.count
+          if @object_media_ids
+            @object_media_ids.count
+          else
+            ActiveFedora::SolrService.count("has_model_ssim:Media AND media_organization_id_ssim:#{@id}", opts: { rows: 999_999 })
+          end
         end
 
         # returns media ids associated with this collection through a device
         def device_media_ids
-          @device_media_ids ||= SolrDocument.where( { "has_model_ssim" => "Media",
-                                                      "media_device_facility_organization_id_ssim" => @id },
-                                                      opts: { fl: 'id', rows: 999999 } ).map(&:id)
+          @device_media_ids ||= Morphosource::SolrService.new.get_docs("has_model_ssim:Media AND media_device_facility_organization_id_ssim:#{@id}",
+                                                                      fl: 'id', qt: 'standard', rows: 999_999)
+                                                                      .map { |d| d['id'] }
         end
 
         # returns the count of media imaged by a device managed by this organization
         def device_media_count
-          device_media_ids.count
+          if @device_media_ids
+            @device_media_ids.count
+          else
+            ActiveFedora::SolrService.count("has_model_ssim:Media AND media_device_facility_organization_id_ssim:#{@id}",
+                                            opts: { rows: 999_999 } )
+          end
         end
 
         # returns the total count of objects associated with media that:
         # represent objects managed by this organization OR
         # were imaged by a device managed by this organization
         def object_count
-          specimen_count + cho_count
+          if @specimen_count && @cho_count
+            @object_count ||= @specimen_count + @cho_count
+          else
+            @object_count ||= Morphosource::SolrService.new.get_docs("media_organization_id_ssim:#{@id} OR media_device_facility_organization_id_ssim:#{@id}",
+                                                                      fl: 'physical_object_id_ssim',
+                                                                      qt: 'standard',
+                                                                      rows: 999_999)
+          end                                                         .map { |d| d['physical_object_id_ssim'] }.uniq.count
         end
 
         # returns the total count of specimens associated with media that:
         # represent specimens managed by this organization OR
         # were imaged by a device managed by this organization
         def specimen_count
-          @specimen_count ||= (object_media_specimen_ids + device_media_specimen_ids).uniq.count
-        end
-
-        def object_media_specimen_ids
-          SolrDocument.where( { "has_model_ssim" => "Media",
-                                "media_organization_id_ssim" => @id },
-                                opts: { fl: 'id,media_physical_object_type_ssim,physical_object_id_ssim', rows: 999999 } )
-                                .select { |d| d['media_physical_object_type_ssim'] == ['Biological Specimen'] }
-                                .map { |d| d["physical_object_id_ssim"] }.uniq
-        end
-
-        def device_media_specimen_ids
-          SolrDocument.where( { "has_model_ssim" => "Media",
-                                "media_device_facility_organization_id_ssim" => @id },
-                                opts: { fl: 'id,media_physical_object_type_ssim,physical_object_id_ssim', rows: 999999 } )
-                                .select { |d| d['media_physical_object_type_ssim'] == ['Biological Specimen'] }
-                                .map { |d| d["physical_object_id_ssim"] }.uniq
+          @specimen_count ||= Morphosource::SolrService.new.get_docs("media_organization_id_ssim:#{@id} OR media_device_facility_organization_id_ssim:#{@id}",
+                                                                      fl: 'physical_object_id_ssim',
+                                                                      fq: ['media_physical_object_type_ssim:("Biological Specimen")'],
+                                                                      qt: 'standard',
+                                                                      rows: 999_999)
+                                                                      .map { |d| d['physical_object_id_ssim'] }.uniq.count
         end
 
         # returns the total count of cultural heritage objects associated with media that:
         # represent objects managed by this organization OR
         # were imaged by a device managed by this organization
         def cho_count
-          @cho_count ||= (object_media_cho_ids + device_media_cho_ids).uniq.count
-        end
-
-        def object_media_cho_ids
-          SolrDocument.where( { "has_model_ssim" => "Media",
-                                "media_organization_id_ssim" => @id },
-                                opts: { fl: 'id,media_physical_object_type_ssim,physical_object_id_ssim', rows: 999999 } )
-                                .select { |d| d['media_physical_object_type_ssim'] == ['Cultural Heritage Object'] }
-                                .map { |d| d["physical_object_id_ssim"] }.uniq
-        end
-
-        def device_media_cho_ids
-          SolrDocument.where( { "has_model_ssim" => "Media",
-                                "media_device_facility_organization_id_ssim" => @id },
-                                opts: { fl: 'id,media_physical_object_type_ssim,physical_object_id_ssim', rows: 999999 } )
-                                .select { |d| d['media_physical_object_type_ssim'] == ['Cultural Heritage Object'] }
-                                .map { |d| d["physical_object_id_ssim"] }.uniq
+          @specimen_count ||= Morphosource::SolrService.new.get_docs("media_organization_id_ssim:#{@id} OR media_device_facility_organization_id_ssim:#{@id}",
+                                                                     fl: 'physical_object_id_ssim',
+                                                                     fq: ['media_physical_object_type_ssim:("Cultural Heritage Object")'],
+                                                                     qt: 'standard',
+                                                                     rows: 999_999)
+                                                                     .map { |d| d['physical_object_id_ssim'] }.uniq.count
         end
 
         # returns the total count of devices managed by this organization
         def device_count
-          @device_count ||= SolrDocument.where( { "has_model_ssim" => "Device",
-                                                  "organization_id_ssim" => @id },
-                                                  opts: { fl: 'id', rows: 999999 } ).count
+          @device_count ||= ActiveFedora::SolrService.count("has_model_ssim:Device AND organization_id_ssim:#{@id}",
+                                                            opts: { fl: 'id', rows: 999_999 } )
         end
 
         # returns the total count of projects in this organization
         def project_count
-          @project_count ||= SolrDocument.where( { "has_model_ssim" => "Collection",
-                                                  "member_of_collection_ids_ssim" => @id },
-                                                  opts: { fl: 'id', rows: 999999 } ).count
+          @project_count ||= ActiveFedora::SolrService.count("has_model_ssim:Collection AND member_of_collection_ids_ssim:#{@id}",
+                                                             opts: { fl: 'id', rows: 999_999 } )
         end
 
         # returns a hash of media ids and their download counts
@@ -137,7 +142,7 @@ module Morphosource
 
         # returns the total download count for all object media
         def object_media_downloads_count
-          object_media_downloads.map { |view| view.last }.sum
+          @object_media_downloads_count ||= object_media_downloads.map { |view| view.last }.sum
         end
 
         # returns an array containing the top downloaded object media id and its download count
@@ -155,7 +160,7 @@ module Morphosource
         # returns the total download count for all device media
         # Ex: 10
         def device_media_downloads_count
-          device_media_downloads.map { |view| view.last }.sum
+          @device_media_downloads_count ||= device_media_downloads.map { |view| view.last }.sum
         end
 
         # returns an array containing the top downloaded device media id and its download count
@@ -206,19 +211,19 @@ module Morphosource
         # returns an array containing the top viewed media id and its view count
         # Ex: ["000200007", 24]
         def top_view
-          media_views.max_by { |k,v| v }
+          @top_view ||= media_views.max_by { |k,v| v }
         end
 
         # returns an array containing the top viewed object media id and its view count
         # Ex: ["000200007", 24]
         def top_object_media_view
-          object_media_views.max_by { |k,v| v }
+          @top_object_media_view ||= object_media_views.max_by { |k,v| v }
         end
 
         # returns an array containing the top viewed device media id and its view count
         # Ex: ["000200007", 24]
         def top_device_media_view
-          device_media_views.max_by { |k,v| v }
+          @top_device_media_view ||= device_media_views.max_by { |k,v| v }
         end
       end
 

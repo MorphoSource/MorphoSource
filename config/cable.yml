@@ -7,5 +7,5 @@ test:
 
 production:
   adapter: redis
-  url: redis://<%= ENV['REDIS_HOST'] || 'localhost' %>:6379/1
+  url: <%= ENV['REDIS_URL'] || "redis://:#{ ENV["REDIS_PASSWORD"] || "" }@#{ ENV["REDIS_HOST"] || "localhost" }:6379/" %>
   channel_prefix: MorphoSource_SF_production

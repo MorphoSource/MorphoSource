@@ -72,21 +72,25 @@ class Collection < ActiveFedora::Base
   end
 
   def media_list?
-    collection_type.title == 'Media List'
+    false
   end
 
   def sequential_section_list?
-    collection_type.title == 'Sequential Section List'
+    false
   end
 
   def organization_collection?
-    collection_type.title == 'Organization'
+    false
   end
 
   # TODO: Alias this to organization_collection when migration
   # from works to collections is complete.
   # NB: Be very careful doing this as this method is used to differentiate work vs coll elsewhere
   def organization?
+    false
+  end
+
+  def manages_objects_and_devices?
     false
   end
 
@@ -191,6 +195,8 @@ class Collection < ActiveFedora::Base
         else
           member.save!
         end
+        object_id = member.physical_object_id&.first
+        UpdateWorkIndexJob.perform_later(object_id) if object_id.present?
       end
       member
     end
@@ -204,6 +210,8 @@ class Collection < ActiveFedora::Base
         remove_team_access_grants(work)
       end
       work.save!
+      object_id = work.physical_object_id&.first
+      UpdateWorkIndexJob.perform_later(object_id) if object_id.present?
       if media_inherit_permissions?
         InheritPermissionsJob.perform_later(work.id)
       end

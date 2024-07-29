@@ -1,0 +1,10 @@
+.git
+.github
+
+docker_files
+node_modules
+
+log/*
+tmp/*
+
+fits.log

@@ -7,6 +7,8 @@
 # Ignore bundler config.
 /.bundle
 
+/?
+
 # Ignore the default SQLite database.
 /db/*.sqlite3
 /db/*.sqlite3-journal
@@ -22,12 +24,10 @@
 
 .byebug_history
 .env
+.irb_history
 
 # Ignore application configuration
 /config/application.yml
-
-# Google Analytics config
-/config/analytics.yml
 
 # Browse Everything providers config
 /config/browse_everything_providers.yml
@@ -52,9 +52,6 @@
 # Batch import config
 /config/batch_import.yml
 
-# Resque pool config
-/config/resque-pool.yml
-
 # FITS log file
 /fits.log
 
@@ -68,7 +65,7 @@
 
 /derivatives
 
-#ignore banners and logos added to collections 
+#ignore banners and logos added to collections
 /public/branding
 
 # ---------------------------------------------------

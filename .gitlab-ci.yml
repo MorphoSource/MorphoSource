@@ -1,5 +1,5 @@
 variables:
-  FAST_DEPLOY: "false"
+  MIGRATE_DB: "false"
   SKIP_TESTS: "false"
 
 stages:
@@ -8,163 +8,116 @@ stages:
   - predeploy
   - deploy
 
-build_job:
+.build:
   stage: build
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ''
+  services:
+    - name: docker:27-dind
   before_script:
-    - ruby -v
-    - gem install bundler -v 2.0.2
-    - bundle version
-  script:
-    - cp $RAILS_DEPLOY_PATH/etc/database.yml config/
-    - cp $RAILS_DEPLOY_PATH/etc/analytics.yml config/
-    - cp $RAILS_DEPLOY_PATH/etc/browse_everything_providers.yml config/
-    - bundle _2.0.2_ install --path=vendor/bundle --without=development --binstubs=bin --no-cache
-    - bundle binstubs bundler --force
-    - bundle exec rake assets:precompile
-  artifacts:
-    paths:
-      - .bundle/
-      - bin/
-      - config/database.yml
-      - config/analytics.yml
-      - config/browse_everything_providers.yml
-      - public/assets/
-      - vendor/bundle/
+    - echo "$CONTAINER_REGISTRY_TOKEN_GITLAB" | docker login -u containerwrite --password-stdin gitlab-registry.oit.duke.edu
   tags:
-    - build
+    - oit-shared
 
-.test:
+build_app:
+  extends: .build
+  script:
+    - docker build --target morphosource-prod --tag gitlab-registry.oit.duke.edu/morphosource/morphosource:app-$CI_COMMIT_BRANCH --tag gitlab-registry.oit.duke.edu/morphosource/morphosource:app-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA  .
+    - docker push gitlab-registry.oit.duke.edu/morphosource/morphosource:app-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA
+    - docker push gitlab-registry.oit.duke.edu/morphosource/morphosource:app-$CI_COMMIT_BRANCH
+
+build_worker:
+  extends: .build
+  script:
+    - docker build --target morphosource-worker-prod --tag gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-$CI_COMMIT_BRANCH --tag gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA  .
+    - docker push gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA
+    - docker push gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-$CI_COMMIT_BRANCH
+
+test:
   stage: test
   variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ''
     RAILS_ENV: test
-  before_script:
-    - source $RAILS_DEPLOY_PATH/etc/export-test.env
-    - ruby -v
-    - bundle version
-    - node -v
-    - psql --version
-    - $BLENDER_PATH/blender -v
-    - $FIJI_PATH/Fiji.app/ImageJ-linux64 --info
-    - $FITS_PATH -v
-    - $MORPHOSOURCE_PYTHON --version
-    - img2dcm --version
-    - dcmdjpeg --version
-    - gltf-pipeline --version
-    - bin/rake db:reset
-    - bundle exec rake morphosource:create_collection_types
-  tags:
-    - test
-
-test_until_fail_job:
-  extends: .test
-  variables: 
-    RSPEC_FAIL_FAST: "true"
   except:
-    refs: 
-      - main
     variables:
       - $SKIP_TESTS == "true"
+  services:
+    - name: docker:20.10-dind
+  needs:
+    - build_worker
+  before_script:
+    - echo "$CONTAINER_REGISTRY_TOKEN_GITLAB" | docker login -u containerwrite --password-stdin gitlab-registry.oit.duke.edu
   script:
-    - bin/rake ci:wrapped_spec[~accessibility]
-
-test_all_job:
-  extends: .test
-  except: 
-    variables:
-      - $SKIP_TESTS == "true"
-  only:
-    - main
-  script:
-    - bin/rake ci:wrapped_spec[~accessibility]
-
-accessibility_job:
-  extends: .test
-  except: 
-    variables:
-      - $SKIP_TESTS == "true"
-  allow_failure: true
-  script:
-    - bin/rake ci:wrapped_spec[accessibility]
-
-predeploy_prod:
-  stage: predeploy
-  environment:
-    name: production
-    url: https://www.morphosource.org/
-  variables:
-    RAKE_COMMAND: sudo -u $RAILS_USER -n -i $RAILS_ROOT/bin/rake -f $RAILS_ROOT/Rakefile
-  only:
-    refs:
-      - main
-    variables:
-      - $FAST_DEPLOY == "false"
-  allow_failure: true
-  script:
-    - $RAKE_COMMAND morphosource:set_time_until_maintenance_in_minutes[30]
+    - docker network create test-network
+    - docker run --name postgres --network test-network -e POSTGRES_USER=hydra -e POSTGRES_PASSWORD=hydra -e POSTGRES_DB=test -d postgres
+    - docker run --name solr --network test-network -v $(pwd)/solr/conf:/core_config/conf -d solr:7.7.3 sh -c "solr-precreate hydra-test /core_config"
+    - docker run --name fcrepo --network test-network -v $(pwd)/vendor/docker/fcrepo/fedora.xml:/var/lib/jetty/webapps/fedora.xml -d ghcr.io/samvera/fcrepo4:4.7.5
+    - docker run --name redis --network test-network -d redis:5-alpine
+    - docker run --name morphosource --network test-network --env-file ./vendor/docker/docker-compose.env -e RAILS_ENV=test -e SOLR_URL=http://solr:8983/solr/hydra-test -e FCREPO_BASE_PATH=/test -e FIJI_SCRIPT_COMMAND= gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA docker-test.sh
   tags:
-    - production
+    - oit-shared
+
+# Defunct, TODO consider reimplementing in future
+# predeploy_prod:
+#   stage: predeploy
+#   environment:
+#     name: production
+#     url: https://www.morphosource.org/
+#   variables:
+#     RAKE_COMMAND: sudo -u $RAILS_USER -n -i $RAILS_ROOT/bin/rake -f $RAILS_ROOT/Rakefile
+#   only:
+#     refs:
+#       - main
+#     variables:
+#       - $FAST_DEPLOY == "false"
+#   allow_failure: true
+#   script:
+#     - $RAKE_COMMAND morphosource:set_time_until_maintenance_in_minutes[30]
+#   tags:
+#     - production
 
 .deploy:
   stage: deploy
   variables:
-    RAKE_COMMAND: sudo -u $RAILS_USER -n -i $RAILS_ROOT/bin/rake -f $RAILS_ROOT/Rakefile
-  script:
-    - rsync -rl --delete --exclude-from=EXCLUDE ./ $RAILS_ROOT/
-    - $RAKE_COMMAND maintenance:start
-    - '$RAKE_COMMAND db:setup || true'
-    - $RAKE_COMMAND db:migrate
-    - $RAKE_COMMAND tmp:cache:clear
-    - $RAKE_COMMAND hyrax:workflow:load
-    - $RAKE_COMMAND morphosource:clear_time_until_maintenance_in_minutes
-    - $RAKE_COMMAND maintenance:end
-  after_script:
-    - sudo /usr/bin/systemctl restart $RAILS_SERVICE_UNIT
+    K8S_STRATEGY: RollingUpdate
+    K8S_RUN_DB_MIGRATE: false
+  image:
+    name: gitlab-registry.oit.duke.edu/duke_openshift_users/community-supported-resources/build-helper:alpine
+  tags:
+    - oit-shared
 
 deploy_dev:
   extends: .deploy
-  environment:
-    name: development
-    url: https://morphosource-dev.oit.duke.edu/
   only:
     refs:
       - dev
-  tags:
-    - development
+  before_script:
+    - if [ "$MIGRATE_DB" == "true" ]; then K8S_STRATEGY="Recreate"; fi
+    - if [ "$MIGRATE_DB" == "true" ]; then K8S_RUN_DB_MIGRATE="true"; fi
+    - oc login $K8S_URL_DEV --token=$K8S_TOKEN_DEV
+    - oc project $K8S_NAMESPACE_DEV
+  script:
+    - mkdir helm_chart
+    - cd helm_chart/
+    - git clone https://$GITLAB_CI_REPO_READ_USER:$GITLAB_CI_REPO_READ_TOKEN@gitlab.oit.duke.edu/morphosource/helm-chart.git .
+    - helm upgrade morphosource charts/hyrax -f charts/hyrax/values.yaml -f charts/hyrax/values.dev.yaml --set image.tagPrefix=app-dev- --set worker.image.tagPrefix=worker-dev- --set workerHeavy.image.tagPrefix=worker-dev- --set image.tagVersion=$CI_COMMIT_SHORT_SHA --set strategyType=$K8S_STRATEGY --set runDbMigrate=$K8S_RUN_DB_MIGRATE
 
 deploy_prod:
   extends: .deploy
-  environment:
-    name: production
-    url: https://www.morphosource.org/
   only:
     refs:
       - main
-    variables: 
-      - $FAST_DEPLOY == "false"
-  when: delayed
-  start_in: 30 minutes
-  tags:
-    - production
-
-fast_deploy_prod:
-  stage: deploy
-  environment:
-    name: production
-    url: https://www.morphosource.org/
-  variables:
-    RAKE_COMMAND: sudo -u $RAILS_USER -n -i $RAILS_ROOT/bin/rake -f $RAILS_ROOT/Rakefile
-  only:
-    refs:
-      - main
-    variables: 
-      - $FAST_DEPLOY == "true"
+  before_script:
+    - if [ "$MIGRATE_DB" == "true" ]; then K8S_STRATEGY="Recreate"; fi
+    - if [ "$MIGRATE_DB" == "true" ]; then K8S_RUN_DB_MIGRATE="true"; fi
+    - oc login $K8S_URL_PROD --token=$K8S_TOKEN_PROD
+    - oc project $K8S_NAMESPACE_PROD
   script:
-    - rsync -rl --delete --exclude-from=EXCLUDE ./ $RAILS_ROOT/
-    - '$RAKE_COMMAND db:setup || true'
-    - $RAKE_COMMAND db:migrate
-    - $RAKE_COMMAND tmp:cache:clear
-    - $RAKE_COMMAND hyrax:workflow:load
-  after_script:
-    - sudo /usr/bin/systemctl restart $RAILS_SERVICE_UNIT
-  tags:
-    - production
+    - mkdir helm_chart
+    - cd helm_chart/
+    - git clone https://$GITLAB_CI_REPO_READ_USER:$GITLAB_CI_REPO_READ_TOKEN@gitlab.oit.duke.edu/morphosource/helm-chart.git .
+    - helm upgrade morphosource charts/hyrax -f charts/hyrax/values.yaml -f charts/hyrax/values.prod.yaml --set image.tagPrefix=app-main- --set worker.image.tagPrefix=worker-main- --set workerHeavy.image.tagPrefix=worker-main- --set imageTagVersion=$CI_COMMIT_SHORT_SHA --set strategyType=$K8S_STRATEGY --set runDbMigrate=$K8S_RUN_DB_MIGRATE

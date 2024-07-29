@@ -23,6 +23,10 @@ module Morphosource
       end
       alias department institution_name
 
+      def media_ownership_transfer
+        self['media_ownership_transfer_bsi']
+      end
+
       def recordset_id
         self['recordset_id_ssim']
       end

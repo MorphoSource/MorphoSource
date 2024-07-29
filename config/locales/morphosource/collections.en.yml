@@ -4,6 +4,89 @@ en:
       view:
         managed_by: "Managed by: %{managers}"
         temporary_access: You are viewing this MorphoSource %{collection_type} with a temporary access link. This grants you access to view the project as well as all media contained within the project. This does not grant the ability to download file(s) associated with media.
+        about:
+          contact:
+            header:
+              title: Contact
+              hint: Contact information provided by organization manager(s).
+            address: Address
+            city: City
+            contact_person: Contact person
+            country: Country
+            postal_code: Postal code
+            state_province: State/Province
+          contents:
+            header:
+              title: Contents
+              hint: Counts for all media representing objects managed by the organization or imaged using organization managed devices. These counts may include unpublished media.
+            chos: Number of represented cultural heritage objects
+            device_media: Number of device media
+            devices: Number of devices
+            media: Number of media
+            object_media: Number of object media
+            objects: Number of represented objects
+            projects: Number of projects
+            specimens: Number of represented specimens
+            total_media: Total number of media
+            total_objects: Total number of objects
+          details:
+            header:
+              title: Details
+              hint: Information provided by organization manager(s).
+            collection_code: Collection code
+            collection_managers: Managed by
+            identifier: Identifier
+            institution: Institution
+            institution_code: Institution code
+            organization_name: Organization name
+            organization_type: Organization type
+            recordset_id: Recordset ID
+          downloads:
+            header:
+              title: Media Downloads
+              hint: Download counts of all media representing objects managed by the organization or imaged using organization managed devices. These counts may include downloads of unpublished media.
+            device_media_downloads: Device media downloads
+            downloads: Media Downloads
+            most_downloaded_device_media: Most downloaded device media
+            most_downloaded_media: Most downloaded media
+            most_downloaded_object_media: Most downloaded object media
+            object_media_downloads: Object media downloads
+            total_downloads: Total media downloads
+          permissions:
+            header:
+              title: Media Management and Use Preferences
+              hint: this is a hint for media management and use preferences
+            modal:
+              text: Definitions of media management and use fields are listed below. The values in these fields are the organization's preferred values for media created by imaging objects managed by the organization.
+            agreement_uri: Additional usage agreement
+            download_permission: Publication status
+            download_reviewer: Download reviewer
+            license: Creative Commons license
+            media_ownership_transfer: Media ownership transfer
+            morphosource_use_agreement_type: MorphoSource use agreement type
+            permissions_enforcement_mode: Permissions enforcement mode
+            permits_commercial_use: Permits commercial use
+            permits_3d_use: Permits 3D use
+            preview_mode: Media preview mode
+            required_archival_of_published_derivatives: Required archival of published derivatives
+            rights_holder: IP holder
+            rights_statement: Copyright statement
+          related_links:
+            header:
+              title: Related Links
+              hint: this is a hint for related links
+            related_links: Related links
+          views:
+            header:
+              title: Media Views
+              hint: View counts of all media representing objects managed by the organization or imaged using organization managed devices. These counts may include views of unpublished media.
+            device_media: Device media views
+            media: Media views
+            most_viewed_device_media: Most viewed device media
+            most_viewed_media: Most viewed media
+            most_viewed_object_media: Most viewed object media
+            object_media: Object media views
+            total_media: Total media views
       edit:
         temporary_access:
           description: You can use this section to generate a temporary link to share this %{collection_type} and the media contained in it with someone, even if they don't have a MorphoSource account. This link will allow that user to view this %{collection_type} and the media in the %{collection_type}, but not download any media file(s) associated with the media records. You can set how long until this link expires.

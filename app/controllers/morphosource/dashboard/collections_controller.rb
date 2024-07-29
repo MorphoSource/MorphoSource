@@ -73,6 +73,19 @@ module Morphosource
         after_update
       end
 
+      def batch_remove_members_ajax
+        remove_ids = params["remove_ids"]
+        if remove_ids.present? && remove_ids.is_a?(Array) && remove_ids.all? { |id| id.is_a?(String) && id.match?(/^\d+$/) }
+          RemoveCollectionMembersJob.perform_later(@collection.id, remove_ids)
+          respond_to do |format|
+            format.json { render json: { status: 'success' }, status: :ok }
+          end
+        else
+          respond_to do |format|
+            format.json { render json: { status: 'fail', error: 'Nothing to remove'  }, status: :ok }
+          end
+        end
+      end
 
       def process_member_changes
         case member_params

@@ -175,9 +175,64 @@ div.collection-page {
     }
   }
 
-  // about tab columns
-  .about .about-column {
-    padding-left: 15px;
-    padding-right: 15px;
+  // about tab
+  .about {
+    margin: -10px;
+    font-size: 14px;
+    // all elements should be 14px
+    h2, .showcase-label, .showcase-value, .text-muted-item {
+      font-size: inherit;
+    }
+
+    .about-column {
+      padding-left: 15px;
+      padding-right: 15px;
+    }
+
+    h2.header-modal-definitions {
+      display: flex;
+      justify-content: space-between;
+
+      a {
+        text-transform: none;
+        font-weight: normal;
+      }
+    }
+
+    .row {
+      padding-top: 4px;
+      padding-bottom: 4px;
+    }
+
+    .statistics {
+      .view-stat {
+        display: flex;
+      }
+      .showcase-label {
+        flex-grow: 1;
+      }
+      .showcase-value {
+        width: 50px !important;
+        text-align: right;
+      }
+      .top-media {
+        .top-media-card {
+          padding-left: 10px;
+          display: flex;
+          margin-bottom: 20px;
+        }
+        .text-muted {
+          display: flex;
+        }
+        .text-muted-item {
+          padding-right: 4px;
+        }
+      }
+    }
+    .thumbnail-sm img {
+      max-width: 100px;
+      padding-top: 4px;
+      padding-right: 8px;
+    }
   }
 }

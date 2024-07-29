@@ -18,15 +18,18 @@
 # For ALL organization types:
 # - if no objects OR both object types are present, display both object tabs
 # - if only one object type is present, do not display the other object tab
+
+# If an organization has media it shouldn't (eg. device organization has object media):
+# - display all tabs
 %>
 
 <ul class="nav nav-tabs" role="tablist">
-  <% if @collection.organization_type == ['Museum, Department, or Lab Collection'] %>
+  <% if @collection.organization_type == ['Museum, Department, or Lab Collection'] && @device_media_count == 0 %>
     <%= render 'morphosource/collections/organization_collections/nav_tabs/object_tabs' %>
-  <% elsif @collection.organization_type == ['Scanning Facility'] %>
+  <% elsif @collection.organization_type == ['Scanning Facility'] && @org_media_count == 0 %>
     <%= render 'morphosource/collections/organization_collections/nav_tabs/device_tabs' %>
   <% else %>
-    <% # if organization_type is ['Collection and Scanning Facility'] or blank %>
+    <% # if organization_type is ['Collection and Scanning Facility'] or blank OR there are unexpected org/device media %>
     <%= render 'morphosource/collections/organization_collections/nav_tabs/object_and_device_tabs' %>
   <% end %>
 </ul>

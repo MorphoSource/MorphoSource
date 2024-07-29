@@ -497,6 +497,8 @@ class Media < Morphosource::Works::Base
   end
 
   def transfer_media_to_organization_collection(org)
+    # check if organization is already the media owner
+    return if user_with_ownership == org.id
     # check that organization has a valid data manager
     if org.managers&.first.present?
       # First, is media manager user the same as the new org data manager?

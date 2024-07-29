@@ -95,7 +95,7 @@ module Morphosource
         # represent objects managed by this organization OR
         # were imaged by a device managed by this organization
         def cho_count
-          @specimen_count ||= Morphosource::SolrService.new.get_docs("media_organization_id_ssim:#{@id} OR media_device_facility_organization_id_ssim:#{@id}",
+          @cho_count ||= Morphosource::SolrService.new.get_docs("media_organization_id_ssim:#{@id} OR media_device_facility_organization_id_ssim:#{@id}",
                                                                      fl: 'physical_object_id_ssim',
                                                                      fq: ['media_physical_object_type_ssim:("Cultural Heritage Object")'],
                                                                      qt: 'standard',

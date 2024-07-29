@@ -34,21 +34,25 @@
   <% end %>
   <%# top object media, top device media %>
   <% if @collection.manages_objects_and_devices? %>
-  <%# top object media %>
-    <div class="row view-stat">
-      <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.views.most_viewed_object_media') %></div>
-      <div class="col-xs-6 showcase-value "><%= @stats.top_object_media_view&.last %></div>
-    </div>
-    <div class="row view-stat">
-      <%= render 'morphosource/collections/organization_collections/about/top_media', media_id: @stats.top_object_media_view&.first %>
-    </div>
+    <%# top object media %>
+    <% if @stats.top_object_media_view&.first.present? %>
+      <div class="row view-stat">
+        <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.views.most_viewed_object_media') %></div>
+        <div class="col-xs-6 showcase-value "><%= @stats.top_object_media_view&.last %></div>
+      </div>
+      <div class="row view-stat">
+        <%= render 'morphosource/collections/organization_collections/about/top_media', media_id: @stats.top_object_media_view&.first %>
+      </div>
+    <% end %>
     <%# top device media %>
-    <div class="row view-stat">
-      <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.views.most_viewed_device_media') %></div>
-      <div class="col-xs-6 showcase-value "><%= @stats.top_device_media_view&.last %></div>
-    </div>
-    <div class="row view-stat">
-      <%= render 'morphosource/collections/organization_collections/about/top_media', media_id: @stats.top_device_media_view&.first %>
-    </div>
+    <% if @stats.top_device_media_view&.first.present? %>
+      <div class="row view-stat">
+        <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.views.most_viewed_device_media') %></div>
+        <div class="col-xs-6 showcase-value "><%= @stats.top_device_media_view&.last %></div>
+      </div>
+      <div class="row view-stat">
+        <%= render 'morphosource/collections/organization_collections/about/top_media', media_id: @stats.top_device_media_view&.first %>
+      </div>
+    <% end %>
   <% end %>
 </div>

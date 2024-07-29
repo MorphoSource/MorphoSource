@@ -79,6 +79,7 @@ services:
       - test
     volumes:
       - .:/app/samvera/hyrax-webapp
+      - ./solr/conf:/app/samvera/hyrax-webapp/solr/config
       - /app/samvera/hyrax-webapp/vendor/bundle
       - /app/samvera/hyrax-webapp/.bundle/
       - test-derivatives:/app/samvera/hyrax-webapp/derivatives

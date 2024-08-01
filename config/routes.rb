@@ -687,7 +687,15 @@ Rails.application.routes.draw do
 
   # Resque
   require "resque_web"
-  mount ResqueWeb::Engine => "/queues"
+
+  resque_web_constraint = lambda do |request|
+    current_user = request.env['warden'].user
+    current_user.present? && current_user.respond_to?(:admin?) && current_user.admin?
+  end
+  
+  constraints resque_web_constraint do
+    mount ResqueWeb::Engine => "/queues"
+  end
 
   # RIIIF
   mount Riiif::Engine => 'images', as: :riiif if Hyrax.config.iiif_image_server?

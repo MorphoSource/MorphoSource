@@ -120,4 +120,4 @@ deploy_prod:
     - mkdir helm_chart
     - cd helm_chart/
     - git clone https://$GITLAB_CI_REPO_READ_USER:$GITLAB_CI_REPO_READ_TOKEN@gitlab.oit.duke.edu/morphosource/helm-chart.git .
-    - helm upgrade morphosource charts/hyrax -f charts/hyrax/values.yaml -f charts/hyrax/values.prod.yaml --set image.tagPrefix=app-main- --set worker.image.tagPrefix=worker-main- --set workerHeavy.image.tagPrefix=worker-main- --set imageTagVersion=$CI_COMMIT_SHORT_SHA --set strategyType=$K8S_STRATEGY --set runDbMigrate=$K8S_RUN_DB_MIGRATE
+    - helm upgrade morphosource charts/hyrax -f charts/hyrax/values.yaml -f charts/hyrax/values.prod.yaml --set image.tagPrefix=app-main- --set worker.image.tagPrefix=worker-main- --set workerHeavy.image.tagPrefix=worker-main- --set image.tagVersion=$CI_COMMIT_SHORT_SHA --set strategyType=$K8S_STRATEGY --set runDbMigrate=$K8S_RUN_DB_MIGRATE

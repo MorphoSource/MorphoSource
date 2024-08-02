@@ -36,7 +36,13 @@ class BiologicalSpecimen < Morphosource::Works::Base
 
   # :occurrence_id_changed? may change to :will_save_change_to_occurrence_id?
   # if ActiveFedora updates to reflect the Rails 5.1+ ActiveRecord/ActiveModel API
-  before_update :update_metadata_from_idigbio_occurrence_id, if: :occurrence_id_changed?
+
+
+# revise below later
+
+
+#  before_update :update_metadata_from_idigbio_occurrence_id, if: :occurrence_id_changed?
+
 
   def best_taxonomy
     if canonical_taxonomy.present?

@@ -1,4 +1,4 @@
-class UpdateBsoFromIdigbioJob < Hyrax::ApplicationJob
+class UpdateSingleSpecimenFromIdigbioJob < Hyrax::ApplicationJob
 
   queue_as Hyrax.config.update_slow_queue_name
 

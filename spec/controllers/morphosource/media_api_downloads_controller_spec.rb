@@ -63,11 +63,6 @@ RSpec.describe Morphosource::MediaAPIDownloadsController, type: :controller do
       file_set_dup.original_file.crc32 = [100]
       file_set_dup.original_file.save!
       file_set_dup.reload
-
-      allow(SolrDocument).to receive(:find).and_call_original
-      works.each do |work|
-        allow(SolrDocument).to receive(:find).with(work.id).and_return(SolrDocument.find(work.id))
-      end
     end
 
     describe 'response' do

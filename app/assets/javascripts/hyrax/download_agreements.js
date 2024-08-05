@@ -197,6 +197,8 @@ $( document ).ready(function() {
       if ( $('#modal-agree').prop('checked') &&
         usage.length >= 50 && usageList() != "" )  {
         
+        $(this).find("#g-recaptcha-response").attr('disabled', 'disabled');
+
         formType =$(this).attr('class');        
         if (formType == 'download-selected') {
           console.log('downloading selected in cart');

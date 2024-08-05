@@ -4,4 +4,4 @@ development:
 test:
   url: <%= ENV['SOLR_URL'] || ( "http://127.0.0.1:#{ ENV['SOLR_TEST_PORT'] || 8985 }/solr/hydra-test" ) %>
 production:
-  url: <%= ENV['SOLR_URL'] || ( "http://#{ ENV['SOLR_ADMIN_USER'] || "admin" }:#{ ENV['SOLR_ADMIN_PASSWORD'] || "admin" }@#{ ENV['SOLR_HOST'] || "127.0.0.1" }:#{ ENV['SOLR_PORT'] || 8983 }/solr/#{ ENV['SOLR_COLLECTION_NAME'] || "hyrax" }" ) %>
+  url: <%= ENV['SOLR_URL'] || ( "http://#{ ENV['SOLR_HOST'] || "127.0.0.1" }:#{ ENV['SOLR_PORT'] || 8983 }/solr/#{ ENV['SOLR_COLLECTION_NAME'] || "hyrax" }" ) %>

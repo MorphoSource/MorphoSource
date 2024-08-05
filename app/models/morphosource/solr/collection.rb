@@ -17,6 +17,10 @@ module Morphosource
       def project?
         self["human_readable_type_tesim"] == ["Project"]
       end
+
+      def media_inherit_permissions?
+        team? || project?
+      end
     end
   end
 end

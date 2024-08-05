@@ -19,18 +19,18 @@ module Morphosource
     end
 
     def update_metadata_from_idigbio_occurrence_id
+      flash_notice_if_updated = nil
       if @bso.idigbio_match_found == 1
         @idigbio_occurrence = @bso.idigbio_occurrence_id_results[:data].first
         if idigbio_recordset_different_from_org?
           @log.debug "IDigBioUpdateService: Specimen #{@bso.id} not synced because the organization (#{@bso.organization_id.first}) has recordset ID(s) (#{@org_recordset_ids.join(', ')}) different from the iDigBio-supplied recordset ID #{@idb_recordset_id}."
         else          
           get_idigbio_taxonomy
-          get_idigbio_metadata
-byebug   
-    
+          get_idigbio_metadata    
           if @force_update || idigbio_record_different_from_specimen?
             apply_idigbio_update
             @log.debug "IDigBioUpdateService: Specimen #{@bso.id} updated as a result of " + (@force_update ? "force_update" : "idigbio_record_different_from_specimen")
+            flash_notice_if_updated = "The specimen has been updated to match the iDigBio record."
           end
         end
       elsif @bso.idigbio_match_found > 1
@@ -38,6 +38,7 @@ byebug
           @log.debug "IDigBioUpdateService: Specimen #{@bso.id} not synced because multiple records found for OID: #{@bso.occurrence_id.first}"
         end
       end
+      return flash_notice_if_updated
     end
 
     def idigbio_recordset_different_from_org?

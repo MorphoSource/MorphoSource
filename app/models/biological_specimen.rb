@@ -2,7 +2,6 @@ class BiologicalSpecimen < Morphosource::Works::Base
 
   include ::Hyrax::WorkBehavior
   include Morphosource::PhysicalObjectBehavior
-  include Morphosource::BiologicalSpecimenIdigbioUpdateBehavior
   include Morphosource::PersistentIdentifiersBehavior
   validates_with Morphosource::ParentChildValidator
   before_create :controlled_value_filter, :date_filter, :set_idigbio_link_origin_when_create
@@ -33,16 +32,6 @@ class BiologicalSpecimen < Morphosource::Works::Base
       self.idigbio_link_origin = ["user"]
     end
   end
-
-  # :occurrence_id_changed? may change to :will_save_change_to_occurrence_id?
-  # if ActiveFedora updates to reflect the Rails 5.1+ ActiveRecord/ActiveModel API
-
-
-# revise below later
-
-
-#  before_update :update_metadata_from_idigbio_occurrence_id, if: :occurrence_id_changed?
-
 
   def best_taxonomy
     if canonical_taxonomy.present?

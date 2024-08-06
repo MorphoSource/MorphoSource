@@ -196,8 +196,6 @@ $( document ).ready(function() {
       var usage = $('#custom-usage').val();
       if ( $('#modal-agree').prop('checked') &&
         usage.length >= 50 && usageList() != "" )  {
-        
-        $(this).find("#g-recaptcha-response").attr('disabled', 'disabled');
 
         formType =$(this).attr('class');        
         if (formType == 'download-selected') {
@@ -207,6 +205,7 @@ $( document ).ready(function() {
           this.submit();
         } else if (formType == 'download-single') {
           console.log('downloading single ');
+          $(this).find("#g-recaptcha-response").attr('disabled', 'disabled');
           $('input[name=usage]').val(usage);
           $('input[name=usage_list]').val(usageList());
           this.submit();

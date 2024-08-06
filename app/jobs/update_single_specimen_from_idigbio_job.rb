@@ -2,10 +2,7 @@ class UpdateSingleSpecimenFromIdigbioJob < Hyrax::ApplicationJob
 
   queue_as Hyrax.config.update_slow_queue_name
 
-  def perform(id, save_work=false, system_update=false, log_file)
-    log = log_file.present?? Logger.new(log_file) : Logger.new(STDOUT) 
-    if BiologicalSpecimen.exists?(id) 
-      BiologicalSpecimen.find(id).update_metadata_from_idigbio_occurrence_id(save_work, system_update, false, log_file)
-    end
+  def perform(id, system_update=false, log_file, canonical_taxonomy_id, taxonomy_id_array, taxonomy_params_array, biospec_model_params)
+    Morphosource::IDigBioUpdateService.call(id, true, system_update, log_file, canonical_taxonomy_id, taxonomy_id_array, taxonomy_params_array, biospec_model_params)
   end
 end

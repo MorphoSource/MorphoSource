@@ -831,25 +831,19 @@ namespace :morphosource do
     else
       update = false
     end
-    qry = "has_model_ssim:BiologicalSpecimen"
-    if args[:bso_id].present?
-      bso_id = args[:bso_id]
-      qry += " AND id:#{bso_id}"
-    end
-    result = ActiveFedora::SolrService.query(qry, rows: 999999)
-    log.debug "#{result.count} specimens found"
-    result.each do |hit|
-      UpdateBsoFromIdigbioJob.perform_later(hit.id, update, true, log_file)
-    end
-    if args[:send_email] ==  "true" && Hyrax.config.system_report_recipients.present?
-      ApplicationMailer.send_email_with_attachment(
-        Hyrax.config.system_report_recipients,
-        "MS IDigbio Update Report " + (update == false ? "(report only) " : "") +
-        Time.now.strftime("%m-%d-%Y_%H-%M"),
-        "Please see IDigbio Update Report in " + log_file,
-         nil).deliver_now
-    end
-    log.debug "update_bso_from_idigbio completed. #{result.count} specimens found"
+
+# change to perform later
+
+UpdateSpecimensFromIdigbioJob.perform_now(update, true, log_file)
+
+#    if args[:send_email] ==  "true" && Hyrax.config.system_report_recipients.present?
+#      ApplicationMailer.send_email_with_attachment(
+#        Hyrax.config.system_report_recipients,
+#        "MS IDigbio Update Report " + (update == false ? "(report only) " : "") +
+#        Time.now.strftime("%m-%d-%Y_%H-%M"),
+#        "Please see IDigbio Update Report in " + log_file,
+#         nil).deliver_now
+#    end
   end
 
   # MCZ slide import

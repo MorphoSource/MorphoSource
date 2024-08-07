@@ -4,60 +4,67 @@ class UpdateSpecimensFromIdigbioJob < Hyrax::ApplicationJob
 
   def perform(save_work=false, system_update=false, force_update=false, log_file=nil)
     @log = log_file.present?? Logger.new(log_file) : Logger.new(STDOUT) 
-
     qry = "has_model_ssim:BiologicalSpecimen"
     # todo: limiting each document to only iDigBio-specific fields and other fields critical for iDigBio updates
     result = ActiveFedora::SolrService.query(qry, rows: 999999)
     @log.debug "#{result.count} specimens found"
     result.each do |hit|
-
-      bso = BiologicalSpecimen.find(hit.id)
-
-      #- Iterate through each BSO document from Solr
-
-      #-For each document, query the iDigBio API and check if the iDigBio record is different from the specimen (e.g., if an update is needed). 
-
-      update_metadata_from_idigbio_occurrence_id(bso)
-
-
-      #-This job should only touch Solr, and should not touch FCRepo.
-
-
+      update_metadata_from_idigbio_occurrence_id(hit.document)
     end
   end
 
   def update_metadata_from_idigbio_occurrence_id(bso)
-      @bso = bso
     flash_notice_if_updated = nil
-    if @bso.idigbio_match_found == 1
-      @idigbio_occurrence = @bso.idigbio_occurrence_id_results[:data].first
-      if idigbio_recordset_different_from_org?
-        @log.debug "UpdateSpecimensFromIdigbioJob: Specimen #{@bso.id} not synced because the organization (#{@bso.organization_id.first}) has recordset ID(s) (#{@org_recordset_ids.join(', ')}) different from the iDigBio-supplied recordset ID #{@idb_recordset_id}."
+    if idigbio_match_found(bso) == 1
+      @idigbio_occurrence = @occurrence_id_results[:data].first
+      if idigbio_recordset_different_from_org?(bso)
+byebug
+        @log.debug "UpdateSpecimensFromIdigbioJob: Specimen #{bso["id"]} not synced because the organization (#{bso["organization_id_tesim"].first}) has recordset ID(s) (#{@org_recordset_ids.join(', ')}) different from the iDigBio-supplied recordset ID #{@idb_recordset_id}."
       else          
+byebug
         get_idigbio_taxonomy
         get_idigbio_metadata    
-        if @force_update || idigbio_record_different_from_specimen?
-
-      #-If an update is needed, a second separate iDigBio update job should be used (see next major bullet).
-byebug
-
-          UpdateSingleSpecimenFromIdigbioJob.perform_now(@bso.id, @system_update, @log_file,
+        if @force_update || idigbio_record_different_from_specimen?(bso)
+          UpdateSingleSpecimenFromIdigbioJob.perform_now(bso["id"], @system_update, @log_file,
             @canonical_taxonomy_id, @taxonomy_id_array, @taxonomy_params_array, @biospec_model_params)
-          @log.debug "UpdateSpecimensFromIdigbioJob: Specimen #{@bso.id} updated as a result of " + (@force_update ? "#force_update" : "idigbio_record_different_from_specimen")
+          @log.debug "UpdateSpecimensFromIdigbioJob: Specimen #{bso["id"]} updated as a result of " + (@force_update ? "#force_update" : "idigbio_record_different_from_specimen")
 #          flash_notice_if_updated = "The specimen has been updated to match the iDigBio record."
 
         end
       end
-    elsif @bso.idigbio_match_found > 1
+    elsif idigbio_match_found(bso) > 1
       if @system_update
-        @log.debug "UpdateSpecimensFromIdigbioJob: Specimen #{@bso.id} not synced because multiple records found for OID: #{@bso.occurrence_id.first}"
+        @log.debug "UpdateSpecimensFromIdigbioJob: Specimen #{bso["id"]} not synced because multiple records found for OID: #{bso["occurrence_id_ssim"].first}"
       end
     end
     return flash_notice_if_updated
   end
 
-  def idigbio_recordset_different_from_org?
-    if (@org_recordset_ids = @bso.organizations&.first&.recordset_id).present?
+  def occurrence_id_valid?(occurrence_id)
+    # valid if 8 characters minimum AND has both a letter and a number
+    occurrence_id.present? && occurrence_id.first.length >= 8 &&
+      occurrence_id.first.count("0-9") > 0 && occurrence_id.first.count("a-zA-Z") > 0
+  end
+
+  def idigbio_occurrence_id_results(occurrence_id)
+    Morphosource::IDigBio.search({'occurrenceid' => occurrence_id})
+  end
+
+  def idigbio_match_found(bso)
+    occurrence_id = bso["occurrence_id_ssim"]
+    return -1 unless occurrence_id_valid?(occurrence_id)
+    @occurrence_id_results = idigbio_occurrence_id_results(occurrence_id)
+    return -1 unless (@occurrence_id_results[:status] == :success) && (@occurrence_id_results[:data].length > 0)
+    return @occurrence_id_results[:data].length 
+  end
+
+  def idigbio_recordset_different_from_org?(bso)
+    org_id = bso["organization_id_tesim"]
+    return false unless org_id.present?
+    org = SolrDocument.find(org_id)
+    return false unless org.present?
+    @org_recordset_ids = org["recordset_id_tesim"]
+    if @org_recordset_ids.present?
       if (@idb_recordset_id = @idigbio_occurrence.dig("indexTerms", "recordset")).present?
         return !@org_recordset_ids.include?(@idb_recordset_id)
       end
@@ -110,29 +117,45 @@ byebug
       end  
   end
 
-  def idigbio_record_different_from_specimen?
+  def idigbio_record_different_from_specimen?(bso)
     is_diff = false
-    if @canonical_taxonomy_id.present? 
-      if !@bso.canonical_taxonomy_ids.to_a.include? @canonical_taxonomy_id  
+    if @canonical_taxonomy_id.present? && bso["canonical_taxonomy_tesim"].present?
+      if !bso["canonical_taxonomy_tesim"].include? @canonical_taxonomy_id  
         is_diff = true
-        @log.debug "is_diff Specimen #{@bso.id}: canonical_taxonomy_ids #{@bso.canonical_taxonomy_ids.to_a} does not include #{@canonical_taxonomy_id}"
+        @log.debug "is_diff Specimen #{bso["id"]}: canonical_taxonomy_ids #{bso["canonical_taxonomy_tesim"]} does not include #{@canonical_taxonomy_id}"
       end
     end
-    # Note: @bso.taxonomy_id can contain more IDs than taxonomy_id_array since 
+    # Note: taxonomy_id can contain more IDs than taxonomy_id_array since 
     # new taxonomies are added when apply_idigbio_update was called in a previous update
-    if (@taxonomy_id_array - @bso.taxonomy_id.to_a).present? 
-      is_diff = true
-      @log.debug "is_diff Specimen #{@bso.id}: taxonomy_id_array #{@taxonomy_id_array} VS #{@bso.taxonomy_id.to_a}"
+    if bso["taxonomy_id_tesim"].present?
+      if (@taxonomy_id_array - bso["taxonomy_id_tesim"]).present? 
+        is_diff = true
+        @log.debug "is_diff Specimen #{bso["id"]}: taxonomy_id_array #{@taxonomy_id_array} VS #{bso["taxonomy_id_tesim"]}"
+      end
     end
     if @taxonomy_params_array.present? 
       is_diff = true
-      @log.debug "is_diff Specimen #{@bso.id}: taxonomy_params_array #{@taxonomy_params_array}"
+      @log.debug "is_diff Specimen #{bso["id"]}: taxonomy_params_array #{@taxonomy_params_array}"
     end
     @biospec_model_params.each do |key, value|
+      solr_fields = {
+        "idigbio_uuid" => "idigbio_uuid_tesim", 
+        "idigbio_recordset_id" => "idigbio_recordset_id_tesim", 
+        "vouchered" => "vouchered_tesim", 
+        "institution_code" => "institution_code_tesim", 
+        "collection_code" => "collection_code_tesim", 
+        "catalog_number" => "catalog_number_tesim", 
+        "occurrence_id" => "occurrence_id_tesim", 
+        "related_url" => "related_url_tesim", 
+        "creator" => "creator_tesim", 
+        "periodic_time" => "periodic_time_tesim", 
+        "original_location" => "original_location_tesim"
+      }
+
       # case-insensitive comparison for cases like "male" vs. "Male"
-      if Array(value).map(&:downcase).sort != @bso.send(key).map(&:downcase).sort
+      if Array(value).map(&:downcase).sort != bso[solr_fields[key]]&.map(&:downcase)&.sort
         is_diff = true
-        @log.debug "is_diff Specimen #{@bso.id}: key=#{key}, #{Array(value)} VS #{@bso.send(key).to_a}"
+        @log.debug "is_diff Specimen #{bso["id"]}: key=#{key}, #{Array(value)} VS #{bso[solr_fields[key]]}"
       end      
     end
     return is_diff

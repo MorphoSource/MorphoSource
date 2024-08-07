@@ -20,13 +20,13 @@ module Morphosource
     def get(query = nil, args = {})
       args = args.merge(q: query) unless args.key?(:q)
       args = args.merge(rows: 999999) unless args.key?(:rows)
-      # todo: setting default sort field might be needed here
-      #args = args.merge(sort: 'title_si asc') unless args.key?(:sort)
-      puts(args)
+      args = args.merge(qt: 'standard') unless args.key?(:qt)
+
       @result = connection.post('select', data: args) # Switching to post due to URI too long errors
     end
 
     def get_count(query = nil, args = {})
+      args = args.merge(rows: 0)
       get(query, args)
       count
     end

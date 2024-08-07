@@ -834,7 +834,7 @@ namespace :morphosource do
 
 # change to perform later
 
-UpdateSpecimensFromIdigbioJob.perform_now(update, true, log_file)
+    UpdateSpecimensFromIdigbioJob.perform_now(nil, update, true, false, log_file)
 
 #    if args[:send_email] ==  "true" && Hyrax.config.system_report_recipients.present?
 #      ApplicationMailer.send_email_with_attachment(

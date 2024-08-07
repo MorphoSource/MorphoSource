@@ -2,34 +2,48 @@ class UpdateSpecimensFromIdigbioJob < Hyrax::ApplicationJob
 
   queue_as Hyrax.config.update_medium_queue_name
 
-  def perform(save_work=false, system_update=false, force_update=false, log_file=nil)
+  def perform(bso_id=nil, save_work=false, system_update=false, force_update=false, log_file=nil)
+    @flash_notice_if_updated = nil
     @log = log_file.present?? Logger.new(log_file) : Logger.new(STDOUT) 
     qry = "has_model_ssim:BiologicalSpecimen"
+    if bso_id.present?
+      # handle single specimen
+      qry += " AND id:#{bso_id}"
+      @single_specimen_update = true
+    else
+      @single_specimen_update = false
+    end
     # todo: limiting each document to only iDigBio-specific fields and other fields critical for iDigBio updates
     result = ActiveFedora::SolrService.query(qry, rows: 999999)
     @log.debug "#{result.count} specimens found"
     result.each do |hit|
       update_metadata_from_idigbio_occurrence_id(hit.document)
     end
+    return @flash_notice_if_updated
   end
 
   def update_metadata_from_idigbio_occurrence_id(bso)
-    flash_notice_if_updated = nil
     if idigbio_match_found(bso) == 1
       @idigbio_occurrence = @occurrence_id_results[:data].first
       if idigbio_recordset_different_from_org?(bso)
-byebug
         @log.debug "UpdateSpecimensFromIdigbioJob: Specimen #{bso["id"]} not synced because the organization (#{bso["organization_id_tesim"].first}) has recordset ID(s) (#{@org_recordset_ids.join(', ')}) different from the iDigBio-supplied recordset ID #{@idb_recordset_id}."
       else          
-byebug
         get_idigbio_taxonomy
         get_idigbio_metadata    
+byebug
         if @force_update || idigbio_record_different_from_specimen?(bso)
-          UpdateSingleSpecimenFromIdigbioJob.perform_now(bso["id"], @system_update, @log_file,
-            @canonical_taxonomy_id, @taxonomy_id_array, @taxonomy_params_array, @biospec_model_params)
+          if @single_specimen_update
+byebug
+            UpdateSingleSpecimenFromIdigbioJob.perform_now(bso["id"], @system_update, @log_file,
+              @canonical_taxonomy_id, @taxonomy_id_array, @taxonomy_params_array, @biospec_model_params)
+          else
+# perform_later
+byebug
+            UpdateSingleSpecimenFromIdigbioJob.perform_now(bso["id"], @system_update, @log_file,
+              @canonical_taxonomy_id, @taxonomy_id_array, @taxonomy_params_array, @biospec_model_params)
+          end
           @log.debug "UpdateSpecimensFromIdigbioJob: Specimen #{bso["id"]} updated as a result of " + (@force_update ? "#force_update" : "idigbio_record_different_from_specimen")
-#          flash_notice_if_updated = "The specimen has been updated to match the iDigBio record."
-
+          @flash_notice_if_updated = "The specimen has been updated to match the iDigBio record."
         end
       end
     elsif idigbio_match_found(bso) > 1
@@ -37,7 +51,6 @@ byebug
         @log.debug "UpdateSpecimensFromIdigbioJob: Specimen #{bso["id"]} not synced because multiple records found for OID: #{bso["occurrence_id_ssim"].first}"
       end
     end
-    return flash_notice_if_updated
   end
 
   def occurrence_id_valid?(occurrence_id)

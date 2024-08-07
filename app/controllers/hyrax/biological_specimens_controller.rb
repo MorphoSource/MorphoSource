@@ -82,11 +82,11 @@ module Hyrax
 
     # :occurrence_id_changed? may change to :will_save_change_to_occurrence_id?
     # if ActiveFedora updates to reflect the Rails 5.1+ ActiveRecord/ActiveModel API
-#    after_action :update_from_idigbio, only: :update
+    after_action :update_from_idigbio, only: :update
 
     def update_from_idigbio
-      if occurrence_id_changed? 
-        @flash_notice_if_updated = Morphosource::IDigBioUpdateService.call(curation_concern.id, true, false, false, nil)
+      if occurrence_id_changed? & curation_concern.occurrence_id.present?
+        @flash_notice_if_updated = UpdateSpecimensFromIdigbioJob.perform_now(curation_concern.id, true, false, false, nil)
       end
     end
 

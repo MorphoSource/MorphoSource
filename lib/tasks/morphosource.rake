@@ -664,7 +664,7 @@ namespace :morphosource do
   desc 'Update media ip holder field'
   task :update_media_ip_holder => :environment do
     # find media with rights holder metadata with 'Name:' format
-    ids = Morphosource::SolrService.new.get_docs("rights_holder_tesim:Name:").map{|d| d["id"]}
+    ids = Morphosource::SolrService.new.get_docs('rights_holder_tesim:"Name:"').map{|d| d["id"]}
     ids.each do |id|
       m = Media.find(id)
       # ex: ["Name: Name1, Type: Copyright and License", "Name: Name3, Type: License", "Name: Name2, Type: Copyright"]

@@ -65,37 +65,22 @@ module Morphosource
     # ---  methods for physical object types ---
 
     def media_po_type_facets
-      facet_fields = [
-        'media_physical_object_type_ssim'
-      ]
+      facet_fields = [ 'media_physical_object_type_ssim' ]
 
-      params = {
-        fl: 'id',
-        fq: ["has_model_ssim:Media"]
-      }
-      solr.get_facet_fields(nil, facet_fields, params)
+      params = { fl: 'id' }
+      solr.get_facet_fields("has_model_ssim:Media", facet_fields, params)
       return solr.facet_fields(facet_fields), solr.count
     end
 
     def total_bso
-      params = {
-        rows: 0,
-        fq: [
-          "(has_model_ssim:BiologicalSpecimen)"
-        ]
-      }
-      solr.get(nil, params)
+      params = { rows: 0 }
+      solr.get("has_model_ssim:BiologicalSpecimen", params)
       solr.count
     end
 
     def total_cho
-      params = {
-        rows: 0,
-        fq: [
-          "(has_model_ssim:CulturalHeritageObject)"
-        ]
-      }
-      solr.get(nil, params)
+      params = { rows: 0 }
+      solr.get("has_model_ssim:CulturalHeritageObject", params)
       solr.count
     end
 
@@ -106,11 +91,8 @@ module Morphosource
         Solrizer.solr_name("media_type", :symbol),
         "modality_ssim"
       ]
-      params = {
-        fl: 'id',
-        fq: ["has_model_ssim:Media"]
-      }
-      solr.get_facet_fields(nil, facet_fields, params)
+      params = { fl: 'id' }
+      solr.get_facet_fields("has_model_ssim:Media", facet_fields, params)
       return solr.facet_fields(facet_fields), solr.count
     end
 

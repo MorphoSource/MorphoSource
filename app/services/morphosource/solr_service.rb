@@ -18,7 +18,18 @@ module Morphosource
     end
 
     def get(query = nil, args = {})
-      args = args.merge(q: query) unless args.key?(:q)
+      if !args.key?(:q)
+        if query.present?
+          args = args.merge(q: query)
+        elsif args[:fq].present? and ( ( args[:fq] || [] ).count == 1 )
+          # special case no query and only 1 fq condition, fq condition becomes query
+          args = args.merge(q: args[:fq].pop)
+        else
+          # fallback to always supply query
+          args = args.merge(q: "*:*")
+        end
+      end
+
       args = args.merge(rows: 999999) unless args.key?(:rows)
       args = args.merge(qt: 'standard') unless args.key?(:qt)
 

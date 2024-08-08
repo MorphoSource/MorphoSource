@@ -4,6 +4,9 @@ class UpdateSpecimensFromIdigbioJob < Hyrax::ApplicationJob
 
   def perform(bso_id=nil, save_work=false, system_update=false, force_update=false, log_file=nil)
     @flash_notice_if_updated = nil
+    @save_work = save_work
+    @system_update = system_update
+    @force_update = force_update
     @log = log_file.present?? Logger.new(log_file) : Logger.new(STDOUT) 
     qry = "has_model_ssim:BiologicalSpecimen"
     if bso_id.present?
@@ -13,8 +16,8 @@ class UpdateSpecimensFromIdigbioJob < Hyrax::ApplicationJob
     else
       @single_specimen_update = false
     end
-    # todo: limiting each document to only iDigBio-specific fields and other fields critical for iDigBio updates
-    result = ActiveFedora::SolrService.query(qry, rows: 999999)
+    fields = "id, occurrence_id_ssim, occurrence_id_tesim, organization_id_tesim, canonical_taxonomy_tesim, taxonomy_id_tesim, idigbio_uuid_tesim, idigbio_recordset_id_tesim, vouchered_tesim, institution_code_tesim, collection_code_tesim, catalog_number_tesim, related_url_tesim, creator_tesim, periodic_time_tesim, original_location_tesim" 
+    result = ActiveFedora::SolrService.query(qry, rows: 999999, fl: fields)
     @log.debug "#{result.count} specimens found"
     result.each do |hit|
       update_metadata_from_idigbio_occurrence_id(hit.document)
@@ -30,17 +33,15 @@ class UpdateSpecimensFromIdigbioJob < Hyrax::ApplicationJob
       else          
         get_idigbio_taxonomy
         get_idigbio_metadata    
-byebug
         if @force_update || idigbio_record_different_from_specimen?(bso)
-          if @single_specimen_update
-byebug
-            UpdateSingleSpecimenFromIdigbioJob.perform_now(bso["id"], @system_update, @log_file,
-              @canonical_taxonomy_id, @taxonomy_id_array, @taxonomy_params_array, @biospec_model_params)
-          else
-# perform_later
-byebug
-            UpdateSingleSpecimenFromIdigbioJob.perform_now(bso["id"], @system_update, @log_file,
-              @canonical_taxonomy_id, @taxonomy_id_array, @taxonomy_params_array, @biospec_model_params)
+          if @save_work
+            if @single_specimen_update
+              UpdateSingleSpecimenFromIdigbioJob.perform_now(bso["id"], @system_update, @log_file,
+                @canonical_taxonomy_id, @taxonomy_id_array, @taxonomy_params_array, @biospec_model_params)
+            else
+              UpdateSingleSpecimenFromIdigbioJob.perform_later(bso["id"], @system_update, @log_file,
+                @canonical_taxonomy_id, @taxonomy_id_array, @taxonomy_params_array, @biospec_model_params)
+            end
           end
           @log.debug "UpdateSpecimensFromIdigbioJob: Specimen #{bso["id"]} updated as a result of " + (@force_update ? "#force_update" : "idigbio_record_different_from_specimen")
           @flash_notice_if_updated = "The specimen has been updated to match the iDigBio record."

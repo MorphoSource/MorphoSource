@@ -22,8 +22,7 @@ module Morphosource
       apply_idigbio_update
     end
   
-    def apply_idigbio_update
-byebug   
+    def apply_idigbio_update   
       add_new_taxonomies
       link_taxonomies
       update_metadata_from_idigbio

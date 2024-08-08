@@ -822,7 +822,7 @@ namespace :morphosource do
   end
 
   desc "Update specimens from IDigbio"
-  task :update_bso_from_idigbio, [:update, :send_email, :bso_id] => :environment do |task, args|
+  task :update_bso_from_idigbio, [:update, :send_email] => :environment do |task, args|
     log_file = 'log/idigbio_update_' + Time.now.strftime("%m-%d-%Y_%H-%M") + '.log'
     log = Logger.new(log_file)
     log.debug "update_bso_from_idigbio started."
@@ -831,19 +831,15 @@ namespace :morphosource do
     else
       update = false
     end
-
-# change to perform later
-
-    UpdateSpecimensFromIdigbioJob.perform_now(nil, update, true, false, log_file)
-
-#    if args[:send_email] ==  "true" && Hyrax.config.system_report_recipients.present?
-#      ApplicationMailer.send_email_with_attachment(
-#        Hyrax.config.system_report_recipients,
-#        "MS IDigbio Update Report " + (update == false ? "(report only) " : "") +
-#        Time.now.strftime("%m-%d-%Y_%H-%M"),
-#        "Please see IDigbio Update Report in " + log_file,
-#         nil).deliver_now
-#    end
+    UpdateSpecimensFromIdigbioJob.perform_later(nil, update, true, false, log_file)
+    if args[:send_email] ==  "true" && Hyrax.config.system_report_recipients.present?
+      ApplicationMailer.send_email_with_attachment(
+        Hyrax.config.system_report_recipients,
+        "MS IDigbio Update Report " + (update == false ? "(report only) " : "") +
+        Time.now.strftime("%m-%d-%Y_%H-%M"),
+        "Please see IDigbio Update Report in " + log_file,
+         nil).deliver_now
+    end
   end
 
   # MCZ slide import

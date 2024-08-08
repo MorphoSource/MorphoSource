@@ -27,6 +27,17 @@ class BiologicalSpecimen < Morphosource::Works::Base
   # schema (by adding accepts_nested_attributes)
   include Morphosource::BiologicalSpecimenMetadata
 
+  # :occurrence_id_changed? may change to :will_save_change_to_occurrence_id?
+  # if ActiveFedora updates to reflect the Rails 5.1+ ActiveRecord/ActiveModel API
+  after_update :update_from_idigbio, if: :occurrence_id_changed?
+
+  def update_from_idigbio
+    if occurrence_id.present?
+byebug 
+      UpdateSpecimensFromIdigbioJob.perform_now(id, true, false, false, nil)
+    end
+  end
+
   def set_idigbio_link_origin_when_create
     if self.idigbio_uuid.present?
       self.idigbio_link_origin = ["user"]

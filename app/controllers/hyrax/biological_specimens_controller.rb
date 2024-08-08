@@ -80,19 +80,22 @@ module Hyrax
       end
     end
 
-    # :occurrence_id_changed? may change to :will_save_change_to_occurrence_id?
-    # if ActiveFedora updates to reflect the Rails 5.1+ ActiveRecord/ActiveModel API
-    after_action :update_from_idigbio, only: :update
+    before_action :set_idigbio_update_notice, only: :update
 
-    def update_from_idigbio
-      if occurrence_id_changed? & curation_concern.occurrence_id.present?
-        @flash_notice_if_updated = UpdateSpecimensFromIdigbioJob.perform_now(curation_concern.id, true, false, false, nil)
+    def set_idigbio_update_notice
+byebug   
+      if params[:biological_specimen][:occurrence_id].present? && 
+        (curation_concern.occurrence_id.first != params[:biological_specimen][:occurrence_id])
+         # set save_work to false because save work will be done in model
+        @flash_notice_if_idb_updated = UpdateSpecimensFromIdigbioJob.perform_now(curation_concern.id, false, false, false, nil)
+byebug
       end
     end
 
     def idigbio_update_notice
-      if occurrence_id_changed? && @flash_notice_if_updated.present?
-        flash[:notice] = @flash_notice_if_updated
+ byebug  
+      if @flash_notice_if_idb_updated.present?
+        flash[:notice] = @flash_notice_if_idb_updated
       end
     end
 

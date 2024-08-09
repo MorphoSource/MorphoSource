@@ -15,7 +15,8 @@ module Hyrax
     self.show_presenter = Hyrax::BiologicalSpecimenPresenter
 
     before_action :record_original_organizations, only: :update
-    after_action :idigbio_update_notice, only: :update
+    before_action :check_idigbio_update, only: :update
+    after_action :set_idigbio_update_notice, only: :update
 
     skip_authorize_resource only: :showcase
 
@@ -80,22 +81,17 @@ module Hyrax
       end
     end
 
-    before_action :set_idigbio_update_notice, only: :update
-
-    def set_idigbio_update_notice
-byebug   
-      if params[:biological_specimen][:occurrence_id].present? && 
-        (curation_concern.occurrence_id.first != params[:biological_specimen][:occurrence_id])
-         # set save_work to false because save work will be done in model
-        @flash_notice_if_idb_updated = UpdateSpecimensFromIdigbioJob.perform_now(curation_concern.id, false, false, false, nil)
-byebug
+    def check_idigbio_update
+      if (param_occ_id = params[:biological_specimen][:occurrence_id]).present? && 
+        (curation_concern.occurrence_id&.first != param_occ_id)
+        occurrence_id_results = Morphosource::IDigBio.search({'occurrenceid' => param_occ_id})
+        @idigbio_record_found = (occurrence_id_results[:status] == :success && occurrence_id_results[:data].length > 0)
       end
     end
 
-    def idigbio_update_notice
- byebug  
-      if @flash_notice_if_idb_updated.present?
-        flash[:notice] = @flash_notice_if_idb_updated
+    def set_idigbio_update_notice
+      if @idigbio_record_found
+        flash[:notice] = "The specimen has been updated to match the iDigBio record."
       end
     end
 

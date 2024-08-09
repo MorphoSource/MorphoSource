@@ -3,7 +3,6 @@ class UpdateSpecimensFromIdigbioJob < Hyrax::ApplicationJob
   queue_as Hyrax.config.update_medium_queue_name
 
   def perform(bso_id=nil, save_work=false, system_update=false, force_update=false, log_file=nil)
-    @flash_notice_if_updated = nil
     @save_work = save_work
     @system_update = system_update
     @force_update = force_update
@@ -16,17 +15,17 @@ class UpdateSpecimensFromIdigbioJob < Hyrax::ApplicationJob
     else
       @single_specimen_update = false
     end
-    fields = "id, occurrence_id_ssim, occurrence_id_tesim, organization_id_tesim, canonical_taxonomy_tesim, taxonomy_id_tesim, idigbio_uuid_tesim, idigbio_recordset_id_tesim, vouchered_tesim, institution_code_tesim, collection_code_tesim, catalog_number_tesim, related_url_tesim, creator_tesim, periodic_time_tesim, original_location_tesim" 
+    fields = "id, occurrence_id_tesim, organization_id_tesim, canonical_taxonomy_tesim, taxonomy_id_tesim, idigbio_uuid_tesim, idigbio_recordset_id_tesim, vouchered_tesim, institution_code_tesim, collection_code_tesim, catalog_number_tesim, related_url_tesim, creator_tesim, periodic_time_tesim, original_location_tesim" 
     result = ActiveFedora::SolrService.query(qry, rows: 999999, fl: fields)
     @log.debug "#{result.count} specimens found"
     result.each do |hit|
       update_metadata_from_idigbio_occurrence_id(hit.document)
     end
-    return @flash_notice_if_updated
   end
 
   def update_metadata_from_idigbio_occurrence_id(bso)
-    if idigbio_match_found(bso) == 1
+    occurrence_id = bso["occurrence_id_tesim"]
+    if idigbio_match_found(occurrence_id) == 1
       @idigbio_occurrence = @occurrence_id_results[:data].first
       if idigbio_recordset_different_from_org?(bso)
         @log.debug "UpdateSpecimensFromIdigbioJob: Specimen #{bso["id"]} not synced because the organization (#{bso["organization_id_tesim"].first}) has recordset ID(s) (#{@org_recordset_ids.join(', ')}) different from the iDigBio-supplied recordset ID #{@idb_recordset_id}."
@@ -44,12 +43,11 @@ class UpdateSpecimensFromIdigbioJob < Hyrax::ApplicationJob
             end
           end
           @log.debug "UpdateSpecimensFromIdigbioJob: Specimen #{bso["id"]} updated as a result of " + (@force_update ? "#force_update" : "idigbio_record_different_from_specimen")
-          @flash_notice_if_updated = "The specimen has been updated to match the iDigBio record."
         end
       end
-    elsif idigbio_match_found(bso) > 1
+    elsif idigbio_match_found(occurrence_id) > 1
       if @system_update
-        @log.debug "UpdateSpecimensFromIdigbioJob: Specimen #{bso["id"]} not synced because multiple records found for OID: #{bso["occurrence_id_ssim"].first}"
+        @log.debug "UpdateSpecimensFromIdigbioJob: Specimen #{bso["id"]} not synced because multiple records found for OID: #{bso["occurrence_id_tesim"].first}"
       end
     end
   end
@@ -64,8 +62,7 @@ class UpdateSpecimensFromIdigbioJob < Hyrax::ApplicationJob
     Morphosource::IDigBio.search({'occurrenceid' => occurrence_id})
   end
 
-  def idigbio_match_found(bso)
-    occurrence_id = bso["occurrence_id_ssim"]
+  def idigbio_match_found(occurrence_id)
     return -1 unless occurrence_id_valid?(occurrence_id)
     @occurrence_id_results = idigbio_occurrence_id_results(occurrence_id)
     return -1 unless (@occurrence_id_results[:status] == :success) && (@occurrence_id_results[:data].length > 0)

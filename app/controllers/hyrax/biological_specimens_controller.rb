@@ -82,10 +82,13 @@ module Hyrax
     end
 
     def check_idigbio_update
-      if (param_occ_id = params[:biological_specimen][:occurrence_id]).present? && 
-        (curation_concern.occurrence_id&.first != param_occ_id)
-        occurrence_id_results = Morphosource::IDigBio.search({'occurrenceid' => param_occ_id})
-        @idigbio_record_found = (occurrence_id_results[:status] == :success && occurrence_id_results[:data].length > 0)
+      @idigbio_record_found = false
+      if params[:biological_specimen].present?
+        if (param_occ_id = params[:biological_specimen][:occurrence_id]).present? && 
+          (curation_concern.occurrence_id&.first != param_occ_id)
+          occurrence_id_results = Morphosource::IDigBio.search({'occurrenceid' => param_occ_id})
+          @idigbio_record_found = (occurrence_id_results[:status] == :success && occurrence_id_results[:data].length > 0)
+        end
       end
     end
 

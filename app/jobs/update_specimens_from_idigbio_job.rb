@@ -3,24 +3,29 @@ class UpdateSpecimensFromIdigbioJob < Hyrax::ApplicationJob
   queue_as Hyrax.config.update_medium_queue_name
 
   def perform(bso_id=nil, save_work=false, system_update=false, force_update=false, log_file=nil)
+    @bso_id = bso_id
     @save_work = save_work
     @system_update = system_update
     @force_update = force_update
     @log = log_file.present?? Logger.new(log_file) : Logger.new(STDOUT) 
-    qry = "has_model_ssim:BiologicalSpecimen"
-    if bso_id.present?
+    if @bso_id.present?
       # handle single specimen
-      qry += " AND id:#{bso_id}"
       @single_specimen_update = true
     else
       @single_specimen_update = false
     end
-    fields = "id, occurrence_id_tesim, organization_id_tesim, canonical_taxonomy_tesim, taxonomy_id_tesim, idigbio_uuid_tesim, idigbio_recordset_id_tesim, vouchered_tesim, institution_code_tesim, collection_code_tesim, catalog_number_tesim, related_url_tesim, creator_tesim, periodic_time_tesim, original_location_tesim" 
-    result = ActiveFedora::SolrService.query(qry, rows: 999999, fl: fields)
-    @log.debug "#{result.count} specimens found"
-    result.each do |hit|
+    bso_result.each do |hit|
       update_metadata_from_idigbio_occurrence_id(hit.document)
     end
+  end
+
+  def bso_result
+    qry = "has_model_ssim:BiologicalSpecimen"
+    if @bso_id.present?
+      qry += " AND id:#{@bso_id}"
+    end
+    fields = "id, occurrence_id_tesim, organization_id_tesim, canonical_taxonomy_tesim, taxonomy_id_tesim, idigbio_uuid_tesim, idigbio_recordset_id_tesim, vouchered_tesim, institution_code_tesim, collection_code_tesim, catalog_number_tesim, related_url_tesim, creator_tesim, periodic_time_tesim, original_location_tesim" 
+    ActiveFedora::SolrService.query(qry, rows: 999999, fl: fields)
   end
 
   def update_metadata_from_idigbio_occurrence_id(bso)

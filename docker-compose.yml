@@ -64,7 +64,6 @@ services:
       context: .
       target: morphosource-worker-dev
     container_name: app_test
-    command: sh -c 'rm -rf /app/samvera/hyrax-webapp/tmp/* && bundle && bundle exec rake hydra:test_server'
     user: "101292838:0"
     env_file:
       - ./vendor/docker/credentials.env
@@ -72,14 +71,16 @@ services:
       - ./vendor/docker/docker-compose-test.env
     depends_on:
       - db_migrate
+      - fcrepo
       - memcached
       - postgres
       - redis
+      - solr
     profiles:
       - test
     volumes:
       - .:/app/samvera/hyrax-webapp
-      - ./solr/conf:/app/samvera/hyrax-webapp/solr/config
+      #- ./solr/conf:/app/samvera/hyrax-webapp/solr/config
       - /app/samvera/hyrax-webapp/vendor/bundle
       - /app/samvera/hyrax-webapp/.bundle/
       - test-derivatives:/app/samvera/hyrax-webapp/derivatives
@@ -181,18 +182,32 @@ services:
     networks:
       - morphosource
 
+  # solr:
+  #   image: solr:7.7.3
+  #   container_name: solr
+  #   ports:
+  #     - 8983:8983
+  #   command:
+  #     - sh
+  #     - "-c"
+  #     - "solr-precreate hydra-development /core_config"
+  #   volumes:
+  #     - solr_home:/opt/solr/server/solr/mycores
+  #     - ./solr/conf:/core_config/conf
+  #   networks:
+  #     - morphosource
+
   solr:
-    image: solr:7.7.3
+    image: bitnami/solr:8.11.2-debian-11-r233
     container_name: solr
+    environment:
+      SOLR_CORES: "hydra-development, hydra-test"
+      SOLR_CORE_CONF_DIR: /core_config/conf
     ports:
-     - 8983:8983
-    command:
-      - sh
-      - "-c"
-      - "solr-precreate hydra-development /core_config"
+      - 8983:8983
     volumes:
-      - solr_home:/opt/solr/server/solr/mycores
       - ./solr/conf:/core_config/conf
+      - solr_data:/bitnami
     networks:
       - morphosource
 
@@ -220,7 +235,7 @@ volumes:
   hyrax-uploads:
   rails-tmp:
   redis:
-  solr_home:
+  solr_data:
   test-derivatives:
   test-uploads:
   test-public:

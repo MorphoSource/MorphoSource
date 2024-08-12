@@ -27,7 +27,7 @@ module FactoryBehavior
   end
 end
 
-class FactoryBot
+module FactoryBot
   class DefinitionProxy
     include FactoryBehavior
   end

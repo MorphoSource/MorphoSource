@@ -1,5 +1,8 @@
 FactoryBot.define do
   factory :project, class: Collection do
+    # MorphoSource FactoryBehavior methods
+    # see config/initializers/factory_bot.rb
+    after_create_collection # provides find methods for collections
 
     title               { ["example project"] }
     depositor           { nil }
@@ -8,11 +11,6 @@ FactoryBot.define do
     after(:build) do |project|
       project_collection_type = Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::Projects::SETTINGS)
       project.collection_type_gid = project_collection_type.gid
-    end
-
-    after(:create) do |project|
-      # find project by id
-      ::RSpec::Mocks.allow_message(project.class, :find).with(project.id).and_return(project)
     end
   end
 end

@@ -173,6 +173,28 @@ class User < ApplicationRecord
     end
   end
 
+  def globus_file_submitter?
+    groups.include? 'globus_file_submitter'
+  end
+
+  def make_globus_file_submitter
+    if globus_file_submitter?
+      puts "Can't add - #{display_name} is already a globus file submitter"
+    else
+      globus_file_submitter_group.users += [self]
+      puts "#{display_name} is now a globus file submitter"
+    end
+  end
+
+  def remove_globus_file_submitter
+    if !globus_file_submitter?
+      puts "Can't remove - #{display_name} is not a globus file submitter"
+    else
+      globus_file_submitter_group.users -= [self]
+      puts "#{display_name} globus file submitter status removed"
+    end
+  end
+
   def remote_file_submitter?
     groups.include? 'remote_file_submitter'
   end
@@ -416,6 +438,10 @@ class User < ApplicationRecord
 
   def batch_submission_contributor_group
     Role.find_by(name: 'batch_submission_contributor')
+  end
+
+  def globus_file_submitter_group
+    Role.find_by(name: 'globus_file_submitter')
   end
 
   def remote_file_submitter_group

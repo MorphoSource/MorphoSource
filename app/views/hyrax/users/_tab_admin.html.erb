@@ -44,6 +44,23 @@
   </div>
   <div class="row">
     <div class="col-sm-9">
+      Globus File Submitter
+    </div>
+    <div class="col-sm-3 toggle-btn">
+      <%
+       if @user.globus_file_submitter? %>
+        <%= button_to main_app.remove_globus_file_submitter_path(@user.ms_id), method: :post do %>
+          <i class="fa fa-toggle-on"></i> <span>Yes</span>
+        <% end %>
+      <% else %>
+        <%= button_to main_app.make_globus_file_submitter_path(@user.ms_id), method: :post do %>
+          <i class="fa fa-toggle-off"></i> <span>No</span>
+        <% end %>
+      <% end %>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-sm-9">
       Remote File Submitter
     </div>
     <div class="col-sm-3 toggle-btn">

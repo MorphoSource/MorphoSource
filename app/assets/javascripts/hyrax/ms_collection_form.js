@@ -18,6 +18,57 @@ function disableUpload(className) {
 
 $(document).ready(function() {
 
+  if ($('body').hasClass('ms-collection') && !$('body').hasClass('organization_collections')) {
+    var collectionId = $('#collection-id').text();
+    $('#remove-selected-from-collection').on('click', function (e) {
+      selectedMediaIDs = [];
+      $('input[name="batch_work_ids[]"]').each(function() {
+        if ($(this).is(':checked')) {
+          selectedMediaIDs.push($(this).val());
+        }
+      });
+      if (confirm(`Removing selected media will not remove them from MorphoSource, only from this collection. Are you sure you want to remove selected media from the collection?`) == false) {
+        e.preventDefault();
+        return false;
+      } else {
+        disablePage();
+        $.ajax({
+          type: "POST",
+          url: '/dashboard/collections/' + collectionId + '/batch_remove',
+          dataType: 'json',
+          data: { remove_ids: selectedMediaIDs },
+          success: function(response) {
+            if (response.status === 'success') {
+              flashNotice('alert-success', 'Media are being removed in the background. You can refresh the page later to see the changes.');
+            } else {
+              flashNotice('alert-warning', 'There is a problem removing selected media. Please try again.');
+            }
+          },
+          error: function(xhr, status, error) {
+            flashNotice('alert-warning', 'There is a problem removing selected media. Error: ' + error);
+          }
+        }).always(function() {
+          $('.batch_add_selector, #select-all-for-download').prop('checked', false);
+          enablePage();
+          $('html, body').animate({ scrollTop: 0 }, 'fast');
+        });
+        return false;
+      }
+    });
+
+    function flashNotice(alertClass, message) {
+      var notice = `
+        <div class="alert ${alertClass} alert-dismissable" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          ${message}
+        </div>
+      `;
+      $('#collection-id').after(notice);
+    }
+  } // end if (!$('body').hasClass('organization_collections'
+
   if ( $('form[id*="edit_collection"]').length ||
        $('form[id*="edit_media_list"]').length ||
        $('form[id*="edit_sequential_section_list"]').length ||

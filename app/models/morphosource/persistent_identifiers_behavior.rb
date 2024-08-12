@@ -23,7 +23,11 @@ module Morphosource
         end
       when 'BiologicalSpecimen', 'CulturalHeritageObject'
         return 'PhysicalObject'
-      when 'Device', 'OrganizationCollection'
+      when 'Device'
+        # todo: currently getting an error invalid resource type 'Instrument' when the record is "public". 
+        # change this back to "Instrument" when the issue is resolved
+        return 'Service'
+      when 'OrganizationCollection'
         return 'Service'
       else
         return 'Other'
@@ -37,13 +41,17 @@ module Morphosource
     def update_ark_status
       unless self.ark.empty?
         if visibility_changed
-          ark_identifier = Ezid::Identifier.find(self.ark.first)
-          if %w{reserved unavailable}.include?(ark_identifier.status) && public_visibilities.include?(self_visibility)
-            ark_identifier.status = 'public'
-            ark_identifier.save
-          elsif (ark_identifier.status == 'public') && (!public_visibilities.include?(self_visibility))
-            ark_identifier.status = 'unavailable'
-            ark_identifier.save
+          begin
+            ark_identifier = Ezid::Identifier.find(self.ark.first)
+            if %w{reserved unavailable}.include?(ark_identifier.status) && public_visibilities.include?(self_visibility)
+              ark_identifier.status = 'public'
+              ark_identifier.save
+            elsif (ark_identifier.status == 'public') && (!public_visibilities.include?(self_visibility))
+              ark_identifier.status = 'unavailable'
+              ark_identifier.save
+            end
+          rescue => e
+            Rails.logger.error("Error finding ARK. Exception: #{e.message}")
           end
         end
       end
@@ -117,7 +125,11 @@ module Morphosource
                         'datacite.resourcetypegeneral' => self.ark_resource_type
         }
         requested_ark = "#{ENV['EZID_DEFAULT_SHOULDER']}/#{self.id.sub(/^0*/,'')}"
-        minted_ark = Ezid::Identifier.create(requested_ark, ark_metadata)
+        begin
+          minted_ark = Ezid::Identifier.create(requested_ark, ark_metadata)
+        rescue => e
+          Rails.logger.error("Error minting ARK: Work #{self.id} not set. Exception: #{e.message}")
+        end
         unless minted_ark.nil?
           self.ark = [minted_ark.id]
           self.save

@@ -14,7 +14,7 @@ class MediaIndexer < Morphosource::WorkIndexer
   def generate_solr_document
     super.tap do |solr_doc|
       solr_doc['is_remote_backed_bsi'] = object.is_remote_backed?
-
+      solr_doc['file_set_ids_ssim'] = object.file_set_ids
       solr_doc['file_set_visibilities_ssim'] = object.file_set_visibilities
       solr_doc['fileset_accessibility_ssim'] = object.fileset_accessibility
       solr_doc['download_access_group_ssim'] = object.download_groups

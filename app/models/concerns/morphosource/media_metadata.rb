@@ -20,6 +20,14 @@ module Morphosource
         index.as :stored_searchable, :symbol
       end
 
+      property :short_title, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/shortTitle") do |index|
+        index.as :stored_searchable
+      end
+
+      property :custom_title_case_sensitive, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/customTitleCaseSensitive") do |index|
+        index.as :stored_searchable
+      end
+
       # Optional select values
       property :short_description, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/shortDescription") do |index|
         index.as :stored_searchable, :symbol

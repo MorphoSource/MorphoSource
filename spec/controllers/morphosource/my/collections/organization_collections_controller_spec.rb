@@ -82,9 +82,9 @@ RSpec.describe Morphosource::My::Collections::OrganizationCollectionsController,
     context 'user is not an admin' do
       let(:user)  { FactoryBot.create(:contributor) }
 
-      it 'responds with a redirect' do
+      it 'responds with a 200' do
         get :index
-        expect(response.status).to eq(302)
+        expect(response.status).to eq(200)
       end
     end
   end

@@ -491,7 +491,6 @@ RSpec.describe Media do
       let(:data_manager)          { create(:user) }
       let(:depositor)             { create(:user) }
       let!(:contributor_role)     { Role.create(name: 'contributor') }
-      let!(:organization)          { Organization.create(title: ['organization'], permissions_enforcement_mode: nil, data_manager: [data_manager.ms_id]) }
       let(:media)                 { Media.create(title: ['media'], depositor: depositor.ms_id, visibility: 'restricted', fileset_accessibility: ['private'], organization_transfer_on_publish: true) }
 
       before do
@@ -501,24 +500,81 @@ RSpec.describe Media do
         allow(media).to receive(:organizations).and_return([organization])
       end
 
-      context 'conditions are met for transferring media' do
-        before do
-          media.transfer_media_to_organization
+      context 'organization is an organization work' do
+        let!(:organization)         { Organization.create(title: ['organization'], permissions_enforcement_mode: nil, data_manager: [data_manager.ms_id]) }
+
+        context 'conditions are met for transferring media' do
+          before do
+            media.transfer_media_to_organization
+          end
+          it 'creates a new ProxyDepositRequest' do
+            expect(ProxyDepositRequest.where(work_id: media.id, receiving_user: data_manager.id, sending_user: depositor.id, organization_transfer: true).count).to eq(1)
+          end
         end
-        it 'creates a new ProxyDepositRequest' do
-          expect(ProxyDepositRequest.where(work_id: media.id, receiving_user: data_manager.id, sending_user: depositor.id, organization_transfer: true).count).to eq(1)
+
+        context 'organization does not have a data manager set' do
+          before do
+            organization.data_manager = []
+            organization.save
+          end
+          it 'raises an error and logs the details' do
+            message = "Failed to transfer management of media #{media.id} to organization #{organization.id} with data manager #{organization.data_manager}"
+            expect(Rails.logger).to receive(:fatal).with(message)
+            expect { media.transfer_media_to_organization }.to raise_error
+          end
         end
       end
 
-      context 'organization does not have a data manager set' do
+      context 'organization is an organization collection' do
+        let(:contributor_role)        { Role.create(name: 'contributor') }
+        let(:organization_depositor)  { User.create(email: 'org_depositor@email.com', password: 'password') }
+        let!(:organization)           { FactoryBot.create(:organization_collection, depositor: organization_depositor.ms_id, media_ownership_transfer: true) }
+
         before do
-          organization.data_manager = []
-          organization.save
+          organization_depositor.make_contributor
+          organization.managers << organization_depositor
+          organization.managers_group.save
         end
-        it 'raises an error and logs the details' do
-          message = "Failed to transfer management of media #{media.id} to organization #{organization.id} with data manager #{organization.data_manager}"
-          expect(Rails.logger).to receive(:fatal).with(message)
-          expect { media.transfer_media_to_organization }.to raise_error
+
+        context 'conditions are met for transferring media' do
+          before do
+            media.transfer_media_to_organization
+          end
+          it 'creates a new ProxyDepositRequest' do
+            expect(ProxyDepositRequest.where(work_id: media.id, receiving_user: organization.id, sending_user: depositor.id, organization_transfer: true).count).to eq(1)
+          end
+
+          context 'owner is an organization manager' do
+            let(:organization_depositor)  { depositor }
+            context 'media owner and on_behalf_of is blank' do
+              it 'does not create a new ProxyDepositRequest' do
+                expect(ProxyDepositRequest.where(work_id: media.id, receiving_user: organization.id, sending_user: depositor.id, organization_transfer: true).count).to eq(0)
+              end
+              it 'assigns the organization as owner' do
+                expect(media.owner).to eq(organization.id)
+              end
+            end
+            context 'media owner is blank' do
+              let!(:media) { Media.create(title: ['media'], depositor: data_manager.ms_id, visibility: 'restricted', fileset_accessibility: ['private'], organization_transfer_on_publish: true, on_behalf_of: depositor.ms_id) }
+
+              it 'does not create a new ProxyDepositRequest' do
+                expect(ProxyDepositRequest.where(work_id: media.id, receiving_user: organization.id, sending_user: depositor.id, organization_transfer: true).count).to eq(0)
+              end
+              it 'assigns the organization as owner' do
+                expect(media.owner).to eq(organization.id)
+              end
+            end
+            context 'media on_behalf_of is blank' do
+              let!(:media) { Media.create(title: ['media'], depositor: data_manager.ms_id, visibility: 'restricted', fileset_accessibility: ['private'], organization_transfer_on_publish: true, owner: depositor.ms_id) }
+
+              it 'does not create a new ProxyDepositRequest' do
+                expect(ProxyDepositRequest.where(work_id: media.id, receiving_user: organization.id, sending_user: depositor.id, organization_transfer: true).count).to eq(0)
+              end
+              it 'assigns the organization as owner' do
+                expect(media.owner).to eq(organization.id)
+              end
+            end
+          end
         end
       end
     end

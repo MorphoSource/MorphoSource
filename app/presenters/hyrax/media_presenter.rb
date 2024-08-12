@@ -61,7 +61,7 @@ module Hyrax
       :preview_mode, :publication_status_label, :related_url, :remote_manifest_url,
       :remote_origin_url, :required_archival_of_published_derivatives, :rights_holder, :scale_bar,
       :series_type, :short_description, :side, :slice_thickness, :taxonomies_titles, :unit,
-      :user_with_ownership, :x_spacing, :y_spacing, :z_spacing,
+      :user_with_ownership, :x_spacing, :y_spacing, :z_spacing, :short_title,
       to: :solr_document
 
     attr_accessor :file_status
@@ -413,7 +413,8 @@ module Hyrax
     # @return [String] Combined device name and facility name label
     #
     def device_and_facility
-      @device_and_facility ||= "#{device_label}, #{device_organization_institution}"
+
+      @device_and_facility ||= link_to(device_label, Rails.application.routes.url_helpers.hyrax_device_path(device_id)) + ", #{device_organization_institution}"
     end
 
     #

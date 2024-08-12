@@ -31,7 +31,7 @@ common: &defaults
   # monitor: Enable Scout APM or not
   # - Default: none
   # - Valid Options: true, false
-  monitor: true
+  monitor: <%= ActiveRecord::Type::Boolean.new.cast(ENV.fetch("SCOUT_APM_MONITORING") { true }) %>
 
 production:
   <<: *defaults

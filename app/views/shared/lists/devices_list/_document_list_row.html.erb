@@ -1,9 +1,9 @@
 <tr id="document_<%= document.id %>">
-  <td><%= document.id %>
-  <td><%= document['creator_tesim']&.first %></td>
+  <td><%= link_to document.id, hyrax_device_path(document.id) %></td>
+  <td class="break-all"><%= document['creator_tesim']&.first %></td>
   <td class="break-all"><%= document['title_ssi'] %></td>
-  <td><%= device_modalities(document['modality_tesim']) %></td>
-  <td><%= document['description_tesim']&.first %></td>
+  <td class="break-all"><%= device_modalities(document['modality_tesim']) %></td>
+  <td class="break-all"><%= document['description_tesim']&.first %></td>
   <% device_media_count, device_imaging_event_count = device_media_and_imaging_event_counts(document.id) %>
   <td>
     <%= device_imaging_event_count %>
@@ -11,5 +11,5 @@
   <td>
     <%= link_to(device_media_count, main_app.media_search_path({"f"=>{"media_device_id_ssim"=>["#{document.id}"]}})) %>
   </td>
-  <td><%= document.date_uploaded %></td>
+  <td class="break-all"><%= ark_link(document['ark_tesim']&.first) %></td>
 </tr>

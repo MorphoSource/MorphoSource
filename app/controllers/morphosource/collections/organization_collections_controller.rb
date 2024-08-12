@@ -10,13 +10,16 @@ module Morphosource
 
       before_action :redirect_to_collection_type, only: []
 
-      # temporary restriction so only admins can access organizations
-      before_action :authorize_admin
-
       before_action :load_organization, only: [:show, :facet, :about,
         :media_projects, :media_organization_transfer_status]
+
+      # must go after load_organization
+      before_action :redirect_organization_type, only: [:show]
+
       before_action :create_extra_facets, only: [:show, :facet, :about,
         :media_export, :media_download_counts, :media_projects, :media_organization_transfer_status]
+
+      helper_method :search_action_for_dashboard
 
       class_attribute :collection_type
       self.collection_type = collection_type
@@ -83,6 +86,10 @@ module Morphosource
         Morphosource::Collections::OrganizationCollections::OrganizationMediaSearchBuilder
       end
 
+      def search_action_for_dashboard
+        main_app.organization_path
+      end
+
       private
 
         # link for facet filters
@@ -99,6 +106,14 @@ module Morphosource
           args.merge!(request.params)
           main_app.organization_media_facet_path(@collection.id, args)
         end
+
+        def redirect_organization_type
+          # if the organization has object media, do not redirect to the device media tab
+          return unless @org_media_count == 0
+
+          redirect_to organization_device_media_path(@collection) if @collection.scanning_facility?
+        end
+
     end
   end
 end

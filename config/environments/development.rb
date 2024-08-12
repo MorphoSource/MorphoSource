@@ -70,6 +70,11 @@ Rails.application.configure do
   # routes, locales, etc. This feature depends on the listen gem.
   config.file_watcher = ActiveSupport::FileUpdateChecker
 
+  # E.g., https://github.com/rails/rails/pull/23734/files
+  if ENV["RAILS_LOG_TO_STDOUT"].present?
+    config.logger = ActiveSupport::TaggedLogging.new(Logger.new(STDOUT))
+  end
+
   config.reload_classes_only_on_change = true
 
   config.session_store :active_record_store, :key => '_morpho_source_sf_session'

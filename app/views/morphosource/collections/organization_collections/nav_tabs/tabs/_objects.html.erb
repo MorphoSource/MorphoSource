@@ -1,0 +1,21 @@
+<%
+# If no objects OR both object types are present, display both object tabs
+# If only one object type is present, do not display the other object tab
+%>
+
+<% if @specimen_count > 0 || @cho_count == 0 %>
+  <li role="presentation" class=<%= active_tab?(:specimens) %>>
+    <a href=<%= specimens_tab_url(@collection) %> aria-controls="biological_specimens" role="tab">
+      <i class="fas fa-frog" aria-hidden="true"></i> <%= t("morphosource.collections.organization.tabs.specimens.label") %>
+      <%= render_hint_tag(t("morphosource.collections.organization.tabs.specimens.hint")) %>
+    </a>
+  </li>
+<% end %>
+<% if @cho_count > 0 || @specimen_count == 0 %>
+  <li role="presentation" class=<%= active_tab?(:chos) %>>
+    <a href=<%= chos_tab_url(@collection) %> aria-controls="biological_specimens" role="tab">
+      <i class="ms2-icon-bowl icon-bowl" aria-hidden="true"></i> <%= t("morphosource.collections.organization.tabs.chos.label") %>
+      <%= render_hint_tag(t("morphosource.collections.organization.tabs.chos.hint")) %>
+    </a>
+  </li>
+<% end %>

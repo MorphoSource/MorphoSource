@@ -2,7 +2,7 @@ class UpdateWorkMetadataJob < Hyrax::ApplicationJob
 
   queue_as Hyrax.config.update_medium_queue_name
 
-  def perform(work_attributes)
+  def perform(work_attributes, skip_index_related_works = false)
   	if ::ActiveFedora::Base.exists?(work_attributes[:id]&.first)
   		work = ::ActiveFedora::Base.find(work_attributes[:id]&.first)
   		work_properties.each do |p|
@@ -10,6 +10,9 @@ class UpdateWorkMetadataJob < Hyrax::ApplicationJob
           work[p] = work_attributes[p]
         end
   		end
+      if skip_index_related_works
+        work.skip_index_related_works = true
+      end
   		work.save!
   	end
   end

@@ -6,9 +6,6 @@ class OrganizationCollection < Collection
   include Morphosource::OrganizationBehavior
   include Morphosource::PersistentIdentifiersBehavior
 
-  has_many :proxy_deposit_requests, as: :receiving_user
-  has_many :proxy_deposit_requests, as: :sending_user
-
   before_save :convert_media_ownership_transfer
   after_create :create_collection_groups
   after_create :create_organization_project
@@ -51,6 +48,10 @@ class OrganizationCollection < Collection
     self
   end
 
+  def organization_collection?
+    true
+  end
+
   def attachment(field_name)
     Morphosource::AttachmentService.get(self, field_name)
   end
@@ -58,9 +59,19 @@ class OrganizationCollection < Collection
   def is_device_organization?
     ["Scanning Facility", "Collection and Scanning Facility"].include?(organization_type&.first)
   end
+  alias manages_devices? is_device_organization?
 
   def is_object_organization?
     ["Museum, Department, or Lab Collection", "Collection and Scanning Facility"].include?(organization_type&.first)
+  end
+  alias manages_objects? is_object_organization?
+
+  def manages_objects_and_devices?
+    organization_type&.first == "Collection and Scanning Facility"
+  end
+
+  def scanning_facility?
+    organization_type&.first == "Scanning Facility"
   end
 
   def name
@@ -96,6 +107,32 @@ class OrganizationCollection < Collection
   # goes in receiving_user_type
   def self.polymorphic_name
     "OrganizationCollection"
+  end
+
+  def can_manage_devices?
+    organization_type&.first&.include?("Scanning Facility") || false
+  end
+
+  def devices_solr
+    return [] if id.nil?
+
+    qry = "organization_id_ssim:#{self.id} AND has_model_ssim:Device"
+    ActiveFedora::SolrService.query(qry, rows: 999999)
+  end
+
+  def devices
+    ds = devices_solr
+    return [] if ds.blank?
+    ids = ds.map(&:id).select { |id| Device.exists?(id) }
+    Device.find(ids)
+  end
+
+  # Create manager and viewer roles for each Organization collection
+  def create_collection_groups
+    self.class::DEFAULT_GROUP_ROLES.each do |role|
+      name = id.concat("_#{role}")
+      Role.create(name: name) unless Role.find_by(name: name)
+    end
   end
 
   private

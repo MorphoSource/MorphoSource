@@ -2,6 +2,11 @@ module Morphosource
   module Collections
     module OrganizationCollectionsControllerBehavior
 
+      def about
+        @stats = Morphosource::Analytics::Collections::CollectionStats.new(@collection)
+        super
+      end
+
       def media_objects_search_builder_class
         Morphosource::Collections::OrganizationCollections::MediaObjectsSearchBuilder
       end
@@ -33,7 +38,7 @@ module Morphosource
       def managed_media_count
         ActiveFedora::SolrService.count(
           %{
-            has_model_ssim:Media AND 
+            has_model_ssim:Media AND
             media_organization_id_ssim:#{collection.id} AND
             user_with_ownership_ssi:#{@collection.id}
           }
@@ -43,7 +48,7 @@ module Morphosource
       def unmanaged_media_transferable_count
         ActiveFedora::SolrService.count(
           %{
-            has_model_ssim:Media AND 
+            has_model_ssim:Media AND
             media_organization_id_ssim:#{collection.id} AND
             -owner_ssim:#{@collection.id} AND
             organization_transfer_on_publish_bsi:true
@@ -54,7 +59,7 @@ module Morphosource
       def unmanaged_media_untransferable_count
         ActiveFedora::SolrService.count(
           %{
-            has_model_ssim:Media AND 
+            has_model_ssim:Media AND
             media_organization_id_ssim:#{collection.id} AND
             -owner_ssim:#{@collection.id} AND
             organization_transfer_on_publish_bsi:false

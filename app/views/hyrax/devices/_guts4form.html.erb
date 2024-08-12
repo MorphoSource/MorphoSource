@@ -1,0 +1,34 @@
+<div class="row">
+  <h1><%= t("hyrax.works.#{controller.action_name}.header", type: curation_concern.human_readable_type) %></h1>
+  <div class="showcase">
+    <div class="super-title fixedsticky pull-left"><%= @organization&.title&.first %></div>
+    <div id="savewidget" class="col-sm-4 fixedsticky pull-right" role="complementary">
+      <%= f.submit class: 'btn btn-primary pull-right', onclick: "confirmation_needed = false;", id: "with_files_submit", name: "save_with_files" %>
+    </div>
+  </div>
+</div>
+<div class="row">
+    <div class="panel panel-default tabs" role="main">
+      <!-- Tab panes -->
+      <div class="tab-content">
+        <div class="form-tab-content">
+          <div class="base-terms">
+            <% f.object.primary_terms.each do |term| %>
+              <%= render_edit_field_partial(term, f: f) %>
+            <% end %>
+            <% if params[:organization_id] %>
+              <% (f.object.in_works_ids + [params[:organization_id]]).uniq.each do |work_id| %>
+                <%= f.input :in_works_ids, as: :hidden, input_html: { value: work_id, multiple: true } %>
+              <% end %>
+              <%= hidden_field_tag 'parent_id', params[:organization_id] %>
+            <% end %>
+            <% if current_user&.admin? %>
+              <%= render 'form_admin', f: f %>
+            <% else %>
+              <%= f.input :organization_id, as: :hidden, input_html: { value: @organization&.id, multiple: true } %>
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>

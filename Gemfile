@@ -11,7 +11,8 @@ gem 'rdf-vocab', '3.1.4'
 # Use postgresql for all environments, not just production
 gem 'pg'
 gem 'sass-rails', '~> 5.0'
-gem 'uglifier', '>= 1.3.0'
+# gem 'uglifier', '>= 1.3.0'
+gem 'terser'
 gem 'coffee-rails', '~> 4.2'
 gem 'jbuilder', '~> 2.5'
 gem 'figaro'
@@ -70,6 +71,7 @@ gem 'dalli' # mem_cache_store support
 # Sentry.io error tracking
 gem "sentry-ruby"
 gem "sentry-rails"
+gem "sentry-resque"
 
 # Scout APM
 gem "scout_apm"
@@ -111,4 +113,4 @@ group :test do
   gem 'timecop'
 end
 
-gem "ezid-client", "~> 1.9.4"
+gem "ezid-client", "~> 1.11.0"

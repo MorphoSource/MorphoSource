@@ -20,6 +20,11 @@ class BatchSubmissionsController < ApplicationController
   class_attribute :object_organizations_search_builder_class
   self.object_organizations_search_builder_class = Morphosource::Catalog::Organizations::ObjectOrganizationsCatalogSearchBuilder
 
+  # return all possible organization records for organization search
+  configure_blacklight do |config|
+    config.max_per_page = 1000000
+  end
+
   attr_accessor :parent_media_row, :parent_media_id
 
   def instantiate_work_forms

@@ -5,8 +5,7 @@ module Morphosource
       class DeviceMediaController < Morphosource::Collections::OrganizationCollectionsController
         skip_load_and_authorize_resource only: [:show, :about, :facet, :media_export, :media_downloads, :media_download_counts, :media_requests, :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet], instance_name: :collection
 
-        # restrict to admins
-        before_action :authorize_admin
+        before_action :redirect_organization_type, only: []
 
         def search_builder_class
           Morphosource::Collections::OrganizationCollections::DeviceMediaSearchBuilder
@@ -16,6 +15,10 @@ module Morphosource
 
         def create_extra_facets
           create_access_facet
+        end
+
+        def search_action_for_dashboard
+          main_app.organization_device_media_path(@collection)
         end
 
         private

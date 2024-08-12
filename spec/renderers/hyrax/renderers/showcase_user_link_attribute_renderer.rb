@@ -10,10 +10,12 @@ RSpec.describe Hyrax::Renderers::ShowcaseUserLinkAttributeRenderer do
     let(:user1)     { User.create(ms_id: 'user1', display_name: 'user1 display name', email: 'user1@email.com') }
     let(:user2)     { User.create(ms_id: 'user2', email: 'user2@email.com') }
 
-    let(:content)   { "<div class='row'><div class='col-xs-6 showcase-label'>Data managed by</div><div class='col-xs-6 showcase-value '><span class='showcase-link'><a href=#{'/users/' + user.ms_id}>#{user.name}</a></span></div></div>" }
+    let(:content1)   { "<div class='row'><div class='col-xs-6 showcase-label'>Data managed by</div><div class='col-xs-6 showcase-value '><a href=#{'/users/' + user.ms_id}>#{user.name}</a></div></div>" }
+    let(:content2)   { "<div class='row'><div class='col-xs-6 showcase-label'>Data managed by</div><div class='col-xs-6 showcase-value '><a href=#{'/users/' + user.ms_id}>#{user.email}</a></div></div>" }
 
     let(:renderer)  { described_class.new(field, user.ms_id) }
-    let(:expected)  { Nokogiri::HTML(content) }
+    let(:expected1)  { Nokogiri::HTML(content1) }
+    let(:expected2)  { Nokogiri::HTML(content2) }
 
     before do
       allow(User).to receive(:find_by_user_key).with(user1.ms_id).and_return(user1)
@@ -24,7 +26,7 @@ RSpec.describe Hyrax::Renderers::ShowcaseUserLinkAttributeRenderer do
       let(:user) { user1 }
 
       it 'displays the display name' do
-        expect(subject).to be_equivalent_to(expected)
+        expect(subject).to be_equivalent_to(expected1)
       end
     end
 
@@ -32,7 +34,7 @@ RSpec.describe Hyrax::Renderers::ShowcaseUserLinkAttributeRenderer do
       let(:user) { user2 }
 
       it 'displays the ms_id' do
-        expect(subject).to be_equivalent_to(expected)
+        expect(subject).to be_equivalent_to(expected2)
       end
     end
   end

@@ -56,6 +56,8 @@ module Hyrax
     # In a perfect world, there would be a join table that enforced uniqueness on the ID.
     has_one :active_workflow, -> { where(active: true) }, class_name: 'Sipity::Workflow', foreign_key: :permission_template_id
 
+    before_create :update_source_type
+
     ##
     # @api public
     #
@@ -280,6 +282,12 @@ module Hyrax
     def check_fixed_date_requirements(date)
       return true unless release_fixed_date? && release_date.present?
       date == release_date
+    end
+
+    def update_source_type
+      self.source_type = collection&.collection_type&.machine_id
+    rescue
+      self.source_type = self.source_id
     end
   end
 end

@@ -15,10 +15,12 @@ module Morphosource
 
     autoload :Alembic
     autoload :Blender
+    autoload :CompressZip
     autoload :Dcmcjpeg
     autoload :Dcmdjpeg
     autoload :Dcmj2pnm
     autoload :DerivativeTool
+    autoload :Extract7Zip
     autoload :Fiji
     autoload :GltfPipeline
     autoload :GltfScale

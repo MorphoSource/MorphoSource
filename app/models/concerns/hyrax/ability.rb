@@ -16,26 +16,32 @@ module Hyrax
       self.admin_group_name = 'admin'
       self.registered_group_name = 'registered'
       self.public_group_name = 'public' # TODO: find hard coded values and replace with this
-      self.ability_logic += [:admin_permissions,
-                             :curation_concerns_permissions,
-                             :operation_abilities,
-                             :add_to_collection,
-                             :user_abilities,
-                             :featured_work_abilities,
-                             :editor_abilities,
-                             :stats_abilities,
-                             :citation_abilities,
-                             :proxy_deposit_abilities,
-                             :uploaded_file_abilities,
-                             :feature_abilities,
-                             :admin_set_abilities,
-                             :collection_abilities,
-                             :collection_type_abilities,
-                             :permission_template_abilities,
-                             :solr_document_abilities,
-                             :trophy_abilities,
-                             :temporary_link_abilities,
-                             :organization_member_abilities]
+
+      # Ability logic methods are effectively checked in reverse order as logical OR
+      # Place these rules at start of logic array to allow pre-existing rules to be checked first
+      # For adding new rules, place computationally expensive ones first (performed last only if needed)
+      self.ability_logic.prepend *[
+        :temporary_link_abilities,
+        :organization_member_abilities,
+        :admin_permissions,
+        :curation_concerns_permissions,
+        :operation_abilities,
+        :add_to_collection,
+        :user_abilities,
+        :featured_work_abilities,
+        :editor_abilities,
+        :stats_abilities,
+        :citation_abilities,
+        :proxy_deposit_abilities,
+        :uploaded_file_abilities,
+        :feature_abilities,
+        :admin_set_abilities,
+        :collection_abilities,
+        :collection_type_abilities,
+        :permission_template_abilities,
+        :solr_document_abilities,
+        :trophy_abilities
+      ]
     end
 
     # Samvera doesn't use download user/groups, so make it an alias to read
@@ -116,10 +122,10 @@ module Hyrax
       def proxy_deposit_abilities
         can :create, ProxyDepositRequest if Flipflop.proxy_deposit? && registered_user?
 
-        can :accept, ProxyDepositRequest, receiving_user_id: current_user.id, status: 'pending'
-        can :reject, ProxyDepositRequest, receiving_user_id: current_user.id, status: 'pending'
+        can :accept, ProxyDepositRequest, receiving_user_id: current_user.id.to_s, status: 'pending'
+        can :reject, ProxyDepositRequest, receiving_user_id: current_user.id.to_s, status: 'pending'
         # a user who sent a proxy deposit request can cancel it if it's pending.
-        can :destroy, ProxyDepositRequest, sending_user_id: current_user.id, status: 'pending'
+        can :destroy, ProxyDepositRequest, sending_user_id: current_user.id.to_s, status: 'pending'
       end
 
       def user_abilities

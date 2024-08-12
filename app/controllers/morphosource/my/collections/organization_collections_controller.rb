@@ -5,9 +5,6 @@ module Morphosource
 
         before_action :build_breadcrumbs, only: []
 
-        # temporary restriction so only admins can access organization lists
-        before_action :authorize_admin
-
         # Define collection specific filter facets.
         def self.configure_facets
           configure_blacklight do |config|

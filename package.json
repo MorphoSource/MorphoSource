@@ -7,7 +7,7 @@
     "universalviewer": "MorphoSource/universalviewer#uv4-4.0.22-aleph-0.0.21"
 },
 "scripts": {
-  "preinstall": "rm -rf ./public/uv/",
+  "preinstall": "rm -rf ./node_modules/ && rm -rf ./public/uv/",
   "postinstall": "yarn run uv-install && yarn run uv-config",
   "uv-install": "cp -r ./node_modules/universalviewer/dist ./public/uv",
   "uv-config": "cp ./config/uv/uv.html ./public/uv/uv.html & cp ./config/uv/uv-config.json ./public/uv/uv-config.json & cp ./config/uv/uv-config-front-page.json ./public/uv/uv-config-front-page.json"

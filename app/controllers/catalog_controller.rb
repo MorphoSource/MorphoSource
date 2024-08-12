@@ -38,6 +38,8 @@ class CatalogController < ApplicationController
     config.show.partials.insert(1, :openseadragon)
     config.search_builder_class = Morphosource::CatalogSearchBuilder
 
+    config.facet_paginator_class = Morphosource::Solr::FacetPaginator
+
     # Show gallery view
     config.view.gallery.partials = [:index_header, :index]
     #config.view.slideshow.partials = [:index]
@@ -282,7 +284,9 @@ class CatalogController < ApplicationController
 
     # If there are more than this many search results, no spelling ("did you
     # mean") suggestion is offered.
-    config.spell_max = 5
+    config.spell_max = 0
+
+    config.autocomplete_enabled = false
   end
 
   # get search results from the solr index

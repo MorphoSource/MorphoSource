@@ -196,7 +196,7 @@ Hyrax.config do |config|
   if blender_in_path.present?
     config.blender_path = blender_in_path.first
   else
-    config.blender_path = ENV.fetch("BLENDER_PATH")
+    config.blender_path = ENV.fetch("BLENDER_PATH", nil)
   end
 
   config.fiji_path = ENV.fetch("FIJI_PATH", "fiji")
@@ -364,12 +364,56 @@ Hyrax.config do |config|
   # Location where BagIt files should be exported
   # config.bagit_dir = "tmp/descriptions"
 
-  # If browse-everything has been configured, load the configs.  Otherwise, set to nil.
+  # Enable or disable BrowseEverything cloud file provider upload
+  config.enable_browse_everything = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_BROWSE_EVERYTHING', false))
+
+  # Enable or disable specific BrowseEverything cloud file providers
+  config.enable_browse_everything_box = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_BROWSE_EVERYTHING_BOX', false))
+  config.enable_browse_everything_dropbox = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_BROWSE_EVERYTHING_DROPBOX', false))
+  config.enable_browse_everything_google_drive = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_BROWSE_EVERYTHING_GOOGLE_DRIVE', false))
+
+  # Box API credentials
+  config.box_client_id = ENV.fetch('BOX_CLIENT_ID', nil)
+  config.box_client_secret = ENV.fetch('BOX_CLIENT_SECRET', nil)
+
+  # Dropbox API credentials and Browse Everything settings
+  config.dropbox_client_id = ENV.fetch('DROPBOX_CLIENT_ID', nil)
+  config.dropbox_client_secret = ENV.fetch('DROPBOX_CLIENT_SECRET', nil)
+  config.dropbox_download_directory = ENV.fetch('DROPBOX_DOWNLOAD_DIRECTORY', 'tmp/')
+
+  # Google Drive API credentials
+  config.google_drive_client_id = ENV.fetch('GOOGLE_DRIVE_CLIENT_ID', nil)
+  config.google_drive_client_secret = ENV.fetch('GOOGLE_DRIVE_CLIENT_SECRET', nil)
+
+
+  # If browse-everything has been enabled and configured, load the configs.  Otherwise, set to nil.
   begin
-    if defined? BrowseEverything
+    if config.enable_browse_everything && defined?(BrowseEverything)
+      be_config = {}
+      if config.enable_browse_everything_box && config.box_client_id && config.box_client_secret
+        be_config[:box] = {
+          client_id: config.box_client_id,
+          client_secret: config.box_client_secret
+        }
+      end
+      if config.enable_browse_everything_dropbox && config.dropbox_client_id && config.dropbox_client_secret
+        be_config[:dropbox] = {
+          client_id: config.dropbox_client_id,
+          client_secret: config.dropbox_client_secret,
+          download_directory: config.dropbox_download_directory
+        }
+      end
+      if config.enable_browse_everything_google_drive && config.google_drive_client_id && config.google_drive_client_secret
+        be_config[:google_drive] = {
+          client_id: config.google_drive_client_id,
+          client_secret: config.google_drive_client_secret
+        }
+      end
+
+      BrowseEverything.config = be_config
       config.browse_everything = BrowseEverything.config
     else
-      Rails.logger.warn "BrowseEverything is not installed"
+      Rails.logger.warn "BrowseEverything is not enabled or installed"
     end
   rescue Errno::ENOENT
     config.browse_everything = nil

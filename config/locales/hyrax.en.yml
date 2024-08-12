@@ -87,9 +87,9 @@ en:
         confirm: Are you sure you want to transfer ownership of this media to another user?  Click Ok to transfer or Cancel to return to the transfer screen.
         header: Transfer Ownership
       message:
-        org_transfer_receiver: "%{user_link} has requested to transfer the ownership of %{message_content} to your managed %{organization_content}. It is your choice whether to accept or reject this request. If you accept the request, your organization will become the data manager for this media. When accepting the request, you may choose to allow the original depositor to retain edit access to the media. Please accept or reject this request in your %{transfer_link} dashboard. For more details, see our <a href='https://wiki.duke.edu/display/MD/Organization+Ownership+Transfers' target='_blank'>documentation</a>."
+        org_transfer_receiver: "%{user_link} has requested to transfer the ownership of %{message_content} to your managed %{organization_content}. It is your choice whether to accept or reject this request. If you accept the request, your organization will become the data manager for this media. When accepting the request, you may choose to allow the original depositor to retain edit access to the media. Please accept or reject this request in your %{transfer_link} dashboard. For more details, see our <a href='https://duke.atlassian.net/wiki/spaces/MD/pages/35423461/Organization+Ownership+Transfers' target='_blank'>documentation</a>."
         org_transfer_receiver_subject: You have a media transfer request
-        org_transfer_sender: A request to transfer ownership of %{message_content} to organization %{organization_link} has been generated. The organization manager(s) will decide to accept or reject this request. For more details, see our <a href='https://wiki.duke.edu/display/MD/Organization+Ownership+Transfers' target='_blank'>documentation</a>.
+        org_transfer_sender: A request to transfer ownership of %{message_content} to %{receiving_user_link} has been generated. The organization manager(s) will decide to accept or reject this request. For more details, see our <a href='https://duke.atlassian.net/wiki/spaces/MD/pages/35423461/Organization+Ownership+Transfers' target='_blank'>documentation</a>.
         org_transfer_sender_subject: Organization media transfer request generated
         transfer_create: "%{user_link} has requested to transfer the ownership of %{message_content} to you. Please accept or reject this request in your %{transfer_link} dashboard."
         transfer_create_subject: You have a media transfer request
@@ -268,10 +268,12 @@ en:
           view_sequential section_list: View sequential section list
           edit_sequential section_list: Edit sequential section list
           delete_sequential section_list: Delete sequential section list
+          collection_update_success: Media are being added/removed in the background.  You can refresh the page later to see the changes.
         heading:
           list_type: List type
           visibility: Visibility
           collection_type: collection type
+          taxonomy_or_description: Taxonomy / Description
       collections:
         actions:
           add_media_to:
@@ -377,6 +379,10 @@ en:
       form:
         find_parent_work: Parent Works
       valid_work_types: Valid Types
+      edit:
+        header: Edit %{type}
+      new:
+        header: New %{type}
   simple_form:
     hints:
       collection:
@@ -421,3 +427,5 @@ en:
         find_parent_work: Search...
   user:
     inactive_message: Your user account has been made inactive. This may be because you requested that your account be removed from active status, the original person associated with this account has left their field or is deceased, or you have been banned from MorphoSource due to not complying with the site terms of use. You may contact the MorphoSource admins (morphosource@duke.edu) to discuss this and potentially have your account returned to active status.
+
+

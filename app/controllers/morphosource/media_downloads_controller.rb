@@ -89,7 +89,7 @@ module Morphosource
     end
 
     def send_interval_response 
-      zipname = "morphosource_media-#{Time.now.strftime("%Y-%m-%d-%H_%M_%S")}.zip"
+      zipname = zip_name
       interval_response = IntervalResponse.new(interval_sequence, request.env)
       rack_response = interval_response.to_rack_response_triplet
       self.status = rack_response[0]
@@ -102,6 +102,17 @@ module Morphosource
       headers['Content-Type'] = Mime::Type.lookup_by_extension('zip').to_s
       response.sending_file = true
       response.cache_control[:public] ||= false
+    end
+
+    def zip_name
+      m = ""
+      if media.present? && ( media.count == 1 )
+        m = "id-#{media&.first&.id}"
+      elsif media.present? && ( media.count > 1 )
+        m = "#{media.count}-items"
+      end
+
+      "morphosource_media-#{m}_download-#{download_hash[0..7]}.zip"
     end
 
     private

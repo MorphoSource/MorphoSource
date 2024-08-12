@@ -69,6 +69,7 @@
                 <div class="col-xs-6 showcase-value "><%= @presenter.recordset_id&.join('; ') %></div>
               </div>
             <% end %>
+            <%= render_edit_field_partial('identifier', f: f) %>
             <%= render_edit_field_partial('description', f: f) %>
             <%= render_edit_field_partial('related_url', f: f) %>
             <%= render_edit_field_partial('contact_person', f: f) %>

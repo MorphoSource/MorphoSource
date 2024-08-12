@@ -103,7 +103,7 @@ While a number of volumes will be created, most will not be synced with location
 
 * `.:/app/samvera/hyrax-webapp` - MorphoSource_SF application (this repo)
 * `./vendor/docker/fcrepo/fedora.xml:/var/lib/jetty/webapps/fedora.xml` - Fedora config XML
-* `./solr/config:/core_config/conf` - Solr config files
+* `./solr/conf:/core_config/conf` - Solr config files
 
 If using the Apache profile, there will be one or two additional synced volumes (1 for HTTP, 2 for HTTPS).
 

@@ -6,11 +6,17 @@
   </td>
 
   <td>
+    <%= link_to [main_app, document], class: 'media-left', 'aria-hidden' => true do %>
+      <%= render_thumbnail_tag document, { class: 'hidden-xs file_listing_thumbnail' }, { suppress_link: true } %>
+    <% end %>
+  </td>
+  <td>
+    <%= link_to [main_app, document], class: 'media-left', 'aria-hidden' => true do %>
+      <%= document.id %>
+    <% end %>
+  </td>
+  <td>
     <div class='media'>
-      <%= link_to [main_app, document], class: 'media-left', 'aria-hidden' => true do %>
-        <%= render_thumbnail_tag document, { class: 'hidden-xs file_listing_thumbnail' }, { suppress_link: true } %>
-      <% end %>
-
       <div class='media-body'>
         <div class='media-heading'>
 
@@ -31,7 +37,14 @@
       </div>
     </div>
   </td>
-  <td class="date"><%= item.created_at.strftime("%Y-%m-%d") %></td>
+<% if document["media_physical_object_type_ssim"]&.first == "Biological Specimen" %>  
+ <td class="break-all"><%= link_to document["physical_object_title_ssim"]&.first, main_app.hyrax_biological_specimen_path(document["physical_object_id_ssim"]&.first) %></td>
+ <td><%= document["taxonomy_tesim"]&.first %></td>
+<% elsif document["media_physical_object_type_ssim"]&.first == "Cultural Heritage Object" %>  
+ <td class="break-all"><%= link_to document["physical_object_title_ssim"]&.first, main_app.hyrax_cultural_heritage_object_path(document["physical_object_id_ssim"]&.first) %></td>
+ <td><%= document["short_description_tesim"]&.first %></td>
+<% end %> 
+ <td class="date"><%= item.created_at.strftime("%Y-%m-%d") %></td>
   <td><%= date(item,'approved') %></td>
   <td><%= date(item,'expired') %></td>
   <td>

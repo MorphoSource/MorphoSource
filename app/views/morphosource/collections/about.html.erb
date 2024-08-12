@@ -1,9 +1,12 @@
-<% content_for :body_css_classes do %>showcase teams<% end %>
+<% content_for :body_css_classes do %><%= "showcase teams media-list#{' edit' if @can_edit}" %><% end %>
+  <div id="collection-id" style="display: none;"><%= @presenter.id %></div>
 
 <%
 provide :page_title, construct_page_title(@presenter.title)
 %>
-<div class="hyc-container" itemscope itemtype="http://schema.org/CollectionPage">
+<%= render '/flash_msg' %>
+
+<div class="hyc-container collection-page" style="margin-top: 10px;" data-collection-id="<%= @presenter.id %>" itemscope itemtype="http://schema.org/CollectionPage">
   <div class="hyc-header">
     <% unless @presenter.banner_file.blank? %>
         <header class="hyc-banner" style="background-image:url(<%= @presenter.banner_file %>)"></header>
@@ -53,22 +56,29 @@ provide :page_title, construct_page_title(@presenter.title)
     </div>
 
     <div class="col-xs-12 col-sm-4 col-md-4 btn-wrapper">
-    <% if can?(:edit, @presenter.solr_document) %>
-      <%= render 'collection_manage_buttons' %>
+    <% if @can_edit %>
+      <% if @collection.organization_collection? %>
+        <%= render 'morphosource/collections/organization_collections/about/collection_manage_buttons' %>
+      <% else %>
+        <%= render 'collection_manage_buttons' %>
+      <% end %>
     <% end %>
   </div>
 
   </div><!-- /row -->
 
+  <!-- Collection description -->
+  <% if @presenter.description.present? %>
+    <div class="row mb-1">
+      <p><%= @presenter.description&.first %></p>
+    </div>
+  <% end %>
+
   <!-- Subcollections -->
   <% if @presenter.collection_type_is_nestable? && @subcollection_count > 0 %>
-      <div class="hyc-blacklight hyc-bl-title">
-        <h4>TEAM PROJECTS</h4>
-      </div>
-      <div class="hyc-blacklight hyc-bl-results">
-        <%= render 'subcollection_list', collection: @subcollection_docs %>
-      </div>
+    <%= render 'subcollections' %>
   <% end %>
+
 
   <div class="panel panel-default tabs" role="main">
     <!-- Nav tabs -->
@@ -77,8 +87,11 @@ provide :page_title, construct_page_title(@presenter.title)
     <!-- <div class="tab-content"> -->
 
       <div class="panel-body">
-
-        <%= render 'morphosource/collections/about/tab_about' %>
+        <% if @presenter.organization_collection? %>
+          <%= render 'morphosource/collections/organization_collections/about/tab_about' %>
+        <% else %>
+          <%= render 'morphosource/collections/about/tab_about' %>
+        <% end %>
 
       </div>
 

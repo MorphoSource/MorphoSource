@@ -64,6 +64,11 @@ RSpec.describe OrganizationCollection, type: :model do
 
   describe '#create_organization_project' do
     let(:organization)  { FactoryBot.create(:organization_collection, title: ['factory bot organization'], depositor: user.ms_id)}
+
+    before do
+      allow(Collection).to receive(:find).and_call_original
+    end
+
     it 'creates a project with the correct metadata' do
       project = organization.send(:create_organization_project)
       expect(project.title).to eq([I18n.t('morphosource.dashboard.collections.organization_collection.example_project.title', title: organization.title.first)])
@@ -84,8 +89,32 @@ RSpec.describe OrganizationCollection, type: :model do
       end
     end
 
-    it 'adds the depositor to the managers group' do
-      expect(organization.managers).to include(user)
+    it 'does not add the depositor as a manager' do
+      expect(organization.managers).to eq([])
+    end
+  end
+
+  describe '#can_manage_devices?' do
+    let!(:organization) { FactoryBot.create(:organization_collection, depositor: user.ms_id, organization_type: organization_type) }
+
+    context 'organization_type is not set' do
+      let(:organization_type) { [] }
+      it { expect(organization.can_manage_devices?).to be(false) }
+    end
+
+    context 'organization_type is ["Museum, Department, or Lab Collection"]' do
+      let(:organization_type) { ["Museum, Department, or Lab Collection"] }
+      it { expect(organization.can_manage_devices?).to be(false) }
+    end
+
+    context 'organization_type is ["Scanning Facility"]' do
+      let(:organization_type) { ["Scanning Facility"] }
+      it { expect(organization.can_manage_devices?).to be(true) }
+    end
+
+    context 'organization_type is ["Collection and Scanning Facility"]' do
+      let(:organization_type) { ["Collection and Scanning Facility"] }
+      it { expect(organization.can_manage_devices?).to be(true) }
     end
   end
 end

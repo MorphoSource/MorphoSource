@@ -1,5 +1,5 @@
 class CalculateFileSetCrc32Job < Hyrax::ApplicationJob
-  queue_as Hyrax.config.update_medium_queue_name
+  queue_as Hyrax.config.heavy_queue_name
 
   def perform(work_id)
     return unless FileSet.exists?(work_id) &&

@@ -34,8 +34,16 @@ module Morphosource
       #
       def read_zip(&block)
         archive_type = :zip
-        Zip::File.open(file) do |zip|
-          yield(zip, archive_type) if block_given?
+        begin
+          Zip::File.open(file) do |zip|
+            yield(zip, archive_type) if block_given?
+          end
+        rescue Zip::CompressionMethodError
+          # Create or find a non-DEFLATE64 temp file copy
+          temp_file = Morphosource::ZipDeflate64.non_deflate_64_temp_file(file)
+          Zip::File.open(temp_file) do |zip|
+            yield(zip, archive_type) if block_given?
+          end
         end
       end
 
@@ -91,7 +99,7 @@ module Morphosource
             next if File.basename(f_name).start_with?('.')
             f_subpath = preserve_dir_structure ? f_name : File.basename(f_name)
             f_path = File.join(extract_dest, f_subpath)
-            zip.extract(f, f_path)
+            zip_write_entry(zip, f, f_path)
             files_extracted << f_path
           end
         end
@@ -136,7 +144,7 @@ module Morphosource
 
         read_archive do |archive, archive_type|
           if archive_type == :zip
-            archive.extract(file_name, f_path)
+            zip_write_entry(archive, file_name, f_path)
           elsif archive_type == :tar
             archive.each do |f|
               next if File.basename(f.name).start_with?('.') || (f.respond_to?(:file?) && !f.file?)
@@ -149,12 +157,35 @@ module Morphosource
       end
 
       #
-      # Write file data to file path, creating directories if needed. Useful for working with TARs.
+      # Write file data to file path from ZIP, creating directories if needed.
+      #
+      # @param zip Zip::File Zip file IO object
+      # @param f_data Zip::Entry or string zip file path
+      # @param [String] f_path File path to write data to
+      #
+      def zip_write_entry(zip, f_data, f_path)
+        # Remove file if already exists
+        FileUtils.rm(f_path) if File.exists?(f_path)
+
+        # Create dir(s) if needed
+        dir_path = File.dirname(f_path)
+        unless File.directory?(dir_path)
+          FileUtils.mkdir_p(dir_path)
+        end
+
+        zip.extract(f_data, f_path)
+      end
+
+      #
+      # Write file data to file path from TAR, creating directories if needed.
       #
       # @param f_data File byte data
       # @param [String] f_path File path to write data to
       #
       def tar_write_entry(f_data, f_path)
+        # Remove file if already exists
+        FileUtils.rm(f_path) if File.exists?(f_path)
+        
         # Create dir(s) if needed
         dir_path = File.dirname(f_path)
         unless File.directory?(dir_path)

@@ -5,15 +5,12 @@ module Morphosource
       include Morphosource::Collections::OrganizationCollectionsControllerBehavior
 
         skip_load_and_authorize_resource only: [
-          :create, :details, :edit, :members, :new, :ownership, :permissions, :update
+          :create, :details, :edit, :members, :new, :ownership, :permissions, :projects, :update
         ], instance_name: :organization_collection
 
         before_action :redirect_to_collection_type, only: []
         before_action :build_breadcrumbs, only: []
         before_action :load_collection
-
-        # temporary restriction so only admins can access organization collections
-        before_action :authorize_admin
 
         self.presenter_class = Morphosource::Collections::OrganizationPresenter
 

@@ -7,22 +7,48 @@ module Hyrax
       include Morphosource::LinkedTeams::LinkedTeamsManagement
 
       def create(env)
-        env.attributes['title'] = [ generated_title(env) ]
+        env.attributes['title'] = [ get_title(env) ]
         env.attributes['keyword'] = split_keywords(env)
         add_team_access(env)
         super
       end
 
       def update(env)
-        env.attributes['title'] = [ generated_title(env) ]
+        env.attributes['title'] = [ get_title(env) ]
         env.attributes['keyword'] = split_keywords(env)
         add_team_access(env)
         super
       end
 
+      def get_title(env)
+        attrs = env.attributes
+        if attrs.key?('short_title')
+          custom_title = attrs['short_title'].presence || ''
+        else
+          custom_title = env.curation_concern.short_title.presence || ''
+        end
+
+        if custom_title.present?
+          # use custom title provided by user
+          if attrs.key?('custom_title_case_sensitive')
+            custom_title_case_sensitive = attrs['custom_title_case_sensitive'].presence || ''
+          else
+            custom_title_case_sensitive = env.curation_concern.custom_title_case_sensitive.presence || ''
+          end
+
+          if custom_title_case_sensitive.present?
+            if custom_title_case_sensitive == ['1']
+              return custom_title.first
+            end
+          end
+          return custom_title.first.titleize
+        else 
+          return generated_title(env)
+        end
+      end
+
       def generated_title(env)
         attrs = env.attributes
-
         if attrs.key?('id')
           id = attrs['id'].presence || ''
         else

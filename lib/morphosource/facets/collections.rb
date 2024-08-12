@@ -7,9 +7,9 @@ module Morphosource
       # if paging on collections id facet (ex: 'member_of_team_ids') and sorting alphabetically, use the alphabetized_collections_facet method instead
       def facet
         @facet = blacklight_config.facet_fields[params[:id]]
-        if @facet.helper_method == :collection_title_by_id && params["facet.sort"] == "index"
+        if @facet&.helper_method == :collection_title_by_id && params["facet.sort"] == "index"
           alphabetized_facet(facet_type: 'collection')
-        elsif @facet.helper_method == :user_name_by_id && params["facet.sort"] == "index"
+        elsif @facet&.helper_method == :user_name_by_id && params["facet.sort"] == "index"
           alphabetized_facet(facet_type: 'user')
         else
           super

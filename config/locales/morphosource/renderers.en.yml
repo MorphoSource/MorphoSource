@@ -1,0 +1,6 @@
+en:
+  morphosource:
+    renderers:
+      showcase_media_ownership_transfer_attribute_renderer:
+        enabled: 'Enabled'
+        not_enabled: 'Not Enabled'

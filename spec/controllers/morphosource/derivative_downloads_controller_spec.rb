@@ -244,8 +244,8 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
                 expect(response.headers['Accept-Ranges']).to eq "bytes"
               end
 
-              it 'sends requested content from media id' do
-                expect(ActiveFedora::Base).not_to receive(:find).with(private_media.id)
+              it 'gets media from Fedora, not file_set' do
+                expect(ActiveFedora::Base).to receive(:find).with(private_media.id)
                 expect(ActiveFedora::Base).not_to receive(:find).with(private_file_set.id)
                 get :show, params: { id: private_media.id, file: 'thumbnail' }
               end

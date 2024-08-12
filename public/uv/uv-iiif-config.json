@@ -2,7 +2,7 @@
   "options": {
     "dropEnabled": true,
     "footerPanelEnabled": true,
-    "headerPanelEnabled": false,
+    "headerPanelEnabled": true,
     "leftPanelEnabled": true,
     "limitLocales": false,
     "overrideFullScreen": false,

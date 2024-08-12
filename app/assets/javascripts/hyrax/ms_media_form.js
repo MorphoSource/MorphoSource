@@ -6,8 +6,8 @@ document.addEventListener("share-tab-loaded", function(event) {
 
   $('#btn-transfer-submit').click(function() {
     if (transferToSelect.val().length == 0) {
-      alert('Please select a user');
-    } else if (confirm('Are you sure you want to transfer ownership of this work to another user? Click Ok to transfer or Cancel to return to the transfer screen')) {
+      alert('Please select a user or organization');
+    } else if (confirm('Are you sure you want to transfer ownership of this work to another user or organization? Click Ok to transfer or Cancel to return to the transfer screen')) {
         disablePage();
         $('#new_proxy_deposit_request').submit();
     }
@@ -20,6 +20,17 @@ $( document ).ready(function() {
 
   if ( $('form[id*="edit_media"]').length ||
        $('form[id*="new_media"]').length ) {
+
+    setCustomTitlePlaceholder();
+    $(document).on('change', 'input[name="media[part][]"]', function() {
+      setCustomTitlePlaceholder();
+    });
+    $(document).on('click', 'button.remove', function() {
+      setCustomTitlePlaceholder();
+    });
+    $(document).on('change', 'select#imaging_event_ie_modality', function() {
+      setCustomTitlePlaceholder();
+    });
 
     IsImagingEventOK = false;
     IsProcessingEventOK = false;
@@ -71,6 +82,7 @@ $( document ).ready(function() {
 
     $(document).on('change', '#media_media_type', function() {
       adjust_form_media_type();
+      setCustomTitlePlaceholder();
     });
 
     setMediaLocalRemoteEvent();
@@ -156,6 +168,30 @@ $( document ).ready(function() {
       $(scaleBarGroup).hide(); // hide the field label and add button
 
     } // /setupScaleBar
+
+    function setCustomTitlePlaceholder() {
+      var parts = $('input[name="media[part][]"]').map(function() {
+        return $(this).val();
+      }).toArray();
+      var title = parts.join(', ');
+      if (title == '') {
+        title = "Element Unspecified";
+      } else {
+        title = toTitleCase(title);
+      }
+      var mediaTypeSelect = $('#media_media_type');
+      if (mediaTypeSelect.length) {
+        title += ' [' + mediaTypeSelect.val() + ']';
+      }
+      var modalitySelect = $('#imaging_event_ie_modality'); // from the select input when IE is editable
+      var modalityDiv = $('.ie_modality_value'); // from the hidden div when IE is not editable
+      if (modalityDiv.length) {
+        title += ' [' + modalityAbbrev(modalityDiv.text()) + ']';
+      } else if (modalitySelect.length) {
+        title += ' [' + modalityAbbrev(modalitySelect.val()) + ']';
+      }
+      $('#media_short_title').attr('placeholder', title);
+    }
 
     function adjust_form_media_type() {
       $('.media_type_block').hide();
@@ -428,6 +464,20 @@ $( document ).ready(function() {
     $('#btn-select-media.has-processing-event-false').click(function() {
       // display a modal to prompt the user to fill in the processing event form
       $('#modal-select-parent-media-new-processing-event').modal();
+    })
+
+    // when a parent media is selected
+    $('#btn-add-parent-media').click(function() {
+      // close the modal, immediately save the processing event form, then refresh the page
+      if ($(this).data('hasProcessingEvent') == true) {
+        $('#modal-select-parent-media').modal('hide');
+        disablePageAndSave(".btn-save-media");
+        $("form#related_form_processing_event").submitRelatedWork(reloadPage);
+      } else if ($(this).data('hasProcessingEvent') == false) {
+        $('#modal-select-parent-media-new-processing-event').modal('hide');
+        $('.new-processing-event-wrapper').show();
+        $('.selected_parent_media').show();
+      }
     })
 
     // when page is loaded, show/hide content based on which tab is active

@@ -31,9 +31,14 @@ module Morphosource
     def organization?
       self.class == Morphosource::Collections::OrganizationPresenter
     end
+    alias organization_collection? organization?
 
     def list?
       media_list? || sequential_section_list?
+    end
+
+    def can_remove_media_from?
+      (team? || project? || list?)
     end
 
     def manager_list(managers)

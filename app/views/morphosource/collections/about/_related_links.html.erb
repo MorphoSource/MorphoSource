@@ -1,2 +1,6 @@
-<h2>RELATED LINKS</h2>
-<%= @presenter.attribute_to_html(:related_url, label: 'Related links', render_as: :showcase_external_link, include_empty: false, html_dl: false) %>
+<h2>
+  <%= t('morphosource.collections.view.about.related_links.header.title').upcase %>
+  <span><%= render_hint_tag(t("morphosource.collections.view.about.related_links.header.hint")) %></span>
+</h2>
+<%# related url %>
+<%= @presenter.attribute_to_html(:related_url, label: t('morphosource.collections.view.about.related_links.related_links'), render_as: :showcase_external_link, include_empty: true, html_dl: false) %>

@@ -6,16 +6,19 @@ module Morphosource
 
           include Morphosource::Collections::OrganizationCollectionsControllerBehavior
 
-          skip_load_and_authorize_resource only: [:show, :about, :facet, :objects_export], instance_name: :collection
+          helper_method :search_action_for_dashboard
 
-          # restrict to admins
-          before_action :authorize_admin
+          skip_load_and_authorize_resource only: [:show, :about, :facet, :objects_export], instance_name: :collection
 
           def media_count_search_builder_class
             Morphosource::Collections::OrganizationCollections::OrganizationMediaSearchBuilder
           end
 
           self.presenter_class = Morphosource::Collections::OrganizationPresenter
+
+          def search_action_for_dashboard
+            main_app.organization_specimens_path(@collection)
+          end
 
         end
       end

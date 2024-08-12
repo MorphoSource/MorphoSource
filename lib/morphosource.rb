@@ -9,6 +9,7 @@ module Morphosource
   autoload :Metadata
   autoload :Minter
   autoload :PackratApi
+  autoload :ZipDeflate64
 
   include Morphosource::Configurable
 

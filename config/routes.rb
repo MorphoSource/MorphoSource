@@ -353,6 +353,8 @@ Rails.application.routes.draw do
       patch 'dashboard/collections/:id', to: 'collections#update'
       delete 'dashboard/collections/:id', to: 'collections#destroy', as: 'destroy_collection'
       post 'dashboard/collections/:id/remove/:member_id', to: 'collections#remove_member', as: 'collection_remove_member'
+      post 'dashboard/collections/:id/batch_remove', to: 'collections#batch_remove_members_ajax', as: 'collection_batch_remove_member'
+
       # Create project within team
       get 'collections/:parent_id/under', controller: 'nest_collections', action: 'create_collection_under', as: 'create_subcollection_under'
 
@@ -506,6 +508,7 @@ Rails.application.routes.draw do
       get 'index.php/Detail/MediaDetail/Show/media_id/:id', to: 'ms1#media_group'
       get 'index.php/Detail/MediaDetail/Show/media_file_id/:id', to: 'ms1#media'
       get 'index.php/Detail/ProjectDetail/Show/project_id/:id', to: 'ms1#projects'
+      get 'media/morphosource/images/*prefix/:file', to: 'ms1#media_thumbnail'
     end
   end
 
@@ -684,7 +687,15 @@ Rails.application.routes.draw do
 
   # Resque
   require "resque_web"
-  mount ResqueWeb::Engine => "/queues"
+
+  resque_web_constraint = lambda do |request|
+    current_user = request.env['warden'].user
+    current_user.present? && current_user.respond_to?(:admin?) && current_user.admin?
+  end
+  
+  constraints resque_web_constraint do
+    mount ResqueWeb::Engine => "/queues"
+  end
 
   # RIIIF
   mount Riiif::Engine => 'images', as: :riiif if Hyrax.config.iiif_image_server?

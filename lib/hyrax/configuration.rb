@@ -613,8 +613,99 @@ module Hyrax
       @update_slow_queue_name ||= :update_slow
     end
 
-    # @deprecated
-    # Todo: Check Hyrax::Configuration::registered_ingest_dirs
+    # @!attribute [w] import_export_jar_file_path
+    #   Path to the jar file for the Fedora import/export tool
+    attr_writer :import_export_jar_file_path
+    def import_export_jar_file_path
+      @import_export_jar_file_path ||= "tmp/fcrepo-import-export.jar"
+    end
+
+    # @!attribute [w] bagit_dir
+    #   Location where BagIt files are exported
+    attr_writer :bagit_dir
+    def bagit_dir
+      @bagit_dir ||= "tmp/descriptions"
+    end
+
+    ### Browse Everything
+
+    # @!attribute [w] enable_browse_everything
+    # Whether to enable BrowseEverything or not
+    attr_writer :enable_browse_everything
+    def enable_browse_everything
+      @enable_browse_everything ||= false
+    end
+
+    # @!attribute [w] enable_browse_everything_box
+    # Whether to enable BrowseEverything Box provider
+    attr_writer :enable_browse_everything_box
+    def enable_browse_everything_box
+      @enable_browse_everything_box ||= false
+    end
+
+    # @!attribute [w] enable_browse_everything_dropbox
+    # Whether to enable BrowseEverything Dropbox provider
+    attr_writer :enable_browse_everything_dropbox
+    def enable_browse_everything_dropbox
+      @enable_browse_everything_dropbox ||= false
+    end
+
+    # @!attribute [w] enable_browse_everything_google_drive
+    # Whether to enable BrowseEverything Google Drive provider
+    attr_writer :enable_browse_everything_google_drive
+    def enable_browse_everything_google_drive
+      @enable_browse_everything_google_drive ||= false
+    end
+
+    # @!attribute [w] box_client_id
+    # Box API client ID credential
+    attr_writer :box_client_id
+    def box_client_id
+      @box_client_id ||= nil
+    end
+
+    # @!attribute [w] box_client_secret
+    # Box API client secret credential
+    attr_writer :box_client_secret
+    def box_client_secret
+      @box_client_secret ||= nil
+    end
+    
+    # @!attribute [w] dropbox_client_id
+    # Dropbox API client ID credential
+    attr_writer :dropbox_client_id
+    def dropbox_client_id
+      @dropbox_client_id ||= nil
+    end
+
+    # @!attribute [w] dropbox_client_secret
+    # Dropbox API client secret credential
+    attr_writer :dropbox_client_secret
+    def dropbox_client_secret
+      @dropbox_client_secret ||= nil
+    end
+
+    # @!attribute [w] dropbox_download_directory
+    # Dropbox API client temporary download directory location
+    attr_writer :dropbox_download_directory
+    def dropbox_download_directory
+      @dropbox_download_directory ||= nil
+    end
+
+    # @!attribute [w] google_drive_client_id
+    # Google Drive API client ID credential
+    attr_writer :google_drive_client_id
+    def google_drive_client_id
+      @google_drive_client_id ||= nil
+    end
+
+    # @!attribute [w] google_drive_client_secret
+    # Google Drive API client secret credential
+    attr_writer :google_drive_client_secret
+    def google_drive_client_secret
+      @google_drive_client_secret ||= nil
+    end
+
     # @!attribute [w] whitelisted_ingest_dirs
     #   List of directories which can be used for local file system ingestion.
     attr_writer :whitelisted_ingest_dirs

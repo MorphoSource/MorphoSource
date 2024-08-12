@@ -1,0 +1,29 @@
+<%
+array_of_ids = @device_media_ids[0,21]
+media_count = @device_media_ids.count
+items_per_row = 3
+items_to_show_initially = 6
+@row_div_opened = false
+%>
+  <h2><%= media_count %> MEDIA IMAGED BY DEVICE</h2>
+  <%  members = presenter.member_presenters_for(array_of_ids) %>
+  <% if members.present? %>
+    <div class="media-block device-media-items">
+      <%= render partial: @presenter.showcase_media_items_member_partial, collection: members, as: :showcase_media_items_member, :locals => {:media_count => media_count, :items_per_row => items_per_row, :items_to_show_initially => items_to_show_initially} %>
+
+      <% if media_count > items_to_show_initially %>
+        <div class="text-center"><%= link_to "See all #{media_count} media imaged by device", main_app.media_search_path({ 'f.device': @presenter.id }), class: "link" %></div>
+        </div><!-- closing the collapse-block-media-items-member div -->
+      <% end %>
+
+    </div>
+
+    <% if media_count > items_to_show_initially %>
+      <%= collapse_expand_panel("collapse-block-media-items-member") %>
+    <% end %>
+
+  <% end %>
+
+  <% if @row_div_opened # most likely media is missing and div is never closed %>
+    </div>
+  <% end %>

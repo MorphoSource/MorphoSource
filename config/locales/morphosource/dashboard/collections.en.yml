@@ -18,9 +18,9 @@ en:
         edit:
           header: Edit %{type_title}
         organization:
-          info: For more information on organizational teams, please read <a href="https://wiki.duke.edu/pages/viewpage.action?pageId=266569096">What is an Organizational Management Team?</a>
+          info: For more information on organizational teams, please read <a href="https://duke.atlassian.net/wiki/spaces/MD/pages/35422980/What+is+an+Organizational+Management+Team">What is an Organizational Management Team?</a>
         permissions:
-          info: Use these fields to specify default recommended permissions settings for newly contributed media. For more details on these fields and how they should be used, consult our documentation on <a href="https://wiki.duke.edu/display/MD/Media+Ownership%2C+Management%2C+and+Reuse+Permissions" target="_blank">Media Ownership, Management, and Reuse Permissions</a>.
+          info: Use these fields to specify default recommended permissions settings for newly contributed media. For more details on these fields and how they should be used, consult our documentation on <a href="https://duke.atlassian.net/wiki/spaces/MD/pages/35422501/Media+Ownership+Management+and+Reuse+Permissions" target="_blank">Media Ownership, Management, and Reuse Permissions</a>.
         media_lists:
           action:
             new:
@@ -50,6 +50,27 @@ en:
             header: New Organization
           edit:
             header: Edit Organization
+          form_members_table:
+            managers:
+              title: 'Managers'
+              help: Managers of this organization can modify collection metadata, grant other members access, and add and edit organization devices. Managers have edit access to all media managed by the organization and view access to media representing organization objects or imaged using an organization device.
+              empty: No managers have been added.
+            editors:
+              title: 'Editors'
+              help: Editors are given edit and download access to all media managed by the organization and view access to media representing organization objects or imaged using an organization device. Editors can also add and edit organization devices.
+              empty: No editors have been added.
+            depositors:
+              title: 'Depositors'
+              help: Depositors can upload media to be managed by the organization, but are not granted additional access to media associated with the organization.
+              empty: No depositors have been added.
+            downloaders:
+              title: 'Downloaders'
+              help: Downloaders are given view access to all media associated with the organization through organization objects or devices and can download media managed by the organization.
+              empty: No downloaders have been added.
+            viewers:
+              title: 'Viewers'
+              help: Viewers are given view access to all media associated with the organization through organization objects or devices.
+              empty: No viewers have been added.
         projects:
           new:
             header: New Project

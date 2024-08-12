@@ -121,6 +121,22 @@ RSpec.describe User, type: :model do
     end
   end
 
+  describe '#globus_file_submitter?' do
+    context 'user is not a globus_file_submitter' do
+      it 'returns false' do
+        expect(user.globus_file_submitter?).to be(false)
+      end
+    end
+    context 'user is a globus_file_submitter' do
+      before do
+        allow(user).to receive(:groups).and_return(['globus_file_submitter'])
+      end
+      it 'returns true' do
+        expect(user.globus_file_submitter?).to be(true)
+      end
+    end
+  end
+
   describe '#remote_file_submitter?' do
     context 'user is not a remote_file_submitter' do
       it 'returns false' do

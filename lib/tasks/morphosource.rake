@@ -28,6 +28,9 @@ namespace :morphosource do
     Rails.logger.info('Create admin role')
     Rake::Task['morphosource:create_admin_role'].invoke
 
+    Rails.logger.info('Create globus file submitter role')
+    Rake::Task['morphosource:create_globus_file_submitter_role'].invoke
+
     Rails.logger.info('Create remote file submitter role')
     Rake::Task['morphosource:create_remote_file_submitter_role'].invoke
 
@@ -518,6 +521,11 @@ namespace :morphosource do
       organization = Hyrax::CollectionType.create(Morphosource::CollectionTypes::Organizations::SETTINGS)
       Hyrax::CollectionTypes::CreateService.add_default_participants(organization.id)
     end
+  end
+
+  desc 'Set Up Globus File Submitter Role'
+  task :create_globus_file_submitter_role => :environment do
+    Role.find_or_create_by(name: 'globus_file_submitter')
   end
 
   desc 'Set Up Remote File Submitter Role'

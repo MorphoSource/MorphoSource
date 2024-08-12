@@ -886,6 +886,9 @@ GEM
     sentry-rails (5.8.0)
       railties (>= 5.0)
       sentry-ruby (~> 5.8.0)
+    sentry-resque (5.8.0)
+      resque (>= 1.24)
+      sentry-ruby (~> 5.8.0)
     sentry-ruby (5.8.0)
       concurrent-ruby (~> 1.0, >= 1.0.2)
     shex (0.6.1)
@@ -1079,6 +1082,7 @@ DEPENDENCIES
   scout_apm
   selenium-webdriver
   sentry-rails
+  sentry-resque
   sentry-ruby
   shoulda-callback-matchers (~> 1.1.1)
   shoulda-matchers (~> 3.1)

@@ -1,5 +1,8 @@
 FactoryBot.define do
   factory :sequential_section_list, class: SequentialSectionList do
+    # MorphoSource FactoryBehavior methods
+    # see config/initializers/factory_bot.rb
+    after_create_collection # provides find methods for collections
 
     title               { ["example sequential section list"] }
     depositor           { nil }
@@ -8,13 +11,6 @@ FactoryBot.define do
     after(:build) do |sequential_section_list|
       sequential_section_list_collection_type = Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::SequentialSectionLists::SETTINGS)
       sequential_section_list.collection_type_gid = sequential_section_list_collection_type.gid
-    end
-
-    after(:create) do |sequential_section_list|
-      # find sequential_section_list by id
-      ::RSpec::Mocks.allow_message(sequential_section_list.class, :find).with(sequential_section_list.id).and_return(sequential_section_list)
-      # find collection by id
-      ::RSpec::Mocks.allow_message(::Collection, :find).with(sequential_section_list.id).and_return(sequential_section_list)
     end
   end
 end

@@ -74,6 +74,7 @@ gem 'dalli' # mem_cache_store support
 # Sentry.io error tracking
 gem "sentry-ruby"
 gem "sentry-rails"
+gem "sentry-resque"
 
 # Scout APM
 gem "scout_apm"

@@ -266,6 +266,13 @@ module Hyrax
       @enable_browse_everything ||= false
     end
 
+    # @!attribute [w] enable_browse_everything_file_system
+    # Whether to enable BrowseEverything local file system (Globus) provider
+    attr_writer :enable_browse_everything_file_system
+    def enable_browse_everything_file_system
+      @enable_browse_everything_file_system ||= false
+    end
+
     # @!attribute [w] enable_browse_everything_box
     # Whether to enable BrowseEverything Box provider
     attr_writer :enable_browse_everything_box

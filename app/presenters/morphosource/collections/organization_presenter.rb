@@ -43,11 +43,11 @@ module Morphosource
       end
 
       def object_media_count
-        Morphosource::SolrService.new.get_docs("has_model_ssim:Media AND media_organization_id_ssim:#{id}").count
+        Morphosource::SolrService.new.get_count("has_model_ssim:Media AND media_organization_id_ssim:#{id}")
       end
 
       def device_media_count
-        Morphosource::SolrService.new.get_docs("has_model_ssim:Media AND media_device_facility_organization_id_ssim:#{id}").count
+        Morphosource::SolrService.new.get_count("has_model_ssim:Media AND media_device_facility_organization_id_ssim:#{id}")
       end
 
       def attachment_url

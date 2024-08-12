@@ -54,6 +54,7 @@ module MediaFinderHelper
   #
   def direct_child_media_works(solr_document)
     return [] unless solr_document.present?
+    return [] unless solr_document.member_ids.present?
 
     processing_events = solr.get_docs(
       "#{assemble_or_query("id", solr_document.member_ids)} AND has_model_ssim:ProcessingEvent",

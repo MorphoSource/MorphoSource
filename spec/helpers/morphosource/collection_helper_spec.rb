@@ -76,7 +76,7 @@ RSpec.describe Morphosource::CollectionRolesHelper, type: :helper do
   end
 
   describe 'list_includes_specimens?' do
-    let(:response)    { Morphosource::SolrService.new.get("has_model_ssim:Media", {"facet.field"=>["media_physical_object_type_ssim"]}) }
+    let(:response)    { Morphosource::SolrService.new.get_facet_fields("has_model_ssim:Media", ["media_physical_object_type_ssim"]) }
 
     context 'document list is only specimens' do
       let!(:media_doc1) { FactoryBot.create(:media_document) }

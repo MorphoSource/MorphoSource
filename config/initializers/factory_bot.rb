@@ -27,8 +27,6 @@ module FactoryBehavior
   end
 end
 
-class FactoryBot
-  class DefinitionProxy
-    include FactoryBehavior
-  end
+class FactoryBot::DefinitionProxy
+  include FactoryBehavior
 end

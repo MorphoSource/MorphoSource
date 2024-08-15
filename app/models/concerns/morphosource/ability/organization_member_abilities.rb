@@ -1,7 +1,8 @@
 module Morphosource
   module Ability
     module OrganizationMemberAbilities
-      include PhysicalObjects
+      include PhysicalObjectAbilities
+      include EventAbilities
 
       # View Media and FileSets through organization membership
       def organization_member_abilities
@@ -21,6 +22,10 @@ module Morphosource
           has_organizational_access_to_physical_object? obj
         end
 
+        can :read, [::ImagingEvent, ::ProcessingEvent] do |obj|
+          has_organizational_access_to_event? obj
+        end
+
         can :read, ::SolrDocument do |obj|
           case obj.has_model&.first
           when 'Media'
@@ -29,6 +34,8 @@ module Morphosource
             has_organizational_access_to_fileset? obj
           when 'BiologicalSpecimen', 'CulturalHeritageObject'
             has_organizational_access_to_physical_object? obj
+          when 'ImagingEvent', 'ProcessingEvent'
+            has_organizational_access_to_event? obj
           else
             false
           end
@@ -57,6 +64,10 @@ module Morphosource
           has_organizational_edit_access_to_physical_object? obj
         end
 
+        can :edit, [::ImagingEvent, ::ProcessingEvent] do |obj|
+          has_organizational_edit_access_to_event? obj
+        end
+
         can :edit, ::SolrDocument do |obj|
           case obj.has_model&.first
           when 'Media'
@@ -65,11 +76,13 @@ module Morphosource
             has_organizational_edit_access_to_fileset? obj
           when 'BiologicalSpecimen', 'CulturalHeritageObject'
             has_organizational_edit_access_to_physical_object? obj
+          when 'ImagingEvent', 'ProcessingEvent'
+            has_organizational_edit_access_to_event? obj
           else
             false
           end
         end
-        
+
         can :edit, String do |id|
           obj = SolrDocument.find(id)
           can? :edit, obj
@@ -183,7 +196,7 @@ module Morphosource
 
       def solr_document(obj)
         case obj
-        when FileSet, Media, BiologicalSpecimen, CulturalHeritageObject
+        when Morphosource::Works::Base
           return SolrDocument.find(obj.id)
         when SolrDocument
           return obj

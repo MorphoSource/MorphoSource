@@ -42,6 +42,9 @@ module Morphosource
                                     voltage
                                     xray_tube_type].freeze
 
+      def imaging_event?
+        self['has_model_ssim'] == ['ImagingEvent']
+      end
     end
   end
 end

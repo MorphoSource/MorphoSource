@@ -4,35 +4,26 @@ module Morphosource
       include Morphosource::MessageHelper
 
       before_action :require_permissions
-#      with_themed_layout 'morphosource_dashboard'
 
-      before_action :get_items, only: [:current_applications]
-      before_action :split_filter_user_keys, only: [:current_applications]
-      before_action :filter_items, only: [:current_applications]
-      before_action :paginate_items, only: [:current_applications]
+      before_action :get_current_items, only: [:current_applications]
+      before_action :get_previous_items, only: [:previous_applications]
+#      before_action :split_filter_user_keys, only: [:current_applications]
+      before_action :filter_items, only: [:current_applications, :previous_applications]
+      before_action :paginate_items, only: [:current_applications, :previous_applications]
+
 
       PAGE_TITLE = I18n.t("morphosource.admin.contributor_petitions.page_title")
       PAGE_DESCRIPTION = I18n.t("morphosource.admin.contributor_petitions.page_description")
 
       def current_applications
         @tab = 'current'
-#        @all_petitions = ContributorPetition.where(decision_required: true)
         @decided_petition_count = ContributorPetition.where.not(decision_required: true).count
         @undecided_petition_count = ContributorPetition.where(decision_required: true).count
-
-#        add_breadcrumb t(:'hyrax.controls.home'), root_path
-#        add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
-#        add_breadcrumb t(:'morphosource.admin.contributor_petitions.header'), main_app.admin_contributor_petitions_path
-
-#        render('index')
-
+        @item_count = @items.count
         @search = true if search_form_present?
         respond_to do |format|
           format.html do 
-            @item_count = @items.total_count
-
             render('index')
-
           end
           format.csv  do
             prepare_items_for_csv
@@ -42,15 +33,18 @@ module Morphosource
 
       def previous_applications
         @tab = 'previous'
-        @all_petitions = ContributorPetition.where.not(decision_required: true)
         @decided_petition_count = ContributorPetition.where.not(decision_required: true).count
         @undecided_petition_count = ContributorPetition.where(decision_required: true).count
-
-        add_breadcrumb t(:'hyrax.controls.home'), root_path
-        add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
-        add_breadcrumb t(:'morphosource.admin.contributor_petitions.header'), main_app.admin_contributor_petitions_path
-
-        render('index')
+        @item_count = @items.count
+        @search = true if search_form_present?
+        respond_to do |format|
+          format.html do 
+            render('index')
+          end
+          format.csv  do
+            prepare_items_for_csv
+          end
+        end
       end
 
       def update_application_decision
@@ -95,13 +89,12 @@ module Morphosource
 
       private 
 
-      def get_items
-
-#        @all_petitions = ContributorPetition.where(decision_required: true)
+      def get_current_items
         @items = ContributorPetition.where(decision_required: true)
-#    byebug
-        @decided_petition_count = ContributorPetition.where.not(decision_required: true).count
-        @undecided_petition_count = ContributorPetition.where(decision_required: true).count
+      end
+
+      def get_previous_items
+        @items = ContributorPetition.where.not(decision_required: true)
       end
 
       def require_permissions

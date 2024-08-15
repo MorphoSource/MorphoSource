@@ -6,3 +6,12 @@
 <th><%= t('.table.user_advisor') %></th>
 <th><%= t('.table.contribution_amount') %></th>
 <th><%= t('.table.terms_agree') %></th>
+<% if @tab == 'previous' %>
+  <th><%= t('.table.decision') %></th>
+  <th><%= t('.table.decision_message') %></th>
+  <th><%= t('.table.decided_by') %></th>
+  <th><%= t('.table.date_approved') %></th>
+  <th><%= t('.table.date_returned') %></th>
+  <th><%= t('.table.date_denied') %></th>
+  <th><%= t('.table.action') %></th>
+<% end %>

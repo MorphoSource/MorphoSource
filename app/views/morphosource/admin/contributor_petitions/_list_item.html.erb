@@ -1,8 +1,4 @@
-<% 
-demographics = ( item.user_demographics.presence || []).join('; ') 
-#byebug
-#decision_user = User.find(item.decision_by)
-%>
+<% demographics = ( item.user_demographics.presence || []).join('; ') %>
 <tr id="item_<%= item.id %>">
   <td><%= link_to item.user.name_or_email, Hyrax::Engine.routes.url_helpers.user_path(item.user) %></td>
   <td><%= item.reason %></td>
@@ -12,12 +8,19 @@ demographics = ( item.user_demographics.presence || []).join('; ')
   <td><%= item.user_advisor %></td>
   <td><%= item.contribution_amount %></td>
   <td><%= item.terms_agree ? "Yes" : "No" %></td>
-  <td><%= item.decision_state&.capitalize %></td>
-  <td>
-    <%#= link_to decision_user.name_or_email, Hyrax::Engine.routes.url_helpers.user_path(decision_user) %> 
-  </td>
-  <td><%= item.date_approved %></td>
-  <td><%= item.date_returned %></td>
-  <td><%= item.date_denied %></td>
-
+  <% if @tab == 'previous' %>
+    <td><%= item.decision_state.capitalize %></td>
+    <td><%= item.decision_message %></td>
+    <% decision_user = User.find(item.decision_by) %>
+    <td>
+      <%= link_to decision_user.name_or_email, Hyrax::Engine.routes.url_helpers.user_path(decision_user) %> 
+    </td>
+    <td><%= item.date_approved %></td>
+    <td><%= item.date_returned %></td>
+    <td><%= item.date_denied %></td>
+    <td>
+      <%= link_to 'Update Decision', main_app.admin_update_contributor_petition_decision_path(:id => item.id), class: 'btn btn-sm btn-primary' %>
+    </td>
+  <% end %>
 </tr>
+

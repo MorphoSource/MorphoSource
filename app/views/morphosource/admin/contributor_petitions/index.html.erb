@@ -1,0 +1,42 @@
+<% provide :page_title, page_title %>
+
+<nav class="breadcrumb" role="region" aria-label="Breadcrumb">
+  <ol>
+    <li><a href="/?locale=en">Home</a></li>
+    <li><a href="/dashboard?locale=en">Dashboard</a></li>
+    <li class="active"><%= page_title %></li>
+  </ol>
+</nav>
+
+<%= render 'search_container' %>
+
+  <%= render 'heading' %>
+<div class="panel panel-default tabs itemtable <%= controller.controller_name %>">
+
+  <ul class="nav nav-tabs" id="my_nav" role="navigation">
+    <li<%= ' class="active"'.html_safe if @tab == 'current' %>>
+      <%= link_to(main_app.admin_contributor_petitions_path) do %>
+        <%= t("Current Applications") %>
+        <% if @undecided_petition_count.present? %>
+          <span class="count label label-danger" style="vertical-align: text-top;"><%= number_with_delimiter(@undecided_petition_count, :delimiter => ',') %></span>
+        <% end %>
+      <% end %>
+    </li>
+    <li<%= ' class="active"'.html_safe if @tab == 'previous' %>>
+      <%= link_to(main_app.admin_contributor_petitions_previous_path) do %>
+        <%= t("Previous Applications") %>
+        <% if @decided_petition_count.present? %>
+          <span class="count label label-info" style="vertical-align: text-top;"><%= number_with_delimiter(@decided_petition_count, :delimiter => ',') %></span>
+        <% end %>
+      <% end %>
+    </li>
+  </ul>
+
+  <div class="panel-body showcase">
+
+    <%= render 'document_list' %>
+    <div class="showcase">
+      <%= render 'results_pagination' %>
+    </div>
+  </div>
+</div>

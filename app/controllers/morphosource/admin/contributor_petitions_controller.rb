@@ -6,11 +6,10 @@ module Morphosource
       before_action :require_permissions
 
       before_action :get_current_items, only: [:current_applications]
-      before_action :get_previous_items, only: [:previous_applications]
-#      before_action :split_filter_user_keys, only: [:current_applications]
-      before_action :filter_items, only: [:current_applications, :previous_applications]
-      before_action :paginate_items, only: [:current_applications, :previous_applications]
-
+      before_action :get_previous_items, only: [:previous_applications, :update_application_decision]
+      before_action :split_filter_user_keys, only: [:current_applications]
+      before_action :filter_items, only: [:current_applications, :previous_applications, :update_application_decision]
+      before_action :paginate_items, only: [:current_applications, :previous_applications, :update_application_decision]
 
       PAGE_TITLE = I18n.t("morphosource.admin.contributor_petitions.page_title")
       PAGE_DESCRIPTION = I18n.t("morphosource.admin.contributor_petitions.page_description")
@@ -49,18 +48,21 @@ module Morphosource
 
       def update_application_decision
         @tab = 'previous'
-        @all_petitions = ContributorPetition.where.not(decision_required: true)
         @decided_petition_count = ContributorPetition.where.not(decision_required: true).count
         @undecided_petition_count = ContributorPetition.where(decision_required: true).count
         if ContributorPetition.exists?(params[:id])
           @petition = ContributorPetition.find(params[:id])
         end
-
-        add_breadcrumb t(:'hyrax.controls.home'), root_path
-        add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
-        add_breadcrumb t(:'morphosource.admin.contributor_petitions.header'), main_app.admin_contributor_petitions_path
-
-        render('index')
+        @item_count = @items.count
+        @search = true if search_form_present?
+        respond_to do |format|
+          format.html do 
+            render('index')
+          end
+          format.csv  do
+            prepare_items_for_csv
+          end
+        end
       end
 
       def decide_petition
@@ -99,6 +101,54 @@ module Morphosource
 
       def require_permissions
         authorize! :read, :admin_dashboard
+      end
+
+#      def valid_sort_attributes
+#        [
+#          'work_id', 
+#          'users.display_name',
+#          'reviewers',
+#          'date_requested', 
+#          'date_approved',
+#          'date_denied',
+#          'date_canceled',
+#          'date_expired',
+#          'date_cleared',
+#          'date_downloaded',
+#          'use'
+#        ]
+#      end
+#
+#      def default_sort_param
+#        'date_requested DESC'
+#      end
+#
+      def user_key_params
+        ['user_id']
+      end
+
+      def valid_filter_attributes
+        [
+          'user_id',
+          'user_affiliation',
+          'date_returned_start', 
+          'date_returned_end', 
+          'date_approved_start',
+          'date_approved_end',
+          'date_denied_start',
+          'date_denied_end'
+        ]
+      end
+
+      def filter_attribute_where_statements
+        {
+          'date_returned_start' => 'date_returned >= ?',
+          'date_returned_end' => 'date_returned <= ?',
+          'date_approved_start' => 'date_approved >= ?',
+          'date_approved_end' => 'date_approved <= ?',
+          'date_denied_start' => 'date_denied >= ?',
+          'date_denied_end' => 'date_denied <= ?'
+        }
       end
 
       def set_petition_decision_attributes(state)
@@ -142,7 +192,7 @@ module Morphosource
         if state == 'approve'
           additional_msg = "This means you should now have contributor and data manager privileges on MorphoSource. You may upload new media, create or participate in projects and teams, and have other users transfer media ownership to you."
         elsif state == 'return'
-          additional_msg = "This means that your application has been temporarily rejected, likely with a request for further or modified information. If a message is present below, you should consult it, as it likely has instructions for you to follow. Please resubmit your application to become a contributor or data manager, making any necessary changes."
+          additional_msg = "This means that your application has been  *** TBD ***  temporarily rejected, likely with a request for further or modified information. If a message is present below, you should consult it, as it likely has instructions for you to follow. Please resubmit your application to become a contributor or data manager, making any necessary changes."
         elsif state == 'deny'
           additional_msg = "This means that your application has been rejected. You will not be able to resubmit a contributor application while your application is denied. You should contact the <a href='mailto:morphosource@duke.edu'>MorphoSource administrators</a> to learn what (if anything) may be done to resolve this situation."
         end

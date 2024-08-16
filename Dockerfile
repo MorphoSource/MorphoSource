@@ -47,7 +47,6 @@ RUN gem install bundler -v 2.0.2
 FROM morphosource-build as morphosource-build-dev
 
 ARG APP_PATH=.
-ARG BUNDLE_WITHOUT
 
 USER app
 
@@ -68,7 +67,6 @@ RUN chmod -R g+rwX $RAILS_ROOT
 FROM morphosource-build as morphosource-build-prod
 
 ARG APP_PATH=.
-ARG BUNDLE_WITHOUT
 ARG SECRET_KEY_BASE
 
 USER app
@@ -76,7 +74,7 @@ USER app
 COPY --chown=1001:0 $APP_PATH/Gemfile $RAILS_ROOT/Gemfile
 COPY --chown=1001:0 $APP_PATH/Gemfile.lock $RAILS_ROOT/Gemfile.lock
 RUN bundle config --global && \
-  bundle install --jobs "$(nproc)" --path=vendor/bundle
+  bundle install --jobs "$(nproc)" --path=vendor/bundle --without development
 
 COPY --chown=1001:0 $APP_PATH $RAILS_ROOT
 
@@ -97,6 +95,7 @@ ENV BUNDLE_APP_CONFIG="$RAILS_ROOT/.bundle"
 
 RUN apt update && \
   apt install -y --no-install-recommends \
+  libjemalloc2 \
   libcurl4 \
   imagemagick \
   netcat \
@@ -115,6 +114,7 @@ WORKDIR $RAILS_ROOT
 
 ENV PATH="$RAILS_ROOT/bin:$PATH"
 ENV LD_LIBRARY_PATH="/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64:/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64/server:$LD_LIBRARY_PATH"
+ENV LD_PRELOAD=libjemalloc.so.2
 ENV RAILS_ROOT=$RAILS_ROOT
 ENV RAILS_SERVE_STATIC_FILES="1"
 
@@ -153,8 +153,6 @@ CMD ["bundle", "exec", "puma", "-v", "-b", "tcp://0.0.0.0:3000"]
 ### MORPHOSOURCE-WORKER-BASE STAGE ###
 
 FROM morphosource-base as morphosource-worker-base
-
-ENV MALLOC_ARENA_MAX=2
 
 USER root
 # Setup for installing Java 8 on Debian 11

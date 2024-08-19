@@ -522,6 +522,10 @@ Rails.application.routes.draw do
     post 'users/:id/make_batch_submission_contributor' => 'batch_submission_contributors#make_batch_submission_contributor', as: 'make_batch_submission_contributor'
     post 'users/:id/remove_batch_submission_contributor' => 'batch_submission_contributors#remove_batch_submission_contributor', as: 'remove_batch_submission_contributor'
 
+    # Grant/remove globus_file_submitter status
+    post 'users/:id/make_globus_file_submitter' => 'globus_file_submitters#make_globus_file_submitter', as: 'make_globus_file_submitter'
+    post 'users/:id/remove_globus_file_submitter' => 'globus_file_submitters#remove_globus_file_submitter', as: 'remove_globus_file_submitter'
+
     # Grant/remove remote_file_submitter status
     post 'users/:id/make_remote_file_submitter' => 'remote_file_submitters#make_remote_file_submitter', as: 'make_remote_file_submitter'
     post 'users/:id/remove_remote_file_submitter' => 'remote_file_submitters#remove_remote_file_submitter', as: 'remove_remote_file_submitter'

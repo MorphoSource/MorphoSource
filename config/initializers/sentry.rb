@@ -7,8 +7,8 @@ Sentry.init do |config|
 
   config.environment = ENV['SENTRY_ENV'] || Rails.env
 
-  # sample one-third of errors
-  config.sample_rate = 0.333
+  # sample all errors (previously sample one-third of errors)
+  config.sample_rate = 1.0
 
   # disable transaction sampling
   config.traces_sample_rate = 0.0

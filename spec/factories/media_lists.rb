@@ -1,5 +1,8 @@
 FactoryBot.define do
   factory :media_list, class: MediaList do
+    # MorphoSource FactoryBehavior methods
+    # see config/initializers/factory_bot.rb
+    after_create_collection # provides find methods for collections
 
     title               { ["example media list"] }
     depositor           { nil }
@@ -8,13 +11,6 @@ FactoryBot.define do
     after(:build) do |media_list|
       media_list_collection_type = Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::MediaLists::SETTINGS)
       media_list.collection_type_gid = media_list_collection_type.gid
-    end
-
-    after(:create) do |media_list|
-      # find media_list by id
-      ::RSpec::Mocks.allow_message(media_list.class, :find).with(media_list.id).and_return(media_list)
-      # find collection by id
-      ::RSpec::Mocks.allow_message(::Collection, :find).with(media_list.id).and_return(media_list)
     end
   end
 end

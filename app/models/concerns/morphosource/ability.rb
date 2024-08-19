@@ -39,6 +39,10 @@ module Morphosource
       user_groups.include? 'batch_submission_contributor'
     end
 
+    def globus_file_submitter?
+      user_groups.include? 'globus_file_submitter'
+    end
+
     def remote_file_submitter?
       user_groups.include? 'remote_file_submitter'
     end

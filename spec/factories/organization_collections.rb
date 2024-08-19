@@ -1,5 +1,8 @@
 FactoryBot.define do
   factory :organization_collection, class: OrganizationCollection do
+    # MorphoSource FactoryBehavior methods
+    # see config/initializers/factory_bot.rb
+    after_create_collection # provides find methods for collections
 
     title               { ["example organization collection"] }
     depositor           { nil }
@@ -10,13 +13,6 @@ FactoryBot.define do
       organization.collection_type_gid = organization_collection_type.gid
       # skip creating an example project for tests
       OrganizationCollection.skip_callback(:create, :after, :create_organization_project, raise: false)
-    end
-
-    after(:create) do |organization|
-      # find organization_collection by id
-      ::RSpec::Mocks.allow_message(organization.class, :find).with(organization.id).and_return(organization)
-      # find collection by id
-      ::RSpec::Mocks.allow_message(::Collection, :find).with(organization.id).and_return(organization)
     end
   end
 end

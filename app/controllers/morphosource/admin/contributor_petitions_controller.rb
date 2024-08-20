@@ -7,7 +7,7 @@ module Morphosource
 
       before_action :get_current_items, only: [:current_applications]
       before_action :get_previous_items, only: [:previous_applications, :update_application_decision]
-      before_action :split_filter_user_keys, only: [:current_applications]
+      before_action :split_filter_user_keys, only: [:current_applications, :previous_applications]
       before_action :filter_items, only: [:current_applications, :previous_applications, :update_application_decision]
       before_action :paginate_items, only: [:current_applications, :previous_applications, :update_application_decision]
 
@@ -26,6 +26,7 @@ module Morphosource
           end
           format.csv  do
             prepare_items_for_csv
+            render('index')
           end
         end
       end
@@ -42,6 +43,7 @@ module Morphosource
           end
           format.csv  do
             prepare_items_for_csv
+            render('index')
           end
         end
       end
@@ -149,6 +151,26 @@ module Morphosource
           'date_denied_start' => 'date_denied >= ?',
           'date_denied_end' => 'date_denied <= ?'
         }
+      end
+
+      def prepare_items_for_csv
+        @items = @items.map do |item|
+          item.attributes.map do |field, value|
+            if field == 'created_at'
+byebug
+              field = 'started_at'
+            elsif field == 'user_id'
+byebug
+              value = User.find_by_user_key(value)&.name_and_email
+            end
+  
+            if value.kind_of? Array
+              value = value.join(';')
+            end
+  
+            [field, value]
+          end.to_h
+        end
       end
 
       def set_petition_decision_attributes(state)

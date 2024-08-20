@@ -8,8 +8,9 @@
   <td><%= item.user_advisor %></td>
   <td><%= item.contribution_amount %></td>
   <td><%= item.terms_agree ? "Yes" : "No" %></td>
+  <td><%= item.created_at %></td>
+  <td><%= item.decision_state&.capitalize %></td>
   <% if @tab == 'previous' %>
-    <td><%= item.decision_state.capitalize %></td>
     <td><%= item.decision_message %></td>
     <% decision_user = User.find(item.decision_by) %>
     <td>

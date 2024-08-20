@@ -156,12 +156,8 @@ module Morphosource
       def prepare_items_for_csv
         @items = @items.map do |item|
           item.attributes.map do |field, value|
-            if field == 'created_at'
-byebug
-              field = 'started_at'
-            elsif field == 'user_id'
-byebug
-              value = User.find_by_user_key(value)&.name_and_email
+            if field == 'user_id' or field == 'decision_by'
+              value = User.find_by_id(value)&.name_and_email
             end
   
             if value.kind_of? Array
@@ -214,7 +210,7 @@ byebug
         if state == 'approve'
           additional_msg = "This means you should now have contributor and data manager privileges on MorphoSource. You may upload new media, create or participate in projects and teams, and have other users transfer media ownership to you."
         elsif state == 'return'
-          additional_msg = "This means that your application has been  *** TBD ***  temporarily rejected, likely with a request for further or modified information. If a message is present below, you should consult it, as it likely has instructions for you to follow. Please resubmit your application to become a contributor or data manager, making any necessary changes."
+          additional_msg = "This means that your application has been temporarily returned to you, likely with a request for further or modified information. If a message is present below, you should consult it, as it likely has instructions for you to follow. Please resubmit your application to become a contributor or data manager, making any necessary changes."
         elsif state == 'deny'
           additional_msg = "This means that your application has been rejected. You will not be able to resubmit a contributor application while your application is denied. You should contact the <a href='mailto:morphosource@duke.edu'>MorphoSource administrators</a> to learn what (if anything) may be done to resolve this situation."
         end

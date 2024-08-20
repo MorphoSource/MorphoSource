@@ -66,6 +66,10 @@ Rails.application.routes.draw do
     # Admin sign in as user
     get 'users/:id/become', to: 'users#become', as: 'become_user'
 
+    ### AJAX ROUTE FOR CHECKING FOR EXISTING PARTIAL UPLOADS
+
+    get 'uploads', to: 'uploads#find'
+
     ### AJAX ROUTES FOR MEDIA OWNERS SUBMITTING UPDATES TO MEDIA-ASSOCIATED IE AND PE WORKS ###
 
     resources :processing_events do

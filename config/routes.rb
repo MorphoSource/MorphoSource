@@ -66,9 +66,16 @@ Rails.application.routes.draw do
     # Admin sign in as user
     get 'users/:id/become', to: 'users#become', as: 'become_user'
 
-    ### AJAX ROUTE FOR CHECKING FOR EXISTING PARTIAL UPLOADS
+    ### AJAX ROUTES FOR FILE UPLOADS
 
     get 'uploads', to: 'uploads#find'
+    delete '/uploads/:id', to: 'uploads#destroy', as: :uploaded_file
+    post '/uploads', to: 'uploads#create'
+    # This is a hack that is required because the rails form the uploader is on
+    # sets the _method parameter to patch when the work already exists.
+    # Eventually it would be good to update the javascript so that it doesn't
+    # submit the form, just the file and always uses POST.
+    patch '/uploads', to: 'uploads#create'
 
     ### AJAX ROUTES FOR MEDIA OWNERS SUBMITTING UPDATES TO MEDIA-ASSOCIATED IE AND PE WORKS ###
 

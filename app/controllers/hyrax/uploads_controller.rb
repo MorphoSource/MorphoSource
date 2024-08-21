@@ -61,7 +61,7 @@ module Hyrax
           upload_hash: params[:upload_hash],
           user: current_user
         }
-        @upload.save!
+      @upload.save!
     end
   end
 end

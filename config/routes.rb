@@ -142,10 +142,10 @@ Rails.application.routes.draw do
     get 'teams/:id/media_requests', to: 'collections#media_requests', as: 'team_media_requests'
     get 'projects/:id/media_downloads', to: 'collections#media_downloads', as: 'project_media_downloads'
     get 'projects/:id/media_requests', to: 'collections#media_requests', as: 'project_media_requests'
-    get 'media_lists/:id/media_downloads', to: 'collections#media_downloads', as: 'media_list_media_downloads'
-    get 'media_lists/:id/media_requests', to: 'collections#media_requests', as: 'media_list_media_requests'
-    get 'sequential_section_lists/:id/media_downloads', to: 'collections#media_downloads', as: 'sequential_section_list_media_downloads'
-    get 'sequential_section_lists/:id/media_requests', to: 'collections#media_requests', as: 'sequential_section_list_media_requests'
+    get 'media-lists/:id/media-downloads', to: 'collections#media_downloads', as: 'media_list_media_downloads'
+    get 'media-lists/:id/media-requests', to: 'collections#media_requests', as: 'media_list_media_requests'
+    get 'sequential-section-lists/:id/media-downloads', to: 'collections#media_downloads', as: 'sequential_section_list_media_downloads'
+    get 'sequential-section-lists/:id/media-requests', to: 'collections#media_requests', as: 'sequential_section_list_media_requests'
 
     ### ADMIN TOOLS AND VIEWS ###
     scope module: :admin, path: 'admin' do
@@ -280,51 +280,65 @@ Rails.application.routes.draw do
       ### MEDIA LISTS ###
 
       # Media list general
-      get 'media_lists/:id', to: 'media_lists#show', as: 'media_list'
-      get 'media_lists/:id/biological_specimens', to: 'biological_specimens#show', as: 'media_list_specimens'
-      get 'media_lists/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show', as: 'media_list_chos'
-      get 'media_lists/:id/about', to: 'media_lists#about', as: 'media_list_about'
-      get 'media_lists/:collection_id/facet/:id', to: 'media_lists#facet', as: 'media_list_media_facet'
-      get 'media_lists/:collection_id/biological_specimens/facet/:id', to: 'biological_specimens#facet', as: 'media_list_specimens_facet'
-      get 'media_lists/:collection_id/cultural_heritage_objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'media_list_chos_facet'
-      get 'media_lists/:id/order_media', to: 'media_lists#order_media', as: 'media_list_order_media'
-      get 'media_lists/:id/preview/:media_id', to: 'media_lists#preview', as: 'media_list_preview'
+      get 'media-lists/:id', to: 'media_lists#show', as: 'media_list'
+      get 'media-lists/:id/biological-specimens', to: 'biological_specimens#show', as: 'media_list_specimens'
+      get 'media-lists/:id/cultural-heritage-objects', to: 'cultural_heritage_objects#show', as: 'media_list_chos'
+      get 'media-lists/:id/about', to: 'media_lists#about', as: 'media_list_about'
+      get 'media-lists/:collection_id/facet/:id', to: 'media_lists#facet', as: 'media_list_media_facet'
+      get 'media-lists/:collection_id/biological-specimens/facet/:id', to: 'biological_specimens#facet', as: 'media_list_specimens_facet'
+      get 'media-lists/:collection_id/cultural-heritage-objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'media_list_chos_facet'
+      get 'media-lists/:id/order-media', to: 'media_lists#order_media', as: 'media_list_order_media'
+      get 'media-lists/:id/preview/:media_id', to: 'media_lists#preview', as: 'media_list_preview'
 
       # Media list CSV exports
-      get 'media_lists/:id/media_export', to: 'media_lists#media_export_with_intersections_facet', as: 'media_list_media_export'
-      get 'media_lists/:id/media_download_counts', to: 'media_lists#media_download_counts_with_intersections_facet', as: 'media_list_media_download_counts'
-      get 'media_lists/:id/biological_specimens/objects_export', to: 'biological_specimens#objects_export', as: 'media_list_specimens_export'
-      get 'media_lists/:id/cultural_heritage_objects/objects_export', to: 'cultural_heritage_objects#objects_export', as: 'media_list_chos_export'
+      get 'media-lists/:id/media-export', to: 'media_lists#media_export_with_intersections_facet', as: 'media_list_media_export'
+      get 'media-lists/:id/media-download-counts', to: 'media_lists#media_download_counts_with_intersections_facet', as: 'media_list_media_download_counts'
+      get 'media-lists/:id/biological-specimens/objects-export', to: 'biological_specimens#objects_export', as: 'media_list_specimens_export'
+      get 'media-lists/:id/cultural-heritage-objects/objects-export', to: 'cultural_heritage_objects#objects_export', as: 'media_list_chos_export'
+
+      # Redirect
+      get 'media_lists/:id', to: redirect('/media-lists/%{id}')
+      get 'media_lists/:id/about', to: redirect('/media-lists/%{id}/about')
+      get 'media_lists/:id/biological_specimens', to: redirect('media-lists/%{id}/biological-specimens')
+      get 'media_lists/:id/cultural_heritage_objects', to: redirect('media-lists/%{id}/cultural-heritage-objects')
 
       ### SEQUENTIAL SECTION LISTS ###
 
       # Despite scope being media_lists, this is for sequential_section_lists (which inherit from media lists)
       scope module: :media_lists do
         # Sequential section list general
-        get 'sequential_section_lists/:id', to: 'sequential_section_lists#show', as: 'sequential_section_list'
-        get 'sequential_section_lists/:id/about', to: 'sequential_section_lists#about', as: 'sequential_section_list_about'
-        get 'sequential_section_lists/:collection_id/facet/:id', to: 'sequential_section_lists#facet', as: 'sequential_section_list_media_facet'
+        get 'sequential-section-lists/:id', to: 'sequential_section_lists#show', as: 'sequential_section_list'
+        get 'sequential-section-lists/:id/about', to: 'sequential_section_lists#about', as: 'sequential_section_list_about'
+        get 'sequential-section-lists/:collection_id/facet/:id', to: 'sequential_section_lists#facet', as: 'sequential_section_list_media_facet'
 
         # Sequential section list CSV exports
-        get 'sequential_section_lists/:id/media_export', to: 'sequential_section_lists#media_export_with_intersections_facet', as: 'sequential_section_list_media_export'
-        get 'sequential_section_lists/:id/media_download_counts', to: 'sequential_section_lists#media_download_counts_with_intersections_facet', as: 'sequential_section_list_media_download_counts'
+        get 'sequential-section-lists/:id/media-export', to: 'sequential_section_lists#media_export_with_intersections_facet', as: 'sequential_section_list_media-export'
+        get 'sequential-section-lists/:id/media-download-counts', to: 'sequential_section_lists#media_download_counts_with_intersections_facet', as: 'sequential_section_list_media-download-counts'
 
         # Order media
-        get 'sequential_section_lists/:id/order_media', to: 'sequential_section_lists#order_media', as: 'sequential_section_list_order_media'
+        get 'sequential-section-lists/:id/order-media', to: 'sequential_section_lists#order_media', as: 'sequential_section_list_order_media'
 
         # Preview media
-        get 'sequential_section_lists/:id/preview/:media_id', to: 'sequential_section_lists#preview', as: 'sequential_section_list_preview'
+        get 'sequential-section-lists/:id/preview/:media_id', to: 'sequential_section_lists#preview', as: 'sequential_section_list_preview'
+
+        # Redirect
+        get 'sequential_section_lists/:id', to: redirect('/sequential-section-lists/%{id}')
+        get 'sequential_section_lists/:id/about', to: redirect('/sequential-section-lists/%{id}/about')
       end
 
       # Sequential section list object tab
-      get 'sequential_section_lists/:id/biological_specimens', to: 'biological_specimens#show', as: 'sequential_section_list_specimens'
-      get 'sequential_section_lists/:id/cultural_heritage_objects', to: 'cultural_heritage_objects#show', as: 'sequential_section_list_chos'
-      get 'sequential_section_lists/:collection_id/biological_specimens/facet/:id', to: 'biological_specimens#facet', as: 'sequential_section_list_specimens_facet'
-      get 'sequential_section_lists/:collection_id/cultural_heritage_objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'sequential_section_list_chos_facet'
+      get 'sequential-section-lists/:id/biological-specimens', to: 'biological_specimens#show', as: 'sequential_section_list_specimens'
+      get 'sequential-section-lists/:id/cultural-heritage-objects', to: 'cultural_heritage_objects#show', as: 'sequential_section_list_chos'
+      get 'sequential-section-lists/:collection_id/biological-specimens/facet/:id', to: 'biological_specimens#facet', as: 'sequential_section_list_specimens_facet'
+      get 'sequential-section-lists/:collection_id/cultural-heritage-objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'sequential_section_list_chos_facet'
 
       # Sequential section list object CSV exports
-      get 'sequential_section_lists/:id/biological_specimens/objects_export', to: 'biological_specimens#objects_export', as: 'sequential_section_list_specimens_export'
-      get 'sequential_section_lists/:id/cultural_heritage_objects/objects_export', to: 'cultural_heritage_objects#objects_export', as: 'sequential_section_list_chos_export'
+      get 'sequential-section-lists/:id/biological-specimens/objects-export', to: 'biological_specimens#objects_export', as: 'sequential_section_list_specimens_export'
+      get 'sequential-section-lists/:id/cultural-heritage-objects/objects-export', to: 'cultural_heritage_objects#objects_export', as: 'sequential_section_list_chos_export'
+
+      # Redirect
+      get 'sequential_section_lists/:id/biological_specimens', to: redirect('sequential-section-lists/%{id}/biological-specimens')
+      get 'sequential_section_lists/:id/cultural_heritage_objects', to: redirect('sequential-section-lists/%{id}/cultural-heritage-objects')
     end
 
     ### DASHBOARD ###
@@ -404,26 +418,26 @@ Rails.application.routes.draw do
         patch 'organizations/:id', to: 'organization_collections#update'
 
         # Media lists
-        get 'media_lists/new', to: 'media_lists#new', as: 'new_media_list'
-        get 'media_lists/:id', to: 'media_lists#edit', as: 'media_list_edit'
-        get 'media_lists/:id/edit', to: redirect('dashboard/media_lists/%{id}')
-        get 'media_lists/:id/files', to: 'media_lists#files'
-        get 'media_lists/:id/members', to: 'media_lists#members', as: 'media_list_members'
-        post 'media_lists', to: 'media_lists#create'
-        put 'media_lists', to: 'media_lists#update'
-        put 'media_lists/:id', to: 'media_lists#update', as: 'update_media_list'
-        patch 'media_lists/:id', to: 'media_lists#update'
+        get 'media-lists/new', to: 'media_lists#new', as: 'new_media_list'
+        get 'media-lists/:id', to: 'media_lists#edit', as: 'media_list_edit'
+        get 'media-lists/:id/edit', to: redirect('dashboard/media-lists/%{id}')
+        get 'media-lists/:id/files', to: 'media_lists#files'
+        get 'media-lists/:id/members', to: 'media_lists#members', as: 'media_list_members'
+        post 'media-lists', to: 'media_lists#create'
+        put 'media-lists', to: 'media_lists#update'
+        put 'media-lists/:id', to: 'media_lists#update', as: 'update_media_list'
+        patch 'media-lists/:id', to: 'media_lists#update'
 
         # Sequential section lists (in scope media_lists due to inheriting from media list)
         scope module: :media_lists do
-          get 'sequential_section_lists/new', to: 'sequential_section_lists#new', as: 'new_sequential_section_list'
-          get 'sequential_section_lists/:id', to: 'sequential_section_lists#edit', as: 'sequential_section_list_edit'
-          get 'sequential_section_lists/:id/files', to: 'sequential_section_lists#files'
-          get 'sequential_section_lists/:id/members', to: 'sequential_section_lists#members', as: 'sequential_section_list_members'
-          post 'sequential_section_lists', to: 'sequential_section_lists#create'
-          put 'sequential_section_lists', to: 'sequential_section_lists#update'
-          put 'sequential_section_lists/:id', to: 'sequential_section_lists#update', as: 'update_sequential_section_list'
-          patch 'sequential_section_lists/:id', to: 'sequential_section_lists#update'
+          get 'sequential-section-lists/new', to: 'sequential_section_lists#new', as: 'new_sequential_section_list'
+          get 'sequential-section-lists/:id', to: 'sequential_section_lists#edit', as: 'sequential_section_list_edit'
+          get 'sequential-section-lists/:id/files', to: 'sequential_section_lists#files'
+          get 'sequential-section-lists/:id/members', to: 'sequential_section_lists#members', as: 'sequential_section_list_members'
+          post 'sequential-section-lists', to: 'sequential_section_lists#create'
+          put 'sequential-section-lists', to: 'sequential_section_lists#update'
+          put 'sequential-section-lists/:id', to: 'sequential_section_lists#update', as: 'update_sequential_section_list'
+          patch 'sequential-section-lists/:id', to: 'sequential_section_lists#update'
         end
       end
     end
@@ -477,9 +491,17 @@ Rails.application.routes.draw do
       resources :cultural_heritage_objects, only: [:index], controller: 'cultural_heritage_objects'
 
       # my collection sub-type pages
+
+      # organizations
       resources :organizations, only: [:index, :create], controller: 'collections/organization_collections'
-      resources :media_lists, only: [:index, :create], controller: 'collections/media_lists'
-      resources :sequential_section_lists, only: [:index, :create], controller: 'collections/media_lists/sequential_section_lists'
+
+      ## media lists
+      get 'media-lists', action: :index, controller: 'collections/media_lists'
+      post 'media-lists', action: :create, controller: 'collections/media_lists'
+
+      ## sequential section lists
+      get 'sequential-section-lists', action: :index, controller: 'collections/media_lists/sequential_section_lists'
+      post 'sequential-section-lists', action: :create, controller: 'collections/media_lists/sequential_section_lists'
 
       # my other pages
       get 'cart', action: :index, controller: :media_carts
@@ -495,7 +517,7 @@ Rails.application.routes.draw do
       get '/media/:collection_id/facet/:id', to: 'add_media#facet', as: 'dashboard_add_media_facet'
       get '/specimens/facet/:id', to: 'biological_specimens#facet', as: 'dashboard_specimens_facet'
       get '/cultural_heritage_objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'dashboard_chos_facet'
-      get '/sequential_section_lists/facet/:id', to: 'collections/media_lists/sequential_section_lists#facet', as: 'dashboard_sequential_section_lists_facet'
+      get '/sequential-section-lists/facet/:id', to: 'collections/media_lists/sequential_section_lists#facet', as: 'dashboard_sequential_section_lists_facet'
     end
 
     ### LEGACY MS1 URLS THAT REDIRECT TO CONCERN AND COLLECTION SHOW PAGES ###
@@ -696,7 +718,7 @@ Rails.application.routes.draw do
     current_user = request.env['warden'].user
     current_user.present? && current_user.respond_to?(:admin?) && current_user.admin?
   end
-  
+
   constraints resque_web_constraint do
     mount ResqueWeb::Engine => "/queues"
   end

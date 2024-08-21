@@ -95,12 +95,12 @@ RSpec.describe Morphosource::Collections::BiologicalSpecimensController, type: :
       end
       describe 'search_action_url' do
         it 'is media_list_specimens_path' do
-          expect(subject.send(:search_action_url)).to eq("/media_lists/#{media_list.id}/biological_specimens?locale=en")
+          expect(subject.send(:search_action_url)).to eq(media_list_specimens_path(media_list.id))
         end
       end
       describe 'search_facet_path' do
         it 'is media_list_specimens_facet_path' do
-          expect(subject.send(:search_facet_path, {id: facet_id})).to eq("/media_lists/#{media_list.id}/biological_specimens/facet/#{facet_id}?locale=en")
+          expect(subject.send(:search_facet_path, {id: facet_id})).to eq(media_list_specimens_facet_path(media_list.id, id: facet_id))
         end
       end
     end
@@ -111,12 +111,12 @@ RSpec.describe Morphosource::Collections::BiologicalSpecimensController, type: :
       end
       describe 'search_action_url' do
         it 'is sequential_section_list_specimens_path' do
-          expect(subject.send(:search_action_url)).to eq("/sequential_section_lists/#{sequential_section_list.id}/biological_specimens?locale=en")
+          expect(subject.send(:search_action_url)).to eq(sequential_section_list_specimens_path(sequential_section_list.id))
         end
       end
       describe 'search_facet_path' do
         it 'is sequential_section_list_specimens_facet_path' do
-          expect(subject.send(:search_facet_path, {id: facet_id})).to eq("/sequential_section_lists/#{sequential_section_list.id}/biological_specimens/facet/#{facet_id}?locale=en")
+          expect(subject.send(:search_facet_path, {id: facet_id})).to eq(sequential_section_list_specimens_facet_path(sequential_section_list.id, id: facet_id))
         end
       end
     end

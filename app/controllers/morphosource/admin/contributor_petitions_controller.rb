@@ -133,6 +133,8 @@ module Morphosource
         [
           'user_id',
           'user_affiliation',
+          'date_application_submitted_start',
+          'date_application_submitted_end',
           'date_returned_start', 
           'date_returned_end', 
           'date_approved_start',
@@ -144,6 +146,8 @@ module Morphosource
 
       def filter_attribute_where_statements
         {
+          'date_application_submitted_start' => 'created_at >= ?',
+          'date_application_submitted_end' => 'created_at <= ?',
           'date_returned_start' => 'date_returned >= ?',
           'date_returned_end' => 'date_returned <= ?',
           'date_approved_start' => 'date_approved >= ?',
@@ -159,7 +163,25 @@ module Morphosource
             if field == 'user_id' or field == 'decision_by'
               value = User.find_by_id(value)&.name_and_email
             end
-  
+            case field
+            when 'user_id'
+              field = 'Applicant'
+            when 'created_at'
+              field = 'Date Application Submitted'
+            when 'reason'
+              field = 'Nature and Purpose of Data'
+            when 'terms_agree'
+              field =  'Agreed to Terms?'
+            when 'user_affiliation'
+              field =  'Organization'
+            when 'user_demographics'
+              field =  'Professional Affiliation'
+            when 'user_department'
+              field =  'Department'
+            when 'user_advisor'
+              field =  'Student Advisor'
+            end
+
             if value.kind_of? Array
               value = value.join(';')
             end
@@ -221,8 +243,6 @@ module Morphosource
 
         deliver_message(email_sender, @petition.user, msg.html_safe, "Contributor Application #{state_past[state].capitalize}")
       end
-
-
 
       def petition_params
         @petition_params ||= params.fetch(:contributor_petition, {}).permit(:decision_message)

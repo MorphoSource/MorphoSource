@@ -2,7 +2,7 @@
 
 <%= f.input :user_affiliation, label: "Organization", :input_html => {value: @user_affiliation }, required: false %>
 
-<% [ 'date_returned', 'date_approved', 'date_denied' ].each do |attr| %>
+<% [ 'date_application_submitted', 'date_returned', 'date_approved', 'date_denied' ].each do |attr| %>
   <%= render partial: 'search_form_field_date_range', locals: { f: f, attr: attr } %>
 <% end %>
 

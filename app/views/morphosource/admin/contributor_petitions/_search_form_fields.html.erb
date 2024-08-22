@@ -6,6 +6,15 @@
   <%= render partial: 'search_form_field_date_range', locals: { f: f, attr: attr } %>
 <% end %>
 
+<div class="form-group search_start_date">
+  <label class="control-label" for="decision_state">
+    Decision State
+  </label>
+  <div>
+    <%= f.select :decision_state, options_for_select([['Approve', 'approve'], ['Return', 'return'], ['Deny', 'deny']], @decision_state), label: "Decision", required: false %>
+  </div>
+</div>
+
 <script>
 $( document ).ready(function() {
   $('#filter_items_user_id').userSearchMultipleByID($('#filter_items_user_id').data('user'));

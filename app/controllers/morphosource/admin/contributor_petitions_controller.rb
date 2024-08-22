@@ -17,7 +17,7 @@ module Morphosource
       def current_applications
         @tab = 'current'
         @decided_petition_count = ContributorPetition.where.not(decision_required: true).count
-        @undecided_petition_count = ContributorPetition.where(decision_required: true).count
+        @undecided_petition_count = @items.count
         @item_count = @items.count
         @search = true if search_form_present?
         respond_to do |format|
@@ -33,7 +33,7 @@ module Morphosource
 
       def previous_applications
         @tab = 'previous'
-        @decided_petition_count = ContributorPetition.where.not(decision_required: true).count
+        @decided_petition_count = @items.count
         @undecided_petition_count = ContributorPetition.where(decision_required: true).count
         @item_count = @items.count
         @search = true if search_form_present?
@@ -140,7 +140,8 @@ module Morphosource
           'date_approved_start',
           'date_approved_end',
           'date_denied_start',
-          'date_denied_end'
+          'date_denied_end',
+          'decision_state'
         ]
       end
 

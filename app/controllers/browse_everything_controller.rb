@@ -15,7 +15,7 @@ BrowseEverythingController.class_eval do
         url_options: BrowseEverything.config.merge(user_fs_config).merge(url_options: url_options)
       )
     else
-      super
+      BrowserFactory.build(session: session, url_options: url_options)
     end
   end
 

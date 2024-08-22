@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Morphosource::My::Collections::MediaLists::SequentialSectionListsController, type: :controller do
 
-  let(:user)                                      { User.create(email: 'user@email.com', password: 'password') }
+  let(:user)  { User.create(email: 'user@email.com', password: 'password') }
 
   describe 'collections_type' do
     it { expect(subject.collections_type).to eq('sequential_section_lists') }

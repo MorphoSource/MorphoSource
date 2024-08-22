@@ -4,7 +4,16 @@ RSpec.describe SequentialSectionListIndexer do
   subject(:solr_document) { SequentialSectionListIndexer.new(list).generate_solr_document }
 
   let(:user)  { FactoryBot.create(:contributor)}
-  let(:list)  { FactoryBot.create(:sequential_section_list, depositor: user.ms_id) }
+  let(:doi)   { ['10.17602/M2/L123456'] }
+  let(:list)  { FactoryBot.create(:sequential_section_list,
+                                  depositor: user.ms_id,
+                                  doi: doi) }
+
+  describe 'property fields' do
+    it 'indexes doi' do
+      expect(subject['doi_ssim']).to match_array(doi)
+    end
+  end
 
   describe 'custom fields' do
     context 'list has media' do

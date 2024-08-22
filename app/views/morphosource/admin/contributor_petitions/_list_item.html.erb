@@ -1,5 +1,6 @@
 <% demographics = ( item.user_demographics.presence || []).join('; ') %>
 <tr id="item_<%= item.id %>">
+  <td><%= item.created_at %></td>
   <td><%= link_to item.user.name_or_email, Hyrax::Engine.routes.url_helpers.user_path(item.user) %></td>
   <td><%= item.reason %></td>
   <td><%= item.user_affiliation %></td>
@@ -8,7 +9,6 @@
   <td><%= item.user_advisor %></td>
   <td><%= item.contribution_amount %></td>
   <td><%= item.terms_agree ? "Yes" : "No" %></td>
-  <td><%= item.created_at %></td>
   <td><%= item.decision_state&.capitalize %></td>
   <% if @tab == 'previous' %>
     <td><%= item.decision_message %></td>

@@ -94,47 +94,50 @@ module Morphosource
       private 
 
       def get_current_items
-        @items = ContributorPetition.where(decision_required: true)
+        @items = ContributorPetition.where(decision_required: true).includes(:user).order(sort_param)
       end
 
       def get_previous_items
-        @items = ContributorPetition.where.not(decision_required: true)
+        @items = ContributorPetition.where.not(decision_required: true).includes(:user).order(sort_param)
       end
 
       def require_permissions
         authorize! :read, :admin_dashboard
       end
 
-#      def valid_sort_attributes
-#        [
-#          'work_id', 
-#          'users.display_name',
-#          'reviewers',
-#          'date_requested', 
-#          'date_approved',
-#          'date_denied',
-#          'date_canceled',
-#          'date_expired',
-#          'date_cleared',
-#          'date_downloaded',
-#          'use'
-#        ]
-#      end
-#
-#      def default_sort_param
-#        'date_requested DESC'
-#      end
-#
+      def valid_sort_attributes
+        [
+          'created_at',
+          'users.display_name',
+          'user_affiliation',
+          'user_department',
+          'date_returned', 
+          'date_approved',
+          'date_denied',
+          'decision_state',
+          'reason',
+          'user_demographics',
+          'user_advisor',
+          'contribution_amount',
+          'terms_agree',
+          'decision'
+        ]
+      end
+
+      def default_sort_param
+        'created_at DESC'
+      end
+
       def user_key_params
         ['user_id']
       end
 
       def valid_filter_attributes
         [
-          'user_id',
-          'user_affiliation',
           'date_application_submitted_start',
           'date_application_submitted_end',
+          'user_id',
+          'user_affiliation',
           'date_returned_start', 
           'date_returned_end', 
           'date_approved_start',

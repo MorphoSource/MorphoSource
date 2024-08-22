@@ -27,6 +27,13 @@ en:
             user_department: 'Department'
             user_advisor: 'Student Advisor'
             created_at: 'Date Application Submitted'
+            decision: 'Decision'
+            decision_message: 'Decision Message'
+            decided_by: 'Decided By'
+            date_approved: 'Date Approved'
+            date_returned: 'Date Returned'
+            date_denied: 'Date Denied'
+            action: 'Action'
       import:
         slides:
           job_submitted: Slides import job has been submitted for background processing. Please check back later.

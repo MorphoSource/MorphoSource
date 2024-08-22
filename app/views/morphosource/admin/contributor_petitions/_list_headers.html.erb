@@ -1,18 +1,18 @@
-<th><%= t('.table.user') %></th>
-<th><%= t('.table.reason') %></th>
-<th><%= t('.table.user_affiliation') %></th>
-<th><%= t('.table.user_department') %></th>
-<th><%= t('.table.user_demographics') %></th>
-<th><%= t('.table.user_advisor') %></th>
-<th><%= t('.table.contribution_amount') %></th>
-<th><%= t('.table.terms_agree') %></th>
-<th><%= t('.table.created_at') %></th>
-<th><%= t('.table.decision') %></th>
+<th><%= sortable_itemtable_header(t('.table.created_at'), 'created_at', 'desc') %></th>
+<th><%= sortable_itemtable_header(t('.table.user'), 'users.display_name', 'asc') %></th>
+<th><%= sortable_itemtable_header(t('.table.reason'), 'reason', 'asc') %></th>
+<th><%= sortable_itemtable_header(t('.table.user_affiliation'), 'user_affiliation', 'asc') %></th>
+<th><%= sortable_itemtable_header(t('.table.user_department'), 'user_department', 'asc') %></th>
+<th><%= sortable_itemtable_header(t('.table.user_demographics'), 'user_demographics', 'asc') %></th>
+<th><%= sortable_itemtable_header(t('.table.user_advisor'), 'user_advisor', 'asc') %></th>
+<th><%= sortable_itemtable_header(t('.table.contribution_amount'), 'contribution_amount', 'asc') %></th>
+<th><%= sortable_itemtable_header(t('.table.terms_agree'), 'terms_agree', 'asc') %></th>
+<th><%= sortable_itemtable_header('Decision', 'decision_state', 'asc') %></th>
 <% if @tab == 'previous' %>
-  <th><%= t('.table.decision_message') %></th>
-  <th><%= t('.table.decided_by') %></th>
-  <th><%= t('.table.date_approved') %></th>
-  <th><%= t('.table.date_returned') %></th>
-  <th><%= t('.table.date_denied') %></th>
+  <th><%= sortable_itemtable_header(t('.table.decision_message'), 'decision_message', 'asc') %></th>
+  <th><%= sortable_itemtable_header(t('.table.decided_by'), 'users.display_name', 'asc') %></th>
+  <th><%= sortable_itemtable_header(t('.table.date_approved'), 'date_approved', 'asc') %></th>
+  <th><%= sortable_itemtable_header(t('.table.date_returned'), 'date_returned', 'asc') %></th>
+  <th><%= sortable_itemtable_header(t('.table.date_denied'), 'date_denied', 'asc') %></th>
   <th><%= t('.table.action') %></th>
 <% end %>

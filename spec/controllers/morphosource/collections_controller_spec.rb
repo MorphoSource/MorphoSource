@@ -266,7 +266,7 @@ RSpec.describe Morphosource::CollectionsController, type: :controller do
                           controller: "morphosource/collections/media_lists" } }
 
       it 'is the media list remove constraints url' do
-        expect(subject.send(:remove_constraint_url, params)).to include("/media_lists/#{media_list.id}?f%5Bhuman_readable_media_type_ssim%5D%5B%5D=Image&locale=en")
+        expect(subject.send(:remove_constraint_url, params)).to include("/media-lists/#{media_list.id}?f%5Bhuman_readable_media_type_ssim%5D%5B%5D=Image&locale=en")
       end
     end
 
@@ -278,7 +278,7 @@ RSpec.describe Morphosource::CollectionsController, type: :controller do
                                       controller: "morphosource/collections/media_lists/sequential_section_lists" } }
 
       it 'is the sequential section list remove constraints url' do
-        expect(subject.send(:remove_constraint_url, params)).to include("/sequential_section_lists/#{sequential_section_list.id}?f%5Bhuman_readable_media_type_ssim%5D%5B%5D=Image&locale=en")
+        expect(subject.send(:remove_constraint_url, params)).to include("/sequential-section-lists/#{sequential_section_list.id}?f%5Bhuman_readable_media_type_ssim%5D%5B%5D=Image&locale=en")
       end
     end
 

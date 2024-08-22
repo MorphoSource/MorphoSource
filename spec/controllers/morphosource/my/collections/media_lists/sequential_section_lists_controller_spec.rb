@@ -13,12 +13,10 @@ RSpec.describe Morphosource::My::Collections::MediaLists::SequentialSectionLists
   end
 
   describe 'search_action_url' do
-    it 'is media_list_path' do
-      expect(subject.search_action_url).to include("/dashboard/my/sequential_section_lists?locale=en")
-    end
+    it { expect(subject.search_action_url).to include(my_sequential_section_lists_path) }
   end
 
   describe 'search_action_for_dashboard' do
-    it { expect(subject.search_action_for_dashboard).to eq("/dashboard/my/sequential_section_lists?locale=en") }
+    it { expect(subject.search_action_for_dashboard).to eq(my_sequential_section_lists_path) }
   end
 end

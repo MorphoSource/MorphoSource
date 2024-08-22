@@ -65,7 +65,7 @@ RSpec.describe Morphosource::Collections::MediaLists::SequentialSectionListsCont
       subject.instance_variable_set(:@curation_concern, sequential_section_list)
     end
     it 'is sequential_section_list_path' do
-      expect(subject.send(:search_action_url)).to eq("/sequential_section_lists/#{sequential_section_list.id}?locale=en")
+      expect(subject.send(:search_action_url)).to eq(sequential_section_list_path(sequential_section_list.id))
     end
   end
 
@@ -74,8 +74,8 @@ RSpec.describe Morphosource::Collections::MediaLists::SequentialSectionListsCont
     before do
       subject.instance_variable_set(:@collection, sequential_section_list)
     end
-    it 'is sequential_section_list_path' do
-      expect(subject.send(:search_facet_path, {id: facet_id})).to eq("/sequential_section_lists/#{sequential_section_list.id}/facet/#{facet_id}?locale=en")
+    it 'is sequential_section_list_media_facet_path' do
+      expect(subject.send(:search_facet_path, {id: facet_id})).to eq(sequential_section_list_media_facet_path(sequential_section_list.id, id: facet_id))
     end
   end
 

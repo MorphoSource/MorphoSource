@@ -10,14 +10,10 @@
 
 <%= render 'search_container' %>
 
-  <%= render 'heading' %>
-
 <% if @petition.present? %>
 <div class="panel panel-default" style="display: table;">
-  <div class="panel-heading">
-    <h2 class="panel-title h2">Update Contributor Application Decision</h2>
-  </div>
   <div class="panel-body">
+    <h2 class="panel-title h2">Update Contributor Application Decision</h2>
     <table class="table table-striped" style="font-size: smaller;">
       <thead>
         <th><%= t('.table.user') %></th>

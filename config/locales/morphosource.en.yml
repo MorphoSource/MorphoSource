@@ -18,7 +18,7 @@ en:
         header: 'Contributor Applications'
         list_headers:
           table:
-            contribution_amount: 'Data Amount (GB or Other Units)'
+            contribution_amount: 'Total Data Amount (GB or Other Units)'
             reason: 'Nature and Purpose of Data'
             terms_agree: 'Agreed to Terms?'
             user: 'Applicant'
@@ -109,7 +109,7 @@ en:
           user_affiliation: 'Organization (Institution, museum, university, etc.)'
           user_department: 'Department'
           user_advisor: 'If you are a graduate student, provide the name, email, and professional affiliation of your advisor (Required only for graduate students)'
-          contribution_amount: 'Approximate size of the data you intend to contribute in gigabytes or other appropriate units '
+          contribution_amount: 'Approximate size of the total data amount you intend to contribute in gigabytes or other appropriate units'
           terms_agree: 'Contributor terms and conditions'
           terms_agree_description: 'I agree to the MorphoSource <a href="/contributor_terms" target="_blank">Contributor Terms of Use</a>. I understand these are distinct from the general MorphoSource <a href="/terms" target="_blank">Terms of Use</a>, and I agree to comply with both sets of terms.'
         fund_codes:

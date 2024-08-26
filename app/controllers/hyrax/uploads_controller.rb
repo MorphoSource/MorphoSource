@@ -33,7 +33,8 @@ module Hyrax
             # weird, but restart the upload
             create_initial_upload
           else
-            return head(:bad_request)
+            Rails.logger.error("UploadsController: In chunked upload, chunk initial byte #{chunk_initial_byte} did not equal current file size #{current_size}")
+            raise "Unexplained error with chunked uploading"
           end
         end
       else

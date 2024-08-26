@@ -8,8 +8,6 @@ class ModifyCollectionMembershipJob < Hyrax:: ApplicationJob
       add_to_collection_ids = Array(add_to_collection_ids) - Array(remove_from_collection_ids)
       remove_from_collection_ids = Array(remove_from_collection_ids) - Array(add_to_collection_ids)
       
-      
-
       if media.present? && ( add_to_collection_ids.present? || remove_from_collection_ids.present? )
         # Only add or remove collections when appropriate
         media_in_collection_ids = media.member_of_collection_ids.to_a

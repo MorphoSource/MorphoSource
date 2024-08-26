@@ -822,25 +822,16 @@ namespace :morphosource do
   end
 
   desc "Update specimens from IDigbio"
-  task :update_bso_from_idigbio, [:update, :send_email] => :environment do |task, args|
-    log_file = 'log/idigbio_update_' + Time.now.strftime("%m-%d-%Y_%H-%M") + '.log'
-    log = Logger.new(log_file)
-    log.debug "update_bso_from_idigbio started."
+  task :update_bso_from_idigbio, [:update] => :environment do |task, args|
+    Rails.logger.debug "update_bso_from_idigbio started."
     if args[:update].present? && args[:update] == 'true'
       update = true
     else
       update = false
     end
-    UpdateSpecimensFromIdigbioJob.perform_later(nil, update, true, false, log_file)
-    if args[:send_email] ==  "true" && Hyrax.config.system_report_recipients.present?
-      ApplicationMailer.send_email_with_attachment(
-        Hyrax.config.system_report_recipients,
-        "MS IDigbio Update Report " + (update == false ? "(report only) " : "") +
-        Time.now.strftime("%m-%d-%Y_%H-%M"),
-        "Please see IDigbio Update Report in " + log_file,
-         nil).deliver_now
+#    UpdateSpecimensFromIdigbioJob.perform_later(nil, update, true, false)
+UpdateSpecimensFromIdigbioJob.perform_now(nil, update, true, true)
     end
-  end
 
   # MCZ slide import
   desc "Get new MCZ sequential section slides from GBIF"

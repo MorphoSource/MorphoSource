@@ -2,19 +2,18 @@ module Morphosource
   class IDigBioUpdateService
     include Morphosource::MessageHelper
 
-    def self.call(bso_id, save_work=false, system_update=false, log_file=nil, canonical_taxonomy_id, taxonomy_id_array, taxonomy_params_array, biospec_model_params)
-      new(bso_id, save_work, system_update, log_file, canonical_taxonomy_id, taxonomy_id_array, taxonomy_params_array, biospec_model_params).call
+    def self.call(bso_id, save_work=false, system_update=false, params_for_update)
+      new(bso_id, save_work, system_update, params_for_update).call
     end
 
-    def initialize(bso_id, save_work, system_update, log_file, canonical_taxonomy_id, taxonomy_id_array, taxonomy_params_array, biospec_model_params)
+    def initialize(bso_id, save_work, system_update, params_for_update)
       @save_work = save_work
       @system_update = system_update
-      @log_file = log_file
-      @canonical_taxonomy_id = canonical_taxonomy_id
-      @taxonomy_id_array = taxonomy_id_array
-      @taxonomy_params_array = taxonomy_params_array
-      @biospec_model_params = biospec_model_params
-      @log = log_file.present?? Logger.new(log_file) : Logger.new(STDOUT) 
+      @canonical_taxonomy_id = params_for_update[:canonical_taxonomy_id]
+      @taxonomy_id_array = params_for_update[:taxonomy_id_array]
+      @taxonomy_params_array = params_for_update[:taxonomy_params_array]
+      @biospec_model_params = params_for_update[:biospec_model_params]
+byebug   
       @bso = BiologicalSpecimen.find(bso_id)
     end
 
@@ -23,8 +22,10 @@ module Morphosource
     end
   
     def apply_idigbio_update   
-      add_new_taxonomies
-      link_taxonomies
+      if @save_work
+        add_new_taxonomies
+        link_taxonomies
+      end
       update_metadata_from_idigbio
     end
   
@@ -52,10 +53,10 @@ module Morphosource
       end
   
       if @bso.taxonomy_id_changed?
-        @log.debug "IDigBioUpdateService: BSO #{@bso.id} : taxonomy_id #{old_taxonomy_id} will be updated to '#{@bso.taxonomy_id.to_a}'"
+        Rails.logger.debug "IDigBioUpdateService: BSO #{@bso.id} : taxonomy_id #{old_taxonomy_id} will be updated to '#{@bso.taxonomy_id.to_a}'"
       end
       if @bso.canonical_taxonomy_changed?
-        @log.debug "IDigBioUpdateService: BSO #{@bso.id} : canonical_taxonomy #{old_canonical_taxonomy} will be updated to '#{@bso.canonical_taxonomy.to_a}'"
+        Rails.logger.debug "IDigBioUpdateService: BSO #{@bso.id} : canonical_taxonomy #{old_canonical_taxonomy} will be updated to '#{@bso.canonical_taxonomy.to_a}'"
       end
     end
   
@@ -64,7 +65,7 @@ module Morphosource
       @biospec_model_params.each do |key, value|
         @bso.send("#{key}=", Array(value) )
         if @bso.send("#{key}_changed?")
-          @log.debug "IDigBioUpdateService: BSO #{@bso.id} : #{key} field will be updated to '#{value}'"
+          Rails.logger.debug "IDigBioUpdateService: BSO #{@bso.id} : #{key} field will be updated to '#{value}'"
         end
       end
       if @bso.idigbio_uuid_changed?

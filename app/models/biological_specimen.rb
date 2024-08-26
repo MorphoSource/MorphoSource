@@ -33,7 +33,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
 
   def update_from_idigbio
     if occurrence_id.present?
-      UpdateSpecimensFromIdigbioJob.perform_now(id, true, false, false, nil)
+      UpdateSpecimensFromIdigbioJob.perform_now(id, true, false, false)
     end
   end
 

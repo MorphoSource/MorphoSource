@@ -21,7 +21,7 @@ module Morphosource
         @idigbio_occurrence = @occurrence_id_results[:data].first
         if idigbio_recordset_different_from_org?(bso)
           Rails.logger.debug "Specimen #{bso["id"]} not synced because the organization (#{bso["organization_id_tesim"].first}) has recordset ID(s) (#{@org_recordset_ids.join(', ')}) different from the iDigBio-supplied recordset ID #{@idb_recordset_id}."
-          return {:ok_to_update => false} 
+          return nil
         else          
           get_idigbio_taxonomy
           get_idigbio_metadata    
@@ -29,22 +29,19 @@ module Morphosource
 byebug
             Rails.logger.debug "Specimen #{bso["id"]} updated as a result of " + (@force_update ? "#force_update" : "idigbio_record_different_from_specimen")
             return {
-              :ok_to_update => true, 
-              :params_for_update => {
-                :canonical_taxonomy_id => @canonical_taxonomy_id, 
-                :taxonomy_id_array => @taxonomy_id_array, 
-                :taxonomy_params_array => @taxonomy_params_array, 
-                :biospec_model_params => @biospec_model_params                
-              }
+              :canonical_taxonomy_id => @canonical_taxonomy_id, 
+              :taxonomy_id_array => @taxonomy_id_array, 
+              :taxonomy_params_array => @taxonomy_params_array, 
+              :biospec_model_params => @biospec_model_params                
             }
           else
 byebug
-            return {:ok_to_update => false} 
+            return nil 
           end
         end
       elsif idigbio_match_found(occurrence_id) > 1
         Rails.logger.debug "Specimen #{bso["id"]} not synced because multiple records found for OID: #{bso["occurrence_id_tesim"].first}"
-        return {:ok_to_update => false} 
+        return nil
       end
     end
 

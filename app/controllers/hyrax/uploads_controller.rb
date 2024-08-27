@@ -24,9 +24,15 @@ module Hyrax
         chunk_initial_byte = content_range[/\ (.*?)-/,1].to_i
 
         current_size = @upload.file.url ? File.size(@upload.file.url) : 0
+        if current_size != @upload.total_file_size
+          raise "Unexpected size mismatch in uploaded file #{@upload.id} with expected size #{@upload.total_file_size} but actual size #{current_size}"
+        end
+
         if ( current_size > 0 ) && ( current_size == chunk_initial_byte )
           # new chunk confirmed, append
           File.open(@upload.file.url, "ab") { |f| incoming_file.to_io.each_line { |line| f.write(line) } }
+          @upload.total_file_size = File.size(@upload.file.url)
+          @upload.save!
         else
           # chunk can not be appended to existing file, maybe restart upload?
           if chunk_initial_byte == 0
@@ -59,6 +65,7 @@ module Hyrax
     def create_initial_upload
       @upload.attributes = { 
           file: params[:files].first,
+          total_file_size: params[:files].first.size,
           upload_hash: params[:upload_hash],
           user: current_user
         }

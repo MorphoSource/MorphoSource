@@ -17,7 +17,7 @@
     <div class="col-xs-6 showcase-value">
       <%= number_with_delimiter(
         Morphosource::SolrService.new.get_count(
-          "has_model_ssim:Collection AND collection_type_gid_ssim:gid://\"#{GlobalID.app}/Hyrax::CollectionType/#{Morphosource::CollectionTypesService.project_collection_type_id}\""
+          "has_model_ssim:Collection AND collection_type_gid_ssim:\"gid://#{GlobalID.app}/Hyrax::CollectionType/#{Morphosource::CollectionTypesService.project_collection_type_id}\""
         ),
         :delimiter => ','
       ) %>

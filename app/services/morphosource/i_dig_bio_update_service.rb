@@ -1,6 +1,5 @@
 module Morphosource
   class IDigBioUpdateService
-    include Morphosource::MessageHelper
 
     def self.call(specimen_id, save_work=false, system_update=false, params_for_update)
       new(specimen_id, save_work, system_update, params_for_update).call
@@ -13,7 +12,6 @@ module Morphosource
       @taxonomy_id_array = params_for_update[:taxonomy_id_array]
       @taxonomy_params_array = params_for_update[:taxonomy_params_array]
       @biospec_model_params = params_for_update[:biospec_model_params]
-byebug   
       @specimen = BiologicalSpecimen.find(specimen_id)
     end
 

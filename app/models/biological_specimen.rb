@@ -33,7 +33,11 @@ class BiologicalSpecimen < Morphosource::Works::Base
 
   def update_from_idigbio
     if occurrence_id.present?
-      UpdateSpecimensFromIdigbioJob.perform_now(id, true, false, false)
+      if (params_for_update = Morphosource::IDigBioCompareService.call(id, false)).present?
+byebug
+# now or later?
+        UpdateSingleSpecimenFromIdigbioJob.perform_now(id, system_update=false, params_for_update)
+      end
     end
   end
 

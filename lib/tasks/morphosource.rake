@@ -829,9 +829,9 @@ namespace :morphosource do
     else
       update = false
     end
-#    UpdateSpecimensFromIdigbioJob.perform_later(nil, update, true, false)
+#UpdateSpecimensFromIdigbioJob.perform_later(save_work=update, force_update=false)
 
-UpdateSpecimensFromIdigbioJob.perform_now(nil, update, true, true)
+UpdateSpecimensFromIdigbioJob.perform_now(save_work=update, force_update=true)
     end
 
   # MCZ slide import

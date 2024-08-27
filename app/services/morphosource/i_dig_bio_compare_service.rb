@@ -2,32 +2,32 @@ module Morphosource
   class IDigBioCompareService
     include Morphosource::MessageHelper
 
-    def self.call(bso_id, force_update=false)
-      new(bso_id, force_update).call
+    def self.call(specimen_id, force_update=false)
+      new(specimen_id, force_update).call
     end
 
-    def initialize(bso_id, force_update)
+    def initialize(specimen_id, force_update)
       @force_update = force_update
-      @bso = SolrDocument.find(bso_id)
+      @specimen = SolrDocument.find(specimen_id)
     end
 
     def call
-      get_metadata_from_idigbio_occurrence_id(@bso)
+      get_metadata_from_idigbio_occurrence_id(@specimen)
     end
 
-    def get_metadata_from_idigbio_occurrence_id(bso)
-      occurrence_id = bso["occurrence_id_tesim"]
+    def get_metadata_from_idigbio_occurrence_id(specimen)
+      occurrence_id = specimen["occurrence_id_tesim"]
       if idigbio_match_found(occurrence_id) == 1
         @idigbio_occurrence = @occurrence_id_results[:data].first
-        if idigbio_recordset_different_from_org?(bso)
-          Rails.logger.debug "Specimen #{bso["id"]} not synced because the organization (#{bso["organization_id_tesim"].first}) has recordset ID(s) (#{@org_recordset_ids.join(', ')}) different from the iDigBio-supplied recordset ID #{@idb_recordset_id}."
+        if idigbio_recordset_different_from_org?(specimen)
+          Rails.logger.debug "Specimen #{specimen["id"]} not synced because the organization (#{specimen["organization_id_tesim"].first}) has recordset ID(s) (#{@org_recordset_ids.join(', ')}) different from the iDigBio-supplied recordset ID #{@idb_recordset_id}."
           return nil
         else          
           get_idigbio_taxonomy
           get_idigbio_metadata    
-          if @force_update || idigbio_record_different_from_specimen?(bso)
+          if @force_update || idigbio_record_different_from_specimen?(specimen)
 byebug
-            Rails.logger.debug "Specimen #{bso["id"]} updated as a result of " + (@force_update ? "#force_update" : "idigbio_record_different_from_specimen")
+            Rails.logger.debug "Specimen #{specimen["id"]} updated as a result of " + (@force_update ? "#force_update" : "idigbio_record_different_from_specimen")
             return {
               :canonical_taxonomy_id => @canonical_taxonomy_id, 
               :taxonomy_id_array => @taxonomy_id_array, 
@@ -40,7 +40,7 @@ byebug
           end
         end
       elsif idigbio_match_found(occurrence_id) > 1
-        Rails.logger.debug "Specimen #{bso["id"]} not synced because multiple records found for OID: #{bso["occurrence_id_tesim"].first}"
+        Rails.logger.debug "Specimen #{specimen["id"]} not synced because multiple records found for OID: #{specimen["occurrence_id_tesim"].first}"
         return nil
       end
     end
@@ -62,8 +62,8 @@ byebug
       return @occurrence_id_results[:data].length 
     end
 
-    def idigbio_recordset_different_from_org?(bso)
-      org_id = bso["organization_id_tesim"]
+    def idigbio_recordset_different_from_org?(specimen)
+      org_id = specimen["organization_id_tesim"]
       return false unless org_id.present?
       org = SolrDocument.find(org_id)
       return false unless org.present?
@@ -121,25 +121,25 @@ byebug
         end  
     end
 
-    def idigbio_record_different_from_specimen?(bso)
+    def idigbio_record_different_from_specimen?(specimen)
       is_diff = false
-      if @canonical_taxonomy_id.present? && bso["canonical_taxonomy_tesim"].present?
-        if !bso["canonical_taxonomy_tesim"].include? @canonical_taxonomy_id  
+      if @canonical_taxonomy_id.present? && specimen["canonical_taxonomy_tesim"].present?
+        if !specimen["canonical_taxonomy_tesim"].include? @canonical_taxonomy_id  
           is_diff = true
-          Rails.logger.debug "is_diff Specimen #{bso["id"]}: canonical_taxonomy_ids #{bso["canonical_taxonomy_tesim"]} does not include #{@canonical_taxonomy_id}"
+          Rails.logger.debug "is_diff Specimen #{specimen["id"]}: canonical_taxonomy_ids #{specimen["canonical_taxonomy_tesim"]} does not include #{@canonical_taxonomy_id}"
         end
       end
       # Note: taxonomy_id can contain more IDs than taxonomy_id_array since 
       # new taxonomies are added when apply_idigbio_update was called in a previous update
-      if bso["taxonomy_id_tesim"].present?
-        if (@taxonomy_id_array - bso["taxonomy_id_tesim"]).present? 
+      if specimen["taxonomy_id_tesim"].present?
+        if (@taxonomy_id_array - specimen["taxonomy_id_tesim"]).present? 
           is_diff = true
-          Rails.logger.debug "is_diff Specimen #{bso["id"]}: taxonomy_id_array #{@taxonomy_id_array} VS #{bso["taxonomy_id_tesim"]}"
+          Rails.logger.debug "is_diff Specimen #{specimen["id"]}: taxonomy_id_array #{@taxonomy_id_array} VS #{specimen["taxonomy_id_tesim"]}"
         end
       end
       if @taxonomy_params_array.present? 
         is_diff = true
-        Rails.logger.debug "is_diff Specimen #{bso["id"]}: taxonomy_params_array #{@taxonomy_params_array}"
+        Rails.logger.debug "is_diff Specimen #{specimen["id"]}: taxonomy_params_array #{@taxonomy_params_array}"
       end
       @biospec_model_params.each do |key, value|
         solr_fields = {
@@ -157,9 +157,9 @@ byebug
         }
 
         # case-insensitive comparison for cases like "male" vs. "Male"
-        if Array(value).map(&:downcase).sort != bso[solr_fields[key]]&.map(&:downcase)&.sort
+        if Array(value).map(&:downcase).sort != specimen[solr_fields[key]]&.map(&:downcase)&.sort
           is_diff = true
-          Rails.logger.debug "is_diff Specimen #{bso["id"]}: key=#{key}, #{Array(value)} VS #{bso[solr_fields[key]]}"
+          Rails.logger.debug "is_diff Specimen #{specimen["id"]}: key=#{key}, #{Array(value)} VS #{specimen[solr_fields[key]]}"
         end      
       end
       return is_diff

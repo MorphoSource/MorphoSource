@@ -822,14 +822,15 @@ namespace :morphosource do
   end
 
   desc "Update specimens from IDigbio"
-  task :update_bso_from_idigbio, [:update] => :environment do |task, args|
-    Rails.logger.debug "update_bso_from_idigbio started."
+  task :update_specimens_from_idigbio, [:update] => :environment do |task, args|
+    Rails.logger.debug "update_specimens_from_idigbio started."
     if args[:update].present? && args[:update] == 'true'
       update = true
     else
       update = false
     end
 #    UpdateSpecimensFromIdigbioJob.perform_later(nil, update, true, false)
+
 UpdateSpecimensFromIdigbioJob.perform_now(nil, update, true, true)
     end
 

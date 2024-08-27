@@ -2,11 +2,11 @@ module Morphosource
   class IDigBioUpdateService
     include Morphosource::MessageHelper
 
-    def self.call(bso_id, save_work=false, system_update=false, params_for_update)
-      new(bso_id, save_work, system_update, params_for_update).call
+    def self.call(specimen_id, save_work=false, system_update=false, params_for_update)
+      new(specimen_id, save_work, system_update, params_for_update).call
     end
 
-    def initialize(bso_id, save_work, system_update, params_for_update)
+    def initialize(specimen_id, save_work, system_update, params_for_update)
       @save_work = save_work
       @system_update = system_update
       @canonical_taxonomy_id = params_for_update[:canonical_taxonomy_id]
@@ -14,7 +14,7 @@ module Morphosource
       @taxonomy_params_array = params_for_update[:taxonomy_params_array]
       @biospec_model_params = params_for_update[:biospec_model_params]
 byebug   
-      @bso = BiologicalSpecimen.find(bso_id)
+      @specimen = BiologicalSpecimen.find(specimen_id)
     end
 
     def call
@@ -41,53 +41,53 @@ byebug
     end
   
     def link_taxonomies
-      # now link taxonomy (new or existing) to the bso
+      # now link taxonomy (new or existing) to the specimen
       if @taxonomy_id_array.present?
-        old_taxonomy_id = @bso.taxonomy_id.to_a
-        @bso.taxonomy_id = (@bso.taxonomy_id + @taxonomy_id_array).uniq
+        old_taxonomy_id = @specimen.taxonomy_id.to_a
+        @specimen.taxonomy_id = (@specimen.taxonomy_id + @taxonomy_id_array).uniq
       end
       if @canonical_taxonomy_id.present?
-        old_canonical_taxonomy = @bso.canonical_taxonomy.to_a
-        @bso.canonical_taxonomy_will_change! unless old_canonical_taxonomy.include? @canonical_taxonomy_id
-        @bso.canonical_taxonomy = (@bso.canonical_taxonomy << @canonical_taxonomy_id).uniq
+        old_canonical_taxonomy = @specimen.canonical_taxonomy.to_a
+        @specimen.canonical_taxonomy_will_change! unless old_canonical_taxonomy.include? @canonical_taxonomy_id
+        @specimen.canonical_taxonomy = (@specimen.canonical_taxonomy << @canonical_taxonomy_id).uniq
       end
   
-      if @bso.taxonomy_id_changed?
-        Rails.logger.debug "IDigBioUpdateService: BSO #{@bso.id} : taxonomy_id #{old_taxonomy_id} will be updated to '#{@bso.taxonomy_id.to_a}'"
+      if @specimen.taxonomy_id_changed?
+        Rails.logger.debug "IDigBioUpdateService: specimen #{@specimen.id} : taxonomy_id #{old_taxonomy_id} will be updated to '#{@specimen.taxonomy_id.to_a}'"
       end
-      if @bso.canonical_taxonomy_changed?
-        Rails.logger.debug "IDigBioUpdateService: BSO #{@bso.id} : canonical_taxonomy #{old_canonical_taxonomy} will be updated to '#{@bso.canonical_taxonomy.to_a}'"
+      if @specimen.canonical_taxonomy_changed?
+        Rails.logger.debug "IDigBioUpdateService: specimen #{@specimen.id} : canonical_taxonomy #{old_canonical_taxonomy} will be updated to '#{@specimen.canonical_taxonomy.to_a}'"
       end
     end
   
     def update_metadata_from_idigbio
-      # sync bso metadata
+      # sync specimen metadata
       @biospec_model_params.each do |key, value|
-        @bso.send("#{key}=", Array(value) )
-        if @bso.send("#{key}_changed?")
-          Rails.logger.debug "IDigBioUpdateService: BSO #{@bso.id} : #{key} field will be updated to '#{value}'"
+        @specimen.send("#{key}=", Array(value) )
+        if @specimen.send("#{key}_changed?")
+          Rails.logger.debug "IDigBioUpdateService: specimen #{@specimen.id} : #{key} field will be updated to '#{value}'"
         end
       end
-      if @bso.idigbio_uuid_changed?
-        @bso.idigbio_link_origin = @system_update ? ["system_generated"] : ["user"]
+      if @specimen.idigbio_uuid_changed?
+        @specimen.idigbio_link_origin = @system_update ? ["system_generated"] : ["user"]
       end
-      @bso.title = [generated_title]
-      @bso.save if @save_work
+      @specimen.title = [generated_title]
+      @specimen.save if @save_work
     end
 
     private
 
     def generated_title
-      inst = @bso.institution_code&.first.presence || ''
-      coll = @bso.collection_code&.first.presence || ''
-      cnum = @bso.catalog_number&.first.presence || ''
+      inst = @specimen.institution_code&.first.presence || ''
+      coll = @specimen.collection_code&.first.presence || ''
+      cnum = @specimen.catalog_number&.first.presence || ''
       case
       when inst.present? || coll.present? || cnum.present?
         collection_catalog_generated_title(inst, coll, cnum)
-      when @bso.identifier.present?
-        identifier_generated_title(@bso.identifier)
+      when @specimen.identifier.present?
+        identifier_generated_title(@specimen.identifier)
       else
-        fallback_generated_title(@bso.vouchered, ::User.find_by_user_key(@bso.depositor))
+        fallback_generated_title(@specimen.vouchered, ::User.find_by_user_key(@specimen.depositor))
       end
     end
 

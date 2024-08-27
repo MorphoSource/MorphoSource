@@ -23,8 +23,8 @@ module Hyrax
         content_range = request.headers["CONTENT-RANGE"]
         chunk_initial_byte = content_range[/\ (.*?)-/,1].to_i
 
-        current_size = @upload.file.size
-        if current_size == chunk_initial_byte
+        current_size = @upload.file.url ? File.size(@upload.file.url) : 0
+        if ( current_size > 0 ) && ( current_size == chunk_initial_byte )
           # new chunk confirmed, append
           File.open(@upload.file.url, "ab") { |f| incoming_file.to_io.each_line { |line| f.write(line) } }
         else

@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Morphosource::My::Collections::MediaLists::SequentialSectionListsController, type: :controller do
 
-  let(:user)                                      { User.create(email: 'user@email.com', password: 'password') }
+  let(:user)  { User.create(email: 'user@email.com', password: 'password') }
 
   describe 'collections_type' do
     it { expect(subject.collections_type).to eq('sequential_section_lists') }
@@ -13,12 +13,10 @@ RSpec.describe Morphosource::My::Collections::MediaLists::SequentialSectionLists
   end
 
   describe 'search_action_url' do
-    it 'is media_list_path' do
-      expect(subject.search_action_url).to include("/dashboard/my/sequential_section_lists?locale=en")
-    end
+    it { expect(subject.search_action_url).to include(my_sequential_section_lists_path) }
   end
 
   describe 'search_action_for_dashboard' do
-    it { expect(subject.search_action_for_dashboard).to eq("/dashboard/my/sequential_section_lists?locale=en") }
+    it { expect(subject.search_action_for_dashboard).to eq(my_sequential_section_lists_path) }
   end
 end

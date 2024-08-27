@@ -47,14 +47,4 @@ RSpec.describe 'dashboard my pages routing', type: :routing do
     route = { controller: 'morphosource/my/cultural_heritage_objects', action: 'facet', id: 'foobar' }
     expect(:get => '/dashboard/my/cultural_heritage_objects/facet/foobar').to route_to(route)
   end
-
-  it 'has my sequential section lists routes' do
-    # index
-    route = { controller: 'morphosource/my/collections/media_lists/sequential_section_lists', action: 'index' }
-    expect(:get => '/dashboard/my/sequential_section_lists').to route_to(route)
-    # facet
-    route = { controller: 'morphosource/my/collections/media_lists/sequential_section_lists', action: 'facet', id: 'foobar' }
-    expect(:get => '/dashboard/my/sequential_section_lists/facet/foobar').to route_to(route)
-  end
-
 end

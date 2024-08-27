@@ -367,6 +367,9 @@ Hyrax.config do |config|
   # Enable or disable BrowseEverything cloud file provider upload
   config.enable_browse_everything = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_BROWSE_EVERYTHING', false))
 
+  # Enable or disable BrowseEverything local file system (Globus) provider
+  config.enable_browse_everything_file_system = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_BROWSE_EVERYTHING_FILE_SYSTEM', false))
+
   # Enable or disable specific BrowseEverything cloud file providers
   config.enable_browse_everything_box = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_BROWSE_EVERYTHING_BOX', false))
   config.enable_browse_everything_dropbox = ActiveModel::Type::Boolean.new.cast(ENV.fetch('ENABLE_BROWSE_EVERYTHING_DROPBOX', false))

@@ -10,6 +10,9 @@ module Morphosource
       property :list_type, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/listType") do |index|
         index.as :stored_searchable, :symbol
       end
+      property :doi, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/DOI") do |index|
+        index.as :stored_searchable, :symbol
+      end
     end
   end
 end

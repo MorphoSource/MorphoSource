@@ -70,7 +70,7 @@ module Morphosource
       }
 
       # Default user roles
-      ROLES = ["admin", "batch_submission_contributor", "contributor", "charge_api", "remote_file_submitter"]
+      ROLES = ["admin", "batch_submission_contributor", "contributor", "charge_api", "globus_file_submitter", "remote_file_submitter"]
     end
   end
 end

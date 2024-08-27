@@ -1,7 +1,8 @@
 module Morphosource
   module Organizations
     # Migrates organization work to organization collection
-    class WorkToCollectionService
+    class MigrateWorkToCollectionService
+      include Morphosource::ResqueJobsHelper
 
       attr_reader :organization_work_id, :organization_work, :organization_collection_id,
         :organization_collection, :organization_team_id, :organization_team, :data, :all_media_ids,

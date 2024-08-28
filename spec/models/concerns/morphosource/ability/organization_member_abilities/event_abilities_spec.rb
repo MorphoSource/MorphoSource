@@ -419,7 +419,7 @@ RSpec.describe 'Morphosource::Ability', type: :model do
       context 'imaging event has no child media' do
         context 'imaging event has no child works' do
           it 'returns nil' do
-            expect(ability.send(:detect_child_media, event_doc)).to be nil
+            expect(ability.send(:detect_child_media, event_doc)).to eq([])
           end
         end
         context 'imaging event has a processing event with no child media' do
@@ -428,7 +428,7 @@ RSpec.describe 'Morphosource::Ability', type: :model do
             event.save!
           end
           it 'returns nil' do
-            expect(ability.send(:detect_child_media, event_doc)).to be nil
+            expect(ability.send(:detect_child_media, event_doc)).to eq([])
           end
         end
         context 'imaging event has multiple processing events with no child media' do
@@ -439,7 +439,7 @@ RSpec.describe 'Morphosource::Ability', type: :model do
             event.save!
           end
           it 'returns nil' do
-            expect(ability.send(:detect_child_media, event_doc)).to be nil
+            expect(ability.send(:detect_child_media, event_doc)).to eq([])
           end
         end
       end
@@ -493,7 +493,7 @@ RSpec.describe 'Morphosource::Ability', type: :model do
       context 'processing event has no child media' do
         context 'processing event has no child works' do
           it 'returns nil' do
-            expect(ability.send(:detect_child_media, event_doc)).to be nil
+            expect(ability.send(:detect_child_media, event_doc)).to eq([])
           end
         end
       end

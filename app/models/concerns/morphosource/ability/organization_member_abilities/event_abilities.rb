@@ -40,7 +40,7 @@ module Morphosource
         # returns an array of closest ancestor media solr hits for the event
         def detect_child_media(event)
           return [] unless member_ids = event['member_ids_ssim']
-          member_docs = event.member_docs
+          member_docs = Morphosource::SolrService.new.get_docs(nil, fq: ["id:(#{member_ids.join(' OR ')})"])
           # if the event has an immediate child media, return it
           media = member_docs.select { |doc| doc['has_model_ssim'] == ['Media'] }
           return media if media.present?

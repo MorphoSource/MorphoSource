@@ -31,7 +31,7 @@ module Hyrax
         if ( current_size > 0 ) && ( current_size == chunk_initial_byte )
           # new chunk confirmed, append
           File.open(@upload.file.url, "ab") { |f| incoming_file.to_io.each_line { |line| f.write(line) } }
-          @upload.total_file_size = File.size(@upload.file.url)
+          @upload.total_file_size = current_size + incoming_file.size
           @upload.save!
         else
           # chunk can not be appended to existing file, maybe restart upload?

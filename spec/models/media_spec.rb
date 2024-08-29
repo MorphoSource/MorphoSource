@@ -538,38 +538,47 @@ RSpec.describe Media do
 
         context 'conditions are met for transferring media' do
           before do
+            allow(User).to receive(:find_by).and_call_original
             media.transfer_media_to_organization
           end
+
           it 'creates a new ProxyDepositRequest' do
             expect(ProxyDepositRequest.where(work_id: media.id, receiving_user: organization.id, sending_user: depositor.id, organization_transfer: true).count).to eq(1)
           end
 
           context 'owner is an organization manager' do
             let(:organization_depositor)  { depositor }
+
             context 'media owner and on_behalf_of is blank' do
+
               it 'does not create a new ProxyDepositRequest' do
                 expect(ProxyDepositRequest.where(work_id: media.id, receiving_user: organization.id, sending_user: depositor.id, organization_transfer: true).count).to eq(0)
               end
+
               it 'assigns the organization as owner' do
                 expect(media.owner).to eq(organization.id)
               end
             end
+
             context 'media owner is blank' do
               let!(:media) { Media.create(title: ['media'], depositor: data_manager.ms_id, visibility: 'restricted', fileset_accessibility: ['private'], organization_transfer_on_publish: true, on_behalf_of: depositor.ms_id) }
 
               it 'does not create a new ProxyDepositRequest' do
                 expect(ProxyDepositRequest.where(work_id: media.id, receiving_user: organization.id, sending_user: depositor.id, organization_transfer: true).count).to eq(0)
               end
+
               it 'assigns the organization as owner' do
                 expect(media.owner).to eq(organization.id)
               end
             end
+
             context 'media on_behalf_of is blank' do
               let!(:media) { Media.create(title: ['media'], depositor: data_manager.ms_id, visibility: 'restricted', fileset_accessibility: ['private'], organization_transfer_on_publish: true, owner: depositor.ms_id) }
 
               it 'does not create a new ProxyDepositRequest' do
                 expect(ProxyDepositRequest.where(work_id: media.id, receiving_user: organization.id, sending_user: depositor.id, organization_transfer: true).count).to eq(0)
               end
+
               it 'assigns the organization as owner' do
                 expect(media.owner).to eq(organization.id)
               end

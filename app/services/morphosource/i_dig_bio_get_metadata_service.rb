@@ -20,7 +20,7 @@ module Morphosource
       # Check all conditions to see if a sync is needed
       # Return metadata if all conditions pass.
       @occurrence_id = specimen["occurrence_id_tesim"]
-      return nil unless occurrence_id_valid?(occurrence_id)        
+      return nil unless occurrence_id_valid?        
       return nil unless (occurrence_id_results[:status] == :success) && (occurrence_id_results[:data].length > 0)
 
       if occurrence_id_results[:data].length > 1
@@ -28,7 +28,7 @@ module Morphosource
         return nil
       end
 
-      if idigbio_recordset_different_from_org?(specimen)
+      if idigbio_recordset_different_from_org?
         Rails.logger.debug "Specimen #{specimen["id"]} not synced because the organization (#{specimen["organization_id_tesim"].first}) has recordset ID(s) (#{org_recordset_ids.join(', ')}) different from the iDigBio-supplied recordset ID #{idb_recordset_id}."
         return nil
       end
@@ -36,13 +36,13 @@ module Morphosource
       return get_metadata_from_idigbio_occurrence_id
     end
 
-    def occurrence_id_valid?(occurrence_id)
+    def occurrence_id_valid?
       # valid if 8 characters minimum AND has both a letter and a number
       occurrence_id.present? && occurrence_id.first.length >= 8 &&
         occurrence_id.first.count("0-9") > 0 && occurrence_id.first.count("a-zA-Z") > 0
     end
 
-    def idigbio_recordset_different_from_org?(specimen)
+    def idigbio_recordset_different_from_org?
       org_id = specimen["organization_id_tesim"]
       return false unless org_id.present?
       org = SolrDocument.find(org_id)

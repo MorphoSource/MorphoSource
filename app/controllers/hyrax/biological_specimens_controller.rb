@@ -20,8 +20,6 @@ module Hyrax
 
     skip_authorize_resource only: :showcase
 
-    attr_accessor :idigbio_occurrence_id_results
-
     # override the layout from WorksControllerBehavior
     def decide_layout
       layout = case action_name

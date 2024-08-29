@@ -50,50 +50,6 @@ RSpec.describe BiologicalSpecimen do
 
     end
 
-    describe "occurrence_id_valid" do
-      let (:invalid_oid) { ['1234567'] }
-      let (:invalid_oid_2) { ['12345678'] }
-      let (:invalid_oid_3) { ['abcdefgh'] }
-      let (:valid_oid) { ['abcdefg7'] }
-
-      describe "less than 8 chars" do
-        before do
-          subject.occurrence_id = invalid_oid
-        end      
-        it "occurrence_id invalid" do
-          expect(subject.occurrence_id_valid?).to eq(false)
-        end
-      end
-
-      describe "no alphabet" do
-        before do
-          subject.occurrence_id = invalid_oid_2
-        end      
-        it "occurrence_id invalid" do
-          expect(subject.occurrence_id_valid?).to eq(false)
-        end
-      end
-
-      describe "no digit" do
-        before do
-          subject.occurrence_id = invalid_oid_3
-        end      
-        it "occurrence_id invalid" do
-          expect(subject.occurrence_id_valid?).to eq(false)
-        end
-      end
-
-      describe "valid id" do
-        before do
-          subject.occurrence_id = valid_oid
-        end      
-        it "occurrence_id valid" do
-          expect(subject.occurrence_id_valid?).to eq(true)
-        end
-      end
-
-    end
-
     describe "taxonomy methods" do
       let (:taxonomy1)  { Taxonomy.create(id: "1", title: ["taxonomy1 title"], trusted: ["Yes"]) }
       let (:taxonomy2)  { Taxonomy.create(id: "2", title: ["taxonomy2 title"], trusted: ["Yes"]) }

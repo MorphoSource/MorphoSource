@@ -25,7 +25,7 @@ RSpec.describe UpdateSpecimensFromIdigbioJob do
 
   describe "#specimen_result" do 
     it 'returns a result containing the expected solr fields' do
-      result = subject.bso_result.first
+      result = subject.specimen_result.first
       expect(result["id"]).not_to eq(nil)
       expect(result["organization_id_tesim"]).to eq([org.id])
       expect(result["occurrence_id_tesim"]).to eq(["occurrence_1"])

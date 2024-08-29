@@ -830,10 +830,8 @@ namespace :morphosource do
     else
       update = false
     end
-#UpdateSpecimensFromIdigbioJob.perform_later(save_work=update, force_update=false)
-
-UpdateSpecimensFromIdigbioJob.perform_now(save_work=update, force_update=false)
-    end
+    UpdateSpecimensFromIdigbioJob.perform_later(save_work=update, force_update=false)
+  end
 
   # MCZ slide import
   desc "Get new MCZ sequential section slides from GBIF"

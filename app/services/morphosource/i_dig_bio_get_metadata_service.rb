@@ -1,8 +1,7 @@
 module Morphosource
   class IDigBioGetMetadataService
 
-    attr_reader :specimen, :occurrence_id, :org_recordset_ids, :idigbio_occurrence, :idb_recordset_id, 
-      :canonical_taxonomy_id, :taxonomy_id_array, :taxonomy_params_array, :biospec_model_params
+    attr_reader :specimen, :occurrence_id_results, :occurrence_id, :org_recordset_ids, :idigbio_occurrence, :idb_recordset_id, :canonical_taxonomy_id, :taxonomy_id_array, :taxonomy_params_array, :biospec_model_params
 
     def self.call(specimen_id)
       new(specimen_id).call
@@ -10,18 +9,18 @@ module Morphosource
 
     def initialize(specimen_id)
       @specimen = SolrDocument.find(specimen_id)
-    end
-
-    def occurrence_id_results
-      @occurrence_id_results ||= Morphosource::IDigBio.search({'occurrenceid' => occurrence_id})
+      @occurrence_id = specimen["occurrence_id_tesim"]
+      if occurrence_id_valid?
+        @occurrence_id_results = Morphosource::IDigBio.search({'occurrenceid' => occurrence_id})
+      end
     end
 
     def call
       # Check all conditions to see if a sync is needed
       # Return metadata if all conditions pass.
-      @occurrence_id = specimen["occurrence_id_tesim"]
-      return nil unless occurrence_id_valid?        
-      return nil unless (occurrence_id_results[:status] == :success) && (occurrence_id_results[:data].length > 0)
+      unless occurrence_id_results.present? && occurrence_id_results[:status] == :success && occurrence_id_results[:data].length > 0
+        return nil
+      end
 
       if occurrence_id_results[:data].length > 1
         Rails.logger.debug "Specimen #{specimen["id"]} not synced because multiple records found for OID: #{specimen["occurrence_id_tesim"].first}"

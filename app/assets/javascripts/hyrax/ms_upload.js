@@ -34,7 +34,7 @@ $( document ).ready(function() {
     });
 
     var options = {
-      maxChunkSize: 50000000,
+      maxChunkSize: 100000000,
       maxFileSize: 100000000000,
       maxNumberOfFiles: 1,
       maxRetries: 5,

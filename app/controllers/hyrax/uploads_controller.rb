@@ -16,9 +16,9 @@ module Hyrax
       incoming_file = params[:files]&.first
       incoming_file_name = incoming_file.original_filename
 
-      if Hyrax::UploadedFile.exists?(file: incoming_file_name, upload_hash: params[:upload_hash], user: current_user)
+      if ( existing_upload = Hyrax::UploadedFile.find_by(file: incoming_file_name, upload_hash: params[:upload_hash], user: current_user) ).present?
         # This is a new chunk to append to an existing file (probably)
-        @upload = Hyrax::UploadedFile.find_by(file: incoming_file_name, upload_hash: params[:upload_hash], user: current_user)
+        @upload = existing_upload
 
         content_range = request.headers["CONTENT-RANGE"]
         chunk_initial_byte = content_range[/\ (.*?)-/,1].to_i
@@ -31,8 +31,7 @@ module Hyrax
         if ( current_size > 0 ) && ( current_size == chunk_initial_byte )
           # new chunk confirmed, append
           File.open(@upload.file.url, "ab") { |f| incoming_file.to_io.each_line { |line| f.write(line) } }
-          @upload.total_file_size = current_size + incoming_file.size
-          @upload.save!
+          @upload.update_columns(total_file_size: current_size + incoming_file.size)
         else
           # chunk can not be appended to existing file, maybe restart upload?
           if chunk_initial_byte == 0

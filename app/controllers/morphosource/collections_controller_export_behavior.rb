@@ -64,8 +64,11 @@ module Morphosource
     ### Download and Download Request Export ###
 
     def media_downloads
-      deny_access_unauthorized and return unless current_user.present?
-      deny_access_forbidden    and return unless current_user.can?(:edit, @collection)
+      unless current_user&.admin?
+        deny_access_unauthorized and return unless current_user.present?
+        deny_access_forbidden    and return if @collection.media_list?
+        deny_access_forbidden    and return unless current_user.can?(:edit, @collection)
+      end
 
       @document_type = 'media_download'
       repository.blacklight_config.max_per_page = 9999999
@@ -109,8 +112,11 @@ module Morphosource
     end
 
     def media_requests
-      deny_access_unauthorized and return unless current_user.present?
-      deny_access_forbidden    and return unless current_user.can?(:edit, @collection)
+      unless current_user&.admin?
+        deny_access_unauthorized and return unless current_user.present?
+        deny_access_forbidden    and return if @collection.media_list?
+        deny_access_forbidden    and return unless current_user.can?(:edit, @collection)
+      end
 
       @document_type = 'media_request'
       repository.blacklight_config.max_per_page = 9999999
@@ -180,25 +186,26 @@ module Morphosource
     end
 
     def works_export_filename
-      t("morphosource.collections.#{collection_type.title.downcase}.exports.#{tab.to_s}.media_export.filename")
+      t("morphosource.collections.#{@collection.collection_type.machine_id}.exports.#{tab.to_s}.media_export.filename")
     rescue
       "#{@document_type.titleize.pluralize} Query"
     end
 
     def media_download_counts_filename
-      t("morphosource.collections.#{collection_type.title.downcase}.exports.#{tab.to_s}.media_download_counts.filename")
+      t("morphosource.collections.#{@collection.collection_type.machine_id}.exports.#{tab.to_s}.media_download_counts.filename")
     rescue
       'Media%20Download%20Counts'
     end
 
     def media_downloads_filename
-      t("morphosource.collections.#{collection_type.title.downcase}.exports.#{tab.to_s}.media_downloads.filename")
+      t("morphosource.collections.#{@collection.collection_type.machine_id}.exports.#{tab.to_s}.media_downloads.filename")
     rescue
       'Media%20Downloads'
     end
 
     def media_requests_filename
-      t("morphosource.collections.#{collection_type.title.downcase}.exports.#{tab.to_s}.media_requests.filename")
+      byebug
+      t("morphosource.collections.#{@collection.collection_type.machine_id}.exports.#{tab.to_s}.media_requests.filename")
     rescue
       'Media%20Requests'
     end

@@ -57,6 +57,7 @@ provide :page_title, construct_page_title(@presenter.title)
     </div>
 
     <div class="col-xs-12 col-sm-4 col-md-4 btn-wrapper">
+    <% byebug %>
       <% if @can_deposit %>
         <%= render 'collection_manage_buttons' %>
       <% end %>

@@ -53,6 +53,10 @@ module Hyrax
             test_edit(list.id)
           end
 
+          can :deposit, MediaList do |list|
+            Hyrax::Collections::PermissionsService.can_deposit_in_collection?(ability: self, collection_id: list.id)
+          end
+
           cannot :create, ::SequentialSectionList
 
           # only admins can create organization collections

@@ -50,6 +50,7 @@ module Morphosource
     end
 
     def works_export
+      byebug
       deny_access_unauthorized and return unless current_user.present?
       deny_access_forbidden    and return unless current_user.can?(:edit, @collection)
 
@@ -79,6 +80,7 @@ module Morphosource
     end
 
     def media_download_counts
+      byebug
       deny_access_unauthorized and return unless current_user.present?
       deny_access_forbidden    and return unless current_user.can?(:edit, @collection)
 

@@ -4,13 +4,7 @@ module Morphosource
 
       include Morphosource::Collections::OrderedMediaBehavior
 
-      skip_load_and_authorize_resource only: [:show, :about, :facet, :order_media], instance_name: :collection
-
       before_action :redirect_to_collection_type, only: []
-
-      # temporary restriction so only admins can access media lists and sequential section lists
-      # allow show action only
-      before_action :authorize_admin, except: [:show, :about, :facet]
 
       class_attribute :collection_type
 

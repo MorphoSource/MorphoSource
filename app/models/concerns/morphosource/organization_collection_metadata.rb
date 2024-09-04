@@ -11,6 +11,10 @@ module Morphosource
       property :ark, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/ark") do |index|
         index.as :stored_searchable
       end
+
+      property :legacy_organization_work_id, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/legacyOrganizationWorkID"), multiple: false do |index|
+        index.as :stored_searchable
+      end
     end
   end
 end

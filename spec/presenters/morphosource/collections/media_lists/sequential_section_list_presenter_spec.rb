@@ -1,6 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe Morphosource::Collections::MediaLists::SequentialSectionListPresenter do
+
+  let(:main_app)  { Rails.application.routes.url_helpers }
+
   let(:id)        { '123' }
   let(:list)      { double('list', id: id) }
   let(:solr_doc)  { double('solr doc', id: id) }
@@ -13,7 +16,7 @@ RSpec.describe Morphosource::Collections::MediaLists::SequentialSectionListPrese
   end
 
   describe 'edit_path' do
-    it { expect(subject.edit_path).to eq("/dashboard/sequential_section_lists/#{id}?locale=en") }
+    it { expect(subject.edit_path).to eq(main_app.sequential_section_list_edit_path( { :id => id, :locale => 'en' } )) }
   end
 
   describe 'collection_type_title' do

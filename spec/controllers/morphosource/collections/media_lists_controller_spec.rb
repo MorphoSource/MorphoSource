@@ -63,7 +63,7 @@ RSpec.describe Morphosource::Collections::MediaListsController, type: :controlle
       subject.instance_variable_set(:@curation_concern, media_list)
     end
     it 'is media_list_path' do
-      expect(subject.send(:search_action_url)).to eq("/media_lists/#{media_list.id}?locale=en")
+      expect(subject.send(:search_action_url)).to eq(media_list_path(media_list.id))
     end
   end
 
@@ -72,8 +72,8 @@ RSpec.describe Morphosource::Collections::MediaListsController, type: :controlle
     before do
       subject.instance_variable_set(:@collection, media_list)
     end
-    it 'is media_list_path' do
-      expect(subject.send(:search_facet_path, {id: facet_id})).to eq("/media_lists/#{media_list.id}/facet/#{facet_id}?locale=en")
+    it 'is media_list_media_facet_path' do
+      expect(subject.send(:search_facet_path, {id: facet_id})).to eq(media_list_media_facet_path(media_list.id, id: facet_id))
     end
   end
 

@@ -8,7 +8,7 @@
         placeholder: "Search for a user or organization",
         minimumInputLength: 2,
         id: function(object) {
-          return object.user_key;
+          return object.id;
         },
         initSelection: function(element, callback) {
           var data = {

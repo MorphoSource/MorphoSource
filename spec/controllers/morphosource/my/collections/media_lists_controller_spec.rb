@@ -2,7 +2,8 @@ require 'rails_helper'
 
 RSpec.describe Morphosource::My::Collections::MediaListsController, type: :controller do
 
-  let(:user)                        { User.create(email: 'user@email.com', password: 'password') }
+  let!(:collection_type)  { Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::MediaLists::SETTINGS) }
+  let(:user)              { User.create(email: 'user@email.com', password: 'password') }
 
   describe 'registered user' do
     context 'user is sign in' do
@@ -33,11 +34,11 @@ RSpec.describe Morphosource::My::Collections::MediaListsController, type: :contr
 
   describe 'search_action_url' do
     it 'is media_list_path' do
-      expect(subject.search_action_url).to include("/dashboard/my/media_lists?locale=en")
+      expect(subject.search_action_url).to include(my_media_lists_path)
     end
   end
 
   describe 'search_action_for_dashboard' do
-    it { expect(subject.search_action_for_dashboard).to eq("/dashboard/my/media_lists?locale=en") }
+    it { expect(subject.search_action_for_dashboard).to eq(my_media_lists_path) }
   end
 end

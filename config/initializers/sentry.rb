@@ -12,4 +12,15 @@ Sentry.init do |config|
 
   # disable transaction sampling
   config.traces_sample_rate = 0.0
+
+  exceptions_do_not_send = [I18n::InvalidLocale]
+  config.before_send = lambda do |event, hint|
+    # skip certain exceptions
+    # note: hint[:exception] would be a String if you use async callback
+    if exceptions_do_not_send.include?(hint[:exception])
+      nil
+    else
+      event
+    end
+  end
 end

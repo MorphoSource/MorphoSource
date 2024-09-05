@@ -3,12 +3,30 @@ module Morphosource
 
     attr_reader :specimen, :occurrence_id_results, :occurrence_id, :org_recordset_ids, :idigbio_occurrence, :idb_recordset_id, :canonical_taxonomy_id, :taxonomy_id_array, :taxonomy_params_array, :biospec_model_params
 
+    SPECIMEN_SOLR_FIELDS = {
+      "idigbio_uuid" => "idigbio_uuid_tesim", 
+      "idigbio_recordset_id" => "idigbio_recordset_id_tesim", 
+      "vouchered" => "vouchered_tesim", 
+      "institution_code" => "institution_code_tesim", 
+      "collection_code" => "collection_code_tesim", 
+      "catalog_number" => "catalog_number_tesim", 
+      "occurrence_id" => "occurrence_id_tesim", 
+      "related_url" => "related_url_tesim", 
+      "creator" => "creator_tesim", 
+      "periodic_time" => "periodic_time_tesim", 
+      "original_location" => "original_location_tesim"
+    }
+
     def self.call(specimen_id)
       new(specimen_id).call
     end
 
-    def initialize(specimen_id)
-      @specimen = SolrDocument.find(specimen_id)
+    def initialize(specimen_id: nil, specimen_doc: nil)
+      if specimen_id
+        @specimen = SolrDocument.find(specimen_id)
+      else
+        @specimen = specimen_doc
+      end
       @occurrence_id = specimen["occurrence_id_tesim"]
       if occurrence_id_valid?
         @occurrence_id_results = Morphosource::IDigBio.search({'occurrenceid' => occurrence_id})
@@ -77,24 +95,10 @@ module Morphosource
         Rails.logger.debug "is_diff Specimen #{specimen["id"]}: taxonomy_params_array #{taxonomy_params_array}"
       end
       biospec_model_params.each do |key, value|
-        solr_fields = {
-          "idigbio_uuid" => "idigbio_uuid_tesim", 
-          "idigbio_recordset_id" => "idigbio_recordset_id_tesim", 
-          "vouchered" => "vouchered_tesim", 
-          "institution_code" => "institution_code_tesim", 
-          "collection_code" => "collection_code_tesim", 
-          "catalog_number" => "catalog_number_tesim", 
-          "occurrence_id" => "occurrence_id_tesim", 
-          "related_url" => "related_url_tesim", 
-          "creator" => "creator_tesim", 
-          "periodic_time" => "periodic_time_tesim", 
-          "original_location" => "original_location_tesim"
-        }
-
         # case-insensitive comparison for cases like "male" vs. "Male"
-        if Array(value).map(&:downcase).sort != specimen[solr_fields[key]]&.map(&:downcase)&.sort
+        if Array(value).map(&:downcase).sort != specimen[SPECIMEN_SOLR_FIELDS[key]]&.map(&:downcase)&.sort
           is_diff = true
-          Rails.logger.debug "is_diff Specimen #{specimen["id"]}: key=#{key}, #{Array(value)} VS #{specimen[solr_fields[key]]}"
+          Rails.logger.debug "is_diff Specimen #{specimen["id"]}: key=#{key}, #{Array(value)} VS #{specimen[SPECIMEN_SOLR_FIELDS[key]]}"
         end      
       end
       return is_diff

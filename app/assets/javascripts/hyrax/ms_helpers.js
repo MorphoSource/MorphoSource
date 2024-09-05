@@ -27,17 +27,19 @@ function enablePageAndSave(btn) {
 
 function disablePage() {
   // Create overlay and append to body:
-  if ($('#overlay-whole-page').length) {
-
-  } else {
+  if (!($('#overlay-whole-page').length)) {
     $('<div id="overlay-whole-page" class="ui-loading-whole-page"/>').css({
         position: 'fixed',
         top: 0,
         left: 0,
         width: '100%',
-        height: $(window).height() + 'px'
-    }).hide().appendTo('body');
-
+        height: $(window).height() + 'px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center'
+    })
+    .html('<div class="overlay-message">Please wait and do not close the browser</div>')
+    .hide().appendTo('body');
   }
   $('#overlay-whole-page').show();
 }

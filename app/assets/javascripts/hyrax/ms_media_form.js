@@ -259,7 +259,6 @@ $( document ).ready(function() {
   jQuery.fn.extend({
     submitRelatedWork: function (callback) {
       var relatedFormId = $(this).attr('id');
-//debugger;
       console.log('submitting '+ relatedFormId );
       var postData = new FormData($(this)[0]);
       $.ajax({
@@ -270,13 +269,7 @@ $( document ).ready(function() {
         contentType: false,
         dataType: "json",
         success: function(data){
-          //console.log("submitted work ID: " + data.id );
-//debugger;
-//          if (relatedFormId.indexOf('imaging_event') != -1)
-//            IsImagingEventOK = true;
-//          else if (relatedFormId.indexOf('processing_event') != -1)
-//            IsProcessingEventOK = true;
-//          if (callback) callback();
+          console.log("submitted work ID: " + data.id );
         }
       }).fail(function(data) {
         console.log("getting a fail status ", data );
@@ -290,20 +283,15 @@ $( document ).ready(function() {
           });
         }
         if (msg) alert(msg);
-        if (callback) callback();
-      }).always(function(data) {
-
       });
-
-//debugger;
-
-// no need to wait for ajax post to finish
-          if (relatedFormId.indexOf('imaging_event') != -1)
-            IsImagingEventOK = true;
-          else if (relatedFormId.indexOf('processing_event') != -1)
-            IsProcessingEventOK = true;
-          if (callback) callback();
-
+      // Call the next function (to save PE form or media form) 
+      // NO need to wait for ajax post response
+      if (relatedFormId.indexOf('imaging_event') > 0) {
+        IsImagingEventOK = true;
+      } else if (relatedFormId.indexOf('processing_event') > 0) {
+        IsProcessingEventOK = true;
+      }
+      if (callback) callback();
     }
   });
 
@@ -553,7 +541,6 @@ function submitProcessingEvent() {
   if (HasEditProcessingEventForm) {
     var isProcessingActivityValid = buildProcessingActivity(); // populate the PA field before saving PE
     if (isProcessingActivityValid) {
-//debugger;
       $("form#related_form_processing_event").submitRelatedWork(saveMediaIfReady);
     }
   } else {
@@ -566,7 +553,6 @@ function saveMediaIfReady() {
   if (IsImagingEventOK && IsProcessingEventOK) {
     form.submit();
     console.log('...media form submitted');
-//debugger;
   } else {
     $.alert('imaging_event or processing_event not saved properly.');
     enablePageAndSave(".btn-save-media");
@@ -621,9 +607,9 @@ var editMediaSubmit = function() {
   if (isModalityValid() && hasRequiredFields()) {
     disablePageAndSave(".btn-save-media");
     if (HasEditImagingEventForm) {
-//debugger;
       $("form#related_form_imaging_event").submitRelatedWork(submitProcessingEvent);
     } else {
+      // has a read-only Imaging Event form
       IsImagingEventOK = true;
       submitProcessingEvent();
     }

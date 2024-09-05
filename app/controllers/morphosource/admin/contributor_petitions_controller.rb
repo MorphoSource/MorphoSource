@@ -167,23 +167,11 @@ module Morphosource
             if field == 'user_id' or field == 'decision_by'
               value = User.find_by_id(value)&.name_and_email
             end
-            case field
-            when 'user_id'
-              field = 'Applicant'
-            when 'created_at'
-              field = 'Date Application Submitted'
-            when 'reason'
-              field = 'Nature and Purpose of Data'
-            when 'terms_agree'
-              field =  'Agreed to Terms?'
-            when 'user_affiliation'
-              field =  'Organization'
-            when 'user_demographics'
-              field =  'Professional Affiliation'
-            when 'user_department'
-              field =  'Department'
-            when 'user_advisor'
-              field =  'Student Advisor'
+
+            if field == 'user_id'
+              field = t('.list_headers.table.user')
+            else
+              field = t('.list_headers.table.'+field, default: field)
             end
 
             if value.kind_of? Array

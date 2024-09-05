@@ -1,12 +1,12 @@
 class UpdateSpecimensFromIdigbioJob < Hyrax::ApplicationJob
-  include Morphosource::IDigBioUpdateHelper
 
   queue_as Hyrax.config.update_medium_queue_name
 
   def perform(save_work=false, force_update=false)
     specimen_result.each do |hit|      
       if (params_for_update = Morphosource::IDigBioGetMetadataService.call(hit.id)).present?
-        if force_update || idigbio_record_different_from_specimen?(hit, params_for_update)
+byebug  
+        if force_update || Morphosource::IDigBioGetMetadataService.idigbio_record_different_from_specimen?(hit, params_for_update)
           Rails.logger.debug "Specimen #{hit.id} will be updated as a result of " + (force_update ? "force update" : "idigbio record different from specimen")
           if save_work
             UpdateSingleSpecimenFromIdigbioJob.perform_later(hit.id, system_update=true, params_for_update)

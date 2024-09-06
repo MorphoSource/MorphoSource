@@ -11,7 +11,7 @@ RSpec.describe Morphosource::IDigBioGetMetadataService do
       idigbio_recordset_id: ["recordset_id_1"]
     ) }
 
-  subject { described_class.new(specimen.id) }
+  subject { described_class.new(specimen_id: specimen.id) }
 
   describe "#occurrence_id_valid?" do
     let (:invalid_oid) { ['1234567'] }
@@ -46,7 +46,8 @@ RSpec.describe Morphosource::IDigBioGetMetadataService do
       end
     end
 
-    describe "valid id" do
+    describe "valid id, also take specimen solr doc as argument" do
+      subject { described_class.new(specimen_doc: SolrDocument.find(specimen.id)) }
       before do
         subject.instance_variable_set(:@occurrence_id, valid_oid)
       end      

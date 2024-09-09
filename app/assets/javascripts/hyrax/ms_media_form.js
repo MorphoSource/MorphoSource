@@ -6,7 +6,7 @@ document.addEventListener("share-tab-loaded", function(event) {
 
   $('#btn-transfer-submit').click(function() {
     if (transferToSelect.val().length == 0) {
-      alert('Please select a user or organization');
+      $.alert('Please select a user or organization');
     } else if (confirm('Are you sure you want to transfer ownership of this work to another user or organization? Click Ok to transfer or Cancel to return to the transfer screen')) {
         disablePage();
         $('#new_proxy_deposit_request').submit();
@@ -248,7 +248,7 @@ $( document ).ready(function() {
     var thumbField = document.getElementById("custom_thumbnail");
     thumbField.onchange = function() {
       if (this.files[0].size > 500000) {
-        alert('Thumbnail size must be 500KB or smaller.  Please upload another thumbnail image.');
+        $.alert('Thumbnail size must be 500KB or smaller.  Please upload another thumbnail image.');
         $('#custom_thumbnail_hint').addClass('text-alert');
         this.value = "";
       } else {
@@ -284,7 +284,7 @@ $( document ).ready(function() {
             });
           });
         }
-        if (msg) alert(msg);
+        if (msg) $.alert(msg);
       });
       // Call the next function (to save PE form or media form) 
       // NO need to wait for ajax post response
@@ -551,7 +551,7 @@ function isModalityValid() {
     } else {
       console.log('deviceModality '+ deviceModality);
       console.log('imagingEventModality '+ imagingEventModality);
-      alert('Device modality does not match imaging event modality.');
+      $.alert('Device modality does not match imaging event modality.');
     }
   } else {
     return true;
@@ -759,7 +759,7 @@ var setMediaLocalRemoteEvent = function() {
   });
 }
 
-var noFileCheck = function() {
+var noFileCheck = function(event) {
   if (skipNoFileCheck) {
     return true;
   } else if (fileOrigin == "local") {
@@ -774,7 +774,18 @@ var noFileCheck = function() {
     return true;
   }
 
-  return confirm('The media currently has no file associated.  Please click OK if you want to proceed.')
+  $.confirm({
+    title: 'No file associated',
+    content: 'The media has no file associated.  Please click OK if you want to proceed.',
+    buttons: {
+      OK: function() {
+        form.submit();
+      },
+      cancel: function() {
+        enablePage();
+      }
+    }
+  });
 }
 
 var hasRequiredFields = function() {

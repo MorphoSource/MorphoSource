@@ -8,3 +8,20 @@ en:
         description: Free-text notes about the collection. Examples include abstracts of a paper or citation information for a journal article.
         keyword: Words or phrases you select to describe what the collection is about. These are used to search for content.
         title: A name to aid in identifying a collection.
+  morphosource:
+    collections:
+      media_list:
+        exports:
+          media:
+            media_export:
+              label: Media metadata with facets CSV
+              filename: 'Object%20Media%20Metadata'
+            media_download_counts:
+              label: Media metadata with download counts CSV
+              filename: 'Object%20Media%20Download%20Counts'
+            media_downloads:
+              label: Individual media downloads CSV
+              filename: 'Object%20Media%20Downloads'
+            media_requests:
+              label: Individual media download requests CSV
+              filename: 'Object%20Media%20Requests'

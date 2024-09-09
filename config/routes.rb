@@ -153,10 +153,6 @@ Rails.application.routes.draw do
     get 'teams/:id/media_requests', to: 'collections#media_requests', as: 'team_media_requests'
     get 'projects/:id/media_downloads', to: 'collections#media_downloads', as: 'project_media_downloads'
     get 'projects/:id/media_requests', to: 'collections#media_requests', as: 'project_media_requests'
-    get 'media-lists/:id/media-downloads', to: 'collections#media_downloads', as: 'media_list_media_downloads'
-    get 'media-lists/:id/media-requests', to: 'collections#media_requests', as: 'media_list_media_requests'
-    get 'sequential-section-lists/:id/media-downloads', to: 'collections#media_downloads', as: 'sequential_section_list_media_downloads'
-    get 'sequential-section-lists/:id/media-requests', to: 'collections#media_requests', as: 'sequential_section_list_media_requests'
 
     ### ADMIN TOOLS AND VIEWS ###
     scope module: :admin, path: 'admin' do
@@ -304,6 +300,8 @@ Rails.application.routes.draw do
       # Media list CSV exports
       get 'media-lists/:id/media-export', to: 'media_lists#media_export_with_intersections_facet', as: 'media_list_media_export'
       get 'media-lists/:id/media-download-counts', to: 'media_lists#media_download_counts_with_intersections_facet', as: 'media_list_media_download_counts'
+      get 'media-lists/:id/media-downloads', to: 'media_lists#media_downloads', as: 'media_list_media_downloads'
+      get 'media-lists/:id/media-requests', to: 'media_lists#media_requests', as: 'media_list_media_requests'
       get 'media-lists/:id/biological-specimens/objects-export', to: 'biological_specimens#objects_export', as: 'media_list_specimens_export'
       get 'media-lists/:id/cultural-heritage-objects/objects-export', to: 'cultural_heritage_objects#objects_export', as: 'media_list_chos_export'
 
@@ -323,8 +321,10 @@ Rails.application.routes.draw do
         get 'sequential-section-lists/:collection_id/facet/:id', to: 'sequential_section_lists#facet', as: 'sequential_section_list_media_facet'
 
         # Sequential section list CSV exports
-        get 'sequential-section-lists/:id/media-export', to: 'sequential_section_lists#media_export_with_intersections_facet', as: 'sequential_section_list_media-export'
         get 'sequential-section-lists/:id/media-download-counts', to: 'sequential_section_lists#media_download_counts_with_intersections_facet', as: 'sequential_section_list_media-download-counts'
+        get 'sequential-section-lists/:id/media-downloads', to: 'sequential_section_lists#media_downloads', as: 'sequential_section_list_media-downloads'
+        get 'sequential-section-lists/:id/media-export', to: 'sequential_section_lists#media_export_with_intersections_facet', as: 'sequential_section_list_media-export'
+        get 'sequential-section-lists/:id/media-requests', to: 'sequential_section_lists#media_requests', as: 'sequential_section_list_media-requests'
 
         # Order media
         get 'sequential-section-lists/:id/order-media', to: 'sequential_section_lists#order_media', as: 'sequential_section_list_order_media'

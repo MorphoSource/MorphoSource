@@ -35,15 +35,17 @@ $( document ).ready(function() {
     IsImagingEventOK = false;
     IsProcessingEventOK = false;
 
-    if ($('form[id*="related_form_imaging_event"]').length)
+    if ($('form[id*="related_form_imaging_event"]').length) {
       HasEditImagingEventForm = true;
-    else
+    } else {
       HasEditImagingEventForm = false; // this means no edit IE form or IE is not editable
+    }
 
-    if ($('form[id*="related_form_processing_event"]').length)
+    if ($('form[id*="related_form_processing_event"]').length) {
       HasEditProcessingEventForm = true;
-    else
+    } else {
       HasEditProcessingEventForm = false;
+    }
 
     setupEmbeddedWorkForm('biological_specimen', false, 'new');
     setupEmbeddedWorkForm('processing_event', 'new', true, reloadPage);
@@ -297,6 +299,28 @@ $( document ).ready(function() {
 
   if ($('form[id*="edit_media"]').length) { // if edit media form page
 
+    if (HasEditImagingEventForm) {
+      if (window.location.hash === "#imaging-event") {
+        ImagingEventTabClicked = true;
+      } else {
+        ImagingEventTabClicked = false;        
+      }
+      $('#tab-imaging-event').on('click', function() {
+        ImagingEventTabClicked = true;
+      })
+    }
+
+    if (HasEditProcessingEventForm) {
+      if (window.location.hash === "#processing-event") {
+        ProcessingEventTabClicked = true;
+      } else {
+        ProcessingEventTabClicked = false;        
+      }
+      $('#tab-processing-event').on('click', function() {
+        ProcessingEventTabClicked = true;
+      })
+    }
+
     $('#tab-media-details[class!="active"] a').on('click', function(){
       var uvIframe = document.getElementById("uv-iframe");
       if (this.ariaExpanded == "false" && uvIframe) {
@@ -538,7 +562,7 @@ function submitProcessingEvent() {
   // only needs to save PE edit form. Note that for cases like raw media,
   // which has no PE, the page will have a new PE form, which does not need
   // to be submitted when saving the Media
-  if (HasEditProcessingEventForm) {
+  if (HasEditProcessingEventForm && ProcessingEventTabClicked) {
     var isProcessingActivityValid = buildProcessingActivity(); // populate the PA field before saving PE
     if (isProcessingActivityValid) {
       $("form#related_form_processing_event").submitRelatedWork(saveMediaIfReady);
@@ -606,10 +630,10 @@ var editMediaSubmit = function() {
   prepareFieldsBeforeSubmit();
   if (isModalityValid() && hasRequiredFields()) {
     disablePageAndSave(".btn-save-media");
-    if (HasEditImagingEventForm) {
+    if (HasEditImagingEventForm && ImagingEventTabClicked) {
       $("form#related_form_imaging_event").submitRelatedWork(submitProcessingEvent);
     } else {
-      // has a read-only Imaging Event form
+      // has a read-only Imaging Event form, or Imaging Event form has not changed
       IsImagingEventOK = true;
       submitProcessingEvent();
     }

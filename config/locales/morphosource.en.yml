@@ -13,10 +13,12 @@ en:
         page_title: All Background Jobs
         page_description: This is a new page listing all tracked background jobs corresponding to Resque jobs. For now, only batch submissions are tracked with this system. You can optionally choose to include Resque data, adding new information and features to this page, but this will slow page loads when many Resque jobs are present or when many rows are viewed per page. You may want to search for your desired subset of background jobs prior to including Resque data.
       contributor_petitions:
+        page_title: 'Contributor Applications'
+        page_description: ''
         header: 'Contributor Applications'
-        index:
+        list_headers:
           table:
-            contribution_amount: 'Data Amount (GB or Other Units)'
+            contribution_amount: 'Total Data Amount (GB or Other Units)'
             reason: 'Nature and Purpose of Data'
             terms_agree: 'Agreed to Terms?'
             user: 'Applicant'
@@ -24,6 +26,14 @@ en:
             user_demographics: 'Professional Affiliation'
             user_department: 'Department'
             user_advisor: 'Student Advisor'
+            created_at: 'Date Application Submitted'
+            decision: 'Decision'
+            decision_message: 'Decision Message'
+            decided_by: 'Decided By'
+            date_approved: 'Date Approved'
+            date_returned: 'Date Returned'
+            date_denied: 'Date Denied'
+            action: 'Action'
       import:
         slides:
           job_submitted: Slides import job has been submitted for background processing. Please check back later.
@@ -99,7 +109,7 @@ en:
           user_affiliation: 'Organization (Institution, museum, university, etc.)'
           user_department: 'Department'
           user_advisor: 'If you are a graduate student, provide the name, email, and professional affiliation of your advisor (Required only for graduate students)'
-          contribution_amount: 'Approximate size of the data you intend to contribute in gigabytes or other appropriate units '
+          contribution_amount: 'Approximate size of the total data amount you intend to contribute in gigabytes or other appropriate units'
           terms_agree: 'Contributor terms and conditions'
           terms_agree_description: 'I agree to the MorphoSource <a href="/contributor_terms" target="_blank">Contributor Terms of Use</a>. I understand these are distinct from the general MorphoSource <a href="/terms" target="_blank">Terms of Use</a>, and I agree to comply with both sets of terms.'
         fund_codes:

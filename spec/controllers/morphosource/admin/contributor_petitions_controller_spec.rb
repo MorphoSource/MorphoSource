@@ -19,6 +19,11 @@ RSpec.describe Morphosource::Admin::ContributorPetitionsController, :type => :co
         get :current_applications
         expect(response).to have_http_status(200)
       end
+
+      it 'return csv for CSV format requests' do
+        get :current_applications, params: {format: 'csv'}
+        expect(response.content_type).to eq('text/csv')
+      end
     end
 
     context 'when user is not admin' do

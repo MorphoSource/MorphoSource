@@ -4,13 +4,22 @@ module Morphosource
 
       include Morphosource::Collections::OrderedMediaBehavior
 
-      skip_load_and_authorize_resource only: [:show, :about, :facet, :order_media], instance_name: :collection
+      skip_load_and_authorize_resource only: [
+        :about,
+        :facet,
+        :media_download_counts_with_intersections_facet,
+        :media_downloads,
+        :media_export_with_intersections_facet,
+        :media_requests,
+        :order_media,
+        :preview,
+        :show
+      ], instance_name: :media_list
 
       before_action :redirect_to_collection_type, only: []
 
-      # temporary restriction so only admins can access media lists and sequential section lists
-      # allow show action only
-      before_action :authorize_admin, except: [:show, :about, :facet]
+      # media list managers do not necessarily have edit access to media in the list, so they shouldn't be able to view information about other users' downloads/requests for list media.
+      before_action :authorize_admin, only: [:media_downloads, :media_requests]
 
       class_attribute :collection_type
 

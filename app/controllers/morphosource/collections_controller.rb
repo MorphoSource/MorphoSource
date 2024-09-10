@@ -85,7 +85,7 @@ module Morphosource
     private
 
       def authorize_admin
-        redirect_to root_path and return unless current_user&.admin?
+        deny_access_forbidden and return unless current_user&.admin?
       end
 
       def decide_layout

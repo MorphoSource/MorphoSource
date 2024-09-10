@@ -5,9 +5,18 @@ module Morphosource
 
     def perform(media_id: nil, organization_id: nil, user_email: nil, remove_previous_reviewers: false, update_publication_status: nil)
       return false if [media_id, organization_id, user_email, remove_previous_reviewers, update_publication_status].any?(&:blank?)
+      @organization = select_organization(organization_id)
+      if @organization.is_a? Organization
+        normalize_team_media(media_id, user_email, remove_previous_reviewers, update_publication_status)
+      elsif @organization.is_a? OrganizationCollection
+        normalize_organization_media(media_id, user_email, remove_previous_reviewers, update_publication_status)
+      end
+    end
+
+    # refactor to remove this method when organizations have been migrated to collections
+    def normalize_team_media(media_id, user_email, remove_previous_reviewers, update_publication_status)
       @media = Media.find(media_id)
-      @organization = Organization.find(organization_id)
-      @team = Collection.find(@organization.team_id.first)
+      @team = Collection.find_by(id: @organization&.team_id&.first)
       @user = User.find_by(email: user_email)
       @remove_previous_reviewers = remove_previous_reviewers
       @update_publication_status = update_publication_status
@@ -15,8 +24,21 @@ module Morphosource
       update_media_publication_status
       update_data_manager
       update_permissions
-      # this goes last because it saves the media and enques the InheritPermissionsJob
-      add_media_to_team
+      add_media_to_team if @team.present?
+      save_and_reindex
+    end
+
+    def normalize_organization_media(media_id, user_email, remove_previous_reviewers, update_publication_status)
+      @media = Media.find(media_id)
+      @team = Collection.find_by(id: @organization&.team_id&.first)
+      @user = User.find_by(email: user_email)
+      @remove_previous_reviewers = remove_previous_reviewers
+      @update_publication_status = update_publication_status
+      update_download_reviewer
+      update_media_publication_status
+      update_data_manager
+      update_permissions
+      save_and_reindex
     end
 
     def update_download_reviewer
@@ -69,8 +91,12 @@ module Morphosource
     end
 
     def update_data_manager
-      @media.owner = @user.ms_id
-      @media.edit_users += [@user]
+      if @organization.organization_collection?
+        @media.owner = @organization.id
+      else
+        @media.owner = @user.ms_id
+        @media.edit_users += [@user]
+      end
     end
 
     def update_permissions
@@ -107,10 +133,19 @@ module Morphosource
       end
     end
 
+    # refactor to remove this method when organizations have been migrated to collections
     def add_media_to_team
       @team.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
       @media.member_of_collections += [@team]
       Hyrax::PermissionTemplateApplicator.apply(@team.permission_template).to(model: @media)
+    end
+
+    # refactor to remove this method when organizations have been migrated to collections
+    def select_organization(organization_id)
+      Organization.find_by(id: organization_id) || OrganizationCollection.find_by(id: organization_id)
+    end
+
+    def save_and_reindex
       @media.save!
       InheritPermissionsJob.perform_later(@media.id)
     end

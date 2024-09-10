@@ -17,7 +17,7 @@ module Morphosource
           # verify all objects exist
           @team = Collection.find(team_id) # organization-linked team or organization collection
           @organization = select_organization # organization work or organization collection
-          @user_email = User.find_by(email: email).email
+          @user_email = User.find_by(email: email)&.email
           @remove_previous_reviewers = remove_previous_reviewers
           @update_publication_status = update_publication_status
           if project_id.blank? && old_manager_email.blank?
@@ -50,7 +50,7 @@ module Morphosource
         def media_ids
           ids = media.map{ |m| m["id"] }
           if @team.team?
-            data_manager_id = User.find_by(ms_id: @organization.data_manager.first).id
+            data_manager_id = User.find_by(ms_id: @organization.data_manager.first)&.id
           elsif @team.organization_collection?
             data_manager_id = @team.id
           end

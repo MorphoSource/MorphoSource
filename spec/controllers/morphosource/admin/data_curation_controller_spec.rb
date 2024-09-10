@@ -26,6 +26,8 @@ RSpec.describe Morphosource::Admin::DataCurationController, type: :controller do
     end
 
     context 'admin is logged in' do
+      let(:service_params) { { team_id: team.id, project_id: project.id, old_manager_email: '', email: admin.email,  remove_previous_reviewers: 'true', update_publication_status: 'all' } }
+
       before do
         sign_in admin
       end
@@ -36,7 +38,7 @@ RSpec.describe Morphosource::Admin::DataCurationController, type: :controller do
       end
 
       it 'calls the organization normalization service' do
-        expect(Morphosource::DataCuration::OrganizationNormalizationService).to receive(:call).with(params)
+        expect(Morphosource::DataCuration::OrganizationNormalizationService).to receive(:call).with(service_params)
         post :apply_permission_template, params: params
       end
 

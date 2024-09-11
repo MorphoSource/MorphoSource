@@ -7,6 +7,9 @@ module Morphosource
                                        processing_activity_software
                                        processing_activity_type].freeze
 
+      def processing_event?
+        self['has_model_ssim'] == ['ProcessingEvent']
+      end
     end
   end
 end

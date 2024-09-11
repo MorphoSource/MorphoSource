@@ -112,12 +112,12 @@ RSpec.describe 'collections routing', type: :routing do
 
   # CSV exports
   it 'has a media_downloads route' do
-    route = { controller: 'morphosource/collections', action: 'media_downloads', id: id }
+    route = { controller: 'morphosource/collections/media_lists', action: 'media_downloads', id: id }
     expect(:get => "/media-lists/#{id}/media-downloads").to route_to(route)
   end
 
   it 'has a media_requests route' do
-    route = { controller: 'morphosource/collections', action: 'media_requests', id: id }
+    route = { controller: 'morphosource/collections/media_lists', action: 'media_requests', id: id }
     expect(:get => "/media-lists/#{id}/media-requests").to route_to(route)
   end
 

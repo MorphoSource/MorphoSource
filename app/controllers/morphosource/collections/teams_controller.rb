@@ -81,6 +81,10 @@ module Morphosource
         export_render("Media Organization Transfer Status Query")
       end
 
+      def collection_type
+        Hyrax::CollectionType.find_by(Morphosource::CollectionTypes::Teams::SETTINGS)
+      end
+
       private
 
         # link for facet filters

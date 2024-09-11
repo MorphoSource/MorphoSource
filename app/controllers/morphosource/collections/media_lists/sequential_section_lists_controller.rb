@@ -3,10 +3,21 @@ module Morphosource
     module MediaLists
       class SequentialSectionListsController < Morphosource::Collections::MediaListsController
 
-        skip_load_and_authorize_resource only: [:show, :about, :facet, :order_media, :preview], instance_name: :sequential_section_list
+        skip_load_and_authorize_resource only: [
+          :about,
+          :facet,
+          :media_download_counts_with_intersections_facet,
+          :media_downloads,
+          :media_export_with_intersections_facet,
+          :media_requests,
+          :order_media,
+          :preview,
+          :show
+        ], instance_name: :sequential_section_list
 
         before_action :redirect_to_collection_type, only: []
 
+        # unlike media lists, sequentail section list managers do have edit access to media in the list and are allowed to view information about other users' downloads/requests for list media.
         before_action :authorize_admin, only: []
 
         self.presenter_class = Morphosource::Collections::MediaLists::SequentialSectionListPresenter

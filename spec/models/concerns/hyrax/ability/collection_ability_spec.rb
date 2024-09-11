@@ -44,12 +44,31 @@ RSpec.describe 'Hyrax::Ability::CollectionAbility' do
 
     context 'registered user' do
       let(:user)  { registered_user }
-      it 'can create media lists only' do
-        is_expected.not_to be_able_to(:create, new_team)
-        is_expected.not_to be_able_to(:create, new_project)
-        is_expected.not_to be_able_to(:create, new_organization)
-        is_expected.to be_able_to(:create, new_media_list)
-        is_expected.not_to be_able_to(:create, new_sequential_section_list)
+
+      context 'create' do
+        it 'can create media lists only' do
+          is_expected.not_to be_able_to(:create, new_team)
+          is_expected.not_to be_able_to(:create, new_project)
+          is_expected.not_to be_able_to(:create, new_organization)
+          is_expected.to be_able_to(:create, new_media_list)
+          is_expected.not_to be_able_to(:create, new_sequential_section_list)
+        end
+      end
+
+      context 'deposit' do
+        before do
+          collections = [new_team, new_project, new_organization, new_media_list, new_sequential_section_list]
+          collections.each do |collection|
+            allow(Hyrax::Collections::PermissionsService).to receive(:can_deposit_in_collection?).with(ability: subject, collection_id: collection.id).and_return(true)
+          end
+        end
+        it 'can deposit in media lists only' do
+          is_expected.not_to be_able_to(:deposit, new_team)
+          is_expected.not_to be_able_to(:deposit, new_project)
+          is_expected.not_to be_able_to(:deposit, new_organization)
+          is_expected.to be_able_to(:deposit, new_media_list)
+          is_expected.not_to be_able_to(:deposit, new_sequential_section_list)
+        end
       end
     end
   end

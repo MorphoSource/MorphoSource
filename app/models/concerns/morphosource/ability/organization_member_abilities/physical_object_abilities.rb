@@ -1,7 +1,7 @@
 module Morphosource
   module Ability
     module OrganizationMemberAbilities
-      module PhysicalObjects
+      module PhysicalObjectAbilities
         # returns true if the user has read or edit access to the physical object through the organization collection
         def has_organizational_access_to_physical_object?(physical_object)
           Rails.logger.debug("[CANCAN] Checking for individual physical_object access through organization membership")
@@ -23,7 +23,7 @@ module Morphosource
         def po_organization_read_groups(physical_object)
           @po_organization_read_groups ||= begin
             if (
-              (physical_object = solr_document(physical_object)) && 
+              (physical_object = solr_document(physical_object)) &&
               (organization_id = physical_object.organization_id&.first).present?
             )
               OrganizationCollection::READ_GROUP_ROLES.map { |role| "#{organization_id}_#{role}" }
@@ -38,7 +38,7 @@ module Morphosource
         def po_organization_edit_groups(physical_object)
           @po_organization_edit_groups ||= begin
             if (
-              (physical_object = solr_document(physical_object)) && 
+              (physical_object = solr_document(physical_object)) &&
               (organization_id = physical_object.organization_id&.first).present?
             )
               OrganizationCollection::EDIT_GROUP_ROLES.map {|role| "#{organization_id}_#{role}" }

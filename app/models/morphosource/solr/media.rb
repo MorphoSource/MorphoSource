@@ -36,6 +36,10 @@ module Morphosource
                             remote_origin_url
                             remote_manifest_url].freeze
 
+      def media?
+        self['has_model_ssim'] == ['Media']
+      end
+
       def depositor_name
         self['depositor_name_tesim']
       end

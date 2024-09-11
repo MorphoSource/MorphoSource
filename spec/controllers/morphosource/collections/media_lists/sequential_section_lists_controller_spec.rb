@@ -3,55 +3,79 @@ require 'spec_helper'
 
 RSpec.describe Morphosource::Collections::MediaLists::SequentialSectionListsController, type: :controller do
 
-  let(:user)                                    { User.create(email: 'user@email.com', password: 'password') }
-  let(:depositor)                               { User.create(email: 'depositor@email.com', password: 'password') }
-  let(:sequential_section_list)                 { FactoryBot.create(:sequential_section_list, title: ['sequential Section list'], depositor: depositor.ms_id) }
-  let(:media)                                   { Media.create(title: ['media'], depositor: depositor.ms_id, visibility: 'open') }
+  let(:depositor) { User.create(email: 'depositor@email.com', password: 'password') }
+  let(:list)      { FactoryBot.create(:sequential_section_list, title: ['sequential Section list'], depositor: depositor.ms_id, visibility: 'open') }
 
-  describe 'temporary admin-only restriction' do
-    let(:params)  { { id: sequential_section_list.id } }
+  describe 'restricted actions' do
+    let(:params)  { { id: list.id } }
+
     before do
-      Morphosource::Collections::PermissionsCreateService.create_default(collection: sequential_section_list)
-      sequential_section_list.visibility = 'open'
-      sequential_section_list.save!
+      Morphosource::Collections::PermissionsCreateService.create_default(collection: list)
       sign_in user
     end
 
     context 'user is an admin' do
-      let(:admin_role)  { Role.create(name: 'admin') }
-      before do
-        admin_role.users << user
-        admin_role.save
-      end
-      it 'responds with a 200' do
-        get :show, params: params
-        expect(response.status).to eq(200)
+      let(:user) { FactoryBot.create(:admin) }
+
+      it 'allows access' do
         get :about, params: params
         expect(response.status).to eq(200)
-        get :media_export_with_intersections_facet, format: :csv, params: params
+        get :facet, params: { collection_id: list.id, id: 'media_type' }
         expect(response.status).to eq(200)
-        get :media_download_counts_with_intersections_facet, format: :csv, params: params
+        get :media_download_counts_with_intersections_facet, params: params, format: :csv
         expect(response.status).to eq(200)
-        get :preview, params: params.merge( { media_id: media.id } )
+        get :media_downloads, params: params, format: :csv
+        expect(response.status).to eq(200)
+        get :media_export_with_intersections_facet, params: params, format: :csv
+        expect(response.status).to eq(200)
+        get :media_requests, params: params, format: :csv
+        expect(response.status).to eq(200)
+        get :show, params: params
         expect(response.status).to eq(200)
       end
     end
 
-    context 'user is not an admin' do
-      it 'responds with a 200' do
-        get :show, params: params
-        expect(response.status).to eq(200)
+    context 'user is a list manager' do
+      let(:user) { depositor }
+
+      it 'allows access' do
         get :about, params: params
         expect(response.status).to eq(200)
-        get :preview, params: params.merge( { media_id: media.id } )
+        get :facet, params: { collection_id: list.id, id: 'media_type' }
+        expect(response.status).to eq(200)
+        get :media_download_counts_with_intersections_facet, params: params, format: :csv
+        expect(response.status).to eq(200)
+        get :media_export_with_intersections_facet, params: params, format: :csv
+        expect(response.status).to eq(200)
+        get :show, params: params
+        expect(response.status).to eq(200)
+        get :media_downloads, params: params, format: :csv
+        expect(response.status).to eq(200)
+        get :media_requests, params: params, format: :csv
         expect(response.status).to eq(200)
       end
+    end
 
-      it 'redirects to root' do
-        get :media_export_with_intersections_facet, params: params
-        expect(response.status).to eq(302)
-        get :media_download_counts_with_intersections_facet, params: params
-        expect(response.status).to eq(302)
+    context 'user is not an admin or list manager' do
+      let(:user)  { FactoryBot.create(:registered_user) }
+
+      it 'allows some actions and denies others' do
+        # allow
+        get :about, params: params
+        expect(response.status).to eq(200)
+        get :facet, params: { collection_id: list.id, id: 'media_type' }
+        expect(response.status).to eq(200)
+        get :show, params: params
+        expect(response.status).to eq(200)
+        # deny
+        get :media_download_counts_with_intersections_facet, params: params, format: :csv
+        expect(response.status).to eq(403)
+        get :media_downloads, params: params, format: :csv
+        expect(response.status).to eq(403)
+        get :media_export_with_intersections_facet, params: params, format: :csv
+        expect(response.status).to eq(403)
+        get :media_requests, params: params, format: :csv
+        expect(response.status).to eq(403)
       end
     end
   end
@@ -62,20 +86,20 @@ RSpec.describe Morphosource::Collections::MediaLists::SequentialSectionListsCont
 
   describe 'search_action_url' do
     before do
-      subject.instance_variable_set(:@curation_concern, sequential_section_list)
+      subject.instance_variable_set(:@curation_concern, list)
     end
     it 'is sequential_section_list_path' do
-      expect(subject.send(:search_action_url)).to eq(sequential_section_list_path(sequential_section_list.id))
+      expect(subject.send(:search_action_url)).to eq(sequential_section_list_path(list.id))
     end
   end
 
   describe 'search_facet_path' do
     let(:facet_id)  { 'depositor_ssi' }
     before do
-      subject.instance_variable_set(:@collection, sequential_section_list)
+      subject.instance_variable_set(:@collection, list)
     end
     it 'is sequential_section_list_media_facet_path' do
-      expect(subject.send(:search_facet_path, {id: facet_id})).to eq(sequential_section_list_media_facet_path(sequential_section_list.id, id: facet_id))
+      expect(subject.send(:search_facet_path, {id: facet_id})).to eq(sequential_section_list_media_facet_path(list.id, id: facet_id))
     end
   end
 

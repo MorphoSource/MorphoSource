@@ -9,6 +9,10 @@ module Morphosource
       self.can_authorize_with_temporary_link = true
       self.presenter_class = Morphosource::Collections::ProjectPresenter
 
+      def collection_type
+        Hyrax::CollectionType.find_by(Morphosource::CollectionTypes::Projects::SETTINGS)
+      end
+
       private
 
         # link for facet filters

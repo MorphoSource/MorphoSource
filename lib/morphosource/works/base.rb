@@ -69,6 +69,11 @@ module Morphosource
         return find_parent(objects, cond_method)
       end
 
+      def member_docs
+        return [] unless member_ids.present?
+        Morphosource::SolrService.new.get_docs(nil, fq: ["id:(#{member_ids.join(' OR ')})"])
+      end
+
       def specimen?
         self.class == BiologicalSpecimen
       end
@@ -111,7 +116,7 @@ module Morphosource
 
       # return either the user ms_id or the organization collection id
       def user_with_ownership
-        return depositor unless owner.present? 
+        return depositor unless owner.present?
         User.find_by(ms_id: owner)&.ms_id || SolrDocument.where("id" => owner)&.first&.id || depositor
       end
 

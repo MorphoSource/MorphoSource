@@ -72,7 +72,9 @@ Rails.application.configure do
 
   # E.g., https://github.com/rails/rails/pull/23734/files
   if ENV["RAILS_LOG_TO_STDOUT"].present?
-    config.logger = ActiveSupport::TaggedLogging.new(Logger.new(STDOUT))
+    logger           = ActiveSupport::Logger.new(STDOUT)
+    logger.formatter = config.log_formatter
+    config.logger    = ActiveSupport::TaggedLogging.new(logger)
   end
 
   config.reload_classes_only_on_change = true

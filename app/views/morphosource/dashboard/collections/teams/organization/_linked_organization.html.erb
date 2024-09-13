@@ -15,7 +15,7 @@
       multipart: true
     } do |f|
   %>
-  <%= f.submit 'Save Changes', class: 'btn btn-primary' %>
+  <%= f.submit 'Save Default Permissions', class: 'btn btn-primary' %>
   </div>
 </div>
 
@@ -30,9 +30,6 @@
 <div class="col-sm-6" style="padding-left:25px;">
   <% if @collection.team? %>
     <%= render 'morphosource/dashboard/collections/teams/organization/organization_details', f: f %>
-    <% if current_user.admin? %>
-      <%= render 'morphosource/dashboard/collections/permissions/admin_form', f: f %>
-    <% end %>
   <% end %>
   <% end #form %>
   <% if current_user.admin? %>

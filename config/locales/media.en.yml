@@ -97,6 +97,8 @@ en:
         data_uploaded_by: Data uploaded by
         description: Full description
         doi: MorphoSource DOI
+        download_permission: Download permission
+        download_reviewer: Download reviewer
         face_count: Polygons
         funding: Funding attribution
         has_uv_space: UV coordinates

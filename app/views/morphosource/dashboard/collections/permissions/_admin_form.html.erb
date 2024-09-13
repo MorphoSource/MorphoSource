@@ -1,0 +1,13 @@
+<% if current_user.admin? %>
+  <div class="form-group xadmin-preview-mode-container" style="margin-bottom:15px;">
+    <h2>Admin Settings</h2>
+    <% unless @collection.organization_collection? %>
+      <%= render_edit_field_partial('data_manager', f: f, placeholder: 'No preference') %>
+    <% end %>
+    <%= render_edit_field_partial('preview_mode', f: f, blank_label: 'No preference') %>
+    <%= render_edit_field_partial('permissions_enforcement_mode', f: f) %>
+    <% if @collection.organization_collection? %>
+      <%= render_edit_field_partial('media_ownership_transfer', f: f) %>
+    <% end %>
+  </div>
+<% end %>

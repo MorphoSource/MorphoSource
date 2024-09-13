@@ -438,7 +438,7 @@ Hyrax.config do |config|
   # ingest files from the file system that are not part of the BrowseEverything
   # mount point.
   #
-  config.whitelisted_ingest_dirs = ENV.fetch('WHITELISTED_INGEST_DIRS', '').split(':').presence || ['/nas/morphosource_globus/', '/app/samvera/hyrax-webapp/tmp/']
+  config.whitelisted_ingest_dirs = ENV.fetch('WHITELISTED_INGEST_DIRS', '').split(':').presence || ['/nas/morphosource_globus/', '/app/samvera/hyrax-webapp/tmp/', '/spec/fixtures/images/']
 
   config.index_related_works = true
 

@@ -35,22 +35,23 @@ module Morphosource
 
     def call
       # Check all conditions to see if a sync is needed
-      # Return metadata if all conditions pass.
+      # Return metadata, solr document if all conditions pass.  Otherwise return nil, nil
+      # Solr document is returned to avoid another Solr call when calling idigbio_record_different_from_specimen? method
       unless occurrence_id_results.present? && occurrence_id_results[:status] == :success && occurrence_id_results[:data].length > 0
-        return nil
+        return nil, nil
       end
 
       if occurrence_id_results[:data].length > 1
         Rails.logger.debug "Specimen #{specimen["id"]} not synced because multiple records found for OID: #{specimen["occurrence_id_tesim"].first}"
-        return nil
+        return nil, nil
       end
 
       if idigbio_recordset_different_from_org?
         Rails.logger.debug "Specimen #{specimen["id"]} not synced because the organization (#{specimen["organization_id_tesim"].first}) has recordset ID(s) (#{org_recordset_ids.join(', ')}) different from the iDigBio-supplied recordset ID #{idb_recordset_id}."
-        return nil
+        return nil, nil
       end
 
-      return get_metadata_from_idigbio_occurrence_id
+      return get_metadata_from_idigbio_occurrence_id, @specimen
     end
 
     def occurrence_id_valid?

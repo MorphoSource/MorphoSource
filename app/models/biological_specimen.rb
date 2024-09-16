@@ -33,8 +33,8 @@ class BiologicalSpecimen < Morphosource::Works::Base
 
   def update_from_idigbio
     if occurrence_id.present?
-      if (params_for_update = Morphosource::IDigBioGetMetadataService.call(specimen_id: id)).present?
-        if Morphosource::IDigBioGetMetadataService.idigbio_record_different_from_specimen?(SolrDocument.find(id), params_for_update)
+      if (params_for_update, specimen_doc = Morphosource::IDigBioGetMetadataService.call(specimen_id: id)).present?
+        if Morphosource::IDigBioGetMetadataService.idigbio_record_different_from_specimen?(specimen_doc, params_for_update)
           Morphosource::IDigBioUpdateService.call(id, save_work=true, system_update=false, params_for_update)
         end
       end

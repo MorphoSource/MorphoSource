@@ -111,6 +111,7 @@ class BatchSubmissionsController < ApplicationController
     depositor = current_user
     organization_id = request.params["organization_id"]
     device_id = request.params["batch_submission"]["device_id"]
+    owner = request.params.dig("media","owner").blank? ? depositor.ms_id : request.params["media"]["owner"]
     if request.params["batch_submission"]["on_behalf_of"].present?
       on_behalf_of = User.where(ms_id: request.params["batch_submission"]["on_behalf_of"]).first
     end
@@ -131,6 +132,7 @@ class BatchSubmissionsController < ApplicationController
       media_path:media_path,
       admin_user:admin_user,
       depositor:depositor,
+      owner:owner,
       on_behalf_of:on_behalf_of,
       collection_ids:collection_ids,
       fund_code_id:fund_code_id,

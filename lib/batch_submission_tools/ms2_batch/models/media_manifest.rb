@@ -2,15 +2,15 @@ module BatchSubmissionTools
   module Ms2Batch
     module Models
       class MediaManifest
-        attr_accessor :initial_attrs, :depositor, :on_behalf_of, :organization_id, :media_path, :attrs
+        attr_accessor :initial_attrs, :depositor, :owner, :on_behalf_of, :organization_id, :media_path, :attrs
         attr_accessor :id, :work, :work_imported, :derived_parent_file
         attr_accessor :organization_permissions_fields, :organization_attachment_id
 
-        def initialize(initial_attrs: {}, depositor: nil, on_behalf_of: nil, organization_id: nil, media_path: nil, 
-            media_ownership_fields: {}, derived_parent_file: nil, attrs: {}, work_imported: false, **kwargs)
-          
+        def initialize(initial_attrs: {}, depositor: nil, owner: nil, on_behalf_of: nil, organization_id: nil, media_path: nil, media_ownership_fields: {}, derived_parent_file: nil, attrs: {}, work_imported: false, **kwargs)
+
           @initial_attrs = initial_attrs
           @depositor = depositor
+          @owner = owner
           @on_behalf_of = on_behalf_of
           @organization_id = organization_id
 
@@ -35,7 +35,7 @@ module BatchSubmissionTools
         def work
           @work ||=
             if (
-                id.present? && 
+                id.present? &&
                 ::Media.exists?(id)
               )
               ::Media.find(id)
@@ -45,37 +45,41 @@ module BatchSubmissionTools
         end
 
         def create_new_attributes
-          addl_attrs = { 
-            depositor: depositor, 
-            on_behalf_of: on_behalf_of, 
-            download_reviewer: download_reviewer,
-            description: description,
-            derived_parent_file: derived_parent_file
-          }
-          addl_attrs.merge!(@media_ownership_fields).symbolize_keys!
-          addl_attrs.merge!(visibility_mapped(@media_ownership_fields["visibility"]))
-
+          addl_attrs = additional_attributes
           p = media_file_path
           files_dir = nil
           if p.present?
-            addl_attrs[:file] = [p] 
+            addl_attrs[:file] = [p]
             if is_remote_backed?
-              files_dir = :is_remote 
+              files_dir = :is_remote
               addl_attrs[:remote_origin_url] = [p]
-            else 
+            else
               files_dir = File.dirname(p)
             end
           end
 
           BatchSubmissionsImporter::Factory::MediaFactory.new(
-            initial_attrs.except(:id, :media_file).merge(addl_attrs), 
+            initial_attrs.except(:id, :media_file).merge(addl_attrs),
             files_dir,
             false
           ).create_attributes
         end
 
+        def additional_attributes
+          attrs = {
+            depositor: depositor,
+            owner: owner,
+            on_behalf_of: on_behalf_of,
+            download_reviewer: download_reviewer,
+            description: description,
+            derived_parent_file: derived_parent_file
+          }
+          attrs.merge!(@media_ownership_fields).symbolize_keys!
+          attrs.merge!(visibility_mapped(@media_ownership_fields["visibility"]))
+        end
+
         def download_reviewer
-          on_behalf_of.present? ? [on_behalf_of] : [depositor] 
+          on_behalf_of.present? ? [on_behalf_of] : [depositor]
         end
 
         def description
@@ -96,19 +100,19 @@ module BatchSubmissionTools
 
           case requested_visibility
           when public
-            { 
+            {
               :visibility => public,
               :fileset_visibility => "",
               :fileset_accessibility => "open"
             }
           when private
-            { 
+            {
               :visibility => private,
               :fileset_visibility => "",
               :fileset_accessibility => "private"
             }
           when 'restricted_download'
-            { 
+            {
               :visibility => public,
               :fileset_visibility => "",
               :fileset_accessibility => "restricted_download"
@@ -126,9 +130,9 @@ module BatchSubmissionTools
           if Dir.exists?(media_path) && initial_attrs[:media_file]&.first.present?
             # todo: use another way to check if this is for remote file
             if is_remote_backed?
-              return initial_attrs[:media_file].first 
+              return initial_attrs[:media_file].first
             else
-              return File.join(media_path, initial_attrs[:media_file].first) 
+              return File.join(media_path, initial_attrs[:media_file].first)
             end
           else
             return nil

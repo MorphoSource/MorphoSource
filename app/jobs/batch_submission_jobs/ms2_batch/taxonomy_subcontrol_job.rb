@@ -7,11 +7,11 @@ class BatchSubmissionJobs::Ms2Batch::TaxonomySubcontrolJob < Morphosource::Appli
   def perform(manifest, main_job_id)
     # Step 0. Initial preparation
     status.update(manifest: manifest)
-    @manifest = manifest    
+    @manifest = manifest
 
     # Submit jobs for new works to be created
     @manifest['taxonomy_ingests'].each do |t|
-      t['job'] = ::BatchObjectImportJob.perform_later('Taxonomy', t['attrs'].symbolize_keys, nil, false) if !t['id'].present? 
+      t['job'] = ::BatchObjectImportJob.perform_now('Taxonomy', t['attrs'].symbolize_keys, nil, false) if !t['id'].present?
     end
 
     # Monitor jobs

@@ -1,5 +1,5 @@
 class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::ApplicationJobWithStatus
-  include BatchSubmissionTools::Ms2Batch::BatchSubmissionHelper  
+  include BatchSubmissionTools::Ms2Batch::BatchSubmissionHelper
   attr_accessor :manifest, :main_job_id
 
   queue_as Hyrax.config.ingest_queue_name
@@ -41,7 +41,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
           derived_parent_file = child['media']['derived_parent_file']
           break if derived_parent_file.present?
         end
-      end            
+      end
 
       if derived_parent_file.present?
         Rails.logger.debug "iN MediaSubcontrolJob: waiting for parent media creation: #{derived_parent_file}"
@@ -54,9 +54,9 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
       @manifest['media_ie_pe_ingests'].each { |i| i.except!('job') }
       status.update(manifest: @manifest)
 
-      i['job'] = BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob.perform_later(
+      i['job'] = BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob.perform_now(
         @manifest,
-        i, 
+        i,
         ingest_index,
         @manifest['collection_ids'] || [],
         @manifest['fund_code_id'] || nil,
@@ -79,7 +79,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
         end
       end
       exception_message = "One or more media ingests failed. #{exceptions.join('; ')}"
-      update_main_job('failed', exception_message) 
+      update_main_job('failed', exception_message)
       raise exception_message
     end
 
@@ -93,7 +93,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
     Rails.logger.debug "iN created_parent_id: looking for #{parent_file} in job #{main_job_id}... (#{duration} seconds)"
     if main_job.created_objects[parent_file].present?
       return main_job.created_objects[parent_file]
-    else 
+    else
       if duration > 3600 # 1 hr
         raise "Timeout waiting for parent file #{parent_file} to be created in job #{main_job_id}"
       else
@@ -121,14 +121,14 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
       next unless (job = i['job']).present?
 
       # check job status
-      job_status = ActiveJob::Status.get(i['job'])      
+      job_status = ActiveJob::Status.get(i['job'])
       i['job_status'] = job_status[:status].to_s
       if job_status[:status] == :queued || job_status[:status] == :working
         jobs_complete = false
       elsif job_status[:status] == :failed
         i['job_exception'] = "Job #{job.class} failed. Exception: #{job_status[:exception].to_s}"
       elsif job_status[:status] == :completed
-        next          
+        next
       else
         i['job_exception'] = "Job #{job.class} produced unexpected status: #{job_status[:status].to_s}"
       end

@@ -1,5 +1,5 @@
 class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::ApplicationJobWithStatus
-  include BatchSubmissionTools::Ms2Batch::BatchSubmissionHelper  
+  include BatchSubmissionTools::Ms2Batch::BatchSubmissionHelper
   attr_accessor :manifest, :main_job_id
 
   queue_as Hyrax.config.mass_ingest_queue_name
@@ -24,11 +24,11 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
     # ingest imaging event
     if ingest['imaging_event'].present?
       imaging_event = BatchSubmissionsImporter::BatchObjectImporter.call(
-        'ImagingEvent', 
+        'ImagingEvent',
         ingest['imaging_event'].first[1]['attrs'].merge(
           'physical_object_id' => [ingest['physical_object_id']]
-        ).symbolize_keys, 
-        nil, 
+        ).symbolize_keys,
+        nil,
         false
       )
       created_objects["ie"] = imaging_event.id
@@ -43,13 +43,13 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
     if ingest['parent'].present?
       ingest['parent'].each do |idx, parent|
 
-        if target_parent_id.present? 
+        if target_parent_id.present?
           # the media has been created as a child media earlier
           parent_media = Media.find(target_parent_id)
           next
         end
 
-        if parent['media']['id'].present? 
+        if parent['media']['id'].present?
           # parent media is existing.  get the obj and skip (no need to create)
           parent_media = Media.find(pad(parent['media']['id']))
           next
@@ -60,11 +60,11 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
           is_raw = false
           if parent['pe'].present?
             parent_pe = BatchSubmissionsImporter::BatchObjectImporter.call(
-              'ProcessingEvent', 
+              'ProcessingEvent',
               parent['pe']['attrs'].merge(
                 'parent_id' => [imaging_event.id]
-              ).symbolize_keys, 
-              nil, 
+              ).symbolize_keys,
+              nil,
               false
             )
             created_objects["parent_pe_"+idx] = parent_pe.id
@@ -84,20 +84,20 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
           # debug: check parent['media']['attrs']
           if is_raw
             parent_media = BatchSubmissionsImporter::BatchObjectImporter.call(
-              'Media', 
+              'Media',
               parent['media']['attrs'].merge(
                 'parent_id' => [imaging_event.id]
-              ).symbolize_keys, 
+              ).symbolize_keys,
               nil,
               false,
               preview_file
             )
           else
             parent_media = BatchSubmissionsImporter::BatchObjectImporter.call(
-              'Media', 
+              'Media',
               parent['media']['attrs'].merge(
                 'parent_id' => [parent_pe.id]
-              ).symbolize_keys, 
+              ).symbolize_keys,
               nil,
               false,
               preview_file
@@ -107,7 +107,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
           media_file = parent['media']['initial_attrs']['media_file'].first
           created_objects[media_file] = parent_media.id
           Rails.logger.debug "iN MediaIePeIngestJob: parent media created: #{parent_media.id} "
-          Rails.logger.debug "iN MediaIePeIngestJob:  updating job #{@main_job_id} with created_objects #{created_objects}" 
+          Rails.logger.debug "iN MediaIePeIngestJob:  updating job #{@main_job_id} with created_objects #{created_objects}"
           main_job.update_created_objects(created_objects)
 
           all_media << parent_media
@@ -124,11 +124,11 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
         if child['pe'].present?
           # associate with the direct parent
           child_pe = BatchSubmissionsImporter::BatchObjectImporter.call(
-            'ProcessingEvent', 
+            'ProcessingEvent',
             child['pe']['attrs'].merge(
               'parent_id' => [direct_parent.id]
-            ).symbolize_keys, 
-            nil, 
+            ).symbolize_keys,
+            nil,
             false
           )
           created_objects["child_pe_"+idx] = child_pe.id
@@ -147,11 +147,11 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
           Rails.logger.debug "iN MediaIePeIngestJob: creating child media... "
 
           child_media = BatchSubmissionsImporter::BatchObjectImporter.call(
-            'Media', 
+            'Media',
             child['media']['attrs'].merge(
               'parent_id' => [child_pe.id]
-            ).symbolize_keys, 
-            nil, 
+            ).symbolize_keys,
+            nil,
             false,
             preview_file
           )
@@ -159,7 +159,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
           media_file = child['media']['initial_attrs']['media_file'].first
           created_objects[media_file] = child_media.id
           Rails.logger.debug "iN MediaIePeIngestJob: child media created: #{child_media.id} "
-          Rails.logger.debug "iN MediaIePeIngestJob:  updating job #{@main_job_id} with created_objects #{created_objects}" 
+          Rails.logger.debug "iN MediaIePeIngestJob:  updating job #{@main_job_id} with created_objects #{created_objects}"
           main_job.update_created_objects(created_objects)
 
           all_media << child_media
@@ -175,8 +175,8 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
     add_media_to_fund_code(all_media, fund_code_id)
     transfer_media_to_organization(all_media, organization_transfer_immediately)
     add_org_attachment_to_media(all_media, @organization_id) if @organization_id.present?
-    
-    UpdateWorkIndexJob.perform_later(ingest['physical_object_id'])
+
+    UpdateWorkIndexJob.perform_now(ingest['physical_object_id'])
   end
 
   def main_job

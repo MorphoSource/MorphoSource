@@ -2,18 +2,19 @@ module BatchSubmissionTools
   module Ms2Batch
     class Manifest
       include BatchSubmissionTools::Ms2Batch::BatchSubmissionHelper
-      attr_accessor :input_path, :media_path, :admin_user, :depositor, :on_behalf_of,
-        :organization_id, :organization_transfer_immediately, :device_id, :device_modality, 
+      attr_accessor :input_path, :media_path, :admin_user, :depositor, :owner, :on_behalf_of,
+        :organization_id, :organization_transfer_immediately, :device_id, :device_modality,
         :collection_ids, :fund_code_id,
-        :rows, :media_group_to_rows, :rows_to_bso, :biological_specimen_ingests, 
+        :rows, :media_group_to_rows, :rows_to_bso, :biological_specimen_ingests,
         :taxonomy_ingests, :rows_to_taxonomy, :media_ie_pe_ingests, :media_ownership_fields,
         :skipped_row_count, :summary
 
-      def initialize(input_path:, media_path:, admin_user:, depositor:, organization_id:, organization_transfer_immediately: false, device_id:, on_behalf_of: nil, collection_ids: [], fund_code_id: nil, media_ownership_fields:, modality:)
+      def initialize(input_path:, media_path:, admin_user:, depositor:, owner:, organization_id:, organization_transfer_immediately: false, device_id:, on_behalf_of: nil, collection_ids: [], fund_code_id: nil, media_ownership_fields:, modality:)
         @input_path = input_path
         @media_path = media_path
         @admin_user = admin_user.user_key
         @depositor = depositor.user_key
+        @owner = owner
         @on_behalf_of = on_behalf_of.present? ? on_behalf_of.user_key : nil
         @organization_id = organization_id
         @organization_transfer_immediately = organization_transfer_immediately
@@ -31,9 +32,10 @@ module BatchSubmissionTools
         @rows_to_taxonomy = {}
 
         @media_ie_pe_ingests = []
-        
+
         @summary = {
           "depositor_id" => @depositor,
+          "owner_id" => @owner,
           "organization_id" => @organization_id,
           "device_id" => @device_id,
           "collection_ids" => @collection_ids,
@@ -67,7 +69,7 @@ module BatchSubmissionTools
           hash[sheet_index][:raw_list] << index
         end
         rows_to_remove = []
-        derived_group_rows = {} # 
+        derived_group_rows = {} #
 
         media_group_to_rows.each do |sheet_index, mg|
           parents = []
@@ -79,12 +81,12 @@ module BatchSubmissionTools
             parent_index = ""
             derived_parent_index = ""
             # is parent?
-            if row[:media][:parent_file].present? 
+            if row[:media][:parent_file].present?
               children << row_index
               # look for the parent row index
               rows.each_with_index do |r , idx|
-                if (r[:media][:media_file]&.first == row[:media][:parent_file].first) 
-                  if r[:media][:raw_or_derived]&.first == "Derived" 
+                if (r[:media][:media_file]&.first == row[:media][:parent_file].first)
+                  if r[:media][:raw_or_derived]&.first == "Derived"
                     derived_parent_index = idx
                   else
                     parent_index = idx
@@ -101,17 +103,17 @@ module BatchSubmissionTools
                 # find the media group that ingest the derived parent
                 derived_parents << derived_parent_index
                 if derived_group_rows[[derived_parent_index]].present?
-                  # combine children with a derived parent so they will be all ingested in one job.  
+                  # combine children with a derived parent so they will be all ingested in one job.
                   # this will avoid race condition when children are created at the same time
-                  media_group_to_rows[derived_group_rows[[derived_parent_index]]][:children] << row_index 
+                  media_group_to_rows[derived_group_rows[[derived_parent_index]]][:children] << row_index
                   rows_to_remove << row_index
                 else
                   derived_group_rows[[derived_parent_index]] = [row_index]
                 end
-              end                  
+              end
             elsif row[:media][:parent_ms_id].present?
               children << row_index
-            else 
+            else
               # note that child with undeposited parent also falls in here
               parents << row_index
             end
@@ -129,7 +131,7 @@ module BatchSubmissionTools
           end # /mg[:raw_list]
         end # //media_group_to_rows
 
-        # sort media group by group until no more media 
+        # sort media group by group until no more media
         remain_mg = @media_group_to_rows.clone
         full_ordered_list = []
         begin
@@ -137,7 +139,7 @@ module BatchSubmissionTools
           if !ordered_list.present?
             raise "Something went wrong.  ordered_list return nothing"
           end
-          full_ordered_list += ordered_list          
+          full_ordered_list += ordered_list
           ordered_list.each do |key|
             remain_mg.delete(key)
           end
@@ -153,7 +155,7 @@ module BatchSubmissionTools
           rows_to_remove.each { |k| @media_group_to_rows.delete [k] }
         end
 
-        # if there is a parent in a row removed, find the new parent and re-order if needed 
+        # if there is a parent in a row removed, find the new parent and re-order if needed
         new_parents_for.each do |new_parent, child|
           move_item_in_front(full_ordered_list, new_parent, child)
           rows_to_remove.each { |k| full_ordered_list.delete [k] }
@@ -196,7 +198,7 @@ module BatchSubmissionTools
       end
 
       def group_with_hierarchy(mg)
-        # re-order rows to have parent > child ingestion order 
+        # re-order rows to have parent > child ingestion order
         hierarchy = []
         largest_hierarchy = []
         # sort list by hierarchy
@@ -236,8 +238,8 @@ module BatchSubmissionTools
           else
             # proceed with constructing ingest
             bso_ingest = BatchSubmissionTools::Ms2Batch::Models::BiologicalSpecimenManifest.new(
-              initial_attrs: bso, 
-              depositor: depositor, 
+              initial_attrs: bso,
+              depositor: depositor,
               on_behalf_of: on_behalf_of,
               organization_id: organization_id
             )
@@ -249,13 +251,13 @@ module BatchSubmissionTools
 
       # Match :biological_specimen hash from @rows to previously constructed BSO ingests to catch duplicates
       def match_bsos(bso_hash)
-        biological_specimen_ingests.each_with_index do |s, index| 
-          if 
+        biological_specimen_ingests.each_with_index do |s, index|
+          if
             (
               bso_hash[:ms_id]&.present? &&
-              bso_hash[:ms_id]&.first == s.id 
+              bso_hash[:ms_id]&.first == s.id
             ) ||
-            ( 
+            (
               bso_hash[:occurrence_id].present? &&
               bso_hash[:occurrence_id]&.first&.downcase == s.occurrence_id&.downcase
             ) ||
@@ -276,7 +278,7 @@ module BatchSubmissionTools
 
         rows.pluck(:taxonomy).each_with_index do |taxonomy_attrs, index|
           bso = biological_specimen_ingests[rows_to_bso[index]]
- 
+
           # construct taxonomies if necessary (i.e., if BSO is to be created)
           if bso.attrs.present?
             # skip unless there are taxonomy attributes to use or we can get taxonomy from iDigBio
@@ -330,24 +332,25 @@ module BatchSubmissionTools
           end
 
           # Is there a parent? If so, get IE and parent PE/media ingest from it. Otherwise, get IE from first child
-          if mg[:parents].present? 
+          if mg[:parents].present?
             parent_row_index = mg[:parents].first
             media_attrs = rows[parent_row_index][:media]
 
             if parent_row_index == sheet_index.first && media_attrs[:raw_or_derived].first == "Raw"
 
               ie_row_index = parent_row_index
-
+              byebug
               parent_media = BatchSubmissionTools::Ms2Batch::Models::MediaManifest.new(
                 initial_attrs: media_attrs,
                 depositor: depositor,
+                owner: owner,
                 on_behalf_of: on_behalf_of,
                 organization_id: organization_id,
                 media_path: media_path,
                 media_ownership_fields: media_ownership_fields
               )
               parent = {
-                parent_row_index => 
+                parent_row_index =>
                   BatchSubmissionTools::Ms2Batch::Models::MediaPeManifest.new(media: parent_media)
               }
 
@@ -363,21 +366,22 @@ module BatchSubmissionTools
               parent_media = BatchSubmissionTools::Ms2Batch::Models::MediaManifest.new(
                 initial_attrs: media_attrs,
                 depositor: depositor,
+                owner: owner,
                 on_behalf_of: on_behalf_of,
                 organization_id: organization_id,
                 media_path: media_path,
                 media_ownership_fields: media_ownership_fields
               )
               parent = {
-                parent_row_index => 
+                parent_row_index =>
                   BatchSubmissionTools::Ms2Batch::Models::MediaPeManifest.new(media: parent_media, pe: parent_pe)
               }
 
             end
           else
-            # if parent_ms_id exists, get the existing parent 
+            # if parent_ms_id exists, get the existing parent
             if rows[mg[:children].first][:media][:parent_ms_id].present?
-              media_attrs = { 
+              media_attrs = {
                 ms_id: pad(rows[mg[:children].first][:media][:parent_ms_id].first)
               }
               parent_media = BatchSubmissionTools::Ms2Batch::Models::MediaManifest.new(
@@ -385,7 +389,7 @@ module BatchSubmissionTools
               )
               parent = {
                 "existing" => BatchSubmissionTools::Ms2Batch::Models::MediaPeManifest.new(media: parent_media)
-              }              
+              }
             end
 
             ie_row_index = mg[:children].first
@@ -405,7 +409,7 @@ module BatchSubmissionTools
 
             if mg[:derived_parents].present?
               # mark the ingest with dependency
-              derived_parent_file = rows[row_index][:media][:parent_file].first             
+              derived_parent_file = rows[row_index][:media][:parent_file].first
             end
 
             child_pe = BatchSubmissionTools::Ms2Batch::Models::ProcessingEventManifest.new(
@@ -433,8 +437,8 @@ module BatchSubmissionTools
           end.to_h
 
           media_ie_pe_ingests << BatchSubmissionTools::Ms2Batch::Models::MediaIePeManifest.new(
-            imaging_event: imaging_event, 
-            parent: parent, 
+            imaging_event: imaging_event,
+            parent: parent,
             children: children
           )
         end # / media_group_to_rows.each

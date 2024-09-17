@@ -25,7 +25,7 @@ class BatchSubmissionJobs::Ms2Batch::BiologicalSpecimenSubcontrolJob < Morphosou
         raise "Some taxonomies to be ingested do not have IDs. Taxonomies: #{taxonomy_ingests.join('; ')}"
       end
 
-      b['job'] = ::BatchObjectImportJob.perform_later('BiologicalSpecimen', b['attrs'].symbolize_keys, nil, false)
+      b['job'] = ::BatchObjectImportJob.perform_now('BiologicalSpecimen', b['attrs'].symbolize_keys, nil, false)
     end
 
     # Monitor jobs

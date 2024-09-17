@@ -32,6 +32,7 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def index
+    byebug
     last_job = current_user.last_batch_submission_job
     if last_job.present?
       check_job_failure(last_job) unless (last_job.status == "failed" ||  last_job.status == "completed")
@@ -109,6 +110,7 @@ class BatchSubmissionsController < ApplicationController
     media_path = user_share_full_path
     admin_user = User.batch_user
     depositor = current_user
+    owner = request.params.dig("media","owner")
     organization_id = request.params["organization_id"]
     device_id = request.params["batch_submission"]["device_id"]
     if request.params["batch_submission"]["on_behalf_of"].present?
@@ -131,6 +133,7 @@ class BatchSubmissionsController < ApplicationController
       media_path:media_path,
       admin_user:admin_user,
       depositor:depositor,
+      owner:owner,
       on_behalf_of:on_behalf_of,
       collection_ids:collection_ids,
       fund_code_id:fund_code_id,
@@ -146,12 +149,12 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def start_ingest_job
-    job = ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_later(@request_manifest_object, current_user)
-    main_job = BackgroundJob.create({ job_id: job.job_id, job_class: job.class.to_s, status: job.status.status.to_s, user_id: current_user.user_key, created_objects: {} })
+    job = ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_now(@request_manifest_object, current_user)
+    # main_job = BackgroundJob.create({ job_id: job.job_id, job_class: job.class.to_s, status: job.status.status.to_s, user_id: current_user.user_key, created_objects: {} })
     # rename the manifest tmp file with job id for locating easier
     if (manifest_tmp_file = @request_manifest_object["summary"]["manifest_tmp_file"]).present?
       if File.exists?(manifest_tmp_file)
-        new_file = Rails.root.join(Dir.tmpdir, 'manifest_' + job.job_id + File.extname(manifest_tmp_file)).to_s
+        new_file = Rails.root.join(Dir.tmpdir, 'manifest_' + 'test' + File.extname(manifest_tmp_file)).to_s
         File.rename(manifest_tmp_file, new_file)
       end
     end

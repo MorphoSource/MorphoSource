@@ -1,5 +1,5 @@
 class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWithStatus
-  include BatchSubmissionTools::Ms2Batch::BatchSubmissionHelper  
+  include BatchSubmissionTools::Ms2Batch::BatchSubmissionHelper
   attr_accessor :manifest, :main_job_id
 
   queue_as Hyrax.config.batch_submission_queue_name
@@ -22,10 +22,10 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
     begin
       update_main_job(status.status.to_s, nil)
       exception_caught = false
- 
+
       sub_jobs.each do |job_class|
-        Rails.logger.debug "iN ControlJob #{@main_job_id}: sending to sub_job  " 
-        job = job_class.send :perform_later, @manifest, @main_job_id
+        Rails.logger.debug "iN ControlJob #{@main_job_id}: sending to sub_job  "
+        job = job_class.send :perform_now, @manifest, @main_job_id
         sleep(30.seconds) until monitor_subjob_status(job)
         progress.increment
       end
@@ -39,10 +39,10 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
     ensure
       status.update(manifest: @manifest)
     end
-    # at this point, all subjobs are either :completed, 
+    # at this point, all subjobs are either :completed,
     # unless exception was raised and caught above
-    unless exception_caught    
-      update_main_job("completed") 
+    unless exception_caught
+      update_main_job("completed")
       notify_user(user, "completed", @main_job_id)
     end
   end
@@ -56,14 +56,15 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
   end
 
   def main_job
-    BackgroundJob.where(job_id: main_job_id).first
+    # BackgroundJob.where(job_id: main_job_id).first
+    BackgroundJob.last
   end
 
   def update_main_job(status_str=nil, exceptions=nil)
     unless status_str.present?
-      status_str = status.status.to_s 
+      status_str = status.status.to_s
     end
-    main_job.update_status(status_str, exceptions)
+    # main_job.update_status(status_str, exceptions)
   end
 
   def monitor_subjob_status(job)
@@ -99,7 +100,7 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
     status.update(work_deletion: :working)
 
     related_ids = []
-    
+
     main_job.created_objects.each do |key, id|
       related_ids.concat delete_work_if_needed(id)
     end
@@ -108,7 +109,7 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
       .uniq
       .select { |id| id if ActiveFedora::Base.exists?(id) }
       .compact
-    UpdateRelatedWorksIndexJob.perform_later(final_related_ids)
+    UpdateRelatedWorksIndexJob.perform_now(final_related_ids)
 
     # clear the created_objects list
     main_job.clear_created_objects

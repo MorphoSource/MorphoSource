@@ -332,6 +332,7 @@ class SubmissionsController < ApplicationController
   def create_model_params(work, params)
     model_params = to_form(work).model_attributes(params[work])
     if work == 'media'
+      byebug
       addl_params = { uploaded_files: params[:uploaded_files] }
       addl_params[:selected_files] = params[:selected_files] if params[:selected_files].present?
       addl_params[:collection_id] = params[:collection_id] if params[:collection_id].present?
@@ -411,6 +412,7 @@ class SubmissionsController < ApplicationController
       @processing_event_create_params = model_params
 
     when 'media'
+      byebug
       if @submission.raw_or_derived_media == 'raw'
         parent = @submission.imaging_event_id
       elsif @submission.raw_or_derived_media == 'derived'

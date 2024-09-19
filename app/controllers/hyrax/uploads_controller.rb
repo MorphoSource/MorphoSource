@@ -14,9 +14,12 @@ module Hyrax
       return head(:bad_request) unless ( params[:files]&.first.present? && upload_hash_valid? )
 
       incoming_file = params[:files]&.first
-      incoming_file_name = incoming_file.original_filename
 
-      if ( existing_upload = Hyrax::UploadedFile.find_by(file: incoming_file_name, upload_hash: params[:upload_hash], user: current_user) ).present?
+      # have to sanitize file in case file name has evil characters
+      sanitized_file = CarrierWave::SanitizedFile.new(incoming_file)
+      sanitized_file_name = sanitized_file.filename
+
+      if ( existing_upload = Hyrax::UploadedFile.find_by(file: sanitized_file_name, upload_hash: params[:upload_hash], user: current_user) ).present?
         # This is a new chunk to append to an existing file (probably)
         @upload = existing_upload
 
@@ -33,14 +36,9 @@ module Hyrax
           File.open(@upload.file.url, "ab") { |f| incoming_file.to_io.each_line { |line| f.write(line) } }
           @upload.update_columns(total_file_size: current_size + incoming_file.size)
         else
-          # chunk can not be appended to existing file, maybe restart upload?
-          if chunk_initial_byte == 0
-            # weird, but restart the upload
-            create_initial_upload
-          else
-            Rails.logger.error("UploadsController: In chunked upload, chunk initial byte #{chunk_initial_byte} did not equal current file size #{current_size}")
-            raise "Unexplained error with chunked uploading"
-          end
+          # chunk can not be appended to existing file
+          Rails.logger.error("UploadsController: In chunked upload, chunk initial byte #{chunk_initial_byte} did not equal current file size #{current_size}")
+          raise "Unexplained error with chunked uploading"
         end
       else
         # Create a new upload

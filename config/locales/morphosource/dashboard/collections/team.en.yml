@@ -7,3 +7,6 @@ en:
             roles:
               contributor: 'manager, editor, depositor'
               non-contributor: 'downloader, viewer'
+          organization:
+            organization_details:
+              hint: Information about the linked organization record. This information is displayed on the team's about page.

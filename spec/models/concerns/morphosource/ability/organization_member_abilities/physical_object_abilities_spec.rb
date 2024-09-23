@@ -31,9 +31,10 @@ RSpec.describe 'Morphosource::Ability', type: :model do
             allow(user).to receive(:groups).and_return([])
           end
 
-          it 'returns false for read and edit' do
+          it 'returns false for read, edit, and update' do
             expect(can_read?(biological_specimen)).to be(false)
             expect(can_edit?(biological_specimen)).to be(false)
+            expect(can_update?(biological_specimen)).to be(false)
           end
         end
 
@@ -51,35 +52,38 @@ RSpec.describe 'Morphosource::Ability', type: :model do
 
             context 'the organization is not the data owner' do
               it 'returns the correct permissions for manager member' do
-                # manager can read, edit
+                # manager can read, edit, and update
                 expect(can_read?(biological_specimen, org_manager)).to be(true)
                 expect(can_edit?(biological_specimen, org_manager)).to be(true)
-
+                expect(can_update?(biological_specimen, org_manager)).to be(true)
               end
 
               it 'returns the correct permissions for editor member' do
-                # editor can read & edit
+                # editor can read, edit, and update
                 expect(can_read?(biological_specimen, org_editor)).to be(true)
                 expect(can_edit?(biological_specimen, org_editor)).to be(true)
-
+                expect(can_update?(biological_specimen, org_editor)).to be(true)
               end
 
-              it 'depositors can not read or edit the object' do
+              it 'returns the correct permissions for depositor' do
+                # depositor cannot read, edit, or update
                 expect(can_read?(biological_specimen, org_depositor)).to be(false)
                 expect(can_edit?(biological_specimen, org_depositor)).to be(false)
+                expect(can_update?(biological_specimen, org_depositor)).to be(false)
               end
 
               it 'returns the correct permissions for downloader' do
-                # downloader, and viewer can read, cannot edit, transfer, accept, reject
+                # downloader can read, cannot edit or update
                 expect(can_read?(biological_specimen, org_downloader)).to be(true)
                 expect(can_edit?(biological_specimen, org_downloader)).to be(false)
-
+                expect(can_update?(biological_specimen, org_downloader)).to be(false)
               end
 
               it 'returns the correct permissions for viewer' do
-                # downloader, and viewer can read, cannot edit, transfer, accept, reject
+                # viewer can read, cannot edit or update
                 expect(can_read?(biological_specimen, org_viewer)).to be(true)
                 expect(can_edit?(biological_specimen, org_viewer)).to be(false)
+                expect(can_update?(biological_specimen, org_viewer)).to be(false)
               end
             end
           end
@@ -99,6 +103,7 @@ RSpec.describe 'Morphosource::Ability', type: :model do
           it 'returns false for read and edit' do
             expect(can_read?(cho)).to be(false)
             expect(can_edit?(cho)).to be(false)
+            expect(can_update?(cho)).to be(false)
           end
         end
 
@@ -116,35 +121,38 @@ RSpec.describe 'Morphosource::Ability', type: :model do
 
             context 'the organization is not the data owner' do
               it 'returns the correct permissions for manager member' do
-                # manager can read, edit
+                # manager can read, edit, update
                 expect(can_read?(cho, org_manager)).to be(true)
                 expect(can_edit?(cho, org_manager)).to be(true)
-
+                expect(can_update?(cho, org_manager)).to be(true)
               end
 
               it 'returns the correct permissions for editor member' do
-                # editor can read & edit
+                # editor can read, edit, update
                 expect(can_read?(cho, org_editor)).to be(true)
                 expect(can_edit?(cho, org_editor)).to be(true)
-
+                expect(can_update?(cho, org_editor)).to be(true)
               end
 
-              it 'depositors can not read or edit the object' do
+              it 'returns the correct permissions for depositor' do
+                # depositor cannot read, edit, update
                 expect(can_read?(cho, org_depositor)).to be(false)
                 expect(can_edit?(cho, org_depositor)).to be(false)
+                expect(can_update?(cho, org_depositor)).to be(false)
               end
 
               it 'returns the correct permissions for downloader' do
-                # downloader, and viewer can read, cannot edit, transfer, accept, reject
+                # downloader can read, cannot edit, update
                 expect(can_read?(cho, org_downloader)).to be(true)
                 expect(can_edit?(cho, org_downloader)).to be(false)
-
+                expect(can_update?(cho, org_downloader)).to be(false)
               end
 
               it 'returns the correct permissions for viewer' do
-                # downloader, and viewer can read, cannot edit, transfer, accept, reject
+                # viewer can read, cannot edit, update
                 expect(can_read?(cho, org_viewer)).to be(true)
                 expect(can_edit?(cho, org_viewer)).to be(false)
+                expect(can_update?(cho, org_viewer)).to be(false)
               end
             end
           end

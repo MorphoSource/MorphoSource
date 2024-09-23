@@ -81,7 +81,7 @@ RSpec.describe BatchSubmissionTools::Ms2Batch::Manifest do
         "creator"=>["Louis S. Leakey, Mary D. Leakey"],
         "periodic_time"=>["Lower Pleistocene"],
         "original_location"=>"Tanzania",
-        :organization_id=>["000200000"]
+        :organization_id=>[organization.id]
       )
       expect(subject.instance_variable_get(:@rows_to_bso)).to eq({0=>0, 1=>1, 2=>1})
     end

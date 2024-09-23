@@ -6,7 +6,7 @@ require 'rails_helper'
 RSpec.describe 'Morphosource::Ability', type: :model do
   let(:user)                  { User.create(email: 'user@email.com', password: 'password') }
   let(:ability)               { Ability.new(user) }
-  let!(:depositor)             { FactoryBot.create(:contributor) }
+  let!(:depositor)            { FactoryBot.create(:contributor) }
   let(:organization)          { FactoryBot.create(:organization_collection, depositor: depositor.ms_id) }
 
   let(:org_manager)           { User.create(email: 'manager@email.com', password: 'password') }
@@ -53,16 +53,19 @@ RSpec.describe 'Morphosource::Ability', type: :model do
           allow(user).to receive(:groups).and_return([])
         end
 
-        it 'returns false for read and edit' do
+        it 'returns false for read, edit, and update' do
           # imaging event
           expect(user.can?(:read, imaging_event)).to be(false)
           expect(user.can?(:edit, imaging_event)).to be(false)
+          expect(user.can?(:update, imaging_event)).to be(false)
           # processing event
-          expect(user.can?(:read, imaging_event)).to be(false)
-          expect(user.can?(:edit, imaging_event)).to be(false)
+          expect(user.can?(:read, processing_event)).to be(false)
+          expect(user.can?(:edit, processing_event)).to be(false)
+          expect(user.can?(:update, processing_event)).to be(false)
           # processing event 2
-          expect(user.can?(:read, imaging_event)).to be(false)
-          expect(user.can?(:edit, imaging_event)).to be(false)
+          expect(user.can?(:read, processing_event2)).to be(false)
+          expect(user.can?(:edit, processing_event2)).to be(false)
+          expect(user.can?(:update, processing_event2)).to be(false)
         end
       end
 
@@ -81,28 +84,34 @@ RSpec.describe 'Morphosource::Ability', type: :model do
           end
 
           context 'the organization is not the data owner' do
-            it 'managers, editors, downloaders, and viewers can read but not edit the events; depositors can not read or edit' do
+            it 'managers, editors, downloaders, and viewers can read but not edit or update the events; depositors can not read, edit, or update' do
               org_read_members.each do |org_member|
                 # imaging event
                 expect(can_read?(imaging_event, org_member)).to be(true)
                 expect(can_edit?(imaging_event, org_member)).to be(false)
+                expect(can_update?(imaging_event, org_member)).to be(false)
                 # processing event
                 expect(can_read?(processing_event, org_member)).to be(true)
                 expect(can_edit?(processing_event, org_member)).to be(false)
+                expect(can_update?(processing_event, org_member)).to be(false)
                 # processing event 2
                 expect(can_read?(processing_event2, org_member)).to be(true)
                 expect(can_edit?(processing_event2, org_member)).to be(false)
+                expect(can_update?(processing_event2, org_member)).to be(false)
               end
               # depositor can't do anything
               # imaging_event
               expect(can_read?(imaging_event, org_depositor)).to be(false)
               expect(can_edit?(imaging_event, org_depositor)).to be(false)
+              expect(can_update?(imaging_event, org_depositor)).to be(false)
               # processing event
               expect(can_read?(processing_event, org_depositor)).to be(false)
               expect(can_edit?(processing_event, org_depositor)).to be(false)
+              expect(can_update?(processing_event, org_depositor)).to be(false)
               # processing event 2
               expect(can_read?(processing_event2, org_depositor)).to be(false)
               expect(can_edit?(processing_event2, org_depositor)).to be(false)
+              expect(can_update?(processing_event2, org_depositor)).to be(false)
             end
           end
 
@@ -114,31 +123,37 @@ RSpec.describe 'Morphosource::Ability', type: :model do
             end
 
             it 'returns the correct permissions for manager member' do
-              # manager can edit imaging_event, processing_event
-              # manager can read processing_event2
+              # manager can read, edit, update imaging_event, processing_event
+              # manager can read but not edit, update processing_event2
               # imaging event
               expect(can_read?(imaging_event, org_manager)).to be(true)
               expect(can_edit?(imaging_event, org_manager)).to be(true)
+              expect(can_update?(imaging_event, org_manager)).to be(true)
               # processing event
               expect(can_read?(processing_event, org_manager)).to be(true)
               expect(can_edit?(processing_event, org_manager)).to be(true)
+              expect(can_update?(processing_event, org_manager)).to be(true)
               # processing event 2
               expect(can_read?(processing_event2, org_manager)).to be(true)
               expect(can_edit?(processing_event2, org_manager)).to be(false)
+              expect(can_update?(processing_event2, org_manager)).to be(false)
             end
 
             it 'returns the correct permissions for editor member' do
-              # editor can edit imaging_event, processing_event
+              # editor can edit, update imaging_event, processing_event
               # editor can read processing_event2
               # imaging event
               expect(can_read?(imaging_event, org_editor)).to be(true)
               expect(can_edit?(imaging_event, org_editor)).to be(true)
+              expect(can_update?(imaging_event, org_editor)).to be(true)
               # processing event
               expect(can_read?(processing_event, org_editor)).to be(true)
               expect(can_edit?(processing_event, org_editor)).to be(true)
+              expect(can_update?(processing_event, org_editor)).to be(true)
               # processing event 2
               expect(can_read?(processing_event2, org_editor)).to be(true)
               expect(can_edit?(processing_event2, org_editor)).to be(false)
+              expect(can_update?(processing_event2, org_editor)).to be(false)
             end
 
             it 'returns the correct permissions for depositor member' do
@@ -146,71 +161,86 @@ RSpec.describe 'Morphosource::Ability', type: :model do
               # imaging_event
               expect(can_read?(imaging_event, org_depositor)).to be(false)
               expect(can_edit?(imaging_event, org_depositor)).to be(false)
+              expect(can_update?(imaging_event, org_depositor)).to be(false)
               # processing event
               expect(can_read?(processing_event, org_depositor)).to be(false)
               expect(can_edit?(processing_event, org_depositor)).to be(false)
+              expect(can_update?(processing_event, org_depositor)).to be(false)
               # processing event 2
               expect(can_read?(processing_event2, org_depositor)).to be(false)
               expect(can_edit?(processing_event2, org_depositor)).to be(false)
+              expect(can_update?(processing_event2, org_depositor)).to be(false)
             end
 
             it 'returns the correct permissions for downloader' do
               # downloader can read all records
-              # downloader can't edit any records
+              # downloader can't edit or update any records
               # imaging_event
               expect(can_read?(imaging_event, org_downloader)).to be(true)
               expect(can_edit?(imaging_event, org_downloader)).to be(false)
+              expect(can_update?(processing_event2, org_depositor)).to be(false)
               # processing event
               expect(can_read?(processing_event, org_downloader)).to be(true)
               expect(can_edit?(processing_event, org_downloader)).to be(false)
+              expect(can_update?(processing_event, org_downloader)).to be(false)
               # processing event 2
               expect(can_read?(processing_event2, org_downloader)).to be(true)
               expect(can_edit?(processing_event2, org_downloader)).to be(false)
+              expect(can_update?(processing_event2, org_downloader)).to be(false)
             end
 
             it 'returns the correct permissions for viewer' do
               # viewer can read all records
-              # viewer can't edit any records
+              # viewer can't edit or update any records
               # imaging_event
               expect(can_read?(imaging_event, org_viewer)).to be(true)
               expect(can_edit?(imaging_event, org_viewer)).to be(false)
+              expect(can_update?(imaging_event, org_viewer)).to be(false)
               # processing event
               expect(can_read?(processing_event, org_viewer)).to be(true)
               expect(can_edit?(processing_event, org_viewer)).to be(false)
+              expect(can_update?(processing_event, org_viewer)).to be(false)
               # processing event 2
               expect(can_read?(processing_event2, org_viewer)).to be(true)
               expect(can_edit?(processing_event2, org_viewer)).to be(false)
+              expect(can_update?(processing_event2, org_viewer)).to be(false)
             end
 
             context 'edge case - the top media is owned by the organization but is not otherwise associated with the organization' do
               let(:specimen)  { FactoryBot.create(:biological_specimen) }
 
               it 'returns the correct permissions for manager member' do
-                # manager can edit imaging_event, processing_event
-                # manager can not read processing_event2
+                # manager can read, edit, and update imaging_event, processing_event
+                # manager can not read, edit, or update processing_event2
                 # imaging event
                 expect(can_read?(imaging_event, org_manager)).to be(true)
                 expect(can_edit?(imaging_event, org_manager)).to be(true)
+                expect(can_update?(imaging_event, org_manager)).to be(true)
                 # processing event
                 expect(can_read?(processing_event, org_manager)).to be(true)
                 expect(can_edit?(processing_event, org_manager)).to be(true)
+                expect(can_update?(processing_event, org_manager)).to be(true)
                 # processing event 2
                 expect(can_read?(processing_event2, org_manager)).to be(false)
                 expect(can_edit?(processing_event2, org_manager)).to be(false)
+                expect(can_update?(processing_event2, org_manager)).to be(false)
               end
 
               it 'returns the correct permissions for editor member' do
-                # editor can edit imaging_event, processing_event
-                # editor can not read processing_event2
+                # editor can read, edit, and update imaging_event, processing_event
+                # editor can not read, edit, or update processing_event2
                 # imaging event
                 expect(can_read?(imaging_event, org_editor)).to be(true)
                 expect(can_edit?(imaging_event, org_editor)).to be(true)
+                expect(can_update?(imaging_event, org_editor)).to be(true)
                 # processing event
                 expect(can_read?(processing_event, org_editor)).to be(true)
                 expect(can_edit?(processing_event, org_editor)).to be(true)
+                expect(can_update?(processing_event, org_editor)).to be(true)
                 # processing event 2
                 expect(can_read?(processing_event2, org_editor)).to be(false)
                 expect(can_edit?(processing_event2, org_editor)).to be(false)
+                expect(can_update?(processing_event2, org_editor)).to be(false)
               end
 
               it 'returns the correct permissions for depositor member' do
@@ -218,40 +248,51 @@ RSpec.describe 'Morphosource::Ability', type: :model do
                 # imaging event
                 expect(can_read?(imaging_event, org_depositor)).to be(false)
                 expect(can_edit?(imaging_event, org_depositor)).to be(false)
+                expect(can_update?(imaging_event, org_depositor)).to be(false)
                 # processing event
                 expect(can_read?(processing_event, org_depositor)).to be(false)
                 expect(can_edit?(processing_event, org_depositor)).to be(false)
+                expect(can_update?(processing_event, org_depositor)).to be(false)
                 # processing event 2
                 expect(can_read?(processing_event2, org_depositor)).to be(false)
                 expect(can_edit?(processing_event2, org_depositor)).to be(false)
+                expect(can_update?(processing_event2, org_depositor)).to be(false)
               end
 
               it 'returns the correct permissions for downloader' do
                 # downloader can read imaging_event, processing_event
                 # downloader can not read processing_event2
+                # downloader can not edit, update any records
                 # imaging event
                 expect(can_read?(imaging_event, org_downloader)).to be(true)
                 expect(can_edit?(imaging_event, org_downloader)).to be(false)
+                expect(can_update?(imaging_event, org_downloader)).to be(false)
                 # processing event
                 expect(can_read?(processing_event, org_downloader)).to be(true)
                 expect(can_edit?(processing_event, org_downloader)).to be(false)
+                expect(can_update?(processing_event, org_downloader)).to be(false)
                 # processing event 2
                 expect(can_read?(processing_event2, org_downloader)).to be(false)
                 expect(can_edit?(processing_event2, org_downloader)).to be(false)
+                expect(can_update?(processing_event2, org_downloader)).to be(false)
               end
 
               it 'returns the correct permissions for viewer' do
                 # viewer can read imaging_event, processing_event
                 # viewer can not read processing_event2
+                # viewer can not edit, update any records
                 # imaging event
                 expect(can_read?(imaging_event, org_viewer)).to be(true)
                 expect(can_edit?(imaging_event, org_viewer)).to be(false)
+                expect(can_update?(imaging_event, org_viewer)).to be(false)
                 # processing event
                 expect(can_read?(processing_event, org_viewer)).to be(true)
                 expect(can_edit?(processing_event, org_viewer)).to be(false)
+                expect(can_update?(processing_event, org_viewer)).to be(false)
                 # processing event 2
                 expect(can_read?(processing_event2, org_viewer)).to be(false)
                 expect(can_edit?(processing_event2, org_viewer)).to be(false)
+                expect(can_update?(processing_event2, org_viewer)).to be(false)
               end
             end
           end
@@ -264,31 +305,37 @@ RSpec.describe 'Morphosource::Ability', type: :model do
             end
 
             it 'returns the correct permissions for manager member' do
-              # manager can read imaging_event, processing_event
-              # manager can edit processing_event2
+              # manager can read but not edit or udpate imaging_event, processing_event
+              # manager can read, edit, and update processing_event2
               # imaging event
               expect(can_read?(imaging_event, org_manager)).to be(true)
               expect(can_edit?(imaging_event, org_manager)).to be(false)
+              expect(can_update?(imaging_event, org_manager)).to be(false)
               # processing event
               expect(can_read?(processing_event, org_manager)).to be(true)
               expect(can_edit?(processing_event, org_manager)).to be(false)
+              expect(can_update?(processing_event, org_manager)).to be(false)
               # processing event 2
               expect(can_read?(processing_event2, org_manager)).to be(true)
               expect(can_edit?(processing_event2, org_manager)).to be(true)
+              expect(can_update?(processing_event2, org_manager)).to be(true)
             end
 
             it 'returns the correct permissions for editor member' do
-              # editor can read imaging_event, processing_event
-              # editor can edit processing_event2
+              # editor can read but not edit or update imaging_event, processing_event
+              # editor can edit and update processing_event2
               # imaging event
               expect(can_read?(imaging_event, org_editor)).to be(true)
               expect(can_edit?(imaging_event, org_editor)).to be(false)
+              expect(can_update?(imaging_event, org_editor)).to be(false)
               # processing event
               expect(can_read?(processing_event, org_editor)).to be(true)
               expect(can_edit?(processing_event, org_editor)).to be(false)
+              expect(can_update?(processing_event, org_editor)).to be(false)
               # processing event 2
               expect(can_read?(processing_event2, org_editor)).to be(true)
               expect(can_edit?(processing_event2, org_editor)).to be(true)
+              expect(can_update?(processing_event2, org_editor)).to be(true)
             end
 
             it 'returns the correct permissions for depositor member' do
@@ -296,72 +343,86 @@ RSpec.describe 'Morphosource::Ability', type: :model do
               # imaging_event
               expect(can_read?(imaging_event, org_depositor)).to be(false)
               expect(can_edit?(imaging_event, org_depositor)).to be(false)
+              expect(can_update?(imaging_event, org_depositor)).to be(false)
               # processing event
               expect(can_read?(processing_event, org_depositor)).to be(false)
               expect(can_edit?(processing_event, org_depositor)).to be(false)
+              expect(can_update?(processing_event, org_depositor)).to be(false)
               # processing event 2
               expect(can_read?(processing_event2, org_depositor)).to be(false)
               expect(can_edit?(processing_event2, org_depositor)).to be(false)
+              expect(can_update?(processing_event2, org_depositor)).to be(false)
             end
 
             it 'returns the correct permissions for downloader' do
               # downloader can read all records
-              # downloader can't edit any records
+              # downloader can't edit or update any records
               # imaging_event
               expect(can_read?(imaging_event, org_downloader)).to be(true)
               expect(can_edit?(imaging_event, org_downloader)).to be(false)
+              expect(can_update?(imaging_event, org_downloader)).to be(false)
               # processing event
               expect(can_read?(processing_event, org_downloader)).to be(true)
               expect(can_edit?(processing_event, org_downloader)).to be(false)
+              expect(can_update?(processing_event, org_downloader)).to be(false)
               # processing event 2
               expect(can_read?(processing_event2, org_downloader)).to be(true)
               expect(can_edit?(processing_event2, org_downloader)).to be(false)
+              expect(can_update?(processing_event2, org_downloader)).to be(false)
             end
 
             it 'returns the correct permissions for viewer' do
               # viewer can read all records
-              # viewer can't edit any records
+              # viewer can't edit or update any records
               # imaging_event
               expect(can_read?(imaging_event, org_viewer)).to be(true)
               expect(can_edit?(imaging_event, org_viewer)).to be(false)
+              expect(can_update?(imaging_event, org_viewer)).to be(false)
               # processing event
               expect(can_read?(processing_event, org_viewer)).to be(true)
               expect(can_edit?(processing_event, org_viewer)).to be(false)
+              expect(can_update?(processing_event, org_viewer)).to be(false)
               # processing event 2
               expect(can_read?(processing_event2, org_viewer)).to be(true)
               expect(can_edit?(processing_event2, org_viewer)).to be(false)
-
+              expect(can_update?(processing_event2, org_viewer)).to be(false)
             end
 
             context 'edge case - the child media is owned by the organization but is not otherwise associated with the organization' do
               let(:specimen)  { FactoryBot.create(:biological_specimen) }
 
               it 'returns the correct permissions for manager member' do
-                # manager can not read imaging_event, processing_event
-                # manager can edit processing_event2
+                # manager can not read, edit, or update imaging_event, processing_event
+                # manager can read, edit, and update processing_event2
                 # imaging event
                 expect(can_read?(imaging_event, org_manager)).to be(false)
                 expect(can_edit?(imaging_event, org_manager)).to be(false)
+                expect(can_update?(imaging_event, org_manager)).to be(false)
                 # processing event
                 expect(can_read?(processing_event, org_manager)).to be(false)
                 expect(can_edit?(processing_event, org_manager)).to be(false)
+                expect(can_update?(processing_event, org_manager)).to be(false)
                 # processing event 2
                 expect(can_read?(processing_event2, org_manager)).to be(true)
                 expect(can_edit?(processing_event2, org_manager)).to be(true)
+                expect(can_update?(processing_event2, org_manager)).to be(true)
               end
 
               it 'returns the correct permissions for editor member' do
-                # editor can not read imaging_event, processing_event
-                # editor can edit processing_event2
+                # editor can not read, edit, or update imaging_event, processing_event
+                # editor can read, edit, and update processing_event2
                 # imaging event
                 expect(can_read?(imaging_event, org_editor)).to be(false)
                 expect(can_edit?(imaging_event, org_editor)).to be(false)
+                expect(can_update?(imaging_event, org_editor)).to be(false)
                 # processing event
                 expect(can_read?(processing_event, org_editor)).to be(false)
                 expect(can_edit?(processing_event, org_editor)).to be(false)
+                expect(can_update?(processing_event, org_editor)).to be(false)
                 # processing event 2
                 expect(can_read?(processing_event2, org_editor)).to be(true)
                 expect(can_edit?(processing_event2, org_editor)).to be(true)
+                expect(can_update?(processing_event2, org_editor)).to be(true)
               end
 
               it 'returns the correct permissions for depositor member' do
@@ -369,40 +430,49 @@ RSpec.describe 'Morphosource::Ability', type: :model do
                 # imaging event
                 expect(can_read?(imaging_event, org_depositor)).to be(false)
                 expect(can_edit?(imaging_event, org_depositor)).to be(false)
+                expect(can_update?(imaging_event, org_depositor)).to be(false)
                 # processing event
                 expect(can_read?(processing_event, org_depositor)).to be(false)
                 expect(can_edit?(processing_event, org_depositor)).to be(false)
+                expect(can_update?(processing_event, org_depositor)).to be(false)
                 # processing event 2
                 expect(can_read?(processing_event2, org_depositor)).to be(false)
                 expect(can_edit?(processing_event2, org_depositor)).to be(false)
+                expect(can_update?(processing_event2, org_depositor)).to be(false)
               end
 
               it 'returns the correct permissions for downloader' do
-                # downloader, and viewer can not read imaging_event, processing_event
-                # downloader, and viewer can read processing_event2
+                # downloader can not read, edit, or update imaging_event, processing_event
+                # downloader can read but not edit or update processing_event2
                 # imaging event
                 expect(can_read?(imaging_event, org_downloader)).to be(false)
                 expect(can_edit?(imaging_event, org_downloader)).to be(false)
+                expect(can_update?(imaging_event, org_downloader)).to be(false)
                 # processing event
                 expect(can_read?(processing_event, org_downloader)).to be(false)
                 expect(can_edit?(processing_event, org_downloader)).to be(false)
+                expect(can_update?(processing_event, org_downloader)).to be(false)
                 # processing event 2
                 expect(can_read?(processing_event2, org_downloader)).to be(true)
                 expect(can_edit?(processing_event2, org_downloader)).to be(false)
+                expect(can_update?(processing_event2, org_downloader)).to be(false)
               end
 
               it 'returns the correct permissions for viewer' do
-                # downloader, and viewer can not read imaging_event, processing_event
-                # downloader, and viewer can read processing_event2
+                # viewer can not read, edit, or update imaging_event, processing_event
+                # viewer can read but not edit or update processing_event2
                 # imaging event
                 expect(can_read?(imaging_event, org_viewer)).to be(false)
                 expect(can_edit?(imaging_event, org_viewer)).to be(false)
+                expect(can_update?(imaging_event, org_viewer)).to be(false)
                 # processing event
                 expect(can_read?(processing_event, org_viewer)).to be(false)
                 expect(can_edit?(processing_event, org_viewer)).to be(false)
+                expect(can_update?(processing_event, org_viewer)).to be(false)
                 # processing event 2
                 expect(can_read?(processing_event2, org_viewer)).to be(true)
                 expect(can_edit?(processing_event2, org_viewer)).to be(false)
+                expect(can_update?(processing_event2, org_viewer)).to be(false)
               end
             end
           end

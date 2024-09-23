@@ -54,23 +54,23 @@ module Morphosource
 
         return unless contributor?
 
-        can :edit, ::Media do |obj|
+        can [:edit, :update], ::Media do |obj|
           has_organizational_edit_access_to_media? obj
         end
 
-        can :edit, ::FileSet do |obj|
+        can [:edit, :update], ::FileSet do |obj|
           has_organizational_edit_access_to_fileset? obj
         end
 
-        can :edit, [::BiologicalSpecimen, ::CulturalHeritageObject] do |obj|
+        can [:edit, :update], [::BiologicalSpecimen, ::CulturalHeritageObject] do |obj|
           has_organizational_edit_access_to_physical_object? obj
         end
 
-        can :edit, [::ImagingEvent, ::ProcessingEvent] do |obj|
+        can [:edit, :update], [::ImagingEvent, ::ProcessingEvent] do |obj|
           has_organizational_edit_access_to_event? obj
         end
 
-        can :edit, ::SolrDocument do |obj|
+        can [:edit, :update], ::SolrDocument do |obj|
           case obj.has_model&.first
           when 'Media'
             has_organizational_edit_access_to_media? obj
@@ -85,7 +85,7 @@ module Morphosource
           end
         end
 
-        can :edit, String do |id|
+        can [:edit, :update], String do |id|
           obj = SolrDocument.find(id)
           can? :edit, obj
         rescue

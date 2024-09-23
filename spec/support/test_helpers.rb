@@ -72,6 +72,20 @@ module TestHelpers
     user.can? :edit, work_doc
   end
 
+  def can_update?(work, member = user)
+    user = User.find(member.id)
+    ability = Ability.new(user)
+    work_doc = SolrDocument.find(work.id)
+    return false unless ability.can? :update, work.id
+    return false unless ability.can? :update, work.id
+    return false unless ability.can? :update, work
+    return false unless ability.can? :update, work_doc
+    return false unless user.can? :update, work.id
+    return false unless user.can? :update, work
+
+    user.can? :update, work_doc
+  end
+
   def can_transfer?(work, member = user)
     user = User.find(member.id)
     ability = Ability.new(user)

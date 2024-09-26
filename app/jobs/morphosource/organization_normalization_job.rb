@@ -9,7 +9,7 @@ module Morphosource
       if @organization.is_a? Organization
         normalize_team_media(media_id, user_email, remove_previous_reviewers, update_publication_status)
       elsif @organization.is_a? OrganizationCollection
-        normalize_organization_media(media_id, user_email, remove_previous_reviewers, update_publication_status)
+        normalize_organization_media(media_id, remove_previous_reviewers, update_publication_status)
       end
     end
 
@@ -28,10 +28,9 @@ module Morphosource
       save_and_reindex
     end
 
-    def normalize_organization_media(media_id, user_email, remove_previous_reviewers, update_publication_status)
+    def normalize_organization_media(media_id, remove_previous_reviewers, update_publication_status)
       @media = Media.find(media_id)
       @team = Collection.find_by(id: @organization&.team_id&.first)
-      @user = User.find_by(email: user_email)
       @remove_previous_reviewers = remove_previous_reviewers
       @update_publication_status = update_publication_status
       update_download_reviewer

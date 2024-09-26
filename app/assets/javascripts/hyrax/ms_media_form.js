@@ -299,28 +299,6 @@ $( document ).ready(function() {
 
   if ($('form[id*="edit_media"]').length) { // if edit media form page
 
-    if (HasEditImagingEventForm) {
-      if (window.location.hash === "#imaging-event") {
-        ImagingEventTabClicked = true;
-      } else {
-        ImagingEventTabClicked = false;        
-      }
-      $('#tab-imaging-event').on('click', function() {
-        ImagingEventTabClicked = true;
-      })
-    }
-
-    if (HasEditProcessingEventForm) {
-      if (window.location.hash === "#processing-event") {
-        ProcessingEventTabClicked = true;
-      } else {
-        ProcessingEventTabClicked = false;        
-      }
-      $('#tab-processing-event').on('click', function() {
-        ProcessingEventTabClicked = true;
-      })
-    }
-
     $('#tab-media-details[class!="active"] a').on('click', function(){
       var uvIframe = document.getElementById("uv-iframe");
       if (this.ariaExpanded == "false" && uvIframe) {
@@ -562,7 +540,7 @@ function submitProcessingEvent() {
   // only needs to save PE edit form. Note that for cases like raw media,
   // which has no PE, the page will have a new PE form, which does not need
   // to be submitted when saving the Media
-  if (HasEditProcessingEventForm && ProcessingEventTabClicked) {
+  if (HasEditProcessingEventForm) {
     var isProcessingActivityValid = buildProcessingActivity(); // populate the PA field before saving PE
     if (isProcessingActivityValid) {
       $("form#related_form_processing_event").submitRelatedWork(saveMediaIfReady);
@@ -630,7 +608,7 @@ var editMediaSubmit = function() {
   prepareFieldsBeforeSubmit();
   if (isModalityValid() && hasRequiredFields()) {
     disablePageAndSave(".btn-save-media");
-    if (HasEditImagingEventForm && ImagingEventTabClicked) {
+    if (HasEditImagingEventForm) {
       $("form#related_form_imaging_event").submitRelatedWork(submitProcessingEvent);
     } else {
       // has a read-only Imaging Event form, or Imaging Event form has not changed
@@ -774,18 +752,7 @@ var noFileCheck = function(event) {
     return true;
   }
 
-  $.confirm({
-    title: 'No file associated',
-    content: 'The media has no file associated.  Please click OK if you want to proceed.',
-    buttons: {
-      OK: function() {
-        form.submit();
-      },
-      cancel: function() {
-        enablePage();
-      }
-    }
-  });
+  return confirm('The media currently has no file associated.  Please click OK if you want to proceed.')
 }
 
 var hasRequiredFields = function() {

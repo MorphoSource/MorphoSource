@@ -21,7 +21,8 @@ module Morphosource
           redirect_back(fallback_location: admin_data_curation_path) and return
         end
         flash[:notice] = 'Organization Normalization job has been submitted for background processing. Please check back later.'
-        redirect_to team_path(team)
+        path = team.team? ? team_path(team) : organization_collection_path(team)
+        redirect_to path
       end
 
       private

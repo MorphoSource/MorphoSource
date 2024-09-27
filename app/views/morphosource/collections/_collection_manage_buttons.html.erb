@@ -33,7 +33,7 @@
             %>
           </li>
           <% # Unless current_user.admin? don't show user download information for media lists %>
-          <% if current_user.admin? || !@collection.media_list? %>
+          <% if current_user&.admin? || !@collection.media_list? %>
             <li>
               <%= link_to 'Individual media downloads CSV',
                 media_downloads_csv_url(@collection),

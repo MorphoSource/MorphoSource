@@ -17,16 +17,12 @@ module Morphosource
       "original_location" => "original_location_tesim"
     }
 
-    def self.call(specimen_id)
-      new(specimen_id).call
+    def self.call(solr_doc)
+      new(solr_doc).call
     end
 
-    def initialize(specimen_id: nil, specimen_doc: nil)
-      if specimen_id
-        @specimen = SolrDocument.find(specimen_id)
-      else
-        @specimen = specimen_doc
-      end
+    def initialize(solr_doc)
+      @specimen = solr_doc
       @occurrence_id = specimen["occurrence_id_tesim"]
       if occurrence_id_valid?
         @occurrence_id_results = Morphosource::IDigBio.search({'occurrenceid' => occurrence_id})

@@ -57,7 +57,7 @@ provide :page_title, construct_page_title(@presenter.title)
 
     <div class="col-xs-12 col-sm-4 col-md-4 btn-wrapper">
       <% if @collection.organization_collection? %>
-        <% if @can_edit || @collection.editors&.include?(current_user) %>
+        <% if @can_edit || ( current_user.present? && @collection.editors&.include?(current_user) ) %>
           <%= render 'morphosource/collections/organization_collections/about/collection_manage_buttons' %>
         <% end %>
       <% elsif @can_edit %>

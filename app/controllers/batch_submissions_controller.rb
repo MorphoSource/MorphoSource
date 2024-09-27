@@ -126,7 +126,7 @@ class BatchSubmissionsController < ApplicationController
     end
     fund_code_id = request.params["batch_submission"]["fund_code"]
     modality = request.params["batch_submission"]["modality"]
-    owner = (request.params.dig("media","owner") || on_behalf_of&.ms_id || depositor.ms_id)
+    owner = request.params.dig("media","owner") || on_behalf_of&.ms_id || depositor.ms_id
     media_ownership_fields = request.params["batch_submission"]["media"]
     media_ownership_fields["owner"] = owner
     media_ownership_fields["organization_transfer_on_publish"] = true if ( organization_media_transfer == :publication )

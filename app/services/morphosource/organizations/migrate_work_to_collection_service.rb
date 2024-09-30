@@ -443,7 +443,7 @@ module Morphosource
 
         if org_data_manager.present? && !organization_collection.media_ownership_transfer
           raise "STEP 5 FAILED. Organization work had data manager but media transfer not enabled for collection."
-        elsif organization_collection.media_ownership_transfer
+        elsif organization_collection.media_ownership_transfer && !org_data_manager.present? 
           raise "STEP 5 FAILED. Organization work did not have data manager but media transfer is enabled for collection."
         end
 

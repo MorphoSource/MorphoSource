@@ -151,7 +151,7 @@ module Morphosource
         if org_data_manager.present?
           data_manager_media = Media.where("media_organization_id_ssim": organization_work.id, "user_with_ownership_ssi": org_data_manager.user_key)
           data_manager_media.each do |media|
-            ContentDepositorChangeEventJob.perform_later(media, organization_collection, false, org_data_manager.id)
+            ContentDepositorChangeEventJob.perform_later(media, organization_collection.id, false, org_data_manager.id)
           end
         end
 

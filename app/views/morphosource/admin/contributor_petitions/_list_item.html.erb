@@ -2,7 +2,11 @@
 <tr id="item_<%= item.id %>">
   <td><%= item.created_at %></td>
   <td><%= link_to item.user.name_or_email, Hyrax::Engine.routes.url_helpers.user_path(item.user) %></td>
-  <td><%= item.reason %></td>
+  <td>
+    <%= auto_link(item.reason) do |url|
+      "<a href='#{url}' class='break-all'>#{url}</a>".html_safe
+    end %>
+  </td>
   <td><%= item.user_affiliation %></td>
   <td><%= item.user_department %></td>
   <td><%= demographics %></td>
@@ -11,7 +15,11 @@
   <td><%= item.terms_agree ? "Yes" : "No" %></td>
   <td><%= item.decision_state&.capitalize %></td>
   <% if @tab == 'previous' %>
-    <td><%= item.decision_message %></td>
+    <td>
+      <%= auto_link(item.decision_message) do |url|
+        "<a href='#{url}' class='break-all'>#{url}</a>".html_safe
+      end %>        
+    </td>
     <% decision_user = User.find(item.decision_by) %>
     <td>
       <%= link_to decision_user.name_or_email, Hyrax::Engine.routes.url_helpers.user_path(decision_user) %> 

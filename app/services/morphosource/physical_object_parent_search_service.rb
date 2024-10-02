@@ -6,7 +6,7 @@ module Morphosource
 
     attr_reader :params, :id, :physical_object_ids
 
-    SORTABLE_TITLE_FIELD = Solrizer.solr_name('title', :stored_sortable)
+    SORTABLE_TITLE_FIELD = ActiveFedora.index_field_mapper.solr_name('title', :stored_sortable)
 
     def self.call(params={})
       new(params).call
@@ -28,7 +28,7 @@ module Morphosource
     end
 
     def total_media_count_for_po
-      query = "#{Solrizer.solr_name('physical_object_id', :stored_searchable)}:#{id} AND has_model_ssim:Media"
+      query = "#{ActiveFedora.index_field_mapper.solr_name('physical_object_id', :stored_searchable)}:#{id} AND has_model_ssim:Media"
       search_solr(query).length
     end
 
@@ -37,8 +37,8 @@ module Morphosource
       def find_physical_object_ids(specific_id)
         query = "id:#{prepare_value(specific_id)} AND has_model_ssim:Media"
         result = search_solr(query)&.first
-        if result.present? && result[Solrizer.solr_name('physical_object_id', :stored_searchable)].present?
-          physical_object_ids.push(*result[Solrizer.solr_name('physical_object_id', :stored_searchable)])
+        if result.present? && result[ActiveFedora.index_field_mapper.solr_name('physical_object_id', :stored_searchable)].present?
+          physical_object_ids.push(*result[ActiveFedora.index_field_mapper.solr_name('physical_object_id', :stored_searchable)])
         end
       end
 
@@ -57,7 +57,7 @@ module Morphosource
       def param_clauses(specific_params)
         clauses = []
         specific_params.each do |k,v|
-          clauses << "#{Solrizer.solr_name(k, :symbol)}:#{prepare_value(v)}"
+          clauses << "#{ActiveFedora.index_field_mapper.solr_name(k, :symbol)}:#{prepare_value(v)}"
         end
         clauses
       end

@@ -42,18 +42,6 @@ RSpec.describe Collection, type: :model do
     end
   end
 
-  # override Hyrax::CollectionBehavior to add editors and downloaders to read_groups
-  describe '#permission_template_read_groups' do
-    before do
-      team.create_collection_groups
-      Morphosource::Collections::PermissionsCreateService.create_default(collection: team)
-    end
-
-    it 'returns collection editors, depositors, downloaders, and viewers' do
-      expect(team.permission_template_read_groups).to match_array([team.editors_group, team.depositors_group, team.downloaders_group, team.viewers_group].map(&:name))
-    end
-  end
-
   describe '#human_readable_type' do
     let(:another_collection)  { Collection.create(title: ['Another'], collection_type_gid: another_collection_type.gid, depositor: user.ms_id) }
 

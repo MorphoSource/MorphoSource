@@ -6,7 +6,7 @@ module Morphosource
     def collection_title_by_id(id)
       solr_docs = controller.repository.find(id).docs
       return nil if solr_docs.empty?
-      solr_field = solr_docs.first[Solrizer.solr_name("title", :stored_searchable)]
+      solr_field = solr_docs.first[ActiveFedora.index_field_mapper.solr_name("title", :stored_searchable)]
       return nil if solr_field.nil?
       solr_field.first
     rescue

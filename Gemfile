@@ -5,7 +5,6 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
-#gem 'rails', '~> 5.2'
 gem 'rails', '5.2.8'
 gem 'rdf-vocab', '3.1.4'
 
@@ -32,11 +31,9 @@ gem 'iiif_manifest', :git => 'https://github.com/MorphoSource/iiif_manifest.git'
 # used for XML validation in Crossref DOI deposit
 gem 'nokogiri'
 
-gem 'hyrax', '2.9.0'
+gem 'hyrax', '3.6.0'
 
-gem 'om'
-
-gem 'hydra-role-management'
+gem 'hydra-role-management', '~> 1.1.0'
 
 gem 'resque'
 gem 'resque-pool'

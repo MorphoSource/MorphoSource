@@ -5,6 +5,10 @@ module Morphosource
 
         before_action :build_breadcrumbs, only: []
 
+        configure_blacklight do |config|
+          config.search_builder_class = Morphosource::My::Collections::MediaListsSearchBuilder
+        end
+
         def collections_type
           "media_lists"
         end

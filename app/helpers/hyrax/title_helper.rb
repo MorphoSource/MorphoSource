@@ -8,17 +8,21 @@ module Hyrax::TitleHelper
     (elements.flatten.compact + [application_name]).join(' // ')
   end
 
+  ##
+  # @deprecated
   def curation_concern_page_title(curation_concern)
-    if curation_concern.persisted?
-      construct_page_title(curation_concern.to_s, "#{curation_concern.human_readable_type} [#{curation_concern.to_param}]")
-    else
-      construct_page_title("New #{curation_concern.human_readable_type}")
-    end
+    Deprecation.warn 'The curation_concern_page_title helper will be removed in Hyrax 4.0.' \
+                     "\n\tUse title_presenter(curation_concern).page_title instead."
+    title_presenter(curation_concern).page_title
   end
 
   def default_page_title
     text = controller_name.singularize.titleize
     text = "#{action_name.titleize} " + text if action_name
     construct_page_title(text)
+  end
+
+  def title_presenter(resource)
+    Hyrax::PageTitleDecorator.new(resource)
   end
 end

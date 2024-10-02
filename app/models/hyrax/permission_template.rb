@@ -1,75 +1,133 @@
+# frozen_string_literal: true
 module Hyrax
-  # Defines behavior that is applied to objects added as members of an AdminSet
+  ##
+  # Holds policy data about the workflow and permissions applied objects when
+  # they are deposited through an Administrative Set or a Collection. Each
+  # template record has a {#source} (through {#source_id}); the template's
+  # rules inform the behavior of objects deposited through that {#source}.
   #
-  #  * access rights to stamp on each object
-  #  * calculate embargo/lease release dates
+  # The {PermissionTemplate} specifies:
   #
-  # There is an interplay between an AdminSet and a PermissionTemplate.
+  # - an {#active_workflow} that the object will enter and be processed through.
+  # - {#access_grants} that can be applied to each object (especially at deposit
+  #   time).
+  # - an embargo configuration ({#release_date} {#release_period}) for default
+  #   embargo behavior.
   #
-  # @see Hyrax::AdminSet for further discussion
-  class PermissionTemplate < ActiveRecord::Base
+  # Additionally, the {PermissionTemplate} grants authority to perform actions
+  # that relate to the Administrative Set/Collection itself. Rules for who can
+  # deposit to, view(?!), or manage the admin set are governed by related
+  # {PermissionTemplateAccess} records. Administrat Sets should have a manager
+  # granted by some such record.
+  #
+  # @todo write up what "default embargo behavior", when it is applied, and how
+  #   it interacts with embargoes specified by user input.
+  #
+  # @example cerating a permission template and manager for an admin set
+  #   admin_set = Hyrax::AdministrativeSet.new(title: 'My Admin Set')
+  #   admin_set = Hyrax.persister.save(resource: admin_set)
+  #
+  #   template = PermissionTemplate.create!(source_id: admin_set.id.to_s)
+  #   Hyrax::PermissionTemplateAccess.create!(permission_template: template,
+  #                                          agent_type: Hyrax::PermissionTemplateAccess::USER,
+  #                                          agent_id: user.user_key,
+  #                                          access: Hyrax::PermissionTemplateAccess::MANAGE)
+  #
+  # @see Hyrax::AdministrativeSet
+  class PermissionTemplate < ActiveRecord::Base # rubocop:disable Metrics/ClassLength
     self.table_name = 'permission_templates'
 
+    ##
+    # @!attribute [rw] source_id
+    #   @return [String] identifier for the {Collection} or {AdministrativeSet}
+    #     to which this template applies.
+    # @!attribute [rw] access_grants
+    #   @return [Hyrax::PermissionTemplateAccess]
+    # @!attribute [rw] active_workflow
+    #   @return [Sipity::Workflow]
+    # @!attribute [rw] available_workflows
+    #   @return [Enumerable<Sipity::Workflow>]
     has_many :access_grants, class_name: 'Hyrax::PermissionTemplateAccess', dependent: :destroy
     accepts_nested_attributes_for :access_grants, reject_if: :all_blank
 
+    # The list of workflows that could be activated; It includes the active workflow
+    has_many :available_workflows, class_name: 'Sipity::Workflow', dependent: :destroy
+
+    # In a perfect world, there would be a join table that enforced uniqueness on the ID.
+    has_one :active_workflow, -> { where(active: true) }, class_name: 'Sipity::Workflow', foreign_key: :permission_template_id
+
     before_create :update_source_type
 
+    ##
     # @api public
+    #
     # Retrieve the agent_ids associated with the given agent_type and access
+    #
     # @param [String] agent_type
     # @param [String] access
+    #
     # @return [Array<String>] of agent_ids that match the given parameters
     def agent_ids_for(agent_type:, access:)
       access_grants.where(agent_type: agent_type, access: access).pluck(:agent_id)
     end
 
-    # The list of workflows that could be activated; It includes the active workflow
-    has_many :available_workflows, class_name: 'Sipity::Workflow', dependent: :destroy, foreign_key: :permission_template_id
+    ##
+    # @note this is a convenience method for +Hyrax.query_service.find_by(id: template.source_id)+
+    #
+    # @return [Hyrax::Resource] the collection this template is associated with
+    def source
+      Hyrax.query_service.find_by(id: source_id)
+    end
 
-    # In a perfect world, there would be a join table that enforced uniqueness on the ID.
-    has_one :active_workflow, -> { where(active: true) }, class_name: 'Sipity::Workflow', foreign_key: :permission_template_id
-
+    ##
     # A bit of an analogue for a `belongs_to :source_model` as it crosses from Fedora to the DB
-    # @return [AdminSet | Collection]
-    # @raise [ActiveFedora::ObjectNotFoundError] when neither an AdminSet or Collection is found
+    # @return [AdminSet, ::Collection]
+    # @raise [Hyrax::ObjectNotFoundError] when neither an AdminSet or Collection is found
+    # @note This method will eventually be replaced by #source which returns a Hyrax::Resource
+    #   object.  Many methods are equally able to process both Hyrax::Resource and
+    #   ActiveFedora::Base.  Only call this method if you need the ActiveFedora::Base object.
+    # @see #source
     def source_model
-      admin_set
+      ActiveFedora::Base.find(source_id)
     rescue ActiveFedora::ObjectNotFoundError
-      collection
+      raise Hyrax::ObjectNotFoundError
     end
 
     # A bit of an analogue for a `belongs_to :admin_set` as it crosses from Fedora to the DB
+    # @deprecated Use #source instead
     # @return [AdminSet]
-    # @raise [ActiveFedora::ObjectNotFoundError] when the we cannot find the AdminSet
+    # @raise [Hyrax::ObjectNotFoundError] when the we cannot find the AdminSet
     def admin_set
+      Deprecation.warn("#admin_set is deprecated; use #source instead.")
       return AdminSet.find(source_id) if AdminSet.exists?(source_id)
-      raise ActiveFedora::ObjectNotFoundError
+      raise Hyrax::ObjectNotFoundError
     rescue ActiveFedora::ActiveFedoraError # TODO: remove the rescue when active_fedora issue #1276 is fixed
-      raise ActiveFedora::ObjectNotFoundError
+      raise Hyrax::ObjectNotFoundError
     end
 
     # A bit of an analogue for a `belongs_to :collection` as it crosses from Fedora to the DB
+    # @deprecated Use #source instead
     # @return [Collection]
-    # @raise [ActiveFedora::ObjectNotFoundError] when the we cannot find the Collection
+    # @raise [Hyrax::ObjectNotFoundError] when the we cannot find the Collection
     def collection
-      return Collection.find(source_id) if Collection.exists?(source_id)
-      raise ActiveFedora::ObjectNotFoundError
+      Deprecation.warn("#collection is deprecated; use #source instead.")
+      return ::Collection.find(source_id) if ::Collection.exists?(source_id)
+      raise Hyrax::ObjectNotFoundError
     rescue ActiveFedora::ActiveFedoraError # TODO: remove the rescue when active_fedora issue #1276 is fixed
-      raise ActiveFedora::ObjectNotFoundError
+      raise Hyrax::ObjectNotFoundError
     end
 
     # Valid Release Period values
-    RELEASE_TEXT_VALUE_FIXED = 'fixed'.freeze
-    RELEASE_TEXT_VALUE_NO_DELAY = 'now'.freeze
+    RELEASE_TEXT_VALUE_FIXED = 'fixed'
+    RELEASE_TEXT_VALUE_NO_DELAY = 'now'
 
     # Valid Release Varies sub-options
-    RELEASE_TEXT_VALUE_BEFORE_DATE = 'before'.freeze
-    RELEASE_TEXT_VALUE_EMBARGO = 'embargo'.freeze
-    RELEASE_TEXT_VALUE_6_MONTHS = '6mos'.freeze
-    RELEASE_TEXT_VALUE_1_YEAR = '1yr'.freeze
-    RELEASE_TEXT_VALUE_2_YEARS = '2yrs'.freeze
-    RELEASE_TEXT_VALUE_3_YEARS = '3yrs'.freeze
+    RELEASE_TEXT_VALUE_BEFORE_DATE = 'before'
+    RELEASE_TEXT_VALUE_EMBARGO = 'embargo'
+    RELEASE_TEXT_VALUE_6_MONTHS = '6mos'
+    RELEASE_TEXT_VALUE_1_YEAR = '1yr'
+    RELEASE_TEXT_VALUE_2_YEARS = '2yrs'
+    RELEASE_TEXT_VALUE_3_YEARS = '3yrs'
 
     # Key/value pair of valid embargo periods. Values are number of months embargoed.
     RELEASE_EMBARGO_PERIODS = {
@@ -136,30 +194,100 @@ module Hyrax
       visibility == value
     end
 
+    ##
+    # @return [Array<String>]
+    def edit_users
+      agent_ids_for(access: 'manage', agent_type: 'user')
+    end
+
+    ##
+    # @return [Array<String>]
+    def edit_groups
+      agent_ids_for(access: 'manage', agent_type: 'group')
+    end
+
+    ##
+    # @return [Array<String>]
+    def read_users
+      (agent_ids_for(access: 'view', agent_type: 'user') +
+        agent_ids_for(access: 'deposit', agent_type: 'user')).uniq
+    end
+
+    ##
+    # compared to Hyrax 3.6.0, add editors and downloaders to read_groups
+    # @return [Array<String>]
+    def read_groups
+      (agent_ids_for(access: 'view', agent_type: 'group') + 
+        agent_ids_for(access: 'edit_works', agent_type: 'group') +
+        agent_ids_for(access: 'download', agent_type: 'group') +
+        agent_ids_for(access: 'deposit', agent_type: 'group')).uniq -
+        [::Ability.registered_group_name, ::Ability.public_group_name]
+    end
+
+    ##
+    # @deprecated Use #reset_access_controls_for instead
+    # @param interpret_visibility [Boolean] whether to retain the existing
+    #   visibility when applying permission template ACLs
+    # @return [Boolean]
+    def reset_access_controls(interpret_visibility: false)
+      Deprecation.warn("#reset_access_controls is deprecated; use #reset_access_controls_for instead.")
+      reset_access_controls_for(collection: source_model,
+                                interpret_visibility: interpret_visibility)
+    end
+
+    ##
+    # @param collection [::Collection, Hyrax::Resource]
+    # @param interpret_visibility [Boolean] whether to retain the existing
+    #   visibility when applying permission template ACLs
+    # @return [Boolean]
+    def reset_access_controls_for(collection:, interpret_visibility: false) # rubocop:disable Metrics/MethodLength
+      interpreted_read_groups = read_groups
+
+      if interpret_visibility
+        visibilities = Hyrax::VisibilityMap.instance
+        interpreted_read_groups -= visibilities.deletions_for(visibility: collection.visibility)
+        interpreted_read_groups += visibilities.additions_for(visibility: collection.visibility)
+      end
+
+      case collection
+      when Valkyrie::Resource
+        collection.permission_manager.edit_groups = edit_groups
+        collection.permission_manager.edit_users  = edit_users
+        collection.permission_manager.read_groups = interpreted_read_groups
+        collection.permission_manager.read_users  = read_users
+        collection.permission_manager.acl.save
+      else
+        collection.update!(edit_users: edit_users,
+                           edit_groups: edit_groups,
+                           read_users: read_users,
+                           read_groups: interpreted_read_groups.uniq)
+      end
+    end
+
     private
 
-      # If template requires no delays, check if date is exactly today
-      def check_no_delay_requirements(date)
-        return true unless release_no_delay?
-        date == Time.zone.today
-      end
+    # If template requires no delays, check if date is exactly today
+    def check_no_delay_requirements(date)
+      return true unless release_no_delay?
+      date == Time.zone.today
+    end
 
-      # If template requires a release before a specific date, check this date is valid
-      def check_before_date_requirements(date)
-        return true unless release_before_date? && release_date.present?
-        date <= release_date
-      end
+    # If template requires a release before a specific date, check this date is valid
+    def check_before_date_requirements(date)
+      return true unless release_before_date? && release_date.present?
+      date <= release_date
+    end
 
-      # If template requires an exact date, check this date matches
-      def check_fixed_date_requirements(date)
-        return true unless release_fixed_date? && release_date.present?
-        date == release_date
-      end
+    # If template requires an exact date, check this date matches
+    def check_fixed_date_requirements(date)
+      return true unless release_fixed_date? && release_date.present?
+      date == release_date
+    end
 
-      def update_source_type
-        self.source_type = collection&.collection_type&.machine_id
-      rescue
-        self.source_type = self.source_id
-      end
+    def update_source_type
+      self.source_type = collection&.collection_type&.machine_id
+    rescue
+      self.source_type = self.source_id
+    end
   end
 end

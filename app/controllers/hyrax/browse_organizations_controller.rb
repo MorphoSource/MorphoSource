@@ -5,9 +5,17 @@ module Hyrax
 
     with_themed_layout 'morphosource_1_column'
 
+    def self.configure_facets
+      configure_blacklight do |config|
+        config.search_builder_class = Morphosource::OrganizationsSearchBuilder
+      end
+    end
+
     def search_builder_class
       Morphosource::OrganizationsSearchBuilder
     end
+    # todo: this method call (and definition above) might not be needed. remove later
+    configure_facets
 
     def index
       (@response, @document_list) = query_solr
@@ -21,7 +29,7 @@ module Hyrax
   
     def get_organization_count_by_type
       @org_type_and_count ||= begin
-        facet_array = @response.dig("facet_counts", "facet_fields", Solrizer.solr_name('organization_type', :facetable))
+        facet_array = @response.dig("facet_counts", "facet_fields", "organization_type_sim")
         if facet_array.present?
           Hash[*facet_array]
         else

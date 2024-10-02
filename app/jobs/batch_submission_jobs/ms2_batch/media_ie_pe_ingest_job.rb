@@ -177,6 +177,10 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
     add_org_attachment_to_media(all_media, @organization_id) if @organization_id.present?
     
     UpdateWorkIndexJob.perform_later(ingest['physical_object_id'])
+    # update index for each media here since they are not indexed properly after Hyrax 3 update 
+    all_media.each do |m|
+      UpdateWorkIndexJob.perform_later(m.id)
+    end
   end
 
   def main_job

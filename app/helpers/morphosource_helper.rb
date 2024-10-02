@@ -126,14 +126,14 @@ module MorphosourceHelper
   end
 
   def device_selector
-    sortable_title_field = Solrizer.solr_name('title', :stored_sortable)
+    sortable_title_field = ActiveFedora.index_field_mapper.solr_name('title', :stored_sortable)
     hits = devices
     hits.map { |hit| [ hit[sortable_title_field], hit.id ] }
   end
 
   def devices
-    sortable_title_field = Solrizer.solr_name('title', :stored_sortable)
-    qry = "#{Solrizer.solr_name('has_model', :symbol)}:Device"
+    sortable_title_field = ActiveFedora.index_field_mapper.solr_name('title', :stored_sortable)
+    qry = "#{ActiveFedora.index_field_mapper.solr_name('has_model', :symbol)}:Device"
     ActiveFedora::SolrService.query(qry, rows: 999999, sort: "#{sortable_title_field} ASC")
   end
 
@@ -179,7 +179,7 @@ module MorphosourceHelper
   end
 
   def organization_selector
-    sortable_title_field = Solrizer.solr_name('title', :stored_sortable)
+    sortable_title_field = ActiveFedora.index_field_mapper.solr_name('title', :stored_sortable)
     hits = organizations
     hits.map { |hit| [ hit[sortable_title_field], hit.id ] }
   end
@@ -194,8 +194,8 @@ module MorphosourceHelper
   end
 
   def organizations
-    sortable_title_field = Solrizer.solr_name('title', :stored_sortable)
-    qry = "#{Solrizer.solr_name('has_model', :symbol)}:Organization"
+    sortable_title_field = ActiveFedora.index_field_mapper.solr_name('title', :stored_sortable)
+    qry = "#{ActiveFedora.index_field_mapper.solr_name('has_model', :symbol)}:Organization"
     ActiveFedora::SolrService.query(qry, rows: 999999, sort: "#{sortable_title_field} ASC")
   end
 
@@ -215,14 +215,14 @@ module MorphosourceHelper
   end
 
   def media_selector
-    sortable_title_field = Solrizer.solr_name('title', :stored_sortable)
+    sortable_title_field = ActiveFedora.index_field_mapper.solr_name('title', :stored_sortable)
     hits = media
     hits.map { |hit| [ hit[sortable_title_field], hit.id ] }
   end
 
   def media
-    sortable_title_field = Solrizer.solr_name('title', :stored_sortable)
-    qry = "#{Solrizer.solr_name('has_model', :symbol)}:Media"
+    sortable_title_field = ActiveFedora.index_field_mapper.solr_name('title', :stored_sortable)
+    qry = "#{ActiveFedora.index_field_mapper.solr_name('has_model', :symbol)}:Media"
     ActiveFedora::SolrService.query(qry, rows: 999999, sort: "#{sortable_title_field} ASC")
   end
 

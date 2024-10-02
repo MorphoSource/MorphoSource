@@ -12,6 +12,7 @@ Hyrax::Dashboard::NestedCollectionsSearchBuilder.class_eval do
   def show_only_valid_collection_types(solr_parameters)
     solr_parameters[:fq] ||= []
     # return teams
+    @collection_type = Hyrax::CollectionType.find_by_gid!(@collection.collection_type_gid)
     if nesting_project_as_child?
       gid = Hyrax::CollectionType.find_by(title: "Team").gid
     # return projects
@@ -28,12 +29,11 @@ Hyrax::Dashboard::NestedCollectionsSearchBuilder.class_eval do
 
   private
 
-    def nesting_project_as_child?
-      @collection.project? && @nest_direction == :as_parent
-    end
+  def nesting_project_as_child?
+    ( @collection_type.machine_id == "project" ) && ( @nest_direction == :as_parent )
+  end
 
-    def nesting_team_as_parent?
-      @collection.team? && @nest_direction == :as_child
-    end
-
+  def nesting_team_as_parent?
+    ( @collection_type.machine_id == "team" ) && ( @nest_direction == :as_child )
+  end
 end

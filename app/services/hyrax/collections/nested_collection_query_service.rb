@@ -33,13 +33,16 @@ module Hyrax
       # @param limit_to_id [nil, String] Limit the query to just check if the given id is in the response. Useful for validation.
       # @return [Array<SolrDocument>]
       def self.available_child_collections(parent:, scope:, limit_to_id: nil)
-        return [] unless parent.try(:nestable?)
-        return [] unless scope.can?(:deposit, parent)
+        return [] unless nestable?(collection: parent)
+        return [] unless scope.can?(:edit, parent)
+
         # projects can't have child collections
-        return [] if parent.project?
+        parent_collection_type = Hyrax::CollectionType.find_by_gid!(parent.collection_type_gid)
+        return [] if (parent_collection_type.machine_id == "project")
+        
         results = query_solr(collection: parent, access: :read, scope: scope, limit_to_id: limit_to_id, nest_direction: :as_child).documents
         # if parent is a team, return only projects without parents
-        results.select!{ |r| r["nesting_collection__parent_ids_ssim"].nil? } if parent.team?
+        results.select!{ |r| r["nesting_collection__parent_ids_ssim"].nil? } if (parent_collection_type.machine_id == "team")
         results
       end
 
@@ -52,12 +55,16 @@ module Hyrax
       # @param limit_to_id [nil, String] Limit the query to just check if the given id is in the response. Useful for validation.
       # @return [Array<SolrDocument>]
       def self.available_parent_collections(child:, scope:, limit_to_id: nil)
-        return [] unless child.try(:nestable?)
-        return [] unless scope.can?(:read, child)
+        return [] unless nestable?(collection: child)
+        return [] unless scope.can?(:edit, child)
+        
         # teams can't have parent collections
-        return [] if child.team?
+        child_collection_type = Hyrax::CollectionType.find_by_gid!(child.collection_type_gid)
+        return [] if (child_collection_type.machine_id == "team")
+
         # projects can have only one parent
-        return [] if child.project? && child.parent?
+        return [] if (child_collection_type.machine_id == "project") && child.member_of_collection_ids.present?
+
         query_solr(collection: child, access: :deposit, scope: scope, limit_to_id: limit_to_id, nest_direction: :as_parent).documents
       end
       # @api public
@@ -84,7 +91,7 @@ module Hyrax
       # @param limit_to_id [nil, String] Limit the query to just check if the given id is in the response. Useful for validation.
       # @param nest_direction [Symbol] :as_child or :as_parent
       def self.query_solr(collection:, access:, scope:, limit_to_id:, nest_direction:)
-        nesting_attributes = NestingAttributes.new(id: collection.id, scope: scope)
+        nesting_attributes = NestingAttributes.new(id: collection.id.to_s, scope: scope)
         query_builder = Hyrax::Dashboard::NestedCollectionsSearchBuilder.new(
           access: access,
           collection: collection,
@@ -93,7 +100,7 @@ module Hyrax
           nest_direction: nest_direction
         )
 
-        query_builder.where(id: limit_to_id) if limit_to_id
+        query_builder.where(id: limit_to_id.to_s) if limit_to_id
         query = clean_lucene_error(builder: query_builder)
         scope.repository.search(query)
       end
@@ -125,13 +132,15 @@ module Hyrax
       # @todo Consider expanding from same collection type to a lookup table that says "This collection type can have within it, these collection types"
       def self.parent_and_child_can_nest?(parent:, child:, scope:)
         return false if parent == child # Short-circuit
+        parent_collection_type = Hyrax::CollectionType.find_by_gid!(parent.collection_type_gid)
+        child_collection_type = Hyrax::CollectionType.find_by_gid!(child.collection_type_gid)
         if parent.collection_type_gid != child.collection_type_gid
           # Teams are able to have child projects
-          return false unless parent.team? && child.project?
+          return false unless (parent_collection_type.machine_id == "team") && (child_collection_type.machine_id == "project")
           # Projects can have only one parent
-          return false if child.parent?
+          return false if child.member_of_collection_ids.present?
         else
-          return false if parent.team? || parent.project?
+          return false if (parent_collection_type.machine_id == "team") || (parent_collection_type.machine_id == "project")
         end
         return false if available_parent_collections(child: child, scope: scope, limit_to_id: parent.id).none?
         return false if available_child_collections(parent: parent, scope: scope, limit_to_id: child.id).none?
@@ -157,19 +166,22 @@ module Hyrax
       #
       # Get the child collection's nesting depth
       #
-      # @param child [Collection]
-      # @return [Fixnum] the largest number of collections in a path nested under this collection (including this collection)
+      # @param child [::Collection]
+      # @return [Fixnum] the largest number of collections in a path nested
+      #   under this collection (including this collection)
       def self.child_nesting_depth(child:, scope:)
-        return 1 if child.nil?
+        return 1 unless child
         # The nesting depth of a child collection is found by finding the largest nesting depth
         # among all collections and works which have the child collection in the paths, and
         # subtracting the nesting depth of the child collection itself.
         # => 1) First we find all the collections with this child in the path, sort the results in descending order, and take the first result.
         # note: We need to include works in this search. They are included in the depth validations in
         # the indexer, so we do NOT use collection search builder here.
-        builder = Hyrax::SearchBuilder.new(scope).where("#{Samvera::NestingIndexer.configuration.solr_field_name_for_storing_pathnames}:/.*#{child.id}.*/")
-        builder.query[:sort] = "#{Samvera::NestingIndexer.configuration.solr_field_name_for_deepest_nested_depth} desc"
-        builder.query[:rows] = 1
+        builder = Hyrax::SearchBuilder.new(scope).with({
+                                                         q: "#{Samvera::NestingIndexer.configuration.solr_field_name_for_storing_pathnames}:/.*#{child.id}.*/",
+                                                         sort: "#{Samvera::NestingIndexer.configuration.solr_field_name_for_deepest_nested_depth} desc"
+                                                       })
+        builder.rows = 1
         query = clean_lucene_error(builder: builder)
         response = scope.repository.search(query).documents.first
 
@@ -177,7 +189,7 @@ module Hyrax
         descendant_depth = response[Samvera::NestingIndexer.configuration.solr_field_name_for_deepest_nested_depth]
 
         # => 2) Then we get the stored depth of the child collection itself to eliminate the collections above this one from our count, and add 1 to add back in this collection itself
-        child_depth = NestingAttributes.new(id: child.id, scope: scope).depth
+        child_depth = NestingAttributes.new(id: child.id.to_s, scope: scope).depth
         nesting_depth = descendant_depth - child_depth + 1
 
         # this should always be positive, but just being safe
@@ -193,9 +205,21 @@ module Hyrax
       # @return [Fixnum] the largest number of collections above this collection (includes this collection)
       def self.parent_nesting_depth(parent:, scope:)
         return 1 if parent.nil?
-        NestingAttributes.new(id: parent.id, scope: scope).depth
+        NestingAttributes.new(id: parent.id.to_s, scope: scope).depth
       end
       private_class_method :parent_nesting_depth
+
+      # @api private
+      #
+      # @param collection [Hyrax::PcdmCollection,::Collection]
+      # @return [Boolean] true if the collection is nestable; otherwise, false
+      def self.nestable?(collection:)
+        return false if collection.blank?
+        return collection.nestable? if collection.respond_to? :nestable?
+        collection_type = Hyrax::CollectionType.find_by_gid!(collection.collection_type_gid)
+        collection_type.nestable?
+      end
+      private_class_method :nestable?
     end
   end
 end

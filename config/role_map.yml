@@ -1,0 +1,20 @@
+development:
+  admin:
+  contributor:
+  batch_submission_contributor:
+  remote_file_submitter:
+  charge_api:
+
+test:
+  admin:
+  contributor:
+  batch_submission_contributor:
+  remote_file_submitter:
+  charge_api:
+
+production:
+  admin:
+  contributor:
+  batch_submission_contributor:
+  remote_file_submitter:
+  charge_api:

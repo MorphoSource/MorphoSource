@@ -672,7 +672,7 @@ namespace :morphosource do
   desc 'Update media ip holder field'
   task :update_media_ip_holder => :environment do
     # find media with rights holder metadata with 'Name:' format
-    ids = Morphosource::SolrService.new.get_docs("rights_holder_tesim:Name:").map{|d| d["id"]}
+    ids = Morphosource::SolrService.new.get_docs('rights_holder_tesim:"Name:"').map{|d| d["id"]}
     ids.each do |id|
       m = Media.find(id)
       # ex: ["Name: Name1, Type: Copyright and License", "Name: Name3, Type: License", "Name: Name2, Type: Copyright"]
@@ -716,7 +716,7 @@ namespace :morphosource do
       update = false
     end
     # update all bso and cho with org linked team
-    qry = "linked_organization_id_ssi:* AND has_model_ssim:Collection AND collection_type_gid_ssim:\"gid://morpho-source-sf/hyrax-collectiontype/1\""
+    qry = "linked_organization_id_ssi:* AND has_model_ssim:Collection AND collection_type_gid_ssim:\"gid://#{GlobalID.app}/Hyrax::CollectionType/#{Morphosource::CollectionTypesService.team_collection_type_id}\""
     result = ActiveFedora::SolrService.query(qry, rows: 999999)
     puts "#{result.count} org-linked teams found "
     result.each do |hit|
@@ -743,7 +743,7 @@ namespace :morphosource do
       update = false
     end
     # update all bso and cho with org linked team
-    qry = "linked_organization_id_ssi:* AND has_model_ssim:Collection AND collection_type_gid_ssim:\"gid://morpho-source-sf/hyrax-collectiontype/1\""
+    qry = "linked_organization_id_ssi:* AND has_model_ssim:Collection AND collection_type_gid_ssim:\"gid://#{GlobalID.app}/Hyrax::CollectionType/#{Morphosource::CollectionTypesService.team_collection_type_id}\""
     result = ActiveFedora::SolrService.query(qry, rows: 999999)
     puts "#{result.count} org-linked teams found "
     result.each do |hit|

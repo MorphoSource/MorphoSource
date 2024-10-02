@@ -1,8 +1,62 @@
-require 'hyrax/callbacks'
 require 'hyrax/role_registry'
 require 'samvera/nesting_indexer'
 
 module Hyrax
+  ##
+  # Handles configuration for the Hyrax engine. (NOTE: copied from Hyrax 3.6.0 configuration.rb)
+  #
+  # This class provides a series of accessors for setting and retrieving global
+  # engine options. For convenient reference, options are grouped into the
+  # following functional areas:
+  #
+  # - Groups
+  # - Identifiers
+  # - IIIF
+  # - Local Storage
+  # - System Dependencies
+  # - Theme
+  # - Valkyrie
+  #
+  # == Groups
+  #
+  # Hyrax has special handling for three groups: "admin", "registered", and "public".
+  #
+  # These settings support using custom names for these functional groups in
+  # object ACLs.
+  #
+  # == Identifiers
+  # == IIIF
+  #
+  # Objects in Hyrax serve out IIIF manifests. These configuration options
+  # toggle server availability, allow customization of image and info URL
+  # generation, and provide other hooks for custom IIIF behavior.
+  #
+  # == Local Storage
+  #
+  # Hyrax applications need local disk access to store working copies of files
+  # for a variety of purposes. Some of these storage paths need to be available
+  # all application processes. These options control the paths to use for each
+  # type of file.
+  #
+  # == System Dependiencies
+  #
+  # @example adding configuration with `Hyrax.config` (recommended usage)
+  #
+  #   Hyrax.config do |config|
+  #     config.work_requires_files = true
+  #     config.derivatives_path('tmp/dir/for/derivatives/')
+  #   end
+  #
+  # == Theme
+  #
+  # Options related to the overall appearance of Hyrax.
+  #
+  # == Valkyrie
+  #
+  # *Experimental:* Options for toggling Hyrax's experimental "Wings" valkyrie
+  # adapter and configuring valkyrie.
+  #
+  # @see Hyrax.config
   class Configuration
     include Callbacks
 
@@ -48,10 +102,153 @@ module Hyrax
       true
     end
 
+    # @!group Analytics
+
+    attr_writer :analytics
+    attr_reader :analytics
+    def analytics?
+      @analytics ||= false
+    end
+
+    # Currently supports 'google' or 'matomo'
+    # google is default for backward compatability
+    attr_writer :analytics_provider
+    def analytics_provider
+      @analytics_provider ||=
+        ENV.fetch('HYRAX_ANALYTICS_PROVIDER', 'google')
+    end
+
+    attr_writer :google_analytics_id
+    def google_analytics_id
+      @google_analytics_id ||= nil
+    end
+    alias google_analytics_id? google_analytics_id
+
+    # Defaulting analytic start date to whenever the file was uploaded by leaving it blank
+    attr_writer :analytic_start_date
+    attr_reader :analytic_start_date
+
+    # @!endgroup
+    # @!group Groups
+
+    # Hyrax 3.x config has some of these, we do not use them (so far)
+
+    # @!endgroup
+    # @!group Identifier Minting
+
+    attr_writer :enable_noids
+    def enable_noids?
+      return @enable_noids unless @enable_noids.nil?
+      @enable_noids = true
+    end
+
+    attr_writer :noid_template
+    def noid_template
+      @noid_template ||= '.reeddeeddk'
+    end
+
+    attr_writer :noid_minter_class
+    def noid_minter_class
+      @noid_minter_class ||= ::Noid::Rails::Minter::Db
+    end
+
+    attr_writer :minter_statefile
+    def minter_statefile
+      @minter_statefile ||= '/tmp/minter-state'
+    end
+
+    # @!endgroup
+    # @!group IIIF
+
+    # Enable IIIF image service. This is required to use the
+    # IIIF viewer enabled show page
+    #
+    # If you have run the hyrax:riiif generator, an embedded riiif service
+    # will be used to deliver images via IIIF. If you have not, you will
+    # need to configure the following other configuration values to work
+    # with your image server.
+    #
+    # @see config.iiif_image_url_builder
+    # @see config.iiif_info_url_builder
+    # @see config.iiif_image_compliance_level_uri
+    # @see config.iiif_image_size_default
+    #
+    # @note Default is false
+    #
+    # @return [Boolean] true to enable, false to disable
+    def iiif_image_server?
+      return @iiif_image_server unless @iiif_image_server.nil?
+      @iiif_image_server = false
+    end
+    attr_writer :iiif_image_server
+
+    # URL that resolves to an image provided by a IIIF image server
+    #
+    # @return [#call] lambda/proc that generates a URL to an image
+    def iiif_image_url_builder
+      @iiif_image_url_builder ||= ->(file_id, base_url, _size, _format) { "#{base_url}/downloads/#{file_id.split('/').first}" }
+    end
+
+    attr_writer :iiif_image_url_builder
+
+    # URL that resolves to an info.json file provided by a IIIF image server
+    #
+    # @return [#call] lambda/proc that generates a URL to image info
+    def iiif_info_url_builder
+      @iiif_info_url_builder ||= ->(_file_id, _base_url) { '' }
+    end
+    attr_writer :iiif_info_url_builder
+
+    # URL that indicates your IIIF image server compliance level
+    #
+    # @return [String] valid IIIF image compliance level URI
+    def iiif_image_compliance_level_uri
+      @iiif_image_compliance_level_uri ||= 'http://iiif.io/api/image/2/level2.json'
+    end
+    attr_writer :iiif_image_compliance_level_uri
+
+    # IIIF image size default
+    #
+    # @return [#String] valid IIIF image size parameter
+    def iiif_image_size_default
+      @iiif_image_size_default ||= '600,'
+    end
+    attr_writer :iiif_image_size_default
+
+    # IIIF metadata - fields to display in the metadata section
+    #
+    # @return [#Array] fields
+    def iiif_metadata_fields
+      @iiif_metadata_fields ||= Hyrax::Forms::WorkForm.required_fields
+    end
+    attr_writer :iiif_metadata_fields
+
+    # Set predicate for rendering to dc:hasFormat as defined in
+    #   IIIF Presentation API context:  http://iiif.io/api/presentation/2/context.json
+    attr_writer :rendering_predicate
+    def rendering_predicate
+      @rendering_predicate ||= ::RDF::Vocab::DC.hasFormat
+    end
+
+    # @!endgroup
+    # @!group Local Storage
+
+    # @!attribute [w] bagit_dir
+    #   Location where BagIt files are exported
+    attr_writer :bagit_dir
+    def bagit_dir
+      @bagit_dir ||= "tmp/descriptions"
+    end
+
     # Path on the local file system where derivatives will be stored
     attr_writer :derivatives_path
     def derivatives_path
       @derivatives_path ||= Rails.root.join('tmp', 'derivatives')
+    end
+
+    attr_writer :derivatives_tmp_path
+    def derivatives_tmp_path
+      @derivatives_tmp_path ||= Rails.root.join("tmp")
     end
 
     # Path on the local file system where attachments will be stored
@@ -66,11 +263,25 @@ module Hyrax
       @working_path ||= Rails.root.join('tmp', 'uploads')
     end
 
+    # NOTE: This used to be called `working_path` in CurationConcerns
+    attr_writer :upload_path
+    def upload_path
+      @upload_path ||= ->() { Rails.root + 'tmp' + 'uploads' }
+    end
+
+    attr_writer :cache_path
+    def cache_path
+      @cache_path ||= ->() { Rails.root + 'tmp' + 'uploads' + 'cache' }
+    end
+
     # Path on the local file system where where logos and banners for specific collections will be stored.
     attr_writer :branding_path
     def branding_path
       @branding_path ||= Rails.root.join('public', 'branding')
     end
+
+    # @!endgroup
+    # @!group System Dependencies
 
     attr_writer :enable_ffmpeg
     def enable_ffmpeg
@@ -83,11 +294,161 @@ module Hyrax
       @ffmpeg_path ||= 'ffmpeg'
     end
 
+    attr_writer :fits_path
+    def fits_path
+      @fits_path ||= 'fits.sh'
+    end
+
     attr_writer :fits_message_length
     def fits_message_length
       @fits_message_length ||= 5
     end
 
+    # @!attribute [w] import_export_jar_file_path
+    #   Path to the jar file for the Fedora import/export tool
+    attr_writer :import_export_jar_file_path
+    def import_export_jar_file_path
+      @import_export_jar_file_path ||= "tmp/fcrepo-import-export.jar"
+    end
+
+    # @!attribute [w] virus_scanner
+    #   @return [Hyrax::VirusScanner] the default system virus scanner
+    attr_writer :virus_scanner
+    def virus_scanner
+      @virus_scanner ||=
+        if Hyrax.primary_work_type.respond_to?(:default_system_virus_scanner)
+          Hyrax.primary_work_type.default_system_virus_scanner
+        else
+          Hyrax::VirusScanner
+        end
+    end
+
+    # MS-specific dependencies
+
+    attr_writer :blender_path
+    def blender_path
+      @blender_path ||= 'blender'
+    end
+
+    attr_writer :fiji_path
+    def fiji_path
+      @fiji_path ||= 'fiji'
+    end
+
+    # Custom executable path for running fiji scripts
+    attr_writer :fiji_script_command
+    def fiji_script_command
+      @fiji_script_command ||= nil
+    end
+
+    attr_writer :python_path
+    def python_path
+      @python_path ||= 'python3'
+    end
+
+    # @!endgroup
+    # @!group Theme
+
+    # Site-wide branding fields (can customize logo and title for non-MorphoSource instances)
+
+    # DEPRECATED, not used in this application
+    attr_writer :banner_image
+    def banner_image
+      # This image can be used for free and without attribution. See here for source and license: https://github.com/samvera/hyrax/issues/1551#issuecomment-326624909
+      @banner_image ||= 'https://user-images.githubusercontent.com/101482/29949206-ffa60d2c-8e67-11e7-988d-4910b8787d56.jpg'
+    end
+
+    attr_writer :logo_image
+    def logo_image
+      # Default image is 80x80 pixels and is located in app/assets/images/, it is displayed at 40x40 and 60x60
+      @logo_image ||= nil
+    end
+
+    attr_writer :site_title
+    def site_title
+      # Will fall back to "MorphoSource" where not otherwise provided
+      @site_title ||= nil
+    end
+
+    attr_writer :default_site_title
+    def default_site_title
+      @default_site_title ||= 'MorphoSource'
+    end
+
+    # Try to display site announcements? Required github_access_token for GH discussions board
+    attr_writer :site_announcements
+    def site_announcements
+      @site_announcements ||= false
+    end
+
+    ##
+    # @return [Boolean]
+    def disable_wings
+      return @disable_wings unless @disable_wings.nil?
+      ActiveModel::Type::Boolean.new.cast(ENV.fetch('HYRAX_SKIP_WINGS', false))
+    end
+    attr_writer :disable_wings
+
+    attr_writer :display_media_download_link
+    def display_media_download_link?
+      return @display_media_download_link unless @display_media_download_link.nil?
+      @display_media_download_link = true
+    end
+
+    # @!endgroup
+    # @!group Valkyrie
+
+    ##
+    # @return [Valkyrie::StorageAdapter]
+    def branding_storage_adapter
+      @branding_storage_adapter ||= Valkyrie::StorageAdapter.find(:branding_disk)
+    end
+
+    ##
+    # @param [#to_sym] adapter
+    def branding_storage_adapter=(adapter)
+      @branding_storage_adapter = Valkyrie::StorageAdapter.find(adapter.to_sym)
+    end
+
+    ##
+    # @return [Valkyrie::StorageAdapter]
+    def derivatives_storage_adapter
+      @derivatives_storage_adapter ||= Valkyrie::StorageAdapter.find(:derivatives_disk)
+    end
+
+    ##
+    # @param [#to_sym] adapter
+    def derivatives_storage_adapter=(adapter)
+      @derivatives_storage_adapter = Valkyrie::StorageAdapter.find(adapter.to_sym)
+    end
+
+    ##
+    # @return [#save, #save_all, #delete, #wipe!] an indexing adapter
+    def index_adapter
+      @index_adapter ||= Valkyrie::IndexingAdapter.find(:null_index)
+    end
+
+    ##
+    # @param [#to_sym] adapter
+    def index_adapter=(adapter)
+      @index_adapter = Valkyrie::IndexingAdapter.find(adapter.to_sym)
+    end
+
+    ##
+    # @return [Boolean] whether to use the experimental valkyrie index
+    def query_index_from_valkyrie
+      @query_index_from_valkyrie ||= false
+    end
+    attr_writer :query_index_from_valkyrie
+
+    ##
+    # @return [Boolean] whether to use experimental valkyrie storage features
+    def use_valkyrie?
+      return true if disable_wings # always return true if wings is disabled
+      ActiveModel::Type::Boolean.new.cast(ENV.fetch('HYRAX_VALKYRIE', false))
+    end
+    # @!endgroup
+    
     attr_writer :feature_config_path
     def feature_config_path
       @feature_config_path ||= Rails.root.join('config', 'features.yml')
@@ -171,6 +532,15 @@ module Hyrax
 
     # Override characterization runner
     attr_accessor :characterization_runner
+
+    ##
+    # @!attribute [w] characterization_proxy
+    #   Which FileSet file to use for mime type resolution
+    #   @ see Hyrax::FileSetTypeService
+    attr_writer :characterization_proxy
+    def characterization_proxy
+      @characterization_proxy ||= :original_file
+    end
 
     # Attributes for the lock manager which ensures a single process/thread is mutating a ore:Aggregation at once.
     # @!attribute [w] lock_retry_count
@@ -464,12 +834,6 @@ module Hyrax
       @browse_everything ||= nil
     end
 
-    attr_writer :analytics
-    attr_reader :analytics
-    def analytics?
-      @analytics ||= false
-    end
-
     attr_writer :citations
     def citations?
       @citations ||= false
@@ -533,13 +897,6 @@ module Hyrax
       @admin_set_predicate ||= ::RDF::Vocab::DC.isPartOf
     end
 
-    # Set predicate for rendering to dc:hasFormat as defined in
-    #   IIIF Presentation API context:  http://iiif.io/api/presentation/2/context.json
-    attr_writer :rendering_predicate
-    def rendering_predicate
-      @rendering_predicate ||= ::RDF::Vocab::DC.hasFormat
-    end
-
     attr_writer :work_requires_files
     def work_requires_files?
       return true if @work_requires_files.nil?
@@ -596,15 +953,181 @@ module Hyrax
       @audit_user_key
     end
 
-    # NOTE: This used to be called `working_path` in CurationConcerns
-    attr_writer :upload_path
-    def upload_path
-      @upload_path ||= ->() { Rails.root + 'tmp' + 'uploads' }
+    attr_writer :collection_type_index_field
+    def collection_type_index_field
+      @collection_type_index_field ||= 'collection_type_gid_ssim'
     end
 
-    attr_writer :cache_path
-    def cache_path
-      @cache_path ||= ->() { Rails.root + 'tmp' + 'uploads' + 'cache' }
+    attr_writer :collection_model
+    ##
+    # @return [#constantize] a string representation of the collection
+    #   model
+    def collection_model
+      @collection_model ||= '::Collection'
+    end
+
+    ##
+    # @return [Class] the configured collection model class
+    def collection_class
+      collection_model.safe_constantize
+    end
+
+    attr_writer :admin_set_model
+    ##
+    # @return [#constantize] a string representation of the admin set
+    #   model
+    def admin_set_model
+      @admin_set_model ||= 'AdminSet'
+    end
+
+    ##
+    # @return [Class] the configured admin set model class
+    def admin_set_class
+      admin_set_model.constantize
+    end
+
+    attr_writer :id_field
+    def id_field
+      @id_field || index_field_mapper.id_field
+    end
+
+    attr_writer :index_field_mapper
+    def index_field_mapper
+      @index_field_mapper ||= ActiveFedora.index_field_mapper
+    end
+
+    # Should a button with "Share my work" show on the front page to users who are not logged in?
+    attr_writer :display_share_button_when_not_logged_in
+    def display_share_button_when_not_logged_in?
+      return true if @display_share_button_when_not_logged_in.nil?
+      @display_share_button_when_not_logged_in
+    end
+
+    attr_writer :permission_levels
+    def permission_levels
+      @permission_levels ||= { "View/Download" => "read",
+                               "Edit access" => "edit" }
+    end
+
+    attr_writer :owner_permission_levels
+    def owner_permission_levels
+      @owner_permission_levels ||= { "Edit access" => "edit" }
+    end
+
+    attr_writer :permission_options
+    def permission_options
+      @permission_options ||= { "Choose Access" => "none",
+                                "View/Download" => "read",
+                                "Edit" => "edit" }
+    end
+
+    attr_writer :ms_permission_levels
+    def ms_permission_levels
+      @ms_permission_levels ||= { "View access" => "read",
+                               "Download access" => "download",
+                               "Edit access" => "edit" }
+    end
+
+    attr_writer :ms_permission_options
+    def ms_permission_options
+      @ms_permission_options ||= { "Choose Access" => "none",
+                                "View" => "read",
+                                "Download" => "download",
+                                "Edit" => "edit" }
+    end
+
+    attr_writer :publisher
+    def publisher
+      @publisher ||= Hyrax::Publisher.instance
+    end
+
+    attr_writer :translate_uri_to_id
+
+    def translate_uri_to_id
+      @translate_uri_to_id ||= lambda do |uri|
+        baseparts = 2 + [(::Noid::Rails.config.template.gsub(/\.[rsz]/, '').length.to_f / 2).ceil, 4].min
+        uri.to_s.sub("#{ActiveFedora.fedora.host}#{ActiveFedora.fedora.base_path}", '').split('/', baseparts).last
+      end
+    end
+
+    attr_writer :translate_id_to_uri
+    def translate_id_to_uri
+      @translate_id_to_uri ||= lambda do |id|
+        "#{ActiveFedora.fedora.host}#{ActiveFedora.fedora.base_path}/#{::Noid::Rails.treeify(id)}"
+      end
+    end
+
+    attr_writer :contact_email
+    def contact_email
+      @contact_email ||= "repo-admin@example.org"
+    end
+
+    attr_writer :system_report_recipients
+    def system_report_recipients
+      @system_report_recipients ||= ""
+    end
+
+    attr_writer :override_mail_recipient
+    def override_mail_recipient
+      @override_mail_recipient ||= ""
+    end
+
+    attr_writer :subject_prefix
+    def subject_prefix
+      @subject_prefix ||= "Contact form:"
+    end
+
+    attr_writer :extract_full_text
+    def extract_full_text?
+      return @extract_full_text unless @extract_full_text.nil?
+      @extract_full_text = true
+    end
+
+    attr_writer :uploader
+    def uploader
+      @uploader ||= if Rails.env.development?
+                      # use sequential uploads in development to avoid database locking problems with sqlite3.
+                      default_uploader_config.merge(limitConcurrentUploads: 1, sequentialUploads: true)
+                    else
+                      default_uploader_config
+                    end
+    end
+
+    # Miscellaneous MorphoSource fields
+
+    attr_writer :index_related_works
+    def index_related_works
+      @index_related_works ||= false
+    end
+
+    attr_writer :unknown_ct_scanner
+    def unknown_ct_scanner
+      @unknown_ct_scanner ||= nil
+    end
+
+    attr_writer :null_organization_id
+    def null_organization_id
+      @null_organization_id ||= nil
+    end
+
+    attr_writer :max_for_download_request_details
+    def max_for_download_request_details
+      @max_for_download_request_details ||= 100
+    end
+
+    attr_writer :host_name
+    def host_name
+      @host_name ||= "morphosource.org"
+    end
+
+    attr_writer :sftp_share_root
+    def sftp_share_root
+      @sftp_share_root ||= "/sftp_share_root_NOT_DEFINED/"
+    end
+
+    attr_writer :front_page_media
+    def front_page_media
+      @front_page_media ||= nil
     end
 
     ### YAML file application configuration ###
@@ -947,10 +1470,18 @@ module Hyrax
       @unused_storage_fund_code_id ||= nil
     end
 
-    attr_accessor :nested_relationship_reindexer
+    def use_solr_graph_for_collection_nesting
+      ActiveModel::Type::Boolean.new.cast(ENV.fetch('HYRAX_USE_SOLR_GRAPH_NESTING', false))
+    end
 
+    attr_accessor :nested_relationship_reindexer
     def default_nested_relationship_reindexer
       ->(id:, extent:) { rescued_nested_relationship_reindexer(id: id, extent: extent) }
+    end
+
+    attr_writer :solr_select_path
+    def solr_select_path
+      @solr_select_path ||= ActiveFedora.solr_config.fetch(:select_path, 'select')
     end
 
     def rescued_nested_relationship_reindexer(id:, extent:)
@@ -959,6 +1490,20 @@ module Hyrax
       rescue Ldp::Gone => e
         Rails.logger.error "Samvera::NestingIndexer.reindex_relationships experienced Ldp::Gone error with work #{id}"
       end
+    end
+
+    # A configuration point for changing the available range for
+    # selecting per page results
+    #
+    # @!attribute [w] range_for_number_of_results_to_display_per_page
+    #   A configuration point for changing the available range for
+    #   selecting per page results
+    # @note This has no impact on the default page size of the controller.
+    attr_writer :range_for_number_of_results_to_display_per_page
+
+    # @return [Array<Integer>]
+    def range_for_number_of_results_to_display_per_page
+      @range_for_number_of_results_to_display_per_page ||= [10, 20, 50, 100]
     end
 
     private

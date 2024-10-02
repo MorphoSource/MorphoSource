@@ -26,7 +26,7 @@ module Morphosource
       configure_facets
 
       def search_builder_class
-       Morphosource::My::CollectionsSearchBuilder
+        Morphosource::My::CollectionsSearchBuilder
       end
 
       def index
@@ -38,7 +38,7 @@ module Morphosource
         managed_collections_count
         @user = current_user
         Deprecation.silence(Hyrax::MyController) do
-          (@response, @document_list) = query_solr
+          (@response, @document_list) = search_service.search_results
         end
         @collection_counts = collection_counts
         prepare_instance_variables_for_batch_control_display

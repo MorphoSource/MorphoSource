@@ -134,7 +134,7 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
         let(:parent_double) { double(nestable?: true) }
 
         it 'returns an empty array' do
-          expect(scope).to receive(:can?).with(:deposit, parent_double).and_return(false)
+          expect(scope).to receive(:can?).with(:edit, parent_double).and_return(false)
           expect(described_class).not_to receive(:query_solr)
           expect(subject).to eq([])
         end
@@ -146,7 +146,7 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
           let(:parent_project) { Collection.new(id: 'Parent_Project', collection_type_gid: project_collection_type.gid ) }
 
           it 'returns an empty array' do
-            expect(scope).to receive(:can?).with(:deposit, parent_project).and_return(true)
+            expect(scope).to receive(:can?).with(:edit, parent_project).and_return(true)
             expect(described_class).not_to receive(:query_solr)
             expect(subject).to eq([])
           end
@@ -237,7 +237,7 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
             subject { described_class.available_child_collections(parent: team_a, scope: scope) }
 
             it 'returns an array of projects minus any projects that already have parents' do
-              expect(scope).to receive(:can?).with(:deposit, team_a).and_return(true)
+              expect(scope).to receive(:can?).with(:edit, team_a).and_return(true)
               expect(described_class).to receive(:query_solr).with(collection: team_a, access: :read, scope: scope, limit_to_id: nil, nest_direction: :as_child).and_call_original
               expect(subject.map(&:id)).to contain_exactly(project_2.id)
             end
@@ -247,7 +247,7 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
             subject { described_class.available_child_collections(parent: another_a, scope: scope) }
 
             it 'returns an array of the same collection type minus the child collection' do
-              expect(scope).to receive(:can?).with(:deposit, another_a).and_return(true)
+              expect(scope).to receive(:can?).with(:edit, another_a).and_return(true)
               expect(described_class).to receive(:query_solr).with(collection: another_a, access: :read, scope: scope, limit_to_id: nil, nest_direction: :as_child).and_call_original
               expect(subject.map(&:id)).to contain_exactly(another_b.id)
             end
@@ -273,7 +273,7 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
         let(:child_double) { double(nestable?: true) }
 
         it 'returns an empty array' do
-          expect(scope).to receive(:can?).with(:read, child_double).and_return(false)
+          expect(scope).to receive(:can?).with(:edit, child_double).and_return(false)
           expect(described_class).not_to receive(:query_solr)
           expect(subject).to eq([])
         end
@@ -286,8 +286,8 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
           let(:child_team) { Collection.new(id: 'Child_Team', collection_type_gid: team_collection_type.gid )}
 
           it 'returns an empty array' do
-            expect(child_team).to receive(:try).with(:nestable?).and_return(true)
-            expect(scope).to receive(:can?).with(:read, child_team).and_return(true)
+            expect(described_class).to receive(:nestable?).and_return(true)
+            expect(scope).to receive(:can?).with(:edit, child_team).and_return(true)
             expect(described_class).not_to receive(:query_solr)
             expect(subject).to eq([])
           end
@@ -295,12 +295,15 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
         describe 'and the child is a project with a parent' do
           subject { described_class.available_parent_collections(child: child_project, scope: scope) }
 
-          let(:child_project) { Collection.new(id: 'Child_Team', collection_type_gid: project_collection_type.gid )}
+          let(:child_project) { Collection.new(id: 'Child_Project', collection_type_gid: project_collection_type.gid )}
+
+          before do
+            allow(child_project).to receive(:member_of_collection_ids).and_return(['123456789'])
+          end
 
           it 'returns an empty array' do
-            expect(child_project).to receive(:try).with(:nestable?).and_return(true)
-            expect(scope).to receive(:can?).with(:read, child_project).and_return(true)
-            expect(child_project).to receive(:parent?).and_return(true)
+            expect(described_class).to receive(:nestable?).and_return(true)
+            expect(scope).to receive(:can?).with(:edit, child_project).and_return(true)
             expect(described_class).not_to receive(:query_solr)
             expect(subject).to eq([])
           end
@@ -393,7 +396,7 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
             subject { described_class.available_parent_collections(child: project_1, scope: scope) }
 
             it 'returns an array of team collections only' do
-              expect(scope).to receive(:can?).with(:read, project_1).and_return(true)
+              expect(scope).to receive(:can?).with(:edit, project_1).and_return(true)
               expect(described_class).to receive(:query_solr).with(collection: project_1, access: :deposit, scope: scope, limit_to_id: nil, nest_direction: :as_parent).and_call_original
               expect(subject.map(&:id)).to contain_exactly(team_a.id, team_b.id)
             end
@@ -403,7 +406,7 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
             subject { described_class.available_parent_collections(child: another_a, scope: scope) }
 
             it 'returns an array of the same collection type minus the child collection' do
-              expect(scope).to receive(:can?).with(:read, another_a).and_return(true)
+              expect(scope).to receive(:can?).with(:edit, another_a).and_return(true)
               expect(described_class).to receive(:query_solr).with(collection: another_a, access: :deposit, scope: scope, limit_to_id: nil, nest_direction: :as_parent).and_call_original
               expect(subject.map(&:id)).to contain_exactly(another_b.id)
             end

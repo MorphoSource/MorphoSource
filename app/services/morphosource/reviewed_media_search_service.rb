@@ -29,13 +29,13 @@ module Morphosource
       end
 
       def model_clause
-        "#{Solrizer.solr_name('has_model', :symbol)}:Media"
+        "#{ActiveFedora.index_field_mapper.solr_name('has_model', :symbol)}:Media"
       end
 
       def param_clauses(specific_params)
         clauses = []
         specific_params.each do |k,v|
-          clauses << "#{Solrizer.solr_name(k, :symbol)}:#{prepare_value(v)}"
+          clauses << "#{ActiveFedora.index_field_mapper.solr_name(k, :symbol)}:#{prepare_value(v)}"
         end
         clauses
       end

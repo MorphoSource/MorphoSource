@@ -84,6 +84,10 @@ nav#masthead {
 */
 .showcase {
 
+  .viewer-wrapper iframe {
+    position: inherit;
+  }
+
   ul.error-list, ul.warn-list {
     margin-left: 0;
     margin-block-start: 0;
@@ -312,9 +316,14 @@ nav#masthead {
   }
 
   .team-logo img {
-    width: 60px;
+    max-width: 66px;
+    max-height: 66px;
     margin-right:16px;
-    margin-bottom: 8px;
+    margin-top: 15px;
+    @media (min-width: 769px) {
+      max-width: 80px;
+      max-height: 80px;
+    }
   }
 
   .team-title {

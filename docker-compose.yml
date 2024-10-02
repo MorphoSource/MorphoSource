@@ -25,8 +25,8 @@ services:
       - 3000:3000
     volumes:
       - .:/app/samvera/hyrax-webapp
-      - /app/samvera/hyrax-webapp/vendor/bundle
-      - /app/samvera/hyrax-webapp/.bundle/
+      - app-vendor-bundle:/app/samvera/hyrax-webapp/vendor/bundle
+      - app-bundle:/app/samvera/hyrax-webapp/.bundle/
       - hyrax-derivatives:/app/samvera/hyrax-webapp/derivatives
       - hyrax-uploads:/app/samvera/hyrax-webapp/uploads
       - rails-tmp:/app/samvera/hyrax-webapp/tmp
@@ -51,8 +51,8 @@ services:
       - solr
     volumes:
       - .:/app/samvera/hyrax-webapp
-      - /app/samvera/hyrax-webapp/vendor/bundle
-      - /app/samvera/hyrax-webapp/.bundle/
+      - app-vendor-bundle:/app/samvera/hyrax-webapp/vendor/bundle
+      - app-bundle:/app/samvera/hyrax-webapp/.bundle/
       - hyrax-derivatives:/app/samvera/hyrax-webapp/derivatives
       - hyrax-uploads:/app/samvera/hyrax-webapp/uploads
       - rails-tmp:/app/samvera/hyrax-webapp/tmp
@@ -64,7 +64,6 @@ services:
       context: .
       target: morphosource-worker-dev
     container_name: app_test
-    command: sh -c 'rm -rf /app/samvera/hyrax-webapp/tmp/* && bundle && bundle exec rake hydra:test_server'
     user: "101292838:0"
     env_file:
       - ./vendor/docker/credentials.env
@@ -72,16 +71,17 @@ services:
       - ./vendor/docker/docker-compose-test.env
     depends_on:
       - db_migrate
+      - fcrepo
       - memcached
       - postgres
       - redis
+      - solr
     profiles:
       - test
     volumes:
       - .:/app/samvera/hyrax-webapp
-      - ./solr/conf:/app/samvera/hyrax-webapp/solr/config
-      - /app/samvera/hyrax-webapp/vendor/bundle
-      - /app/samvera/hyrax-webapp/.bundle/
+      - app-vendor-bundle:/app/samvera/hyrax-webapp/vendor/bundle
+      - app-bundle:/app/samvera/hyrax-webapp/.bundle/
       - test-derivatives:/app/samvera/hyrax-webapp/derivatives
       - test-uploads:/app/samvera/hyrax-webapp/uploads
       - test-public:/app/samvera/hyrax-webapp/public
@@ -107,8 +107,8 @@ services:
       - solr
     volumes:
       - .:/app/samvera/hyrax-webapp
-      - /app/samvera/hyrax-webapp/vendor/bundle
-      - /app/samvera/hyrax-webapp/.bundle/
+      - app-vendor-bundle:/app/samvera/hyrax-webapp/vendor/bundle
+      - app-bundle:/app/samvera/hyrax-webapp/.bundle/
       - rails-tmp:/app/samvera/hyrax-webapp/tmp
     networks:
       - morphosource
@@ -135,8 +135,8 @@ services:
       - test
     volumes:
       - .:/app/samvera/hyrax-webapp
-      - /app/samvera/hyrax-webapp/vendor/bundle
-      - /app/samvera/hyrax-webapp/.bundle/
+      - app-vendor-bundle:/app/samvera/hyrax-webapp/vendor/bundle
+      - app-bundle:/app/samvera/hyrax-webapp/.bundle/
       - test-tmp:/app/samvera/hyrax-webapp/tmp
     networks:
       - morphosource
@@ -182,45 +182,29 @@ services:
       - morphosource
 
   solr:
-    image: solr:7.7.3
+    image: bitnami/solr:8.11.2-debian-11-r233
     container_name: solr
+    environment:
+      SOLR_CORES: "hyrax, hyrax_test"
+      SOLR_CORE_CONF_DIR: /core_config/conf
     ports:
-     - 8983:8983
-    command:
-      - sh
-      - "-c"
-      - "solr-precreate hydra-development /core_config"
+      - 8983:8983
     volumes:
-      - solr_home:/opt/solr/server/solr/mycores
       - ./solr/conf:/core_config/conf
-    networks:
-      - morphosource
-
-  apache: # Currently non-functional on Apple Silicon Macs
-    image: 'bitnami/apache:latest'
-    container_name: apache
-    user: root
-    ports:
-      - '80:80'
-      - '443:443'
-    env_file:
-      - ./vendor/docker/docker-compose.env
-    profiles:
-      - apache
-    volumes:
-    - ./vendor/docker/apache/vhost.conf:/vhosts/vhost.conf:ro
-    # - ./vendor/docker/apache/certs:/certs
+      - solr_data:/bitnami
     networks:
       - morphosource
 
 volumes:
+  app-bundle:
+  app-vendor-bundle:
   db:
   fcrepo:
   hyrax-derivatives:
   hyrax-uploads:
   rails-tmp:
   redis:
-  solr_home:
+  solr_data:
   test-derivatives:
   test-uploads:
   test-public:

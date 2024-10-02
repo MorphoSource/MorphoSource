@@ -25,14 +25,6 @@ class Collection < ActiveFedora::Base
     team? ? Morphosource::Collections::TeamPresenter : Morphosource::Collections::ProjectPresenter
   end
 
-  # override Hyrax::CollectionBehavior to add editors and downloaders to read_groups
-  def permission_template_read_groups
-    (permission_template.agent_ids_for(access: 'view', agent_type: 'group') + permission_template.agent_ids_for(access: 'edit_works', agent_type: 'group') +
-    permission_template.agent_ids_for(access: 'download', agent_type: 'group') +
-    permission_template.agent_ids_for(access: 'deposit', agent_type: 'group')).uniq -
-    [::Ability.registered_group_name, ::Ability.public_group_name]
-  end
-
   def human_readable_type
     collection_type.title
   end
@@ -253,8 +245,9 @@ class Collection < ActiveFedora::Base
 
   # override Hyrax::CollectionBehavior method to allow collection types to be changed
   def collection_type_gid=(new_collection_type_gid)
+    new_collection_type_gid = new_collection_type_gid&.to_s
     new_collection_type = Hyrax::CollectionType.find_by_gid!(new_collection_type_gid)
-    super
+    super(new_collection_type_gid)
     @collection_type = new_collection_type
     collection_type_gid
   end

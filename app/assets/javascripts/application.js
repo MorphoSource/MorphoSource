@@ -13,7 +13,6 @@
 
 // Required by Blacklight
 //= require jquery
-//= require browse_everything
 //= require jquery_ujs
 // Important: the order of loadng dataTables js matters
 //= require dataTables/jquery.dataTables
@@ -23,7 +22,7 @@
 
 //= require_tree .
 //= require hyrax
-//= require select2
+
 //= require morphosource/ms_collections_v2
 //= require morphosource/ms_app
 //= require morphosource/ms_editor
@@ -50,6 +49,3 @@
 //= require morphosource/editor/getty_controlled_vocabulary
 //= require morphosource/submission
 //= require morphosource/getty_fields
-
-//= require("jquery-ui/ui/widget")
-//= require("jquery-ui/ui/widgets/sortable")

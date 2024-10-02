@@ -4,7 +4,7 @@ module Morphosource
 
     attr_reader :solr, :taxonomy_genus, :taxonomy_species, :model, :params, :rows
 
-    SORTABLE_TITLE_FIELD = Solrizer.solr_name('title', :stored_sortable)
+    SORTABLE_TITLE_FIELD = ActiveFedora.index_field_mapper.solr_name('title', :stored_sortable)
 
     def self.call(model, params={}, rows=100)
       new(model, params, rows).call
@@ -39,7 +39,7 @@ module Morphosource
       end
 
       def model_clause
-        "#{Solrizer.solr_name('has_model', :symbol)}:#{model_name}"
+        "#{ActiveFedora.index_field_mapper.solr_name('has_model', :symbol)}:#{model_name}"
       end
   end
 end

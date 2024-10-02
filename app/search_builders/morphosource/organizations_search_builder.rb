@@ -25,7 +25,7 @@ module Morphosource
     end
 
     def sort_field
-      Solrizer.solr_name('institution_name', :sortable)
+      ActiveFedora.index_field_mapper.solr_name('institution_name', :sortable)
     end
 
     def add_sorting_to_solr(solr_parameters)

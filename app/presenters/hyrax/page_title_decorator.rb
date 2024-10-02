@@ -22,9 +22,12 @@ module Hyrax
     ##
     # @return [String] a title for pages about this object
     def page_title
-      result = "#{object.human_readable_type} [#{object.to_param}] // #{h.application_name}"
-      result = title + ' // ' + result if object.persisted?
-      result
+      if object.persisted?
+        result = "#{object.human_readable_type} [#{object.to_param}] // #{h.application_name}"
+        title + ' // ' + result
+      else
+        "New #{object.human_readable_type} // #{h.application_name}"
+      end
     end
   end
 end

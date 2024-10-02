@@ -1,0 +1,44 @@
+<div class="row tab-action-buttons">
+  <% if current_user.admin? && @collection.organization %>
+  <div class="float-right ml-1">
+    <%= render 'morphosource/dashboard/collections/teams/organization/unlink_organization'%>
+  </div>
+  <% end %>
+
+  <div class="float-right">
+  <% org_form = Hyrax::OrganizationForm.new(@organization, @current_ability, controller) %>
+  <%= simple_form_for org_form,
+    wrapper: :showcase_default,
+    :url => main_app.update_default_permissions_path(@collection),
+    html: {
+      class: ['editor', 'team_organization_permissions_edit'],
+      multipart: true
+    } do |f|
+  %>
+  <%= f.submit 'Save Default Permissions', class: 'btn btn-primary' %>
+  </div>
+</div>
+
+<!-- left column -->
+<div class="col-sm-6">
+  <h2 style="margin-top: 0px;">ORGANIZATION PERMISSION DEFAULTS</h2>
+  <%= render 'morphosource/dashboard/collections/permissions/organization_permission_defaults', f: f %>
+  <%= render 'morphosource/dashboard/collections/permissions/organization_permission_admin_settings', f: f %>
+</div>
+
+<!-- right column -->
+<div class="col-sm-6" style="padding-left:25px;">
+  <% if @collection.team? %>
+    <%= render 'morphosource/dashboard/collections/teams/organization/organization_details', f: f %>
+  <% end %>
+  <% end #form %>
+  <% if current_user.admin? %>
+    <div class="form-group row">
+      <div class="block-fill block-padding">
+        <h2 class="mt-0">Remote File Submission Settings</h2>
+        <%= render 'morphosource/dashboard/collections/permissions/remote_file_permissions' %>
+      </div>
+    </div>
+  <% end %>
+
+</div><!-- /right column -->

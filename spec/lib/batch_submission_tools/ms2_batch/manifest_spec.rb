@@ -2,19 +2,31 @@ require 'rails_helper'
 
 RSpec.describe BatchSubmissionTools::Ms2Batch::Manifest do
 
-  let(:admin_user)             { User.create(email: 'email@email.com', password: 'password', sftp_share: '/tmp') }
-  let(:depositor)              { User.create(email: 'email2@email.com', password: 'password', sftp_share: '') }
-  let(:admins)                 { Role.create(name: 'admin') }
-  let(:contributors)   		   { Role.create(name: 'contributor') }
-
-	let (:input_path) { fixture_path + '/batch_submission_manifest_object_test.xlsx'}
-  let (:media_path) { fixture_path }
-  let(:device)                { Device.create(title: ['device'], modality: ['Photogrammetry'])}
-  let(:organization)  { Organization.create(title: ['Organization'] ) }
-  let(:media_ownership_fields) {
-         {"visibility"=>"restricted", "download_reviewer"=>["e1eefa"], "rights_holder"=>["org ip holder"], "rights_statement"=>"http://rightsstatements.org/vocab/InC-OW-EU/1.0/", "license"=>["https://creativecommons.org/licenses/by-sa/4.0/"], "morphosource_use_agreement_type"=>"Permissive", "permits_commercial_use"=>"CommercialUsePermitted", "permits_3d_use"=>"3DPrintingPermitted", "required_archival_of_published_derivatives"=>"EncouragedButNotRequired", "funding"=>[""], "publisher"=>[""], "cite_as"=>"", "preview_mode"=>"Thumbnail Only", "agreement_uri"=>"", "member_of_collection_ids"=>""}
-    }
-  let(:modality) {'Photogrammetry'}
+  let(:admin_user)              { User.create(email: 'email@email.com', password: 'password', sftp_share: '/tmp') }
+  let(:depositor)               { User.create(email: 'email2@email.com', password: 'password', sftp_share: '') }
+  let(:admins)                  { Role.create(name: 'admin') }
+  let(:contributors)   		      { Role.create(name: 'contributor') }
+  let(:input_path)              { fixture_path + '/batch_submission_manifest_object_test.xlsx'}
+  let(:media_path)              { fixture_path }
+  let(:device)                  { Device.create(title: ['device'], modality: ['Photogrammetry'])}
+  let(:organization)            { Organization.create(title: ['Organization'] ) }
+  let(:owner)                   { FactoryBot.create(:organization_collection, depositor: depositor.ms_id).id }
+  let(:media_ownership_fields)  { { "visibility"=>"restricted",
+                                    "download_reviewer"=>["e1eefa"],
+                                    "rights_holder"=>["org ip holder"],
+                                    "rights_statement"=>"http://rightsstatements.org/vocab/InC-OW-EU/1.0/",
+                                    "license"=>["https://creativecommons.org/licenses/by-sa/4.0/"],
+                                    "morphosource_use_agreement_type"=>"Permissive",
+                                    "permits_commercial_use"=>"CommercialUsePermitted",
+                                    "permits_3d_use"=>"3DPrintingPermitted",
+                                    "required_archival_of_published_derivatives"=>"EncouragedButNotRequired",
+                                    "funding"=>[""],
+                                    "publisher"=>[""],
+                                    "cite_as"=>"",
+                                    "preview_mode"=>"Thumbnail Only",
+                                    "agreement_uri"=>"",
+                                    "member_of_collection_ids"=>"" } }
+  let(:modality)                { 'Photogrammetry' }
 
   before do
     admins.users << [admin_user]
@@ -25,16 +37,21 @@ RSpec.describe BatchSubmissionTools::Ms2Batch::Manifest do
 
   describe "Manifest object" do
     subject { BatchSubmissionTools::Ms2Batch::Manifest.new(
-      input_path:input_path, 
-      media_path:media_path, 
-      admin_user:admin_user, 
-      depositor:depositor, 
-      organization_id:organization.id, 
+      input_path:input_path,
+      media_path:media_path,
+      admin_user:admin_user,
+      depositor:depositor,
+      owner:owner,
+      organization_id:organization.id,
       device_id:device.id,
       media_ownership_fields:media_ownership_fields,
       modality:modality
       )
     }
+
+    it 'responds to owner' do
+      expect(subject).to respond_to(:owner)
+    end
 
     it "contains rows data" do
       expect(subject.instance_variable_get(:@rows).count).to eql(3)
@@ -42,9 +59,11 @@ RSpec.describe BatchSubmissionTools::Ms2Batch::Manifest do
     end
 
     it "contains summary" do
-      expect(subject.instance_variable_get(:@summary)["depositor_id"]).to eql(depositor.ms_id)
+      summary = subject.instance_variable_get(:@summary)
+      expect(summary["depositor_id"]).to eq(depositor.ms_id)
+      expect(summary["owner_id"]).to eq(owner)
       # media files come from the test manifest xlsx
-      expect(subject.instance_variable_get(:@summary)["media_files"]).to eql(
+      expect(summary["media_files"]).to eq(
         ["ANSP_Fish_181150.zip", "ANSP_Fish_180334_Head.jpg", "ANSP_Fish_181150.zip"])
     end
 
@@ -62,7 +81,7 @@ RSpec.describe BatchSubmissionTools::Ms2Batch::Manifest do
         "creator"=>["Louis S. Leakey, Mary D. Leakey"],
         "periodic_time"=>["Lower Pleistocene"],
         "original_location"=>"Tanzania",
-        :organization_id=>["000200000"]
+        :organization_id=>[organization.id]
       )
       expect(subject.instance_variable_get(:@rows_to_bso)).to eq({0=>0, 1=>1, 2=>1})
     end
@@ -77,16 +96,14 @@ RSpec.describe BatchSubmissionTools::Ms2Batch::Manifest do
       expect(ingest_obj.count).to eq(2)
       expect(ingest_obj.first.to_h[:imaging_event].count).to eq(1)
       expect(ingest_obj.first.to_h[:imaging_event][0][:initial_attrs]).to include(
-        :description=>["smc IE desc"], 
-        :creator=>["John Doe"], 
+        :description=>["smc IE desc"],
+        :creator=>["John Doe"],
         :software=>["smc IE software"]
       )
       expect(ingest_obj.first.to_h[:children][1][:pe][:attrs]).to include(
-        :software=>["pe smc sw"], 
+        :software=>["pe smc sw"],
         :description=>["pe smc desc"]
       )
     end
-
   end
-
 end

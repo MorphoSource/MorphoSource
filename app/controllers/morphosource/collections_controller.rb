@@ -20,8 +20,9 @@ module Morphosource
 
     before_action :load_collection, :redirect_to_collection_type, :authorize_collection
 
-    class_attribute :can_authorize_with_temporary_link
+    class_attribute :can_authorize_with_temporary_link, :collection_type
     self.can_authorize_with_temporary_link = false
+    self.collection_type = collection_type
     self.presenter_class = presenter_class
     self.search_state_class = Morphosource::SearchState
     self.temporary_access_link_class = TemporaryCollectionAccessLink
@@ -84,7 +85,7 @@ module Morphosource
     private
 
       def authorize_admin
-        redirect_to root_path and return unless current_user&.admin?
+        deny_access_forbidden and return unless current_user&.admin?
       end
 
       def decide_layout

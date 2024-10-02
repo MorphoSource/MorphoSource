@@ -1,0 +1,51 @@
+<%= f.input :user_id, label: "Applicant (For Multiple, Will Match Any)", input_html: { data: { user: format_users_select2(@user_id) } }, required: false %>
+
+<%= f.input :user_affiliation, label: "Organization", :input_html => {value: @user_affiliation }, required: false %>
+
+<div class="form-group string optional">
+  <label class="control-label string optional">Decision State</label>
+  <%= f.select :decision_state, options_for_select([['', ''], ['Approve', 'approve'], ['Return', 'return'], ['Deny', 'deny']], @decision_state), { label: "Decision", required: false }, { class: "form-control" } %>
+</div>
+
+<% [ 'date_application_submitted', 'date_returned', 'date_approved', 'date_denied' ].each do |attr| %>
+  <%= render partial: 'search_form_field_date_range', locals: { f: f, attr: attr } %>
+<% end %>
+
+
+<script>
+$( document ).ready(function() {
+  $('#filter_items_user_id').userSearchMultipleByID($('#filter_items_user_id').data('user'));
+});
+
+(function( $ ){
+  $.fn.userSearchMultipleByID = function(initialData) {
+    return this.each(function() {
+      $(this).select2( {
+        minimumInputLength: 2,
+        id: function(object) {
+          return object.id;
+        },
+        multiple: true,
+        initSelection: function(element, callback) {
+          callback(initialData);
+        },
+        ajax: { // Use the jQuery.ajax wrapper provided by Select2
+          url: "/users.json",
+          dataType: "json",
+          data: function (term, page) {
+            return {
+              uq: term // Search term
+            };
+          },
+          results: function(data, page) {
+            return { results: data.users };
+          }
+        },
+      }).select2(
+        'data', 
+        initialData
+      );
+    });
+  };
+})( jQuery );
+</script>

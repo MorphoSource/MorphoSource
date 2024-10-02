@@ -15,26 +15,27 @@
       multipart: true
     } do |f|
   %>
-  <%= f.submit 'Save Default Permissions', class: 'btn btn-primary' %>
+  <%= f.submit 'Save Changes', class: 'btn btn-primary' %>
   </div>
-</div>
-
-<div class="col-sm-12">
-<h2 style="margin-top: 0px;">ORGANIZATION PERMISSION DEFAULTS</h2>
 </div>
 
 <!-- left column -->
 <div class="col-sm-6">
+  <h2 style="margin-top: 0px;">ORGANIZATION PERMISSION DEFAULTS</h2>
   <%= render 'morphosource/dashboard/collections/permissions/organization_permission_defaults', f: f %>
+  <%= render 'morphosource/dashboard/collections/permissions/organization_permission_admin_settings', f: f %>
 </div>
 
 <!-- right column -->
 <div class="col-sm-6" style="padding-left:25px;">
-  <%= render 'morphosource/dashboard/collections/permissions/organization_permission_admin_settings', f: f %>
-
+  <% if @collection.team? %>
+    <%= render 'morphosource/dashboard/collections/teams/organization/organization_details', f: f %>
+    <% if current_user.admin? %>
+      <%= render 'morphosource/dashboard/collections/permissions/admin_form', f: f %>
+    <% end %>
+  <% end %>
   <% end #form %>
-
-  <% if @collection.organization %>
+  <% if current_user.admin? %>
     <div class="form-group row">
       <div class="block-fill block-padding">
         <h2 class="mt-0">Remote File Submission Settings</h2>

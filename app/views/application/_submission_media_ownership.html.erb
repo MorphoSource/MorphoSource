@@ -10,13 +10,12 @@
     </div>
   </div>
   <div id="media-ownership-fields">
-
     <div class="row media_owner_wrapper">
       <div class="col-xs-6 showcase-label"><%= t('simple_form.labels.submission.owner') %></div>
-      <div class="col-xs-6 showcase-value"><%= current_user.display_name %></div>
+      <div class="col-xs-6 showcase-value" name="batch_submission[media][owner]" id="batch_submission_media_owner"><%= current_user.display_name %></div>
     </div>
 
-    <div class="row">
+    <div class="row" id="media-depositor">
       <div class="col-xs-6 showcase-label"><%= t('simple_form.labels.submission.depositor') %></div>
       <div class="col-xs-6 showcase-value"><%= current_user.display_name %></div>
     </div>

@@ -235,7 +235,9 @@ module Morphosource
             # associate media with this project and not with the team
             non_organization_team_media_ids = non_organization_team_media_docs.map { |d| d["id"] }
             non_organization_team_media_ids.each do |non_organization_team_media_id|
-              ModifyCollectionMembershipJob.perform_later(
+              ModifyCollectionMembershipJob.set(
+                queue: Hyrax.config.update_slow_queue_name
+              ).perform_later(
                 work_id: non_organization_team_media_id,
                 add_to_collection_ids: [custom_project.id],
                 remove_from_collection_ids: [organization_team.id]
@@ -287,7 +289,9 @@ module Morphosource
         end
 
         biological_specimens.each do |biological_specimen|
-          UpdateBiologicalSpecimenMetadataJob.perform_later(
+          UpdateBiologicalSpecimenMetadataJob.set(
+            queue: Hyrax.config.update_slow_queue_name
+          ).perform_later(
             { id: [biological_specimen.id], organization_id: [organization_collection.id] },
             true # skip reindexing, we'll handle this manually
           )
@@ -311,7 +315,9 @@ module Morphosource
 
         cultural_heritage_objects.each do |cultural_heritage_object|
           # N.b. this job also works for CHOs!
-          UpdateBiologicalSpecimenMetadataJob.perform_later(
+          UpdateBiologicalSpecimenMetadataJob.set(
+            queue: Hyrax.config.update_slow_queue_name
+          ).perform_later(
             { id: [cultural_heritage_object.id], organization_id: [organization_collection.id] },
             true # skip reindexing, we'll handle this manually
           )
@@ -341,15 +347,15 @@ module Morphosource
         ).map { |doc| doc['id'] }    
 
         Rails.logger.info "Reindexing media to catch changes from objects, devices, and/or org team/project"
-        all_media_ids.compact.uniq.sort.each { |id| SaveWorkJob.perform_later(id) }
+        all_media_ids.compact.uniq.sort.each { |id| SaveWorkJob.set( queue: Hyrax.config.update_slow_queue_name ).perform_later(id) }
 
         # Reindex objects one more time (yes, duplicate reindex) to catch changes in media 
         # Objects index team membership from media, so only needed if org team/project exists
         if organization_team.present?
           wait_until_no_jobs("SaveWorkJob")
           Rails.logger.info "Reindexing objects to capture media collection membership changes"
-          biological_specimen_ids.compact.uniq.each { |id| SaveWorkJob.perform_later(id) }
-          cultural_heritage_object_ids.compact.uniq.each { |id| SaveWorkJob.perform_later(id) }
+          biological_specimen_ids.compact.uniq.each { |id| SaveWorkJob.set( queue: Hyrax.config.update_slow_queue_name ).perform_later(id) }
+          cultural_heritage_object_ids.compact.uniq.each { |id| SaveWorkJob.set( queue: Hyrax.config.update_slow_queue_name ).perform_later(id) }
         end
 
         ### STEP 12. Reindex any sequential section lists linked to organization ###
@@ -357,7 +363,7 @@ module Morphosource
 
         ActiveFedora::SolrService.query(
             "has_model_ssim:SequentialSectionList && organization_id_ssim:#{organization_work.id}", rows: 999999, fl: ["id"]
-        ).each { |list_doc| SaveWorkJob.perform_later(list_doc["id"]) }
+        ).each { |list_doc| SaveWorkJob.set( queue: Hyrax.config.update_slow_queue_name ).perform_later(list_doc["id"]) }
 
         Rails.logger.info "--- MIGRATION PHASE 1 COMPLETE, LEGACY ORGANIZATION #{organization_work_id} HAS BEEN COPIED TO ORGANIZATION COLLECTION #{organization_collection.id} ---"
         Rails.logger.info "--- WAIT FOR DOCUMENT REINDEXING BEFORE PROCEEDING TO PHASE 2 ---"

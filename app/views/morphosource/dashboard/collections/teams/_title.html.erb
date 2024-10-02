@@ -1,0 +1,11 @@
+<div class="col-xs-9 no-horizontal-padding title team-title">
+  <div>
+    <span class="fa fa-edit" aria-hidden="true"></span>
+    <h1 style="margin-bottom:20px;"><%= @collection.title.first %>
+      <%= @presenter.collection_type_badge %>
+      <%= @presenter.id_badge %>
+      <%= @presenter.permission_badge %>
+    </h1>
+  </div>
+  <%= render 'morphosource/dashboard/collections/teams/manage_buttons' %>
+</div>

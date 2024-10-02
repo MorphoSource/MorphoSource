@@ -15,7 +15,8 @@
             <ul>
               <h4>Applies organizational permissions</h4>
               <h4>Assigns a new owner/data manager</h4>
-              <h4>Adds the media to the organization's linked team</h4>
+              <h4>For Teams: Adds the media to the organization's linked team</h4>
+              <h4>For Organization Collections: assigns the organization as the media data manager</h4>
             </ul>
           </div>
           <div style="display:flex; flex-direction:row;">
@@ -24,7 +25,8 @@
               <div style="border:3px solid black; border-radius:5px; padding:5px; margin-bottom: 10px;">
                 <div class="input-field">
                   <div>
-                    <%= form.label :team_id, "Org-Linked Team ID" %>
+                    <p><strong>Org-Linked Team OR</strong></p>
+                    <%= form.label :team_id, "Organization Collection ID" %>
                   </div>
                   <p>Ex: 000345596</p>
                   <div>
@@ -35,11 +37,11 @@
                 <div style="border:2px solid black; border-radius:5px; padding:5px;">
                   <div class="input-field">
                     <div>
-                      <%= form.label :collection_id, "Media Collection ID" %>
+                      <%= form.label :project_id, "Media Collection ID" %>
                     </div>
                     <p>Ex: 000778565</p>
                     <div>
-                      <%= form.text_field :collection_id %>
+                      <%= form.text_field :project_id %>
                     </div>
                   </div>
                   <p style="width:100%; text-align:center"><strong>AND / OR</strong></p>
@@ -59,6 +61,7 @@
                   <%= form.label :email, "New Data Manager Email" %>
                 </div>
                 <p>Ex: user@email.com</p>
+                <p>Leave blank for Organization Collections</p>
                 <div>
                   <%= form.text_field :email %>
                 </div>
@@ -104,7 +107,7 @@
               </div>
               <div class="notes-column">
                 <h4>Notes:</h4>
-                <p>To normalize all organizational media already in a team, use the team id for both the Team ID and the Collection ID.</p>
+                <p>To normalize all organizational media already in a team, use the team/organization collection id for both the Team ID and the Collection ID.</p>
                 <p>It is safe to run this update even if media in the project are already in the team, it will still update permissions metadata for those media.</p>
                 <p>If 'Remove Previous Download Reviewers' is set to 'Yes', all media download reviewers will be set to whatever is in the organizational template.</p>
                 <p>If 'Remove Previous Download Reviewers' is set to 'No', media download reviewers will be updated to the following, based on the original publication status:

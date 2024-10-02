@@ -66,27 +66,48 @@ en:
   simple_form:
     labels:
       organization:
-        institution_name: Parent Institution Name
-        title: Organization Name/Title
-        institution_code: Institution Code(s)
-        collection_code: Collection Code(s)
+        address: Street address
+        city: City
+        collection_code: Collection code(s)
+        contact_person: Contact person
+        country: Country
+        data_manager: Data manager
+        description: Description or notes
+        download_permission: Download permission
+        download_reviewer: Download reviewer
+        identifier: Identifier
+        institution_code: Institution code(s)
+        institution_name: Parent institution name
+        license: License
+        organization_type: Organization type
+        postal_code: Postal code
+        recordset_id: Recordset ID
         related_url: Related URL
-        state_province: State/Province
-        postal_code: Postal Code
-        address: Street Address
-        description: Description/Notes
+        rights_holder: IP holder
+        rights_statement: Rights statement
+        state_province: State or province
+        title: Organization name or title
     hints:
       organization:
-        collection_code: The code used in the second part of the organization's Darwin Core triplet for specimens. Used to differentiate specimens in one collection from specimens in other collections.
+        address: The street address of the organization
+        city: The city where the organization is located
+        collection_code: The code used in the second part of the organization's Darwin Core triplet for specimens. Used to differentiate specimens in one collection from specimens in other collections. Contact Morphosource admins at morphosource@duke.edu to change the collection code(s)
+        contact_person: The name and email address of the person who should be contacted for questions about the organization
+        country: The country where the organization is located
         device_media_count: Total number of media imaged by organization devices, you have view access to these
-        institution_code: The code used in the first part of the organization's Darwin Core triplet for specimens. Probably used by multiple organizations in an institution.
-        institution_name: The name of the larger museum, university, or corporation this organization belongs to.
+        description: A brief description or notes about the organization
+        institution_code: The code used in the first part of the organization's Darwin Core triplet for specimens. Probably used by multiple organizations in an institution. Contact Morphosource admins at morphosource@duke.edu to change the institution code(s)
+        institution_name: The name of the larger museum, university, or corporation this organization belongs to. Contact Morphosource admins at morphosource@duke.edu to change the institution name
         managed_media_count: Total number of media where organization is the media data manager, you have edit access to these
         object_media_count: Total number of media representing organization objects, you have view access to these
+        organization_type: Contact Morphosource admins at morphosource@duke.edu to change the organization type
         org_cho_count: Total number of cultural heritage objects linked to organization, you can edit these
         org_device_count: Total number of devices linked to organization, you can edit these
         org_specimen_count: Total number of biological specimen objects linked to organization, you can edit these
+        postal_code: The postal code where the organization is located
+        recordset_id: Contact Morphosource admins at morphosource@duke.edu to change the recordset ID
         related_url: The website(s) associated with the organization.
+        state_province: The state or province where the organization is located
         title: The name of the collection, laboratory, department, or other autonomous organization that manages a collection of physical objects.
         transfer_ready_media: Total number of media where an automated transfer request is currently pending or where a request will be generated on media publication
         transfer_unready_media: Total number of media that are not available for automated transfer, probably due to pre-dating organization opting in to automated transfer workflow

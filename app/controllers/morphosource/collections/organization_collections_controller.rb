@@ -21,8 +21,6 @@ module Morphosource
 
       helper_method :search_action_for_dashboard
 
-      class_attribute :collection_type
-      self.collection_type = collection_type
       self.presenter_class = Morphosource::Collections::OrganizationPresenter
 
       def self.configure_facets
@@ -79,7 +77,7 @@ module Morphosource
       end
 
       def collection_type
-        Hyrax::CollectionType.find_by(title: 'Organization')
+        Hyrax::CollectionType.find_by(Morphosource::CollectionTypes::Organizations::SETTINGS)
       end
 
       def search_builder_class

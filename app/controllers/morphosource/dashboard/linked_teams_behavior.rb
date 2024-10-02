@@ -140,11 +140,6 @@ module Morphosource
 
       def format_update_params
         format_download_permission
-        multi_value_fields = [:data_manager, :download_permission, :download_reviewer, :permits_3d_use,
-          :permits_commercial_use, :license, :rights_statement, :agreement_uri,
-          :morphosource_use_agreement_type, :required_archival_of_published_derivatives,
-          :preview_mode, :rights_holder, :rights_holder_blank, :rights_statement_blank,
-          :license_blank, :permissions_enforcement_mode]
         multi_value_fields.each do |field|
           @params[field] = Array(@params[field]) if @params.key?(field)
         end
@@ -163,6 +158,34 @@ module Morphosource
 
       def redirect_back_organization
         redirect_back(fallback_location: hyrax.edit_dashboard_collection_path(params[:id], locale: 'en', anchor: 'organization'))
+      end
+
+      def multi_value_fields
+        [:address,
+         :agreement_uri,
+         :city,
+         :country,
+         :data_manager,
+         :description,
+         :download_permission,
+         :download_reviewer,
+         :institution_name,
+         :license,
+         :license_blank,
+         :morphosource_use_agreement_type,
+         :organization_type,
+         :permissions_enforcement_mode,
+         :permits_3d_use,
+         :permits_commercial_use,
+         :preview_mode,
+         :postal_code,
+         :required_archival_of_published_derivatives,
+         :rights_holder,
+         :rights_holder_blank,
+         :rights_statement,
+         :rights_statement_blank,
+         :state_province,
+         :title]
       end
     end
   end

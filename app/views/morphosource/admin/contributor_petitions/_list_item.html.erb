@@ -1,0 +1,49 @@
+<% demographics = ( item.user_demographics.presence || []).join('; ') %>
+<tr id="item_<%= item.id %>">
+  <td><%= item.created_at %></td>
+  <td><%= link_to item.user.name_or_email, Hyrax::Engine.routes.url_helpers.user_path(item.user) %></td>
+  <td><%= item.reason %></td>
+  <td><%= item.user_affiliation %></td>
+  <td><%= item.user_department %></td>
+  <td><%= demographics %></td>
+  <td><%= item.user_advisor %></td>
+  <td><%= item.contribution_amount %></td>
+  <td><%= item.terms_agree ? "Yes" : "No" %></td>
+  <td><%= item.decision_state&.capitalize %></td>
+  <% if @tab == 'previous' %>
+    <td><%= item.decision_message %></td>
+    <% decision_user = User.find(item.decision_by) %>
+    <td>
+      <%= link_to decision_user.name_or_email, Hyrax::Engine.routes.url_helpers.user_path(decision_user) %> 
+    </td>
+    <td><%= item.date_approved %></td>
+    <td><%= item.date_returned %></td>
+    <td><%= item.date_denied %></td>
+    <td>
+      <%= link_to 'Update Decision', main_app.admin_update_contributor_petition_decision_path(:id => item.id), class: 'btn btn-sm btn-primary' %>
+    </td>
+  <% end %>
+</tr>
+<% if @tab == 'current' %>
+  <tr>
+    <td colspan="8" style="padding-bottom: 50px;">
+      <%= simple_form_for item, url: main_app.admin_contributor_petitions_decide_path(:id => item.id), method: :patch do |f| %>
+        <div class="row" style="padding: 0;">
+          <div class="col-xs-8">
+            <!-- <div>Message will be sent to user on application decision:</div> -->
+            <%= f.label :decision_message, class: 'control-label' do %>
+              Message to send with decision or already sent with decision:
+            <% end %>
+            <%= f.text_area :decision_message, class: "form-control", placeholder: 'Send a message to user with decision.', :rows => 1 %>
+          </div>
+          <div class="col-xs-4 text-right" style="margin-top: 25px;">
+            <%= f.submit 'Approve', class: 'btn btn-sm btn-primary' %>
+            <%= f.submit 'Return', class: 'btn btn-sm btn-info', style: 'margin-left: 10px; margin-right: 10px;' %>
+            <%= f.submit 'Deny', class: 'btn btn-sm btn-danger' %>
+          </div>
+        </div>
+      <% end %>
+    </td>
+  </tr>
+<% end %>
+

@@ -9,26 +9,28 @@
       </button>
       <ul class="dropdown-menu">
         <li>
-          <%= link_to t("morphosource.collections.organization.exports.#{@tab.to_s}.media_export.label"), media_export_csv_url(@collection), class: 'btn btn-primary' %>
+          <%= link_to t("morphosource.collections.organization.exports.#{@tab.to_s}.media_export.label"), self.send("#{@tab}_export_csv_url", @collection), class: 'btn btn-primary' %>
         </li>
         <li>
           <%= link_to t("morphosource.collections.organization.exports.#{@tab.to_s}.media_download_counts.label"),
-          media_download_counts_csv_url(@collection), class: 'btn btn-primary'
+          self.send("#{@tab}_download_counts_csv_url",@collection), class: 'btn btn-primary'
           %>
         </li>
         <li>
           <%= link_to t("morphosource.collections.organization.exports.#{@tab.to_s}.media_downloads.label"),
-            media_downloads_csv_url(@collection), class: 'btn btn-primary'
+            self.send("#{@tab}_downloads_csv_url", @collection), class: 'btn btn-primary'
           %>
         </li>
         <li>
-          <%= link_to t("morphosource.collections.organization.exports.#{@tab.to_s}.media_requests.label"), media_requests_csv_url(@collection),
+          <%= link_to t("morphosource.collections.organization.exports.#{@tab.to_s}.media_requests.label"), self.send("#{@tab}_requests_csv_url", @collection),
             class: 'btn btn-primary'
           %>
         </li>
       </ul>
     </div>
-    <% if @collection.can_manage_devices? %>
+  <% end %>
+  <% if @collection.can_manage_devices? %>
+    <% if @can_edit || ( current_user.present? && @collection.editors&.include?(current_user) ) %>
       <div class="collection-manage-button-wrapper">
         <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Add <span class="caret"></span>
         </button>

@@ -49,64 +49,64 @@ module TestHelpers
     user = User.find(member.id)
     ability = Ability.new(user)
     work_doc = SolrDocument.find(work.id)
-    result = []
-    result << (ability.can? :read, work.id)
-    result << (ability.can? :read, work)
-    result << (ability.can? :read, work_doc)
-    result << (user.can? :read, work.id)
-    result << (user.can? :read, work)
-    result << (user.can? :read, work_doc)
-    return if result.uniq.count > 1
+    return false unless ability.can? :read, work.id
+    return false unless ability.can? :read, work
+    return false unless ability.can? :read, work_doc
+    return false unless user.can? :read, work.id
+    return false unless user.can? :read, work
 
-    result.first
+    user.can? :read, work_doc
   end
 
   def can_edit?(work, member = user)
     user = User.find(member.id)
     ability = Ability.new(user)
     work_doc = SolrDocument.find(work.id)
-    result = []
-    result << (ability.can? :edit, work.id)
-    result << (ability.can? :edit, work)
-    result << (ability.can? :edit, work_doc)
-    result << (user.can? :edit, work.id)
-    result << (user.can? :edit, work)
-    result << (user.can? :edit, work_doc)
-    return if result.uniq.count > 1
+    return false unless ability.can? :edit, work.id
+    return false unless ability.can? :edit, work.id
+    return false unless ability.can? :edit, work
+    return false unless ability.can? :edit, work_doc
+    return false unless user.can? :edit, work.id
+    return false unless user.can? :edit, work
 
-    result.first
+    user.can? :edit, work_doc
+  end
+
+  def can_update?(work, member = user)
+    user = User.find(member.id)
+    ability = Ability.new(user)
+    work_doc = SolrDocument.find(work.id)
+    return false unless ability.can? :update, work.id
+    return false unless ability.can? :update, work.id
+    return false unless ability.can? :update, work
+    return false unless ability.can? :update, work_doc
+    return false unless user.can? :update, work.id
+    return false unless user.can? :update, work
+
+    user.can? :update, work_doc
   end
 
   def can_transfer?(work, member = user)
     user = User.find(member.id)
     ability = Ability.new(user)
-    result = []
-    result << (ability.can? :transfer, work.id)
-    result << (user.can? :transfer, work.id)
-    return if result.uniq.count > 1
+    return false unless ability.can? :transfer, work.id
 
-    result.first
+    user.can? :transfer, work.id
   end
 
   def can_accept?(request, member = user)
     user = User.find(member.id)
     ability = Ability.new(user)
-    result = []
-    result << (ability.can? :accept, request)
-    result << (user.can? :accept, request)
-    return if result.uniq.count > 1
+    return false unless ability.can? :accept, request
 
-    result.first
+    user.can? :accept, request
   end
 
   def can_reject?(request, member = user)
     user = User.find(member.id)
     ability = Ability.new(user)
-    result = []
-    result << (ability.can? :reject, request)
-    result << (user.can? :reject, request)
-    return if result.uniq.count > 1
+    return false unless ability.can? :reject, request
 
-    result.first
+    user.can? :reject, request
   end
 end

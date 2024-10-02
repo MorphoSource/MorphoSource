@@ -113,6 +113,8 @@ class BatchSubmissionsController < ApplicationController
     device_id = request.params["batch_submission"]["device_id"]
     if request.params["batch_submission"]["on_behalf_of"].present?
       on_behalf_of = User.where(ms_id: request.params["batch_submission"]["on_behalf_of"]).first
+    else
+      on_behalf_of = nil
     end
     collection_ids = []
     if request.params["media"].present?
@@ -124,13 +126,16 @@ class BatchSubmissionsController < ApplicationController
     end
     fund_code_id = request.params["batch_submission"]["fund_code"]
     modality = request.params["batch_submission"]["modality"]
+    owner = request.params.dig("media","owner") || on_behalf_of&.ms_id || depositor.ms_id
     media_ownership_fields = request.params["batch_submission"]["media"]
+    media_ownership_fields["owner"] = owner
     media_ownership_fields["organization_transfer_on_publish"] = true if ( organization_media_transfer == :publication )
     @manifest_object = BatchSubmissionTools::Ms2Batch::Manifest.new(
       input_path:input_path,
       media_path:media_path,
       admin_user:admin_user,
       depositor:depositor,
+      owner:owner,
       on_behalf_of:on_behalf_of,
       collection_ids:collection_ids,
       fund_code_id:fund_code_id,

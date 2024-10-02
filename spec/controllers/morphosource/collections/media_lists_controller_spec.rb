@@ -3,53 +3,81 @@ require 'spec_helper'
 
 RSpec.describe Morphosource::Collections::MediaListsController, type: :controller do
 
-  let(:user)                        { User.create(email: 'user@email.com', password: 'password') }
-  let(:depositor)                   { User.create(email: 'depositor@email.com', password: 'password') }
-  let(:media_list)                  { MediaList.create(title: ['media list'], collection_type_gid: media_list_collection_type.gid, depositor: depositor.ms_id) }
+  let(:depositor) { User.create(email: 'depositor@email.com', password: 'password') }
+  let(:list)      { FactoryBot.create(:media_list, title: ['media list'], depositor: depositor.ms_id, visibility: 'open') }
 
-  before do
-    Morphosource::Collections::PermissionsCreateService.create_default(collection: media_list)
-  end
+  describe 'restricted actions' do
+    let(:params)  { { id: list.id } }
 
-  describe 'temporary admin-only restriction' do
-    let(:params)  { { id: media_list.id } }
     before do
-      media_list.visibility = 'open'
-      media_list.save!
+      Morphosource::Collections::PermissionsCreateService.create_default(collection: list)
       sign_in user
     end
 
     context 'user is an admin' do
-      let(:admin_role)  { Role.create(name: 'admin') }
-      before do
-        admin_role.users << user
-        admin_role.save
-      end
-      it 'responds with a 200' do
-        get :show, params: params
-        expect(response.status).to eq(200)
+      let(:user) { FactoryBot.create(:admin) }
+
+      it 'allows access' do
         get :about, params: params
+        expect(response.status).to eq(200)
+        get :facet, params: { collection_id: list.id, id: 'media_type' }
+        expect(response.status).to eq(200)
+        get :media_download_counts_with_intersections_facet, params: params, format: :csv
+        expect(response.status).to eq(200)
+        get :media_downloads, params: params, format: :csv
         expect(response.status).to eq(200)
         get :media_export_with_intersections_facet, params: params, format: :csv
         expect(response.status).to eq(200)
-        get :media_download_counts_with_intersections_facet, params: params, format: :csv
+        get :media_requests, params: params, format: :csv
+        expect(response.status).to eq(200)
+        get :show, params: params
         expect(response.status).to eq(200)
       end
     end
 
-    context 'user is not an admin' do
-      it 'responds with a 200' do
-        get :show, params: params
-        expect(response.status).to eq(200)
+    context 'user is a list manager' do
+      let(:user) { depositor }
+
+      it 'allows some actions and denies others' do
+        # allow
         get :about, params: params
         expect(response.status).to eq(200)
+        get :facet, params: { collection_id: list.id, id: 'media_type' }
+        expect(response.status).to eq(200)
+        get :media_download_counts_with_intersections_facet, params: params, format: :csv
+        expect(response.status).to eq(200)
+        get :media_export_with_intersections_facet, params: params, format: :csv
+        expect(response.status).to eq(200)
+        get :show, params: params
+        expect(response.status).to eq(200)
+        # deny
+        get :media_downloads, params: params, format: :csv
+        expect(response.status).to eq(403)
+        get :media_requests, params: params, format: :csv
+        expect(response.status).to eq(403)
       end
+    end
 
-      it 'redirects to root' do
-        get :media_export_with_intersections_facet, params: params
-        expect(response.status).to eq(302)
-        get :media_download_counts_with_intersections_facet, params: params
-        expect(response.status).to eq(302)
+    context 'user is not an admin or list manager' do
+      let(:user)  { FactoryBot.create(:registered_user) }
+
+      it 'allows some actions and denies others' do
+        # allow
+        get :about, params: params
+        expect(response.status).to eq(200)
+        get :facet, params: { collection_id: list.id, id: 'media_type' }
+        expect(response.status).to eq(200)
+        get :show, params: params
+        expect(response.status).to eq(200)
+        # deny
+        get :media_download_counts_with_intersections_facet, params: params, format: :csv
+        expect(response.status).to eq(403)
+        get :media_downloads, params: params, format: :csv
+        expect(response.status).to eq(403)
+        get :media_export_with_intersections_facet, params: params, format: :csv
+        expect(response.status).to eq(403)
+        get :media_requests, params: params, format: :csv
+        expect(response.status).to eq(403)
       end
     end
   end
@@ -60,20 +88,20 @@ RSpec.describe Morphosource::Collections::MediaListsController, type: :controlle
 
   describe 'search_action_url' do
     before do
-      subject.instance_variable_set(:@curation_concern, media_list)
+      subject.instance_variable_set(:@curation_concern, list)
     end
     it 'is media_list_path' do
-      expect(subject.send(:search_action_url)).to eq(media_list_path(media_list.id))
+      expect(subject.send(:search_action_url)).to eq(media_list_path(list.id))
     end
   end
 
   describe 'search_facet_path' do
     let(:facet_id)  { 'depositor_ssi' }
     before do
-      subject.instance_variable_set(:@collection, media_list)
+      subject.instance_variable_set(:@collection, list)
     end
     it 'is media_list_media_facet_path' do
-      expect(subject.send(:search_facet_path, {id: facet_id})).to eq(media_list_media_facet_path(media_list.id, id: facet_id))
+      expect(subject.send(:search_facet_path, {id: facet_id})).to eq(media_list_media_facet_path(list.id, id: facet_id))
     end
   end
 

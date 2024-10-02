@@ -32,20 +32,22 @@
               class: 'btn btn-primary'
             %>
           </li>
+          <% # Unless current_user.admin? don't show user download information for media lists %>
+          <% if current_user&.admin? || !@collection.media_list? %>
+            <li>
+              <%= link_to 'Individual media downloads CSV',
+                media_downloads_csv_url(@collection),
+                class: 'btn btn-primary'
+              %>
+            </li>
 
-          <li>
-            <%= link_to 'Individual media downloads CSV',
-              media_downloads_csv_url(@collection),
-              class: 'btn btn-primary'
-            %>
-          </li>
-
-          <li>
-            <%= link_to 'Individual media download requests CSV',
-              media_requests_csv_url(@collection),
-              class: 'btn btn-primary'
-            %>
-          </li>
+            <li>
+              <%= link_to 'Individual media download requests CSV',
+                media_requests_csv_url(@collection),
+                class: 'btn btn-primary'
+              %>
+            </li>
+          <% end %>
 
           <% if @presenter.team? && @presenter.organization.present? %>
             <li>

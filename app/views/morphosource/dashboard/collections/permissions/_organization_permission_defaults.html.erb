@@ -1,27 +1,20 @@
 <div id="organization-permissions">
-  <% if @collection.team? %>
+  <% if @collection.organization? %>
     <div class="form-group row">
       <div class="col-xs-6 showcase-label">
-        <label class="control-label" for="">Organization</label>
+        <label class="control-label" for="">Institution</label>
       </div>
       <div class="col-xs-6 showcase-value">
-        <%= link_to(@organization.title.first, collection_about_path(@collection)) %>
+        <%= @organization.institution_name.first %>
       </div>
     </div>
   <% end %>
-  <div class="form-group row">
-    <div class="col-xs-6 showcase-label">
-      <label class="control-label" for="">Institution</label>
-    </div>
-    <div class="col-xs-6 showcase-value">
-      <%= @organization.institution_name.first %>
-    </div>
-  </div>
   <div class="mb-2" style="padding-left: 8px;">
     <span>
       <%= t('morphosource.dashboard.collections.permissions.info').html_safe %>
     </span>
   </div>
+
   <!-- These fields are used in Team - linked organization
   Labels and hints are in config/locales/media_permissions -->
 
@@ -29,7 +22,7 @@
   <% if @collection.team? %>
     <div class="form-group row mb-2">
       <div class="col-xs-6 showcase-label">
-        <label class="control-label select optional" for="data_manager">Data manager</label>
+        <label class="control-label select optional" for="data_manager"><%= t('simple_form.labels.organization.data_manager') %></label>
         <i class="material-icons tooltip-icon" data-original-title="" title="">
           <p class="hint hide">
             <%= t('simple_form.hints.defaults.data_manager') %>

@@ -28,27 +28,31 @@ module Hydra::Works
     def characterize
       # Peek inside of archives
       @all_files, @content, @file_name, @accepted_file_count = archive_to_content
-      raise "Error characterizing #{source}: no representative file found" if file_name == nil
 
       # Extract metadata
-      if blender_mesh_file_types.include? File.extname(file_name).downcase
-        # Use Blender instead of FITS for characterization
-        @parser_class, @tools = blender_options
-      elsif gltf_inspect_mesh_file_types.include? File.extname(file_name).downcase
-        # Extract all files to temp location and use gltf-inspect instead of FITS for characterization
-        if File.extname(file_name).downcase == '.gltf'
-          @needs_cleanup = true
-          @content = extract_representative_content_and_others
+      if file_name.present? && content.present?
+        # Special handling for meshes
+        if blender_mesh_file_types.include? File.extname(file_name).downcase
+          # Use Blender instead of FITS for characterization
+          @parser_class, @tools = blender_options
+        elsif gltf_inspect_mesh_file_types.include? File.extname(file_name).downcase
+          # Extract all files to temp location and use gltf-inspect instead of FITS for characterization
+          if File.extname(file_name).downcase == '.gltf'
+            @needs_cleanup = true
+            @content = extract_representative_content_and_others
+          end
+          @parser_class, @tools = gltf_inspect_options
         end
-        @parser_class, @tools = gltf_inspect_options
-      end
-      extracted_md = extract_metadata(content)
+      
+        extracted_md = extract_metadata(content)
 
-      # Process metadata
-      terms = parse_metadata(extracted_md)
-      store_metadata(terms) # places fields in sub_object (always have to call fields directly)
-      transfer_metadata_to_object # places fields in object
-      transfer_special_fields_to_object # places mime_type and file_size in object from sub_object
+        # Process metadata
+        terms = parse_metadata(extracted_md)
+        store_metadata(terms) # places fields in sub_object (always have to call fields directly)
+        transfer_metadata_to_object # places fields in object
+      end
+
+      transfer_special_fields_to_object # places special fields (mime type, size, etc) in object from sub_object
     ensure
       cleanup_tmp_files if @needs_cleanup
     end
@@ -243,10 +247,15 @@ module Hydra::Works
     end
 
     def transfer_special_fields_to_object
-      object.send('contents_file_name=', file_name)
       object.send('contents_accepted_file_count=', accepted_file_count)
       object.send('contents_all_files=', all_files&.to_json || "[]")
-      special_fields.each { |sf| object.send("contents_#{sf.to_s}=", sub_object.send(sf)) }
+
+      if file_name.present?
+        object.send('contents_file_name=', file_name)
+        special_fields.each { |sf| object.send("contents_#{sf.to_s}=", sub_object.send(sf)) }
+      else
+        object.send('contents_mime_type=', nil)
+      end
     end
 
     def special_fields

@@ -20,7 +20,7 @@ $( document ).ready(function() {
       let that = this;
       // Only initiate resume if can connect to server, otherwise do nothing
       $.getJSON(
-        '/uploads', 
+        '/uploads',
         {
           file: $("#fileupload").find("input#upload-hash").val(),
           upload_hash: $("#fileupload").find("input#upload-hash").val()
@@ -43,7 +43,7 @@ $( document ).ready(function() {
       add: function (e, data) {
         let add_files_async = function(that, e, data) {
           $.getJSON(
-            '/uploads', 
+            '/uploads',
             {
               file: data.files[0].name,
               upload_hash: $("#fileupload").find("input#upload-hash").val()
@@ -57,7 +57,7 @@ $( document ).ready(function() {
             }
           );
         }
-        
+
         let that = this;
 
         // Create event for triggering this dynamically
@@ -73,7 +73,7 @@ $( document ).ready(function() {
         retries = data.context.data('retries') || 0;
         retry = function () {
           $.getJSON(
-            '/uploads', 
+            '/uploads',
             {
               file: data.files[0].name,
               upload_hash: $("#fileupload").find("input#upload-hash").val()
@@ -106,7 +106,6 @@ $( document ).ready(function() {
       }
     };
     $('#fileupload').hyraxUploader(options);
-    $('#fileuploadlogo').hyraxUploader({downloadTemplateId: 'logo-template-download'});
 
     // show / hide file upload buttons
     // currently the fileupload widget is on media edit page and submission flow
@@ -127,7 +126,7 @@ $( document ).ready(function() {
         uploadStatusOK = true;
         justUploaded = 1;
         if (isAutoSave) {
-          console.log('auto saving ...');          
+          console.log('auto saving ...');
           $.loader.close();
           $('.btn-save-media').trigger('click');
         }
@@ -145,7 +144,7 @@ $( document ).ready(function() {
           $('[id="add-cloud-files"]').hide();
           $('.dropzone').hide();
         }
-        
+
         $('.fileupload-progress').hide();
         uploadStatusOK = true;
         justUploaded = 0;
@@ -173,4 +172,14 @@ $( document ).ready(function() {
       });
   }
 
+});
+
+//= require hyrax/uploader
+// https://github.com/samvera/hyrax/blob/v2.9.0/app/assets/javascripts/hyrax/fileupload.js
+// This code governs uploads of logos and banners on the collection dashboard.
+// hyraxUploader with other options (like afterSubmit), then override this file.
+Blacklight.onLoad(function() {
+  var options = {};
+  $('#fileuploadbanner').hyraxUploader(options);
+  $('#fileuploadlogo').hyraxUploader({downloadTemplateId: 'logo-template-download'});
 });

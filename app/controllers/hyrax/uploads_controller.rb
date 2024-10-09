@@ -11,39 +11,51 @@ module Hyrax
     end
 
     def create
-      return head(:bad_request) unless ( params[:files]&.first.present? && upload_hash_valid? )
-
-      incoming_file = params[:files]&.first
-
-      # have to sanitize file in case file name has evil characters
-      sanitized_file = CarrierWave::SanitizedFile.new(incoming_file)
-      sanitized_file_name = sanitized_file.filename
-
-      if ( existing_upload = Hyrax::UploadedFile.find_by(file: sanitized_file_name, upload_hash: params[:upload_hash], user: current_user) ).present?
-        # This is a new chunk to append to an existing file (probably)
-        @upload = existing_upload
-
-        content_range = request.headers["CONTENT-RANGE"]
-        chunk_initial_byte = content_range[/\ (.*?)-/,1].to_i
-
-        current_size = @upload.file.url ? File.size(@upload.file.url) : 0
-        if current_size != @upload.total_file_size
-          raise "Unexpected size mismatch in uploaded file #{@upload.id} with expected size #{@upload.total_file_size} but actual size #{current_size}"
-        end
-
-        if ( current_size > 0 ) && ( current_size == chunk_initial_byte )
-          # new chunk confirmed, append
-          File.open(@upload.file.url, "ab") { |f| incoming_file.to_io.each_line { |line| f.write(line) } }
-          @upload.update_columns(total_file_size: current_size + incoming_file.size)
-        else
-          # chunk can not be appended to existing file
-          Rails.logger.error("UploadsController: In chunked upload, chunk initial byte #{chunk_initial_byte} did not equal current file size #{current_size}")
-          raise "Unexplained error with chunked uploading"
-        end
+      # if uploading from the dashboard, this will be a collection logo or banner - bypass resumable upload
+      # otherwise, it will be a file upload from submission or media edit
+      if params["referer_anchor"]&.include? "/dashboard/"
+        create_logo
       else
-        # Create a new upload
-        create_initial_upload
+        return head(:bad_request) unless ( params[:files]&.first.present? && upload_hash_valid? )
+
+        incoming_file = params[:files]&.first
+
+        # have to sanitize file in case file name has evil characters
+        sanitized_file = CarrierWave::SanitizedFile.new(incoming_file)
+        sanitized_file_name = sanitized_file.filename
+
+        if ( existing_upload = Hyrax::UploadedFile.find_by(file: sanitized_file_name, upload_hash: params[:upload_hash], user: current_user) ).present?
+          # This is a new chunk to append to an existing file (probably)
+          @upload = existing_upload
+
+          content_range = request.headers["CONTENT-RANGE"]
+          chunk_initial_byte = content_range[/\ (.*?)-/,1].to_i
+
+          current_size = @upload.file.url ? File.size(@upload.file.url) : 0
+          if current_size != @upload.total_file_size
+            raise "Unexpected size mismatch in uploaded file #{@upload.id} with expected size #{@upload.total_file_size} but actual size #{current_size}"
+          end
+
+          if ( current_size > 0 ) && ( current_size == chunk_initial_byte )
+            # new chunk confirmed, append
+            File.open(@upload.file.url, "ab") { |f| incoming_file.to_io.each_line { |line| f.write(line) } }
+            @upload.update_columns(total_file_size: current_size + incoming_file.size)
+          else
+            # chunk can not be appended to existing file
+            Rails.logger.error("UploadsController: In chunked upload, chunk initial byte #{chunk_initial_byte} did not equal current file size #{current_size}")
+            raise "Unexplained error with chunked uploading"
+          end
+        else
+          # Create a new upload
+          create_initial_upload
+        end
       end
+    end
+
+    def create_logo
+      @upload.attributes = { file: params[:files].first,
+                             user: current_user }
+      @upload.save!
     end
 
     def destroy
@@ -60,7 +72,7 @@ module Hyrax
     end
 
     def create_initial_upload
-      @upload.attributes = { 
+      @upload.attributes = {
           file: params[:files].first,
           total_file_size: params[:files].first.size,
           upload_hash: params[:upload_hash],

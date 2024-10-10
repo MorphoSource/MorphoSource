@@ -31,8 +31,7 @@ module Morphosource
 
     def call
       # Check all conditions to see if a sync is needed
-      # Return metadata, solr document if all conditions pass.  Otherwise return nil, nil
-      # Solr document is returned to avoid another Solr call when calling idigbio_record_different_from_specimen? method
+      # Return metadata if all conditions pass.  Otherwise return nil
       unless occurrence_id_results.present? && occurrence_id_results[:status] == :success && occurrence_id_results[:data].length > 0
         return nil
       end

@@ -2,7 +2,6 @@ class BiologicalSpecimen < Morphosource::Works::Base
 
   include ::Hyrax::WorkBehavior
   include Morphosource::PhysicalObjectBehavior
-  include Morphosource::BiologicalSpecimenIdigbioUpdateBehavior
   include Morphosource::PersistentIdentifiersBehavior
   validates_with Morphosource::ParentChildValidator
   before_create :controlled_value_filter, :date_filter, :set_idigbio_link_origin_when_create
@@ -28,15 +27,25 @@ class BiologicalSpecimen < Morphosource::Works::Base
   # schema (by adding accepts_nested_attributes)
   include Morphosource::BiologicalSpecimenMetadata
 
+  # :occurrence_id_changed? may change to :will_save_change_to_occurrence_id?
+  # if ActiveFedora updates to reflect the Rails 5.1+ ActiveRecord/ActiveModel API
+  after_update :update_from_idigbio, if: :occurrence_id_changed?
+
+  def update_from_idigbio
+    if occurrence_id.present?
+      if (params_for_update = Morphosource::IDigBioGetMetadataService.call(self.to_solr)).present?      
+        if Morphosource::IDigBioGetMetadataService.idigbio_record_different_from_specimen?(self.to_solr, params_for_update)
+          Morphosource::IDigBioUpdateService.call(id, save_work=true, system_update=false, params_for_update)
+        end
+      end
+    end
+  end
+
   def set_idigbio_link_origin_when_create
     if self.idigbio_uuid.present?
       self.idigbio_link_origin = ["user"]
     end
   end
-
-  # :occurrence_id_changed? may change to :will_save_change_to_occurrence_id?
-  # if ActiveFedora updates to reflect the Rails 5.1+ ActiveRecord/ActiveModel API
-  before_update :update_metadata_from_idigbio_occurrence_id, if: :occurrence_id_changed?
 
   def best_taxonomy
     if canonical_taxonomy.present?
@@ -96,22 +105,6 @@ class BiologicalSpecimen < Morphosource::Works::Base
     else
       'User Created'
     end
-  end
-
-  def occurrence_id_valid?
-    # valid if 8 characters minimum AND has both a letter and a number
-    occurrence_id.present? && occurrence_id.first.length >= 8 &&
-      occurrence_id.first.count("0-9") > 0 && occurrence_id.first.count("a-zA-Z") > 0
-  end
-
-  def idigbio_occurrence_id_results
-    @idigbio_occurrence_id_results ||= Morphosource::IDigBio.search({'occurrenceid' => self.occurrence_id.first})
-  end
-
-  def idigbio_match_found
-    return -1 unless occurrence_id_valid?
-    return -1 unless (idigbio_occurrence_id_results[:status] == :success) && (idigbio_occurrence_id_results[:data].length > 0)
-    return idigbio_occurrence_id_results[:data].length 
   end
 
 

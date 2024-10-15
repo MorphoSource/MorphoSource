@@ -40,7 +40,10 @@ module Hyrax
     def new
       @curation_concern.organization_id = assign_organization_id
       @curation_concern.visibility = 'open' # default all new devices to open
-      super
+      @admin_set_options = available_admin_sets
+      curation_concern.depositor = current_user.user_key
+      curation_concern.admin_set_id = Hyrax.config.default_admin_set_id
+      build_form
     end
 
     private

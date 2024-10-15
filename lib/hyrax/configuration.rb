@@ -448,7 +448,7 @@ module Hyrax
       ActiveModel::Type::Boolean.new.cast(ENV.fetch('HYRAX_VALKYRIE', false))
     end
     # @!endgroup
-    
+
     attr_writer :feature_config_path
     def feature_config_path
       @feature_config_path ||= Rails.root.join('config', 'features.yml')
@@ -677,7 +677,7 @@ module Hyrax
     def box_client_secret
       @box_client_secret ||= nil
     end
-    
+
     # @!attribute [w] dropbox_client_id
     # Dropbox API client ID credential
     attr_writer :dropbox_client_id
@@ -984,6 +984,46 @@ module Hyrax
     # @return [Class] the configured admin set model class
     def admin_set_class
       admin_set_model.constantize
+    end
+
+    attr_writer :admin_set_model
+    ##
+    # @return [#constantize] a string representation of the admin set
+    #   model
+    def admin_set_model
+      @admin_set_model ||= 'AdminSet'
+    end
+
+    ##
+    # @return [Class] the configured admin set model class
+    def admin_set_class
+      admin_set_model.constantize
+    end
+
+    ##
+    # @return [String] the default admin set id
+    def default_admin_set_id
+      default_admin_set.id.to_s
+    end
+
+    ##
+    # @return [Hyrax::AdministrativeSet] the default admin set
+    # @see Hyrax::AdminSetCreateService.find_or_create_default_admin_set
+
+    # override Hyrax::AdminSetCreateService.find_or_create_default_admin_set for now
+    # building the valkyrie version of the default admin set crashes the app because it
+    # queries for all the admin_set's members, which is all work records in the system.
+    def default_admin_set
+      # @default_admin_set ||= Hyrax::AdminSetCreateService.find_or_create_default_admin_set
+      @default_admin_set ||= AdminSet.find(AdminSet::DEFAULT_ID)
+    end
+
+    ##
+    # If the default admin set is changed, call reset.  The next time one of the default
+    # admin set configs is checked, the default_admin_set variable will be updated.
+    # @see Hyrax::DefaultAdministrativeSet.update
+    def reset_default_admin_set
+      @default_admin_set = nil
     end
 
     attr_writer :id_field

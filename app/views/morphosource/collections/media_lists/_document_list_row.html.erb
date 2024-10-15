@@ -50,9 +50,11 @@
     <div class="object-col-taxonomy"><i><%= document["taxonomy_ssim"]&.first %></i></div>
   </td>
   <td><i><%= document["taxonomy_ssim"]&.first %></i></td>
-  <td><%= document["human_readable_media_type_tesim"]&.first %></td>
-  <td><%= document.date_uploaded %></td>
-  <td class='long-badge'><%= render_publication_status_badge(document) %></td>
+  <% if @hide_viewer %>
+    <td><%= document["human_readable_media_type_tesim"]&.first %></td>
+    <td><%= document.date_uploaded %></td>
+    <td class='long-badge'><%= render_publication_status_badge(document) %></td>
+  <% end %>
   <td class="view-column">
     <div class="view-label">
       <% if @hide_viewer %>

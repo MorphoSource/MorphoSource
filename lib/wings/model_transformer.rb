@@ -4,6 +4,9 @@
 # e.g., https://github.com/samvera/hyrax/pull/6298
 # TODO5 remove these files, as fixed versions will be in Hyrax
 
+# This file is not exactly how it is in 5.0.0
+# 5.0.0 makes additional changes on top of 3.6.0 in addition to those applied here
+
 module Wings
   ##
   # Transforms ActiveFedora models or objects into Valkyrie::Resource models or
@@ -134,15 +137,7 @@ module Wings
       { :id => pcdm_object.id,
         :created_at => pcdm_object.try(:create_date),
         :updated_at => pcdm_object.try(:modified_date),
-        :member_ids => member_ids,
         ::Valkyrie::Persistence::Attributes::OPTIMISTIC_LOCK => lock_token }
-    end
-
-    # Prefer ordered members, but if ordered members don't exist, use non-ordered members.
-    def member_ids
-      ordered_member_ids = pcdm_object.try(:ordered_member_ids)
-      return ordered_member_ids if ordered_member_ids.present?
-      pcdm_object.try(:member_ids)
     end
 
     def lock_token

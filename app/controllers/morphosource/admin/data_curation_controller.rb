@@ -11,7 +11,7 @@ module Morphosource
         begin
           team = Collection.find(params[:team_id])
           Morphosource::DataCuration::OrganizationNormalizationService.call( team_id: params[:team_id],
-                                                                             project_id: params[:collection_id],
+                                                                             project_id: params[:project_id],
                                                                              old_manager_email: params[:old_manager_email],
                                                                              email: params[:email],
                                                                              remove_previous_reviewers: params[:remove_previous_reviewers],

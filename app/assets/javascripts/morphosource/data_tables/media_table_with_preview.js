@@ -5,16 +5,16 @@ var createMediaTableWithPreview = function(selector) {
   return $(selector).DataTable({
     responsive: {
       details: {
-        type: 'none',
-        target: ''
+        display: $.fn.dataTable.Responsive.display.childRowImmediate,
+        type: 'inline'
       }
     },
     columnDefs: [
+      { orderable: false, targets: 0 }, // disable sorting
+      { orderable: false, targets: -1 },
       { responsivePriority: 1, targets: 0 },
-      { responsivePriority: 2, targets: 1 },
-      { responsivePriority: 3, targets: 2 },
-      { responsivePriority: 3, targets: 3 },
-      { responsivePriority: 4, targets: -1 }, // rightmost column
+      { responsivePriority: 3, targets: 1 },
+      { responsivePriority: 2, targets: -1 }, // rightmost column
     ],
     pageLength: 10,
     bPaginate: false,

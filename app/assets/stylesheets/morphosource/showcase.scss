@@ -409,7 +409,14 @@ nav#masthead {
     }
   }
 
-  table.teams-projects, table.media-works, table.collections-list-table {
+  .collections-wrapper .collections-list-table {
+    th:nth-child(1), th:nth-child(2), 
+    td:nth-child(1), td:nth-child(2) {
+      text-align: center;
+    }
+  }
+
+  table.teams-projects, table.media-works, table.collections-list-table, table.organizations-list-table {
     th, td {
       text-align: center;
     }

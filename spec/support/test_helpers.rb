@@ -58,6 +58,19 @@ module TestHelpers
     user.can? :read, work_doc
   end
 
+  def can_download?(work, member = user)
+    user = User.find(member.id)
+    ability = Ability.new(user)
+    work_doc = SolrDocument.find(work.id)
+    return false unless ability.can? :download, work.id
+    return false unless ability.can? :download, work
+    return false unless ability.can? :download, work_doc
+    return false unless user.can? :download, work.id
+    return false unless user.can? :download, work
+
+    user.can? :read, work_doc
+  end
+
   def can_edit?(work, member = user)
     user = User.find(member.id)
     ability = Ability.new(user)

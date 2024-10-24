@@ -50,9 +50,33 @@ module Morphosource
           false
         end
 
+        # Download rules
+
+        return unless registered_user? || admin?
+
+        can :download, ::Media do |obj|
+          has_organizational_download_access_to_media?(obj)
+        end
+
+        can :download, ::SolrDocument do |obj|
+          case obj.has_model&.first
+          when 'Media'
+            has_organizational_download_access_to_media? obj
+          else
+            false
+          end
+        end
+
+        can :download, String do |id|
+          obj = SolrDocument.find(id)
+          can? :download, obj
+        rescue
+          false
+        end
+
         # Edit rules
 
-        return unless contributor?
+        return unless contributor? || admin?
 
         can [:edit, :update], ::Media do |obj|
           has_organizational_edit_access_to_media? obj

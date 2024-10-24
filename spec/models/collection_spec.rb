@@ -13,6 +13,18 @@ RSpec.describe Collection, type: :model do
   let(:all_media)               { [media, media2, media3] }
 
 
+  describe 'GROUP_ROLES' do
+    it { expect(Collection::MANAGE_GROUP_ROLES).to match_array(%w(managers)) }
+
+    it { expect(Collection::EDIT_GROUP_ROLES).to match_array(%w(managers editors)) }
+
+    it { expect(Collection::DOWNLOAD_GROUP_ROLES).to match_array(%w(managers editors downloaders)) }
+
+    it { expect(Collection::READ_GROUP_ROLES).to match_array(%w(managers editors downloaders viewers)) }
+
+    it { expect(Collection::DEFAULT_GROUP_ROLES).to match_array(%w(managers editors depositors downloaders viewers)) }
+  end
+
   describe 'organization methods' do
     let!(:org1)  { Organization.create(title: ['title'], team_id: [team.id]) }
     let!(:org2)  { Organization.create(title: ['title'], team_id: []) }

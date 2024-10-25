@@ -17,14 +17,14 @@ class Collection < ActiveFedora::Base
 
   MANAGE_GROUP_ROLES = %w[managers].freeze
   # editors group grants members ability to edit works in the collection, but not to edit collection metadata or grant permissions
-  EDIT_GROUP_ROLES = MANAGE_GROUP_ROLES + %w[editors].freeze
+  EDIT_GROUP_ROLES = %w[managers editors].freeze
   # includes all groups that have edit access to the collection works plus downloaders
-  DOWNLOAD_GROUP_ROLES = EDIT_GROUP_ROLES + %w[downloaders].freeze
+  DOWNLOAD_GROUP_ROLES = %w[managers editors downloaders].freeze
   # all groups except depositors grant ability to read works in the collection
-  READ_GROUP_ROLES = DOWNLOAD_GROUP_ROLES + %w[viewers].freeze
+  READ_GROUP_ROLES = %w[managers editors downloaders viewers].freeze
   # all groups
   # depositors can add works to the collection, but do not have additional access to other works in the collection
-  DEFAULT_GROUP_ROLES = READ_GROUP_ROLES + %w[depositors].freeze
+  DEFAULT_GROUP_ROLES = %w[managers editors depositors downloaders viewers].freeze
 
   def presenter_class
     team? ? Morphosource::Collections::TeamPresenter : Morphosource::Collections::ProjectPresenter

@@ -25,6 +25,10 @@ class CharacterizeJob < Hyrax::ApplicationJob
     Hydra::Works::Crc32CharacterizationService.run(file_set.characterization_proxy, filepath)
     Rails.logger.debug "Ran CRC32 characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
 
+    # save the file_set metadata and crc32 before running the rest of the services
+    # because in case of abrupt exit, rescue or ensure is not able to handle the exception
+    file_set.characterization_proxy.save!
+
     begin
       ext = File.extname(filepath)
       if (ext =~ /\.(glb|gltf)$/)
@@ -53,7 +57,7 @@ class CharacterizeJob < Hyrax::ApplicationJob
       file_set.update_index
       file_set.parent&.in_collections&.each(&:update_index)
     end
-    
+
     Morphosource::Works::FileSetCharacterizationParentUpdateService.run(file_set)
     CreateDerivativesJob.perform_later(file_set, file_id, filepath)
   end

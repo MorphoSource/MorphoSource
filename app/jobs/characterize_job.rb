@@ -12,18 +12,24 @@ class CharacterizeJob < Hyrax::ApplicationJob
   def perform(file_set, file_id, filepath = nil)
     raise "#{file_set.class.characterization_proxy} was not found for FileSet #{file_set.id}" unless file_set.characterization_proxy?
     filepath = Hyrax::WorkingDirectory.find_or_retrieve(file_id, file_set.id) unless filepath && File.exist?(filepath)
-    # Run FITS , then gltf-inspect (for glb/gltf) or blender (for other mesh file types).  
-    # For mesh files:
-    # - we want gltf-inspect/blender to overwrite the mime type output from FITS
-    # - we still want to run FITS to get basic file info (e.g. checksum)
+
+    # Calculate Crc32, needed for file download
+    CharacterizeCrc32Job.perform_later(file_set, file_id, filepath)
+
+    # Generic file characterization based on FITS applied to the upload's single file
+    # Want to run this on all uploads, to get basic file info
+    
     Rails.logger.debug "Running FITS characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
     Hydra::Works::CharacterizationService.run(file_set.characterization_proxy, filepath)
     Rails.logger.debug "Ran FITS characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
 
-    # Calculate CRC32 for file
-    Rails.logger.debug "Running CRC32 characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
-    Hydra::Works::Crc32CharacterizationService.run(file_set.characterization_proxy, filepath)
-    Rails.logger.debug "Ran CRC32 characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
+    file_set.characterization_proxy.save!
+    file_set.update_index
+    file_set.parent&.in_collections&.each(&:update_index)
+    Morphosource::Works::FileSetCharacterizationParentUpdateService.run(file_set)
+
+    # Specialized file characterization for meshes or to process representative file for archive
+    # For mesh files, gltf-inspect/blender overwrites mime type output from FITS
 
     begin
       ext = File.extname(filepath)
@@ -52,9 +58,26 @@ class CharacterizeJob < Hyrax::ApplicationJob
       file_set.characterization_proxy.save!
       file_set.update_index
       file_set.parent&.in_collections&.each(&:update_index)
+      Morphosource::Works::FileSetCharacterizationParentUpdateService.run(file_set)
     end
     
-    Morphosource::Works::FileSetCharacterizationParentUpdateService.run(file_set)
     CreateDerivativesJob.perform_later(file_set, file_id, filepath)
+  end
+end
+
+def CharacterizeCrc32Job < Hyrax::ApplicationJob
+  queue_as Hyrax.config.heavy_queue_name
+
+  def perform(file_set, file_id, filepath = nil)
+    raise "#{file_set.class.characterization_proxy} was not found for FileSet #{file_set.id}" unless file_set.characterization_proxy?
+    filepath = Hyrax::WorkingDirectory.find_or_retrieve(file_id, file_set.id) unless filepath && File.exist?(filepath)
+
+    Rails.logger.debug "Running CRC32 characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
+    Hydra::Works::Crc32CharacterizationService.run(file_set.characterization_proxy, filepath)
+    Rails.logger.debug "Ran CRC32 characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
+
+    file_set.characterization_proxy.save!
+    file_set.update_index
+    file_set.parent&.in_collections&.each(&:update_index)
   end
 end

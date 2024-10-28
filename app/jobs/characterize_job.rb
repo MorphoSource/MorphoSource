@@ -65,7 +65,7 @@ class CharacterizeJob < Hyrax::ApplicationJob
   end
 end
 
-def CharacterizeCrc32Job < Hyrax::ApplicationJob
+class CharacterizeCrc32Job < Hyrax::ApplicationJob
   queue_as Hyrax.config.heavy_queue_name
 
   def perform(file_set, file_id, filepath = nil)

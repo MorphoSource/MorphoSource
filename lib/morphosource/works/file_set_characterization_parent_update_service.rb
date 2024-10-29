@@ -88,7 +88,6 @@ module Morphosource
           :aperture_value => :aperture_value,
           :iso_speed_ratings => :iso_speed_ratings,
           :shutter_speed => :shutter_speed,
-
           :exposure_time => :exposure_time,
           :pixel_spacing_calibration => :pixel_spacing_calibration_type,
           :frame_averaging => :contrast_frame_averaging,
@@ -103,7 +102,6 @@ module Morphosource
           :source_detector_distance => :distance_source_to_detector,
           :target_material => :anode_target_material,
           :rotation_number => :spiral_pitch_factor
-    
         }
       end
 

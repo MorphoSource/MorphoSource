@@ -205,6 +205,13 @@ RUN npm install --global @morphosource/gltf-scale@0.0.1
 RUN mkdir -p /opt/firefox && \
     ln -s /usr/bin/firefox /opt/firefox/firefox
 
+# Install rclone
+RUN mkdir -p /app/rclone && \
+  cd /app/rclone && \
+  curl -O https://downloads.rclone.org/rclone-current-linux-amd64.zip && \
+  unzip rclone-current-linux-amd64.zip && \
+  rm rclone-current-linux-amd64.zip
+
 USER app
 
 ENV FITS_VERSION='1.5.5'

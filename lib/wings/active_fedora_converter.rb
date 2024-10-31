@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+# TODO: If no further edits, this file can be removed after upgrading to Hyrax 5.1
 
 require 'wings/converter_value_mapper'
 require 'wings/active_fedora_converter/default_work'

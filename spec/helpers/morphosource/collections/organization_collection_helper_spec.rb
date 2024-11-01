@@ -31,14 +31,8 @@ RSpec.describe Morphosource::Collections::OrganizationCollectionHelper, type: :h
       allow(subject).to receive(:current_ability).and_return(Ability.new(user))
     end
 
-    it 'returns a list of media and appropriate counts' do
-      # total_viewable_device_media
-      media_docs = subject.total_viewable_device_media(device.id)
-      expect(media_docs.map { |doc| doc['id'] } ).to match_array([media.id])
-      # total_viewable_device_media_count
-      expect(subject.total_viewable_device_media_count(device.id)).to eq(1)
-      # total_viewable_device_imaging_events
-      expect(subject.total_viewable_device_imaging_events(device.id)).to eq(1)
+    it 'returns the correct counts of media and imaging events' do
+      expect(subject.device_media_and_imaging_event_counts(device.id)).to match_array([1, 1])
     end
   end
 end

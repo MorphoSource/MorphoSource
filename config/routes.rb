@@ -382,6 +382,8 @@ Rails.application.routes.draw do
 
       # Create project within team
       get 'collections/:parent_id/under', controller: 'nest_collections', action: 'create_collection_under', as: 'create_subcollection_under'
+      post 'collections/:parent_id/under', controller: 'nest_collections', action: 'create_relationship_under', as: 'create_nest_collection_under'
+      post 'collections/:parent_id/remove_child/:child_id', controller: 'nest_collections', action: 'remove_relationship_under', as: 'remove_child_relationship_under'
 
       # organization-team linkage functions (will eventually be deprecated)
       post 'dashboard/collections/:id/organizations', action: :link_organization, controller: :linked_teams, as: 'dashboard_collection_link_organization'

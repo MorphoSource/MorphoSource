@@ -21,7 +21,7 @@ RSpec.describe CollectionRolesController, :type => :controller do
       let(:status)  { 'fail' }
       it 'has the correct fail message' do
         subject.send(:update_notice, status)
-        expect(flash[:error]).to eq({:error=>"Invalid update option for permission template."})
+        expect(flash[:error]).to include(error: "Invalid update option for permission template.")
       end
     end
     context 'status is user_status' do

@@ -57,7 +57,7 @@ test:
     - docker run --name solr --network test-network -v $(pwd)/solr/conf:/core_config/conf -d solr:7.7.3 sh -c "solr-precreate hydra-test /core_config"
     - docker run --name fcrepo --network test-network -v $(pwd)/vendor/docker/fcrepo/fedora.xml:/var/lib/jetty/webapps/fedora.xml -d ghcr.io/samvera/fcrepo4:4.7.5
     - docker run --name redis --network test-network -d redis:5-alpine
-    - docker run --name morphosource --network test-network --env-file ./vendor/docker/docker-compose.env -e RAILS_ENV=test -e SOLR_URL=http://solr:8983/solr/hydra-test -e FCREPO_BASE_PATH=/test -e FIJI_SCRIPT_COMMAND= gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA docker-test.sh
+    - docker run --name morphosource --network test-network --env-file ./vendor/docker/docker-compose.env -e RAILS_ENV=test -e SOLR_TEST_URL=http://solr:8983/solr/hydra-test -e FCREPO_BASE_PATH=/test -e FIJI_SCRIPT_COMMAND= gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA docker-test.sh
   tags:
     - oit-shared
 

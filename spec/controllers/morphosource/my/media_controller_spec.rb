@@ -9,7 +9,6 @@ RSpec.describe Morphosource::My::MediaController, type: :controller do
   describe ".configure_facets" do
     let(:facet_fields)  { described_class.blacklight_config.facet_fields}
     before do
-      allow_any_instance_of(described_class).to receive(:search_builder_class).and_return("search_builder_class")
       described_class.configure_facets
     end
     describe 'media type' do
@@ -104,16 +103,29 @@ RSpec.describe Morphosource::My::MediaController, type: :controller do
 
   describe 'search_builder_class' do
     context 'user is an admin' do
+      let(:admins)  { Role.create(name: 'admin') }
+
       before do
-        allow(controller).to receive_message_chain(:current_user, :admin?).and_return(true)
+        admins.users << user
+        admins.save
+        sign_in user
+        get :index
       end
-      it { expect(controller.search_builder_class).to eq(Morphosource::Users::EditMediaSearchBuilder) }
+      
+      it 'search_builder_class is EditSpecimensSearchBuilder' do
+        expect(controller.search_builder_class).to eq(Morphosource::Users::EditMediaSearchBuilder)
+      end
     end
+
     context 'user is not an admin' do
       before do
-        allow(controller).to receive_message_chain(:current_user, :admin?).and_return(false)
+        sign_in user
+        get :index
       end
-      it { expect(controller.search_builder_class).to eq(Morphosource::Users::MyMediaSearchBuilder) }
+
+      it 'search_builder_class is MySpecimensSearchBuilder' do
+        expect(controller.search_builder_class).to eq(Morphosource::Users::MyMediaSearchBuilder)
+      end
     end
   end
 

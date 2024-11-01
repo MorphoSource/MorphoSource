@@ -309,6 +309,11 @@ en:
             confirmation: 'Delete this organization?'
           public_view:
             label: 'Public view'
+        form_branding:
+          logo:
+            description: You can upload one logo image to be displayed on the collection page. The recommended image size is 80 x 80 pixels.
+          banner:
+            description: You can upload one banner image to be displayed at the top of the collection page. The recommended image size is 1200 x 120 pixels.
         form_relationships:
           modals:
             remove_this_project_description: Removing this project will not remove it from the repository.  It will only remove the project from this team. You will remain a project manager, but all other members of the team will be removed from the project, even if they were members before the project was added to the team. Are you sure you want to remove this project?

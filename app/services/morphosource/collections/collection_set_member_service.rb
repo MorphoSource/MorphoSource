@@ -39,11 +39,11 @@ module Morphosource
           end
         end
         core_fq = assemble_user_media_query
-        core_fq += " OR (#{Solrizer.solr_name('member_of_collection_ids', :symbol)}:(#{collection_ids.join(' OR ')}))" if collection_ids.length > 0
+        core_fq += " OR (#{ActiveFedora.index_field_mapper.solr_name('member_of_collection_ids', :symbol)}:(#{collection_ids.join(' OR ')}))" if collection_ids.length > 0
         core_fq += subcoll_fq if subcoll_fq.present?
         core_fq += assemble_organization_media_query(organization_object_ids) if organization_object_ids.present? 
         fq_params << core_fq
-        fq_params << "#{Solrizer.solr_name('has_model', :symbol)}:#{Media}"
+        fq_params << "#{ActiveFedora.index_field_mapper.solr_name('has_model', :symbol)}:#{Media}"
 
         response = available_member_works_filter_query(fq_params: fq_params)
         return response
@@ -63,7 +63,7 @@ module Morphosource
       #
       def all_member_media_objects(object_ids = [], object_model = nil, fq_params = [])
         core_fq = "(id:(#{object_ids.join(' OR ')}))"
-        core_fq += " AND (#{Solrizer.solr_name('has_model', :symbol)}:#{object_model})" if object_model.present?
+        core_fq += " AND (#{ActiveFedora.index_field_mapper.solr_name('has_model', :symbol)}:#{object_model})" if object_model.present?
         fq_params << core_fq 
         available_member_works_filter_query(fq_params: fq_params, object_model: object_model)
       end
@@ -100,7 +100,7 @@ module Morphosource
         def assemble_multiple_collection_query_for(coll_id)
           subcollection_ids = available_member_subcollections(coll_id).documents.map { |s| s['id'] }
           if subcollection_ids.present?
-            " OR (#{Solrizer.solr_name('member_of_collection_ids', :symbol)}:(#{subcollection_ids.join(' OR ')}))"
+            " OR (#{ActiveFedora.index_field_mapper.solr_name('member_of_collection_ids', :symbol)}:(#{subcollection_ids.join(' OR ')}))"
           else
             ""
           end
@@ -109,7 +109,7 @@ module Morphosource
         # @api private
         #
         def assemble_organization_media_query(organization_object_ids)
-          " OR (#{Solrizer.solr_name('physical_object_id', :stored_searchable)}:(#{organization_object_ids.join(' OR ')}))"
+          " OR (#{ActiveFedora.index_field_mapper.solr_name('physical_object_id', :stored_searchable)}:(#{organization_object_ids.join(' OR ')}))"
         end
 
         # @api private

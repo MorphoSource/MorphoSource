@@ -6,10 +6,10 @@ require 'rails/all'
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-module MorphoSourceSf
+module MorphosourceApplication
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 5.1
+    config.load_defaults 5.2
 
     # Settings in config/environments/* take precedence over those specified here.
     # Application configuration should go into files in config/initializers
@@ -23,7 +23,15 @@ module MorphoSourceSf
       end
     end
 
-    middleware.use ::ActionDispatch::Static, File.join(Hyrax.config.derivatives_path, '..'), index: 'index', headers: config.public_file_server.headers
+    middleware.use(
+      ::ActionDispatch::Static, 
+      File.join(
+        ENV.fetch("DERIVATIVES_PATH", Rails.root.join("tmp", "derivatives")), 
+        '..'
+      ), 
+      index: 'index', 
+      headers: config.public_file_server.headers
+    )
 
     config.i18n.load_path += Dir[Rails.root.join('config', 'locales', '**', '*.{rb,yml}')]
   end

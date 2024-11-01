@@ -18,9 +18,11 @@
               <th><%= sortable_table_header('Part', 'part_ssi') %></th>
               <th><%= sortable_table_header('Object', 'physical_object_title_ssi') %></th>
               <th><%= sortable_table_header('Taxonomy', 'taxonomy_ssi') %></th>
-              <th><%= sortable_table_header('Type', 'human_readable_media_type_ssi') %></th>
-              <th><%= sortable_table_header('Date Added', 'date_uploaded_dtsi') %></th>
-              <th style="padding: 8px 0px 8px 0px;"><%= sortable_table_header('Publication Status', 'publication_status_ssi') %></th>
+              <% if @hide_viewer %>
+                <th><%= sortable_table_header('Type', 'human_readable_media_type_ssi') %></th>
+                <th><%= sortable_table_header('Date Added', 'date_uploaded_dtsi') %></th>
+                <th style="padding: 8px 0px 8px 0px;"><%= sortable_table_header('Publication Status', 'publication_status_ssi') %></th>
+              <% end %>
               <th class="view-column">View</th>
             </tr>
           </thead>

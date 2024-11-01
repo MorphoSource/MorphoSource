@@ -1,9 +1,9 @@
 development:
   adapter: solr
-  url: <%= ENV['SOLR_URL'] || "http://127.0.0.1:#{ENV.fetch('SOLR_DEVELOPMENT_PORT', 8983)}/solr/hydra-development" %>
+  url: <%= ENV['SOLR_DEVELOPMENT_URL'] || ENV['SOLR_URL'] || "http://127.0.0.1:#{ENV.fetch('SOLR_DEVELOPMENT_PORT', 8983)}/solr/hyrax" %>
 test: &test
   adapter: solr
-  url: <%= ENV['SOLR_URL'] || "http://127.0.0.1:#{ENV.fetch('SOLR_TEST_PORT', 8985)}/solr/hydra-test" %>
+  url: <%= ENV['SOLR_TEST_URL'] || ENV['SOLR_URL'] || "http://127.0.0.1:#{ENV.fetch('SOLR_TEST_PORT', 8985)}/solr/hyrax_test" %>
 production:
   adapter: solr
   url: <%= ENV['SOLR_URL'] || ( "http://#{ ENV['SOLR_ADMIN_USER'] || "admin" }:#{ ENV['SOLR_ADMIN_PASSWORD'] || "admin" }@#{ ENV['SOLR_HOST'] || "127.0.0.1" }:#{ ENV['SOLR_PORT'] || 8983 }/solr/#{ ENV['SOLR_COLLECTION_NAME'] || "hyrax" }" ) %>

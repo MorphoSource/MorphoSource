@@ -5,7 +5,7 @@ module Morphosource
 
     attr_reader :params
 
-    SORTABLE_TITLE_FIELD = Solrizer.solr_name('title', :stored_sortable)
+    SORTABLE_TITLE_FIELD = ActiveFedora.index_field_mapper.solr_name('title', :stored_sortable)
 
     # Used for finding valid taxonomies based on taxonomic ranks
     TAXONOMIC_RANKS = [
@@ -52,7 +52,7 @@ module Morphosource
     private
 
       def model_clause
-        "#{Solrizer.solr_name('has_model', :symbol)}:Taxonomy"
+        "#{ActiveFedora.index_field_mapper.solr_name('has_model', :symbol)}:Taxonomy"
       end
 
       def search_solr(qry)
@@ -76,13 +76,13 @@ module Morphosource
           param_clauses
         else
           # Must match genus, species, and NO subspecies + any other params provided
-          param_clauses << "-#{Solrizer.solr_name('taxonomy_subspecies', :stored_searchable)}:*"
+          param_clauses << "-#{ActiveFedora.index_field_mapper.solr_name('taxonomy_subspecies', :stored_searchable)}:*"
         end
       end
 
       def assemble_strict_higher_taxonomy_param_clauses
-        positive_clauses = params.map { |k,v| "#{Solrizer.solr_name(k, :stored_searchable)}:#{prepare_value(v)}" }
-        negative_clauses = (TAXONOMIC_RANKS - params.keys).map { |k| "-#{Solrizer.solr_name(k, :stored_searchable)}:*" }
+        positive_clauses = params.map { |k,v| "#{ActiveFedora.index_field_mapper.solr_name(k, :stored_searchable)}:#{prepare_value(v)}" }
+        negative_clauses = (TAXONOMIC_RANKS - params.keys).map { |k| "-#{ActiveFedora.index_field_mapper.solr_name(k, :stored_searchable)}:*" }
         positive_clauses + negative_clauses
       end
   end

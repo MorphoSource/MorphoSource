@@ -13,6 +13,14 @@ module Morphosource
           (organization_groups(media) & @user_groups).present?
         end
 
+        # returns true if the user has download access to the media through the organization collection
+        def has_organizational_download_access_to_media?(media)
+          Rails.logger.debug("[CANCAN] Checking for individual media download access through organization membership")
+          return false unless media = solr_document(media)
+
+          (organization_download_groups(media) & @user_groups).present?
+        end
+
         # returns true if the user has edit access to the media through the organization collection
         def has_organizational_edit_access_to_media?(media)
           Rails.logger.debug("[CANCAN] Checking for individual media edit access through organization membership")
@@ -55,6 +63,17 @@ module Morphosource
           [object_org_id, device_org_id, owner_org_id].compact.uniq.each_with_object([]) do |id, groups|
             OrganizationCollection::READ_GROUP_ROLES.each {|role| groups << "#{id}_#{role}"}
           end.flatten
+        end
+
+        def organization_download_groups(media)
+          return [] unless media = solr_document(media)
+
+          if (media["owner_type_ssi"] == "OrganizationCollection") && media["owner_ssim"]&.first.present?
+            owner_org_id = media["owner_ssim"]&.first
+            return OrganizationCollection::DOWNLOAD_GROUP_ROLES.map {|role| "#{owner_org_id}_#{role}" }
+          else
+            return []
+          end
         end
 
         def organization_edit_groups(media)

@@ -14,7 +14,7 @@ module Morphosource
       link = ""
       parsed_params = filter_params(filter_prefix, request_params)
       parsed_params.map do |k,v|
-        link = link + '&' + k + '=' + v 
+        link = link + '&' + ActionController::Base.helpers.sanitize(k) + '=' + ActionController::Base.helpers.sanitize(v)
       end       
       link = link + "#" + tab if tab.present?
       link.html_safe
@@ -36,21 +36,33 @@ module Morphosource
       return_params = {}
       temp_params = params.select{ |k,v| k.match(/^#{prefix}/) }.select{ |k,v| v.present? }
       temp_params.each do |k,v|
-        return_params[k] = v
+        return_params[ActionController::Base.helpers.sanitize(k)] = ActionController::Base.helpers.sanitize(v)
       end
       return_params
+    end
+
+    def view_param_valid?
+      params['view'].present? && (params['view'].to_sym == :list || params['view'].to_sym == :gallery)
+    end
+
+    def is_number?(string)
+      true if Float(string) rescue false
+    end
+
+    def rows_param_valid?(key)
+      params[key].present? && is_number?(params[key])
     end
 
     def hidden_params_for_filters(prefix)
       hidden_params = {}
       params = request_params
-      hidden_params.merge!({'view' => params['view']}) if params['view'].present?
-      hidden_params.merge!({'rows' => params['rows']}) if params['rows'].present?
-      hidden_params.merge!({'brows' => params['brows']}) if params['brows'].present?
-      hidden_params.merge!({'crows' => params['crows']}) if params['crows'].present?
+      hidden_params.merge!({'view' => params['view']}) if view_param_valid?
+      hidden_params.merge!({'rows' => params['rows']}) if rows_param_valid?('rows')
+      hidden_params.merge!({'brows' => params['brows']}) if rows_param_valid?('brows')
+      hidden_params.merge!({'crows' => params['crows']}) if rows_param_valid?('crows')
       html = ''
       hidden_params.map do |k,v|
-        html += '<input type="hidden" name="' + k + '" value="' + v + '" />'
+        html += '<input type="hidden" name="' + ActionController::Base.helpers.sanitize(k) + '" value="' + ActionController::Base.helpers.sanitize(v) + '" />'
       end
       html.html_safe
     end
@@ -58,13 +70,13 @@ module Morphosource
     def hidden_params_for_pagination(prefix)
       hidden_params = {}
       params = request_params
-      hidden_params.merge!({'view' => params['view']}) if params['view'].present?
+      hidden_params.merge!({'view' => params['view']}) if view_param_valid?
       html = ''
       hidden_params.map do |k,v|
-        html += '<input type="hidden" name="' + k + '" value="' + v + '" />'
+        html += '<input type="hidden" name="' + k + '" value="' + ActionController::Base.helpers.sanitize(v) + '" />'
       end
       params.map do |k,v|
-        html += '<input type="hidden" name="' + k + '" value="' + v + '" />' if k.include? prefix
+        html += '<input type="hidden" name="' + ActionController::Base.helpers.sanitize(k) + '" value="' + ActionController::Base.helpers.sanitize(v) + '" />' if k.include? prefix
       end
       html.html_safe
     end

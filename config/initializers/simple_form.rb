@@ -168,3 +168,13 @@ SimpleForm.setup do |config|
   # Defines which i18n scope will be used in Simple Form.
   # config.i18n_scope = 'simple_form'
 end
+
+# This should not be necessary, SimpleForm should automatically pick up these inputs from gems
+# But after Hyrax 3.x upgrade, it does not, and this is now needed for some reason (?)
+module SimpleForm
+  class FormBuilder < ActionView::Helpers::FormBuilder
+    map_type :multi_value, to: MultiValueInput
+    map_type :multi_value_select, to: MultiValueSelectInput
+    map_type :controlled_vocabulary, to: ControlledVocabularyInput
+  end
+end

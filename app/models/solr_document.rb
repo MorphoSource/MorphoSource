@@ -86,13 +86,13 @@ class SolrDocument
 
   PROPERTIES.each do |property|
     define_method(property) do
-      self[Solrizer.solr_name(property, :stored_searchable)]
+      self[ActiveFedora.index_field_mapper.solr_name(property, :stored_searchable)]
     end
   end
 
   # API fields
   def has_model
-    self[Solrizer.solr_name('has_model', :symbol)]
+    self[ActiveFedora.index_field_mapper.solr_name('has_model', :symbol)]
   end
 
   def title
@@ -105,21 +105,21 @@ class SolrDocument
 
   # Add custom metadata fields to show view
   def in_works_ids
-    self[Solrizer.solr_name('in_works_ids', :stored_searchable)]
+    self[ActiveFedora.index_field_mapper.solr_name('in_works_ids', :stored_searchable)]
   end
 
   def sortable_title
-    self[Solrizer.solr_name('title', :stored_sortable)]
+    self[ActiveFedora.index_field_mapper.solr_name('title', :stored_sortable)]
   end
 
   # Derivative download field
   def access_control_id
-    self[Solrizer.solr_name('accessControl', :symbol)]
+    self[ActiveFedora.index_field_mapper.solr_name('accessControl', :symbol)]
   end
 
   # Processing Event & Image Capture Event
   def software
-    self[Solrizer.solr_name('software', :stored_searchable)]
+    self[ActiveFedora.index_field_mapper.solr_name('software', :stored_searchable)]
   end
 
   # Download fields

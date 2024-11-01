@@ -2,7 +2,19 @@
 module Morphosource
   module Collections
     # Responsible for retrieving collection members
+    # TODO: The Hyrax equivalent of this class is deprecated in 3.6.0, might want to update
     class CollectionMemberService < Hyrax::Collections::CollectionMemberService
+      attr_reader :scope, :params, :collection
+      delegate :repository, to: :scope
+
+      # @param scope [#repository] Typically a controller object which responds to :repository
+      # @param [Collection]
+      # @param [ActionController::Parameters] query params
+      def initialize(scope:, collection:, params:)
+        @scope = scope
+        @collection = collection
+        @params = params
+      end
 
       # @api public
       #
@@ -11,10 +23,10 @@ module Morphosource
       # 2) members of subcollections of given collection (if collection is nestable), and
       # 3) media representing physical objects from collection-linked media
       def all_member_media(organization_object_ids = [], fq_params = [])
-        core_fq = "(#{Solrizer.solr_name('member_of_collection_ids', :symbol)}:#{collection.id})"
+        core_fq = "(#{ActiveFedora.index_field_mapper.solr_name('member_of_collection_ids', :symbol)}:#{collection.id})"
         core_fq += assemble_multiple_collection_query if collection.respond_to?(:collection_type) && collection.collection_type.nestable?
         core_fq += assemble_organization_media_query(organization_object_ids) if organization_object_ids.present?
-        fq_params << "#{Solrizer.solr_name('has_model', :symbol)}:#{Media}"
+        fq_params << "#{ActiveFedora.index_field_mapper.solr_name('has_model', :symbol)}:#{Media}"
         available_media_works_filter_query(fq_params: fq_params, core_fq: core_fq)
       end
 
@@ -22,7 +34,7 @@ module Morphosource
       #
       def all_member_media_objects(object_ids = [], object_model = nil, fq_params = [])
         core_fq = "(id:(#{object_ids.join(' OR ')}))"
-        core_fq += " AND (#{Solrizer.solr_name('has_model', :symbol)}:#{object_model})" if object_model.present?
+        core_fq += " AND (#{ActiveFedora.index_field_mapper.solr_name('has_model', :symbol)}:#{object_model})" if object_model.present?
         fq_params << core_fq
         available_member_works_filter_query(fq_params: fq_params, object_model: object_model)
       end
@@ -92,7 +104,7 @@ module Morphosource
       def assemble_multiple_collection_query
         subcollection_ids = available_member_subcollections.documents.map { |s| s['id'] }
         if subcollection_ids.present?
-          " OR (#{Solrizer.solr_name('member_of_collection_ids', :symbol)}:(#{subcollection_ids.join(' OR ')}))"
+          " OR (#{ActiveFedora.index_field_mapper.solr_name('member_of_collection_ids', :symbol)}:(#{subcollection_ids.join(' OR ')}))"
         else
           ""
         end
@@ -121,7 +133,19 @@ module Morphosource
       # @api private
       #
       def assemble_organization_media_query(organization_object_ids)
-        " OR (#{Solrizer.solr_name('physical_object_id', :stored_searchable)}:(#{organization_object_ids.join(' OR ')}))"
+        " OR (#{ActiveFedora.index_field_mapper.solr_name('physical_object_id', :stored_searchable)}:(#{organization_object_ids.join(' OR ')}))"
+      end
+
+      # @api private
+      #
+      def query_solr(query_builder:, query_params:)
+        repository.search(query_builder.with(query_params).query)
+      end
+
+      # @api private
+      #
+      def query_solr_with_field_selection(query_builder:, fl:)
+        repository.search(query_builder.merge(fl: fl).query)
       end
 
       # @api private
@@ -173,7 +197,7 @@ module Morphosource
       end
 
       def std_core_fq
-        "#{Solrizer.solr_name('member_of_collection_ids', :symbol)}:#{collection.id}"
+        "#{ActiveFedora.index_field_mapper.solr_name('member_of_collection_ids', :symbol)}:#{collection.id}"
       end
     end
   end

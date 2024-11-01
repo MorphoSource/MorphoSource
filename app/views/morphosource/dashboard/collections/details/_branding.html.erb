@@ -4,7 +4,7 @@ https://github.com/samvera/hyrax/blob/v2.7.0/app/views/hyrax/dashboard/collectio
 
 <div class="set-access-controls">
   <h2><%= t('hyrax.dashboard.collections.form_branding.logo.label') %></h2>
-  <p><%= t('hyrax.dashboard.collections.form_branding.logo.description') %></p>
+  <p><%= t('morphosource.dashboard.collections.form_branding.logo.description', collection_type: @collection.collection_type.title.downcase) %></p>
 
   <div id="fileuploadlogo" class="fileuploadlogo">
     <!-- Redirect browsers with JavaScript disabled to the origin page -->
@@ -79,9 +79,10 @@ https://github.com/samvera/hyrax/blob/v2.7.0/app/views/hyrax/dashboard/collectio
 
 
   <h2><%= t('hyrax.dashboard.collections.form_branding.banner.label') %></h2>
-  <p><%= t('hyrax.dashboard.collections.form_branding.banner.description') %>.</p>
+  <p><%= t('morphosource.dashboard.collections.form_branding.banner.description', collection_type: @collection.collection_type.title.downcase) %></p>
 
-  <div id="fileupload" class="fileuploadbanner">
+  
+  <div id="fileuploadbanner" class="fileuploadbanner">
     <!-- Redirect browsers with JavaScript disabled to the origin page -->
     <noscript><input type="hidden" name="redirect" value="<%= main_app.root_path %>" /></noscript>
     <!-- The table listing the files available for upload/download -->

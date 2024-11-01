@@ -12,7 +12,17 @@ end
 # overriding MAX_ROWS definition here: https://github.com/samvera/active_fedora/blob/a66a7e9618c101e6d06d0f77e36cc5a2c28b8d89/lib/active_fedora/solr_service.rb#L8
 # Fixes bug where unable to remove media from large collections
 class ActiveFedora::SolrService
-
   MAX_ROWS = 50_000
+end
 
+# Monkey-patch to change count to use post instead of get, avoiding solr URI too long errors
+ActiveFedora::SolrService.class_eval do
+  # Get the count of records that match the query
+  # @param [String] query a solr query
+  # @param [Hash] args arguments to pass through to `args' param of SolrService.query (note that :rows will be overwritten to 0)
+  # @return [Integer] number of records matching
+  def count(query, args = {})
+    args = args.merge(rows: 0)
+    SolrService.post(query, args)['response']['numFound'].to_i
+  end
 end

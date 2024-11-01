@@ -9,6 +9,8 @@
 /?
 /vendor/bundle
 
+/vendor/bundle
+
 /?
 
 # Ignore the default SQLite database.

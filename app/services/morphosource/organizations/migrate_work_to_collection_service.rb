@@ -151,7 +151,7 @@ module Morphosource
         if org_data_manager.present?
           data_manager_media = Media.where("media_organization_id_ssim": organization_work.id, "user_with_ownership_ssi": org_data_manager.user_key)
           data_manager_media.each do |media|
-            ContentDepositorChangeEventJob.perform_later(media, organization_collection, false, org_data_manager.id)
+            ContentDepositorChangeEventJob.perform_later(media, organization_collection.id, false, org_data_manager.id)
           end
         end
 
@@ -323,6 +323,12 @@ module Morphosource
           )
         end
 
+        # As a last check to find any media missed, query all media associated with the organization work
+        org_media_ids = ActiveFedora::SolrService.query(
+          "has_model_ssim:Media && media_organization_id_ssim:#{organization_work.id}", rows: 999999, fl: ["id"]
+        ).map { |doc| doc['id'] }  
+        all_media_ids.concat org_media_ids   
+
         # Wait until step 8 and 9 complete before moving on
         wait_until_no_jobs("UpdateBiologicalSpecimenMetadataJob")
 
@@ -330,7 +336,8 @@ module Morphosource
         Rails.logger.info "STEP 10. Update any organization transfers"
 
         if org_data_manager.present?
-          org_transfers = ProxyDepositRequest.where(receiving_user_id: org_data_manager.id, organization_transfer: true)
+          # Find org transfers for media associated with org where receiving user is legacy data manager and is org transfer
+          org_transfers = ProxyDepositRequest.where(work_id: org_media_ids, receiving_user_id: org_data_manager.id, organization_transfer: true)
           org_transfers.each do |transfer|
             # Update without saving due to not wanting to send messages
             transfer.update_column :receiving_user_id, organization_collection.id
@@ -340,11 +347,6 @@ module Morphosource
 
         ### STEP 11. Reindex all media associated with org team, devices, and objects ###
         Rails.logger.info "STEP 11. Reindex all media associated with org team, devices, and objects"
-
-        # As a last check to find any media missed, query all media associated with the organization work
-        all_media_ids.concat ActiveFedora::SolrService.query(
-          "has_model_ssim:Media && media_organization_id_ssim:#{organization_work.id}", rows: 999999, fl: ["id"]
-        ).map { |doc| doc['id'] }    
 
         Rails.logger.info "Reindexing media to catch changes from objects, devices, and/or org team/project"
         all_media_ids.compact.uniq.sort.each { |id| SaveWorkJob.set( queue: Hyrax.config.update_slow_queue_name ).perform_later(id) }
@@ -449,7 +451,7 @@ module Morphosource
 
         if org_data_manager.present? && !organization_collection.media_ownership_transfer
           raise "STEP 5 FAILED. Organization work had data manager but media transfer not enabled for collection."
-        elsif organization_collection.media_ownership_transfer
+        elsif organization_collection.media_ownership_transfer && !org_data_manager.present? 
           raise "STEP 5 FAILED. Organization work did not have data manager but media transfer is enabled for collection."
         end
 

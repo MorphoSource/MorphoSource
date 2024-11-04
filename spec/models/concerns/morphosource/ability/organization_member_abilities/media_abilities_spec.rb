@@ -11,9 +11,9 @@ RSpec.describe 'Morphosource::Ability', type: :model do
   let(:depositor)             { FactoryBot.create(:contributor) }
   let(:organization)          { FactoryBot.create(:organization_collection, depositor: depositor.ms_id) }
 
-  let(:org_manager)           { FactoryBot.create(:contributor) }
-  let(:org_editor)            { FactoryBot.create(:contributor) }
-  let(:org_depositor)         { FactoryBot.create(:contributor) }
+  let(:org_manager)           { FactoryBot.create(:registered_user) }
+  let(:org_editor)            { FactoryBot.create(:registered_user) }
+  let(:org_depositor)         { FactoryBot.create(:registered_user) }
   let(:org_downloader)        { FactoryBot.create(:registered_user) }
   let(:org_viewer)            { FactoryBot.create(:registered_user) }
 
@@ -26,6 +26,13 @@ RSpec.describe 'Morphosource::Ability', type: :model do
                                   member_ids_ssim: [file_set.id],
                                   media_organization_id_ssim: [organization.id],
                               )}
+
+  before do
+    Role.create(name: 'contributor')
+    [org_manager, org_editor, org_depositor].each do |user|
+      user.make_contributor
+    end
+  end
 
   describe 'organization_member_abilities' do
     context 'the work does not exist' do
@@ -43,10 +50,11 @@ RSpec.describe 'Morphosource::Ability', type: :model do
           allow(user).to receive(:groups).and_return([])
         end
 
-        it 'returns false for read, edit, update, transfer, accept, and reject' do
+        it 'returns false for read, download, edit, update, transfer, accept, and reject' do
           # media
           expect(can_read?(media)).to be(false)
           expect(can_edit?(media)).to be(false)
+          expect(can_download?(media)).to be(false)
           expect(can_update?(media)).to be(false)
           expect(can_transfer?(media)).to be(false)
           expect(can_accept?(proxy_deposit_request)).to be(false)
@@ -73,9 +81,10 @@ RSpec.describe 'Morphosource::Ability', type: :model do
 
           context 'the organization is not the data owner' do
             # all non-depositor organization members can read org media and file sets
-            it 'managers, editors, downloaders, and viewers can read but not edit the media' do
+            it 'managers, editors, downloaders, and viewers can read but not download or edit the media' do
               org_read_members.each do |org_member|
                 expect(can_read?(media, org_member)).to be(true)
+                expect(can_download?(media, org_member)).to be(false)
                 expect(can_edit?(media, org_member)).to be(false)
                 expect(can_update?(media, org_member)).to be(false)
                 expect(can_transfer?(media, org_member)).to be(false)
@@ -86,8 +95,9 @@ RSpec.describe 'Morphosource::Ability', type: :model do
             end
 
             # depositor organization members can not read org media and file sets
-            it 'depositors can not read or edit the media' do
+            it 'depositors can not read, download, or edit the media' do
               expect(can_read?(media, org_depositor)).to be(false)
+              expect(can_download?(media, org_depositor)).to be(false)
               expect(can_edit?(media, org_depositor)).to be(false)
               expect(can_update?(media, org_depositor)).to be(false)
               expect(can_transfer?(media, org_depositor)).to be(false)
@@ -107,8 +117,9 @@ RSpec.describe 'Morphosource::Ability', type: :model do
                         )}
 
             it 'returns the correct permissions for manager member' do
-              # manager can read, edit, update, transfer, accept, reject
+              # manager can read, download, edit, update, transfer, accept, reject
               expect(can_read?(media, org_manager)).to be(true)
+              expect(can_download?(media, org_manager)).to be(true)
               expect(can_edit?(media, org_manager)).to be(true)
               expect(can_update?(media, org_manager)).to be(true)
               expect(can_transfer?(media, org_manager)).to be(true)
@@ -120,8 +131,9 @@ RSpec.describe 'Morphosource::Ability', type: :model do
             end
 
             it 'returns the correct permissions for editor member' do
-              # editor can read, edit, and update; cannot transfer, accept, reject
+              # editor can read, download, edit, and update; cannot transfer, accept, reject
               expect(can_read?(media, org_editor)).to be(true)
+              expect(can_download?(media, org_editor)).to be(true)
               expect(can_edit?(media, org_editor)).to be(true)
               expect(can_update?(media, org_editor)).to be(true)
               expect(can_transfer?(media, org_editor)).to be(false)
@@ -135,6 +147,7 @@ RSpec.describe 'Morphosource::Ability', type: :model do
             it 'returns the correct permissions for depositor member' do
               # depositor can't do anything
               expect(can_read?(media, org_depositor)).to be(false)
+              expect(can_download?(media, org_depositor)).to be(false)
               expect(can_edit?(media, org_depositor)).to be(false)
               expect(can_update?(media, org_depositor)).to be(false)
               expect(can_transfer?(media, org_depositor)).to be(false)
@@ -146,8 +159,9 @@ RSpec.describe 'Morphosource::Ability', type: :model do
             end
 
             it 'returns the correct permissions for downloader' do
-              # downloader, and viewer can read, cannot edit, update, transfer, accept, reject
+              # downloade can read and download, cannot edit, update, transfer, accept, reject
               expect(can_read?(media, org_downloader)).to be(true)
+              expect(can_download?(media, org_downloader)).to be(true)
               expect(can_edit?(media, org_downloader)).to be(false)
               expect(can_update?(media, org_downloader)).to be(false)
               expect(can_transfer?(media, org_downloader)).to be(false)
@@ -159,8 +173,9 @@ RSpec.describe 'Morphosource::Ability', type: :model do
             end
 
             it 'returns the correct permissions for viewer' do
-              # downloader, and viewer can read, cannot edit, update, transfer, accept, reject
+              # viewer can read, cannot download, edit, update, transfer, accept, reject
               expect(can_read?(media, org_viewer)).to be(true)
+              expect(can_download?(media, org_viewer)).to be(false)
               expect(can_edit?(media, org_viewer)).to be(false)
               expect(can_update?(media, org_viewer)).to be(false)
               expect(can_transfer?(media, org_viewer)).to be(false)
@@ -181,8 +196,9 @@ RSpec.describe 'Morphosource::Ability', type: :model do
                         )}
 
               it 'returns the correct permissions for manager member' do
-                # manager can read, edit, update, transfer, accept, reject
+                # manager can read, download, edit, update, transfer, accept, reject
                 expect(can_read?(media, org_manager)).to be(true)
+                expect(can_download?(media, org_manager)).to be(true)
                 expect(can_edit?(media, org_manager)).to be(true)
                 expect(can_update?(media, org_manager)).to be(true)
                 expect(can_transfer?(media, org_manager)).to be(true)
@@ -194,8 +210,9 @@ RSpec.describe 'Morphosource::Ability', type: :model do
               end
 
               it 'returns the correct permissions for editor member' do
-                # editor can read, edit, and update; cannot transfer, accept, reject
+                # editor can read, download, edit, and update; cannot transfer, accept, reject
                 expect(can_read?(media, org_editor)).to be(true)
+                expect(can_download?(media, org_editor)).to be(true)
                 expect(can_edit?(media, org_editor)).to be(true)
                 expect(can_update?(media, org_editor)).to be(true)
                 expect(can_transfer?(media, org_editor)).to be(false)
@@ -209,6 +226,7 @@ RSpec.describe 'Morphosource::Ability', type: :model do
               it 'returns the correct permissions for depositor member' do
                 # depositor can't do anything
                 expect(can_read?(media, org_depositor)).to be(false)
+                expect(can_download?(media, org_depositor)).to be(false)
                 expect(can_edit?(media, org_depositor)).to be(false)
                 expect(can_update?(media, org_depositor)).to be(false)
                 expect(can_transfer?(media, org_depositor)).to be(false)
@@ -220,8 +238,9 @@ RSpec.describe 'Morphosource::Ability', type: :model do
               end
 
               it 'returns the correct permissions for downloader' do
-                # downloader, and viewer can read, cannot edit, update, transfer, accept, reject
+                # downloader can read and download, cannot edit, update, transfer, accept, reject
                 expect(can_read?(media, org_downloader)).to be(true)
+                expect(can_download?(media, org_downloader)).to be(true)
                 expect(can_edit?(media, org_downloader)).to be(false)
                 expect(can_update?(media, org_downloader)).to be(false)
                 expect(can_transfer?(media, org_downloader)).to be(false)
@@ -233,8 +252,9 @@ RSpec.describe 'Morphosource::Ability', type: :model do
               end
 
               it 'returns the correct permissions for viewer' do
-                # downloader, and viewer can read, cannot edit, update, transfer, accept, reject
+                # viewer can read, cannot download, edit, update, transfer, accept, reject
                 expect(can_read?(media, org_viewer)).to be(true)
+                expect(can_download?(media, org_viewer)).to be(false)
                 expect(can_edit?(media, org_viewer)).to be(false)
                 expect(can_update?(media, org_viewer)).to be(false)
                 expect(can_transfer?(media, org_viewer)).to be(false)
@@ -301,8 +321,9 @@ RSpec.describe 'Morphosource::Ability', type: :model do
       end
 
       it 'returns the correct permissions for manager member for both media' do
-        # manager can read, edit, update, transfer, accept, reject managed media
+        # manager can read, download, edit, update, transfer, accept, reject managed media
         expect(can_read?(org_media_managed, org_manager)).to be(true)
+        expect(can_download?(org_media_managed, org_manager)).to be(true)
         expect(can_edit?(org_media_managed, org_manager)).to be(true)
         expect(can_update?(org_media_managed, org_manager)).to be(true)
         expect(can_transfer?(org_media_managed, org_manager)).to be(true)
@@ -310,8 +331,9 @@ RSpec.describe 'Morphosource::Ability', type: :model do
         expect(can_edit?(file_set_managed, org_manager)).to be(true)
         expect(can_update?(file_set_managed, org_manager)).to be(true)
 
-        # manager can read, but not edit, update, transfer, accept, reject unmanaged media
+        # manager can read but not download, edit, update, transfer, accept, reject unmanaged media
         expect(can_read?(org_media_unmanaged, org_manager)).to be(true)
+        expect(can_download?(org_media_unmanaged, org_manager)).to be(false)
         expect(can_edit?(org_media_unmanaged, org_manager)).to be(false)
         expect(can_update?(org_media_unmanaged, org_manager)).to be(false)
         expect(can_transfer?(org_media_unmanaged, org_manager)).to be(false)
@@ -321,6 +343,7 @@ RSpec.describe 'Morphosource::Ability', type: :model do
 
         # check managed media again to ensure things are working regardless of order
         expect(can_read?(org_media_managed, org_manager)).to be(true)
+        expect(can_download?(org_media_managed, org_manager)).to be(true)
         expect(can_edit?(org_media_managed, org_manager)).to be(true)
         expect(can_update?(org_media_managed, org_manager)).to be(true)
         expect(can_transfer?(org_media_managed, org_manager)).to be(true)

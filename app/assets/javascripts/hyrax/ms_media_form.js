@@ -6,7 +6,7 @@ document.addEventListener("share-tab-loaded", function(event) {
 
   $('#btn-transfer-submit').click(function() {
     if (transferToSelect.val().length == 0) {
-      alert('Please select a user or organization');
+      $.alert('Please select a user or organization');
     } else if (confirm('Are you sure you want to transfer ownership of this work to another user or organization? Click Ok to transfer or Cancel to return to the transfer screen')) {
         disablePage();
         $('#new_proxy_deposit_request').submit();
@@ -35,15 +35,17 @@ $( document ).ready(function() {
     IsImagingEventOK = false;
     IsProcessingEventOK = false;
 
-    if ($('form[id*="related_form_imaging_event"]').length)
+    if ($('form[id*="related_form_imaging_event"]').length) {
       HasEditImagingEventForm = true;
-    else
+    } else {
       HasEditImagingEventForm = false; // this means no edit IE form or IE is not editable
+    }
 
-    if ($('form[id*="related_form_processing_event"]').length)
+    if ($('form[id*="related_form_processing_event"]').length) {
       HasEditProcessingEventForm = true;
-    else
+    } else {
       HasEditProcessingEventForm = false;
+    }
 
     setupEmbeddedWorkForm('biological_specimen', false, 'new');
     setupEmbeddedWorkForm('processing_event', 'new', true, reloadPage);
@@ -246,7 +248,7 @@ $( document ).ready(function() {
     var thumbField = document.getElementById("custom_thumbnail");
     thumbField.onchange = function() {
       if (this.files[0].size > 500000) {
-        alert('Thumbnail size must be 500KB or smaller.  Please upload another thumbnail image.');
+        $.alert('Thumbnail size must be 500KB or smaller.  Please upload another thumbnail image.');
         $('#custom_thumbnail_hint').addClass('text-alert');
         this.value = "";
       } else {
@@ -260,10 +262,7 @@ $( document ).ready(function() {
     submitRelatedWork: function (callback) {
       var relatedFormId = $(this).attr('id');
       console.log('submitting '+ relatedFormId );
-      // replace with ajax form post to trigger other actions
       var postData = new FormData($(this)[0]);
-      //postdata.push({name: "NonFormValue", value: 'foo'});
-
       $.ajax({
         type: "POST",
         url: $(this).attr('action'),
@@ -272,12 +271,7 @@ $( document ).ready(function() {
         contentType: false,
         dataType: "json",
         success: function(data){
-          //console.log("submitted work ID: " + data.id );
-          if (relatedFormId.indexOf('imaging_event') != -1)
-            IsImagingEventOK = true;
-          else if (relatedFormId.indexOf('processing_event') != -1)
-            IsProcessingEventOK = true;
-          if (callback) callback();
+          console.log("submitted work ID: " + data.id );
         }
       }).fail(function(data) {
         console.log("getting a fail status ", data );
@@ -290,11 +284,16 @@ $( document ).ready(function() {
             });
           });
         }
-        if (msg) alert(msg);
-        if (callback) callback();
-      }).always(function(data) {
-
+        if (msg) $.alert(msg);
       });
+      // Call the next function (to save PE form or media form) 
+      // NO need to wait for ajax post response
+      if (relatedFormId.indexOf('imaging_event') > 0) {
+        IsImagingEventOK = true;
+      } else if (relatedFormId.indexOf('processing_event') > 0) {
+        IsProcessingEventOK = true;
+      }
+      if (callback) callback();
     }
   });
 
@@ -530,7 +529,7 @@ function isModalityValid() {
     } else {
       console.log('deviceModality '+ deviceModality);
       console.log('imagingEventModality '+ imagingEventModality);
-      alert('Device modality does not match imaging event modality.');
+      $.alert('Device modality does not match imaging event modality.');
     }
   } else {
     return true;
@@ -554,8 +553,8 @@ function submitProcessingEvent() {
 
 function saveMediaIfReady() {
   if (IsImagingEventOK && IsProcessingEventOK) {
-    //console.log('updating media work...');
     form.submit();
+    console.log('...media form submitted');
   } else {
     $.alert('imaging_event or processing_event not saved properly.');
     enablePageAndSave(".btn-save-media");
@@ -612,6 +611,7 @@ var editMediaSubmit = function() {
     if (HasEditImagingEventForm) {
       $("form#related_form_imaging_event").submitRelatedWork(submitProcessingEvent);
     } else {
+      // has a read-only Imaging Event form, or Imaging Event form has not changed
       IsImagingEventOK = true;
       submitProcessingEvent();
     }
@@ -737,7 +737,7 @@ var setMediaLocalRemoteEvent = function() {
   });
 }
 
-var noFileCheck = function() {
+var noFileCheck = function(event) {
   if (skipNoFileCheck) {
     return true;
   } else if (fileOrigin == "local") {

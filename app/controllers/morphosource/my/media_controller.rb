@@ -5,7 +5,7 @@ module Morphosource
       def self.configure_facets
         configure_blacklight do |config|
           config.http_method = :post
-          config.search_builder_class = self.new.search_builder_class
+          config.search_builder_class = Morphosource::Users::MyMediaSearchBuilder
           # clear catalog facet fields
           config.facet_fields = {}
           config.add_facet_field "media_type", field: "human_readable_media_type_ssim", label: "Media Type", limit: 10
@@ -21,20 +21,24 @@ module Morphosource
           config.add_facet_field "project", field: "member_of_project_ids_ssim", label: "Project", limit: 10, helper_method: :collection_title_by_id
           config.add_facet_field "owner", field: "user_with_ownership_name_ssim", label: "Data Manager", limit: 10
           config.add_facet_field "depositor", field: "depositor_name_ssim", label: "Data Uploader", limit: 10
+          config.default_solr_params = {
+            qt: "search",
+            qf: "id title_tesim description_tesim creator_tesim keyword_tesim physical_object_title_tesim taxonomy_tesim"
+          }
           config.add_facet_field "data_sponsor", field: "active_fund_code_title_ssim", label: "Data Sponsor", limit: 10
         end
       end
       configure_facets
 
-      def search_builder_class
-        if current_user.admin?
-          Morphosource::Users::EditMediaSearchBuilder
-        else
-          Morphosource::Users::MyMediaSearchBuilder
-        end
-      end
+      before_action :modify_search_builder_class_for_admin, only: [:index]
 
       private
+        # If user is admin, use different search builder class
+        def modify_search_builder_class_for_admin
+          if current_user&.admin?
+            blacklight_config.search_builder_class = Morphosource::Users::EditMediaSearchBuilder
+          end
+        end
 
         # The url of the "more" link for additional facet values
         def search_facet_path(args = {})

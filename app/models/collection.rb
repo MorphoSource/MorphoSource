@@ -15,22 +15,19 @@ class Collection < ActiveFedora::Base
   after_destroy :reindex_collection_members
   after_destroy :destroy_default_groups, if: :type_assigns_groups?
 
-  DEFAULT_GROUP_ROLES = %w[managers editors depositors downloaders viewers].freeze
+  MANAGE_GROUP_ROLES = %w[managers].freeze
   # editors group grants members ability to edit works in the collection, but not to edit collection metadata or grant permissions
   EDIT_GROUP_ROLES = %w[managers editors].freeze
+  # includes all groups that have edit access to the collection works plus downloaders
+  DOWNLOAD_GROUP_ROLES = %w[managers editors downloaders].freeze
   # all groups except depositors grant ability to read works in the collection
   READ_GROUP_ROLES = %w[managers editors downloaders viewers].freeze
+  # all groups
+  # depositors can add works to the collection, but do not have additional access to other works in the collection
+  DEFAULT_GROUP_ROLES = %w[managers editors depositors downloaders viewers].freeze
 
   def presenter_class
     team? ? Morphosource::Collections::TeamPresenter : Morphosource::Collections::ProjectPresenter
-  end
-
-  # override Hyrax::CollectionBehavior to add editors and downloaders to read_groups
-  def permission_template_read_groups
-    (permission_template.agent_ids_for(access: 'view', agent_type: 'group') + permission_template.agent_ids_for(access: 'edit_works', agent_type: 'group') +
-    permission_template.agent_ids_for(access: 'download', agent_type: 'group') +
-    permission_template.agent_ids_for(access: 'deposit', agent_type: 'group')).uniq -
-    [::Ability.registered_group_name, ::Ability.public_group_name]
   end
 
   def human_readable_type
@@ -253,8 +250,9 @@ class Collection < ActiveFedora::Base
 
   # override Hyrax::CollectionBehavior method to allow collection types to be changed
   def collection_type_gid=(new_collection_type_gid)
+    new_collection_type_gid = new_collection_type_gid&.to_s
     new_collection_type = Hyrax::CollectionType.find_by_gid!(new_collection_type_gid)
-    super
+    super(new_collection_type_gid)
     @collection_type = new_collection_type
     collection_type_gid
   end

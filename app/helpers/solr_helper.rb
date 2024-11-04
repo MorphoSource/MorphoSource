@@ -6,7 +6,7 @@ module SolrHelper
   end
 
   def solrize(name, type)
-    Solrizer.solr_name(name, type)
+    ActiveFedora.index_field_mapper.solr_name(name, type)
   end
 
   def desolrize(name)
@@ -30,7 +30,7 @@ module SolrHelper
         clauses << "id:#{prepare_value(v)}"
       else
         term_type = ( k == 'member_ids' ? :symbol : :stored_searchable )
-        clauses << "#{Solrizer.solr_name(k, term_type)}:#{prepare_value(v)}"
+        clauses << "#{ActiveFedora.index_field_mapper.solr_name(k, term_type)}:#{prepare_value(v)}"
       end
     end
     clauses

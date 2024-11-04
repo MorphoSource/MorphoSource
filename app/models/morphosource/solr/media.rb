@@ -49,7 +49,7 @@ module Morphosource
       end
 
       def fileset_visibility
-        self[Solrizer.solr_name('fileset_visibility', :stored_searchable)]
+        self[ActiveFedora.index_field_mapper.solr_name('fileset_visibility', :stored_searchable)]
       end
 
       def fileset_accessibility
@@ -61,7 +61,7 @@ module Morphosource
       end
 
       def human_readable_media_type
-        self[Solrizer.solr_name('human_readable_media_type', :stored_searchable)].first
+        self[ActiveFedora.index_field_mapper.solr_name('human_readable_media_type', :stored_searchable)].first
       end
 
       def human_readable_modality
@@ -90,7 +90,7 @@ module Morphosource
       end
 
       def physical_object_type
-        self[Solrizer.solr_name('media_physical_object_type', :stored_searchable)]&.first
+        self[ActiveFedora.index_field_mapper.solr_name('media_physical_object_type', :stored_searchable)]&.first
       end
 
       def proxy_depositor
@@ -98,19 +98,19 @@ module Morphosource
       end
 
       def modality
-        self[Solrizer.solr_name('modality', :symbol)]
+        self[ActiveFedora.index_field_mapper.solr_name('modality', :symbol)]
       end
 
       def media_organization
-        self[Solrizer.solr_name('media_organization', :stored_searchable)]
+        self[ActiveFedora.index_field_mapper.solr_name('media_organization', :stored_searchable)]
       end
 
       def media_organization_id
-        self[Solrizer.solr_name('media_organization_id', :stored_searchable)]
+        self[ActiveFedora.index_field_mapper.solr_name('media_organization_id', :stored_searchable)]
       end
 
       def media_physical_object_type
-        self[Solrizer.solr_name('media_physical_object_type', :stored_searchable)]
+        self[ActiveFedora.index_field_mapper.solr_name('media_physical_object_type', :stored_searchable)]
       end
 
       def organization_transfer_on_publish

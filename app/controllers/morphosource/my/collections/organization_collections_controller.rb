@@ -9,7 +9,7 @@ module Morphosource
         def self.configure_facets
           configure_blacklight do |config|
             config.http_method = :post
-            config.search_builder_class = self.new.search_builder_class
+            config.search_builder_class = Morphosource::My::Collections::OrganizationsSearchBuilder
             # clear catalog facet fields
             config.facet_fields = {}
             # membership facet added in before_action :create_membership_facet

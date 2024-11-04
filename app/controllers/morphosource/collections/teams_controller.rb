@@ -111,7 +111,7 @@ module Morphosource
 
         # get number of media in collection hash
         def media_number_in_collection(coll_hash)
-          Morphosource::SolrService.new.get_docs("has_model_ssim:Media AND member_of_collection_ids_ssim:#{coll_hash[:id].first} AND media_organization_id_ssim:#{@organization.id}").count
+          Morphosource::SolrService.new.get_count("has_model_ssim:Media AND member_of_collection_ids_ssim:#{coll_hash[:id].first} AND media_organization_id_ssim:#{@organization.id}")
         end
 
     end

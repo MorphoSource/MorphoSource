@@ -24,7 +24,7 @@ class Morphosource::My::MsCollectionsSearchBuilder < ::SearchBuilder
   end
 
   def sort_field
-    Solrizer.solr_name('title', :sortable)
+    ActiveFedora.index_field_mapper.solr_name('title', :sortable)
   end
 
   def add_sorting_to_solr(solr_parameters)

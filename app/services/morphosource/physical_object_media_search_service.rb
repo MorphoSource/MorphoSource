@@ -11,18 +11,20 @@ module Morphosource
       @context = context
     end
 
-    # @param [Symbol] access :read or :edit
     def search_results
+      search.documents
+    end
+
+    def search
       builder = list_search_builder
       repository = MediaCatalogController.new.repository
-      response =  repository.search(builder)
-      response.documents
+      repository.search(builder)
     end
 
     private
 
-      def list_search_builder
-        list_search_builder_class.new(scope: @context, object_id: @object_id).rows(999999)
-      end
+    def list_search_builder
+      list_search_builder_class.new(scope: @context, object_id: @object_id).rows(999999)
+    end
   end
 end

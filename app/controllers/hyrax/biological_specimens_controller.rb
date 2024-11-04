@@ -15,11 +15,10 @@ module Hyrax
     self.show_presenter = Hyrax::BiologicalSpecimenPresenter
 
     before_action :record_original_organizations, only: :update
-    after_action :idigbio_update_notice, only: :update
+    before_action :check_idigbio_update, only: :update
+    after_action :set_idigbio_update_notice, only: :update
 
     skip_authorize_resource only: :showcase
-
-    attr_accessor :idigbio_occurrence_id_results
 
     # override the layout from WorksControllerBehavior
     def decide_layout
@@ -80,8 +79,19 @@ module Hyrax
       end
     end
 
-    def idigbio_update_notice
-      if occurrence_id_changed? && curation_concern.idigbio_match_found == 1 && !curation_concern.idigbio_recordset_different_from_org?
+    def check_idigbio_update
+      @idigbio_record_found = false
+      if params[:biological_specimen].present?
+        if (param_occ_id = params[:biological_specimen][:occurrence_id]).present? && 
+          (curation_concern.occurrence_id&.first != param_occ_id)
+          occurrence_id_results = Morphosource::IDigBio.search({'occurrenceid' => param_occ_id})
+          @idigbio_record_found = (occurrence_id_results[:status] == :success && occurrence_id_results[:data].length > 0)
+        end
+      end
+    end
+
+    def set_idigbio_update_notice
+      if @idigbio_record_found
         flash[:notice] = "The specimen has been updated to match the iDigBio record."
       end
     end

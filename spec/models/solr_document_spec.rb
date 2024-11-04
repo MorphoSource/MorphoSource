@@ -4,7 +4,7 @@ RSpec.describe ::SolrDocument, type: :model do
   let(:document) { described_class.new(attributes) }
   let(:attributes) { {} }
 
-  describe "organization metadata field solrizer methods" do
+  describe "organization metadata field index mapping methods" do
     let(:work) do
       Organization.new({
         title: ['American Museum of Natural History'],
@@ -65,7 +65,7 @@ RSpec.describe ::SolrDocument, type: :model do
     end
   end
 
-  describe "device metadata field solrizer methods" do
+  describe "device metadata field index mapping methods" do
     let(:work) do
       Device.new({
         title: ['XTekCT 100'],

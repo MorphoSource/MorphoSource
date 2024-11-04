@@ -49,6 +49,21 @@ body.dashboard {
     min-height: calc(100vh - 55px);
   }
 
+  .panel.contributor_petitions {
+    width: fit-content;
+  }
+
+  .panel#collection-edit-controls {
+    padding:20px;
+  }
+
+  .panel-footer {
+    background-color: transparent;
+  }
+
+  .field-controls .add, .field-controls .remove {
+    width: 3em;
+  }
 }
 
 .landing-header {

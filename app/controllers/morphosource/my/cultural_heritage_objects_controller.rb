@@ -1,11 +1,10 @@
 module Morphosource
   module My
     class CulturalHeritageObjectsController < WorksController
-
       def self.configure_facets
         configure_blacklight do |config|
           config.http_method = :post
-          config.search_builder_class = self.new.search_builder_class
+          config.search_builder_class = Morphosource::Users::MyChosSearchBuilder
           # clear catalog facet fields
           config.facet_fields = {}
           config.add_facet_field "organization", field: "organization_ssim", label: "Organization", limit: 10
@@ -15,15 +14,15 @@ module Morphosource
       end
       configure_facets
 
-      def search_builder_class
-        if current_user.admin?
-          Morphosource::Users::EditChosSearchBuilder
-        else
-          Morphosource::Users::MyChosSearchBuilder
-        end
-      end
+      before_action :modify_search_builder_class_for_admin, only: [:index]
 
       private
+        # If user is admin, use different search builder class
+        def modify_search_builder_class_for_admin
+          if current_user&.admin?
+            blacklight_config.search_builder_class = Morphosource::Users::EditChosSearchBuilder
+          end
+        end
 
         def search_action_url(*args)
           main_app.my_cultural_heritage_objects_path(*args)

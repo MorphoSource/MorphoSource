@@ -109,7 +109,7 @@ module Morphosource
     end
 
     def page_is_team?
-      path_info.include?("teams")
+      @page_is_team ||= path_info.include?("teams")
     end
 
     def page_is_organization?
@@ -129,14 +129,16 @@ module Morphosource
     end
 
     def collection_type
-      if page_is_team?
-        'team'
-      elsif page_is_project?
-        'project'
-      elsif page_is_media_list?
-        'media list'
-      elsif page_is_sequential_section_list?
-        'sequential section list'
+      @collection_type ||= begin
+        if page_is_team?
+          'team'
+        elsif page_is_project?
+          'project'
+        elsif page_is_media_list?
+          'media list'
+        elsif page_is_sequential_section_list?
+          'sequential section list'
+        end
       end
     end
 
@@ -164,16 +166,28 @@ module Morphosource
       end
     end
 
+    def view_param_valid?
+      params['view'].present? && (params['view'].to_sym == :list || params['view'].to_sym == :gallery)
+    end
+
+    def is_number?(string)
+      true if Float(string) rescue false
+    end
+
+    def rows_param_valid?(key)
+      params[key].present? && is_number?(params[key])
+    end
+
     def hidden_params_for_filters(prefix)
       hidden_params = {}
       params = request_params
-      hidden_params.merge!({'view' => params['view']}) if params['view'].present?
-      hidden_params.merge!({'rows' => params['rows']}) if params['rows'].present?
-      hidden_params.merge!({'brows' => params['brows']}) if params['brows'].present?
-      hidden_params.merge!({'crows' => params['crows']}) if params['crows'].present?
+      hidden_params.merge!({'view' => params['view']}) if view_param_valid?
+      hidden_params.merge!({'rows' => params['rows']}) if rows_param_valid?('rows')
+      hidden_params.merge!({'brows' => params['brows']}) if rows_param_valid?('brows')
+      hidden_params.merge!({'crows' => params['crows']}) if rows_param_valid?('crows')
       html = ''
       hidden_params.map do |k,v|
-        html += '<input type="hidden" name="' + k + '" value="' + v + '" />'
+        html += '<input type="hidden" name="' + ActionController::Base.helpers.sanitize(k) + '" value="' + ActionController::Base.helpers.sanitize(v) + '" />'
       end
       html.html_safe
     end
@@ -181,13 +195,13 @@ module Morphosource
     def hidden_params_for_pagination(prefix)
       hidden_params = {}
       params = request_params
-      hidden_params.merge!({'view' => params['view']}) if params['view'].present?
+      hidden_params.merge!({'view' => params['view']}) if view_param_valid?
       html = ''
       hidden_params.map do |k,v|
-        html += '<input type="hidden" name="' + k + '" value="' + v + '" />'
+        html += '<input type="hidden" name="' + k + '" value="' + ActionController::Base.helpers.sanitize(v) + '" />'
       end
       params.map do |k,v|
-        html += '<input type="hidden" name="' + k + '" value="' + v + '" />' if k.include? prefix
+        html += '<input type="hidden" name="' + ActionController::Base.helpers.sanitize(k) + '" value="' + ActionController::Base.helpers.sanitize(v) + '" />' if k.include? prefix
       end
       html.html_safe
     end
@@ -439,13 +453,13 @@ module Morphosource
     # check if current page of media includes media imaged from biological specimens
     # used to determine if taxonomy column should be displayed
     def response_includes_specimens?(response)
-      @includes_specimens ||= response["facet_counts"]["facet_fields"]["media_physical_object_type_ssim"].include? "Biological Specimen"
+      @includes_specimens ||= ( response.dig("facet_counts", "facet_fields", "media_physical_object_type_ssim") || [] ).include? "Biological Specimen"
     end
 
     # takes either a Collection or SolrDocument
     def collection_managers(collection)
       managers = Role.find_by(name: "#{collection.id}_managers")&.users
-      managers.sort.map { |manager| link_to manager.name, hyrax.user_path(manager) }.join('</br>').html_safe
+      managers.sort.map { |manager| link_to ActionController::Base.helpers.sanitize(manager.name), hyrax.user_path(manager) }.join('</br>').html_safe
     end
   end
 end

@@ -13,6 +13,18 @@ RSpec.describe Collection, type: :model do
   let(:all_media)               { [media, media2, media3] }
 
 
+  describe 'GROUP_ROLES' do
+    it { expect(Collection::MANAGE_GROUP_ROLES).to match_array(%w(managers)) }
+
+    it { expect(Collection::EDIT_GROUP_ROLES).to match_array(%w(managers editors)) }
+
+    it { expect(Collection::DOWNLOAD_GROUP_ROLES).to match_array(%w(managers editors downloaders)) }
+
+    it { expect(Collection::READ_GROUP_ROLES).to match_array(%w(managers editors downloaders viewers)) }
+
+    it { expect(Collection::DEFAULT_GROUP_ROLES).to match_array(%w(managers editors depositors downloaders viewers)) }
+  end
+
   describe 'organization methods' do
     let!(:org1)  { Organization.create(title: ['title'], team_id: [team.id]) }
     let!(:org2)  { Organization.create(title: ['title'], team_id: []) }
@@ -39,18 +51,6 @@ RSpec.describe Collection, type: :model do
       it 'returns the title of the organization linked to a parent team' do
         expect(project.organization_name).to eq(org1.title)
       end
-    end
-  end
-
-  # override Hyrax::CollectionBehavior to add editors and downloaders to read_groups
-  describe '#permission_template_read_groups' do
-    before do
-      team.create_collection_groups
-      Morphosource::Collections::PermissionsCreateService.create_default(collection: team)
-    end
-
-    it 'returns collection editors, depositors, downloaders, and viewers' do
-      expect(team.permission_template_read_groups).to match_array([team.editors_group, team.depositors_group, team.downloaders_group, team.viewers_group].map(&:name))
     end
   end
 

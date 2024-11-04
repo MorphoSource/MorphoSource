@@ -2,7 +2,6 @@ module Morphosource
   module Dashboard
     class CollectionsController < Hyrax::Dashboard::CollectionsController
       include Morphosource::Dashboard::CollectionsControllerBehavior
-      include Morphosource::CollectionHelper
 
       skip_load_and_authorize_resource only: [:edit, :update, :new, :members, :projects, :organization, :create], instance_name: :collection
 
@@ -60,11 +59,13 @@ module Morphosource
           format.html {
             redirect_to permissions_path, notice: "Remote file submission settings updated" and return if params[:update_remote_file_submission_settings]
 
-            redirect_to collection_media_path(@collection), notice: t('hyrax.dashboard.my.action.collection_update_success')
+            redirect_to helpers.collection_media_path(@collection), notice: t('hyrax.dashboard.my.action.collection_update_success')
           }
-          format.json { render json: @collection, status: :updated, location: collection_media_path(@collection) }
+          format.json { render json: @collection, status: :updated, location: helpers.collection_media_path(@collection) }
         end
       end
+      # Hyrax 3.6.0 deprecated after_update in favor of after_update_response
+      alias after_update_response after_update
 
       # Simple end-point to remove single collection member
       def remove_member
@@ -140,7 +141,7 @@ module Morphosource
         link_parent_collection(params[:parent_id]) unless params[:parent_id].nil?
         respond_to do |format|
           ActiveFedora::SolrService.instance.conn.commit
-          format.html { redirect_to collection_edit_path(@collection), notice: t('hyrax.dashboard.my.action.collection_create_success') }
+          format.html { redirect_to helpers.collection_edit_path(@collection), notice: t('hyrax.dashboard.my.action.collection_create_success') }
           format.json { render json: @collection, status: :created, location: dashboard_collection_path(@collection) }
         end
       end
@@ -163,7 +164,7 @@ module Morphosource
       end
 
       def update_referer
-        return collection_media_path(@collection) if params[:showcase]
+        return helpers.collection_media_path(@collection) if params[:showcase]
 
         return edit_dashboard_collection_path(@collection) + (params[:referer_anchor] || '') if params[:stay_on_edit]
 

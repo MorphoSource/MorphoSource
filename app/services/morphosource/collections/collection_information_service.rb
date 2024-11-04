@@ -12,7 +12,7 @@ module Morphosource
         :organizations, :info, :subcollection_ids
       delegate :repository, to: :scope
 
-      SORTABLE_TITLE_FIELD = Solrizer.solr_name('title', :stored_sortable)
+      SORTABLE_TITLE_FIELD = ActiveFedora.index_field_mapper.solr_name('title', :stored_sortable)
 
       def self.call(scope:, collection_id:)
         new(scope, collection_id).call
@@ -218,7 +218,7 @@ module Morphosource
         end
 
         def std_core_fq
-          "#{Solrizer.solr_name('member_of_collection_ids', :symbol)}:#{collection.id}"
+          "#{ActiveFedora.index_field_mapper.solr_name('member_of_collection_ids', :symbol)}:#{collection.id}"
         end
 
         def facet_field_hash(result, field_names)

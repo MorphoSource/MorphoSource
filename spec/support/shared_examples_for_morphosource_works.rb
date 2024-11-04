@@ -2,7 +2,7 @@ RSpec.shared_examples 'a Morphosource work' do
 
   describe 'indexing' do
     it 'indexes a sortable version of the title field' do
-      expect(subject.to_solr).to include(Solrizer.solr_name('title', :stored_sortable))
+      expect(subject.to_solr).to include(ActiveFedora.index_field_mapper.solr_name('title', :stored_sortable))
     end
   end
 

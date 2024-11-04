@@ -71,7 +71,7 @@ Hyrax.config do |config|
   ### Initial users and system users (should be customized for repository instances) ###
 
   # Initial user accounts that will be created when running rake task create_development_users
-
+  
   # Single user email set by ENV["MS_TEST_USR"]
   config.ms_test_usr = Morphosource.ms_test_usr
   # Set by ENV["MS_TEST_PW"]
@@ -232,8 +232,8 @@ Hyrax.config do |config|
   config.iiif_image_server = true
 
   # Returns a URL that resolves to an image provided by a IIIF image server
-  config.iiif_image_url_builder = lambda do |file_id, base_url, size|
-    Riiif::Engine.routes.url_helpers.image_url(file_id, host: base_url, size: size)
+  config.iiif_image_url_builder = lambda do |file_id, base_url, size, format|
+    Riiif::Engine.routes.url_helpers.image_url(file_id, host: base_url, size: size, format: format)
   end
   # config.iiif_image_url_builder = lambda do |file_id, base_url, size|
   #   "#{base_url}/downloads/#{file_id.split('/').first}"
@@ -438,7 +438,7 @@ Hyrax.config do |config|
   # ingest files from the file system that are not part of the BrowseEverything
   # mount point.
   #
-  config.whitelisted_ingest_dirs = ENV.fetch('WHITELISTED_INGEST_DIRS', '').split(':').presence || ['/nas/morphosource_globus/', '/app/samvera/hyrax-webapp/tmp/', '/app/samvera/hyrax-webapp/spec/fixtures/images/']
+  config.whitelisted_ingest_dirs = ENV.fetch('WHITELISTED_INGEST_DIRS', '').split(':').presence || ['/nas/morphosource_globus/', '/app/samvera/hyrax-webapp/tmp/', '/app/samvera/hyrax-webapp/spec/fixtures/images/', '/app/samvera/hyrax-webapp/spec/fixtures/bunny/', '/app/samvera/hyrax-webapp/spec/fixtures/dcm_stack/']
 
   config.index_related_works = true
 

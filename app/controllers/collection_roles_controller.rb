@@ -101,7 +101,7 @@ class CollectionRolesController < ApplicationController
   end
 
   def reload_collection_share
-    redirect_to members_tab_url(collection)
+    redirect_to helpers.members_tab_url(collection)
   end
 
   def update_user_access

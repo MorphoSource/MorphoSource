@@ -1,11 +1,10 @@
 module Morphosource
   module My
     class BiologicalSpecimensController < WorksController
-
       def self.configure_facets
         configure_blacklight do |config|
           config.http_method = :post
-          config.search_builder_class = self.new.search_builder_class
+          config.search_builder_class = Morphosource::Users::MySpecimensSearchBuilder
           # clear catalog facet fields
           config.facet_fields = {}
           config.add_facet_field "record_source", field: "record_source_ssim", label: "Source", limit: 10
@@ -17,18 +16,17 @@ module Morphosource
           config.add_facet_field "project", field: "media_member_of_project_ids_ssim", label: "Project", limit: 10, helper_method: :collection_title_by_id
         end
       end
-      
       configure_facets
 
-      def search_builder_class
-        if current_user.admin?
-          Morphosource::Users::EditSpecimensSearchBuilder
-        else
-          Morphosource::Users::MySpecimensSearchBuilder
-        end
-      end
+      before_action :modify_search_builder_class_for_admin, only: [:index]
 
       private
+        # If user is admin, use different search builder class
+        def modify_search_builder_class_for_admin
+          if current_user&.admin?
+            blacklight_config.search_builder_class = Morphosource::Users::EditSpecimensSearchBuilder
+          end
+        end
 
         # The url of the "more" link for additional facet values
         def search_facet_path(args = {})

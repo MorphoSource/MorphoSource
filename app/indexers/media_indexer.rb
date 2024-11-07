@@ -151,9 +151,13 @@ class MediaIndexer < Morphosource::WorkIndexer
       # team
       @team_ids = object.member_of_team_ids
       solr_doc['member_of_team_ids_ssim'] = @team_ids
+      solr_doc['member_of_teams_ssim'] = object.member_of_team_titles
+
       # project
       @project_ids = object.member_of_project_ids
       solr_doc['member_of_project_ids_ssim'] = @project_ids
+      solr_doc['member_of_projects_ssim'] = object.member_of_project_titles
+
       # media list
       media_list_ids = object.member_of_media_list_ids
       solr_doc['member_of_media_list_ids_ssim'] = media_list_ids

@@ -325,12 +325,20 @@ class Media < Morphosource::Works::Base
     member_of_teams.map(&:id)
   end
 
+  def member_of_team_titles
+    member_of_teams.map { |t| [t.title.to_a] }.flatten
+  end
+
   def member_of_projects
     member_of_collections.select { |c| c.project? }
   end
 
   def member_of_project_ids
     member_of_projects.map(&:id)
+  end
+
+  def member_of_project_titles
+    member_of_projects.map { |p| [p.title.to_a] }.flatten
   end
 
   def member_of_media_lists

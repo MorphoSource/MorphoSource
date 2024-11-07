@@ -4,13 +4,14 @@
   "private": true,
   "repository": "git@github.com:MorphoSource/MorphoSource.git",
   "dependencies": {
-    "universalviewer": "MorphoSource/universalviewer#uv4-4.0.22-aleph-0.0.21"
+    "universalviewer": "MorphoSource/universalviewer#b571376d08651e7056efc25837586b955bb47cea"
 },
 "scripts": {
   "preinstall": "rm -rf ./node_modules/ && rm -rf ./public/uv/",
-  "postinstall": "yarn run uv-install && yarn run uv-config",
-  "uv-install": "cp -r ./node_modules/universalviewer/dist ./public/uv",
-  "uv-config": "cp ./config/uv/uv.html ./public/uv/uv.html & cp ./config/uv/uv-config.json ./public/uv/uv-config.json & cp ./config/uv/uv-config-front-page.json ./public/uv/uv-config-front-page.json"
+  "postinstall": "yarn run uv-build && yarn run uv-deploy && yarn run uv-config && rm -rf ./node_modules/",
+  "uv-build": "cd ./node_modules/universalviewer && npm install && npm run build && cd ../..",
+  "uv-deploy": "cp -r ./node_modules/universalviewer/dist ./public/uv",
+  "uv-config": "cp ./config/uv/uv.html ./public/uv/uv.html && cp ./config/uv/uv-config.json ./public/uv/uv-config.json && cp ./config/uv/uv-config-front-page.json ./public/uv/uv-config-front-page.json"
   },
   "devDependencies": {}
 }

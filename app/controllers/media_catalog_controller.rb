@@ -10,7 +10,7 @@ class MediaCatalogController < CatalogController
 
   configure_blacklight do |config|
     config.search_builder_class = Morphosource::Catalog::MediaCatalogSearchBuilder
-    DEFAULT_LIMIT = 1
+    DEFAULT_LIMIT = 10
 
     # facet fields
     config.add_facet_field "media_type", field: "human_readable_media_type_ssim", label: "Media Type", limit: DEFAULT_LIMIT
@@ -20,7 +20,7 @@ class MediaCatalogController < CatalogController
     config.add_facet_field "imaging_facility", field: "media_device_facility_organization_ssim", label: "Imaging Facility", limit: DEFAULT_LIMIT
     config.add_facet_field "device", field: "media_device_ssim", label: "Imaging Device", limit: DEFAULT_LIMIT, helper_method: :device_title_by_id
     config.add_facet_field "publication_status", field: "publication_status_ssi", label: "Publication Status", limit: DEFAULT_LIMIT
-    config.add_facet_field "rights_statement", field: "rights_statement_ssim", label: "Rights Statement", limit: DEFAULT_LIMIT, helper_method: :rights_statement_title_by_id
+    config.add_facet_field "rights_statement", field: "rights_statement_title_ssim", label: "Rights Statement", limit: DEFAULT_LIMIT
     config.add_facet_field "license", field: "license_ssim", label: "CC License",limit: DEFAULT_LIMIT, helper_method: :license_title_by_id
     config.add_facet_field "taxonomy_name", field: "taxonomy_ssim", label: "Taxonomy (Name)", limit: DEFAULT_LIMIT
     config.add_facet_field "taxonomy_gbif", field: "external_taxonomy_ssim", label: "Taxonomy (GBIF)", limit: 25

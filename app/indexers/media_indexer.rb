@@ -8,6 +8,7 @@ class MediaIndexer < Morphosource::WorkIndexer
   # Fetch remote labels for based_near. You can remove this if you don't want
   # this behavior
   include Hyrax::IndexesLinkedMetadata
+  include Morphosource::CatalogHelper
 
   self.thumbnail_path_service = Morphosource::MediaThumbnailPathService
 
@@ -58,7 +59,9 @@ class MediaIndexer < Morphosource::WorkIndexer
       # TODO: after all data indexed in _ssim fields, move from existing _tesim => new _ssim fields
       solr_doc['license_ssim'] = object.license
       solr_doc['rights_statement_ssim'] = object.rights_statement
-
+      if object.rights_statement.present?
+        solr_doc['rights_statement_title_ssim'] = rights_statement_title_by_id(object.rights_statement.first)
+      end
       solr_doc['media_parent_id_ssim'] = object.media_parent&.id
 
       physical_objects = object.physical_objects

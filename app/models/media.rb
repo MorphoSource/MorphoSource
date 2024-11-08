@@ -349,12 +349,20 @@ class Media < Morphosource::Works::Base
     member_of_media_lists.map(&:id)
   end
 
+  def member_of_media_list_titles
+    member_of_media_lists.map { |l| [l.title.to_a] }.flatten
+  end
+
   def member_of_sequential_section_lists
     member_of_collections.select { |c| c.sequential_section_list? }
   end
 
   def member_of_sequential_section_list_ids
     member_of_sequential_section_lists.map(&:id)
+  end
+
+  def member_of_sequential_section_list_titles
+    member_of_sequential_section_lists.map { |l| [l.title.to_a] }.flatten
   end
 
   #

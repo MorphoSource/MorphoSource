@@ -76,8 +76,11 @@ module Morphosource::Derivatives::Processors
     end
 
     def create_tmp_draco_glb
-      gltf_pipeline = Morphosource::Derivatives::GltfPipeline.new(glb_path, draco_glb_path)
-      gltf_pipeline.call 
+      Morphosource::Derivatives::GltfTransform.new(
+        cli_command: :optimize,
+        source_path: glb_path, 
+        out_path:    draco_glb_path
+      ).call
     end
 
     def write_draco_glb

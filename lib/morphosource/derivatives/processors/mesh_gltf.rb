@@ -4,6 +4,7 @@ module Morphosource::Derivatives::Processors
   end
 
   class MeshGltf < Mesh
+    attr_accessor :metalr_glb_path
     attr_accessor :center_glb_path
     attr_accessor :scaled_glb_path
     attr_accessor :max_texture_size
@@ -24,8 +25,22 @@ module Morphosource::Derivatives::Processors
 
     # Center and scale mesh
     def create_tmp_nondraco_glb
+      create_metalr_glb
       create_center_glb
       create_scaled_glb
+    end
+
+    # Some GLB models with spec/gloss materials need materials converted to metal/rough workflow
+    # https://www.donmccurdy.com/2022/11/28/converting-gltf-pbr-materials-from-specgloss-to-metalrough
+    def create_metalr_glb
+      metalr_glb_name = File.basename(source_path, '.*') + '-metalr.glb'
+      @metalr_glb_path = File.join(tmp_dir_path, metalr_glb_name)
+
+      Morphosource::Derivatives::GltfTransform.new(
+        cli_command: :metalrough,
+        source_path: source_path, 
+        out_path:    metalr_glb_path
+      ).call
     end
 
     # Translate GLB to coordinate origin
@@ -35,7 +50,7 @@ module Morphosource::Derivatives::Processors
 
       Morphosource::Derivatives::GltfTransform.new(
         cli_command: :center,
-        source_path: source_path, 
+        source_path: metalr_glb_path, 
         out_path:    center_glb_path
       ).call
     end

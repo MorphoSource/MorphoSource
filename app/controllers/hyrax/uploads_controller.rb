@@ -13,7 +13,7 @@ module Hyrax
     def create
       # if uploading from the dashboard, this will be a collection logo or banner - bypass resumable upload
       # otherwise, it will be a file upload from submission or media edit
-      if params["referer_anchor"]&.include? "/dashboard/"
+      if request.referrer&.include? "/dashboard/"
         create_logo
       else
         return head(:bad_request) unless ( params[:files]&.first.present? && upload_hash_valid? )

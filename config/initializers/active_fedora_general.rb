@@ -17,12 +17,14 @@ end
 
 # Monkey-patch to change count to use post instead of get, avoiding solr URI too long errors
 ActiveFedora::SolrService.class_eval do
-  # Get the count of records that match the query
-  # @param [String] query a solr query
-  # @param [Hash] args arguments to pass through to `args' param of SolrService.query (note that :rows will be overwritten to 0)
-  # @return [Integer] number of records matching
-  def count(query, args = {})
-    args = args.merge(rows: 0)
-    SolrService.post(query, args)['response']['numFound'].to_i
+  class << self
+    # Get the count of records that match the query
+    # @param [String] query a solr query
+    # @param [Hash] args arguments to pass through to `args' param of SolrService.query (note that :rows will be overwritten to 0)
+    # @return [Integer] number of records matching
+    def count(query, args = {})
+      args = args.merge(rows: 0)
+      ActiveFedora::SolrService.post(query, args)['response']['numFound'].to_i
+    end
   end
 end

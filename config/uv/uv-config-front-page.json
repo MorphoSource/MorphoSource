@@ -12,6 +12,11 @@
         "titleEnabled": false
       }
     },
+    "centerPanel": {
+      "options": {
+        "titleEnabled": false
+      }
+    },
     "footerPanel": {
       "options": {
         "downloadEnabled": false,

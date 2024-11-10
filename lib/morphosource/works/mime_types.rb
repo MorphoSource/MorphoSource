@@ -18,15 +18,19 @@ module Morphosource
 
       module ClassMethods
         def mesh_mime_types
-          @mesh_mime_types ||= gltf_mesh_mime_types + misc_mesh_mime_types
+          @mesh_mime_types ||= gltf_mesh_mime_types + obj_mesh_mime_types + misc_mesh_mime_types
         end
 
         def gltf_mesh_mime_types
           ['model/gltf+json']
         end
 
+        def obj_mesh_mime_types
+          ['text/prs.wavefront-obj']
+        end
+
         def misc_mesh_mime_types
-          ['application/ply', 'application/stl', 'text/prs.wavefront-obj', 'model/vrml', 'model/x3d+xml']
+          ['application/ply', 'application/stl', 'model/vrml', 'model/x3d+xml']
         end
 
         def archive_mime_types

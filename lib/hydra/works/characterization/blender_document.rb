@@ -3,7 +3,7 @@ module Hydra::Works::Characterization
     attr_accessor :ng_xml
 
     PROXIED_TERMS = %i(
-      format_label  file_mime_type blender_version gltf_inspect_version
+      format_label  file_mime_type blender_version gltf_inspect_version pymeshlab_version
 
       file_size filename original_checksum rights_basis copyright_basis copyright_note
       well_formed valid filestatus_message
@@ -44,6 +44,11 @@ module Hydra::Works::Characterization
     # t.gltf_inspect_version(proxy: [:identification, :identity, :tool, :gltf_inspect_version])
     def gltf_inspect_version
       ng_xml.css("blender > identification > identity > tool").first.at("gltfInspectVersion").text
+    end
+
+    # t.pymeshlab_version(proxy: [:identification, :identity, :tool, :pymeshlab_version])
+    def pymeshlab_version
+      ng_xml.css("blender > identification > identity > tool").first.at("pymeshlabVersion").text
     end
 
     # @!group file

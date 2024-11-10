@@ -206,6 +206,9 @@ Hyrax.config do |config|
 
   config.python_path = ENV.fetch("MORPHOSOURCE_PYTHON", "python3")
 
+  # Skip PyMeshLab for characterization
+  config.skip_pymeshlab_characterization = ActiveModel::Type::Boolean.new.cast(ENV.fetch("SKIP_PYMESHLAB_CHARACTERIZATION", false))
+
   # Path to the file derivatives creation tool
   # config.libreoffice_path = "soffice"
 

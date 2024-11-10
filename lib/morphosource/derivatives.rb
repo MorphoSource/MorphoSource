@@ -26,6 +26,7 @@ module Morphosource
     autoload :GltfScale
     autoload :GltfTransform
     autoload :Img2dcm
+    autoload :Obj2gltf
 
     def self.blender_path
       Hyrax.config.blender_path

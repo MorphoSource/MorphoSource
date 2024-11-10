@@ -101,6 +101,7 @@ class FileSet < ActiveFedora::Base
     :centroid_method,
     :blender_version,
     :gltf_inspect_version,
+    :pymeshlab_version,
     to: :characterization_proxy
   )
 

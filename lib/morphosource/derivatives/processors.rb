@@ -10,6 +10,7 @@ module Morphosource
       autoload :ImageSeriesUtil
       autoload :Mesh
       autoload :MeshGltf
+      autoload :MeshObj
       autoload :Video
     end
   end

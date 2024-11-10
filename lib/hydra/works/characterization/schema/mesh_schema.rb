@@ -16,5 +16,6 @@ module Hydra::Works::Characterization
     property :centroid_method, predicate: RDF::URI('https://www.morphosource.org/terms/centroidMethod')
     property :blender_version, predicate: RDF::URI('https://www.morphosource.org/terms/blenderVersion')
     property :gltf_inspect_version, predicate: RDF::URI('https://www.morphosource.org/terms/gltfInspectVersion')
+    property :pymeshlab_version, predicate: RDF::URI('https://www.morphosource.org/terms/pymeshlabVersion')
   end
 end

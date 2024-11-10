@@ -66,7 +66,7 @@ module Hydra::Works
     end
 
     def blender_options
-      return Hydra::Works::Characterization::BlenderDocument, :blender
+      return Hydra::Works::Characterization::BlenderDocument, ( Hyrax.config.skip_pymeshlab_characterization ? :blender : :pymeshlab )
     end
 
     def gltf_inspect_options

@@ -189,6 +189,14 @@ RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
 RUN pip3 install --no-cache-dir --upgrade pip && \
   pip3 install --no-cache-dir numpy Pillow pydicom
 
+# Install Python package pymeshlab, which has an annoying quirk for M1 platforms
+# RUN wget https://github.com/alemuntoni/PyMeshLab/releases/download/v2024.3/pymeshlab-2024.3-cp311-cp311-macosx_11_0_arm64.whl -O pymeshlab.whl && \
+#   pip3 install pymeshlab.whl;
+
+RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
+pip3 install --no-cache-dir pymeshlab; \
+fi 
+
 # Install GLTF Pipeline 3D mesh derivative tool, used for creating Draco GLBs
 RUN npm install --global gltf-pipeline
 
@@ -200,6 +208,9 @@ RUN npm install --global @morphosource/gltf-inspect@0.2.0
 
 # Install gltf-scale 3D mesh scaling tool, used for creating GLB derivatives with real world scales
 RUN npm install --global @morphosource/gltf-scale@0.0.1
+
+# Install obj2gltf 3D mesh derivative tool, used for converting OBJ to GLTF creating derivatives
+RUN npm install --global obj2gltf
 
 # Create symlink to Firefox (for automated tests)
 RUN mkdir -p /opt/firefox && \

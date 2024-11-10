@@ -218,10 +218,20 @@ module Hydra::Works
     end
 
     def append_property_value(property, value)
-      # We don't want multiple mime_types; this overwrites each time to accept last value
-      value = sub_object.send(property) + [value] unless property == :mime_type
-      # We don't want multiple heights / widths, pick the max
-      value = value.map(&:to_i).max.to_s if property == :height || property == :width
+      if property == :mime_type
+        # mime type special case: overwrites previous value as string
+        value = value
+      elsif property == :height || property == :width
+        # height and width special case: overwrite previous value with max of multiple values as string
+        value = value.map(&:to_i).max.to_s
+      elsif property_values_replace_previous.include? property
+        # overwrite special case: overwrite previous value as array
+        value = Array(value)
+      else
+        # standard case: append new value to previous values as array
+        value = sub_object.send(property) + Array(value)
+      end
+
       sub_object.send("#{property}=", value)
     end
 
@@ -244,6 +254,18 @@ module Hydra::Works
         Hydra::Works::Characterization::ImageSchema,
         Hydra::Works::Characterization::VideoSchema
       ]
+    end
+
+    def file_metadata_schemas
+      ActiveFedora::WithMetadata::DefaultMetadataClassFactory.file_metadata_schemas
+    end
+
+    def property_values_replace_previous
+      @property_values_replace_previous ||= file_metadata_schemas.each_with_object([]) do |schema, props|
+        schema.properties.each do |prop|
+          props << prop.name if prop.to_h[:replace_prev_val]
+        end
+      end
     end
 
     def transfer_special_fields_to_object

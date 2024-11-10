@@ -9,6 +9,7 @@ module Morphosource
     autoload :ImageSeriesCroppedImageDerivatives
     autoload :MeshDerivatives
     autoload :MeshGltfDerivatives
+    autoload :MeshObjDerivatives
     autoload :VideoDerivatives
 
     autoload :Processors

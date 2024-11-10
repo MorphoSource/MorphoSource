@@ -193,7 +193,7 @@ RUN pip3 install --no-cache-dir --upgrade pip && \
 # RUN wget https://github.com/alemuntoni/PyMeshLab/releases/download/v2024.3/pymeshlab-2024.3-cp311-cp311-macosx_11_0_arm64.whl -O pymeshlab.whl && \
 #   pip3 install pymeshlab.whl;
 
-RUN if [ "$TARGETPLATFORM" = "linux/amd64" ]; then \
+RUN if [ "$TARGETPLATFORM" != "linux/arm64" ]; then \
 pip3 install --no-cache-dir pymeshlab; \
 fi 
 

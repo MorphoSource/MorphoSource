@@ -119,8 +119,8 @@ module Hydra::Works
           # mime type special case: overwrites previous value as string
           value = value
         elsif property == :height || property == :width
-          # height and width special case: overwrite previous value with max of multiple values as string
-          value = value.map(&:to_i).max.to_s
+          # height and width special case: get max of multiple values as string
+          value = (object.send(property) + Array(value)).map(&:to_i).max.to_s
         elsif property_values_replace_previous.include? property
           # overwrite special case: overwrite previous value as array
           value = Array(value)

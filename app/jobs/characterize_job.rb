@@ -42,10 +42,6 @@ class CharacterizeJob < Hyrax::ApplicationJob
         Hydra::Works::CharacterizationService.run(file_set.characterization_proxy, filepath, gltf_inspect_options)
         Rails.logger.debug "Ran gltf-inspect characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
       elsif (ext =~ /\.(obj|ply|stl|wrl|x3d)$/)
-        blender_options = {
-          "parser_class" => Hydra::Works::Characterization::BlenderDocument, 
-          "tool_class" => :blender
-        }
         Rails.logger.debug "Running Blender characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
         Hydra::Works::CharacterizationService.run(file_set.characterization_proxy, filepath, blender_options)
         Rails.logger.debug "Ran Blender characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
@@ -62,6 +58,13 @@ class CharacterizeJob < Hyrax::ApplicationJob
     end
     
     CreateDerivativesJob.perform_later(file_set, file_id, filepath)
+  end
+
+  def blender_options
+    {
+      "parser_class" => Hydra::Works::Characterization::BlenderDocument, 
+      "tool_class" => ( Hyrax.config.skip_pymeshlab_characterization ? :blender : :pymeshlab )
+    }
   end
 end
 

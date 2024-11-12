@@ -530,6 +530,12 @@ module Hyrax
       @derivatives_tmp_path ||= Rails.root.join("tmp")
     end
 
+    # Skip PyMeshLab for characterizing files (certain combinations of OS/Python can't run pymeshlab)
+    attr_writer :skip_pymeshlab_characterization
+    def skip_pymeshlab_characterization
+      @skip_pymeshlab_characterization ||= false
+    end
+
     # Override characterization runner
     attr_accessor :characterization_runner
 

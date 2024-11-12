@@ -81,6 +81,7 @@ module Morphosource
         Hyrax::IiifManifestPresenter.new(work).tap do |p|
           p.hostname = request.base_url
           p.ability = current_ability
+          p.access_control_id = params[:id]
         end
       end
   end

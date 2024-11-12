@@ -42,7 +42,6 @@ RSpec.describe CharacterizeJob do
           # mesh details
           expect(subject[:point_count_tesim].first).to eq("35947")
           expect(subject[:face_count_tesim].first).to eq("69451")
-          expect(subject[:edges_per_face_tesim].first).to eq("3")
           expect(subject[:bounding_box_x_tesim].first).to eq("0.1556989997625351")
           expect(subject[:bounding_box_y_tesim].first).to eq("0.15433360636234283")
           expect(subject[:bounding_box_z_tesim].first).to eq("0.1206732988357544")
@@ -55,8 +54,8 @@ RSpec.describe CharacterizeJob do
           expect(subject[:centroid_z_tesim].first).to eq("0.00894711457962819")
 
           # method and tool details
-          expect(subject[:centroid_method_tesim].first).to eq "Vertex Mean"
-          expect(subject[:blender_version_tesim]&.first.present?).to be true
+          expect(subject[:centroid_method_tesim].first.present?).to be true
+          expect(subject[:blender_version_tesim]&.first.present? || subject[:pymeshlab_version_tesim]&.first.present?).to be true
           expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be false
         end
       end
@@ -73,7 +72,6 @@ RSpec.describe CharacterizeJob do
           # mesh details
           expect(subject[:point_count_tesim].first).to eq("34834")
           expect(subject[:face_count_tesim].first).to eq("69451")
-          expect(subject[:edges_per_face_tesim].first).to eq("3")
           expect(subject[:bounding_box_x_tesim].first).to eq("0.1556990034878254")
           expect(subject[:bounding_box_y_tesim].first).to eq("0.15433400869369507")
           expect(subject[:bounding_box_z_tesim].first).to eq("0.1206739991903305")
@@ -86,8 +84,8 @@ RSpec.describe CharacterizeJob do
           expect(subject[:centroid_z_tesim].first).to eq("0.008991039898314488")
 
           # method and tool details
-          expect(subject[:centroid_method_tesim].first).to eq "Vertex Mean"
-          expect(subject[:blender_version_tesim]&.first.present?).to be true
+          expect(subject[:centroid_method_tesim].first.present?).to be true
+          expect(subject[:blender_version_tesim]&.first.present? || subject[:pymeshlab_version_tesim]&.first.present?).to be true
           expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be false
         end
       end
@@ -122,7 +120,7 @@ RSpec.describe CharacterizeJob do
 
           # method and tool details
           expect(subject[:centroid_method_tesim].first).to eq "Bounding Box"
-          expect(subject[:blender_version_tesim]&.first.present?).to be false
+          expect(subject[:blender_version_tesim]&.first.present? || subject[:pymeshlab_version_tesim]&.first.present?).to be false
           expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be true
         end
       end
@@ -157,7 +155,7 @@ RSpec.describe CharacterizeJob do
 
           # method and tool details
           expect(subject[:centroid_method_tesim].first).to eq "Bounding Box"
-          expect(subject[:blender_version_tesim]&.first.present?).to be false
+          expect(subject[:blender_version_tesim]&.first.present? || subject[:pymeshlab_version_tesim]&.first.present?).to be false
           expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be true
         end
       end
@@ -186,7 +184,7 @@ RSpec.describe CharacterizeJob do
 
           # method and tool details
           expect(subject[:centroid_method_tesim].first).to eq "Bounding Box"
-          expect(subject[:blender_version_tesim]&.first.present?).to be false
+          expect(subject[:blender_version_tesim]&.first.present? || subject[:pymeshlab_version_tesim]&.first.present?).to be false
           expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be true
         end
       end
@@ -203,7 +201,6 @@ RSpec.describe CharacterizeJob do
           # mesh details
           expect(subject[:point_count_tesim].first).to eq("34834")
           expect(subject[:face_count_tesim].first).to eq("69451")
-          expect(subject[:edges_per_face_tesim].first).to eq("3")
           expect(subject[:bounding_box_x_tesim].first).to start_with("0.")
           expect(subject[:bounding_box_y_tesim].first).to start_with("0.")
           expect(subject[:bounding_box_z_tesim].first).to start_with("0.")
@@ -216,8 +213,8 @@ RSpec.describe CharacterizeJob do
           expect(subject[:centroid_z_tesim].first).to start_with("0.")
 
           # method and tool details
-          expect(subject[:centroid_method_tesim].first).to eq "Vertex Mean"
-          expect(subject[:blender_version_tesim]&.first.present?).to be true
+          expect(subject[:centroid_method_tesim].first.present?).to be true
+          expect(subject[:blender_version_tesim]&.first.present? || subject[:pymeshlab_version_tesim]&.first.present?).to be true
           expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be false
         end
       end
@@ -234,7 +231,6 @@ RSpec.describe CharacterizeJob do
           # mesh details
           expect(subject[:point_count_tesim].first).to eq("35947")
           expect(subject[:face_count_tesim].first).to eq("69451")
-          expect(subject[:edges_per_face_tesim].first).to eq("3")
           expect(subject[:bounding_box_x_tesim].first).to start_with("0.")
           expect(subject[:bounding_box_y_tesim].first).to start_with("0.")
           expect(subject[:bounding_box_z_tesim].first).to start_with("0.")
@@ -247,8 +243,8 @@ RSpec.describe CharacterizeJob do
           expect(subject[:centroid_z_tesim].first).to start_with("0.")
 
           # method and tool details
-          expect(subject[:centroid_method_tesim].first).to eq "Vertex Mean"
-          expect(subject[:blender_version_tesim]&.first.present?).to be true
+          expect(subject[:centroid_method_tesim].first.present?).to be true
+          expect(subject[:blender_version_tesim]&.first.present? || subject[:pymeshlab_version_tesim]&.first.present?).to be true
           expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be false
         end
       end
@@ -265,7 +261,6 @@ RSpec.describe CharacterizeJob do
           # mesh details
           expect(subject[:point_count_tesim].first).to eq("34834")
           expect(subject[:face_count_tesim].first).to eq("69451")
-          expect(subject[:edges_per_face_tesim].first).to eq("3")
           expect(subject[:bounding_box_x_tesim].first).to start_with("0.")
           expect(subject[:bounding_box_y_tesim].first).to start_with("0.")
           expect(subject[:bounding_box_z_tesim].first).to start_with("0.")
@@ -278,8 +273,8 @@ RSpec.describe CharacterizeJob do
           expect(subject[:centroid_z_tesim].first).to start_with("0.")
 
           # method and tool details
-          expect(subject[:centroid_method_tesim].first).to eq "Vertex Mean"
-          expect(subject[:blender_version_tesim]&.first.present?).to be true
+          expect(subject[:centroid_method_tesim].first.present?).to be true
+          expect(subject[:blender_version_tesim]&.first.present? || subject[:pymeshlab_version_tesim]&.first.present?).to be true
           expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be false
         end
       end
@@ -378,8 +373,8 @@ RSpec.describe CharacterizeJob do
           expect(subject[:vertex_color_tesim].first).to eq("False")
 
           # method and tool details
-          expect(subject[:centroid_method_tesim].first).to eq "Vertex Mean"
-          expect(subject[:blender_version_tesim]&.first.present?).to be true
+          expect(subject[:centroid_method_tesim].first.present?).to be true
+          expect(subject[:blender_version_tesim]&.first.present? || subject[:pymeshlab_version_tesim]&.first.present?).to be true
           expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be false
         end
       end
@@ -412,8 +407,8 @@ RSpec.describe CharacterizeJob do
           expect(subject[:vertex_color_tesim].first).to eq("False")
 
           # method and tool details
-          expect(subject[:centroid_method_tesim].first).to eq "Vertex Mean"
-          expect(subject[:blender_version_tesim]&.first.present?).to be true
+          expect(subject[:centroid_method_tesim].first.present?).to be true
+          expect(subject[:blender_version_tesim]&.first.present? || subject[:pymeshlab_version_tesim]&.first.present?).to be true
           expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be false
         end
       end
@@ -447,7 +442,7 @@ RSpec.describe CharacterizeJob do
 
           # method and tool details
           expect(subject[:centroid_method_tesim].first).to eq "Bounding Box"
-          expect(subject[:blender_version_tesim]&.first.present?).to be false
+          expect(subject[:blender_version_tesim]&.first.present? || subject[:pymeshlab_version_tesim]&.first.present?).to be false
           expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be true
         end
       end
@@ -481,7 +476,7 @@ RSpec.describe CharacterizeJob do
 
           # method and tool details
           expect(subject[:centroid_method_tesim].first).to eq "Bounding Box"
-          expect(subject[:blender_version_tesim]&.first.present?).to be false
+          expect(subject[:blender_version_tesim]&.first.present? || subject[:pymeshlab_version_tesim]&.first.present?).to be false
           expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be true
         end
       end
@@ -518,8 +513,8 @@ RSpec.describe CharacterizeJob do
           expect(subject[:centroid_z_tesim].first).to eq("0.00894711457962819")
 
           # method and tool details
-          expect(subject[:centroid_method_tesim].first).to eq "Vertex Mean"
-          expect(subject[:blender_version_tesim]&.first.present?).to be true
+          expect(subject[:centroid_method_tesim].first.present?).to be true
+          expect(subject[:blender_version_tesim]&.first.present? || subject[:pymeshlab_version_tesim]&.first.present?).to be true
           expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be false
         end
       end

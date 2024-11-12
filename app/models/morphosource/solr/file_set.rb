@@ -67,7 +67,8 @@ module Morphosource
                            vertex_color
                            centroid_method
                            blender_version
-                           gltf_inspect_version]
+                           gltf_inspect_version
+                           pymeshlab_version]
 
       ZIP_PROPERTIES = %w[contents_accepted_file_count
                           contents_file_name

@@ -82,6 +82,7 @@ class MsFileSetIndexer < Hyrax::FileSetIndexer
       solr_doc['centroid_method_tesim'] = object.centroid_method
       solr_doc['blender_version_tesim'] = object.blender_version
       solr_doc['gltf_inspect_version_tesim'] = object.gltf_inspect_version
+      solr_doc['pymeshlab_version_tesim'] = object.pymeshlab_version
       
       # zip archive contents
       solr_doc['contents_all_files_ss'] = object.contents_all_files

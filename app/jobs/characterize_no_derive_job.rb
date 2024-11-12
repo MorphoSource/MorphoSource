@@ -31,10 +31,6 @@ class CharacterizeNoDeriveJob < Hyrax::ApplicationJob
     begin
       ext = File.extname(filepath)
       if (ext =~ /\.(glb|gltf|obj|ply|stl|wrl|x3d)$/)
-        blender_options = {
-          "parser_class" => Hydra::Works::Characterization::BlenderDocument, 
-          "tool_class" => :blender
-        }
         Rails.logger.debug "Running Blender characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
         Hydra::Works::CharacterizationService.run(file_set.characterization_proxy, filepath, blender_options)
         Rails.logger.debug "Ran Blender characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
@@ -50,5 +46,12 @@ class CharacterizeNoDeriveJob < Hyrax::ApplicationJob
     end
     
     Morphosource::Works::FileSetCharacterizationParentUpdateService.run(file_set)
+  end
+
+  def blender_options
+    {
+      "parser_class" => Hydra::Works::Characterization::BlenderDocument, 
+      "tool_class" => ( Hyrax.config.skip_pymeshlab_characterization ? :blender : :pymeshlab )
+    }
   end
 end

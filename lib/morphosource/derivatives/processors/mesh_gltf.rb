@@ -21,6 +21,7 @@ module Morphosource::Derivatives::Processors
       'ft' => 0.304785126485827,
       'mi' => 1609.34
     }
+    UNIT_DEFAULT = 'm'
     VERTEX_MAX = 1_000_000
 
     # Center and scale mesh
@@ -59,9 +60,10 @@ module Morphosource::Derivatives::Processors
     def create_scaled_glb
       scaled_glb_name = File.basename(source_path, '.*') + '-scaled.glb'
       @scaled_glb_path = File.join(tmp_dir_path, scaled_glb_name)
-      unit = directives.fetch(:unit, nil)
+      unit = directives.fetch(:unit, UNIT_DEFAULT) || UNIT_DEFAULT
 
-      if unit.present? && (unit&.to_s.downcase != "m")
+      # GLTF output must be in meter scale, so any non-meter unit mesh must be scaled
+      if unit&.to_s.downcase != 'm'
         Morphosource::Derivatives::GltfScale.new(
           center_glb_path,
           scaled_glb_path,

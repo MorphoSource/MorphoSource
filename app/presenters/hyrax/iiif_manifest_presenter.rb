@@ -23,7 +23,9 @@ module Hyrax
     #   @return [Ability]
     # @!attribute [w] hostname
     #   @return [String]
-    attr_writer :ability, :hostname
+    # @!attribute [w] access_control_id
+    #   @return [String]
+    attr_writer :ability, :hostname, :access_control_id
 
     class << self
       ##
@@ -109,9 +111,9 @@ module Hyrax
     ##
     # @return [String] the URL where the manifest can be found
     def manifest_url
-      return '' if id.blank?
+      return '' if !access_control_id.present?
 
-      Rails.application.routes.url_helpers.polymorphic_url([:manifest, model], host: hostname)
+      Rails.application.class.routes.url_helpers.manifest_url(access_control_id, host: hostname)
     end
 
     ##

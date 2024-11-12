@@ -6,6 +6,8 @@ module Morphosource::Derivatives::Processors
   class MeshObj < MeshGltf
     attr_accessor :convrt_glb_path
 
+    UNIT_DEFAULT = 'mm'
+
     def create_tmp_nondraco_glb
       create_convrt_glb
       create_metalr_glb

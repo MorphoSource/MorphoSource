@@ -4,7 +4,7 @@
   "private": true,
   "repository": "git@github.com:MorphoSource/MorphoSource.git",
   "dependencies": {
-    "universalviewer": "MorphoSource/universalviewer#2c74ebed12b7a0146787bf895cc4080302243ea2"
+    "universalviewer": "MorphoSource/universalviewer#4b9f36e9c3b0541d4efc2ae1d32f81f1092e6a2c"
 },
 "scripts": {
   "preinstall": "rm -rf ./node_modules/ && rm -rf ./public/uv/",

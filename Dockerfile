@@ -1,7 +1,7 @@
 ### MORPHOSOURCE-BUILD STAGE (BUILDS APP FILES FOR LATER COPYING) ###
 
-ARG RUBY_VERSION=2.7.4
-FROM ruby:$RUBY_VERSION-bullseye as morphosource-build
+ARG RUBY_VERSION=3.3.6
+FROM ruby:$RUBY_VERSION-bookworm as morphosource-build
 
 ARG RAILS_ROOT=/app/samvera/hyrax-webapp
 ENV BUNDLE_APP_CONFIG="$RAILS_ROOT/.bundle"
@@ -10,7 +10,7 @@ RUN apt update && \
   apt install -y --no-install-recommends \
   libcurl4 \
   imagemagick \
-  netcat \
+  netcat-traditional \
   nodejs \
   npm \
   perl \
@@ -35,10 +35,11 @@ ENV RAILS_ROOT=$RAILS_ROOT
 ENV RAILS_SERVE_STATIC_FILES="1"
 
 # RUN gem update bundler
-ENV BUNDLE_GEMFILE="./Gemfile"
-ENV BUNDLER_VERSION='2.0.2'
-ENV HOME=$RAILS_ROOT
-RUN gem install bundler -v 2.0.2
+# Trying to remove in experimental ruby 3.3.6 update
+# ENV BUNDLE_GEMFILE="./Gemfile"
+# ENV BUNDLER_VERSION='2.0.2'
+# ENV HOME=$RAILS_ROOT
+# RUN gem install bundler -v 2.0.2
 
 
 
@@ -52,8 +53,9 @@ USER app
 
 COPY --chown=1001:0 $APP_PATH/Gemfile $RAILS_ROOT/Gemfile
 COPY --chown=1001:0 $APP_PATH/Gemfile.lock $RAILS_ROOT/Gemfile.lock
+ENV BUNDLE_PATH=/app/samvera/hyrax-webapp/vendor/bundle
 RUN bundle config --global && \
-  bundle install --jobs "$(nproc)" --path=vendor/bundle
+  bundle install --jobs "$(nproc)"
 
 COPY --chown=1001:0 $APP_PATH $RAILS_ROOT
 
@@ -73,8 +75,9 @@ USER app
 
 COPY --chown=1001:0 $APP_PATH/Gemfile $RAILS_ROOT/Gemfile
 COPY --chown=1001:0 $APP_PATH/Gemfile.lock $RAILS_ROOT/Gemfile.lock
+ENV BUNDLE_PATH=/app/samvera/hyrax-webapp/vendor/bundle
 RUN bundle config --global && \
-  bundle install --jobs "$(nproc)" --path=vendor/bundle --without development
+  bundle install --jobs "$(nproc)" --without development
 
 COPY --chown=1001:0 $APP_PATH $RAILS_ROOT
 
@@ -87,8 +90,8 @@ RUN chmod -R g+rwX $RAILS_ROOT
 
 ### MORPHOSOURCE-BASE STAGE ###
 
-ARG RUBY_VERSION=2.7.4
-FROM ruby:$RUBY_VERSION-bullseye as morphosource-base
+ARG RUBY_VERSION=3.3.6
+FROM ruby:$RUBY_VERSION-bookworm as morphosource-base
 
 ARG RAILS_ROOT=/app/samvera/hyrax-webapp
 ENV BUNDLE_APP_CONFIG="$RAILS_ROOT/.bundle"
@@ -98,7 +101,7 @@ RUN apt update && \
   libjemalloc2 \
   libcurl4 \
   imagemagick \
-  netcat \
+  netcat-traditional \
   nodejs \
   npm \
   perl \
@@ -119,10 +122,11 @@ ENV RAILS_ROOT=$RAILS_ROOT
 ENV RAILS_SERVE_STATIC_FILES="1"
 
 # RUN gem update bundler
-ENV BUNDLE_GEMFILE="./Gemfile"
-ENV BUNDLER_VERSION='2.0.2'
-ENV HOME=$RAILS_ROOT
-RUN gem install bundler -v 2.0.2
+# Trying to remove in experimental ruby 3.3.6 update
+# ENV BUNDLE_GEMFILE="./Gemfile"
+# ENV BUNDLER_VERSION='2.0.2'
+# ENV HOME=$RAILS_ROOT
+# RUN gem install bundler -v 2.0.2
 
 
 
@@ -186,8 +190,8 @@ RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
   npm install -g npm
 
 # Install Python packages
-RUN pip3 install --no-cache-dir --upgrade pip && \
-  pip3 install --no-cache-dir numpy Pillow pydicom
+RUN pip3 install --break-system-packages --no-cache-dir --upgrade pip && \
+  pip3 install --break-system-packages --no-cache-dir numpy Pillow pydicom
 
 # Install Python package pymeshlab, which has an annoying quirk for M1 platforms
 # RUN wget https://github.com/alemuntoni/PyMeshLab/releases/download/v2024.3/pymeshlab-2024.3-cp311-cp311-macosx_11_0_arm64.whl -O pymeshlab.whl && \
@@ -195,7 +199,7 @@ RUN pip3 install --no-cache-dir --upgrade pip && \
 
 ARG TARGETPLATFORM
 RUN if [ "$TARGETPLATFORM" != "linux/arm64" ]; then \
-pip3 install --no-cache-dir pymeshlab; \
+pip3 install --break-system-packages --no-cache-dir pymeshlab; \
 fi 
 
 # Install GLTF Pipeline 3D mesh derivative tool, used for creating Draco GLBs

@@ -5,12 +5,12 @@ git_source(:github) do |repo_name|
   "https://github.com/#{repo_name}.git"
 end
 
-gem 'rails', '5.2.8'
+gem 'rails', '~> 6.1'
 gem 'rdf-vocab', '3.1.4'
 
 # Use postgresql for all environments, not just production
 gem 'pg'
-gem 'sass-rails', '~> 5.0'
+gem 'sass-rails', '~> 6.0'
 # gem 'uglifier', '>= 1.3.0'
 gem 'terser'
 gem 'coffee-rails', '~> 4.2'
@@ -21,7 +21,7 @@ gem 'rsolr', '>= 1.0'
 gem 'jquery-rails'
 gem 'devise'
 gem 'devise-guests', '~> 0.6'
-gem 'bootstrap-sass', '~> 3.4'
+gem 'bootstrap', '~> 4.0'
 
 gem 'riiif', '~> 2.2'
 
@@ -31,7 +31,7 @@ gem 'iiif_manifest', :git => 'https://github.com/MorphoSource/iiif_manifest.git'
 # used for XML validation in Crossref DOI deposit
 gem 'nokogiri'
 
-gem 'hyrax', '3.6.0'
+gem 'hyrax', '5.0.1'
 
 gem 'hydra-role-management', '~> 1.1.0'
 
@@ -57,7 +57,7 @@ gem 'rest-client', '~> 2.0'
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
-gem 'activerecord-session_store', github: 'rails/activerecord-session_store'
+gem 'activerecord-session_store'
 
 gem 'render_async'
 gem 'recaptcha'

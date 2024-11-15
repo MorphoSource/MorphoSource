@@ -367,11 +367,18 @@ module Hyrax
         invalid_files = []
         media_type = attributes_for_actor["media_type"].first
         # New uploads
+
         if attributes_for_actor["uploaded_files"].present?
           attributes_for_actor["uploaded_files"].each do |file_id|
             files << Hyrax::UploadedFile.find(file_id)["file"]
           end
+        elsif attributes_for_actor["remote_files"].present?
+          # files uploaded from cloud
+          attributes_for_actor["remote_files"].each do |f| 
+            files << f["file_name"]
+          end
         end
+
         # Previous uploads
         self.curation_concern.file_sets.each do |file_set|
           if file_set.original_file.present?

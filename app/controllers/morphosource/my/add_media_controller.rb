@@ -8,6 +8,22 @@ module Morphosource
 
       before_action :authorize_collection_access, except: [:facet]
 
+      def self.configure_facets
+byebug  
+
+
+
+# check for media & object page, seq section list add media
+
+
+
+
+        configure_blacklight do |config|
+          config.search_builder_class = Morphosource::Users::AddToMediaListSearchBuilder
+        end
+      end
+      configure_facets
+
       def search_builder_class
         unless @collection.present?
           # e.g. called from filter works > more link
@@ -22,16 +38,23 @@ module Morphosource
         when "Sequential Section List"
           @user_collections = sequential_section_lists_service.search_results(:deposit)
         when "Media List"
-          @user_collections = media_lists_service.search_results(:deposit)
+          @user_collections = media_lists_service.search_results(:read)
+byebug  # should be :deposit or :read ?
         else
           @user_collections = collections_service.search_results(:deposit)
         end
+
+  byebug # if @user_collection is empty, this will cause the popup error: "You do not have access to any existing collections..."
+
+
         # media/object counts at top of page
         get_media_object_counts
         # managed_works_count
         @create_work_presenter = create_work_presenter_class.new(current_user)
         @user = current_user
+byebug
         (@response, @document_list) = query_solr
+byebug
         prepare_instance_variables_for_batch_control_display
         respond_to do |format|
           format.html {

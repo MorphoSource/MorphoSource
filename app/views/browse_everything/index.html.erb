@@ -24,10 +24,7 @@
       </div>
     </div>
     <div class="modal-footer">
-      <div class="pull-left">
-        <div style="text-align: left;"><span class="ev-status">0 files selected</span></div>
-        <div style="text-align: left;"><span><i>Directories with 500+ files may not display all files</i></span></div>
-      </div>
+      <span class="pull-left ev-status">0 files selected</span>
       <%= form_tag '#', :class => "ev-submit-form form-horizontal", :data => { :resolver => browse_everything_engine.resolver_path } do %>
         <input type="hidden" name="context" value=""/>
         <button class="ev-cancel btn btn-danger"><%= t('browse_everything.modal_form.cancel')%></button>
@@ -39,9 +36,10 @@
 </div>
 
 <script>
-$(function () {
-  $('div#browse-everything span.ev-status').on('DOMSubtreeModified', function() {
-    var count = parseInt($(this).text().split(' ')[0]);
+$(document).ready(function() {
+  evStatusTarget = document.querySelector('div#browse-everything span.ev-status');
+  new MutationObserver(() => {
+    var count = parseInt($(evStatusTarget).text().split(' ')[0]);
     if (Number.isInteger(count) && count == 1) {
       $('div#browse-everything button#dummy-submit-button').addClass('hide').removeClass('show');
       $('div#browse-everything button.ev-submit').addClass('show').removeClass('hide');
@@ -49,6 +47,6 @@ $(function () {
       $('div#browse-everything button#dummy-submit-button').addClass('show').removeClass('hide');
       $('div#browse-everything button.ev-submit').addClass('hide').removeClass('show');
     }
-  });
+  }).observe(evStatusTarget, { childList: true });
 });
 </script>

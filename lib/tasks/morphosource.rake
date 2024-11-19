@@ -87,9 +87,9 @@ namespace :morphosource do
     Rake::Task['morphosource:create_collection_types'].invoke
   end
 
-  # Runs rake task dev:cache to turn on caching only if it is off
+  # Runs rails command dev:cache to turn on caching only if it is off
   task dev_cache_on: :environment do
-    Rake::Task['dev:cache'].invoke if !Rails.root.join('tmp', 'caching-dev.txt').exist?
+    system('bundle exec rails dev:cache') if !Rails.root.join('tmp', 'caching-dev.txt').exist?
   end
 
   # Loosely adapted from https://github.com/curationexperts/nurax/blob/master/lib/tasks/nurax.rake

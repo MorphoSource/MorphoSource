@@ -22,7 +22,7 @@ RSpec.describe Morphosource::Dashboard::NestedCollectionsSearchBuilder do
   describe 'show_only_projects' do
     it 'filters by project collection type' do
       builder.show_only_projects(solr_parameters)
-      expect(solr_parameters[:fq]).to eq(["_query_:\"{!field f=collection_type_gid_ssim}#{project_collection_type.gid}\""])
+      expect(solr_parameters[:fq]).to eq(["_query_:\"{!field f=collection_type_gid_ssim}#{project_collection_type.to_global_id}\""])
     end
   end
 

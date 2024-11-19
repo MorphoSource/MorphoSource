@@ -2,8 +2,8 @@ require 'rails_helper'
 RSpec.describe Morphosource::Facets::Collections do
   let!(:user)                     { User.create(email: 'user@email.com', password: 'password') }
   let!(:current_ability)          { Ability.new(user) }
-  let!(:private_project)          { Collection.create(title: ['private project'], collection_type_gid: project_collection_type.gid, visibility: 'restricted') }
-  let!(:open_project)             { Collection.create(title: ['open project'], collection_type_gid: project_collection_type.gid, visibility: 'open') }
+  let!(:private_project)          { Collection.create(title: ['private project'], collection_type_gid: project_collection_type.to_global_id, visibility: 'restricted') }
+  let!(:open_project)             { Collection.create(title: ['open project'], collection_type_gid: project_collection_type.to_global_id, visibility: 'open') }
   let(:scope)                     { double('Scope') }
   let(:solr_parameters)           { {} }
 

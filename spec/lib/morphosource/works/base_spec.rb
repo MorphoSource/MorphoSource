@@ -97,9 +97,9 @@ RSpec.describe Morphosource::Works::Base do
   describe 'member_of_public_collection_ids' do
     let(:user)  { User.new(ms_id: 'abcdef') }
     let(:work)  { Media.create(title: ['media title']) }
-    let(:public_collection_1) { Collection.create(title: ['Public Collection 1'], collection_type_gid: project_collection_type.gid, depositor: user.ms_id, visibility: 'open') }
-    let(:public_collection_2) { Collection.create(title: ['Public Collection 2'], collection_type_gid: project_collection_type.gid, depositor: user.ms_id, visibility: 'open') }
-    let(:private_collection) { Collection.create(title: ['Private Collection'], collection_type_gid: project_collection_type.gid, depositor: user.ms_id, visibility: 'restricted') }
+    let(:public_collection_1) { Collection.create(title: ['Public Collection 1'], collection_type_gid: project_collection_type.to_global_id, depositor: user.ms_id, visibility: 'open') }
+    let(:public_collection_2) { Collection.create(title: ['Public Collection 2'], collection_type_gid: project_collection_type.to_global_id, depositor: user.ms_id, visibility: 'open') }
+    let(:private_collection) { Collection.create(title: ['Private Collection'], collection_type_gid: project_collection_type.to_global_id, depositor: user.ms_id, visibility: 'restricted') }
 
     before do
       work.member_of_collections += [public_collection_1, public_collection_2, private_collection]

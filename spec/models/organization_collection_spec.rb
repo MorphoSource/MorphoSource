@@ -14,7 +14,7 @@ RSpec.describe OrganizationCollection, type: :model do
     subject.can_submit_remote_files = false
     subject.city = ['Cambridge']
     subject.collection_code = ['sc']
-    subject.collection_type_gid = organization_collection_type.gid
+    subject.collection_type_gid = organization_collection_type.to_global_id
     subject.contact_person = ['Pam Beasley pam@beasley.com']
     subject.country = ['United States']
     subject.creator = ['Donald Duck']

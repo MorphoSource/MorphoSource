@@ -93,7 +93,7 @@ FactoryBot.define do
     after(:build) do |collection, evaluator|
       collection.apply_depositor_metadata(evaluator.user.user_key)
       collection_type = create(:user_collection_type)
-      collection.collection_type_gid = collection_type.gid
+      collection.collection_type_gid = collection_type.to_global_id
     end
   end
 

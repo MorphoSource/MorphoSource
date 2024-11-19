@@ -15,7 +15,7 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
     subject { described_class.parent_and_child_can_nest?(parent: parent, child: child, scope: scope) }
 
     describe 'parent and child are the same collection' do
-      let(:parent)  { Collection.new(id: 'Parent', collection_type_gid: team_collection_type.gid ) }
+      let(:parent)  { Collection.new(id: 'Parent', collection_type_gid: team_collection_type.to_global_id ) }
       let(:child) { parent }
 
       it { is_expected.to eq(false) }
@@ -23,17 +23,17 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
     describe 'given parent and child are not the same collection' do
       describe 'parent and child are different collection types' do
         describe 'parent is a team' do
-          let(:parent)  { Collection.new(id: 'Parent', collection_type_gid: team_collection_type.gid ) }
+          let(:parent)  { Collection.new(id: 'Parent', collection_type_gid: team_collection_type.to_global_id ) }
           describe 'child is not a project' do
-            let(:child) { Collection.new(id: 'Child', collection_type_gid: another_collection_type.gid)}
+            let(:child) { Collection.new(id: 'Child', collection_type_gid: another_collection_type.to_global_id)}
 
             it { is_expected.to eq(false) }
           end
           describe 'child is a project' do
-            let(:child) { Collection.new(id: 'Child', collection_type_gid: project_collection_type.gid)}
+            let(:child) { Collection.new(id: 'Child', collection_type_gid: project_collection_type.to_global_id)}
 
             describe 'child has a parent' do
-              let(:another_team) { Collection.new(id: 'Another_Team', collection_type_gid: team_collection_type.gid)}
+              let(:another_team) { Collection.new(id: 'Another_Team', collection_type_gid: team_collection_type.to_global_id)}
 
               before do
                 child.member_of_collections << another_team
@@ -76,20 +76,20 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
       end
       describe 'parent and child are the same collection type' do
         describe 'the collections are teams' do
-          let(:parent)  { Collection.new(id: 'Parent', collection_type_gid: team_collection_type.gid ) }
-          let(:child)   { Collection.new(id: 'Child', collection_type_gid: team_collection_type.gid) }
+          let(:parent)  { Collection.new(id: 'Parent', collection_type_gid: team_collection_type.to_global_id ) }
+          let(:child)   { Collection.new(id: 'Child', collection_type_gid: team_collection_type.to_global_id) }
 
           it { is_expected.to eq(false) }
         end
         describe 'the collections are projects' do
-          let(:parent)  { Collection.new(id: 'Parent', collection_type_gid: project_collection_type.gid ) }
-          let(:child)   { Collection.new(id: 'Child', collection_type_gid: project_collection_type.gid) }
+          let(:parent)  { Collection.new(id: 'Parent', collection_type_gid: project_collection_type.to_global_id ) }
+          let(:child)   { Collection.new(id: 'Child', collection_type_gid: project_collection_type.to_global_id) }
 
           it { is_expected.to eq(false) }
         end
         describe 'the collections are another collection type' do
-          let(:parent)  { Collection.new(id: 'Parent', collection_type_gid: another_collection_type.gid ) }
-          let(:child)   { Collection.new(id: 'Child', collection_type_gid: another_collection_type.gid) }
+          let(:parent)  { Collection.new(id: 'Parent', collection_type_gid: another_collection_type.to_global_id ) }
+          let(:child)   { Collection.new(id: 'Child', collection_type_gid: another_collection_type.to_global_id) }
           describe 'the parent is an available parent collection' do
             before do
               allow(described_class).to receive(:available_parent_collections).with(child: child, scope: scope, limit_to_id: parent.id).and_return(['parent'])
@@ -143,7 +143,7 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
         describe 'the parent is a project' do
           subject { described_class.available_child_collections(parent: parent_project, scope: scope) }
 
-          let(:parent_project) { Collection.new(id: 'Parent_Project', collection_type_gid: project_collection_type.gid ) }
+          let(:parent_project) { Collection.new(id: 'Parent_Project', collection_type_gid: project_collection_type.to_global_id ) }
 
           it 'returns an empty array' do
             expect(scope).to receive(:can?).with(:edit, parent_project).and_return(true)
@@ -156,7 +156,7 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
           let!(:project_1) do
             create(:public_collection,
             id: 'Project_1',
-            collection_type_gid: project_collection_type.gid,
+            collection_type_gid: project_collection_type.to_global_id,
             user: user,
             with_permission_template: true,
             member_of_collections: [team_a],
@@ -170,7 +170,7 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
           let!(:project_2) do
             create(:public_collection,
             id: 'Project_2',
-            collection_type_gid: project_collection_type.gid,
+            collection_type_gid: project_collection_type.to_global_id,
             user: user,
             with_permission_template: true,
             member_of_collections: [],
@@ -184,7 +184,7 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
           let!(:team_a) do
             create(:public_collection,
             id: 'Team_A',
-            collection_type_gid: team_collection_type.gid,
+            collection_type_gid: team_collection_type.to_global_id,
             user: user,
             with_permission_template: true,
             with_nesting_attributes:
@@ -197,7 +197,7 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
           let!(:team_b) do
             create(:public_collection,
             id: 'Team_B',
-            collection_type_gid: team_collection_type.gid,
+            collection_type_gid: team_collection_type.to_global_id,
             user: user,
             with_permission_template: true,
             with_nesting_attributes:
@@ -210,7 +210,7 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
           let!(:another_a) do
             create(:public_collection,
             id: 'Another_A',
-            collection_type_gid: another_collection_type.gid,
+            collection_type_gid: another_collection_type.to_global_id,
             user: user,
             with_permission_template: true,
             with_nesting_attributes:
@@ -223,7 +223,7 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
           let!(:another_b) do
             create(:public_collection,
             id: 'Another_B',
-            collection_type_gid: another_collection_type.gid,
+            collection_type_gid: another_collection_type.to_global_id,
             user: user,
             with_permission_template: true,
             with_nesting_attributes:
@@ -283,7 +283,7 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
         describe 'and the child is a team' do
           subject { described_class.available_parent_collections(child: child_team, scope: scope) }
 
-          let(:child_team) { Collection.new(id: 'Child_Team', collection_type_gid: team_collection_type.gid )}
+          let(:child_team) { Collection.new(id: 'Child_Team', collection_type_gid: team_collection_type.to_global_id )}
 
           it 'returns an empty array' do
             expect(described_class).to receive(:nestable?).and_return(true)
@@ -295,7 +295,7 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
         describe 'and the child is a project with a parent' do
           subject { described_class.available_parent_collections(child: child_project, scope: scope) }
 
-          let(:child_project) { Collection.new(id: 'Child_Project', collection_type_gid: project_collection_type.gid )}
+          let(:child_project) { Collection.new(id: 'Child_Project', collection_type_gid: project_collection_type.to_global_id )}
 
           before do
             allow(child_project).to receive(:member_of_collection_ids).and_return(['123456789'])
@@ -315,7 +315,7 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
           let!(:project_1) do
             create(:public_collection,
             id: 'Project_1',
-            collection_type_gid: project_collection_type.gid,
+            collection_type_gid: project_collection_type.to_global_id,
             user: user,
             with_permission_template: true,
             member_of_collections: [],
@@ -329,7 +329,7 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
           let!(:project_2) do
             create(:public_collection,
             id: 'Project_2',
-            collection_type_gid: project_collection_type.gid,
+            collection_type_gid: project_collection_type.to_global_id,
             user: user,
             with_permission_template: true,
             member_of_collections: [],
@@ -343,7 +343,7 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
           let!(:team_a) do
             create(:public_collection,
             id: 'Team_A',
-            collection_type_gid: team_collection_type.gid,
+            collection_type_gid: team_collection_type.to_global_id,
             user: user,
             with_permission_template: true,
             with_nesting_attributes:
@@ -356,7 +356,7 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
           let!(:team_b) do
             create(:public_collection,
             id: 'Team_B',
-            collection_type_gid: team_collection_type.gid,
+            collection_type_gid: team_collection_type.to_global_id,
             user: user,
             with_permission_template: true,
             with_nesting_attributes:
@@ -369,7 +369,7 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
           let!(:another_a) do
             create(:public_collection,
             id: 'Another_A',
-            collection_type_gid: another_collection_type.gid,
+            collection_type_gid: another_collection_type.to_global_id,
             user: user,
             with_permission_template: true,
             with_nesting_attributes:
@@ -382,7 +382,7 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
           let!(:another_b) do
             create(:public_collection,
             id: 'Another_B',
-            collection_type_gid: another_collection_type.gid,
+            collection_type_gid: another_collection_type.to_global_id,
             user: user,
             with_permission_template: true,
             with_nesting_attributes:

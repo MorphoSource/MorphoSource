@@ -53,7 +53,7 @@ RSpec.describe Morphosource::OrganizationNormalizationJob do
   end
 
   context 'organization is a work' do
-    let(:team)                  { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+    let(:team)                  { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.to_global_id, depositor: user.ms_id) }
     let(:organization)          { Organization.create(title: ['Organization'],
                                                     team_id: [team.id],
                                                     download_reviewer: [manager.ms_id],

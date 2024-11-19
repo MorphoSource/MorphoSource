@@ -69,7 +69,7 @@ FactoryBot.define do
   #                      :allow_multiple_membership, # OR :not_allow_multiple_membership
   #                    ] }
   #   let(:collection_type) { create(:collection_lw_type, settings) }
-  #   let(:collection) { build(:collection_lw, collection_type_gid: collection_type.gid) }
+  #   let(:collection) { build(:collection_lw, collection_type_gid: collection_type.to_global_id) }
   #
   # @example Build a collection with nesting fields set in the solr document.  Light weight.
   #          NOTE: The property `with_nesting_attributes` is only supported for building collections.  The attributes will
@@ -169,7 +169,7 @@ FactoryBot.define do
     after(:build) do |collection, evaluator|
       collection.apply_depositor_metadata(evaluator.user.user_key)
       collection_type = create(:user_collection_type)
-      collection.collection_type_gid = collection_type.gid
+      collection.collection_type_gid = collection_type.to_global_id
     end
   end
 

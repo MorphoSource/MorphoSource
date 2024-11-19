@@ -102,7 +102,7 @@ module Morphosource
         def create_series_collection
           collection_type = Hyrax::CollectionType.find_by(Morphosource::CollectionTypes::SequentialSectionLists::SETTINGS)
           list = SequentialSectionList.create(title: collection_title,
-                                                    collection_type_gid: collection_type.gid,
+                                                    collection_type_gid: collection_type.to_global_id,
                                                     depositor: manager.ms_id,
                                                     visibility: list_visibility,
                                                     related_url: collection_related_url,

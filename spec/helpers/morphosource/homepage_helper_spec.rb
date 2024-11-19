@@ -8,12 +8,12 @@ RSpec.describe Morphosource::HomepageHelper, type: :helper do
     let(:ability) { ::Ability.new(guest) }
     let(:scope)   { double(blacklight_config: CatalogController.blacklight_config, current_ability: ability) }
 
-    let!(:projectA)               { Collection.create(id: 'projectA', title: ['Project_A'], collection_type_gid: project_collection_type.gid, visibility: 'open') }
-    let!(:projectB)               { Collection.create(id: 'projectB', title: ['Project_B'], collection_type_gid: project_collection_type.gid, visibility: 'open') }
-    let!(:projectC)               { Collection.create(id: 'projectC', title: ['Project_C'], collection_type_gid: project_collection_type.gid, visibility: 'open') }
-    let!(:projectD)               { Collection.create(id: 'projectD', title: ['Project_D'], collection_type_gid: project_collection_type.gid, visibility: 'open') }
-    let!(:projectE)               { Collection.create(id: 'projectE', title: ['Project_E'], collection_type_gid: project_collection_type.gid, visibility: 'open') }
-    let!(:projectF)               { Collection.create(id: 'projectF', title: ['Project_F'], collection_type_gid: project_collection_type.gid, visibility: 'open') }
+    let!(:projectA)               { Collection.create(id: 'projectA', title: ['Project_A'], collection_type_gid: project_collection_type.to_global_id, visibility: 'open') }
+    let!(:projectB)               { Collection.create(id: 'projectB', title: ['Project_B'], collection_type_gid: project_collection_type.to_global_id, visibility: 'open') }
+    let!(:projectC)               { Collection.create(id: 'projectC', title: ['Project_C'], collection_type_gid: project_collection_type.to_global_id, visibility: 'open') }
+    let!(:projectD)               { Collection.create(id: 'projectD', title: ['Project_D'], collection_type_gid: project_collection_type.to_global_id, visibility: 'open') }
+    let!(:projectE)               { Collection.create(id: 'projectE', title: ['Project_E'], collection_type_gid: project_collection_type.to_global_id, visibility: 'open') }
+    let!(:projectF)               { Collection.create(id: 'projectF', title: ['Project_F'], collection_type_gid: project_collection_type.to_global_id, visibility: 'open') }
     let(:all_project_ids)         { [projectA.id, projectB.id, projectC.id, projectD.id, projectE.id, projectF.id] }
     let(:selected_project_ids)    { [projectA.id, projectC.id, projectE.id] }
 

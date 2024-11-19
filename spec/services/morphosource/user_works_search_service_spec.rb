@@ -8,9 +8,9 @@ RSpec.describe Morphosource::UserWorksSearchService do
   let(:ability)   { ::Ability.new(user) }
   let(:scope)     { double(blacklight_config: CatalogController.blacklight_config, current_ability: ability) }
 
-  let(:projectA)                { Collection.create(title: ['Project_A'], collection_type_gid: project_collection_type.gid, depositor: depositor.ms_id) }
-  let(:projectB)                { Collection.create(title: ['Project_B'], collection_type_gid: project_collection_type.gid, depositor: depositor.ms_id) }
-  let(:team)                    { Collection.create(title: ['Linked Team'], collection_type_gid: team_collection_type.gid, depositor: depositor.ms_id) }
+  let(:projectA)                { Collection.create(title: ['Project_A'], collection_type_gid: project_collection_type.to_global_id, depositor: depositor.ms_id) }
+  let(:projectB)                { Collection.create(title: ['Project_B'], collection_type_gid: project_collection_type.to_global_id, depositor: depositor.ms_id) }
+  let(:team)                    { Collection.create(title: ['Linked Team'], collection_type_gid: team_collection_type.to_global_id, depositor: depositor.ms_id) }
 
   before do
     projectA.create_collection_groups

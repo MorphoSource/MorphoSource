@@ -28,7 +28,7 @@ module Morphosource
         authorize! :create, @collection
         # Coming from the UI, a collection type gid should always be present.  Coming from the API, if a collection type gid is not specified,
         # use the default collection type (provides backward compatibility with versions < Hyrax 2.1.0)
-        @collection.collection_type_gid = params[:collection_type_gid].presence || default_collection_type.gid
+        @collection.collection_type_gid = params[:collection_type_gid].presence || default_collection_type.to_global_id
         @collection.attributes = collection_params.except(:members, :parent_id, :collection_type_gid)
         @collection.depositor = current_user.user_key
         add_members_to_collection unless batch.empty?
@@ -194,7 +194,7 @@ module Morphosource
       end
 
       def default_collection_type_gid
-        default_collection_type.gid
+        default_collection_type.to_global_id
       end
 
       def update_thumbnail

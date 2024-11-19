@@ -21,7 +21,7 @@ class OrganizationCollection < Collection
 
   def initialize(params=nil)
     super
-    self.collection_type_gid = collection_type.gid
+    self.collection_type_gid = collection_type.to_global_id
   end
 
   def self.collection_type
@@ -151,7 +151,7 @@ class OrganizationCollection < Collection
     project_collection_type = Hyrax::CollectionType.where({:title => 'Project'})&.first
     project_title = [I18n.t('morphosource.dashboard.collections.organization_collection.example_project.title', title: title.first)]
     description = [I18n.t('morphosource.dashboard.collections.organization_collection.example_project.description')]
-    project = Collection.create(title: project_title, collection_type_gid: project_collection_type.gid, description: description, visibility: 'restricted', depositor: depositor)
+    project = Collection.create(title: project_title, collection_type_gid: project_collection_type.to_global_id, description: description, visibility: 'restricted', depositor: depositor)
   end
 
   # converts form values 'true' or 'false' to boolean

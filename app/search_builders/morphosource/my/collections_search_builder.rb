@@ -34,7 +34,7 @@ module Morphosource
 
         def collection_types_to_solr_clause
           collection_types.map do |type|
-            type.gid
+            type.to_global_id
           end.join(',')
         end
 

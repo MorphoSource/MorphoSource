@@ -7,7 +7,7 @@ class MediaList < Collection
 
   def initialize(params=nil)
     super
-    self.collection_type_gid = collection_type.gid
+    self.collection_type_gid = collection_type.to_global_id
   end
 
   def self.collection_type

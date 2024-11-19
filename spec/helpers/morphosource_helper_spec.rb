@@ -308,7 +308,7 @@ RSpec.describe MorphosourceHelper, type: :helper do
   end
 
   describe 'eligible_child_projects' do
-    let(:team)                    { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid) }
+    let(:team)                    { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.to_global_id) }
 
     let(:user)  { double('user') }
 

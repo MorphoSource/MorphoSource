@@ -2,8 +2,8 @@ require 'rails_helper'
 
 RSpec.describe Morphosource::Works::IndexRelatedWorks do
 
-  let(:team)                    { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid) }
-  let(:new_team)                { Collection.create(title: ['new team'], collection_type_gid: team_collection_type.gid) }
+  let(:team)                    { Collection.create(title: ['team'], collection_type_gid: team_collection_type.to_global_id) }
+  let(:new_team)                { Collection.create(title: ['new team'], collection_type_gid: team_collection_type.to_global_id) }
 
   let(:organization)            { Organization.create(title: ['organization'], team_id: [team.id]) }
   let(:new_organization)        { Organization.create(title: ['new organization'])}
@@ -136,8 +136,8 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
     context 'work is an organization' do
       let(:media)                   { [media1a, media1b, media2a, media2b] }
       let(:objects)                 { [specimen, cho] }
-      let(:projectA)                { Collection.create(title: ['project A'], collection_type_gid: project_collection_type.gid) }
-      let(:projectB)                { Collection.create(title: ['project B'], collection_type_gid: project_collection_type.gid) }
+      let(:projectA)                { Collection.create(title: ['project A'], collection_type_gid: project_collection_type.to_global_id) }
+      let(:projectB)                { Collection.create(title: ['project B'], collection_type_gid: project_collection_type.to_global_id) }
       let(:team_projects)           { [projectA, projectB] }
       before do
         team_projects.each do |p|
@@ -159,8 +159,8 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
         end
       end
       context 'team_id is updated' do
-        let(:projectC)          { Collection.create(title: ['project C'], collection_type_gid: project_collection_type.gid) }
-        let(:projectD)          { Collection.create(title: ['project D'], collection_type_gid: project_collection_type.gid) }
+        let(:projectC)          { Collection.create(title: ['project C'], collection_type_gid: project_collection_type.to_global_id) }
+        let(:projectD)          { Collection.create(title: ['project D'], collection_type_gid: project_collection_type.to_global_id) }
         let(:new_team_projects) { [projectC, projectD] }
         before do
           new_team_projects.each do |p|

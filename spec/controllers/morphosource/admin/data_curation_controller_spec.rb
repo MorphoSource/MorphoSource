@@ -6,8 +6,8 @@ RSpec.describe Morphosource::Admin::DataCurationController, type: :controller do
 
   let(:admin)                   { User.create(email: 'admin@email.com', password: 'password') }
   let(:admin_role)              { Role.create(name: 'admin') }
-  let(:team)                    { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid, depositor: admin.ms_id) }
-  let!(:project)                { Collection.create(title: ['Project'], collection_type_gid: project_collection_type.gid, depositor: admin.ms_id) }
+  let(:team)                    { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.to_global_id, depositor: admin.ms_id) }
+  let!(:project)                { Collection.create(title: ['Project'], collection_type_gid: project_collection_type.to_global_id, depositor: admin.ms_id) }
   let!(:organization)           { Organization.create(title: ['Organization'], team_id: [team.id])}
 
   before do

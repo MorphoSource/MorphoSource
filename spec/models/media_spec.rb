@@ -423,8 +423,8 @@ RSpec.describe Media do
 
     describe 'member of teams and projects' do
       let(:media) { Media.create(title: ['title'], media_type: ['Image'], visibility: 'open') }
-      let(:team)                    { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid) }
-      let(:project)                 { Collection.create(title: ['Project'], collection_type_gid: project_collection_type.gid) }
+      let(:team)                    { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.to_global_id) }
+      let(:project)                 { Collection.create(title: ['Project'], collection_type_gid: project_collection_type.to_global_id) }
 
       before do
         media.member_of_collections << team << project

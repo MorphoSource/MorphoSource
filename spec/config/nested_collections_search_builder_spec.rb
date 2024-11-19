@@ -3,9 +3,9 @@ require 'rails_helper'
 RSpec.describe Hyrax::Dashboard::NestedCollectionsSearchBuilder do
   let(:another_collection_type) { Hyrax::CollectionType.create(title: "Another", machine_id: 99)}
 
-  let(:project_a) { Collection.new(id: 'Project_A', collection_type_gid: project_collection_type.gid )}
-  let(:team_a) { Collection.new(id: 'Team_A', collection_type_gid: team_collection_type.gid )}
-  let(:another) { Collection.new(id: 'Another', collection_type_gid: another_collection_type.gid )}
+  let(:project_a) { Collection.new(id: 'Project_A', collection_type_gid: project_collection_type.to_global_id )}
+  let(:team_a) { Collection.new(id: 'Team_A', collection_type_gid: team_collection_type.to_global_id )}
+  let(:another) { Collection.new(id: 'Another', collection_type_gid: another_collection_type.to_global_id )}
 
   let(:scope) { double(current_ability: ability, blacklight_config: CatalogController.blacklight_config) }
   let(:access) { :deposit }
@@ -46,7 +46,7 @@ RSpec.describe Hyrax::Dashboard::NestedCollectionsSearchBuilder do
 
       it 'should build a query for teams' do
         subject
-        expect(solr_params.fetch(:fq)).to match_array(["-{!terms f=id}#{collection.id}", "_query_:\"{!field f=collection_type_gid_ssim}#{team_collection_type.gid}\"", "-_query_:\"{!lucene df=nesting_collection__pathnames_ssim}*#{collection.id}*\""])
+        expect(solr_params.fetch(:fq)).to match_array(["-{!terms f=id}#{collection.id}", "_query_:\"{!field f=collection_type_gid_ssim}#{team_collection_type.to_global_id}\"", "-_query_:\"{!lucene df=nesting_collection__pathnames_ssim}*#{collection.id}*\""])
       end
     end
 
@@ -55,7 +55,7 @@ RSpec.describe Hyrax::Dashboard::NestedCollectionsSearchBuilder do
       let(:nest_direction) { :as_child }
       it 'should build a query for projects' do
         subject
-        expect(solr_params.fetch(:fq)).to match_array(["-{!terms f=id}#{collection.id}", "_query_:\"{!field f=collection_type_gid_ssim}#{project_collection_type.gid}\"", "-_query_:\"{!lucene q.op=OR df=nesting_collection__pathnames_ssim}#{collection.id}\"", "-_query_:\"{!field f=nesting_collection__parent_ids_ssim}#{collection.id}\""])
+        expect(solr_params.fetch(:fq)).to match_array(["-{!terms f=id}#{collection.id}", "_query_:\"{!field f=collection_type_gid_ssim}#{project_collection_type.to_global_id}\"", "-_query_:\"{!lucene q.op=OR df=nesting_collection__pathnames_ssim}#{collection.id}\"", "-_query_:\"{!field f=nesting_collection__parent_ids_ssim}#{collection.id}\""])
       end
     end
 

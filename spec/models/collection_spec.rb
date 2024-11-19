@@ -5,8 +5,8 @@ require 'rails_helper'
 RSpec.describe Collection, type: :model do
   let(:another_collection_type) { Hyrax::CollectionType.create(title: 'Another', machine_id: 99) }
   let(:user)                    { User.create(email: 'email@email.com', password: 'password', ms_id: 'abc123') }
-  let(:team)                    { Collection.create(title: ['Team_B'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
-  let(:project)                 { Collection.create(title: ['Project_B'], collection_type_gid: project_collection_type.gid, depositor: user.ms_id) }
+  let(:team)                    { Collection.create(title: ['Team_B'], collection_type_gid: team_collection_type.to_global_id, depositor: user.ms_id) }
+  let(:project)                 { Collection.create(title: ['Project_B'], collection_type_gid: project_collection_type.to_global_id, depositor: user.ms_id) }
   let(:media)                   { Media.create(title: ['media']) }
   let(:media2)                  { Media.create(title: ['media2']) }
   let(:media3)                  { Media.create(title: ['media3']) }
@@ -55,7 +55,7 @@ RSpec.describe Collection, type: :model do
   end
 
   describe '#human_readable_type' do
-    let(:another_collection)  { Collection.create(title: ['Another'], collection_type_gid: another_collection_type.gid, depositor: user.ms_id) }
+    let(:another_collection)  { Collection.create(title: ['Another'], collection_type_gid: another_collection_type.to_global_id, depositor: user.ms_id) }
 
     it 'returns team and project' do
       expect(team.human_readable_type).to eq "Team"
@@ -179,7 +179,7 @@ RSpec.describe Collection, type: :model do
   end
 
   describe 'user groups' do
-    let(:collection)  { Collection.create(title: ['collection title'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+    let(:collection)  { Collection.create(title: ['collection title'], collection_type_gid: team_collection_type.to_global_id, depositor: user.ms_id) }
     let(:user1)       { User.new(email: 'email1@email.com', password: 'password') }
     let(:user2)       { User.new(email: 'email2@email.com', password: 'password') }
     let(:user3)       { User.new(email: 'email3@email.com', password: 'password') }
@@ -218,7 +218,7 @@ RSpec.describe Collection, type: :model do
 
   describe '#destroy_default_groups' do
     context 'the deleted collection is not a team or project' do
-      let(:another) { Collection.create(title: ['Another'], collection_type_gid: another_collection_type.gid, depositor: user.ms_id) }
+      let(:another) { Collection.create(title: ['Another'], collection_type_gid: another_collection_type.to_global_id, depositor: user.ms_id) }
 
       it 'does not call #destroy_default_groups' do
         expect(another).not_to receive(:destroy_default_groups)
@@ -227,7 +227,7 @@ RSpec.describe Collection, type: :model do
     end
 
     context 'the deleted collection is a team or project' do
-      let!(:team) { Collection.create(title: ['Team_A'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+      let!(:team) { Collection.create(title: ['Team_A'], collection_type_gid: team_collection_type.to_global_id, depositor: user.ms_id) }
 
       it 'calls #destroy_default_groups' do
         expect(team).to receive(:destroy_default_groups)
@@ -358,7 +358,7 @@ RSpec.describe Collection, type: :model do
   end
 
   describe '#add_date_uploaded' do
-    let(:team) { Collection.new(title: ['Test Team'], collection_type_gid: team_collection_type.gid) }
+    let(:team) { Collection.new(title: ['Test Team'], collection_type_gid: team_collection_type.to_global_id) }
 
     context 'there is no date uploaded' do
       before do

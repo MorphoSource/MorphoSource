@@ -14,10 +14,10 @@ Hyrax::Dashboard::NestedCollectionsSearchBuilder.class_eval do
     # return teams
     @collection_type = Hyrax::CollectionType.find_by_gid!(@collection.collection_type_gid)
     if nesting_project_as_child?
-      gid = Hyrax::CollectionType.find_by(title: "Team").gid
+      gid = Hyrax::CollectionType.find_by(title: "Team").to_global_id
     # return projects
     elsif nesting_team_as_parent?
-      gid = Hyrax::CollectionType.find_by(title: "Project").gid
+      gid = Hyrax::CollectionType.find_by(title: "Project").to_global_id
     # return same collection type
     else
       gid = @collection.collection_type_gid

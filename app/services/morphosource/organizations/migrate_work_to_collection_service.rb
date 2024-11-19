@@ -208,7 +208,7 @@ module Morphosource
               title: ["Editable media not associated with #{organization_collection.title.first}"],
               visibility: 'restricted',
               description: ["This project was automatically created during an organization migration for the organization #{organization_collection.title.first}. It contains all media that were both previously present in the organization team and also not associated with the organization through a physical object. These media can be edited by organization members with appropriate membership roles, but they will appear in this project and not on the organization page."],
-              collection_type_gid: Hyrax::CollectionType.where({:title => 'Project'})&.first.gid,
+              collection_type_gid: Hyrax::CollectionType.where({:title => 'Project'})&.first.to_global_id,
               depositor: organization_collection.depositor
             )
             custom_project.create_collection_groups

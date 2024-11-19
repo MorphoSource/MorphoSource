@@ -61,7 +61,7 @@ RSpec.describe Organization do
   end
 
   describe "instance" do
-    let(:team)                  { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid) }
+    let(:team)                  { Collection.create(title: ['team'], collection_type_gid: team_collection_type.to_global_id) }
 
     subject { Organization.create({
         title: ['American Museum of Natural History'],
@@ -124,7 +124,7 @@ RSpec.describe Organization do
     end
 
     describe 'team-related instance methods' do
-      let(:team)                  { Collection.create(id: 'teamid', title: ['Team'], collection_type_gid: team_collection_type.gid, depositor: 'abcdef') }
+      let(:team)                  { Collection.create(id: 'teamid', title: ['Team'], collection_type_gid: team_collection_type.to_global_id, depositor: 'abcdef') }
       let(:specimen1)             { BiologicalSpecimen.create(title: ['title'], vouchered: ["Yes"], organization_id: [subject.id]) }
       let(:specimen2)             { BiologicalSpecimen.create(title: ['title'], vouchered: ["No"], organization_id: [subject.id]) }
 
@@ -195,9 +195,9 @@ RSpec.describe Organization do
   end
 
   describe 'record_original_team' do
-    let(:team1)         { Collection.create(title: ['team1'], collection_type_gid: team_collection_type.gid) }
-    let(:team2)         { Collection.create(title: ['team2'], collection_type_gid: team_collection_type.gid) }
-    let(:project)         { Collection.create(title: ['project'], collection_type_gid: project_collection_type.gid) }
+    let(:team1)         { Collection.create(title: ['team1'], collection_type_gid: team_collection_type.to_global_id) }
+    let(:team2)         { Collection.create(title: ['team2'], collection_type_gid: team_collection_type.to_global_id) }
+    let(:project)         { Collection.create(title: ['project'], collection_type_gid: project_collection_type.to_global_id) }
     let(:organization) { Organization.create(title: ['org'], team_id: [team1.id]) }
 
     before do

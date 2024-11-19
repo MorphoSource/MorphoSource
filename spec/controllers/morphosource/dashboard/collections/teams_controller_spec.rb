@@ -5,7 +5,7 @@ RSpec.describe Morphosource::Dashboard::Collections::TeamsController, type: :con
 
   let(:user)  { User.create(email: 'email@email.com', password: 'password')}
   let!(:contributors)  { Role.create(name: 'contributor') }
-  let(:team)  { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+  let(:team)  { Collection.create(title: ['team'], collection_type_gid: team_collection_type.to_global_id, depositor: user.ms_id) }
   let(:media) { Media.create(title: ['media']) }
   let(:params)  { { "id" => team.id, "collection" => { "representative_id" => media.id } } }
 

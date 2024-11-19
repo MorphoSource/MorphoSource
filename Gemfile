@@ -37,7 +37,7 @@ gem 'hydra-role-management', '~> 1.1.0'
 
 gem 'resque'
 gem 'resque-pool'
-gem 'resque-web', require: 'resque_web'
+gem 'resque-web', github: 'MorphoSource/resque-web', ref: '58ea4361c09cc94b1fbf4a1c9bb39e69eab25077'
 
 # for storing and reading ActiveJob status
 gem 'activejob-status'
@@ -54,6 +54,8 @@ gem 'http'
 
 gem 'rest-client', '~> 2.0'
 
+gem 'twitter-typeahead-rails', '0.11.1.pre.corejavascript'
+
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
@@ -64,7 +66,7 @@ gem 'recaptcha'
 gem 'redcarpet'
 gem 'roo'
 gem 'zip-zip'
-gem 'axlsx'
+gem 'caxlsx'
 
 gem 'dalli' # mem_cache_store support
 

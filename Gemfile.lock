@@ -6,6 +6,19 @@ GIT
     iiif_manifest (0.5.0)
       activesupport (>= 4)
 
+GIT
+  remote: https://github.com/MorphoSource/resque-web.git
+  revision: 58ea4361c09cc94b1fbf4a1c9bb39e69eab25077
+  ref: 58ea4361c09cc94b1fbf4a1c9bb39e69eab25077
+  specs:
+    resque-web (0.0.12)
+      coffee-rails
+      font-awesome-sass
+      jquery-rails
+      resque
+      sass-rails
+      twitter-bootstrap-rails
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -136,10 +149,6 @@ GEM
       descendants_tracker (~> 0.0.4)
       ice_nine (~> 0.11.0)
       thread_safe (~> 0.3, >= 0.3.1)
-    axlsx (1.3.6)
-      htmlentities (~> 4.3.1)
-      nokogiri (>= 1.4.1)
-      rubyzip (>= 0.9.5)
     babel-source (5.8.35)
     babel-transpiler (0.7.0)
       babel-source (>= 4.0, < 6)
@@ -201,6 +210,11 @@ GEM
       activesupport (>= 4.0.0)
       mime-types (>= 1.16)
       ssrf_filter (~> 1.0, < 1.1.0)
+    caxlsx (4.1.0)
+      htmlentities (~> 4.3, >= 4.3.4)
+      marcel (~> 1.0)
+      nokogiri (~> 1.10, >= 1.10.4)
+      rubyzip (>= 1.3.0, < 3)
     cgi (0.4.1)
     clipboard-rails (1.7.1)
     coercible (1.0.0)
@@ -843,13 +857,6 @@ GEM
     resque-pool (0.7.1)
       rake (>= 10.0, < 14.0)
       resque (>= 1.22, < 3)
-    resque-web (0.0.12)
-      coffee-rails
-      font-awesome-sass
-      jquery-rails
-      resque
-      sass-rails
-      twitter-bootstrap-rails
     rest-client (2.1.0)
       http-accept (>= 1.7.0, < 2.0)
       http-cookie (>= 1.0.2, < 2.0)
@@ -1005,6 +1012,10 @@ GEM
       execjs (~> 2.7)
       less-rails (>= 3.0, < 5.0)
       railties (>= 5.0, < 8.0)
+    twitter-typeahead-rails (0.11.1.pre.corejavascript)
+      actionpack (>= 3.1)
+      jquery-rails
+      railties (>= 3.1)
     typhoeus (1.4.1)
       ethon (>= 0.9.0)
     tzinfo (2.0.6)
@@ -1084,10 +1095,10 @@ DEPENDENCIES
   activejob-status
   activerecord-session_store
   axe-matchers (~> 2.3.0)
-  axlsx
   bootstrap (~> 4.0)
   byebug
   capybara
+  caxlsx
   coffee-rails (~> 4.2)
   dalli
   devise
@@ -1120,7 +1131,7 @@ DEPENDENCIES
   render_async
   resque
   resque-pool
-  resque-web
+  resque-web!
   rest-client (~> 2.0)
   riiif (~> 2.2)
   roo
@@ -1143,6 +1154,7 @@ DEPENDENCIES
   terser
   timecop
   turnout
+  twitter-typeahead-rails (= 0.11.1.pre.corejavascript)
   tzinfo-data
   vcr
   web-console (>= 3.3.0)

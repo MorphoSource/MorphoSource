@@ -1,5 +1,4 @@
 require 'hyrax/role_registry'
-require 'samvera/nesting_indexer'
 
 module Hyrax
   ##
@@ -69,6 +68,19 @@ module Hyrax
 
     DEFAULT_ACTIVE_WORKFLOW_NAME = 'default'.freeze
     private_constant :DEFAULT_ACTIVE_WORKFLOW_NAME
+
+    # Set the default logger for Hyrax.
+    attr_writer :logger
+
+    ##
+    # @return [Logger]
+    def logger
+      @logger ||= if defined?(Rails)
+                    Rails.logger
+                  else
+                    Valkyrie.logger
+                  end
+    end
 
     # @api public
     # When an admin set is created, we need to activate a workflow.
@@ -1510,6 +1522,17 @@ module Hyrax
     # @return [Array<Integer>]
     def range_for_number_of_results_to_display_per_page
       @range_for_number_of_results_to_display_per_page ||= [10, 20, 50, 100]
+    end
+
+    attr_writer :visibility_map
+    # A mapping from visibility string values to permissions; the default and
+    # reference implementation is provided by {Hyrax::VisibilityMap}.
+    #
+    # @return [Hyrax::VisibilityMap]
+    # @see Hyrax::VisibilityReader
+    # @see Hyrax::VisibilityWriter
+    def visibility_map
+      @visibility_map ||= Hyrax::VisibilityMap.instance
     end
 
     private

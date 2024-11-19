@@ -17,15 +17,8 @@ module Morphosource
       end
 
       def index
-        # The user's collections for the "add to collection" form
-        case @collection.human_readable_type
-        when "Sequential Section List"
-          @user_collections = sequential_section_lists_service.search_results(:deposit)
-        when "Media List"
-          @user_collections = media_lists_service.search_results(:deposit)
+        if @collection.human_readable_type == "Media List"
           blacklight_config.search_builder_class = Morphosource::Users::AddToMediaListSearchBuilder
-        else
-          @user_collections = collections_service.search_results(:deposit)
         end
         # media/object counts at top of page
         get_media_object_counts

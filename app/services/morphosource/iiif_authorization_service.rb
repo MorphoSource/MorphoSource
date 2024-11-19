@@ -1,5 +1,5 @@
 module Morphosource
-  class IIIFAuthorizationService < Hyrax::IIIFAuthorizationService
+  class IiifAuthorizationService < Hyrax::IiifAuthorizationService
     # override to auth with temp link credentials if present
     def can?(_action, object)
       if (

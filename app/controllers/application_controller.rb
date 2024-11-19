@@ -13,9 +13,6 @@ class ApplicationController < ActionController::Base
 
   before_action :set_sitewide_announcement
 
-  # Blacklight discarding flash messages - see https://github.com/samvera/hyrax/issues/1596
-  skip_after_action :discard_flash_if_xhr
-
   rescue_from CanCan::AccessDenied, ActiveFedora::ObjectNotFoundError, Ldp::Gone do |exception|
     respond_to do |format|
       format.json { 

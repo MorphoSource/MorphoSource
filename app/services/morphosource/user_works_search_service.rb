@@ -1,7 +1,6 @@
 module Morphosource
   class UserWorksSearchService
     include Blacklight::Configurable
-    include Blacklight::SearchHelper
 
     def self.call(work_type, access, scope)
       new(work_type, access, scope).call

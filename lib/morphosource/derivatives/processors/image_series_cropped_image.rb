@@ -1,6 +1,4 @@
 require 'fileutils'
-require 'zip'
-require 'archive/tar/minitar'
 
 module Morphosource::Derivatives::Processors
   class TimeoutError < Hydra::Derivatives::TimeoutError

@@ -4,8 +4,11 @@ module Morphosource
       # Assign new groups to manager/editor/depositor/downloader/viewer access if collection is a Team or Project
       def self.create_default(collection:)
         access_grants = access_grants_attributes(collection: collection)
-        Hyrax::PermissionTemplate.create!(source_id: collection.id, access_grants_attributes: access_grants.uniq)
-        collection.reset_access_controls!
+        template = Hyrax::PermissionTemplate.create!(source_id: collection.id.to_s,
+                                                      access_grants_attributes: access_grants.uniq)
+
+        template.reset_access_controls_for(collection: collection, interpret_visibility: true)
+        template
       end
 
       # Add auto-generated groups.

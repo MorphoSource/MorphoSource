@@ -9,7 +9,10 @@ module Morphosource
       def show_only_projects(solr_parameters)
         solr_parameters[:fq] ||= []
         solr_parameters[:fq] += [
-          ActiveFedora::SolrQueryBuilder.construct_query(Collection.collection_type_gid_document_field_name => Hyrax::CollectionType.where(title: "Project").first.to_global_id)
+          Hyrax::SolrQueryBuilderService.construct_query(
+            Collection.collection_type_gid_document_field_name => 
+              Hyrax::CollectionType.where(title: "Project").first.to_global_id
+          )
         ]
       end
 

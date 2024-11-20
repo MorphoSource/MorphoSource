@@ -108,7 +108,6 @@ module Morphosource
                                                     related_url: collection_related_url,
                                                     description: collection_description)
           Morphosource::Collections::PermissionsCreateService.create_default(collection: list)
-          list.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
           list.reload
         end
 

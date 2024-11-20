@@ -17,10 +17,6 @@ class ModifyCollectionMembershipJob < Hyrax:: ApplicationJob
         # Get collections to add/remove and prepare for reindexing
         add_to_collections = Array(add_to_collection_ids).uniq.map { |id| find_collection(id) }.compact
         remove_from_collections = remove_from_collection_ids.uniq.map { |id| find_collection(id) }.compact
-        
-        (add_to_collections + remove_from_collections).each do |collection| 
-          collection.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
-        end
 
         # Check for multiple memberhsip (should never happen)
         add_to_collections.each do |collection|

@@ -35,7 +35,6 @@ module Ms1to2
     def add_works_to_collections(coll_ids)
       invert_collection_ids(coll_ids).each do |coll_id, work_ids|
         c = Collection.find(coll_id)
-        c.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
         c.add_member_objects work_ids
       end
     end

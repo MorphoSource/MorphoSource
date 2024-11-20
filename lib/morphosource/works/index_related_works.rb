@@ -92,7 +92,6 @@ module Morphosource
 
           collections = collections.compact
           collections.each do |c|
-            c.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
             c.update_index
           end
         end

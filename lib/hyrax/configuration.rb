@@ -63,7 +63,6 @@ module Hyrax
       @registered_concerns = []
       @role_registry = Hyrax::RoleRegistry.new
       @default_active_workflow_name = DEFAULT_ACTIVE_WORKFLOW_NAME
-      @nested_relationship_reindexer = default_nested_relationship_reindexer
     end
 
     DEFAULT_ACTIVE_WORKFLOW_NAME = 'default'.freeze
@@ -1488,26 +1487,9 @@ module Hyrax
       @unused_storage_fund_code_id ||= nil
     end
 
-    def use_solr_graph_for_collection_nesting
-      ActiveModel::Type::Boolean.new.cast(ENV.fetch('HYRAX_USE_SOLR_GRAPH_NESTING', false))
-    end
-
-    attr_accessor :nested_relationship_reindexer
-    def default_nested_relationship_reindexer
-      ->(id:, extent:) { rescued_nested_relationship_reindexer(id: id, extent: extent) }
-    end
-
     attr_writer :solr_select_path
     def solr_select_path
       @solr_select_path ||= ActiveFedora.solr_config.fetch(:select_path, 'select')
-    end
-
-    def rescued_nested_relationship_reindexer(id:, extent:)
-      begin
-        Samvera::NestingIndexer.reindex_relationships(id: id, extent: extent)
-      rescue Ldp::Gone => e
-        Rails.logger.error "Samvera::NestingIndexer.reindex_relationships experienced Ldp::Gone error with work #{id}"
-      end
     end
 
     # A configuration point for changing the available range for

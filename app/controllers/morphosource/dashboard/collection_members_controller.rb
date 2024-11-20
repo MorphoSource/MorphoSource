@@ -12,7 +12,6 @@ module Morphosource
         after_update_error(err_msg) if err_msg.present?
         return if err_msg.present?
 
-        @collection.reindex_extent = Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
         AddCollectionMembersJob.perform_later(@collection.id, batch_ids)
         after_update
       end

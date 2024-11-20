@@ -106,7 +106,7 @@ module Hyrax
         # along side the FileSets on the show page
         def add(env, id)
           collection = Collection.find(id)
-          collection.reindex_extent = Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
+
           return unless can_deposit_to_collection?(env, collection)
 
           env.curation_concern.member_of_collections << collection

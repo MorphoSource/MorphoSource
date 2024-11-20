@@ -134,7 +134,6 @@ module Morphosource
 
     # refactor to remove this method when organizations have been migrated to collections
     def add_media_to_team
-      @team.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
       @media.member_of_collections += [@team]
       Hyrax::PermissionTemplateApplicator.apply(@team.permission_template).to(model: @media)
     end

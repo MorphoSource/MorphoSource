@@ -13,7 +13,7 @@ class RemoveCollectionMembersJob < Hyrax::ApplicationJob
     else
       return false
     end
-    c.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
+
     member_ids = Array(member_ids).select { |m_id| Media.exists?(m_id) }
     return false if !member_ids.present?
 

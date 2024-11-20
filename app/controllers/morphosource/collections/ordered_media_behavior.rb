@@ -7,7 +7,6 @@ module Morphosource
         authorize! :edit, @collection
         begin
           @collection.ordered_media = ordered_media_ids
-          @collection.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
           @collection.save!
           flash[:notice] = 'Media order saved'
           flash.keep(:notice)

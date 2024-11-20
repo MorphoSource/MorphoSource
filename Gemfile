@@ -99,7 +99,7 @@ group :development, :test do
   gem 'rspec-its'
   gem 'rails-controller-testing'
   gem 'factory_bot_rails', '~> 4.8'
-  gem 'webmock', '~> 3.5.0'
+  gem 'webmock'
   gem 'geckodriver-helper'
   gem 'shoulda-callback-matchers', '~> 1.1.1'
   gem 'shoulda-matchers', '~> 3.1'

@@ -38,7 +38,7 @@ class Collection < ActiveFedora::Base
   # But using new-style logic for getting collection type, which gets used elsewhere in 5
   # Maybe consider alternative approaches in the future
   def collection_type
-    @collection_type ||= Hyrax::CollectionType.for(collection: collection)
+    @collection_type ||= Hyrax::CollectionType.for(collection: self)
   end
 
   def type_assigns_groups?

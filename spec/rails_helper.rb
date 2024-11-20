@@ -74,4 +74,12 @@ RSpec.configure do |config|
   config.include FactoryBot::Syntax::Methods
   config.include Devise::Test::ControllerHelpers, :type => :controller
   config.include TestHelpers
+
+  config.before(:suite) do
+    ActiveFedora::Cleaner.clean!
+  end
+
+  config.after(:each) do
+    ActiveFedora::Cleaner.clean!
+  end
 end

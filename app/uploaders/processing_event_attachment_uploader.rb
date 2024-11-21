@@ -7,11 +7,12 @@ class ProcessingEventAttachmentUploader < CarrierWave::Uploader::Base
   storage :file
   # storage :fog
 
+  attr_accessor :work_id
+
   # Override the directory where uploaded files will be stored.
   # This is a sensible default for uploaders that are meant to be mounted:
   def store_dir
-byebug 
-    "uploads/#{model.class.to_s.underscore}/#{mounted_as}/#{model.id}"
+    "uploads/processing_event/processing_event_attachment/#{work_id}"
   end
 
   # Provide a default URL as a default if there hasn't been a file uploaded:
@@ -36,7 +37,6 @@ byebug
 
   # Add a white list of extensions which are allowed to be uploaded.
   def extension_whitelist
-byebug 
     %w(txt pdf docx)
   end
 

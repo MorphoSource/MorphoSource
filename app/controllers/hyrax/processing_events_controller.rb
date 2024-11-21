@@ -32,31 +32,7 @@ module Hyrax
       # Handle file upload
       if params[:processing_event_attachment].present?
         file = params[:processing_event_attachment]
-byebug
-
-#(byebug) file.class  <--
-#ActionDispatch::Http::UploadedFile
-
-
-
-# getting 500 error somewhere below
-
-
-      begin
-        uploader = processing_event_attachment_uploader
-        uploader.store!(file)
-
-      rescue StandardError => e
-        puts "An exception occurred: #{e.message}"
-        byebug
-      end
-
-
-    byebug
-        curation_concern.processing_event_attachment = uploader.url
-    byebug
-
-#        curation_concern.save_uploaded_file(file)
+        curation_concern.save_uploaded_file(file)
       end
 
       env = actor_environment

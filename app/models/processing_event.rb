@@ -17,24 +17,22 @@ class ProcessingEvent < Morphosource::Works::Base
   # schema (by adding accepts_nested_attributes)
   include ::Hyrax::BasicMetadata
 
-  property :processing_event_attachment, predicate: ::RDF::URI.new("http://example.org/processingEventAttachment"), multiple: false
-
   # Custom method to handle CarrierWave uploader
   def processing_event_attachment_uploader
     @processing_event_attachment_uploader ||= ProcessingEventAttachmentUploader.new
   end
 
   # Save the file using CarrierWave
-# param file ActionDispatch::Http::UploadedFile
-#  def save_uploaded_file(file)
-#    uploader = processing_event_attachment_uploader
-#    uploader.store!(file)
-#    self.processing_event_attachment = uploader.url
-#byebug
+  # param file ActionDispatch::Http::UploadedFile
+  def save_uploaded_file(file)
+    uploader = processing_event_attachment_uploader
+    uploader.work_id = self.id
+    uploader.store!(file)
+    self.processing_event_attachment = uploader.url
+byebug
 # is save needed here?
-#    save!
-#  end
-
+    save!
+  end
 
   def imaging_event
     ancestors.find(&:imaging_event?)

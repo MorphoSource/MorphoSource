@@ -549,7 +549,7 @@ module Hyrax
               id: work.id,
               creator: work.creator,
               date_created: work.date_created,
-              software: [work.software.join(', ')],
+              software: [work.software&.join(', ')],
               description: work.description
             }.merge(
                 description_attachment: processing_event_description_attachment(work),

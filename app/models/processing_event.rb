@@ -29,9 +29,21 @@ class ProcessingEvent < Morphosource::Works::Base
     uploader.work_id = self.id
     uploader.store!(file)
     self.processing_event_attachment = uploader.url
-byebug
-# is save needed here?
-    save!
+  end
+
+  # Delete the file using the uploader
+  def delete_uploaded_file
+    if self.processing_event_attachment.present?
+      uploader = processing_event_attachment_uploader
+      uploader.work_id = self.id
+      uploader.retrieve_from_store!(File.basename(self.processing_event_attachment))
+      if uploader.file && File.exist?(uploader.file.path)
+        uploader.remove! 
+        self.processing_event_attachment = nil
+      else
+        Rails.logger.warn "File not found: #{uploader.file&.path}"
+      end
+    end
   end
 
   def imaging_event

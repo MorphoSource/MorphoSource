@@ -20,6 +20,7 @@ module Hyrax
     before_action :record_original_parents, only: :update
 
     def update
+      # todo: remove below after new attachment is ready
       # Handle possible attachment upload
       if params[:pe_description] && Morphosource.attachment_formats.include?(File.extname(params[:pe_description].original_filename))
         Morphosource::AttachmentService.create(curation_concern.id, 'pe_description', params[:pe_description])
@@ -33,6 +34,8 @@ module Hyrax
       if params[:processing_event_attachment].present?
         file = params[:processing_event_attachment]
         curation_concern.save_uploaded_file(file)
+      elsif params[:processing_event_attachment_delete] == 'delete'
+        curation_concern.delete_uploaded_file       
       end
 
       env = actor_environment

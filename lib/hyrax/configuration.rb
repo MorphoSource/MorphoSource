@@ -836,9 +836,10 @@ module Hyrax
       @persistent_hostpath ||= "http://localhost/files/"
     end
 
+    attr_accessor :redis_connection
     attr_writer :redis_namespace
     def redis_namespace
-      @redis_namespace ||= "hyrax"
+      @redis_namespace ||= ENV.fetch("HYRAX_REDIS_NAMESPACE", "hyrax")
     end
 
     attr_writer :libreoffice_path

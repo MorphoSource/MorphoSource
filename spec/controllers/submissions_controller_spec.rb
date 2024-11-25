@@ -17,7 +17,7 @@ RSpec.describe SubmissionsController, type: :controller do
 
     it 'should return js' do
       post :search_po_ajax, params: form_params, xhr: true
-      expect(response.content_type).to eq('text/javascript')
+      expect(response.content_type).to include('text/javascript')
       expect(response).to have_http_status(:success)
     end
   end

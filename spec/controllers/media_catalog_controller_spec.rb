@@ -288,7 +288,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
       context 'without API key credentials' do
         it 'returns 404 not found' do
           get :show, params: { id: media.id }, format: :json
-          expect(response.content_type).to eq('application/json')
+          expect(response.content_type).to include('application/json')
           expect(response.code).to eq("404")
         end
       end
@@ -297,7 +297,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
         it 'returns 404 not found' do
           controller.request.env['HTTP_AUTHORIZATION'] = "nonsense"
           get :show, params: { id: media.id }, format: :json
-          expect(response.content_type).to eq('application/json')
+          expect(response.content_type).to include('application/json')
           expect(response.code).to eq("404")
         end
       end
@@ -308,7 +308,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
         it 'returns 200 found' do
           controller.request.env['HTTP_AUTHORIZATION'] = user.token
           get :show, params: { id: media.id }, format: :json
-          expect(response.content_type).to eq('application/json')
+          expect(response.content_type).to include('application/json')
           expect(response.code).to eq("200")
         expect(JSON.parse(response.body).dig("response", "media")).to be_present
         end
@@ -320,7 +320,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
 
       it 'returns 200 found' do
         get :show, params: { id: media.id }, format: :json
-        expect(response.content_type).to eq('application/json')
+        expect(response.content_type).to include('application/json')
         expect(response.code).to eq("200")
         expect(JSON.parse(response.body).dig("response", "media")).to be_present
       end
@@ -335,7 +335,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
       context 'without API key credentials' do
         it 'returns 404 not found' do
           get :show_file_metadata, params: { id: media.id }, format: :json
-          expect(response.content_type).to eq('application/json')
+          expect(response.content_type).to include('application/json')
           expect(response.code).to eq("404")
         end
       end
@@ -344,7 +344,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
         it 'returns 404 not found' do
           controller.request.env['HTTP_AUTHORIZATION'] = "nonsense"
           get :show_file_metadata, params: { id: media.id }, format: :json
-          expect(response.content_type).to eq('application/json')
+          expect(response.content_type).to include('application/json')
           expect(response.code).to eq("404")
         end
       end
@@ -355,7 +355,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
         it 'returns 200 found' do
           controller.request.env['HTTP_AUTHORIZATION'] = user.token
           get :show_file_metadata, params: { id: media.id }, format: :json
-          expect(response.content_type).to eq('application/json')
+          expect(response.content_type).to include('application/json')
           expect(response.code).to eq("200")
           expect(JSON.parse(response.body).dig("response", "file_set")).to be_present
         end
@@ -368,7 +368,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
 
       it 'returns 200 found' do
         get :show_file_metadata, params: { id: media.id }, format: :json
-        expect(response.content_type).to eq('application/json')
+        expect(response.content_type).to include('application/json')
         expect(response.code).to eq("200")
         expect(JSON.parse(response.body).dig("response", "file_set")).to be_present
       end

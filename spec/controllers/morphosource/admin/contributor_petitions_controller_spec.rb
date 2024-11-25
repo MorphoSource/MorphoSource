@@ -22,7 +22,7 @@ RSpec.describe Morphosource::Admin::ContributorPetitionsController, :type => :co
 
       it 'return csv for CSV format requests' do
         get :current_applications, params: {format: 'csv'}
-        expect(response.content_type).to eq('text/csv')
+        expect(response.content_type).to include('text/csv')
       end
     end
 

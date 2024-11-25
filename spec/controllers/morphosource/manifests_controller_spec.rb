@@ -12,7 +12,7 @@ RSpec.describe Morphosource::ManifestsController, type: :controller do
         get :show, params: { id: public_media.access_control_id }
 
         expect(response).to have_http_status(200)
-        expect(response.content_type).to eq('text/html')
+        expect(response.content_type).to include('text/html')
         expect(response.body).to include '@context'
       end
 
@@ -20,7 +20,7 @@ RSpec.describe Morphosource::ManifestsController, type: :controller do
         get :show, params: { id: public_media.access_control_id }, format: :json
 
         expect(response).to have_http_status(200)
-        expect(response.content_type).to eq('application/json')
+        expect(response.content_type).to include('application/json')
         expect(response.body).to include '@context'
       end
     end
@@ -37,7 +37,7 @@ RSpec.describe Morphosource::ManifestsController, type: :controller do
         get :show, params: { id: private_media.access_control_id }, format: :json
 
         expect(response).to have_http_status(404)
-        expect(response.content_type).to eq('application/json')
+        expect(response.content_type).to include('application/json')
         expect(JSON.parse(response.body)["message"]).to eq("Not Found")
       end
     end
@@ -74,7 +74,7 @@ RSpec.describe Morphosource::ManifestsController, type: :controller do
       it "returns 401 unauthorized" do
         get :get_manifest_link, params: { id: private_media.id }, format: :json
         expect(response).to have_http_status(401)
-        expect(response.content_type).to eq('application/json')
+        expect(response.content_type).to include('application/json')
         expect(JSON.parse(response.body)["message"]).to eq("Authentication Required")
       end
     end
@@ -84,7 +84,7 @@ RSpec.describe Morphosource::ManifestsController, type: :controller do
         controller.request.env['HTTP_AUTHORIZATION'] = "nonsense"
         get :get_manifest_link, params: { id: private_media.id }, format: :json
         expect(response).to have_http_status(401)
-        expect(response.content_type).to eq('application/json')
+        expect(response.content_type).to include('application/json')
         expect(JSON.parse(response.body)["message"]).to eq("Authentication Required")
       end
     end
@@ -96,7 +96,7 @@ RSpec.describe Morphosource::ManifestsController, type: :controller do
         controller.request.env['HTTP_AUTHORIZATION'] = api_user.token
         get :get_manifest_link, params: { id: private_media.id }, format: :json
         expect(response).to have_http_status(404)
-        expect(response.content_type).to eq('application/json')
+        expect(response.content_type).to include('application/json')
         expect(JSON.parse(response.body)["message"]).to eq("Not Found")
       end
     end
@@ -111,7 +111,7 @@ RSpec.describe Morphosource::ManifestsController, type: :controller do
         controller.request.env['HTTP_AUTHORIZATION'] = user.token
         get :get_manifest_link, params: { id: private_media.id }, format: :json
         expect(response).to have_http_status(200)
-        expect(response.content_type).to eq('application/json')
+        expect(response.content_type).to include('application/json')
         expect(JSON.parse(response.body).dig("response", "media", "id")).to eq(private_media.id)
         expect(JSON.parse(response.body).dig("response", "media", "manifest_url")).to be_present
       end

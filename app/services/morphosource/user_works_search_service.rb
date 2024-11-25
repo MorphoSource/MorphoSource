@@ -28,7 +28,7 @@ module Morphosource
 
     def search_solr
       blacklight_config.http_method = :post
-      repository.search(query_builder.query)
+      blacklight_config.repository.search(query_builder.query)
     end
 
   end

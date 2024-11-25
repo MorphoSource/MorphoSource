@@ -117,7 +117,6 @@ module Hyrax
         collection_type = Hyrax::CollectionType.find_by_gid!(collection.collection_type_gid)
         collection_type.nestable?
       end
-      private_class_method :nestable?
     end
   end
 end

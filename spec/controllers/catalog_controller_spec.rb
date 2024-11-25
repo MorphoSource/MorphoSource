@@ -5,7 +5,7 @@ RSpec.describe CatalogController, :type => :controller do
   describe "GET #index" do
     subject { described_class.new }
     it "renders the catalog template" do
-      expect(subject.send :_layout, ['test']).to eq("catalog")
+      expect(subject.send(:_layout, nil, [:html])).to eq("catalog")
     end
   end
 

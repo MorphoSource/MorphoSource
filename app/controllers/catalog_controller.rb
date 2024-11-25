@@ -294,7 +294,7 @@ class CatalogController < ApplicationController
     if request.format == "csv"
       blacklight_config.max_per_page = 1_000_000
     end
-    (@response, @document_list) = search_results(params)
+    (@response, @document_list) = search_service.search_results
     @document_type = document_type
     respond_to do |format|
       format.html { store_preferred_view }

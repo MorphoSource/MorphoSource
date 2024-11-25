@@ -53,7 +53,7 @@ module Hyrax
     end
 
     def showcase
-      # note: most curation concern methods get concern from curation_concern_from_search_results
+      # note: most curation concern methods get concern from search_result_document(id: params[:id])
       # this refactors that - only for showcase method - to be more direct, like collections
       # if this works well, should refactor to use this across the board
       curation_concern_solr_doc = curation_concern.present? ? 
@@ -83,7 +83,7 @@ module Hyrax
     # overriding action methods from works_controller_behavior.rb
     def edit
       build_form
-      @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
+      @presenter = show_presenter.new(search_result_document(id: params[:id]), current_ability, request)
       @member_of_collections_json = member_of_collections_json(@presenter.member_of_collection_presenters)  
       if (
         @presenter.imaging_event.present? && 
@@ -157,7 +157,7 @@ module Hyrax
     # in case we need to reference the old edit page. remove this action later
     def hyraxedit
       build_form
-      @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
+      @presenter = show_presenter.new(search_result_document(id: params[:id]), current_ability, request)
       render '/hyrax/base/edit', presenter: @presenter
     end
 
@@ -198,7 +198,7 @@ module Hyrax
             build_form
             #render 'edit', status: :unprocessable_entity
             # todo: make sure to handle error when changing media type
-            @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
+            @presenter = show_presenter.new(search_result_document(id: params[:id]), current_ability, request)
             
             if (
               @presenter.imaging_event.present? && 

@@ -34,14 +34,14 @@ module Hyrax
     end
 
     def showcase
-      @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
+      @presenter = show_presenter.new(search_result_document(id: params[:id]), current_ability, request)
       render 'showcase', presenter: @presenter
     end
 
     # overriding action methods from works_controller_behavior.rb
     def edit
       build_form
-      @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
+      @presenter = show_presenter.new(search_result_document(id: params[:id]), current_ability, request)
       @countries_service = Morphosource::CountriesService.new
       render 'edit', presenter: @presenter
     end

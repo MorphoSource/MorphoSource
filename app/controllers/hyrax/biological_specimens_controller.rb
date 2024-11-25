@@ -38,14 +38,14 @@ module Hyrax
     end
 
     def showcase
-      @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
+      @presenter = show_presenter.new(search_result_document(id: params[:id]), current_ability, request)
       render 'showcase', presenter: @presenter
     end
 
     # overriding action methods from works_controller_behavior.rb
     def edit
       build_form
-      @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
+      @presenter = show_presenter.new(search_result_document(id: params[:id]), current_ability, request)
       #@presenter.get_organization_data
       @countries_service = Morphosource::CountriesService.new
       @new_taxonomy_submit_submissions_url = '/submissions/new_taxonomy_submit'
@@ -57,7 +57,7 @@ module Hyrax
       curation_concern.depositor = current_user.user_key
       curation_concern.admin_set_id = admin_set_id_for_new
       build_form
-      #@presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
+      #@presenter = show_presenter.new(search_result_document(id: params[:id]), current_ability, request)
       #@presenter.get_organization_data
       render '/hyrax/base/new' #, presenter: @presenter
     end

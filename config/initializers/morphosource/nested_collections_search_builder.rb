@@ -14,17 +14,20 @@ Hyrax::Dashboard::NestedCollectionsSearchBuilder.class_eval do
     # return teams
     @collection_type = Hyrax::CollectionType.find_by_gid!(@collection.collection_type_gid)
     if nesting_project_as_child?
-      gid = Hyrax::CollectionType.find_by(title: "Team").to_global_id
+      gid = Hyrax::CollectionType.find_by(title: "Team").to_global_id.to_s
     # return projects
     elsif nesting_team_as_parent?
-      gid = Hyrax::CollectionType.find_by(title: "Project").to_global_id
+      gid = Hyrax::CollectionType.find_by(title: "Project").to_global_id.to_s
     # return same collection type
     else
       gid = @collection.collection_type_gid
     end
+
     solr_parameters[:fq] += [
-      "-" + ActiveFedora::SolrQueryBuilder.construct_query_for_ids(limit_ids), ActiveFedora::SolrQueryBuilder.construct_query(Collection.collection_type_gid_document_field_name => gid)]
-    solr_parameters[:fq] += limit_clause if limit_clause # add limits to prevent illegal nesting arrangements
+      Hyrax::SolrQueryBuilderService.construct_query(Hyrax.config.collection_type_index_field => gid),
+      "-{!graph from=id to=member_of_collection_ids_ssim#{' maxDepth=1' if @nest_direction == :as_parent}}id:#{@collection.id}",
+      "-{!graph to=id from=member_of_collection_ids_ssim#{' maxDepth=1' if @nest_direction == :as_child}}id:#{@collection.id}"
+    ]
   end
 
   private

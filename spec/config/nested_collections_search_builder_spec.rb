@@ -11,9 +11,8 @@ RSpec.describe Hyrax::Dashboard::NestedCollectionsSearchBuilder do
   let(:access) { :deposit }
   let(:user) { User.create(email: "email@email.com", password: "password", ms_id: "abc123") }
   let(:ability) { ::Ability.new(user) }
-  let(:nesting_attributes) { double(parents: [], pathnames: [collection.id], ancestors: [], depth: 1) }
 
-  let(:builder) { described_class.new(scope: scope, access: access, collection: collection, nesting_attributes: nesting_attributes, nest_direction: nest_direction) }
+  let(:builder) { described_class.new(scope: scope, access: access, collection: collection, nest_direction: nest_direction) }
 
   let(:solr_params) { {} }
 
@@ -34,10 +33,6 @@ RSpec.describe Hyrax::Dashboard::NestedCollectionsSearchBuilder do
   end
 
   describe '#show_only_valid_collection_types' do
-    let(:single_type_as_child) { ["-{!terms f=id}#{collection.id}", "_query_:\"{!field f=collection_type_gid_ssim}#{collection.collection_type_gid}\"", "-_query_:\"{!lucene q.op=OR df=nesting_collection__pathnames_ssim}#{collection.id}\"", "-_query_:\"{!field f=nesting_collection__parent_ids_ssim}#{collection.id}\""] }
-
-    let(:single_type_as_parent) { ["-{!terms f=id}#{collection.id}", "_query_:\"{!field f=collection_type_gid_ssim}#{collection.collection_type_gid}\"", "-_query_:\"{!lucene df=nesting_collection__pathnames_ssim}*#{collection.id}*\""] }
-
     subject { builder.show_only_valid_collection_types(solr_params) }
 
     describe 'adding project as subcollection' do
@@ -46,7 +41,11 @@ RSpec.describe Hyrax::Dashboard::NestedCollectionsSearchBuilder do
 
       it 'should build a query for teams' do
         subject
-        expect(solr_params.fetch(:fq)).to match_array(["-{!terms f=id}#{collection.id}", "_query_:\"{!field f=collection_type_gid_ssim}#{team_collection_type.to_global_id}\"", "-_query_:\"{!lucene df=nesting_collection__pathnames_ssim}*#{collection.id}*\""])
+        expect(solr_params.fetch(:fq)).to match_array([
+          "_query_:\"{!field f=collection_type_gid_ssim}#{team_collection_type.to_global_id}\"", 
+          "-{!graph from=id to=member_of_collection_ids_ssim maxDepth=1}id:#{collection.id}", 
+          "-{!graph to=id from=member_of_collection_ids_ssim}id:#{collection.id}"
+        ])
       end
     end
 
@@ -55,7 +54,11 @@ RSpec.describe Hyrax::Dashboard::NestedCollectionsSearchBuilder do
       let(:nest_direction) { :as_child }
       it 'should build a query for projects' do
         subject
-        expect(solr_params.fetch(:fq)).to match_array(["-{!terms f=id}#{collection.id}", "_query_:\"{!field f=collection_type_gid_ssim}#{project_collection_type.to_global_id}\"", "-_query_:\"{!lucene q.op=OR df=nesting_collection__pathnames_ssim}#{collection.id}\"", "-_query_:\"{!field f=nesting_collection__parent_ids_ssim}#{collection.id}\""])
+        expect(solr_params.fetch(:fq)).to match_array([
+          "_query_:\"{!field f=collection_type_gid_ssim}#{project_collection_type.to_global_id}\"", 
+          "-{!graph from=id to=member_of_collection_ids_ssim}id:#{collection.id}", 
+          "-{!graph to=id from=member_of_collection_ids_ssim maxDepth=1}id:#{collection.id}"
+        ])
       end
     end
 
@@ -64,7 +67,11 @@ RSpec.describe Hyrax::Dashboard::NestedCollectionsSearchBuilder do
       let(:nest_direction) { :as_parent }
       it 'should build a query for that collection type only' do
         subject
-        expect(solr_params.fetch(:fq)).to match_array(single_type_as_parent)
+        expect(solr_params.fetch(:fq)).to match_array([
+          "_query_:\"{!field f=collection_type_gid_ssim}#{collection.collection_type_gid}\"", 
+          "-{!graph from=id to=member_of_collection_ids_ssim maxDepth=1}id:#{collection.id}", 
+          "-{!graph to=id from=member_of_collection_ids_ssim}id:#{collection.id}"
+        ])
       end
     end
 
@@ -73,7 +80,11 @@ RSpec.describe Hyrax::Dashboard::NestedCollectionsSearchBuilder do
       let(:nest_direction) { :as_child }
       it 'should bulid a query for that collection type only' do
         subject
-        expect(solr_params.fetch(:fq)).to match_array(single_type_as_child)
+        expect(solr_params.fetch(:fq)).to match_array([
+          "_query_:\"{!field f=collection_type_gid_ssim}#{collection.collection_type_gid}\"", 
+          "-{!graph from=id to=member_of_collection_ids_ssim}id:#{collection.id}", 
+          "-{!graph to=id from=member_of_collection_ids_ssim maxDepth=1}id:#{collection.id}"
+        ])
       end
     end
   end

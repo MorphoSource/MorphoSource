@@ -283,11 +283,11 @@ class User < ApplicationRecord
   end
 
   def make_active
-    update_attributes(active: true)
+    update(active: true)
   end
 
   def make_inactive
-    update_attributes(active: false)
+    update(active: false)
   end
 
   # true if user has download access or an approved cart item

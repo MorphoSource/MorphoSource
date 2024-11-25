@@ -10,7 +10,7 @@
     <div class="skip-to-content">
       <%= link_to "Skip to Content", "#skip-to-content" %>
     </div>
-    <%= render '/masthead' %>
+    <%= render '/masthead', placement_class: nil %>
     <%= content_for(:navbar) %>
     <div id="content-wrapper" class="content-wrapper <%= content_for(:content_css_classes) %>" role="main">
       <div class="sidebar maximized">

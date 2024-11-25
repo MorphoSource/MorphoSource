@@ -270,16 +270,11 @@ en:
     visibility:
       open:
         note_html: "<p>Anyone can view the page and download the associated file(s)</p>"
-        warning_html: "<p>Here's extra information for open things</p>"
       restricted:
         note_html: "<p>Anyone can view the page, but must get permission before downloading the associated file(s)</p>"
-        warning_html: "<p>Here's extra information for restricted things</p>"
       preview:
         note_html: "<p>Anyone can view the page and preview files in the viewer, but files are not available for download</p>"
-        warning_html: "<p>Here's extra information for preview-only things</p>"
       hidden:
         note_html: "<p>Anyone can view the page. Associated files are invisible and cannot be previewed or downloaded.</p>"
-        warning_html: "<p>Here's extra information for hidden things</p>"
       private:
         note_html: "<p>Page and files are hidden from the public.</p>"
-        warning_html: "<p>Here's extra information for private things</p>"

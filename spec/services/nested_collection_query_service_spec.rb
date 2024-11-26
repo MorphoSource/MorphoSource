@@ -151,7 +151,7 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
             expect(subject).to eq([])
           end
         end
-        describe 'the parent is not a project', with_nested_reindexing: true do
+        describe 'the parent is not a project' do
           # using create option here because permission template is required for testing :deposit access
           let!(:project_1) do
             create(:public_collection,
@@ -159,12 +159,7 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
             collection_type_gid: project_collection_type.to_global_id,
             user: user,
             with_permission_template: true,
-            member_of_collections: [team_a],
-            with_nesting_attributes:
-            { ancestors: ['Team_A'],
-              parent_ids: ['Team_A'],
-              pathnames: ['Team_A/Project_1'],
-              depth: 2 })
+            member_of_collections: [team_a])
           end
 
           let!(:project_2) do
@@ -173,12 +168,7 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
             collection_type_gid: project_collection_type.to_global_id,
             user: user,
             with_permission_template: true,
-            member_of_collections: [],
-            with_nesting_attributes:
-            { ancestors: [],
-              parent_ids: [],
-              pathnames: ['Project_2'],
-              depth: 1 })
+            member_of_collections: [])
           end
 
           let!(:team_a) do
@@ -186,12 +176,7 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
             id: 'Team_A',
             collection_type_gid: team_collection_type.to_global_id,
             user: user,
-            with_permission_template: true,
-            with_nesting_attributes:
-            { ancestors: [],
-              parent_ids: [],
-              pathnames: ['Team_A'],
-              depth: 1 })
+            with_permission_template: true)
           end
 
           let!(:team_b) do
@@ -199,12 +184,7 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
             id: 'Team_B',
             collection_type_gid: team_collection_type.to_global_id,
             user: user,
-            with_permission_template: true,
-            with_nesting_attributes:
-            { ancestors: [],
-              parent_ids: [],
-              pathnames: ['Team_B'],
-              depth: 1 })
+            with_permission_template: true)
           end
 
           let!(:another_a) do
@@ -212,12 +192,7 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
             id: 'Another_A',
             collection_type_gid: another_collection_type.to_global_id,
             user: user,
-            with_permission_template: true,
-            with_nesting_attributes:
-            { ancestors: [],
-              parent_ids: [],
-              pathnames: ['Another_A'],
-              depth: 1 })
+            with_permission_template: true)
           end
 
           let!(:another_b) do
@@ -225,12 +200,7 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
             id: 'Another_B',
             collection_type_gid: another_collection_type.to_global_id,
             user: user,
-            with_permission_template: true,
-            with_nesting_attributes:
-            { ancestors: [],
-              parent_ids: [],
-              pathnames: ['Another_B'],
-              depth: 1 })
+            with_permission_template: true)
           end
 
           describe 'the parent is a team' do
@@ -292,6 +262,7 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
             expect(subject).to eq([])
           end
         end
+        
         describe 'and the child is a project with a parent' do
           subject { described_class.available_parent_collections(child: child_project, scope: scope) }
 
@@ -309,74 +280,20 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
           end
         end
 
-        describe 'and the child is not a team or a project with a parent', with_nested_reindexing: true do
+        describe 'and the child is not a team or a project with a parent' do
 
-          # TODO: update to use _lw collections.
-          let!(:project_1) do
-            create(:public_collection,
-            id: 'Project_1',
-            collection_type_gid: project_collection_type.to_global_id,
-            user: user,
-            with_permission_template: true,
-            member_of_collections: [],
-            with_nesting_attributes:
-            { ancestors: [],
-              parent_ids: [],
-              pathnames: ['Project_1'],
-              depth: 1 })
-          end
-
-          let!(:project_2) do
-            create(:public_collection,
-            id: 'Project_2',
-            collection_type_gid: project_collection_type.to_global_id,
-            user: user,
-            with_permission_template: true,
-            member_of_collections: [],
-            with_nesting_attributes:
-            { ancestors: [],
-              parent_ids: [],
-              pathnames: ['Project_2'],
-              depth: 1 })
-          end
-
-          let!(:team_a) do
-            create(:public_collection,
-            id: 'Team_A',
-            collection_type_gid: team_collection_type.to_global_id,
-            user: user,
-            with_permission_template: true,
-            with_nesting_attributes:
-            { ancestors: [],
-              parent_ids: [],
-              pathnames: ['Team_A'],
-              depth: 1 })
-          end
-
-          let!(:team_b) do
-            create(:public_collection,
-            id: 'Team_B',
-            collection_type_gid: team_collection_type.to_global_id,
-            user: user,
-            with_permission_template: true,
-            with_nesting_attributes:
-            { ancestors: [],
-              parent_ids: [],
-              pathnames: ['Team_B'],
-              depth: 1 })
-          end
+          let(:project_1)   { create(:project, depositor: user.ms_id) }
+          let(:project_2)   { create(:project, depositor: user.ms_id) }
+          let(:team_a)      { create(:team, depositor: user.ms_id) }
+          let(:team_b)      { create(:team, depositor: user.ms_id) }
+          let(:collections) { [project_1, project_2, team_a, team_b] }
 
           let!(:another_a) do
             create(:public_collection,
             id: 'Another_A',
             collection_type_gid: another_collection_type.to_global_id,
             user: user,
-            with_permission_template: true,
-            with_nesting_attributes:
-            { ancestors: [],
-              parent_ids: [],
-              pathnames: ['Another_A'],
-              depth: 1 })
+            with_permission_template: false)
           end
 
           let!(:another_b) do
@@ -384,12 +301,16 @@ RSpec.describe Hyrax::Collections::NestedCollectionQueryService, clean_repo: tru
             id: 'Another_B',
             collection_type_gid: another_collection_type.to_global_id,
             user: user,
-            with_permission_template: true,
-            with_nesting_attributes:
-            { ancestors: [],
-              parent_ids: [],
-              pathnames: ['Another_B'],
-              depth: 1 })
+            with_permission_template: false)
+          end
+
+          before do
+            (collections + [another_a, another_b]).each do |collection|
+              collection.create_collection_groups
+              Morphosource::Collections::PermissionsCreateService.create_default(collection: collection)
+              collection.managers << user
+              collection.managers_group.save
+            end
           end
 
           describe 'the child is a project' do

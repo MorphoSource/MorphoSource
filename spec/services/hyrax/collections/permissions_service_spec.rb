@@ -15,7 +15,7 @@ RSpec.describe Hyrax::Collections::PermissionsService do
       collection.create_collection_groups
       Morphosource::Collections::PermissionsCreateService.create_default(collection: collection)
 
-      collection.reset_access_controls!
+      collection.permission_template.reset_access_controls_for(collection: collection)
 
       allow(Hyrax::PermissionTemplate).to receive(:find_by!).with(source_id: collection.id).and_return(col_permission_template)
     end
@@ -254,7 +254,7 @@ RSpec.describe Hyrax::Collections::PermissionsService do
       collections.each do |collection|
         collection.create_collection_groups
         Morphosource::Collections::PermissionsCreateService.create_default(collection: collection)
-        collection.reset_access_controls!
+        collection.permission_template.reset_access_controls_for(collection: collection)
       end
     end
 
@@ -332,7 +332,7 @@ RSpec.describe Hyrax::Collections::PermissionsService do
           [collection4, collection5].each do |c|
             c.create_collection_groups
             Morphosource::Collections::PermissionsCreateService.create_default(collection: c)
-            c.reset_access_controls!
+            c.permission_template.reset_access_controls_for(collection: collection)
           end
 
           collection.managers << user
@@ -480,7 +480,7 @@ RSpec.describe Hyrax::Collections::PermissionsService do
         before do
           collection4.create_collection_groups
           Morphosource::Collections::PermissionsCreateService.create_default(collection: collection4)
-          collection4.reset_access_controls!
+          collection4.permission_template.reset_access_controls_for(collection: collection)
 
           collection.editors << user
           collection.editors_group.save
@@ -540,7 +540,7 @@ RSpec.describe Hyrax::Collections::PermissionsService do
         before do
           collection4.create_collection_groups
           Morphosource::Collections::PermissionsCreateService.create_default(collection: collection4)
-          collection4.reset_access_controls!
+          collection4.permission_template.reset_access_controls_for(collection: collection)
 
           collection.downloaders << user
           collection.downloaders_group.save

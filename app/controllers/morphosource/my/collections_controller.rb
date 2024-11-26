@@ -60,7 +60,6 @@ module Morphosource
           if k.include? 'edit_access_group_ssim'
             counts["Manager"] = v if v > 0
           elsif k.include? 'read_access_group_ssim'
-            # byebug
             if k.include? '_editors'
               counts["Editor"] = v if v > 0
             elsif k.include? '_depositors'

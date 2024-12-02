@@ -95,7 +95,7 @@ body.showcase2 {
 
         .collapse-button  {
           margin-top: 5px;
-          
+
           a {
             font-weight: 500;
           }
@@ -120,6 +120,7 @@ body.showcase2 {
         .media-item {
           align-items: center;
           display: flex;
+          margin-bottom: 3px;
         }
       }
     }
@@ -160,7 +161,7 @@ body.showcase2 {
     .thumbnail, span.no-access-media-label {
       font-size: 14px !important;
     }
-  
+
     .physical-object-media-items,
     .device-media-items {
       .row {
@@ -171,7 +172,7 @@ body.showcase2 {
   }
 
   .media-showcase div.preview {
-    border: 0; 
+    border: 0;
   }
 
   .showcase-label {
@@ -235,7 +236,7 @@ body.showcase2 {
     font-size: 14px;
   }
 
-  
+
 
 }
 

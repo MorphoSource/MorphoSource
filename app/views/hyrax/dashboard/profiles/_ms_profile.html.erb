@@ -22,10 +22,10 @@
 <div class="form-group">
   <%= f.label :state, t("morphosource.dashboard.profiles.edit_primary.state").html_safe, class: 'col-sm-4 control-label required' %>
   <div id='state-select' class="col-sm-8">
-    <%= f.select_tag 'user[state]', options_for_select(Morphosource::UserProfile::LocationHelper::STATE['US'], @user.state), class: "form-control", include_blank: true, required: true %>
+    <%= f.select_tag 'user[state]', options_for_select(Morphosource::UserProfile::LocationHelper::STATE['US'].sort, @user.state), class: "form-control", include_blank: true, required: true %>
   </div>
   <div id='province-select' class="col-sm-8">
-    <%= f.select_tag 'user[state]', options_for_select(Morphosource::UserProfile::LocationHelper::STATE['CA'], @user.state), class: "form-control", include_blank: true, required: true %>
+    <%= f.select_tag 'user[state]', options_for_select(Morphosource::UserProfile::LocationHelper::STATE['CA'].sort, @user.state), class: "form-control", include_blank: true, required: true %>
   </div>
 </div>
 

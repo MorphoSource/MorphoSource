@@ -720,11 +720,11 @@ module Hyrax
     #
     def related_media
       return [] unless imaging_event_id&.first.present?
-      ::SolrDocument.where(
+      ::SolrDocument.where({
         "imaging_event_id_tesim" => imaging_event_id&.first,
         "has_model_ssim" => "Media",
         "-id" => id
-      )
+      })
     end
 
     #

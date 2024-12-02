@@ -1,5 +1,5 @@
 <div class="top-media">
-  <% if media = SolrDocument.where("id" => media_id)&.first %>
+  <% if media = SolrDocument.where({"id" => media_id})&.first %>
     <div class="top-media-card">
       <% if can? :read, media %>
         <% # media thumbnail %>

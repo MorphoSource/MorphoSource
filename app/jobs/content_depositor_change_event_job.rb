@@ -20,7 +20,7 @@ class ContentDepositorChangeEventJob < ContentEventJob
   def select_user(user)
     return user if user.is_a?(User)
 
-    User.find_by(id: user) || SolrDocument.where("id" => user).first
+    User.find_by(id: user) || SolrDocument.where({"id" => user}).first
   end
 
   def action

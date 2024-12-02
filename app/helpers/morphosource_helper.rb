@@ -379,7 +379,7 @@ module MorphosourceHelper
 
   def organization_devices(id)
     # get device id, make, and model for all devices associated with organization id
-    SolrDocument.where('has_model_ssim' => 'Device', 'device_organization_id_ssim' => id).map do |d|
+    SolrDocument.where({'has_model_ssim' => 'Device', 'device_organization_id_ssim' => id}).map do |d|
       {
         'id': d.id,
         'title': d.title,

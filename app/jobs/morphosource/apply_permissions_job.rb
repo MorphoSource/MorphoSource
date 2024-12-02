@@ -51,7 +51,7 @@ module Morphosource
     def apply_collection_permissions(media)
       collection_ids = media.member_of_collection_ids
       collection_ids.each do |id|
-        next unless SolrDocument.where('id' => id)&.first&.media_inherit_permissions?
+        next unless SolrDocument.where({'id' => id})&.first&.media_inherit_permissions?
         next unless template = Hyrax::PermissionTemplate.find_by!(source_id: id)
         Hyrax::PermissionTemplateApplicator.apply(template).to(model: media)
       end

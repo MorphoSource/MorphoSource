@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Morphosource::Collections::CollectionMemberService do
-  let(:scope)       { double('Scope') }
+  let(:scope)       { double('Scope', blacklight_config: CatalogController.blacklight_config) }
   let(:collection)  { double('Collection', id: 'abc') }
   let(:params)      { double('Params') }
 

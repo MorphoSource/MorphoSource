@@ -20,24 +20,25 @@ module Hyrax
     before_action :record_original_parents, only: :update
 
     def update
-      # todo: remove below after new attachment is ready
       # Handle possible attachment upload
-      if params[:pe_description] && Morphosource.attachment_formats.include?(File.extname(params[:pe_description].original_filename))
-        Morphosource::AttachmentService.create(curation_concern.id, 'pe_description', params[:pe_description])
-        params.delete(:pe_description)
-      elsif params[:pe_description_attachment_delete] == 'delete'
-        Morphosource::AttachmentService.delete(curation_concern.id, 'pe_description')
-        params.delete(:pe_description_attachment_delete)
+
+#      if params[:pe_description] && Morphosource.attachment_formats.include?(File.extname(params[:pe_description].original_filename))
+#        Morphosource::AttachmentService.create(curation_concern.id, 'pe_description', params[:pe_description])
+#        params.delete(:pe_description)
+#      elsif params[:pe_description_attachment_delete] == 'delete'
+#        Morphosource::AttachmentService.delete(curation_concern.id, 'pe_description')
+#        params.delete(:pe_description_attachment_delete)
+#      end
+
+byebug
+      if params[:processing_event_attachment_delete] == 'delete'
+        Morphosource::CwAttachmentService.delete(curation_concern, 'processing_event_attachment')
       end
 
-      # Handle file upload
       if params[:processing_event_attachment].present?
-        file = params[:processing_event_attachment]
-        curation_concern.save_uploaded_file(file)
-      elsif params[:processing_event_attachment_delete] == 'delete'
-        curation_concern.delete_uploaded_file       
+        Morphosource::CwAttachmentService.create(curation_concern, 'processing_event_attachment', params[:processing_event_attachment])
       end
-
+      
       env = actor_environment
       emancipate_if_necessary(env)
       if actor.update(env)

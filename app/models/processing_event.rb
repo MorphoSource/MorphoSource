@@ -18,32 +18,8 @@ class ProcessingEvent < Morphosource::Works::Base
   include ::Hyrax::BasicMetadata
 
   # Custom method to handle CarrierWave uploader
-  def processing_event_attachment_uploader
-    @processing_event_attachment_uploader ||= ProcessingEventAttachmentUploader.new
-  end
-
-  # Save the file using CarrierWave
-  # param file ActionDispatch::Http::UploadedFile
-  def save_uploaded_file(file)
-    uploader = processing_event_attachment_uploader
-    uploader.work_id = self.id
-    uploader.store!(file)
-    self.processing_event_attachment = uploader.url
-  end
-
-  # Delete the file using the uploader
-  def delete_uploaded_file
-    if self.processing_event_attachment.present?
-      uploader = processing_event_attachment_uploader
-      uploader.work_id = self.id
-      uploader.retrieve_from_store!(File.basename(self.processing_event_attachment))
-      if uploader.file && File.exist?(uploader.file.path)
-        uploader.remove! 
-        self.processing_event_attachment = nil
-      else
-        Rails.logger.warn "File not found: #{uploader.file&.path}"
-      end
-    end
+  def attachment_uploader
+    ProcessingEventAttachmentUploader
   end
 
   def imaging_event

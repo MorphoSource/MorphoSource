@@ -32,6 +32,17 @@ module Morphosource
         parent.team? || parent.organization_collection?
       end
 
+      # @api private
+      #
+      # @param collection [Hyrax::PcdmCollection,::Collection]
+      # @return [Boolean] true if the collection is nestable; otherwise, false
+      def self.nestable?(collection:)
+        return false if collection.blank?
+        return collection.nestable? if collection.respond_to? :nestable?
+        collection_type = Hyrax::CollectionType.find_by_gid!(collection.collection_type_gid)
+        collection_type.nestable?
+      end
+      private_class_method :nestable?
     end
   end
 end

@@ -493,6 +493,8 @@ module Morphosource
         Rails.logger.info "---"
         Rails.logger.info "Validation successful!"
         Rails.logger.info "---"
+
+        return true
       end
 
       # Complete migration by deleting legacy org work and org team

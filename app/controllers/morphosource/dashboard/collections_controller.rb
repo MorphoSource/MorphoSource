@@ -3,7 +3,7 @@ module Morphosource
     class CollectionsController < Hyrax::Dashboard::CollectionsController
       include Morphosource::Dashboard::CollectionsControllerBehavior
 
-      skip_load_and_authorize_resource only: [:edit, :update, :new, :members, :projects, :organization, :create], instance_name: :collection
+      skip_load_and_authorize_resource only: [:edit, :update, :new, :members, :projects, :organization, :create, :remove_member, :batch_remove_members_ajax], instance_name: :collection
 
       with_themed_layout 'morphosource_dashboard'
 
@@ -75,6 +75,7 @@ module Morphosource
       end
 
       def batch_remove_members_ajax
+        authorize! :update, @collection
         remove_ids = params["remove_ids"]
         if remove_ids.present? && remove_ids.is_a?(Array) && remove_ids.all? { |id| id.is_a?(String) && id.match?(/^\d+$/) }
           RemoveCollectionMembersJob.perform_later(@collection.id, remove_ids)

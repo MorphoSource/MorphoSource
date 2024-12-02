@@ -57,7 +57,7 @@
             ).render %>
             <%= Hyrax::Renderers::ShowcaseDefaultAttributeRenderer.new(
               :software,
-              @presenter.processing_events_data&.first&.dig(:software),
+              software,
               { include_empty: true, work_type: "processing_event" }
             ).render %>
             <%= Hyrax::Renderers::ShowcaseDefaultAttributeRenderer.new(

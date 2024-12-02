@@ -8,7 +8,7 @@ RSpec.describe Morphosource::DataCuration::RelationshipRepairService do
   let!(:specimen) { FactoryBot.create(:biological_specimen, id: '000200001') }
   let(:params)    { { } }
 
-  subject { described_class.call(params) }
+  subject { described_class.call(**params) }
 
   before do
     allow(BiologicalSpecimen).to receive(:find).with(specimen.id).and_return(specimen)

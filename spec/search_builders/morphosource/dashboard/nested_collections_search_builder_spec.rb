@@ -3,12 +3,11 @@ require 'rails_helper'
 RSpec.describe Morphosource::Dashboard::NestedCollectionsSearchBuilder do
   let(:access)              { :edit }
   let(:collection)          { double('Collection') }
-  let(:scope)               { double('Scope') }
-  let(:nesting_attributes)  { double('Nesting Attributes') }
+  let(:scope)               { double('Scope', blacklight_config: CatalogController.blacklight_config) }
   let(:nest_direction)      { double('Nest Direction') }
   let(:solr_parameters)     { {} }
 
-  let(:builder)             { described_class.new(access: access, collection: collection, scope: scope, nesting_attributes: nesting_attributes, nest_direction: nest_direction) }
+  let(:builder)             { described_class.new(access: access, collection: collection, scope: scope, nest_direction: nest_direction) }
 
   describe '.default_processor_chain' do
     it 'includes show_only_projects and show_only_parentless_collections' do
@@ -29,7 +28,7 @@ RSpec.describe Morphosource::Dashboard::NestedCollectionsSearchBuilder do
   describe 'show_only_parentless_collections' do
     it 'filters by parentless collections' do
       builder.show_only_parentless_collections(solr_parameters)
-      expect(solr_parameters[:fq]).to eq(["-nesting_collection__parent_ids_ssim:*"])
+      expect(solr_parameters[:fq]).to eq(["-member_of_collection_ids_ssim:*"])
     end
   end
  end

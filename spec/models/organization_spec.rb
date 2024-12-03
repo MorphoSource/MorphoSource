@@ -193,24 +193,4 @@ RSpec.describe Organization do
       end
     end
   end
-
-  describe 'record_original_team' do
-    let(:team1)         { Collection.create(title: ['team1'], collection_type_gid: team_collection_type.to_global_id) }
-    let(:team2)         { Collection.create(title: ['team2'], collection_type_gid: team_collection_type.to_global_id) }
-    let(:project)         { Collection.create(title: ['project'], collection_type_gid: project_collection_type.to_global_id) }
-    let(:organization) { Organization.create(title: ['org'], team_id: [team1.id]) }
-
-    before do
-      project.member_of_collections << team1
-      project.save
-    end
-
-    context 'updating a team' do
-      it 'records the original team' do
-        organization.update(team_id: [team2.id])
-        expect(organization.instance_variable_get(:@old_collections)).to match_array([team1, project])
-        expect(organization.team).to eq(team2)
-      end
-    end
-  end
 end

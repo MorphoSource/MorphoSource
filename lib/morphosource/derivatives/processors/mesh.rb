@@ -84,7 +84,7 @@ module Morphosource::Derivatives::Processors
     end
 
     def write_draco_glb
-      output_file_service.call(draco_glb_path, directives)
+      output_file_service.call(File.open(draco_glb_path), directives)
     end
 
     def cleanup_tmp_files

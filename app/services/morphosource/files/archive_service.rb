@@ -54,7 +54,7 @@ module Morphosource
       #
       def read_tar(&block)
         archive_type = :tar
-        Archive::Tar::Minitar.open(file) do |tar|
+        Minitar.open(file) do |tar|
           yield(tar, archive_type) if block_given?
         end
       end

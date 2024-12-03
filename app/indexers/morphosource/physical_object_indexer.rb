@@ -3,6 +3,9 @@ module Morphosource
 
     def generate_solr_document
       super.tap do |solr_doc|
+        @media = nil
+        @public_media = nil
+        
         # data processing for subsequent fields
         organizations = object.organizations
         organization_titles = organizations.map{ |o| o.title.first }

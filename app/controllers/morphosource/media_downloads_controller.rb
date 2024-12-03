@@ -385,7 +385,7 @@ module Morphosource
       def temp_manifest_directory
         @temp_manifest_directory ||= begin
           directory_name = Dir.tmpdir() + "/download-media-manifest"
-          Dir.mkdir(directory_name) unless File.exists?(directory_name)
+          Dir.mkdir(directory_name) unless File.exist?(directory_name)
           directory_name
         end
       end

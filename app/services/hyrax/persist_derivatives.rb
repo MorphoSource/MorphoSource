@@ -11,7 +11,7 @@ module Hyrax
     def self.call(stream, directives)
       output_file(directives) do |output|
         # Temporary fix to Ruby 2.6/Red Hat kernal bug (https://bugzilla.redhat.com/show_bug.cgi?id=1840284)
-        if ( stream.is_a?(File) || stream.is_a?(String) ) && File.exists?(stream)
+        if ( stream.is_a?(File) || stream.is_a?(String) ) && File.exist?(stream)
           FileUtils.move(stream, output)
         else
           IO.copy_stream(stream, output)

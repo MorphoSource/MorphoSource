@@ -20,7 +20,7 @@ module Ms1to2
 
     def import_table(tname)
       f = File.join(input_path, tname+'.csv')
-      if File.exists?(f)
+      if File.exist?(f)
         table = {}
         CSVParser.new(f).each do |attrs|
           table[attrs[to_id_key(tname)].first] = attrs

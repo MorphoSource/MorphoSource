@@ -4,7 +4,7 @@ module Morphosource::Derivatives::Processors
       temp_file_name = output_file(file_suffix)
       self.class.encode(source_path, options, temp_file_name)
       output_file_service.call(File.open(temp_file_name, 'rb'), directives)
-      File.unlink(temp_file_name) if File.exists?(temp_file_name)
+      File.unlink(temp_file_name) if File.exist?(temp_file_name)
     end
   end
 end

@@ -155,7 +155,7 @@ class BatchSubmissionsController < ApplicationController
     main_job = BackgroundJob.create({ job_id: job.job_id, job_class: job.class.to_s, status: job.status.status.to_s, user_id: current_user.user_key, created_objects: {} })
     # rename the manifest tmp file with job id for locating easier
     if (manifest_tmp_file = @request_manifest_object["summary"]["manifest_tmp_file"]).present?
-      if File.exists?(manifest_tmp_file)
+      if File.exist?(manifest_tmp_file)
         new_file = Rails.root.join(Dir.tmpdir, 'manifest_' + job.job_id + File.extname(manifest_tmp_file)).to_s
         File.rename(manifest_tmp_file, new_file)
       end

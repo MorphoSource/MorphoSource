@@ -43,21 +43,21 @@ RSpec.describe Hyrax::UploadsController do
           expect(assigns(:upload)).to be_kind_of Hyrax::UploadedFile
           expect(assigns(:upload)).to be_persisted
           expect(assigns(:upload).user).to eq user
-          expect(Hyrax::UploadedFile.exists?(file: 'bunny.ply', upload_hash: upload_hash)).to be true
+          expect(Hyrax::UploadedFile.exist?(file: 'bunny.ply', upload_hash: upload_hash)).to be true
           expect(Hyrax::UploadedFile.where(file: 'bunny.ply', upload_hash: upload_hash).count).to eq 1
           expect(Hyrax::UploadedFile.find_by(file: 'bunny.ply', upload_hash: upload_hash).file.size).to eq 5000
 
           # upload second chunk
           request.headers.merge!({ "CONTENT-RANGE" => "bytes 5000-10000/#{file.size}" })
           post :create, params: { files: [file_chunk2], upload_hash: upload_hash, format: 'json' }
-          expect(Hyrax::UploadedFile.exists?(file: 'bunny.ply', upload_hash: upload_hash)).to be true
+          expect(Hyrax::UploadedFile.exist?(file: 'bunny.ply', upload_hash: upload_hash)).to be true
           expect(Hyrax::UploadedFile.where(file: 'bunny.ply', upload_hash: upload_hash).count).to eq 1
           expect(Hyrax::UploadedFile.find_by(file: 'bunny.ply', upload_hash: upload_hash).file.size).to eq 10000
 
           # upload second chunk
           request.headers.merge!({ "CONTENT-RANGE" => "bytes 10000-#{file.size}/#{file.size}" })
           post :create, params: { files: [file_chunk3], upload_hash: upload_hash, format: 'json' }
-          expect(Hyrax::UploadedFile.exists?(file: 'bunny.ply', upload_hash: upload_hash)).to be true
+          expect(Hyrax::UploadedFile.exist?(file: 'bunny.ply', upload_hash: upload_hash)).to be true
           expect(Hyrax::UploadedFile.where(file: 'bunny.ply', upload_hash: upload_hash).count).to eq 1
           expect(Hyrax::UploadedFile.find_by(file: 'bunny.ply', upload_hash: upload_hash).file.size).to eq file.size
         end

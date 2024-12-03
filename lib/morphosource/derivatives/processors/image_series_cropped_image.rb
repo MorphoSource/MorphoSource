@@ -50,7 +50,7 @@ module Morphosource::Derivatives::Processors
         false
       )
 
-      if File.exists?(img_path)
+      if File.exist?(img_path)
         @source_path = img_path
       else
         raise "Thumbnail target file (#{img}) not found in archive when extracting files"

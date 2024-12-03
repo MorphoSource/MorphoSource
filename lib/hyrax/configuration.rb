@@ -483,6 +483,42 @@ module Hyrax
       @max_days_between_fixity_checks ||= 7
     end
 
+    # @!group Groups
+
+    ##
+    # @!attribute [w] admin_user_group_name
+    #   @return [String]
+    # @!attribute [w] public_user_group_name
+    #   @return [String]
+    # @!attribute [w] registered_user_group_name
+    #   @return [String]
+    attr_writer :admin_user_group_name
+    attr_writer :public_user_group_name
+    attr_writer :registered_user_group_name
+
+    ##
+    # @api public
+    # @return [String]
+    def admin_user_group_name
+      @admin_user_group_name ||= 'admin'
+    end
+
+    ##
+    # @api public
+    # @return [String]
+    def public_user_group_name
+      @public_user_group_name ||= 'public'
+    end
+
+    ##
+    # @api public
+    # @return [String]
+    def registered_user_group_name
+      @registered_user_group_name ||= 'registered'
+    end
+
+    # @!endgroup
+
     attr_writer :enable_noids
     def enable_noids?
       return @enable_noids unless @enable_noids.nil?

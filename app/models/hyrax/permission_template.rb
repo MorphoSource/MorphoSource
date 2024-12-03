@@ -250,7 +250,7 @@ module Hyrax
     end
 
     def update_source_type
-      self.source_type = collection&.collection_type&.machine_id
+      self.source_type = Hyrax::CollectionType.find_by_gid!(source.collection_type_gid).machine_id
     rescue
       self.source_type = self.source_id
     end

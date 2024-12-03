@@ -1,6 +1,7 @@
 class Ability
   include Hydra::Ability
 
+  include Hyrax::Ability
   include Morphosource::Ability
 
   # Define any customized permissions here.

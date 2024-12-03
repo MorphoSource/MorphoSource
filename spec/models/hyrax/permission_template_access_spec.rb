@@ -10,8 +10,7 @@ RSpec.describe Hyrax::PermissionTemplateAccess do
   before do
     collection.create_collection_groups
     Morphosource::Collections::PermissionsCreateService.create_default(collection: collection)
-
-    collection.reset_access_controls!
+    collection.permission_template.reset_access_controls_for(collection: collection)
   end
 
   describe 'default team/project template grants #label, #admin_group, #destroy' do

@@ -550,9 +550,9 @@ module Hyrax
               creator: work.creator,
               date_created: work.date_created,
               software: work.software,
-              description: work.description
+              description: work.description,
+              description_attachment: work.processing_event_attachment
             }.merge(
-                description_attachment: processing_event_description_attachment(work),
                 processing_activity_items: processing_event_activity_parsed(work),
                 child: child,
                 parent: parent,
@@ -603,17 +603,6 @@ module Hyrax
     def processing_event_activity_parsed(pe)
       ( pe.processing_activity || [] ).
         map { |pa| processing_activity_hash(pa) }.sort_by { |hsh| hsh["Step"] }
-    end
-
-    #
-    # Processing Event description attachment URL
-    #
-    # @param [SolrDocument] pe Processing Event SolrDocument
-    #
-    # @return [Array<String>] Processing Event description attachment URL
-    #
-    def processing_event_description_attachment(pe)
-      processing_event_description_attachment ||= get_attachment("pe_description", pe.id)
     end
 
     ### METHODS FINDING OTHER WORKS RELATED TO MEDIA UPSTREAM OR DOWNSTREAM IN TREE HIERARCHY ###

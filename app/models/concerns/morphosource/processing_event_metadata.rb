@@ -26,7 +26,9 @@ module Morphosource
         index.as :stored_searchable
       end
 
-      property :processing_event_attachment, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/processingEventAttachment"), multiple: false
+      property :processing_event_attachment, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/processingEventAttachment") do |index|
+        index.as :stored_searchable
+      end
 
     end
   

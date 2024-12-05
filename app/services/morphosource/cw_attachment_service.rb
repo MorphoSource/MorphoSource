@@ -3,7 +3,6 @@ module Morphosource
     attr_reader :object, :field_name
 
     class << self
-      # Create an attachment for a given object
       # @param object [Object] The model instance (e.g., a ProcessingEvent instance)
       # @param field_name [String] The name of the attachment field
       # @param file [File, ActionDispatch::Http::UploadedFile] The file to be attached
@@ -13,7 +12,6 @@ module Morphosource
         new(object, field_name).create_attachment(file, accepted_formats, save_work)
       end
 
-      # Delete all attachments for the given object and field name
       # @param object [Object] The model instance
       # @param field_name [String] The name of the attachment field
       def delete(object, field_name)
@@ -21,7 +19,6 @@ module Morphosource
       end
     end
 
-    # Initialize with object and field name
     # @param object [Object] The model instance or ID
     # @param field_name [String] The name of the attachment field
     def initialize(object, field_name)
@@ -33,9 +30,9 @@ module Morphosource
       @field_name = field_name
     end
 
-    # Create an attachment
     # @param file [File, ActionDispatch::Http::UploadedFile] The file to be attached
     # @param accepted_formats [Array<String>] List of accepted file formats
+    # @param save_work [Boolean] save work after attachment is created or deleted
     def create_attachment(file, accepted_formats, save_work)
       validate_field
       validate_file_format(file, accepted_formats)
@@ -70,7 +67,6 @@ module Morphosource
       end
     end
 
-    # Validate the file format
     def validate_file_format(file, accepted_formats)
       extension = File.extname(file.original_filename).downcase
       unless accepted_formats.include?(extension)

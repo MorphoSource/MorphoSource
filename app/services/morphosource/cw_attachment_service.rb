@@ -8,8 +8,9 @@ module Morphosource
       # @param field_name [String] The name of the attachment field
       # @param file [File, ActionDispatch::Http::UploadedFile] The file to be attached
       # @param accepted_formats [Array<String>] List of accepted file formats
-      def create(object, field_name, file, accepted_formats = Morphosource.attachment_formats)
-        new(object, field_name).create_attachment(file, accepted_formats)
+      # @param save_work [Boolean] save work after attachment is created or deleted
+      def create(object, field_name, file, accepted_formats = Morphosource.attachment_formats, save_work = false)
+        new(object, field_name).create_attachment(file, accepted_formats, save_work)
       end
 
       # Delete all attachments for the given object and field name
@@ -24,19 +25,24 @@ module Morphosource
     # @param object [Object] The model instance or ID
     # @param field_name [String] The name of the attachment field
     def initialize(object, field_name)
-      @object = object.is_a?(String) ? find_object(object) : object
+      if object.is_a?(String)
+        @object = ActiveFedora::Base.find(object) 
+      else 
+        @object = object
+      end
       @field_name = field_name
     end
 
     # Create an attachment
     # @param file [File, ActionDispatch::Http::UploadedFile] The file to be attached
     # @param accepted_formats [Array<String>] List of accepted file formats
-    def create_attachment(file, accepted_formats)
+    def create_attachment(file, accepted_formats, save_work)
       validate_field
       validate_file_format(file, accepted_formats)
       uploader = build_uploader
       uploader.store!(file)
       object.public_send("#{field_name}=", uploader.url)
+      object.save if save_work
     end
 
     def delete_attachment
@@ -56,15 +62,6 @@ module Morphosource
     end
 
     private
-
-    # Find object by ID
-    def find_object(id)
-byebug
-      klass = Object.const_get(id.split('-').first) # Assumes ID starts with the class name
-      klass.find(id)
-    rescue NameError, ActiveRecord::RecordNotFound
-      raise "Unable to find object with ID #{id}"
-    end
 
     # Validate that the field exists on the object
     def validate_field

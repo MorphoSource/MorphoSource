@@ -14,14 +14,6 @@
     </div>
     <%= p.input :software, as: :multi_value %>
     <%= render_edit_field_partial('description', f: p) %>
-    <%# todo: remove below when new attachment is ready
-    = render_edit_field_partial(
-      'attachment', 
-      f: p, 
-      field: 'pe_description', 
-      label: 'Description attachment file',
-      curation_concern: @processing_event_form.model
-    ) %>
     <%= render_edit_field_partial(
       'attachment_pe', 
       f: p, 

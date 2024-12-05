@@ -409,7 +409,6 @@ class SubmissionsController < ApplicationController
         model_params = assign_model_params_parents(model_params, parents)
       end
       @processing_event_create_params = model_params
-
     when 'media'
       if @submission.raw_or_derived_media == 'raw'
         parent = @submission.imaging_event_id
@@ -492,7 +491,11 @@ class SubmissionsController < ApplicationController
           formats = Morphosource.attachment_formats
         end
         if params[field].present? && formats.include?(File.extname(params[field].original_filename))
-          Morphosource::AttachmentService.create(id, field, params[field], formats)
+          if field == 'processing_event_attachment'
+            Morphosource::CwAttachmentService.create(id, field, params[field], formats, true)
+          else
+            Morphosource::AttachmentService.create(id, field, params[field], formats)
+          end
           params.delete(field)
         elsif field == 'agreement' && submission_params[:organization_for_attachment].present?
           Morphosource::AttachmentService.create_copy(id, field, submission_params[:organization_for_attachment])
@@ -504,7 +507,7 @@ class SubmissionsController < ApplicationController
   def attachment_fields
     {
       'imaging_event' => ['ie_description', 'ie_reference'],
-      'processing_event' => ['pe_description'],
+      'processing_event' => ['processing_event_attachment'],
       'media' => ['agreement']
     }
   end

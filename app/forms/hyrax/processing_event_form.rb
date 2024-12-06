@@ -46,7 +46,7 @@ module Hyrax
       :source,
       :title]
 
-    self.single_valued_fields = [:description, :date_created]
+    self.single_valued_fields = [:description, :date_created, :processing_event_attachment]
 
     self.required_fields = []
 

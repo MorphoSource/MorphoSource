@@ -30,7 +30,7 @@ module Qa::Authorities
         taxonomy_subspecies = doc.taxonomy_subspecies
         gbif_key = doc.gbif_key
         depositor = doc.depositor
-        { id: id, label: title, value: id, taxonomy_domain: taxonomy_domain, taxonomy_kingdom: taxonomy_kingdom, 
+        { id: id, label: title, value: id, taxonomy_domain: taxonomy_domain, taxonomy_kingdom: taxonomy_kingdom,
           taxonomy_phylum: taxonomy_phylum,
           taxonomy_superclass: taxonomy_superclass,
           taxonomy_class: taxonomy_class,
@@ -85,12 +85,12 @@ module Qa::Authorities
           depositor: depositor,
           depositor_name: User.exists?(depositor) ? User.find(depositor).display_name : nil
         }
-        
+
         name = build_name(taxonomy_attrs)
         source_info = build_source_info(taxonomy_attrs[:gbif_key], id)
         nice_title = build_title(name, source_info)
-        { 
-          id: id, label: [nice_title], value: id, 
+        {
+          id: id, label: [nice_title], value: id,
           name: name,
           higher_taxonomy: title,
           ms: true,
@@ -108,14 +108,14 @@ module Qa::Authorities
 
       def ordered_terms
         [ :taxonomy_family, :taxonomy_order, :taxonomy_class,
-          :taxonomy_phylum, :taxonomy_kingdom ]
+          :taxonomy_phylum, :taxonomy_kingdom, :taxonomy_domain ]
       end
 
       def build_name(taxonomy_attrs)
         if taxonomy_attrs[:taxonomy_genus].present?
           build_binomial_name(
-            taxonomy_attrs[:taxonomy_genus], 
-            taxonomy_attrs[:taxonomy_species], 
+            taxonomy_attrs[:taxonomy_genus],
+            taxonomy_attrs[:taxonomy_species],
             taxonomy_attrs[:taxonomy_subspecies]
           )
         else

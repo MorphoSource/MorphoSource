@@ -95,7 +95,9 @@ module Qa::Authorities
         source_info = build_source_info(taxonomy_attrs[:gbif_key], id)
         nice_title = build_title(name, source_info)
         {
-          id: id, label: [nice_title], value: id,
+          id: id, 
+          label: [nice_title], 
+          value: id,
           name: name,
           higher_taxonomy: title,
           ms: true,

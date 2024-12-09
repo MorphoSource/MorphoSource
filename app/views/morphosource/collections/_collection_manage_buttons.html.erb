@@ -76,8 +76,10 @@
       </button>
       <ul class="dropdown-menu">
         <li> <%= link_to "Select existing media", Rails.application.routes.url_helpers.my_add_media_index_path(@presenter.id), class: 'btn btn-sm btn-primary' %> </li>
-        <li> <%= link_to "Upload new media", main_app.new_submission_path(collection: @presenter.id), class: 'btn btn-sm btn-primary' %>
-        </li>
+        <% if current_ability.can? :create, Media %>
+          <li> <%= link_to "Upload new media", main_app.new_submission_path(collection: @presenter.id), class: 'btn btn-sm btn-primary' %>
+          </li>
+        <% end %>
       </ul>
     </div>
   <% end %>

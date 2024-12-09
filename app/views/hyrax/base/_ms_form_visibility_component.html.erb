@@ -4,7 +4,6 @@
   <%= render 'form_permission_under_lease', f: f %>
 <% else %>
     <fieldset>
-      <legend class="legend-save-work">Publication Status</legend>
       <ul id="publication-options" class="visibility">
         <% if f.object.model.download_permission %>
           <span id="selected_visibility" class=<%= f.object.model.download_permission %>></span>
@@ -17,9 +16,6 @@
             <span class="label label-success">Publish with Open Download</span>
             <br />
             <%= t('morphosource.visibility.open.note_html', type: f.object.human_readable_type) %>
-            <div class="collapse" id="collapsePublic" data-parent="#publication-options">
-              <%= t('morphosource.visibility.open.warning_html') %>
-            </div>
           </label>
         </li>
         <li class="radio">
@@ -28,9 +24,6 @@
             <span class="label label-info">Publish with Restricted Download</span>
             <br />
             <%= t('morphosource.visibility.restricted.note_html', type: f.object.human_readable_type) %>
-            <div class="collapse" id="collapseRestricted" data-parent="#publication-options">
-              <%= t('morphosource.visibility.restricted.warning_html') %>
-            </div>
           </label>
         </li>
         <li class="radio">

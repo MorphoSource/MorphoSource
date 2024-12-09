@@ -21,11 +21,11 @@ module Hyrax
 
     def update
       # Handle possible attachment upload
-      if params[:processing_event_attachment_delete] == 'delete'
-        Morphosource::CwAttachmentService.delete(curation_concern, 'processing_event_attachment')
+      if params[:description_attachment_delete] == 'delete'
+        Morphosource::CwAttachmentService.delete(curation_concern, 'description_attachment')
       end
-      if params[:processing_event_attachment].present?
-        Morphosource::CwAttachmentService.create(curation_concern, 'processing_event_attachment', params[:processing_event_attachment])
+      if params[:description_attachment].present?
+        Morphosource::CwAttachmentService.create(curation_concern, 'description_attachment', params[:description_attachment])
       end      
       env = actor_environment
       emancipate_if_necessary(env)

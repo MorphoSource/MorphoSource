@@ -491,7 +491,7 @@ class SubmissionsController < ApplicationController
           formats = Morphosource.attachment_formats
         end
         if params[field].present? && formats.include?(File.extname(params[field].original_filename))
-          if field == 'processing_event_attachment'
+          if field == 'description_attachment'
             Morphosource::CwAttachmentService.create(id, field, params[field], formats, true)
           else
             Morphosource::AttachmentService.create(id, field, params[field], formats)
@@ -507,7 +507,7 @@ class SubmissionsController < ApplicationController
   def attachment_fields
     {
       'imaging_event' => ['ie_description', 'ie_reference'],
-      'processing_event' => ['processing_event_attachment'],
+      'processing_event' => ['description_attachment'],
       'media' => ['agreement']
     }
   end

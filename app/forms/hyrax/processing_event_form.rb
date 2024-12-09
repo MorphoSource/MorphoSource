@@ -22,7 +22,7 @@ module Hyrax
       :processing_activity_type,
       :processing_activity_software,
       :processing_activity_description,
-      :processing_event_attachment
+      :description_attachment
     ]
 
     self.terms -=
@@ -46,12 +46,12 @@ module Hyrax
       :source,
       :title]
 
-    self.single_valued_fields = [:description, :date_created, :processing_event_attachment]
+    self.single_valued_fields = [:description, :date_created, :description_attachment]
 
     self.required_fields = []
 
     def primary_terms
-      required_fields + [:creator, :date_created, :software, :description, :processing_activity, :processing_activity_type, :processing_activity_software, :processing_activity_description, :processing_event_attachment]
+      required_fields + [:creator, :date_created, :software, :description, :processing_activity, :processing_activity_type, :processing_activity_software, :processing_activity_description, :description_attachment]
     end
   end
 end

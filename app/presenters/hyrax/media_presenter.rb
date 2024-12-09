@@ -551,7 +551,7 @@ module Hyrax
               date_created: work.date_created,
               software: [work.software&.join(', ')],
               description: work.description,
-              description_attachment: work.processing_event_attachment
+              description_attachment: work.description_attachment
             }.merge(
                 processing_activity_items: processing_event_activity_parsed(work),
                 child: child,

@@ -5,13 +5,13 @@ RSpec.describe Morphosource::CwAttachmentService do
   describe 'ProcessingEvent attachment' do
     let(:pe) { ProcessingEvent.create }
     let(:file) { Rack::Test::UploadedFile.new('spec/fixtures/text/text.txt', 'text/plain') }
-    let(:field_name) { "processing_event_attachment" }
-    let(:expected_url) { "/uploads/processing_event/processing_event_attachment/text.txt" }
+    let(:field_name) { "description_attachment" }
+    let(:expected_url) { "/uploads/processing_event/description_attachment/text.txt" }
 
     describe '.create' do
       it 'creates an attachment' do
         Morphosource::CwAttachmentService.create(pe, field_name, file, Morphosource.attachment_formats, true)
-        expect(pe.processing_event_attachment).to eq(expected_url)
+        expect(pe.description_attachment).to eq(expected_url)
       end
 
       it 'raises an error for unsupported file formats' do
@@ -27,7 +27,7 @@ RSpec.describe Morphosource::CwAttachmentService do
         Morphosource::CwAttachmentService.create(pe, field_name, file)
         expect {
           Morphosource::CwAttachmentService.delete(pe, field_name)
-        }.to change { pe.processing_event_attachment }.to(nil)
+        }.to change { pe.description_attachment }.to(nil)
       end
     end
   end

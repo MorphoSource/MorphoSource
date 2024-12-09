@@ -18,9 +18,36 @@ class ProcessingEvent < Morphosource::Works::Base
   include ::Hyrax::BasicMetadata
 
   # Custom method to handle CarrierWave uploader
-  def attachment_uploader
+  def attachment_uploader_class
     ProcessingEventAttachmentUploader
   end
+
+  def description_attachment=(file)
+byebug
+    if file.nil?
+byebug
+      self.description_attachment_url = nil
+    else
+      
+      # todo: check and delete existing file first
+
+
+#
+#      validate_file_format(file, accepted_formats)
+
+byebug
+      uploader = self.attachment_uploader_class.new
+      uploader.work_id = self.id
+      uploader.store!(file)
+      self.description_attachment_url = uploader.url
+byebug
+    end
+  end
+
+  def description_attachment
+    self.description_attachment_url
+  end
+
 
   def imaging_event
     ancestors.find(&:imaging_event?)

@@ -81,8 +81,7 @@ module Morphosource
         downloader_groups = current_user.downloader_groups.empty? ? ['none'] : current_user.downloader_groups
         viewer_groups = current_user.viewer_groups.empty? ? ['none'] : current_user.viewer_groups
 
-        config = repository.blacklight_config
-        config.add_facet_field 'membership', label: 'Membership', query: {
+        blacklight_config.add_facet_field 'membership', label: 'Membership', query: {
           manager: {
             label: 'Manager',
             fq: "(edit_access_group_ssim:(#{groups.join(' OR ')}))" },

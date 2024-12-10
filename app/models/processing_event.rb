@@ -18,29 +18,35 @@ class ProcessingEvent < Morphosource::Works::Base
   include ::Hyrax::BasicMetadata
 
   # Custom method to handle CarrierWave uploader
-  def attachment_uploader_class
-    ProcessingEventAttachmentUploader
+  def uploader
+    @uploader ||= ProcessingEventAttachmentUploader.new.tap { |u| u.work_id = id }
   end
 
   def description_attachment=(file)
-byebug
     if file.nil?
-byebug
+      # delete attachment
+      return unless self.description_attachment_url.present?
+      file_name = File.basename(self.description_attachment_url)
+      uploader.retrieve_from_store!(file_name)
+      if uploader.file && File.exist?(uploader.file.path)
+        Rails.logger.info "Deleting file: #{uploader.file.path}"
+        uploader.remove!
+      else
+        Rails.logger.warn "File not found: #{uploader.file&.path}"
+      end
       self.description_attachment_url = nil
     else
-      
-      # todo: check and delete existing file first
-
-
 #
 #      validate_file_format(file, accepted_formats)
-
 byebug
-      uploader = self.attachment_uploader_class.new
+      extension = File.extname(file.original_filename).downcase
+      unless accepted_formats.include?(extension)
+        raise ArgumentError, "Invalid file format: #{extension}. Accepted formats: #{accepted_formats.join(', ')}"
+      end
+
       uploader.work_id = self.id
       uploader.store!(file)
       self.description_attachment_url = uploader.url
-byebug
     end
   end
 
@@ -48,6 +54,12 @@ byebug
     self.description_attachment_url
   end
 
+    def validate_file_format(file, accepted_formats)
+      extension = File.extname(file.original_filename).downcase
+      unless accepted_formats.include?(extension)
+        raise ArgumentError, "Invalid file format: #{extension}. Accepted formats: #{accepted_formats.join(', ')}"
+      end
+    end
 
   def imaging_event
     ancestors.find(&:imaging_event?)

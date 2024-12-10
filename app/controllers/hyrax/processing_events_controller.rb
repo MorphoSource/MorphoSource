@@ -20,13 +20,11 @@ module Hyrax
     before_action :record_original_parents, only: :update
 
     def update
-byebug
-      # Handle possible attachment upload
-#      if params[:description_attachment_delete] == 'delete'
-#        Morphosource::CwAttachmentService.delete(curation_concern, 'description_attachment')
-#      end
+      # Handle possible new attachment upload, delete or replace attachment
+      if params[:description_attachment_delete] == 'delete'
+        curation_concern.description_attachment = nil
+      end
       if params[:description_attachment].present?
-byebug
         curation_concern.description_attachment = params[:description_attachment]
       end      
       env = actor_environment

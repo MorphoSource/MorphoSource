@@ -42,6 +42,7 @@ class ProcessingEvent < Morphosource::Works::Base
         uploader.work_id = self.id
         uploader.store!(file)
         self.description_attachment_url = uploader.url
+        self.save
       else
         raise ArgumentError, "Invalid file format: #{extension}"
       end

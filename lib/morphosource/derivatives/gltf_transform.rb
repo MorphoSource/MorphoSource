@@ -28,7 +28,7 @@ module Morphosource::Derivatives
     def opts_by_command
       {
         optimize: { max_texture_size: 1024, simplify: false, simplify_error: 0.0001 },
-        center: {}, # could support pivot point center/below/above, but for now support only center
+        center: { pivot: 'below' },
         metalrough: {}
       }
     end
@@ -52,7 +52,8 @@ module Morphosource::Derivatives
           --simplify-error #{opts[:simplify_error]} \\
           --texture-size #{opts[:max_texture_size]}"
       when :center
-        "gltf-transform center '#{source_path}' '#{out_path}'"
+        "gltf-transform center '#{source_path}' '#{out_path}' \\
+          --pivot #{opts[:pivot]}"
       when :metalrough
         "gltf-transform metalrough '#{source_path}' '#{out_path}'"
       end

@@ -194,13 +194,14 @@ RUN pip3 install --break-system-packages --no-cache-dir --upgrade pip && \
   pip3 install --break-system-packages --no-cache-dir numpy Pillow pydicom
 
 # Install Python package pymeshlab, which has an annoying quirk for M1 platforms
-# RUN wget https://github.com/alemuntoni/PyMeshLab/releases/download/v2024.3/pymeshlab-2024.3-cp311-cp311-macosx_11_0_arm64.whl -O pymeshlab.whl && \
-#   pip3 install pymeshlab.whl;
-
 ARG TARGETPLATFORM
 RUN if [ "$TARGETPLATFORM" != "linux/arm64" ]; then \
-pip3 install --break-system-packages --no-cache-dir pymeshlab; \
-fi 
+      pip3 install --break-system-packages --no-cache-dir pymeshlab; \
+    else \
+      wget https://github.com/cnr-isti-vclab/PyMeshLab/releases/download/v2023.12.post2/pymeshlab-2023.12.post2-cp311-cp311-manylinux_2_35_aarch64.whl && \
+      pip3 install --break-system-packages --no-cache-dir pymeshlab-2023.12.post2-cp311-cp311-manylinux_2_35_aarch64.whl && \
+      apt install -y qtbase5-dev; \
+    fi
 
 # Install GLTF Pipeline 3D mesh derivative tool, used for creating Draco GLBs
 RUN npm install --global gltf-pipeline

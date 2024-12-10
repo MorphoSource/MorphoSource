@@ -1537,6 +1537,11 @@ module Hyrax
       @solr_select_path ||= ActiveFedora.solr_config.fetch(:select_path, 'select')
     end
 
+    attr_writer :solr_default_method
+    def solr_default_method
+      @solr_default_method ||= :post
+    end
+
     # A configuration point for changing the available range for
     # selecting per page results
     #

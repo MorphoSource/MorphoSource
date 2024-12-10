@@ -58,7 +58,7 @@ RSpec.describe OrganizationCollectionIndexer do
     expect(solr_document['city_ssim']).to match_array(organization.city)
     expect(solr_document['collection_code_sim']).to match_array(organization.collection_code)
     expect(solr_document['collection_code_tesim']).to match_array(organization.collection_code)
-    expect(solr_document['collection_type_gid_ssim']).to  match_array(organization.collection_type.to_global_id)
+    expect(solr_document['collection_type_gid_ssim']).to  match_array(organization.collection_type.to_global_id.to_s)
     expect(solr_document['contact_person_sim']).to match_array(organization.contact_person)
     expect(solr_document['contact_person_tesim']).to match_array(organization.contact_person)
     expect(solr_document['contributor_sim']).to match_array(organization.contributor)

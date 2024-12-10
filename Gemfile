@@ -26,7 +26,7 @@ gem 'bootstrap', '~> 4.0'
 gem 'riiif', '~> 2.2'
 
 # pull iiif_manifest fork that can handle 3D manifests
-gem 'iiif_manifest', :git => 'https://github.com/MorphoSource/iiif_manifest.git', :tag => 'v1.0.0'
+gem 'iiif_manifest', :git => 'https://github.com/MorphoSource/iiif_manifest.git', :tag => 'v1.0.1'
 
 # used for XML validation in Crossref DOI deposit
 gem 'nokogiri'

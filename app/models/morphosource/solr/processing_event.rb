@@ -6,7 +6,7 @@ module Morphosource
                                        processing_activity_description
                                        processing_activity_software
                                        processing_activity_type
-                                       description_attachment].freeze
+                                       description_attachment_url].freeze
 
       def processing_event?
         self['has_model_ssim'] == ['ProcessingEvent']

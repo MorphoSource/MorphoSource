@@ -36,30 +36,21 @@ class ProcessingEvent < Morphosource::Works::Base
       end
       self.description_attachment_url = nil
     else
-#
-#      validate_file_format(file, accepted_formats)
-byebug
+      # add attachment
       extension = File.extname(file.original_filename).downcase
-      unless accepted_formats.include?(extension)
-        raise ArgumentError, "Invalid file format: #{extension}. Accepted formats: #{accepted_formats.join(', ')}"
+      if Morphosource.attachment_formats.include?(extension)
+        uploader.work_id = self.id
+        uploader.store!(file)
+        self.description_attachment_url = uploader.url
+      else
+        raise ArgumentError, "Invalid file format: #{extension}"
       end
-
-      uploader.work_id = self.id
-      uploader.store!(file)
-      self.description_attachment_url = uploader.url
     end
   end
 
   def description_attachment
     self.description_attachment_url
   end
-
-    def validate_file_format(file, accepted_formats)
-      extension = File.extname(file.original_filename).downcase
-      unless accepted_formats.include?(extension)
-        raise ArgumentError, "Invalid file format: #{extension}. Accepted formats: #{accepted_formats.join(', ')}"
-      end
-    end
 
   def imaging_event
     ancestors.find(&:imaging_event?)

@@ -32,7 +32,7 @@ module Morphosource
         @collection.attributes = collection_params.except(:members, :parent_id, :collection_type_gid)
         @collection.depositor = current_user.user_key
         add_members_to_collection unless batch.empty?
-        @collection.visibility = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE unless @collection.discoverable?
+        @collection.visibility = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE unless Hyrax::CollectionType.for(collection: @collection).discoverable?
         if @collection.save
           after_create
         else

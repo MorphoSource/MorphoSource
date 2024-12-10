@@ -181,22 +181,22 @@ module Morphosource
 
     def works_export_filename
       filename = t("morphosource.collections.#{collection_type&.machine_id}.exports.#{tab.to_s}.media_export.filename")
-      filename.include?('translation missing') ? "#{@document_type.titleize.pluralize} Query" : filename
+      filename.downcase.include?('translation missing') ? "#{@document_type.titleize.pluralize} Query" : filename
     end
 
     def media_download_counts_filename
       filename = t("morphosource.collections.#{collection_type&.machine_id}.exports.#{tab.to_s}.media_download_counts.filename")
-      filename.include?('translation missing') ? 'Media%20Download%20Counts' : filename
+      filename.downcase.include?('translation missing') ? 'Media%20Download%20Counts' : filename
     end
 
     def media_downloads_filename
       filename = t("morphosource.collections.#{collection_type&.machine_id}.exports.#{tab.to_s}.media_downloads.filename")
-      filename.include?('translation missing') ? 'Media%20Downloads' : filename
+      filename.downcase.include?('translation missing') ? 'Media%20Downloads' : filename
     end
 
     def media_requests_filename
       filename = t("morphosource.collections.#{collection_type&.machine_id}.exports.#{tab.to_s}.media_requests.filename")
-      filename.include?('translation missing') ? 'Media%20Requests' : filename
+      filename.downcase.include?('translation missing') ? 'Media%20Requests' : filename
     end
   end
 end

@@ -18,7 +18,7 @@ module Morphosource
       def search_organizations(q)
         blacklight_params = ActionController::Parameters.new( { "search_field"=>"all_fields", "q" => q } )
         search_builder = Morphosource::Catalog::OrganizationCollectionsCatalogSearchBuilder.new(self).with(blacklight_params)
-        repository = OrganizationsCatalogController.new.repository
+        repository = OrganizationsCatalogController.new.blacklight_config.repository
         repository.search(search_builder.query).documents
       end
   end

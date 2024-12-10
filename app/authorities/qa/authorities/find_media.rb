@@ -5,7 +5,7 @@ module Qa::Authorities
     def search(_q, controller)
       # The My::FindWorksSearchBuilder expects a current_user
       return [] unless controller.current_user
-      repo = CatalogController.new.repository
+      repo = CatalogController.new.blacklight_config.repository
       builder = search_builder(controller)
       response = repo.search(builder)
       docs = response.documents

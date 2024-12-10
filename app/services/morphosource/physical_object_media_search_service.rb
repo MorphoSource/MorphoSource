@@ -17,7 +17,7 @@ module Morphosource
 
     def search
       builder = list_search_builder
-      repository = MediaCatalogController.new.repository
+      repository = MediaCatalogController.new.blacklight_config.repository
       repository.search(builder)
     end
 

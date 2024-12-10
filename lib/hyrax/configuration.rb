@@ -478,6 +478,16 @@ module Hyrax
       @microdata_default_type ||= 'http://schema.org/CreativeWork'
     end
 
+    attr_writer :derivative_services
+    # The registered candidate derivative services.  In the array, the first `valid?` candidate will
+    # handle the derivative generation.
+    #
+    # @return [Array] of objects that conform to Hyrax::DerivativeService interface.
+    # @see Hyrax::DerivativeService
+    def derivative_services
+      @derivative_services ||= [Morphosource::MsFileSetDerivativesService]
+    end
+
     attr_writer :file_set_model
     ##
     # @return [#constantize] a string representation of the admin set

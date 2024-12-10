@@ -3,9 +3,14 @@ require 'rails_helper'
 describe Morphosource::Derivatives::Processors::ImageSeriesCroppedImage do
   subject { described_class.new(file_name, directives) }
 
+  let(:file_set)  { FactoryBot.create(:file_set) }
+  let(:derivative_path) { Morphosource::DerivativePath.derivative_path_for_reference(file_set, 'thumbnail') }
   let(:file_name) { 'file_name' }
-  let(:derivative_path) { '/tmp/test.jpg' }
-  let(:directives) { { label: :dcm, format: 'dcm', url: URI("file://#{derivative_path}").to_s } }
+  let(:directives) {{
+    label: :dcm, 
+    format: 'dcm', 
+    url: derivative_path
+  }}
 
   describe "#process" do
     context "when a timeout is set" do
@@ -52,7 +57,7 @@ describe Morphosource::Derivatives::Processors::ImageSeriesCroppedImage do
         it "produces the derivative dcm" do
           subject.process
 					expect(File.exist?(derivative_path)).to be true
-					expect(File.size(derivative_path)).to be > 0
+					expect(File.size(derivative_path)).to be > 10000
         end
       end
 
@@ -62,7 +67,7 @@ describe Morphosource::Derivatives::Processors::ImageSeriesCroppedImage do
         it "produces the derivative dcm" do
           subject.process
           expect(File.exist?(derivative_path)).to be true
-          expect(File.size(derivative_path)).to be > 0
+          expect(File.size(derivative_path)).to be > 10000
         end
       end
     end

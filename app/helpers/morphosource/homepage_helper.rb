@@ -18,7 +18,7 @@ module Morphosource
 
     # Return 6 collections
      def collections(rows: 6)
-       builder = Hyrax::CollectionSearchBuilder.new(self).rows(rows)
+       builder = Hyrax::CollectionSearchBuilder.new(CollectionsCatalogController.new).rows(rows)
        config = CollectionsCatalogController.blacklight_config
        response = Blacklight::Solr::Repository.new(config).search(builder)
        response.documents

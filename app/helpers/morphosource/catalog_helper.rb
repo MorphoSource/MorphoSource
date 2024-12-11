@@ -22,7 +22,7 @@ module Morphosource::CatalogHelper
     return nil unless args[:value].present?
 
     display_name = args[:document]["user_with_ownership_name_tesim"]&.first || "User Name Unknown"
-    if args[:document][:owner_type_ssi] == "OrganizationCollection"
+    if args[:document]["owner_type_ssi"] == "OrganizationCollection"
       link_to display_name, main_app.organization_path(args[:value]&.first)
     else
       link_to display_name, Hyrax::Engine.routes.url_helpers.user_path(args[:value]&.first)

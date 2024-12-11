@@ -20,16 +20,22 @@ RSpec.describe Morphosource::Collections::MediaLists::SequentialSectionListsCont
       it 'allows access' do
         get :about, params: params
         expect(response.status).to eq(200)
+        controller.instance_variable_set(:@presenter, nil)
         get :facet, params: { collection_id: list.id, id: 'media_type' }
         expect(response.status).to eq(200)
+        controller.instance_variable_set(:@presenter, nil)
         get :media_download_counts_with_intersections_facet, params: params, format: :csv
         expect(response.status).to eq(200)
+        controller.instance_variable_set(:@presenter, nil)
         get :media_downloads, params: params, format: :csv
         expect(response.status).to eq(200)
+        controller.instance_variable_set(:@presenter, nil)
         get :media_export_with_intersections_facet, params: params, format: :csv
         expect(response.status).to eq(200)
+        controller.instance_variable_set(:@presenter, nil)
         get :media_requests, params: params, format: :csv
         expect(response.status).to eq(200)
+        controller.instance_variable_set(:@presenter, nil)
         get :show, params: params
         expect(response.status).to eq(200)
       end
@@ -41,16 +47,22 @@ RSpec.describe Morphosource::Collections::MediaLists::SequentialSectionListsCont
       it 'allows access' do
         get :about, params: params
         expect(response.status).to eq(200)
+        controller.instance_variable_set(:@presenter, nil)
         get :facet, params: { collection_id: list.id, id: 'media_type' }
         expect(response.status).to eq(200)
+        controller.instance_variable_set(:@presenter, nil)
         get :media_download_counts_with_intersections_facet, params: params, format: :csv
         expect(response.status).to eq(200)
+        controller.instance_variable_set(:@presenter, nil)
         get :media_export_with_intersections_facet, params: params, format: :csv
         expect(response.status).to eq(200)
+        controller.instance_variable_set(:@presenter, nil)
         get :show, params: params
         expect(response.status).to eq(200)
+        controller.instance_variable_set(:@presenter, nil)
         get :media_downloads, params: params, format: :csv
         expect(response.status).to eq(200)
+        controller.instance_variable_set(:@presenter, nil)
         get :media_requests, params: params, format: :csv
         expect(response.status).to eq(200)
       end
@@ -63,17 +75,23 @@ RSpec.describe Morphosource::Collections::MediaLists::SequentialSectionListsCont
         # allow
         get :about, params: params
         expect(response.status).to eq(200)
+        controller.instance_variable_set(:@presenter, nil)
         get :facet, params: { collection_id: list.id, id: 'media_type' }
         expect(response.status).to eq(200)
+        controller.instance_variable_set(:@presenter, nil)
         get :show, params: params
         expect(response.status).to eq(200)
+        controller.instance_variable_set(:@presenter, nil)
         # deny
         get :media_download_counts_with_intersections_facet, params: params, format: :csv
         expect(response.status).to eq(403)
+        controller.instance_variable_set(:@presenter, nil)
         get :media_downloads, params: params, format: :csv
         expect(response.status).to eq(403)
+        controller.instance_variable_set(:@presenter, nil)
         get :media_export_with_intersections_facet, params: params, format: :csv
         expect(response.status).to eq(403)
+        controller.instance_variable_set(:@presenter, nil)
         get :media_requests, params: params, format: :csv
         expect(response.status).to eq(403)
       end

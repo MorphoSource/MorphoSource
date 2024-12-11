@@ -9,6 +9,8 @@ module Morphosource
       self.default_processor_chain += [:return_selected_fields, :filter_collection_facet_for_access]
 
       def member_of_collection(solr_parameters)
+        return unless collection.present? 
+
         solr_parameters[:fq] ||= []
         # if collection is a team, get linked organization media
         if collection.team? && collection.organization.present?
@@ -29,11 +31,12 @@ module Morphosource
       end
 
       def collection_ids
+        return [] unless collection
         [collection.id] + subcollection_ids
       end
 
       def subcollection_ids
-        return [] unless collection.team?
+        return [] unless collection && collection.team?
 
         subcollections = Morphosource::Collections::CollectionMemberService.new(scope: scope, collection: collection, params: {}).available_member_subcollections
         subcollections.docs.map(&:id)

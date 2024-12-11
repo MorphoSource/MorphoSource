@@ -32,7 +32,7 @@ module Morphosource
       def get_collection_media_ids
         sort = params["sort"]&.split(',')&.join(' ') || "id asc"
         search_builder = self.search_builder_class.new(scope: self, collection: @collection).merge(fl: 'id', sort: sort).with( { rows: 999999 } )
-        repository.search(search_builder).response["docs"].map{|d| d["id"]}
+        blacklight_config.repository.search(search_builder).response["docs"].map{|d| d["id"]}
       end
 
       # Find indices of collection_media_ids that correspond to media in current page
@@ -72,7 +72,7 @@ module Morphosource
         end
 
         page = params["page"].present? ? params["page"].to_i : 1
-        per = params["per_page"].present? ? params["per_page"].to_i : @blacklight_config.default_solr_params[:rows]
+        per = params["per_page"].present? ? params["per_page"].to_i : blacklight_config.default_solr_params[:rows]
         Kaminari.paginate_array(document_list, total_count: document_list.count).page(page).per(per)
       end
 

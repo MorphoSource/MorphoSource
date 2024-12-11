@@ -18,7 +18,7 @@ module Hyrax
     configure_facets
 
     def index
-      (@response, @document_list) = query_solr
+      (@response, @document_list) = search_service.search_results
       @paginated_document_list = paginated_item_list
       get_organization_count_by_type
 

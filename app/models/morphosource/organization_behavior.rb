@@ -42,5 +42,10 @@ module Morphosource
         organization_for_attachment: attachment('agreement') ? id : nil
       }
     end
+
+    def normalize_download_reviewer
+      self.download_reviewer = self.download_reviewer.map { |x| x.split(',') }.flatten
+    end
+
   end
 end

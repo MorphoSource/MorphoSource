@@ -25,10 +25,6 @@ class Organization < Morphosource::Works::Base
   # schema (by adding accepts_nested_attributes)
   include ::Hyrax::BasicMetadata
 
-  def normalize_download_reviewer
-    self.download_reviewer = self.download_reviewer.map { |x| x.split(',') }.flatten
-  end
-
   def specimens
     BiologicalSpecimen.where(organization_id_tesim: id)
   end

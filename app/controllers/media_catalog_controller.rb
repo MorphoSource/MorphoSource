@@ -119,7 +119,7 @@ class MediaCatalogController < CatalogController
   # get a single document from the index
   # to add responses for formats other than html or json see _Blacklight::Document::Export_
   def show
-    @response, @document = fetch params[:id], { fq: 'has_model_ssim:Media' }
+    @response, @document = search_service.fetch params[:id], { fq: 'has_model_ssim:Media' }
 
     respond_to do |format|
       format.html { setup_next_and_previous_documents }
@@ -130,8 +130,8 @@ class MediaCatalogController < CatalogController
 
   # an API route for returning media file object details using catalog
   def show_file_metadata
-    @response, @document = fetch params[:id], { fq: "has_model_ssim:Media", fl: ["id", "file_set_ids_ssim"] }
-    _, @fileset_documents = fetch ( @document["file_set_ids_ssim"] || [] ), { fq: "has_model_ssim:FileSet" }
+    @response, @document = search_service.fetch params[:id], { fq: "has_model_ssim:Media", fl: ["id", "file_set_ids_ssim"] }
+    _, @fileset_documents = search_service.fetch ( @document["file_set_ids_ssim"] || [] ), { fq: "has_model_ssim:FileSet" }
     @fileset_document = @fileset_documents&.first
 
     response = @fileset_document.present? ? 

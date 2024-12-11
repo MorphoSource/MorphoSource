@@ -59,7 +59,7 @@ class OrganizationsCatalogController < CatalogController
   end
 
   def show
-    @response, @document = fetch params[:id], { fq: 'has_model_ssim:Organization' }
+    @response, @document = search_service.fetch params[:id], { fq: 'has_model_ssim:Organization' }
 
     respond_to do |format|
       format.html { setup_next_and_previous_documents }

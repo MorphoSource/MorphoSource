@@ -6,6 +6,7 @@ class OrganizationCollection < Collection
   include Morphosource::OrganizationBehavior
   include Morphosource::PersistentIdentifiersBehavior
 
+  before_validation :normalize_download_reviewer
   before_save :convert_media_ownership_transfer
   after_create :create_collection_groups
   after_create :create_organization_project

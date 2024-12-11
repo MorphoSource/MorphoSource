@@ -18,7 +18,7 @@ RSpec.describe Hyrax::UploadsController do
             upload_hash: SecureRandom.uuid,
             format: 'json' 
           }
-          expect(response).to be_success
+          expect(response).to have_http_status(:success)
           expect(assigns(:upload)).to be_kind_of Hyrax::UploadedFile
           expect(assigns(:upload)).to be_persisted
           expect(assigns(:upload).user).to eq user
@@ -39,7 +39,7 @@ RSpec.describe Hyrax::UploadsController do
               upload_hash: upload_hash,
               format: 'json' 
             }
-          expect(response).to be_success
+          expect(response).to have_http_status(:success)
           expect(assigns(:upload)).to be_kind_of Hyrax::UploadedFile
           expect(assigns(:upload)).to be_persisted
           expect(assigns(:upload).user).to eq user

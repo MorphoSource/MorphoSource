@@ -140,7 +140,7 @@ module Hyrax
         end
         search_builder.rows = 99999
         search_builder.query["fl"] = 'id'
-        MediaCatalogController.new.repository.search(search_builder.query).response['docs'].map { |doc| [doc['id'], doc['id']] }
+        MediaCatalogController.new.blacklight_config.repository.search(search_builder.query).response['docs'].map { |doc| [doc['id'], doc['id']] }
       end
 
       # Override this method if you have a different way of getting the member's ids

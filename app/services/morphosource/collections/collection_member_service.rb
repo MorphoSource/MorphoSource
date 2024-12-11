@@ -5,9 +5,9 @@ module Morphosource
     # TODO: The Hyrax equivalent of this class is deprecated in 3.6.0, might want to update
     class CollectionMemberService < Hyrax::Collections::CollectionMemberService
       attr_reader :scope, :params, :collection
-      delegate :repository, to: :scope
+      delegate :blacklight_config, to: :scope
 
-      # @param scope [#repository] Typically a controller object which responds to :repository
+      # @param scope [#blacklight_config] Typically a controller object which responds to :blacklight_config
       # @param [Collection]
       # @param [ActionController::Parameters] query params
       def initialize(scope:, collection:, params:)
@@ -139,13 +139,13 @@ module Morphosource
       # @api private
       #
       def query_solr(query_builder:, query_params:)
-        repository.search(query_builder.with(query_params).query)
+        blacklight_config.repository.search(query_builder.with(query_params).query)
       end
 
       # @api private
       #
       def query_solr_with_field_selection(query_builder:, fl:)
-        repository.search(query_builder.merge(fl: fl).query)
+        blacklight_config.repository.search(query_builder.merge(fl: fl).query)
       end
 
       # @api private
@@ -161,7 +161,7 @@ module Morphosource
           query_builder.merge('facet.limit' => -1)
           query_builder.rows = rows
           query_builder.start = start
-          repository.search(query_builder.query)
+          blacklight_config.repository.search(query_builder.query)
         ensure
           query_builder.merge(q: initial_q)
           query_builder.merge(fq: initial_fq)
@@ -182,7 +182,7 @@ module Morphosource
           query_builder.merge('facet.limit' => -1)
           query_builder.rows = rows
           query_builder.start = start
-          repository.search(query_builder.query)
+          blacklight_config.repository.search(query_builder.query)
         ensure
           query_builder.merge(q: initial_q)
           query_builder.merge(fq: initial_fq)

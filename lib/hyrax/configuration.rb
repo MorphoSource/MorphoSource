@@ -478,6 +478,30 @@ module Hyrax
       @microdata_default_type ||= 'http://schema.org/CreativeWork'
     end
 
+    attr_writer :derivative_services
+    # The registered candidate derivative services.  In the array, the first `valid?` candidate will
+    # handle the derivative generation.
+    #
+    # @return [Array] of objects that conform to Hyrax::DerivativeService interface.
+    # @see Hyrax::DerivativeService
+    def derivative_services
+      @derivative_services ||= [Morphosource::MsFileSetDerivativesService]
+    end
+
+    attr_writer :file_set_model
+    ##
+    # @return [#constantize] a string representation of the admin set
+    #   model
+    def file_set_model
+      @file_set_model ||= 'Hyrax::FileSet'
+    end
+
+    ##
+    # @return [Class] the configured admin set model class
+    def file_set_class
+      file_set_model.constantize
+    end
+
     ##
     # @!attribute [rw] file_set_file_service
     #   @return [Class] implementer of {Hyrax::FileSetFileService}
@@ -1535,6 +1559,11 @@ module Hyrax
     attr_writer :solr_select_path
     def solr_select_path
       @solr_select_path ||= ActiveFedora.solr_config.fetch(:select_path, 'select')
+    end
+
+    attr_writer :solr_default_method
+    def solr_default_method
+      @solr_default_method ||= :post
     end
 
     # A configuration point for changing the available range for

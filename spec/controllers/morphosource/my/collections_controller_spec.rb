@@ -27,7 +27,7 @@ RSpec.describe Morphosource::My::CollectionsController, type: :controller do
   end
 
   describe 'search_builder_class' do
-    it { expect(controller.search_builder_class).to eq(Morphosource::My::CollectionsSearchBuilder) }
+    it { expect(controller.blacklight_config.search_builder_class).to eq(Morphosource::My::CollectionsSearchBuilder) }
   end
 
   describe 'search_facet_path' do

@@ -881,39 +881,57 @@ namespace :morphosource do
     }).import
   end
 
-  desc "Migrate processing event attachments to use CarrierWave"
-  task :migrate_processing_event_attachments => :environment do
+  desc "Migrate attachments to use CarrierWave"
+  task :migrate_attachments, [:model, :field, :old_attachment_field] => :environment do |task, args|
+    model_name = args[:model]
+    field_name = args[:field]
+    old_attachment_field = args[:old_attachment_field] 
 
-      #another one : /processing_events/000200383/ , media 000200384
+    unless model_name.present? && field_name.present?
+      puts "Valid arguments required: model, field, old_attachment_field"
+      exit
+    end
 
+    model_class = model_name.constantize
+    solr_query = "has_model_ssim:#{model_name}"
 
-    qry = "has_model_ssim:ProcessingEvent AND member_ids_ssim:*"
-    result = ActiveFedora::SolrService.query(qry, rows: 999999)
-    puts "#{result.count} Processing Event found "
-    result.each do |hit|
+    puts "Querying Solr with: #{solr_query}"
+    results = ActiveFedora::SolrService.query(solr_query, rows: 999_999)
+    puts "Found #{results.count} records for model #{model_name}"
+
+    results.each do |hit|
       begin
-        processing_event = ProcessingEvent.find(hit.id)
-        old_attachment_path = Morphosource::AttachmentService.get(hit.id, "pe_description")
-        puts "PE #{hit.id} old_attachment_path: #{old_attachment_path}"
-        if processing_event.present? && old_attachment_path.present? 
-          if File.exist?(old_attachment_path)    
+        record = model_class.find(hit.id)
+        old_attachment_path = Morphosource::AttachmentService.get(hit.id, old_attachment_field)
+
+        puts "Processing #{model_name} ##{hit.id} with old attachment path: #{old_attachment_path}"
+
+        if record.present? && old_attachment_path.present? && !record.send(field_name).present?
+          if File.exist?(old_attachment_path)
             file = ActionDispatch::Http::UploadedFile.new(
               filename: File.basename(old_attachment_path),
               type: Marcel::MimeType.for(old_attachment_path),
               tempfile: File.open(old_attachment_path)
             )
-            processing_event.description_attachment = file
-            puts "PE #{hit.id} description_attachment: #{description_attachment}"
+
+            record.send("#{field_name}=", file)
+
+            if record.save
+              puts "Successfully migrated #{model_name} ##{hit.id}: #{field_name} -> #{record.send(field_name)}"
+            else
+              puts "Failed to save #{model_name} ##{hit.id} after migrating attachment."
+            end
           else
-            puts "Skipping PE #{hit.id} old attachment does not exist: #{old_attachment_path}"
+            puts "Skipping #{model_name} ##{hit.id}: File does not exist at path #{old_attachment_path}"
           end
+        else
+          puts "Skipping #{model_name} ##{hit.id}: Record not found, no old attachment, or #{field_name} already present."
         end
       rescue StandardError => e
-        puts "Skipping PE #{hit.id} -- An error occurred: #{e.message}"
+        puts "Error processing #{model_name} ##{hit.id}: #{e.message}"
       end
-    end # /result.each
+    end
   end
-
 
   # Set and clear sitewide announcement messages and time until maintenance
 

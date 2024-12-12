@@ -1,5 +1,22 @@
+module CanCanSkipperFixInheritance
+  def self.included(klass)
+    klass.extend(ClassMethods)
+  end
+
+  module ClassMethods
+    def inherited(klass)
+      super
+      klass._cancan_skipper = cancan_skipper.deep_dup
+    end
+  end
+end
+
 class ApplicationController < ActionController::Base
   helper Openseadragon::OpenseadragonHelper
+
+  # Fixes a bug in CanCanCan, see https://github.com/CanCanCommunity/cancancan/issues/500
+  include CanCanSkipperFixInheritance
+  
   # Adds a few additional behaviors into the application controller
   include Blacklight::Controller
   include Hydra::Controller::ControllerBehavior

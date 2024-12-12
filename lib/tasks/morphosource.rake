@@ -887,12 +887,23 @@ namespace :morphosource do
     field_name = args[:field]
     old_attachment_field = args[:old_attachment_field] 
 
-    unless model_name.present? && field_name.present?
+    unless model_name.present? && field_name.present? && old_attachment_field.present?
       puts "Valid arguments required: model, field, old_attachment_field"
       exit
     end
 
-    model_class = model_name.constantize
+    begin
+      model_class = model_name.constantize
+    rescue StandardError => e
+      puts "Error resolving model '#{model_name}': #{e.message}"
+      exit
+    end
+
+    unless model_class.method_defined?(field_name)
+      puts "Field '#{field_name}' is not defined on model '#{model_name}'"
+      exit
+    end
+
     solr_query = "has_model_ssim:#{model_name}"
 
     puts "Querying Solr with: #{solr_query}"

@@ -4,38 +4,50 @@ require 'spec_helper'
 RSpec.describe Morphosource::Collections::MediaLists::SequentialSectionListsController, type: :controller do
 
   let(:depositor) { User.create(email: 'depositor@email.com', password: 'password') }
-  let(:list)      { FactoryBot.create(:sequential_section_list, title: ['sequential Section list'], depositor: depositor.ms_id, visibility: 'open') }
+  let(:ssl)      { FactoryBot.create(:sequential_section_list, title: ['sequential Section list'], depositor: depositor.ms_id, visibility: 'open') }
 
   describe 'restricted actions' do
-    let(:params)  { { id: list.id } }
+    let(:params)  { { id: ssl.id } }
 
     before do
-      Morphosource::Collections::PermissionsCreateService.create_default(collection: list)
+      Morphosource::Collections::PermissionsCreateService.create_default(collection: ssl)
       sign_in user
     end
 
     context 'user is an admin' do
       let(:user) { FactoryBot.create(:admin) }
 
-      it 'allows access' do
+      it 'allows access to about' do
         get :about, params: params
         expect(response.status).to eq(200)
-        controller.instance_variable_set(:@presenter, nil)
-        get :facet, params: { collection_id: list.id, id: 'media_type' }
+      end
+
+      it 'allows access to facet' do
+        get :facet, params: { collection_id: ssl.id, id: 'media_type' }
         expect(response.status).to eq(200)
-        controller.instance_variable_set(:@presenter, nil)
+      end
+
+      it 'allows access to media_download_counts_with_intersections_facet' do
         get :media_download_counts_with_intersections_facet, params: params, format: :csv
         expect(response.status).to eq(200)
-        controller.instance_variable_set(:@presenter, nil)
+      end
+
+      it 'allows access to media_downloads' do
         get :media_downloads, params: params, format: :csv
         expect(response.status).to eq(200)
-        controller.instance_variable_set(:@presenter, nil)
+      end
+
+      it 'allows access to media_export_with_intersections_facet' do
         get :media_export_with_intersections_facet, params: params, format: :csv
         expect(response.status).to eq(200)
-        controller.instance_variable_set(:@presenter, nil)
+      end
+
+      it 'allows access to media_requests' do
         get :media_requests, params: params, format: :csv
         expect(response.status).to eq(200)
-        controller.instance_variable_set(:@presenter, nil)
+      end
+
+      it 'allows access to show' do
         get :show, params: params
         expect(response.status).to eq(200)
       end
@@ -44,26 +56,38 @@ RSpec.describe Morphosource::Collections::MediaLists::SequentialSectionListsCont
     context 'user is a list manager' do
       let(:user) { depositor }
 
-      it 'allows access' do
+      it 'allows access to about' do
         get :about, params: params
         expect(response.status).to eq(200)
-        controller.instance_variable_set(:@presenter, nil)
-        get :facet, params: { collection_id: list.id, id: 'media_type' }
+      end
+
+      it 'allows access to facet' do
+        get :facet, params: { collection_id: ssl.id, id: 'media_type' }
         expect(response.status).to eq(200)
-        controller.instance_variable_set(:@presenter, nil)
+      end
+
+      it 'allows access to media_download_counts_with_intersections_facet' do
         get :media_download_counts_with_intersections_facet, params: params, format: :csv
         expect(response.status).to eq(200)
-        controller.instance_variable_set(:@presenter, nil)
-        get :media_export_with_intersections_facet, params: params, format: :csv
-        expect(response.status).to eq(200)
-        controller.instance_variable_set(:@presenter, nil)
-        get :show, params: params
-        expect(response.status).to eq(200)
-        controller.instance_variable_set(:@presenter, nil)
+      end
+
+      it 'allows access to media_downloads' do
         get :media_downloads, params: params, format: :csv
         expect(response.status).to eq(200)
-        controller.instance_variable_set(:@presenter, nil)
+      end
+
+      it 'allows access to media_export_with_intersections_facet' do
+        get :media_export_with_intersections_facet, params: params, format: :csv
+        expect(response.status).to eq(200)
+      end
+
+      it 'allows access to media_requests' do
         get :media_requests, params: params, format: :csv
+        expect(response.status).to eq(200)
+      end
+
+      it 'allows access to show' do
+        get :show, params: params
         expect(response.status).to eq(200)
       end
     end
@@ -71,29 +95,45 @@ RSpec.describe Morphosource::Collections::MediaLists::SequentialSectionListsCont
     context 'user is not an admin or list manager' do
       let(:user)  { FactoryBot.create(:registered_user) }
 
-      it 'allows some actions and denies others' do
-        # allow
-        get :about, params: params
-        expect(response.status).to eq(200)
-        controller.instance_variable_set(:@presenter, nil)
-        get :facet, params: { collection_id: list.id, id: 'media_type' }
-        expect(response.status).to eq(200)
-        controller.instance_variable_set(:@presenter, nil)
-        get :show, params: params
-        expect(response.status).to eq(200)
-        controller.instance_variable_set(:@presenter, nil)
-        # deny
-        get :media_download_counts_with_intersections_facet, params: params, format: :csv
-        expect(response.status).to eq(403)
-        controller.instance_variable_set(:@presenter, nil)
-        get :media_downloads, params: params, format: :csv
-        expect(response.status).to eq(403)
-        controller.instance_variable_set(:@presenter, nil)
-        get :media_export_with_intersections_facet, params: params, format: :csv
-        expect(response.status).to eq(403)
-        controller.instance_variable_set(:@presenter, nil)
-        get :media_requests, params: params, format: :csv
-        expect(response.status).to eq(403)
+      context 'allows some actions and denies others' do
+        # allows
+
+        it 'allows access to about' do
+          get :about, params: params
+          expect(response.status).to eq(200)
+        end
+  
+        it 'allows access to facet' do
+          get :facet, params: { collection_id: ssl.id, id: 'media_type' }
+          expect(response.status).to eq(200)
+        end
+
+        it 'allows access to show' do
+          get :show, params: params
+          expect(response.status).to eq(200)
+        end
+
+        # denies
+  
+        it 'allows access to media_download_counts_with_intersections_facet' do
+          get :media_download_counts_with_intersections_facet, params: params, format: :csv
+          expect(response.status).to eq(403)
+        end
+  
+        it 'allows access to media_downloads' do
+          get :media_downloads, params: params, format: :csv
+          expect(response.status).to eq(403)
+        end
+  
+        it 'allows access to media_export_with_intersections_facet' do
+          get :media_export_with_intersections_facet, params: params, format: :csv
+          expect(response.status).to eq(403)
+        end
+  
+        it 'allows access to media_requests' do
+          get :media_requests, params: params, format: :csv
+          expect(response.status).to eq(403)
+        end
       end
     end
   end
@@ -104,20 +144,20 @@ RSpec.describe Morphosource::Collections::MediaLists::SequentialSectionListsCont
 
   describe 'search_action_url' do
     before do
-      subject.instance_variable_set(:@curation_concern, list)
+      subject.instance_variable_set(:@curation_concern, ssl)
     end
     it 'is sequential_section_list_path' do
-      expect(subject.send(:search_action_url)).to eq(sequential_section_list_path(list.id))
+      expect(subject.send(:search_action_url)).to eq(sequential_section_list_path(ssl.id))
     end
   end
 
   describe 'search_facet_path' do
     let(:facet_id)  { 'depositor_ssi' }
     before do
-      subject.instance_variable_set(:@collection, list)
+      subject.instance_variable_set(:@collection, ssl)
     end
     it 'is sequential_section_list_media_facet_path' do
-      expect(subject.send(:search_facet_path, {id: facet_id})).to eq(sequential_section_list_media_facet_path(list.id, id: facet_id))
+      expect(subject.send(:search_facet_path, {id: facet_id})).to eq(sequential_section_list_media_facet_path(ssl.id, id: facet_id))
     end
   end
 

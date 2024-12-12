@@ -33,7 +33,7 @@ RSpec.describe Morphosource::Collections::PermissionsCreateService do
 
     before do
       collection_types.each do |type|
-        allow(Hyrax::CollectionType).to receive(:find_by_gid!).with(type.to_global_id).and_return(type)
+        allow(Hyrax::CollectionType).to receive(:find_by_gid!).with(type.to_global_id.to_s).and_return(type)
       end
       collections.each do |collection|
         Collection::DEFAULT_GROUP_ROLES.each do |role|

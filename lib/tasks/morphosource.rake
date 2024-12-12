@@ -881,6 +881,40 @@ namespace :morphosource do
     }).import
   end
 
+  desc "Migrate processing event attachments to use CarrierWave"
+  task :migrate_processing_event_attachments => :environment do
+
+      #another one : /processing_events/000200383/ , media 000200384
+
+
+    qry = "has_model_ssim:ProcessingEvent AND member_ids_ssim:*"
+    result = ActiveFedora::SolrService.query(qry, rows: 999999)
+    puts "#{result.count} Processing Event found "
+    result.each do |hit|
+      begin
+        processing_event = ProcessingEvent.find(hit.id)
+        old_attachment_path = Morphosource::AttachmentService.get(hit.id, "pe_description")
+        puts "PE #{hit.id} old_attachment_path: #{old_attachment_path}"
+        if processing_event.present? && old_attachment_path.present? 
+          if File.exist?(old_attachment_path)    
+            file = ActionDispatch::Http::UploadedFile.new(
+              filename: File.basename(old_attachment_path),
+              type: Marcel::MimeType.for(old_attachment_path),
+              tempfile: File.open(old_attachment_path)
+            )
+            processing_event.description_attachment = file
+            puts "PE #{hit.id} description_attachment: #{description_attachment}"
+          else
+            puts "Skipping PE #{hit.id} old attachment does not exist: #{old_attachment_path}"
+          end
+        end
+      rescue StandardError => e
+        puts "Skipping PE #{hit.id} -- An error occurred: #{e.message}"
+      end
+    end # /result.each
+  end
+
+
   # Set and clear sitewide announcement messages and time until maintenance
 
   desc "Set sitewide flash-based announcement message"

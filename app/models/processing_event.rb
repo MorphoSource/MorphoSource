@@ -22,6 +22,7 @@ class ProcessingEvent < Morphosource::Works::Base
     @uploader ||= ProcessingEventAttachmentUploader.new.tap { |u| u.work_id = id }
   end
 
+  # @param file [File, ActionDispatch::Http::UploadedFile] The file to be attached, or nil to delete the file
   def description_attachment=(file)
     if file.nil?
       # delete attachment

@@ -907,7 +907,7 @@ namespace :morphosource do
     solr_query = "has_model_ssim:#{model_name}"
 
     puts "Querying Solr with: #{solr_query}"
-    results = ActiveFedora::SolrService.query(solr_query, rows: 999_999)
+    results = ActiveFedora::SolrService.query(solr_query, rows: 999999)
     puts "Found #{results.count} records for model #{model_name}"
 
     results.each do |hit|
@@ -915,28 +915,28 @@ namespace :morphosource do
         record = model_class.find(hit.id)
         old_attachment_path = Morphosource::AttachmentService.get(hit.id, old_attachment_field)
 
-        puts "Processing #{model_name} ##{hit.id} with old attachment path: #{old_attachment_path}"
-
-        if record.present? && old_attachment_path.present? && !record.send(field_name).present?
-          if File.exist?(old_attachment_path)
-            file = ActionDispatch::Http::UploadedFile.new(
-              filename: File.basename(old_attachment_path),
-              type: Marcel::MimeType.for(old_attachment_path),
-              tempfile: File.open(old_attachment_path)
-            )
-
-            record.send("#{field_name}=", file)
-
-            if record.save
-              puts "Successfully migrated #{model_name} ##{hit.id}: #{field_name} -> #{record.send(field_name)}"
-            else
-              puts "Failed to save #{model_name} ##{hit.id} after migrating attachment."
-            end
-          else
-            puts "Skipping #{model_name} ##{hit.id}: File does not exist at path #{old_attachment_path}"
-          end
-        else
+        unless record.present? && old_attachment_path.present? && !record.send(field_name).present?
           puts "Skipping #{model_name} ##{hit.id}: Record not found, no old attachment, or #{field_name} already present."
+          next
+        end
+
+        unless File.exist?(old_attachment_path)
+          puts "Skipping #{model_name} ##{hit.id}: File does not exist at path #{old_attachment_path}"
+          next
+        end
+
+        file = ActionDispatch::Http::UploadedFile.new(
+          filename: File.basename(old_attachment_path),
+          type: Marcel::MimeType.for(old_attachment_path),
+          tempfile: File.open(old_attachment_path)
+        )
+
+        record.send("#{field_name}=", file)
+
+        if record.save
+          puts "Successfully migrated #{model_name} ##{hit.id}: #{field_name} -> #{record.send(field_name)}"
+        else
+          puts "Failed to save #{model_name} ##{hit.id} after migrating attachment."
         end
       rescue StandardError => e
         puts "Error processing #{model_name} ##{hit.id}: #{e.message}"

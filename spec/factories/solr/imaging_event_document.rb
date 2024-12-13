@@ -1,6 +1,5 @@
 # Factory for Imaging Event SolrDocument instances
 IMAGING_EVENT_DOC_ATTRIBUTES = {
-  id: "234567891",
   has_model_ssim: ["ImagingEvent"],
   creator_tesim: ["Creator"],
   date_created_tesim: ["01/01/2001"],
@@ -45,7 +44,8 @@ IMAGING_EVENT_DOC_ATTRIBUTES = {
 
 FactoryBot.define do
   factory :imaging_event_document, class: "SolrDocument" do
-    initialize_with { new(IMAGING_EVENT_DOC_ATTRIBUTES) }
+    sequence(:id, 250000) { |n| n.to_s.rjust(9, "0") } # sequence ids starting at '000250000'
+    initialize_with { new(IMAGING_EVENT_DOC_ATTRIBUTES.merge({'id': id})) }
     to_create { |instance| ActiveFedora::SolrService.add(instance.to_h, softCommit: true)}
   end
 end

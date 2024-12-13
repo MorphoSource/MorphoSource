@@ -3,7 +3,7 @@
     <table class="table table-striped collection-highlights">
       <tbody>
         <%# featured project ids set in config/environments. If no ids added, returns 6 collections the user can access at random. %>
-        <% featured_projects.each do |collection| %>
+        <% @featured_projects.each do |collection| %>
           <tr>
             <td>
               <div class="media">

@@ -914,15 +914,15 @@ namespace :morphosource do
 
     results.each do |hit|
       begin
-        record = model_class.find(hit.id)
+        work = model_class.find(hit.id)
         old_attachment_path = Morphosource::AttachmentService.get(hit.id, old_attachment_field)
 
-        unless record.present? && old_attachment_path.present? 
-          puts "Skipping #{model_name} ##{hit.id}: Record not found or has no old attachment"
+        unless work.present? && old_attachment_path.present? 
+          puts "Skipping #{model_name} ##{hit.id}: work not found or has no attachment to migrate"
           next
         end
 
-        if !record.send(field_name).present?
+        if !work.send(field_name).present?
           puts "Skipping #{model_name} ##{hit.id}: #{field_name} already has a new attachment"
           next
         end
@@ -938,10 +938,10 @@ namespace :morphosource do
           tempfile: File.open(old_attachment_path)
         )
 
-        record.send("#{field_name}=", file)
+        work.send("#{field_name}=", file)
 
-        if record.save
-          puts "Successfully migrated #{model_name} ##{hit.id}: #{field_name} -> #{record.send(field_name)}"
+        if work.save
+          puts "Successfully migrated #{model_name} ##{hit.id}: #{field_name} -> #{work.send(field_name)}"
           Morphosource::AttachmentService.delete(hit.id, old_attachment_field)
           puts "Deleted old attachment #{old_attachment_path}"
         else

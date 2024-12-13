@@ -9,10 +9,10 @@
               <div class="media">
                 <div class="media-body">
                   <div class="media-heading" style="display:flex; flex-direction:row; align-items:center;">
-                    <%= link_to [hyrax, collection] do %>
+                    <%= link_to [main_app, collection] do %>
                       <%= render_thumbnail_tag(collection, { class: 'hidden-xs file_listing_thumbnail' }, { suppress_link: true }) %>
                     <% end %>
-                    <%= link_to [hyrax, collection] do %>
+                    <%= link_to [main_app, collection] do %>
                       <%= collection.title_or_label %>
                     <% end %>
                   </div>

@@ -917,13 +917,18 @@ namespace :morphosource do
         record = model_class.find(hit.id)
         old_attachment_path = Morphosource::AttachmentService.get(hit.id, old_attachment_field)
 
-        unless record.present? && old_attachment_path.present? && !record.send(field_name).present?
-          puts "Skipping #{model_name} ##{hit.id}: Record not found, no old attachment, or #{field_name} already present."
+        unless record.present? && old_attachment_path.present? 
+          puts "Skipping #{model_name} ##{hit.id}: Record not found or has no old attachment"
+          next
+        end
+
+        if !record.send(field_name).present?
+          puts "Skipping #{model_name} ##{hit.id}: #{field_name} already has a new attachment"
           next
         end
 
         unless File.exist?(old_attachment_path)
-          puts "Skipping #{model_name} ##{hit.id}: File does not exist at path #{old_attachment_path}"
+          puts "Skipping #{model_name} ##{hit.id}: Old attachment file does not exist #{old_attachment_path}"
           next
         end
 
@@ -937,8 +942,10 @@ namespace :morphosource do
 
         if record.save
           puts "Successfully migrated #{model_name} ##{hit.id}: #{field_name} -> #{record.send(field_name)}"
+          Morphosource::AttachmentService.delete(hit.id, old_attachment_field)
+          puts "Deleted old attachment #{old_attachment_path}"
         else
-          puts "Failed to save #{model_name} ##{hit.id} after migrating attachment."
+          puts "Failed to save #{model_name} ##{hit.id} after uploading attachment."
         end
       rescue StandardError => e
         puts "Error processing #{model_name} ##{hit.id}: #{e.message}"

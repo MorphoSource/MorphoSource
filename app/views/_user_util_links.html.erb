@@ -1,60 +1,63 @@
-<ul id="user_utility_links" class="nav navbar-nav navbar-right">
+<div id="user_utility_links" class="nav navbar-nav ml-auto">
   <%#= render 'shared/locale_picker' if available_translations.size > 1 %>
-  <li class="dropdown browse-links">
-    <%= link_to hyrax.root_path, role: 'button', data: { toggle: 'dropdown' }, aria: { haspopup: true, expanded: false, controls: 'browse-links' } do %>
+  <div class="dropdown browse-links nav-item">
+    <%= link_to hyrax.root_path, class: 'dropdown-toggle', role: 'button', data: { toggle: 'dropdown' }, aria: { haspopup: true, expanded: false, controls: 'browse-links' } do %>
       <span>Browse</span>
-      <span class="caret"></span>
     <% end %>
-    <ul id="browse-links" class="dropdown-menu dropdown-menu-right" role="menu">
-      <li style='padding-top: 5px;'><%= link_to t("hyrax.toolbar.browse.media_types_and_modalities"), main_app.browse_media_types_and_modalities_path %></li>
-      <li class="divider"></li>
-      <li><%= link_to t("hyrax.toolbar.browse.physical_object_types"), main_app.browse_physical_object_types_path %></li>
-      <li class="divider"></li>
-      <li><%= link_to t("hyrax.toolbar.browse.taxonomy"), main_app.browse_taxonomies_path %></li>
-      <li class="divider"></li>
-      <li><%= link_to t("hyrax.toolbar.browse.projects"), main_app.browse_projects_path %></li>
-      <li class="divider"></li>
-      <li><%= link_to t("hyrax.toolbar.browse.teams"), main_app.browse_teams_path %></li>
-      <li class="divider"></li>
-      <li style='padding-bottom: 5px;'><%= link_to t("hyrax.toolbar.browse.organizations"), main_app.browse_organizations_path %></li>
-      
-    </ul>
-  </li><!-- /.btn-group -->
+    <div id="browse-links" class="dropdown-menu dropdown-menu-right">
+      <%= link_to t("hyrax.toolbar.browse.media_types_and_modalities"), main_app.browse_media_types_and_modalities_path, class: 'dropdown-item' %>
+      <div class="dropdown-divider"></div>
+      <%= link_to t("hyrax.toolbar.browse.physical_object_types"), main_app.browse_physical_object_types_path, class: 'dropdown-item' %>
+      <div class="dropdown-divider"></div>
+      <%= link_to t("hyrax.toolbar.browse.taxonomy"), main_app.browse_taxonomies_path, class: 'dropdown-item' %>
+      <div class="dropdown-divider"></div>
+      <%= link_to t("hyrax.toolbar.browse.projects"), main_app.browse_projects_path, class: 'dropdown-item' %>
+      <div class="dropdown-divider"></div>
+      <%= link_to t("hyrax.toolbar.browse.teams"), main_app.browse_teams_path, class: 'dropdown-item' %>
+      <div class="dropdown-divider"></div>
+      <%= link_to t("hyrax.toolbar.browse.organizations"), main_app.browse_organizations_path, class: 'dropdown-item' %>
+    </div>
+  </div><!-- /.btn-group -->
+
   <% if user_signed_in? %>
-    <li class='notifications'>
+
+    <div class="nav-item notifications">
       <%= render_notifications(user: current_user) %>
-    </li>
-    <!-- Show shopping cart icon if user signed in -->
-    <li>
+    </div>
+
+    <div class="nav-item">
       <%= link_to main_app.my_cart_path do %>
         <span class="fa fa-shopping-cart" aria-hidden="true"></span>
       <% end %>
-    </li>
+    </div>
+
     <% has_become = session[:become_user] %>
-    <li class="dropdown">
-      <%= link_to hyrax.dashboard_profile_path(current_user), role: 'button', data: { toggle: 'dropdown' }, aria: { haspopup: true, expanded: false, controls: 'user-util-links' } do %>
+    <div class="dropdown nav-item">
+      <%= link_to hyrax.dashboard_profile_path(current_user), class: 'dropdown-toggle', role: 'button', data: { toggle: 'dropdown' }, aria: { haspopup: true, expanded: false, controls: 'user-util-links' } do %>
         <span class="sr-only"><%= t("hyrax.toolbar.profile.sr_action") %></span>
         <!-- span class="hidden-xs">&nbsp;<%# = current_user.name %></span-->
         <span class="sr-only"> <%= t("hyrax.toolbar.profile.sr_target") %></span>
         <span class="fa <%= has_become ? "fas fa-user-cog" : "fa-user" %>" aria-hidden="true"></span>
-        <span class="caret"></span>
       <% end %>
-      <ul id="user-util-links" class="dropdown-menu dropdown-menu-right" role="menu">
+      <div id="user-util-links" class="dropdown-menu dropdown-menu-right">
         <% if has_become %>
-          <li class="dropdown-header admin-message">Admin temporarily signed in as <%= current_user&.name || "unknown user" %>.</li>
-          <li class="divider"></li>
+          <div class="dropdown-item dropdown-header admin-message">Admin temporarily signed in as <%= current_user&.name || "unknown user" %>.</div>
+          <div class="dropdown-divider"></div>
         <% end %>
-        <li><%= link_to t("hyrax.toolbar.dashboard.menu"), hyrax.dashboard_path %></li>
+        
+        <%= link_to t("hyrax.toolbar.dashboard.menu"), hyrax.dashboard_path, class: 'dropdown-item' %>
+        <div class="dropdown-divider"></div>
+        <%= link_to t("hyrax.toolbar.profile.logout"), main_app.destroy_user_session_path, class: 'dropdown-item' %>
+      </div>
+    </div><!-- /.btn-group -->
 
-        <li class="divider"></li>
-        <li><%= link_to t("hyrax.toolbar.profile.logout"), main_app.destroy_user_session_path %></li>
-      </ul>
-    </li><!-- /.btn-group -->
   <% else %>
-    <li>
+
+    <div class="nav-item">
       <%= link_to main_app.new_user_session_path do %>
-        <span class="glyphicon glyphicon-log-in" aria-hidden="true"></span> <%= t("hyrax.toolbar.profile.login") %>
+        <i class="fas fa-sign-in-alt"></i> <%= t("hyrax.toolbar.profile.login") %>
       <% end %>
-    </li>
+    </div>
+
   <% end %>
-</ul>
+</div>

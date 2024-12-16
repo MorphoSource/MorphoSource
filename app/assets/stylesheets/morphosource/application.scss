@@ -1,0 +1,21 @@
+// Application-wide overrides, restore styles changed in Bootstrap 4 to our desired defaults
+
+body {
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.btn {
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.dropdown-menu {
+  font-size: 14px;
+}
+
+.form-control {
+  font-size: 14px;
+  height: 34px;
+  line-height: 20px;
+}

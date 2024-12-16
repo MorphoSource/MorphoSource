@@ -11,7 +11,7 @@
     float: right;
   }
 
-  ul#user_utility_links li ul.dropdown-menu a {
+  div#user_utility_links div.dropdown div.dropdown-menu a {
     color: #333333;
   }
 }
@@ -37,11 +37,8 @@ nav#masthead .btn-default {
   max-width: unset;
 }
 
-ul#user_utility_links {
-  margin-top: 5px;
-  margin-right: 0;
-
-  li a {
+div#user_utility_links {
+  a {
     color: #fff;
   }
 

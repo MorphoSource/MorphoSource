@@ -272,14 +272,8 @@ ul.align-li {
 .break-all {
   word-break: break-all;
 }
-.navbar-brand {
-  padding: 15px 0;
-}
-.navbar-nav > li > a {
+.navbar-nav > div.nav-item > a {
   padding: 10px 8px;
-}
-#search-form-header {
-  margin: 0.7em 0 0;
 }
 .title-min-width {
   min-width: 120px;
@@ -315,6 +309,7 @@ ul.align-li {
   margin:50px auto;
 }
 .navbar-brand {
+  font-size: 18px;
   padding: 5px;
 }
 

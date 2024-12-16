@@ -1,11 +1,17 @@
 // Styles for top bar masthead content
 nav#masthead {
   min-height: 55px !important;
+  padding: 0;
+
+  // Bootstrap override
+  a:hover {
+    text-decoration: none;
+  }
 
   // Masthead for most pages
   .container {
-    width: unset;
     max-width: 1200px;
+    width: 100%;
     
     // First masthead content group
     .navbar-header {

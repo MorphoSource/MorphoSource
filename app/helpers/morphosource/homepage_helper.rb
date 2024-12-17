@@ -6,11 +6,12 @@ module Morphosource
       if project_ids.blank?
         collections
       else
-        project_ids.each_with_object([]) do |id, projects|
-          projects << ::SolrDocument.find(id)
+        projects = project_ids.each_with_object([]) do |id, projects|
+          projects << ::SolrDocument.where("id:#{id} AND collection_type_gid_ssim:*")&.first
         end
+        projects.compact.empty? ? collections : projects.compact
       end
-      rescue Blacklight::Exceptions::RecordNotFound
+      rescue
       collections
     end
 

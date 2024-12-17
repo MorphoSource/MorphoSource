@@ -1,5 +1,6 @@
 # Factory for Device SolrDocument instances
 DEVICE_DOC_ATTRIBUTES = {
+  id: "567891234",
   has_model_ssim: "Device",
   creator_tesim: ["Scanning Device Make"],
   description_tesim: ["Description"],
@@ -11,8 +12,7 @@ DEVICE_DOC_ATTRIBUTES = {
 
 FactoryBot.define do
   factory :device_document, class: "SolrDocument" do
-    sequence(:id, 230000) { |n| n.to_s.rjust(9, "0") } # sequence ids starting at '000230000'
-    initialize_with { new(DEVICE_DOC_ATTRIBUTES.merge({'id': id})) }
+    initialize_with { new(DEVICE_DOC_ATTRIBUTES) }
     to_create { |instance| ActiveFedora::SolrService.add(instance.to_h, softCommit: true)}
   end
 end

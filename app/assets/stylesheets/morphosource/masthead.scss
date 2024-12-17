@@ -22,8 +22,8 @@ nav#masthead {
 
   // Styles for catalog page masthead
   .container-fluid {
-    width: unset;
     max-width: 1200px;
+    width: 100%;
   
     .navbar-header {
       padding-left: 15px;
@@ -33,9 +33,9 @@ nav#masthead {
 }
 
 // On front page, tools pane below top bar
-nav.navbar .container {
-  width: unset;
+nav.navbar .container, nav.navbar .container-fluid {
   max-width: 1200px;
+  width: 100%;
 
   .controls .container-fluid {
     padding-left: 0;

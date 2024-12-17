@@ -745,7 +745,6 @@ nav#masthead {
   }
 
   .secondary-nav * {
-    font-size: 14px;
     li.dropdown  {
       margin-left: 0 !important;
       @media (min-width: 767px) {
@@ -757,16 +756,10 @@ nav#masthead {
     li.browse-links {
       width: 150px;
     }
-    .secondary-nav * {
-      font-size: 10px;
-    }
   }
   @media (min-width: 375px) and (max-width: 767px) {
     li.browse-links {
       width: 200px;
-    }
-    .secondary-nav * {
-      font-size: 12px;
     }
   }
 
@@ -810,7 +803,7 @@ nav#masthead {
   }
 
   .content-wrapper {
-    padding-bottom: 30px;
+    padding-bottom: 30px !important;
   }
 
   .content-wrapper.fixed-width {

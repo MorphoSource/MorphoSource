@@ -1,10 +1,10 @@
 <div id="user_utility_links" class="nav navbar-nav ml-auto">
   <%#= render 'shared/locale_picker' if available_translations.size > 1 %>
   <div class="dropdown browse-links nav-item">
-    <%= link_to hyrax.root_path, class: 'dropdown-toggle', role: 'button', data: { toggle: 'dropdown' }, aria: { haspopup: true, expanded: false, controls: 'browse-links' } do %>
+    <%= link_to hyrax.root_path, class: 'dropdown-toggle nav-link', role: 'button', data: { toggle: 'dropdown' }, aria: { haspopup: true, expanded: false, controls: 'browse-links' } do %>
       <span>Browse</span>
     <% end %>
-    <div id="browse-links" class="dropdown-menu dropdown-menu-right">
+    <div id="browse-links" class="dropdown-menu dropdown-menu-right" style="margin-left: 10px; margin-right: 10px">
       <%= link_to t("hyrax.toolbar.browse.media_types_and_modalities"), main_app.browse_media_types_and_modalities_path, class: 'dropdown-item' %>
       <div class="dropdown-divider"></div>
       <%= link_to t("hyrax.toolbar.browse.physical_object_types"), main_app.browse_physical_object_types_path, class: 'dropdown-item' %>
@@ -26,14 +26,14 @@
     </div>
 
     <div class="nav-item">
-      <%= link_to main_app.my_cart_path do %>
+      <%= link_to main_app.my_cart_path, class: 'nav-link' do %>
         <span class="fa fa-shopping-cart" aria-hidden="true"></span>
       <% end %>
     </div>
 
     <% has_become = session[:become_user] %>
     <div class="dropdown nav-item">
-      <%= link_to hyrax.dashboard_profile_path(current_user), class: 'dropdown-toggle', role: 'button', data: { toggle: 'dropdown' }, aria: { haspopup: true, expanded: false, controls: 'user-util-links' } do %>
+      <%= link_to hyrax.dashboard_profile_path(current_user), class: 'dropdown-toggle nav-link', role: 'button', data: { toggle: 'dropdown' }, aria: { haspopup: true, expanded: false, controls: 'user-util-links' } do %>
         <span class="sr-only"><%= t("hyrax.toolbar.profile.sr_action") %></span>
         <!-- span class="hidden-xs">&nbsp;<%# = current_user.name %></span-->
         <span class="sr-only"> <%= t("hyrax.toolbar.profile.sr_target") %></span>
@@ -54,7 +54,7 @@
   <% else %>
 
     <div class="nav-item">
-      <%= link_to main_app.new_user_session_path do %>
+      <%= link_to main_app.new_user_session_path, class: 'nav-link' do %>
         <i class="fas fa-sign-in-alt"></i> <%= t("hyrax.toolbar.profile.login") %>
       <% end %>
     </div>

@@ -2,12 +2,17 @@
 
 body {
   font-size: 14px;
-  line-height: 20px;
+  line-height: 1.428571429;
+}
+
+h1, .h1, h2, .modal-title, .h2, h3, .h3 {
+  margin-top: 20px;
+  margin-bottom: 10px;
 }
 
 .btn {
   font-size: 14px;
-  line-height: 20px;
+  line-height: 1.428571429;
 }
 
 .dropdown-menu {
@@ -17,5 +22,11 @@ body {
 .form-control {
   font-size: 14px;
   height: 34px;
-  line-height: 20px;
+  line-height: 1.428571429;
+}
+
+.navbar + .container {
+  margin-top: 20px; // todo5 this is questionable, may not work on non-homepage pages
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
 }

@@ -11,8 +11,15 @@
     float: right;
   }
 
-  div#user_utility_links div.dropdown div.dropdown-menu a {
-    color: #333333;
+  div#user_utility_links {
+    div#browse-links {
+      margin-left: 0 !important;
+      margin-right: 0 !important;
+    }
+
+    div.dropdown div.dropdown-menu a {
+      color: #333333;
+    }
   }
 }
 
@@ -37,11 +44,12 @@ nav#masthead .btn-default {
   max-width: unset;
 }
 
-div#user_utility_links {
-  a {
-    color: #fff;
-  }
+div.nav-item > a.nav-link {
+  color: #fff !important;
+  max-width: unset;
+}
 
+div#user_utility_links {
   li.dropdown-header.admin-message {
     color: #f68628;
   }
@@ -182,9 +190,9 @@ div#front-banner iframe {
 }
 
 .secondary-nav {
-  min-height: 50px !important;
+  height: 50px !important;
   .container {
-    min-height: 50px !important;
+    max-height: 50px !important;
   }
 }
 

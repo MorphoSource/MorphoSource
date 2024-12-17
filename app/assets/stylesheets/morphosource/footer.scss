@@ -2,8 +2,6 @@
 
 .footer-section {
 	margin: 0px;
-	margin-left: -2px;
-	margin-right: -2px;
 }
 
 .site-footer {
@@ -32,8 +30,13 @@
 	margin-bottom: 5px;
 }
 
-.copyright, .footer-links, .support, .icons {
+.copyright, .support, .icons {
   text-align: center;
+  margin-bottom: 15px;
+}
+
+.footer-links {
+	text-align: left;
   margin-bottom: 15px;
 }
 
@@ -51,10 +54,6 @@
 		text-align: left;
 	}
 
-	.footer-links {
-		text-align: right;
-	}
-
 	.support {
 		text-align: left;
 	}
@@ -69,10 +68,6 @@
   .copyright {
     text-align: left;
     vertical-align: middle !important;
-  }
-
-  .footer-links {
-  	text-align: center;
   }
 
   .support {

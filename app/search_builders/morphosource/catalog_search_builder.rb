@@ -9,7 +9,22 @@ module Morphosource
       return unless facet.present?
       facet_config = blacklight_config.facet_fields[facet]
       contains = blacklight_params[request_keys[:contains]]
-      if blacklight_params[request_keys[:contains]]
+      contains_title = blacklight_params[:'facet.containsTitle']
+
+      if contains_title.present?
+        # Perform a lookup on the Solr title field to find matching IDs
+        response = fetch_ids_by_title_and_model(contains_title, facet_config.key)
+        matching_ids = response['response']['docs'].map { |doc| doc['id'] }
+        if matching_ids.any?
+          # facet.contains does not support multiple values.  Use filter query (fq) instead
+          solr_params[:fq] ||= []
+          solr_params[:fq] << "{!terms f=#{facet_config.field}}#{matching_ids.join(',')}"
+        else
+          # If no matching_ids, add an always-false filter query to ensure no results are returned
+          solr_params[:fq] ||= []
+          solr_params[:fq] << "{!frange l=1 u=0}1"
+        end
+      elsif contains.present?
         solr_params[:"f.#{facet_config.field}.facet.contains"] = contains
         solr_params[:"f.#{facet_config.field}.facet.contains.ignoreCase"] = true
       end
@@ -23,5 +38,16 @@ module Morphosource
     def new_query
       "{!lucene}#{interal_query(dismax_query)}"
     end
+
+    # Query Solr to fetch IDs by matching title and model
+    def fetch_ids_by_title_and_model(title, model)
+      solr_service = Blacklight.default_index.connection
+      solr_service.get('select', params: {
+        q: "title_tesim:\"#{title}\" AND has_model_ssim:#{model.camelcase}",
+        fl: 'id',
+        rows: 1000
+      })
+    end
+
   end
 end

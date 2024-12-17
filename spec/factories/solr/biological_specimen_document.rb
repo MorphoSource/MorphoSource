@@ -1,5 +1,6 @@
 # Factory for Biological Specimen physical object SolrDocument instances
 BIOLOGICAL_SPECIMEN_DOC_ATTRIBUTES = {
+  id: "456789123",
   has_model_ssim: ["BiologicalSpecimen"],
   title_tesim: ["Example media title"],
   title_ssi: "Example media title",
@@ -18,8 +19,7 @@ BIOLOGICAL_SPECIMEN_DOC_ATTRIBUTES = {
 
 FactoryBot.define do
   factory :biological_specimen_document, class: "SolrDocument" do
-    sequence(:id, 210000) { |n| n.to_s.rjust(9, "0") } # sequence ids starting at '000210000'
-    initialize_with { new(BIOLOGICAL_SPECIMEN_DOC_ATTRIBUTES.merge({'id': id})) }
+    initialize_with { new(BIOLOGICAL_SPECIMEN_DOC_ATTRIBUTES.merge(attributes)) }
     to_create { |instance| ActiveFedora::SolrService.add(instance.to_h, softCommit: true)}
   end
 end

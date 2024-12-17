@@ -80,7 +80,7 @@ CHO_MEDIA_DOC_ATTRIBUTES = PRIVATE_MEDIA_DOC_ATTRIBUTES.merge( {
 FactoryBot.define do
   factory :media_document, class: "SolrDocument", aliases: [:private_media_document] do
     sequence(:id, 100000) { |n| n.to_s.rjust(9, "0") } # sequence ids starting at '000100000'
-    initialize_with       { new(PRIVATE_MEDIA_DOC_ATTRIBUTES.merge({'id': id})) }
+    initialize_with       { new(PRIVATE_MEDIA_DOC_ATTRIBUTES.merge({'id': id}).merge(attributes)) }
     to_create             { |instance| ActiveFedora::SolrService.add(instance.to_h, softCommit: true) }
 
     factory :public_media_document do

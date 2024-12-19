@@ -1,6 +1,4 @@
-class AddWorkChildrenLoopHeavyJob < Hyrax::ApplicationJob
-  queue_as Hyrax.config.heavy_queue_name
-
+class AddWorkChildrenLoopHeavyJob < HeavyJob
   # @param [String] parent_id ID string of parent work
   # @param [Array/String] child_ids Array of child work IDs or string of single child ID
   def perform(parent_id, child_ids, delete_existing=false)

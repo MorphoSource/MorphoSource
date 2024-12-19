@@ -4,9 +4,7 @@
 require 'hydra/works/services/crc32_characterization_service.rb'
 require 'hydra/works/services/archive_contents_characterization_service.rb'
 
-class CharacterizeNoDeriveJob < Hyrax::ApplicationJob
-  queue_as Hyrax.config.heavy_queue_name
-
+class CharacterizeNoDeriveJob < HeavyJob
   # Characterizes the file at 'filepath' if available, otherwise, pulls a copy from the repository
   # and runs characterization on that file.
   # @param [FileSet] file_set

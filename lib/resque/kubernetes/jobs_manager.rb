@@ -51,7 +51,7 @@ module Resque
         adjust_manifest(manifest)
 
         job = Kubeclient::Resource.new(manifest)
-        jobs_client.create_job(job, @default_namespace)
+        jobs_client.create_job(job)
       end
 
       private

@@ -20,15 +20,13 @@ module Hyrax
     before_action :record_original_parents, only: :update
 
     def update
-      # Handle possible attachment upload
-      if params[:pe_description] && Morphosource.attachment_formats.include?(File.extname(params[:pe_description].original_filename))
-        Morphosource::AttachmentService.create(curation_concern.id, 'pe_description', params[:pe_description])
-        params.delete(:pe_description)
-      elsif params[:pe_description_attachment_delete] == 'delete'
-        Morphosource::AttachmentService.delete(curation_concern.id, 'pe_description')
-        params.delete(:pe_description_attachment_delete)
+      # Handle possible new attachment upload, delete or replace attachment
+      if params[:description_attachment_delete] == 'delete'
+        curation_concern.description_attachment = nil
       end
-
+      if params[:description_attachment].present?
+        curation_concern.description_attachment = params[:description_attachment]
+      end      
       env = actor_environment
       emancipate_if_necessary(env)
       if actor.update(env)

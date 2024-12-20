@@ -881,6 +881,73 @@ namespace :morphosource do
     }).import
   end
 
+  desc "Migrate attachments to use CarrierWave"
+  task :migrate_attachments, [:model, :field, :old_attachment_field, :and_query] => :environment do |task, args|
+    model_name = args[:model]
+    field_name = args[:field]
+    old_attachment_field = args[:old_attachment_field] 
+    and_query = args[:and_query]
+
+    unless model_name.present? && field_name.present? && old_attachment_field.present?
+      puts "Valid arguments required: model, field, old_attachment_field"
+      exit
+    end
+
+    begin
+      model_class = model_name.constantize
+    rescue StandardError => e
+      puts "Error resolving model '#{model_name}': #{e.message}"
+      exit
+    end
+
+    unless model_class.method_defined?(field_name)
+      puts "Field '#{field_name}' is not defined on model '#{model_name}'"
+      exit
+    end
+
+    solr_query = "has_model_ssim:#{model_name}"
+    solr_query += " AND #{and_query}" if and_query.present?
+
+    puts "Querying Solr with: #{solr_query}"
+    results = ActiveFedora::SolrService.query(solr_query, rows: 999999)
+    puts "Found #{results.count} records for model #{model_name}"
+
+    results.each do |hit|
+      begin
+        work = model_class.find(hit.id)
+        old_attachment_path = Morphosource::AttachmentService.get(hit.id, old_attachment_field)
+
+        unless work.present? && old_attachment_path.present? 
+          puts "Skipping #{model_name} ##{hit.id}: work not found or has no attachment to migrate"
+          next
+        end
+
+        if !work.send(field_name).present?
+          puts "Skipping #{model_name} ##{hit.id}: #{field_name} already has a new attachment"
+          next
+        end
+
+        unless File.exist?(old_attachment_path)
+          puts "Skipping #{model_name} ##{hit.id}: Old attachment file does not exist #{old_attachment_path}"
+          next
+        end
+
+        file = ActionDispatch::Http::UploadedFile.new(
+          filename: File.basename(old_attachment_path),
+          type: Marcel::MimeType.for(old_attachment_path),
+          tempfile: File.open(old_attachment_path)
+        )
+
+        work.send("#{field_name}=", file)
+        puts "Successfully migrated #{model_name} ##{hit.id}: #{field_name} -> #{work.send(field_name)}"
+        Morphosource::AttachmentService.delete(hit.id, old_attachment_field)
+        puts "Deleted old attachment #{old_attachment_path}"
+      rescue StandardError => e
+        puts "Error processing #{model_name} ##{hit.id}: #{e.message}"
+      end
+    end
+  end
+
   # Set and clear sitewide announcement messages and time until maintenance
 
   desc "Set sitewide flash-based announcement message"

@@ -320,10 +320,6 @@ RSpec.describe Hyrax::MediaPresenter do
     it "returns imaging event reference attachment file URL" do
       expect(subject.imaging_event_reference_attachment).to eq(["/attachments/234567891?field=ie_reference"])
     end
-
-    it "returns processing event description attachment file URL" do
-      expect(subject.processing_event_description_attachment(pe)).to eq(["/attachments/pe1?field=pe_description"])
-    end
   end
 
   describe 'universal viewer and derivatives' do

@@ -28,7 +28,6 @@ class ProcessingEvent < Morphosource::Works::Base
       # delete attachment
       return unless self.description_attachment_url.present?
       file_name = File.basename(self.description_attachment_url)
-      uploader.work_id = self.id
       uploader.retrieve_from_store!(file_name)
       if uploader.file && File.exist?(uploader.file.path)
         Rails.logger.info "Deleting file: #{uploader.file.path}"

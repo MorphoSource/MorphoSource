@@ -939,14 +939,9 @@ namespace :morphosource do
         )
 
         work.send("#{field_name}=", file)
-
-        if work.save
-          puts "Successfully migrated #{model_name} ##{hit.id}: #{field_name} -> #{work.send(field_name)}"
-          Morphosource::AttachmentService.delete(hit.id, old_attachment_field)
-          puts "Deleted old attachment #{old_attachment_path}"
-        else
-          puts "Failed to save #{model_name} ##{hit.id} after uploading attachment."
-        end
+        puts "Successfully migrated #{model_name} ##{hit.id}: #{field_name} -> #{work.send(field_name)}"
+        Morphosource::AttachmentService.delete(hit.id, old_attachment_field)
+        puts "Deleted old attachment #{old_attachment_path}"
       rescue StandardError => e
         puts "Error processing #{model_name} ##{hit.id}: #{e.message}"
       end

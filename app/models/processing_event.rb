@@ -37,6 +37,7 @@ class ProcessingEvent < Morphosource::Works::Base
         Rails.logger.warn "File not found: #{uploader.file&.path}"
       end
       self.description_attachment_url = nil
+      self.save
     else
       # add attachment
       extension = File.extname(file.original_filename).downcase

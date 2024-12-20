@@ -137,6 +137,12 @@ module MorphosourceHelper
     ActiveFedora::SolrService.query(qry, rows: 999999, sort: "#{sortable_title_field} ASC")
   end
 
+  def device_organization
+    return unless organization_id = @presenter&.device&.to_h&.dig("device_organization_id_ssim")&.first
+
+    SolrDocument.where('id' =>  organization_id)&.first
+  end
+
   def files_required?(work)
     if Hyrax.config.work_requires_files?
       true
@@ -473,13 +479,13 @@ module MorphosourceHelper
     manager = f.object.user_with_ownership
     individual_list = []
     group_list = {}
-
     # User and group based access
     f.fields_for :permissions do |permission_fields|
       role_name = permission_fields.object.agent_name
       user_list = user_list_by_role(role_name)
       # skip the public, registered, and depositor perms as they are displayed first at the top
       next if ( ['admin', 'public', 'registered', manager].include? role_name.downcase )
+
       if user_list.empty?
         individual_list << permission_fields if !role_name.include?('_')
       else
@@ -487,19 +493,19 @@ module MorphosourceHelper
         access = permission_fields.object.access # read or edit
         next if role_category == 'depositors' # depositors have no collection-level access to works
 
-        group_list[group_id] ||= { 
+        group_list[group_id] ||= {
           access_override: (access == "read") ? access : nil,
           users: {}
         }
         group_list[group_id][:users][role_category] = user_list.join(', ')
       end
     end
-
     # Organization collection based access
+    # object organization
     if (org = f&.object&.model&.organizations&.first).present? && (org.class == OrganizationCollection)
       # If the org does not manage the media, all org members only have view access
-      group_list[org.id] ||= { 
-        access_override: (manager != org.id) ? "read" : nil,
+      group_list[org.id] ||= {
+        access_override: manager != org.id ?  'read' : nil,
         users: {}
       }
 
@@ -509,7 +515,21 @@ module MorphosourceHelper
         group_list[org.id][:users][role_category] = role.users.map { |u| "#{u.name_or_email} (#{role_category.singularize})"}.join(', ')
       end
     end
-
+    # device organization
+    if (org = device_organization).present? && (org['has_model_ssim'] == ['OrganizationCollection'])
+      # If the org does not manage the media, all org members only have view access
+      group_list[org.id] ||= {
+        access_override: manager != org.id ? 'read' : nil,
+        users: {}
+      }
+      group_names = ["#{org.id}_managers", "#{org.id}_editors", "#{org.id}_downloaders", "#{org.id}_viewers"]
+      user_groups = group_names.each_with_object([]) { |role, arr| arr << Role.find_by(name: role) }.compact
+      user_groups.each do |role, hash|
+        role_category = role.name.split('_', 2)[1]
+        next if role.users.count == 0
+        group_list[org.id][:users][role_category] = role.users.map { |u| "#{u.name_or_email} (#{role_category.singularize})"}.join(', ')
+      end
+    end
     return individual_list, group_list
   end
 
@@ -553,7 +573,7 @@ module MorphosourceHelper
       else
         'Unknown access'
       end
-    end  
+    end
   end
 
   def user_list_by_role(access)

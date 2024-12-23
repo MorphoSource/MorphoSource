@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe Hyrax::ProcessingEventForm do
   let(:all_metadata_fields) { [:creator, :date_created, :description, :software, :processing_activity, :processing_activity_description, :processing_activity_software, :processing_activity_type, :description_attachment] }
   let(:required_fields) { [] }
-  let(:single_value_fields) { [:description, :date_created :description_attachment] }
+  let(:single_value_fields) { [:description, :date_created, :description_attachment] }
 
   describe 'class attributes' do
 

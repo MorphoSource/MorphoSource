@@ -922,7 +922,7 @@ namespace :morphosource do
           next
         end
 
-        if work.send(field_name).present?
+        if work.send(field_name).present? 
           puts "Skipping #{model_name} ##{hit.id}: #{field_name} already has a new attachment"
           next
         end

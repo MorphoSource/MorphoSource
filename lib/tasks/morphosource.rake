@@ -914,13 +914,11 @@ namespace :morphosource do
 
     results.each do |hit|
       begin
-        work = model_class.find(hit.id)
         old_attachment_path = Morphosource::AttachmentService.get(hit.id, old_attachment_field)
+        next unless old_attachment_path.present? 
 
-        unless work.present? && old_attachment_path.present? 
-          puts "Skipping #{model_name} ##{hit.id}: work not found or has no attachment to migrate"
-          next
-        end
+        work = model_class.find(hit.id)
+        next unless work.present? 
 
         if work.send(field_name).present? 
           puts "Skipping #{model_name} ##{hit.id}: #{field_name} already has a new attachment"
@@ -945,7 +943,8 @@ namespace :morphosource do
       rescue StandardError => e
         puts "Error processing #{model_name} ##{hit.id}: #{e.message}"
       end
-    end
+    end # /result.each
+    puts "migration completed"
   end
 
   # Set and clear sitewide announcement messages and time until maintenance

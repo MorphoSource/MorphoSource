@@ -882,10 +882,11 @@ namespace :morphosource do
   end
 
   desc "Migrate attachments to use CarrierWave"
-  task :migrate_attachments, [:model, :field, :old_attachment_field, :and_query] => :environment do |task, args|
+  task :migrate_attachments, [:model, :field, :old_attachment_field, :count_only, :and_query] => :environment do |task, args|
     model_name = args[:model]
     field_name = args[:field]
     old_attachment_field = args[:old_attachment_field] 
+    count_only = args[:count_only].present? && args[:count_only] == "true"
     and_query = args[:and_query]
 
     unless model_name.present? && field_name.present? && old_attachment_field.present?
@@ -912,10 +913,20 @@ namespace :morphosource do
     results = ActiveFedora::SolrService.query(solr_query, rows: 999999)
     puts "Found #{results.count} records for model #{model_name}"
 
+    old_attachment_count = 0
+
     results.each do |hit|
       begin
         old_attachment_path = Morphosource::AttachmentService.get(hit.id, old_attachment_field)
         next unless old_attachment_path.present? 
+
+        if old_attachment_path.present? 
+          old_attachment_count += 1
+        else
+          next
+        end
+
+        next if count_only
 
         work = model_class.find(hit.id)
         next unless work.present? 
@@ -944,7 +955,7 @@ namespace :morphosource do
         puts "Error processing #{model_name} ##{hit.id}: #{e.message}"
       end
     end # /result.each
-    puts "migration completed"
+    puts "Migration completed. old_attachment_count = #{old_attachment_count}"
   end
 
   # Set and clear sitewide announcement messages and time until maintenance

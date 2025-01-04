@@ -60,7 +60,9 @@ module Hyrax
         :iso_speed_ratings,
         :shutter_speed,
         # slide scan properties
-        :slide_type
+        :slide_type,
+        :description_attachment,
+        :reference_attachment
     ]
 
     #self.terms += [:software, :scanner_modality]
@@ -110,7 +112,9 @@ module Hyrax
         :lens_model,
         :light_source,
         # slide scan properites
-        :slide_type
+        :slide_type,
+        :description_attachment,
+        :reference_attachment
     ]
 
     # These show above the fold
@@ -155,7 +159,9 @@ module Hyrax
             :lens_model,
             :light_source,
             # slide scan properites
-            :slide_type
+            :slide_type,
+            :description_attachment,
+            :reference_attachment
         ]
     end
 

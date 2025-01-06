@@ -29,7 +29,7 @@ module Hyrax
       to: :imaging_event, allow_nil: true
 
     # Attributes from imaging event solr document with prefix (imaging_event_$)
-    delegate :creator, :date_created, :software, :description,
+    delegate :creator, :date_created, :software, :description, :description_attachment_url,
       to: :imaging_event, prefix: true, allow_nil: true
 
     # Attributes from physical object solr document (biological specimen or cultural heritage object)
@@ -449,14 +449,6 @@ module Hyrax
 
     ### IMAGING EVENT FIELDS ###
 
-    #
-    # Attachment file URL for Imaging Event description document attachment
-    #
-    # @return [Array<String>] Attachment file URL for Imaging Event description attachment
-    #
-    def imaging_event_description_attachment
-      @imaging_event_description_attachment ||= get_attachment("ie_description", imaging_event.id)
-    end
 
     #
     # Attachment file URL for Imaging Event reference document attachment
@@ -464,6 +456,7 @@ module Hyrax
     # @return [Array<String>] Attachment file URL for Imaging Event reference attachment
     #
     def imaging_event_reference_attachment
+byebug    
       @imaging_event_reference_attachment ||= get_attachment("ie_reference", imaging_event.id)
     end
 

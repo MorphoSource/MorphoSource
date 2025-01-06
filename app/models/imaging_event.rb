@@ -95,11 +95,8 @@ class ImagingEvent < Morphosource::Works::Base
       extension = File.extname(file.original_filename).downcase
       if Morphosource.attachment_formats.include?(extension)
         uploader.work_id = self.id
-byebug  
         uploader.store!(file)
-byebug  
         self.description_attachment_url = uploader.url
-byebug  
         self.save
       else
         raise ArgumentError, "Invalid file format: #{extension}"

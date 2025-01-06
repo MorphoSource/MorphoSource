@@ -39,12 +39,11 @@
                   text_if_empty: 'None')
                 %>
                 <%= presenter.attribute_to_html(
-                  :imaging_event_reference_attachment,
-                  link_label: 'Photographic Reference',
+                  :imaging_event_reference_attachment_url,
+                  label: 'Photographic Reference',
                   render_as: :showcase_attachment,
                   include_empty: true,
-                  text_if_empty: 'None',
-                  work_type: "imaging_event")
+                  text_if_empty: 'None')
                 %>
                 <%= presenter.attribute_to_html(:filter, render_as: :showcase_default, include_empty: true, work_type: "imaging_event") %>
                 <% if presenter.imaging_event_modality.presence %>

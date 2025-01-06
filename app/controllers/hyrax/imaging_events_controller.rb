@@ -24,7 +24,6 @@ module Hyrax
         record_original_objects
       end
 
-byebug
       # Handle possible new attachment upload, delete or replace attachment
       if params[:description_attachment_delete] == 'delete'
         curation_concern.description_attachment = nil
@@ -33,26 +32,12 @@ byebug
         curation_concern.description_attachment = params[:description_attachment]
       end      
 
-
-#      # Handle possible attachment upload
-#      if params[:ie_description] && Morphosource.attachment_formats.include?(File.extname(params[:ie_description].original_filename))
-#        Morphosource::AttachmentService.delete(curation_concern.id, 'ie_description')
-#        Morphosource::AttachmentService.create(curation_concern.id, 'ie_description', params[:ie_description], Morphosource.attachment_formats)
-#        params.delete(:ie_description)
-#      elsif params[:ie_description_attachment_delete] == 'delete'
-#        Morphosource::AttachmentService.delete(curation_concern.id, 'ie_description')
-#        params.delete(:ie_description_attachment_delete)
-#      end
-#
-#      if params[:ie_reference] && Morphosource.reference_attachment_formats.include?(File.extname(params[:ie_reference].original_filename))
-#        Morphosource::AttachmentService.delete(curation_concern.id, 'ie_reference')
-#        Morphosource::AttachmentService.create(curation_concern.id, 'ie_reference', params[:ie_reference], Morphosource.reference_attachment_formats)
-#        params.delete(:ie_reference)
-#      elsif params[:ie_reference_attachment_delete] == 'delete'
-#        Morphosource::AttachmentService.delete(curation_concern.id, 'ie_reference')
-#        params.delete(:ie_reference_attachment_delete)
-#      end
-#
+      if params[:reference_attachment_delete] == 'delete'
+        curation_concern.reference_attachment = nil
+      end
+      if params[:reference_attachment].present?
+        curation_concern.reference_attachment = params[:reference_attachment]
+      end      
 
       if actor.update(actor_environment)
         update_media_team_access

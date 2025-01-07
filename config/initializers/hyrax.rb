@@ -125,9 +125,11 @@ Hyrax.config do |config|
   # config.analytics = false
   config.analytics = ENV['TRACK_GOOGLE_ANALYTICS'] == 'true'
 
-  # Google Analytics tracking ID to gather usage statistics
-  # config.google_analytics_id = 'UA-99999999-1'
-  config.google_analytics_id = ENV['GOOGLE_ANALYTICS_TRACKING_ID']
+  # Analytics provider, Hyrax supports ga4, google (ga3, defunct) and matomo
+  config.analytics_provider = ENV.fetch('HYRAX_ANALYTICS_PROVIDER', 'ga4')
+
+  # Google Analytics GA4 Measurement ID
+  config.google_analytics_id = ENV['GOOGLE_ANALYTICS_ID']
 
   # Date you wish to start collecting Google Analytic statistics for
   # Leaving it blank will set the start date to when ever the file was uploaded by

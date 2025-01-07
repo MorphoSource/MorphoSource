@@ -15,9 +15,9 @@
     <%= p.input :software, as: :multi_value %>
     <%= render_edit_field_partial('description', f: p) %>
     <%= render_edit_field_partial(
-      'attachment', 
+      'attachment_pe', 
       f: p, 
-      field: 'pe_description', 
+      field: 'description_attachment', 
       label: 'Description attachment file',
       curation_concern: @processing_event_form.model
     ) %>

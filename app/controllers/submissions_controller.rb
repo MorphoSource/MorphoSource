@@ -313,7 +313,7 @@ class SubmissionsController < ApplicationController
       #puts("Creating #{work}")
       new_work_id, new_work = prepare_and_create_work(work, params)
       @submission.public_send(to_id(work) + '=', new_work_id)
-      create_attachment_if_needed(work, new_work_id) if ['imaging_event', 'processing_event', 'media'].include?(work)
+      create_attachment_if_needed(work, new_work_id, new_work) if ['imaging_event', 'processing_event', 'media'].include?(work)
       # Morphosource::CustomThumbnails
       if work == 'media'
         create_thumbnail
@@ -409,7 +409,6 @@ class SubmissionsController < ApplicationController
         model_params = assign_model_params_parents(model_params, parents)
       end
       @processing_event_create_params = model_params
-
     when 'media'
       if @submission.raw_or_derived_media == 'raw'
         parent = @submission.imaging_event_id
@@ -480,7 +479,7 @@ class SubmissionsController < ApplicationController
     model_params.merge!(new_params)
   end
 
-  def create_attachment_if_needed(work, id)
+  def create_attachment_if_needed(work, id, new_work_object)
     fields = attachment_fields[work]
     fields.each do |field|
       if field == 'agreement' && params[:media][:agreement_uri].present?
@@ -492,7 +491,11 @@ class SubmissionsController < ApplicationController
           formats = Morphosource.attachment_formats
         end
         if params[field].present? && formats.include?(File.extname(params[field].original_filename))
-          Morphosource::AttachmentService.create(id, field, params[field], formats)
+          if work == "processing_event" && field == 'description_attachment'
+            new_work_object.description_attachment = params[:description_attachment]
+          else
+            Morphosource::AttachmentService.create(id, field, params[field], formats)
+          end
           params.delete(field)
         elsif field == 'agreement' && submission_params[:organization_for_attachment].present?
           Morphosource::AttachmentService.create_copy(id, field, submission_params[:organization_for_attachment])
@@ -504,7 +507,7 @@ class SubmissionsController < ApplicationController
   def attachment_fields
     {
       'imaging_event' => ['ie_description', 'ie_reference'],
-      'processing_event' => ['pe_description'],
+      'processing_event' => ['description_attachment'],
       'media' => ['agreement']
     }
   end

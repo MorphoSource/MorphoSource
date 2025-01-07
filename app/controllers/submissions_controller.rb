@@ -491,8 +491,12 @@ class SubmissionsController < ApplicationController
           formats = Morphosource.attachment_formats
         end
         if params[field].present? && formats.include?(File.extname(params[field].original_filename))
-          if work == "processing_event" && field == 'description_attachment'
-            new_work_object.description_attachment = params[:description_attachment]
+          if field == 'pe_description'
+            new_work_object.description_attachment = params[:pe_description]
+          elsif field == 'ie_description'
+            new_work_object.description_attachment = params[:ie_description]
+          elsif field == 'ie_reference'
+            new_work_object.reference_attachment = params[:ie_reference]
           else
             Morphosource::AttachmentService.create(id, field, params[field], formats)
           end
@@ -507,7 +511,7 @@ class SubmissionsController < ApplicationController
   def attachment_fields
     {
       'imaging_event' => ['ie_description', 'ie_reference'],
-      'processing_event' => ['description_attachment'],
+      'processing_event' => ['pe_description'],
       'media' => ['agreement']
     }
   end

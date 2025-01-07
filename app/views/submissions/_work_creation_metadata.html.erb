@@ -10,7 +10,7 @@
     <% elsif term == :description && f.object.model.class == ImagingEvent %>
       <%= render_edit_field_partial(term, f: f) %>
       <%= render_edit_field_partial(
-        'attachment', 
+        'attachment_for_description', 
         f: f, 
         field: 'ie_description', 
         label: 'Description attachment file',

@@ -485,18 +485,13 @@ class SubmissionsController < ApplicationController
       if field == 'agreement' && params[:media][:agreement_uri].present?
         # skip since agreement url exists
       else
-        if field == 'ie_reference'
-          formats = Morphosource.reference_attachment_formats
-        else
-          formats = Morphosource.attachment_formats
-        end
+        formats = (field == 'ie_reference' ? Morphosource.reference_attachment_formats : Morphosource.attachment_formats)
         if params[field].present? && formats.include?(File.extname(params[field].original_filename))
-          if field == 'pe_description'
-            new_work_object.description_attachment = params[:pe_description]
-          elsif field == 'ie_description'
-            new_work_object.description_attachment = params[:ie_description]
-          elsif field == 'ie_reference'
-            new_work_object.reference_attachment = params[:ie_reference]
+          case field
+          when 'pe_description', 'ie_description'
+            new_work_object.description_attachment = params[field]
+          when 'ie_reference'
+            new_work_object.reference_attachment = params[field]
           else
             Morphosource::AttachmentService.create(id, field, params[field], formats)
           end

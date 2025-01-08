@@ -17,7 +17,8 @@
     <%= render_edit_field_partial(
       'attachment_for_description', 
       f: p, 
-      field: 'description_attachment', 
+      field: 'pe_description', 
+      work_attribute: 'description_attachment_url', 
       label: 'Description attachment file',
       curation_concern: @processing_event_form.model
     ) %>

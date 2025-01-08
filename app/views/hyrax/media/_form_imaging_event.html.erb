@@ -23,14 +23,16 @@
     <%= render_edit_field_partial(
       'attachment_for_description',
       f: i,
-      field: 'description_attachment',
+      field: 'ie_description',
+      work_attribute: 'description_attachment_url', 
       label: 'Description attachment file',
       curation_concern: @imaging_event_form.model
     ) %>
     <%= render_edit_field_partial(
       'attachment_for_reference',
       f: i,
-      field: 'reference_attachment',
+      field: 'ie_reference',
+      work_attribute: 'reference_attachment_url', 
       label: 'Photographic reference file',
       curation_concern: @imaging_event_form.model
     ) %>

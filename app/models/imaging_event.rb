@@ -92,7 +92,6 @@ class ImagingEvent < Morphosource::Works::Base
       self.save
     else
       # add attachment
-byebug
       extension = File.extname(file.original_filename).downcase
       if Morphosource.attachment_formats.include?(extension)
         description_uploader.work_id = self.id

@@ -25,18 +25,18 @@ module Hyrax
       end
 
       # Handle possible new attachment upload, delete or replace attachment
-      if params[:description_attachment_delete] == 'delete'
+      if params[:ie_description_delete] == 'delete'
         curation_concern.description_attachment = nil
       end
-      if params[:description_attachment].present?
-        curation_concern.description_attachment = params[:description_attachment]
+      if params[:ie_description].present?
+        curation_concern.description_attachment = params[:ie_description]
       end      
 
-      if params[:reference_attachment_delete] == 'delete'
+      if params[:ie_reference_delete] == 'delete'
         curation_concern.reference_attachment = nil
       end
-      if params[:reference_attachment].present?
-        curation_concern.reference_attachment = params[:reference_attachment]
+      if params[:ie_reference].present?
+        curation_concern.reference_attachment = params[:ie_reference]
       end      
 
       if actor.update(actor_environment)

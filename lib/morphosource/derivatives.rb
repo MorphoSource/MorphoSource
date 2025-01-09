@@ -10,6 +10,7 @@ module Morphosource
     autoload :MeshDerivatives
     autoload :MeshGltfDerivatives
     autoload :MeshObjDerivatives
+    autoload :MeshThumbnailDerivatives
     autoload :VideoDerivatives
 
     autoload :Processors
@@ -27,6 +28,7 @@ module Morphosource
     autoload :GltfScale
     autoload :GltfTransform
     autoload :Img2dcm
+    autoload :Lightbox
     autoload :Obj2gltf
 
     def self.blender_path
@@ -39,6 +41,10 @@ module Morphosource
 
     def self.fiji_path
       Hyrax.config.fiji_path
+    end
+
+    def self.lightbox_url
+      Hyrax.config.lightbox_url
     end
 
     def self.python_path

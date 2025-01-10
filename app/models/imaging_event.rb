@@ -94,7 +94,6 @@ class ImagingEvent < Morphosource::Works::Base
       # add attachment
       extension = File.extname(file.original_filename).downcase
       if Morphosource.attachment_formats.include?(extension)
-        description_uploader.work_id = self.id
         description_uploader.store!(file)
         self.description_attachment_url = description_uploader.url
         self.save
@@ -131,7 +130,6 @@ class ImagingEvent < Morphosource::Works::Base
       # add attachment
       extension = File.extname(file.original_filename).downcase
       if Morphosource.reference_attachment_formats.include?(extension)
-        reference_uploader.work_id = self.id
         reference_uploader.store!(file)
         self.reference_attachment_url = reference_uploader.url
         self.save

@@ -41,10 +41,6 @@ class ProcessingEvent < Morphosource::Works::Base
       # add attachment
       extension = File.extname(file.original_filename).downcase
       if Morphosource.attachment_formats.include?(extension)
-byebug  
-# setting work_id not needed?
-
-        uploader.work_id = self.id
         uploader.store!(file)
         self.description_attachment_url = uploader.url
         self.save

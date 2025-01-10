@@ -955,7 +955,8 @@ namespace :morphosource do
         puts "Error processing #{model_name} ##{hit.id}: #{e.message}"
       end
     end # /result.each
-    puts "Migration completed. old_attachment_count = #{old_attachment_count}"
+    puts "old_attachment_count = #{old_attachment_count}"
+    puts "Migration completed." unless count_only
   end
 
   # Set and clear sitewide announcement messages and time until maintenance

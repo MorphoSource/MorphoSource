@@ -931,10 +931,10 @@ namespace :morphosource do
         work = model_class.find(hit.id)
         next unless work.present? 
 
-        if work.send(field_name).present? 
-          puts "Skipping #{model_name} ##{hit.id}: #{field_name} already has a new attachment"
-          next
-        end
+#        if work.send(field_name).present? 
+#          puts "Skipping #{model_name} ##{hit.id}: #{field_name} already has a new attachment"
+#          next
+#        end
 
         unless File.exist?(old_attachment_path)
           puts "Skipping #{model_name} ##{hit.id}: Old attachment file does not exist #{old_attachment_path}"
@@ -948,9 +948,18 @@ namespace :morphosource do
         )
 
         work.send("#{field_name}=", file)
-        puts "Successfully migrated #{model_name} ##{hit.id}: #{field_name} -> #{work.send(field_name)}"
-        Morphosource::AttachmentService.delete(hit.id, old_attachment_field)
-        puts "Deleted old attachment #{old_attachment_path}"
+
+        # verify new attachment before deleting old one
+        new_file_path = Rails.root.join('public').to_s + work.send(field_name)
+byebug
+        if new_file_path.present?
+#          && File.exist?(new_file_path)
+#            puts "Successfully migrated #{model_name} ##{hit.id}: #{field_name} -> #{new_file_path}"
+#            Morphosource::AttachmentService.delete(hit.id, old_attachment_field)
+#            puts "Deleted old attachment #{old_attachment_path}"
+        else
+          puts "Error migrating #{model_name} ##{hit.id}: Keeping old attachment #{old_attachment_path}"
+        end
       rescue StandardError => e
         puts "Error processing #{model_name} ##{hit.id}: #{e.message}"
       end

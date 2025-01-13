@@ -882,11 +882,20 @@ namespace :morphosource do
   end
 
   desc "Migrate attachments to use CarrierWave"
-  task :migrate_attachments, [:model, :field, :old_attachment_field, :count_only, :and_query] => :environment do |task, args|
+  task :migrate_attachments, [:model, :field, :old_attachment_field, :action, :and_query] => :environment do |task, args|
     model_name = args[:model]
     field_name = args[:field]
     old_attachment_field = args[:old_attachment_field] 
-    count_only = args[:count_only].present? && args[:count_only] == "true"
+    case args[:action]
+    when "migrate"
+      action = 'migrate'
+    when "count_only"
+      action = 'count_only'
+    when "delete_old_attachments"
+      action = 'delete_old_attachments'
+    else
+      exit
+    end
     and_query = args[:and_query]
 
     unless model_name.present? && field_name.present? && old_attachment_field.present?
@@ -919,22 +928,27 @@ namespace :morphosource do
       begin
         old_attachment_path = Morphosource::AttachmentService.get(hit.id, old_attachment_field)
         next unless old_attachment_path.present? 
-
-        if old_attachment_path.present? 
+        
+        if action == 'count_only'
           old_attachment_count += 1
-        else
+          next
+        elsif action == 'delete_old_attachments'
+          Morphosource::AttachmentService.delete(hit.id, old_attachment_field)
+          puts "Deleted old attachment #{old_attachment_path}"
           next
         end
 
-        next if count_only
-
+        # action == 'migrate'
         work = model_class.find(hit.id)
         next unless work.present? 
 
-#        if work.send(field_name).present? 
-#          puts "Skipping #{model_name} ##{hit.id}: #{field_name} already has a new attachment"
-#          next
-#        end
+        if work.send(field_name).present?
+          puts "Skipping #{model_name} ##{hit.id}: #{field_name} already has a new attachment"
+byebug
+work.send("#{field_name}=", nil)
+
+          next
+        end
 
         unless File.exist?(old_attachment_path)
           puts "Skipping #{model_name} ##{hit.id}: Old attachment file does not exist #{old_attachment_path}"
@@ -951,21 +965,17 @@ namespace :morphosource do
 
         # verify new attachment before deleting old one
         new_file_path = Rails.root.join('public').to_s + work.send(field_name)
-byebug
-        if new_file_path.present?
-#          && File.exist?(new_file_path)
-#            puts "Successfully migrated #{model_name} ##{hit.id}: #{field_name} -> #{new_file_path}"
-#            Morphosource::AttachmentService.delete(hit.id, old_attachment_field)
-#            puts "Deleted old attachment #{old_attachment_path}"
+        if new_file_path.present? && File.exist?(new_file_path)
+          puts "Successfully migrated #{model_name} ##{hit.id}: #{field_name} -> #{new_file_path}"
         else
-          puts "Error migrating #{model_name} ##{hit.id}: Keeping old attachment #{old_attachment_path}"
+          puts "Error migrating #{model_name} ##{hit.id}"
         end
       rescue StandardError => e
         puts "Error processing #{model_name} ##{hit.id}: #{e.message}"
       end
     end # /result.each
     puts "old_attachment_count = #{old_attachment_count}"
-    puts "Migration completed." unless count_only
+    puts "#{action} action completed."
   end
 
   # Set and clear sitewide announcement messages and time until maintenance

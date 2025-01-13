@@ -83,7 +83,7 @@ RSpec.describe ProcessingEvent do
     let(:processing_event) { ProcessingEvent.create }
     let(:valid_file) { Rack::Test::UploadedFile.new('spec/fixtures/text/text.txt', 'text/plain') }
     let(:invalid_file) { Rack::Test::UploadedFile.new('spec/fixtures/images/ms.jpg', 'application/jpeg') }
-    let(:valid_file_upload_url) { "/works/processing_event/attachments/text.txt" }
+    let(:valid_file_upload_url) { "/uploads/works/processing_event/attachments/text.txt" }
 
     describe '#uploader' do
       it 'initializes an uploader with the correct work_id' do

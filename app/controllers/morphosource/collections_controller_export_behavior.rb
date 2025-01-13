@@ -50,7 +50,7 @@ module Morphosource
     end
 
     def works_export
-      authorize_export
+      return unless authorize_export
 
       if request.format == 'csv'
         repository.blacklight_config.max_per_page = 9999999
@@ -63,7 +63,7 @@ module Morphosource
     ### Download and Download Request Export ###
 
     def media_downloads
-      authorize_export
+      return unless authorize_export
 
       @document_type = 'media_download'
       repository.blacklight_config.max_per_page = 9999999
@@ -74,7 +74,7 @@ module Morphosource
     end
 
     def media_download_counts
-      authorize_export
+      return unless authorize_export
 
       @document_type = 'media_with_download_count'
       if request.format == 'csv'
@@ -105,7 +105,7 @@ module Morphosource
     end
 
     def media_requests
-      authorize_export
+      return unless authorize_export
       @document_type = 'media_request'
       repository.blacklight_config.max_per_page = 9999999
       (_, @media_document_list) = query_solr_all_results
@@ -195,6 +195,7 @@ module Morphosource
     def authorize_export
       deny_access_unauthorized and return unless current_user.present?
       deny_access_forbidden    and return unless current_user.can?(:edit, @collection)
+      true
     end
 
     def downloads_report(media_ids)

@@ -1033,6 +1033,7 @@ namespace :morphosource do
               type: Marcel::MimeType.for(cw_path),
               tempfile: File.open(cw_path)
             )
+byebug #file.class tempfile
             Morphosource::AttachmentService.create(hit.id, old_attachment_field, file, work.send("#{field_name}_formats"))
 
             old_attachment_path = Morphosource::AttachmentService.get(hit.id, old_attachment_field)

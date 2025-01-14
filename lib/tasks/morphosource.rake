@@ -948,9 +948,6 @@ namespace :morphosource do
 
         if work.send(field_name).present?
           puts "Skipping #{model_name} ##{hit.id}: #{field_name} already has a new attachment"
-#byebug
-#work.send("#{field_name}=", nil)
-
           next
         end
 
@@ -977,6 +974,7 @@ namespace :morphosource do
         end
       rescue StandardError => e
         puts "Error processing #{model_name} ##{hit.id}: #{e.message}"
+        next
       end
     end # /result.each
     puts "old_attachment_count = #{old_attachment_count}"
@@ -1050,11 +1048,15 @@ namespace :morphosource do
 
 #        if delete
         # delete the CW attachment
+byebug   
         work.send("#{field_name}=", nil)
+byebug   
 
       
       rescue StandardError => e
+byebug   
         puts "Error processing #{model_name} ##{hit.id}: #{e.message}"
+        next
       end
     end # /result.each
     puts "attachment_count = #{attachment_count}"

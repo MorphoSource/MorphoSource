@@ -140,7 +140,7 @@ services:
       - morphosource
 
   lightbox:
-    image: gitlab-registry.oit.duke.edu/morphosource/lightbox:0.0.1
+    image: gitlab-registry.oit.duke.edu/morphosource/lightbox:0.0.2
     container_name: lightbox
     # ports:
     #   - 4000:3000

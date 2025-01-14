@@ -881,6 +881,7 @@ namespace :morphosource do
     }).import
   end
 
+  # Attachment migration (AttachmentService -> CarrierWave)
   desc "Migrate attachments to use CarrierWave"
   task :migrate_attachments, [:model, :field, :old_attachment_field, :action, :and_query] => :environment do |task, args|
     model_name = args[:model]
@@ -924,6 +925,7 @@ namespace :morphosource do
     puts "Found #{results.count} records for model #{model_name}"
 
     old_attachment_count = 0
+    processed_attachment_count = 0
 
     results.each do |hit|
       begin
@@ -936,6 +938,7 @@ namespace :morphosource do
         if action == 'delete_old_attachments'
           Morphosource::AttachmentService.delete(hit.id, old_attachment_field)
           puts "Deleted old attachment #{old_attachment_path}"
+          processed_attachment_count += 1
           next
         end
 
@@ -968,6 +971,7 @@ namespace :morphosource do
         new_file_path = Rails.root.join('public').to_s + work.send(field_name)
         if new_file_path.present? && File.exist?(new_file_path)
           puts "Successfully migrated #{model_name} ##{hit.id}: #{field_name} -> #{new_file_path}"
+          processed_attachment_count += 1
         else
           puts "Error migrating #{model_name} ##{hit.id}"
         end
@@ -976,7 +980,86 @@ namespace :morphosource do
       end
     end # /result.each
     puts "old_attachment_count = #{old_attachment_count}"
-    puts "#{action} action completed."
+    puts "#{action} action completed for #{processed_attachment_count} attachments."
+  end
+
+  # Rollback attachment migration (CarrierWave -> AttachmentService)
+  desc "Rollback for Migrate attachments to use CarrierWave"
+  task :rollback_migrate_attachments, [:model, :field, :old_attachment_field] => :environment do |task, args|
+    model_name = args[:model]
+    field_name = args[:field]
+    old_attachment_field = args[:old_attachment_field] 
+
+    unless model_name.present? && field_name.present? && old_attachment_field.present?
+      puts "Valid arguments required: model, field, old_attachment_field"
+      exit
+    end
+
+    begin
+      model_class = model_name.constantize
+    rescue StandardError => e
+      puts "Error resolving model '#{model_name}': #{e.message}"
+      exit
+    end
+
+    unless model_class.method_defined?(field_name)
+      puts "Field '#{field_name}' is not defined on model '#{model_name}'"
+      exit
+    end
+
+    solr_query = "has_model_ssim:#{model_name}"
+
+    puts "Querying Solr with: #{solr_query}"
+    results = ActiveFedora::SolrService.query(solr_query, rows: 999999)
+    puts "Found #{results.count} records for model #{model_name}"
+
+    attachment_count = 0
+    processed_attachment_count = 0
+
+    results.each do |hit|
+      begin
+        work = model_class.find(hit.id)
+        next unless work.present? 
+        next unless work.send(field_name).present?
+
+        attachment_count += 1
+        old_attachment_path = Morphosource::AttachmentService.get(hit.id, old_attachment_field)
+
+        if old_attachment_path.present?
+          puts "#{model_name} ##{hit.id}: old attachment #{old_attachment_field} has not been deleted yet, no need to create the file again"
+        else
+          cw_path = Rails.root.join('public').to_s + work.send(field_name) 
+          if cw_path.present? && File.exist?(cw_path)
+            file = ActionDispatch::Http::UploadedFile.new(
+              filename: File.basename(cw_path),
+              type: Marcel::MimeType.for(cw_path),
+              tempfile: File.open(cw_path)
+            )
+  byebug
+            Morphosource::AttachmentService.create(hit.id, old_attachment_field, file, work.send("#{field_name}_formats"))
+
+            old_attachment_path = Morphosource::AttachmentService.get(hit.id, old_attachment_field)
+            if old_attachment_path.present?
+              puts "Old attachmemnt created for #{model_name} ##{hit.id}: #{old_attachment_field} -> #{old_attachment_path}"
+              processed_attachment_count += 1
+            else
+              puts "Failed to create Old attachmemnt for #{model_name} ##{hit.id}: #{old_attachment_field}"              
+            end
+          end
+
+        end
+
+#        if delete
+        # delete the CW attachment
+        work.send("#{field_name}=", nil)
+
+      
+      rescue StandardError => e
+        puts "Error processing #{model_name} ##{hit.id}: #{e.message}"
+      end
+    end # /result.each
+    puts "attachment_count = #{attachment_count}"
+    puts "Rollback completed for #{processed_attachment_count} attachments."
   end
 
   # Set and clear sitewide announcement messages and time until maintenance

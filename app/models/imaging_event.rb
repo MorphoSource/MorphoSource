@@ -93,7 +93,7 @@ class ImagingEvent < Morphosource::Works::Base
     else
       # add attachment
       extension = File.extname(file.original_filename).downcase
-      if Morphosource.attachment_formats.include?(extension)
+      if description_attachment_formats.include?(extension)
         description_uploader.store!(file)
         self.description_attachment_url = description_uploader.url
         self.save
@@ -105,6 +105,10 @@ class ImagingEvent < Morphosource::Works::Base
 
   def description_attachment
     self.description_attachment_url
+  end
+
+  def description_attachment_formats
+    @description_attachment_formats ||= Morphosource.attachment_formats
   end
 
   def reference_uploader
@@ -129,7 +133,7 @@ class ImagingEvent < Morphosource::Works::Base
     else
       # add attachment
       extension = File.extname(file.original_filename).downcase
-      if Morphosource.reference_attachment_formats.include?(extension)
+      if reference_attachment_formats.include?(extension)
         reference_uploader.store!(file)
         self.reference_attachment_url = reference_uploader.url
         self.save
@@ -141,6 +145,10 @@ class ImagingEvent < Morphosource::Works::Base
 
   def reference_attachment
     self.reference_attachment_url
+  end
+
+  def reference_attachment_formats
+    @reference_attachment_formats ||= Morphosource.reference_attachment_formats
   end
 
   def device

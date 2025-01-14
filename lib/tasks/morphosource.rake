@@ -894,6 +894,7 @@ namespace :morphosource do
     when "delete_old_attachments"
       action = 'delete_old_attachments'
     else
+      puts "invalid action"
       exit
     end
     and_query = args[:and_query]
@@ -929,10 +930,10 @@ namespace :morphosource do
         old_attachment_path = Morphosource::AttachmentService.get(hit.id, old_attachment_field)
         next unless old_attachment_path.present? 
         
-        if action == 'count_only'
-          old_attachment_count += 1
-          next
-        elsif action == 'delete_old_attachments'
+        old_attachment_count += 1
+        next if action == 'count_only'
+
+        if action == 'delete_old_attachments'
           Morphosource::AttachmentService.delete(hit.id, old_attachment_field)
           puts "Deleted old attachment #{old_attachment_path}"
           next
@@ -944,8 +945,8 @@ namespace :morphosource do
 
         if work.send(field_name).present?
           puts "Skipping #{model_name} ##{hit.id}: #{field_name} already has a new attachment"
-byebug
-work.send("#{field_name}=", nil)
+#byebug
+#work.send("#{field_name}=", nil)
 
           next
         end

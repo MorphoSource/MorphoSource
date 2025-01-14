@@ -82,7 +82,7 @@ class ImagingEvent < Morphosource::Works::Base
       return unless self.description_attachment_url.present?
       file_name = File.basename(self.description_attachment_url)
       description_uploader.retrieve_from_store!(file_name)
-      if description_uploader.file && File.exist?(description_uploader.file.path)
+      if description_uploader.file.present? && File.exist?(description_uploader.file.path)
         Rails.logger.info "Deleting file: #{description_uploader.file.path}"
         description_uploader.remove!
       else

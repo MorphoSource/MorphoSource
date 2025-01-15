@@ -977,7 +977,7 @@ namespace :morphosource do
         next
       end
     end # /result.each
-    puts "old_attachment_count = #{old_attachment_count}"
+    puts "#{old_attachment_field} old_attachment_count = #{old_attachment_count}"
     puts "#{action} action completed for #{processed_attachment_count} attachments."
   end
 
@@ -1013,12 +1013,13 @@ namespace :morphosource do
 
     attachment_count = 0
     processed_attachment_count = 0
+    created_old_attachment_count = 0
 
     results.each do |hit|
       begin
         work = model_class.find(hit.id)
         next unless work.present? 
-        next unless work.send(field_name).present?
+        next unless work.send(field_name).present? # no new migrated attachment
 
         attachment_count += 1
         old_attachment_path = Morphosource::AttachmentService.get(hit.id, old_attachment_field)
@@ -1037,27 +1038,23 @@ namespace :morphosource do
               tempfile: tempfile
             )
 
-
-byebug #file.class tempfile
+#byebug #file.class tempfile
             Morphosource::AttachmentService.create(hit.id, old_attachment_field, file, work.send("#{field_name}_formats"))
 
             old_attachment_path = Morphosource::AttachmentService.get(hit.id, old_attachment_field)
             if old_attachment_path.present?
               puts "Old attachmemnt created for #{model_name} ##{hit.id}: #{old_attachment_field} -> #{old_attachment_path}"
-              processed_attachment_count += 1
+              created_old_attachment_count += 1
             else
               puts "Failed to create Old attachmemnt for #{model_name} ##{hit.id}: #{old_attachment_field}"              
             end
           end
-
         end
 
 #        if delete
         # delete the CW attachment
 byebug   
         work.send("#{field_name}=", nil)
-byebug   
-
       
       rescue StandardError => e
 byebug   
@@ -1065,8 +1062,9 @@ byebug
         next
       end
     end # /result.each
-    puts "attachment_count = #{attachment_count}"
-    puts "Rollback completed for #{processed_attachment_count} attachments."
+    puts "#{field_name} attachment_count = #{attachment_count}"
+    puts "#{created_old_attachment_count} old attachments created"
+    puts "Rollback completed."
   end
 
   # Set and clear sitewide announcement messages and time until maintenance

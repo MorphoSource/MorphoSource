@@ -79,22 +79,16 @@ class ImagingEvent < Morphosource::Works::Base
   def description_attachment=(file)
     if file.nil?
       # delete attachment
-byebug   
       return unless self.description_attachment_url.present?
-byebug   
       file_name = File.basename(self.description_attachment_url)
-byebug   
       description_uploader.retrieve_from_store!(file_name)
       if description_uploader.file.present? && File.exist?(description_uploader.file.path)
-byebug   
         Rails.logger.info "Deleting file: #{description_uploader.file.path}"
         description_uploader.remove!
       else
-byebug   
         Rails.logger.warn "File not found: #{description_uploader.file&.path}"
       end
       self.description_attachment_url = nil
-byebug   
       self.save
     else
       # add attachment

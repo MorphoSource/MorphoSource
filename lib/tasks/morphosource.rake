@@ -1028,11 +1028,16 @@ namespace :morphosource do
         else
           cw_path = Rails.root.join('public').to_s + work.send(field_name) 
           if cw_path.present? && File.exist?(cw_path)
+            cw_file = File.open(cw_path)
+            tempfile = Tempfile.new(File.basename(cw_file.path))
+            tempfile.write(cw_file.read)
             file = ActionDispatch::Http::UploadedFile.new(
               filename: File.basename(cw_path),
               type: Marcel::MimeType.for(cw_path),
-              tempfile: File.open(cw_path)
+              tempfile: tempfile
             )
+
+
 byebug #file.class tempfile
             Morphosource::AttachmentService.create(hit.id, old_attachment_field, file, work.send("#{field_name}_formats"))
 

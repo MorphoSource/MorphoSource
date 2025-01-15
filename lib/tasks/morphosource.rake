@@ -1023,7 +1023,7 @@ namespace :morphosource do
 
         cw_attachment_count += 1
         old_attachment_path = Morphosource::AttachmentService.get(hit.id, old_attachment_field)
-
+byebug
         if old_attachment_path.present?
           puts "#{model_name} ##{hit.id}: old attachment #{old_attachment_field} has not been deleted yet, no need to create the file again"
         else

@@ -1011,8 +1011,8 @@ namespace :morphosource do
     results = ActiveFedora::SolrService.query(solr_query, rows: 999999)
     puts "Found #{results.count} records for model #{model_name}"
 
-    attachment_count = 0
-    processed_attachment_count = 0
+    cw_attachment_count = 0
+    deleted_cw_attachment_count = 0
     created_old_attachment_count = 0
 
     results.each do |hit|
@@ -1021,7 +1021,7 @@ namespace :morphosource do
         next unless work.present? 
         next unless work.send(field_name).present? # no new migrated attachment
 
-        attachment_count += 1
+        cw_attachment_count += 1
         old_attachment_path = Morphosource::AttachmentService.get(hit.id, old_attachment_field)
 
         if old_attachment_path.present?
@@ -1051,10 +1051,10 @@ namespace :morphosource do
           end
         end
 
-#        if delete
-        # delete the CW attachment
-byebug   
+#        todo: check if delete argument here?
+
         work.send("#{field_name}=", nil)
+        deleted_cw_attachment_count += 1
       
       rescue StandardError => e
 byebug   
@@ -1062,7 +1062,8 @@ byebug
         next
       end
     end # /result.each
-    puts "#{field_name} attachment_count = #{attachment_count}"
+    puts "#{field_name} cw_attachment_count = #{cw_attachment_count}"
+    puts "#{deleted_cw_attachment_count} CW attachments deleted"
     puts "#{created_old_attachment_count} old attachments created"
     puts "Rollback completed."
   end

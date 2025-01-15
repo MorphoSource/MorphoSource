@@ -983,15 +983,18 @@ namespace :morphosource do
 
   # Rollback attachment migration (CarrierWave -> AttachmentService)
   desc "Rollback for Migrate attachments to use CarrierWave"
-  task :rollback_migrate_attachments, [:model, :field, :old_attachment_field] => :environment do |task, args|
+  task :rollback_migrate_attachments, [:model, :field, :old_attachment_field, :option] => :environment do |task, args|
     model_name = args[:model]
     field_name = args[:field]
     old_attachment_field = args[:old_attachment_field] 
+    option = args[:option]
 
     unless model_name.present? && field_name.present? && old_attachment_field.present?
       puts "Valid arguments required: model, field, old_attachment_field"
       exit
     end
+
+    no_delete = (option.present? && option == "no_delete")
 
     begin
       model_class = model_name.constantize
@@ -1040,7 +1043,6 @@ namespace :morphosource do
               tempfile: tempfile
             )
 
-#byebug #file.class tempfile
             Morphosource::AttachmentService.create(hit.id, old_attachment_field, file, work.send("#{field_name}_formats"))
 
             old_attachment_path = Morphosource::AttachmentService.get(hit.id, old_attachment_field)
@@ -1053,13 +1055,11 @@ namespace :morphosource do
           end
         end
 
-#        todo: check if delete argument here?
-
-        work.send("#{field_name}=", nil)
-        deleted_cw_attachment_count += 1
-      
+        unless no_delete
+          work.send("#{field_name}=", nil)
+          deleted_cw_attachment_count += 1
+        end      
       rescue StandardError => e
-byebug   
         puts "Error processing #{model_name} ##{hit.id}: #{e.message}"
         next
       end

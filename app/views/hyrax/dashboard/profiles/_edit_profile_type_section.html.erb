@@ -1,7 +1,7 @@
 <div class="form-group row">
   <%= f.label :profile_type, t("morphosource.dashboard.profiles.edit_primary.profile_type").html_safe, class: 'col-sm-4 control-label required' %>
   <div class="col-sm-8">
-    <%= f.select_tag 'user[profile_type]', options_for_select(Morphosource::UserProfile::ProfileHelper::PROFILE_TYPES, @user.profile_type), class: "form-control", include_blank: true, required: true %>
+    <%= f.select 'profile_type', options_for_select(Morphosource::UserProfile::ProfileHelper::PROFILE_TYPES, @user.profile_type), class: "form-control", include_blank: true, required: true %>
   </div>
 </div>
 

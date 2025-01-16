@@ -977,7 +977,8 @@ namespace :morphosource do
         next
       end
     end # /result.each
-    puts "#{old_attachment_field} old_attachment_count = #{old_attachment_count}"
+    puts "Migrating attachment #{old_attachment_field} to #{field_name}"
+    puts "Old attachment #{old_attachment_field} count: #{old_attachment_count}"
     puts "#{action} action completed for #{processed_attachment_count} attachments."
   end
 
@@ -1064,7 +1065,8 @@ namespace :morphosource do
         next
       end
     end # /result.each
-    puts "#{field_name} cw_attachment_count = #{cw_attachment_count}"
+    puts "Rolling back migration for attachment field #{field_name} -> #{old_attachment_field}"
+    puts "CarrierWave attachments found: #{cw_attachment_count}"
     puts "#{deleted_cw_attachment_count} CW attachments deleted"
     puts "#{created_old_attachment_count} old attachments created"
     puts "Rollback completed."

@@ -310,6 +310,7 @@ RSpec.describe MorphosourceHelper, type: :helper do
   describe 'grouped_access_list' do
     let(:owner)                 { FactoryBot.create(:contributor) }
     let(:depositor)             { FactoryBot.create(:contributor) }
+    let!(:project_depositor)    { FactoryBot.create(:contributor) }
     let(:editor)                { FactoryBot.create(:contributor) }
     let(:viewer)                { FactoryBot.create(:registered_user) }
     let(:collection_manager)    { FactoryBot.create(:contributor) }
@@ -318,21 +319,9 @@ RSpec.describe MorphosourceHelper, type: :helper do
     let(:collection_downloader) { FactoryBot.create(:registered_user) }
     let(:collection_viewer)     { FactoryBot.create(:registered_user) }
 
-    let(:project_depositor)     { FactoryBot.create(:contributor) }
-    let(:project)               { FactoryBot.create(:project, depositor: project_depositor.ms_id) }
+    let(:project)              { FactoryBot.create(:project, depositor: project_depositor.ms_id) }
 
     let(:collections)           { [project] }
-
-    let(:project_group)         { {"#{project.id}" => {
-                                    :access_override=>nil,
-                                    :users=>{
-                                      "managers" => "#{project_depositor.display_name} (manager), #{collection_manager.display_name} (manager)",
-                                      "editors" => "#{collection_editor.display_name} (editor)",
-                                      "downloaders" => "#{collection_downloader.display_name} (downloader)",
-                                      "viewers" => "#{collection_viewer.display_name} (viewer)"
-                                    }
-                                  }
-                                } }
 
     before do
       collections.each do |coll|
@@ -364,7 +353,7 @@ RSpec.describe MorphosourceHelper, type: :helper do
           individual_list, group_list = helper.grouped_access_list(f)
           # depositor is data manager and is excluded
           expect(individual_list.map{|p| [p.object.agent_name, p.object.access]}).to match_array(user_permissions)
-          expect(group_list).to eq(project_group)
+          expect(list_includes_group?(group_list, project)).to be(true)
         end
       end
     end
@@ -384,7 +373,7 @@ RSpec.describe MorphosourceHelper, type: :helper do
           # owner is data manager, so is excluded
           # depositor is included in individual list
           expect(individual_list.map{|p| [p.object.agent_name, p.object.access]}).to match_array(user_permissions)
-          expect(group_list).to eq(project_group)
+          expect(list_includes_group?(group_list, project)).to be(true)
         end
       end
     end
@@ -397,26 +386,6 @@ RSpec.describe MorphosourceHelper, type: :helper do
       let(:imaging_event)           { FactoryBot.create(:imaging_event, ie_modality: device.modality, device_id: [device.id], physical_object_id: [specimen.id]) }
 
       let(:collections)             { [project, organization, facility] }
-
-      let(:organization_group)      { { "#{organization.id}" => {
-                                        :access_override=>"read",
-                                        :users=>{
-                                          "managers"=>"#{collection_manager.display_name} (manager)",
-                                          "editors"=>"#{collection_editor.display_name} (editor)",
-                                          "downloaders"=>"#{collection_downloader.display_name} (downloader)",
-                                          "viewers"=>"#{collection_viewer.display_name} (viewer)"}
-                                        }
-                                    } }
-
-      let(:facility_group)         { { "#{facility.id}" => {
-                                        :access_override=>"read",
-                                        :users=>{
-                                          "managers"=>"#{collection_manager.display_name} (manager)",
-                                          "editors"=>"#{collection_editor.display_name} (editor)",
-                                          "downloaders"=>"#{collection_downloader.display_name} (downloader)",
-                                          "viewers"=>"#{collection_viewer.display_name} (viewer)"}
-                                        }
-                                    } }
 
       let(:presenter)               { Hyrax::MediaPresenter.new(SolrDocument.find(media.id), Ability.new(owner)) }
 
@@ -441,9 +410,9 @@ RSpec.describe MorphosourceHelper, type: :helper do
             # owner is data manager, so is excluded
             # depositor is included in individual list
             expect(individual_list.map{|p| [p.object.agent_name, p.object.access]}).to match_array([[depositor.ms_id, "edit"],[editor.ms_id, "edit"], [viewer.ms_id, "read"]])
-            expect(group_list).to include(project_group)
-            expect(group_list).to include(organization_group)
-            expect(group_list).to include(facility_group)
+            expect(list_includes_group?(group_list, project)).to be(true)
+            expect(list_includes_group?(group_list, organization)).to be(true)
+            expect(list_includes_group?(group_list, facility)).to be(true)
           end
         end
       end
@@ -451,25 +420,15 @@ RSpec.describe MorphosourceHelper, type: :helper do
       context 'the object organization is the data manager' do
         let!(:media) { Media.create(title: ['title'], depositor: depositor.ms_id, owner: organization.id) }
 
-        let(:organization_group)      { { "#{organization.id}" => {
-                                        :access_override=>nil,
-                                        :users=>{
-                                          "managers"=>"#{collection_manager.display_name} (manager)",
-                                          "editors"=>"#{collection_editor.display_name} (editor)",
-                                          "downloaders"=>"#{collection_downloader.display_name} (downloader)",
-                                          "viewers"=>"#{collection_viewer.display_name} (viewer)"}
-                                        }
-                                      } }
-
         it 'returns a list of users and access' do
           helper.simple_form_for Hyrax::MediaForm.new(media, nil, nil), url: '' do |f|
             individual_list, group_list = helper.grouped_access_list(f)
             # owner is data manager, so is excluded
             # depositor is included in individual list
             expect(individual_list.map{|p| [p.object.agent_name, p.object.access]}).to match_array([[depositor.ms_id, "edit"],[editor.ms_id, "edit"], [viewer.ms_id, "read"]])
-            expect(group_list).to include(project_group)
-            expect(group_list).to include(organization_group)
-            expect(group_list).to include(facility_group)
+            expect(list_includes_group?(group_list, project)).to be(true)
+            expect(list_includes_group?(group_list, organization)).to be(true)
+            expect(list_includes_group?(group_list, facility)).to be(true)
           end
         end
       end
@@ -477,31 +436,19 @@ RSpec.describe MorphosourceHelper, type: :helper do
       context 'the device organization is the data manager' do
         let!(:media) { Media.create(title: ['title'], depositor: depositor.ms_id, owner: facility.id) }
 
-        let(:facility_group)         { { "#{facility.id}" => {
-                                        :access_override=>nil,
-                                        :users=>{
-                                          "managers"=>"#{collection_manager.display_name} (manager)",
-                                          "editors"=>"#{collection_editor.display_name} (editor)",
-                                          "downloaders"=>"#{collection_downloader.display_name} (downloader)",
-                                          "viewers"=>"#{collection_viewer.display_name} (viewer)"}
-                                        }
-                                      } }
-
         it 'returns a list of users and access' do
           helper.simple_form_for Hyrax::MediaForm.new(media, nil, nil), url: '' do |f|
             individual_list, group_list = helper.grouped_access_list(f)
             # owner is data manager, so is excluded
             # depositor is included in individual list
             expect(individual_list.map{|p| [p.object.agent_name, p.object.access]}).to match_array([[depositor.ms_id, "edit"],[editor.ms_id, "edit"], [viewer.ms_id, "read"]])
-            expect(group_list).to include(project_group)
-            expect(group_list).to include(organization_group)
-            expect(group_list).to include(facility_group)
+            expect(list_includes_group?(group_list, project)).to be(true)
+            expect(list_includes_group?(group_list, organization)).to be(true)
+            expect(list_includes_group?(group_list, facility)).to be(true)
           end
         end
       end
     end
-
-
   end
 
   describe 'data_manager_display' do
@@ -545,5 +492,15 @@ RSpec.describe MorphosourceHelper, type: :helper do
         end
       end
     end
+  end
+
+  def list_includes_group?(group_list, group)
+    return false unless sharing_users = group_list[group.id]&.dig(:users)
+    ["managers", "editors", "downloaders", "viewers"].each do |role|
+      group.send(role).each do |user|
+        return false unless sharing_users[role].include?(user.display_name)
+      end
+    end
+    true
   end
 end

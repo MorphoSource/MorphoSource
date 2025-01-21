@@ -50,8 +50,7 @@ module Morphosource
     end
 
     def works_export
-      deny_access_unauthorized and return unless current_user.present?
-      deny_access_forbidden    and return unless current_user.can?(:edit, @collection)
+      return unless authorize_export
 
       if request.format == 'csv'
         repository.blacklight_config.max_per_page = 9999999
@@ -64,20 +63,18 @@ module Morphosource
     ### Download and Download Request Export ###
 
     def media_downloads
-      deny_access_unauthorized and return unless current_user.present?
-      deny_access_forbidden    and return unless current_user.can?(:edit, @collection)
+      return unless authorize_export
 
       @document_type = 'media_download'
       repository.blacklight_config.max_per_page = 9999999
       (_, @media_document_list) = query_solr_all_results
       media_ids = @media_document_list.map{|d| d["id"]}.flatten.compact.uniq
-      @document_list = Morphosource::Reports::DownloadsReportService.call(media_ids)
+      @document_list = downloads_report(media_ids)
       export_render(media_downloads_filename)
     end
 
     def media_download_counts
-      deny_access_unauthorized and return unless current_user.present?
-      deny_access_forbidden    and return unless current_user.can?(:edit, @collection)
+      return unless authorize_export
 
       @document_type = 'media_with_download_count'
       if request.format == 'csv'
@@ -85,8 +82,7 @@ module Morphosource
       end
       (@response, @media_document_list) = query_solr_all_results
       media_ids = @media_document_list.map{|d| d["id"]}.flatten.compact.uniq
-      downloads = Morphosource::Reports::DownloadsReportService.call(media_ids)
-
+      downloads = downloads_report(media_ids)
       user_demographics = downloads.pluck('download_user_id').uniq.map do |user_id|
         [user_id, User.find_by_user_key(user_id)&.demographics ]
       end.to_h
@@ -109,15 +105,12 @@ module Morphosource
     end
 
     def media_requests
-      deny_access_unauthorized and return unless current_user.present?
-      deny_access_forbidden    and return unless current_user.can?(:edit, @collection)
-
+      return unless authorize_export
       @document_type = 'media_request'
       repository.blacklight_config.max_per_page = 9999999
       (_, @media_document_list) = query_solr_all_results
       media_ids = @media_document_list.map{|d| d["id"]}.flatten.compact.uniq
-      @document_list = Morphosource::Reports::RequestsReportService.call(media_ids)
-
+      @document_list = requests_report(media_ids)
       export_render(media_requests_filename)
     end
 
@@ -197,6 +190,24 @@ module Morphosource
     def media_requests_filename
       filename = t("morphosource.collections.#{collection_type&.machine_id}.exports.#{tab.to_s}.media_requests.filename")
       filename.include?('translation missing') ? 'Media%20Requests' : filename
+    end
+
+    def authorize_export
+      deny_access_unauthorized and return unless current_user.present?
+      deny_access_forbidden    and return unless current_user.can?(:edit, @collection)
+      true
+    end
+
+    def downloads_report(media_ids)
+      return [] if media_ids.blank?
+
+      Morphosource::Reports::DownloadsReportService.call(media_ids)
+    end
+
+    def requests_report(media_ids)
+      return [] if media_ids.blank?
+
+      Morphosource::Reports::RequestsReportService.call(media_ids)
     end
   end
 end

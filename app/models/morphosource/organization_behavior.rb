@@ -18,17 +18,6 @@ module Morphosource
       CulturalHeritageObject.where(organization_id_tesim: id)
     end
 
-    def enforced_permissions_fields
-      permissions_fields.select { |k, v| is_intentionally_blank(k) || v&.first.present? }
-    end
-
-    def is_intentionally_blank(field)
-      blank_fields = [:license, :rights_holder, :rights_statement]
-
-      blank_fields.include?(field) &&
-        ActiveModel::Type::Boolean.new.cast(send("#{field.to_s}_blank")&.first)
-    end
-
     # Media associated with the organization via devices and imaging events
     def device_media
       Media.where(media_device_facility_organization_id_ssim: id)
@@ -44,6 +33,17 @@ module Morphosource
 
     def device_physical_objects
       device_specimens + device_cultural_heritage_objects
+    end
+
+    def enforced_permissions_fields
+      permissions_fields.select { |k, v| is_intentionally_blank(k) || v&.first.present? }
+    end
+
+    def is_intentionally_blank(field)
+      blank_fields = [:license, :rights_holder, :rights_statement]
+
+      blank_fields.include?(field) &&
+        ActiveModel::Type::Boolean.new.cast(send("#{field.to_s}_blank")&.first)
     end
 
     def media

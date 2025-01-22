@@ -65,6 +65,14 @@ module Morphosource
             index_related_collections([team])
             index_related_collections(team&.child_projects)
           end
+        when OrganizationCollection
+          if title_changed?
+            if title_changed?
+              index_related(media)
+              index_related(physical_objects)
+            end
+            index_related_collections(child_projects)
+          end
         when Taxonomy
           return unless do_index_related?
           index_related(objects)

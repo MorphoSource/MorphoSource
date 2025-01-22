@@ -10,7 +10,7 @@ module Morphosource
       facet_config = blacklight_config.facet_fields[facet]
       contains = blacklight_params[request_keys[:contains]]
       contains_title = blacklight_params[:'facet.containsTitle']
-
+  
       if contains_title.present?
         # Perform a lookup on the Solr title field to find matching IDs
         response = fetch_ids_by_title_and_model(contains_title, facet_config.key)
@@ -25,8 +25,23 @@ module Morphosource
           solr_params[:fq] << "{!frange l=1 u=0}1"
         end
       elsif contains.present?
-        solr_params[:"f.#{facet_config.field}.facet.contains"] = contains
-        solr_params[:"f.#{facet_config.field}.facet.contains.ignoreCase"] = true
+        if facet_config.key == "rights_statement"
+
+          rights_statements = YAML.load_file(Rails.root.join('config', 'authorities', 'rights_statements.yml'))
+          matching_terms = rights_statements['terms'].select { |term| term['term'].downcase.include?(contains.downcase) }
+          matching_ids = matching_terms.map { |term| term['id'] }
+          if matching_ids.any?
+            solr_params[:fq] ||= []
+            solr_params[:fq] << "{!terms f=#{facet_config.field}}#{matching_ids.join(',')}"
+          else
+            solr_params[:fq] ||= []
+            solr_params[:fq] << "{!frange l=1 u=0}1"
+          end
+          
+        else
+          solr_params[:"f.#{facet_config.field}.facet.contains"] = contains
+          solr_params[:"f.#{facet_config.field}.facet.contains.ignoreCase"] = true
+        end
       end
     end
 

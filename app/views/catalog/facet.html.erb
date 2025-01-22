@@ -1,8 +1,9 @@
 <% 
 if ["device"].include? params[:id] 
+  # For certain facets, use a different param containsTitle to do a solr title field lookup
+  # and return the results (with IDs) matching the title
   containsField = "facet.containsTitle" 
 else
-byebug
   containsField = "facet.contains" 
 end
 %>

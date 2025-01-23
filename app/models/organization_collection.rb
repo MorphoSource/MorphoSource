@@ -5,11 +5,13 @@ class OrganizationCollection < Collection
   include Morphosource::LocationMetadata
   include Morphosource::OrganizationBehavior
   include Morphosource::PersistentIdentifiersBehavior
+  include Morphosource::Works::IndexRelatedWorks
 
   before_save :convert_media_ownership_transfer
   after_create :create_collection_groups
   after_create :create_organization_project
   after_update :update_ark_status
+  after_update :index_related_works
   after_create :mint_ark
   after_destroy :delete_ark_if_reserved
 

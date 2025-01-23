@@ -14,6 +14,27 @@ module Morphosource
       end
     end
 
+    def cultural_heritage_objects
+      CulturalHeritageObject.where(organization_id_tesim: id)
+    end
+
+    # Media associated with the organization via devices and imaging events
+    def device_media
+      Media.where(media_device_facility_organization_id_ssim: id)
+    end
+
+    def device_specimens
+      device_media.map(&:specimens).flatten.uniq { |s| s.id }
+    end
+
+    def device_cultural_heritage_objects
+      device_media.map(&:cultural_heritage_objects).flatten.uniq { |s| s.id }
+    end
+
+    def device_physical_objects
+      device_specimens + device_cultural_heritage_objects
+    end
+
     def enforced_permissions_fields
       permissions_fields.select { |k, v| is_intentionally_blank(k) || v&.first.present? }
     end
@@ -24,6 +45,15 @@ module Morphosource
       blank_fields.include?(field) &&
         ActiveModel::Type::Boolean.new.cast(send("#{field.to_s}_blank")&.first)
     end
+
+    def media
+      physical_objects.map(&:media).flatten
+    end
+
+    def physical_objects
+      specimens + cultural_heritage_objects
+    end
+    alias objects physical_objects
 
     def permissions_fields
       {
@@ -41,6 +71,10 @@ module Morphosource
         attachment_url: agreement_attachment_url,
         organization_for_attachment: attachment('agreement') ? id : nil
       }
+    end
+
+    def specimens
+      BiologicalSpecimen.where(organization_id_tesim: id)
     end
   end
 end

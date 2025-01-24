@@ -857,7 +857,8 @@ module Hyrax
     # @return [SolrDocument, nil] Device document or nil if no device
     #
     def device
-      return nil if !imaging_event.device_id.present?
+      return nil if !imaging_event&.device_id.present?
+
       @device ||= begin
         doc = ::SolrDocument.find(imaging_event.device_id)
       rescue Blacklight::Exceptions::RecordNotFound

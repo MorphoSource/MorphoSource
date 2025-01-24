@@ -1,5 +1,3 @@
-version: '3.7'
-
 services:
   app: &app
     build:
@@ -138,6 +136,14 @@ services:
       - app-vendor-bundle:/app/samvera/hyrax-webapp/vendor/bundle
       - app-bundle:/app/samvera/hyrax-webapp/.bundle/
       - test-tmp:/app/samvera/hyrax-webapp/tmp
+    networks:
+      - morphosource
+
+  lightbox:
+    image: gitlab-registry.oit.duke.edu/morphosource/lightbox:0.0.2
+    container_name: lightbox
+    # ports:
+    #   - 4000:3000
     networks:
       - morphosource
 

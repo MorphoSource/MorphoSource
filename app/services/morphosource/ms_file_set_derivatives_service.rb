@@ -54,6 +54,9 @@ module Morphosource
             url: derivative_url('glb')
           } ]
         )
+
+        # Create 2D thumbnail derivative from GLB mesh derivative instead of original file
+        create_thumbnail_from_mesh(derivative_url('glb'))
       end
 
       # Create derivative for obj mesh format
@@ -69,6 +72,9 @@ module Morphosource
             url: derivative_url('glb')
           } ]
         )
+
+        # Create 2D thumbnail derivative from GLB mesh derivative instead of original file
+        create_thumbnail_from_mesh(derivative_url('glb'))
       end
 
       # Create derivative for general (non-gltf) mesh formats
@@ -83,6 +89,19 @@ module Morphosource
             url: derivative_url('glb')
           } ]
         )
+
+        # Create 2D thumbnail derivative from GLB mesh derivative instead of original file
+        create_thumbnail_from_mesh(derivative_url('glb'))
+      end
+
+      def create_thumbnail_from_mesh(glb_url)
+        Morphosource::Derivatives::MeshThumbnailDerivatives.create(
+          URI(glb_url).path,
+          outputs: [ {
+            label: :thumbnail,
+            url: derivative_url('thumbnail')
+          } ]
+        )  
       end
 
       def create_archive_derivatives(filename)

@@ -12,6 +12,8 @@
 /vendor/bundle
 
 /?
+/.config
+/.npm
 
 # Ignore the default SQLite database.
 /db/*.sqlite3

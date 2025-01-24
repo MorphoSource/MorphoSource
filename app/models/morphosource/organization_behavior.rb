@@ -76,5 +76,9 @@ module Morphosource
     def specimens
       BiologicalSpecimen.where(organization_id_tesim: id)
     end
+
+    def normalize_download_reviewer
+      self.download_reviewer = self.download_reviewer.map { |x| x.split(',') }.flatten
+    end
   end
 end

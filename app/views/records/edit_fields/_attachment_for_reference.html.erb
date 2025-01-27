@@ -1,3 +1,5 @@
+<%# partial for attachments using CarrierWave %>
+<% current_value = curation_concern&.send(work_attribute) %>
 <div class="form-group row string optional attachment-container">
   <div class="col-xs-6 showcase-label">
     <label class="control-label string optional" for="attachment-container">
@@ -9,9 +11,9 @@
   </div>
   <div class="col-xs-6 showcase-value">
     <div class='attachment'>
-      <% if curation_concern.present? && curation_concern.attachment(field).present? %>
+      <% if curation_concern.present? && current_value.present? %>
         <div class='attachment-link'>
-          <%= link_to main_app.attachment_path(id: curation_concern.id, field: field), target: :blank do %>
+          <%= link_to current_value, target: :blank do %>
             <span>Attachment File</span>
           <% end %>
           <span class='input-group-btn field-controls' style='display: inline;'>
@@ -21,10 +23,10 @@
           </span>
         </div>
       <% end %>
-      <div class='attachment-input <%= curation_concern.present? && curation_concern.attachment(field).present? ? 'hide' : '' %>'>
+      <div class='attachment-input <%= curation_concern.present? && current_value.present? ? 'hide' : '' %>'>
         <%= file_field_tag field.to_sym, accept: 'image/jpeg, image/png, image/bmp, image/tiff, application/pdf', class: 'file-field-input' %>
         <span class='hint'>Accepted Formats: <%= "#{Morphosource.reference_attachment_formats.join(', ')}" %></span>
-        <input name='<%= "#{field.downcase}_attachment_delete" %>' class='attachment_delete hide'></input>
+        <input name='<%= "#{field.downcase}_delete" %>' class='attachment_delete hide'></input>
       </div>
     </div>
   </div>

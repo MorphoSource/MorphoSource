@@ -312,14 +312,6 @@ RSpec.describe Hyrax::MediaPresenter do
     it "returns media custom agreement attachment file URL" do
       expect(subject.attachment_url).to eq(["/attachments/#{media_document.id}?field=agreement"])
     end
-
-    it "returns imaging event description attachment file URL" do
-      expect(subject.imaging_event_description_attachment).to eq(["/attachments/234567891?field=ie_description"])
-    end
-
-    it "returns imaging event reference attachment file URL" do
-      expect(subject.imaging_event_reference_attachment).to eq(["/attachments/234567891?field=ie_reference"])
-    end
   end
 
   describe 'universal viewer and derivatives' do

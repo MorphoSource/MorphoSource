@@ -80,8 +80,6 @@ namespace :morphosource do
     Rake::Task['db:create'].invoke
     Rake::Task['morphosource:db_schema_load_if_needed'].invoke
     Rake::Task['db:migrate'].invoke
-    Rails.logger.info('Clear cache')
-    Rake::Task['tmp:cache:clear'].invoke
     Rails.logger.info('Load workflow')
     Rake::Task['hyrax:workflow:load'].invoke
     Rails.logger.info('Create collection types')

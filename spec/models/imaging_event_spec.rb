@@ -182,7 +182,7 @@ RSpec.describe ImagingEvent do
     let(:imaging_event) { ImagingEvent.create }
     let(:valid_file) { Rack::Test::UploadedFile.new('spec/fixtures/text/text.txt', 'text/plain') }
     let(:invalid_file) { Rack::Test::UploadedFile.new('spec/fixtures/images/ms.jpg', 'application/jpeg') }
-    let(:valid_file_upload_url) { "/uploads/works/imaging_event/attachments/description_attachments/text.txt" }
+    let(:valid_file_upload_url) { "/uploads/works/imaging_event/attachments/description/text.txt" }
     let(:uploader) { imaging_event.description_uploader }
 
     describe '#description_uploader' do
@@ -244,7 +244,7 @@ RSpec.describe ImagingEvent do
     let(:imaging_event) { ImagingEvent.create }
     let(:valid_file) { Rack::Test::UploadedFile.new('spec/fixtures/images/ms.jpg', 'application/jpeg') }
     let(:invalid_file) { Rack::Test::UploadedFile.new('spec/fixtures/text/text.txt', 'text/plain') }
-    let(:valid_file_upload_url) { "/uploads/works/imaging_event/attachments/reference_attachments/ms.jpg" }
+    let(:valid_file_upload_url) { "/uploads/works/imaging_event/attachments/reference/ms.jpg" }
     let(:uploader) { imaging_event.reference_uploader }
 
     describe '#reference_uploader' do

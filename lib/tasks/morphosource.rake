@@ -1,3 +1,4 @@
+require 'rails/tasks'
 require 'morphosource'
 require 'ms1to2'
 require 'importer'

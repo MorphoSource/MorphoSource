@@ -20,155 +20,155 @@
   <div class="panel-body">
   <div class="col-xs-12 actions">
     <div class="row horizontal-padding-15">
-      <% if current_user.contributor? || current_user.admin? %>
-        <div class="col-xs-12 col-md-6 action-section">
-          <div>
-            <h2 style="font-size: large;">Contributor Actions</h2>
-          </div>
-
-          <div>
+      <div class="action-column">
+        <% if current_user.contributor? || current_user.admin? %>
+          <div class="col-xs-12 col-md-6 action-section">
             <div>
-              <div class="list-category"><i class="fas fa-folder-plus"></i>Create a new record</div>
+              <h2 style="font-size: large;">Contributor Actions</h2>
+            </div>
+
+            <div>
+              <div>
+                <div class="list-category"><i class="fas fa-folder-plus"></i>Create a new record</div>
+
+                <div class="action-section">
+                  <div class="list-item">
+                    <%= link_to "New media", main_app.new_submission_path %>
+                    <i class="material-icons  md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.dashboard.landing_page.hints.new_media") %>"></i>
+                  </div>
+
+                  <div class="list-item">
+                    <%= link_to "New project", main_app.new_project_path %>
+                    <i class="material-icons  md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.glossary.projects") %>"></i>
+                  </div>
+
+                  <div class="list-item">
+                    <%= link_to "New team", main_app.new_team_path %>
+                    <i class="material-icons  md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.glossary.teams") %>"></i>
+                  </div>
+
+                  <div class="list-item">
+                    <%= link_to "New sequential section list", main_app.new_sequential_section_list_path %>
+                    <i class="material-icons  md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.glossary.sequential_section_lists") %>"></i>
+                  </div>
+
+                  <div class="list-item">
+                    <%= link_to "New media list", main_app.new_media_list_path %>
+                    <i class="material-icons  md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.glossary.media_lists") %>"></i>
+                  </div>
+                </div>
+              </div>
 
               <div class="action-section">
-                <div class="list-item">
-                  <%= link_to "New media", main_app.new_submission_path %>
-                  <i class="material-icons  md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.dashboard.landing_page.hints.new_media") %>"></i>
-                </div>
+                <div class="list-category"><i class="fas fa-eye"></i>View my existing records</div>
 
-                <div class="list-item">
-                  <%= link_to "New project", main_app.new_project_path %>
-                  <i class="material-icons  md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.glossary.projects") %>"></i>
-                </div>
-
-                <div class="list-item">
-                  <%= link_to "New team", main_app.new_team_path %>
-                  <i class="material-icons  md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.glossary.teams") %>"></i>
-                </div>
-
-                <div class="list-item">
-                  <%= link_to "New sequential section list", main_app.new_sequential_section_list_path %>
-                  <i class="material-icons  md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.glossary.sequential_section_lists") %>"></i>
-                </div>
-
-                <div class="list-item">
-                  <%= link_to "New media list", main_app.new_media_list_path %>
-                  <i class="material-icons  md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.glossary.media_lists") %>"></i>
+                <div>
+                  <div class="list-item">
+                    <%= link_to "My media and physical objects", main_app.my_media_index_path %>
+                    <i class="material-icons  md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%=t("morphosource.dashboard.landing_page.hints.my_media_and_objects") %>"></i>
+                  </div>
+                  <div class="list-item">
+                    <%= link_to "My projects", main_app.my_projects_path %>
+                    <i class="material-icons  md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.dashboard.landing_page.hints.my_projects") %>"></i>
+                  </div>
+                  <div class="list-item">
+                    <%= link_to "My teams", main_app.my_teams_path %>
+                    <i class="material-icons  md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.dashboard.landing_page.hints.my_teams") %>"></i>
+                  </div>
+                  <div class="list-item">
+                    <%= link_to "My sequential section lists", main_app.my_sequential_section_lists_path %>
+                    <i class="material-icons  md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.dashboard.landing_page.hints.my_sequential_section_lists") %>"></i>
+                  </div>
+                  <div class="list-item">
+                    <%= link_to "My media lists", main_app.my_media_lists_path %>
+                    <i class="material-icons  md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.dashboard.landing_page.hints.my_media_lists") %>"></i>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="action-section">
-              <div class="list-category"><i class="fas fa-eye"></i>View my existing records</div>
+              <div class="action-section">
+                <div class="list-category"><i class="fas fa-tasks"></i>Manage my existing records</div>
 
-              <div>
-                <div class="list-item">
-                  <%= link_to "My media and physical objects", main_app.my_media_index_path %>
-                  <i class="material-icons  md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%=t("morphosource.dashboard.landing_page.hints.my_media_and_objects") %>"></i>
-                </div>
-                <div class="list-item">
-                  <%= link_to "My projects", main_app.my_projects_path %>
-                  <i class="material-icons  md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.dashboard.landing_page.hints.my_projects") %>"></i>
-                </div>
-                <div class="list-item">
-                  <%= link_to "My teams", main_app.my_teams_path %>
-                  <i class="material-icons  md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.dashboard.landing_page.hints.my_teams") %>"></i>
-                </div>
-                <div class="list-item">
-                  <%= link_to "My sequential section lists", main_app.my_sequential_section_lists_path %>
-                  <i class="material-icons  md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.dashboard.landing_page.hints.my_sequential_section_lists") %>"></i>
-                </div>
-                <div class="list-item">
-                  <%= link_to "My media lists", main_app.my_media_lists_path %>
-                  <i class="material-icons  md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.dashboard.landing_page.hints.my_media_lists") %>"></i>
+                <div>
+                  <div class="list-item">
+                    <%= link_to "Approve or deny download requests from other users", main_app.request_manager_path %>
+                    <i class="material-icons  md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.dashboard.landing_page.hints.requests_manager") %>"></i>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div class="action-section">
-              <div class="list-category"><i class="fas fa-tasks"></i>Manage my existing records</div>
-
-              <div>
-                <div class="list-item">
-                  <%= link_to "Approve or deny download requests from other users", main_app.request_manager_path %>
-                  <i class="material-icons  md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.dashboard.landing_page.hints.requests_manager") %>"></i>
-                </div>
-              </div>
             </div>
-
           </div>
-        </div>
-      <% end %>
-      <div class="col-xs-12 col-md-6 action-section">
-        <div>
-          <h2 style="font-size: large;">Standard Actions</h2>
-        </div>
-        <div>
-          <div class="list-item">
-            <div><%= link_to "View my media cart", main_app.my_cart_path %></div>
-            <i class="material-icons md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.dashboard.landing_page.hints.my_media_cart") %>"></i>
-          </div>
-          <div class="list-item">
-            <div><%= link_to "View my pending requests to download media", main_app.my_requests_path %></div>
-            <i class="material-icons md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.dashboard.landing_page.hints.my_pending_requests") %>"></i>
-          </div>
-          <div class="list-item"><%= link_to "Edit my user profile", edit_dashboard_profile_path(id: current_user.user_key) %></div>
-          <div class="list-item"><%= link_to "Change my password", main_app.profile_edit_password_path(id: current_user.user_key) %>
-          </div>
-          <% if !current_user.contributor? && !current_user.admin? %>
-            <div class="list-item">
-              <%= link_to "New media list", main_app.new_media_list_path %>
-              <i class="material-icons md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.glossary.media_lists") %>"></i>
-            </div>
-            <div class="list-item">
-              <%= link_to "My media lists", main_app.my_media_lists_path %>
-              <i class="material-icons  md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.dashboard.landing_page.hints.my_media_lists") %>"></i>
-            </div>
-          <% end %>
-        </div>
+        <% end %>
       </div>
-
-      <% if !current_user.contributor? && !current_user.admin? %>
+      <div class="action-column">
         <div class="col-xs-12 col-md-6 action-section">
           <div>
-            <h2 style="font-size: large;">Become A Contributor</h2>
+            <h2 style="font-size: large;">Standard Actions</h2>
           </div>
-
-          <div>
-            <p>
-              <%= t("morphosource.dashboard.landing_page.full_text.become_a_contributor").html_safe %>
-            </p>
-          </div>
-        </div>
-      <% end %>
-
-      <% if current_user.admin? %>
-        <div class="col-xs-12 col-md-6 action-section">
-          <div>
-            <h2 style="font-size: large;">Administrator Actions</h2>
-          </div>
-
           <div>
             <div class="list-item">
-              <%= link_to "Decide contributor applications", main_app.admin_contributor_petitions_path %>
-              <% if ( petition_count = ContributorPetition.where(decision_required: true).count ) > 0 %>
-                  <span class="count label label-danger" style="vertical-align: text-top; margin-left: 5px; font-size: small;">
-                    <%= number_with_delimiter(petition_count, :delimiter => ',') %>
-                  </span>
-                <% end %>
+              <div><%= link_to "View my media cart", main_app.my_cart_path %></div>
+              <i class="material-icons md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.dashboard.landing_page.hints.my_media_cart") %>"></i>
             </div>
-            <div class="list-item"><%= link_to "Create new organization", main_app.new_hyrax_organization_path %></div>
-            <div class="list-item"><%= link_to "Create new device", main_app.new_hyrax_device_path %></div>
-            <div class="list-item"><%= link_to "View and search users", hyrax.users_path %></div>
             <div class="list-item">
-              <%= link_to "Background job dashboard", "/queues", target: '_blank' %>
-              <i class="fas fa-external-link-alt" style="margin-left: 5px;"></i>
+              <div><%= link_to "View my pending requests to download media", main_app.my_requests_path %></div>
+              <i class="material-icons md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.dashboard.landing_page.hints.my_pending_requests") %>"></i>
             </div>
+            <div class="list-item"><%= link_to "Edit my user profile", edit_dashboard_profile_path(id: current_user.user_key) %></div>
+            <div class="list-item"><%= link_to "Change my password", main_app.profile_edit_password_path(id: current_user.user_key) %>
+            </div>
+            <% if !current_user.contributor? && !current_user.admin? %>
+              <div class="list-item">
+                <%= link_to "New media list", main_app.new_media_list_path %>
+                <i class="material-icons md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.glossary.media_lists") %>"></i>
+              </div>
+              <div class="list-item">
+                <%= link_to "My media lists", main_app.my_media_lists_path %>
+                <i class="material-icons  md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.dashboard.landing_page.hints.my_media_lists") %>"></i>
+              </div>
+            <% end %>
           </div>
         </div>
-      <% end %>
+        <% if !current_user.contributor? && !current_user.admin? %>
+          <div class="col-xs-12 col-md-6 action-section">
+            <div>
+              <h2 style="font-size: large;">Become A Contributor</h2>
+            </div>
+
+            <div>
+              <p>
+                <%= t("morphosource.dashboard.landing_page.full_text.become_a_contributor").html_safe %>
+              </p>
+            </div>
+          </div>
+        <% end %>
+        <% if current_user.admin? %>
+          <div class="col-xs-12 col-md-6 action-section">
+            <div>
+              <h2 style="font-size: large;">Administrator Actions</h2>
+            </div>
+
+            <div>
+              <div class="list-item">
+                <%= link_to "Decide contributor applications", main_app.admin_contributor_petitions_path %>
+                <% if ( petition_count = ContributorPetition.where(decision_required: true).count ) > 0 %>
+                    <span class="count label label-danger" style="vertical-align: text-top; margin-left: 5px; font-size: small;">
+                      <%= number_with_delimiter(petition_count, :delimiter => ',') %>
+                    </span>
+                  <% end %>
+              </div>
+              <div class="list-item"><%= link_to "Create new organization", main_app.new_hyrax_organization_path %></div>
+              <div class="list-item"><%= link_to "Create new device", main_app.new_hyrax_device_path %></div>
+              <div class="list-item"><%= link_to "View and search users", hyrax.users_path %></div>
+              <div class="list-item">
+                <%= link_to "Background job dashboard", "/queues", target: '_blank' %>
+                <i class="fas fa-external-link-alt" style="margin-left: 5px;"></i>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
     </div>
   </div>
 </div>
-
-<script>

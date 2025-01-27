@@ -18,7 +18,7 @@ body.dashboard {
         padding-top: 0;
         padding-left: 5px;
       }
-    }  
+    }
   }
 
   &.profile .panel-body {
@@ -26,13 +26,17 @@ body.dashboard {
   }
 
   .collections-wrapper {
-    padding-top: 10px; 
+    padding-top: 10px;
 
     .collections-panel-wrapper.panel {
       width: unset;
     }
   }
-  
+
+  .main-header {
+    width: 100%;
+  }
+
   .main-content {
     background-color: #fff;
   }
@@ -71,6 +75,9 @@ body.dashboard {
   align-items: center;
   justify-content: center;
   margin-bottom: 20px;
+  flex-wrap: nowrap;
+  max-width: 90%;
+  margin-left: 15px;
 
   img {
     margin-right: 20px;
@@ -92,8 +99,14 @@ body.dashboard {
     font-size: larger;
   }
 
+  .action-column {
+    flex: 1;
+    min-width: 300px;
+  }
+
   .action-section {
     margin-bottom: 30px;
+    max-width: 100%;
   }
 
   .list-category {

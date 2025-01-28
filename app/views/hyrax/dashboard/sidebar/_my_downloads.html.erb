@@ -1,13 +1,13 @@
-<li class="h5"><%= t('morphosource.admin.sidebar.my_downloads') %></li>
+<li class="h5 nav-item"><%= t('morphosource.dashboard.sidebar.my_downloads.title') %></li>
 
-<%= menu.nav_link(main_app.my_cart_path) do %>
-  <span class="fa fa-shopping-cart" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.admin.sidebar.media_cart') %></span>
+<%= menu.nav_link(main_app.my_cart_path, class: "nav-link") do %>
+  <span class="fa fa-shopping-cart" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.dashboard.sidebar.my_downloads.media_cart') %></span>
 <% end %>
 
-<%= menu.nav_link(main_app.my_requests_path) do %>
-  <span class="fa fa-tasks" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.admin.sidebar.requests_for_media') %></span>
+<%= menu.nav_link(main_app.my_requests_path, class: "nav-link") do %>
+  <span class="fa fa-tasks" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.dashboard.sidebar.my_downloads.requests_for_media') %></span>
 <% end %>
 
-<%= menu.nav_link(main_app.my_downloads_path) do %>
-  <span class="fa fa-download" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.admin.sidebar.previous_downloads') %></span>
+<%= menu.nav_link(main_app.my_downloads_path, class: "nav-link") do %>
+  <span class="fa fa-download" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.dashboard.sidebar.my_downloads.previous_downloads') %></span>
 <% end %>

@@ -51,6 +51,17 @@ body.dashboard {
   .sidebar {
     // Sidebar should adjust for 55px masthead height
     min-height: calc(100vh - 55px);
+
+    a {
+      display: flex;
+      align-items: center;
+      padding-left: 10px;
+    }
+
+  }
+
+  .sidebar.maximized .nav-pills > li a {
+    padding: 12px 10px 12px 10px;
   }
 
   .panel.contributor_petitions {

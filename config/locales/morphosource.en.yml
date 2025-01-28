@@ -37,15 +37,6 @@ en:
       import:
         slides:
           job_submitted: Slides import job has been submitted for background processing. Please check back later.
-      sidebar:
-        contributor_petitions: 'Contrib. Applications'
-        downloads: 'Downloads'
-        fund_codes: 'Fund Codes'
-        fund_code_charges: 'Fund Code Charges'
-        media_cart: 'Media Cart'
-        previous_downloads: 'Previous Downloads'
-        requests: 'My Requests'
-        manage_requests: 'Manage Requests'
       fund_codes:
         header: 'Fund Code Control Panel'
       fund_code_charges:

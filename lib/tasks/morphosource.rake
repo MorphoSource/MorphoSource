@@ -983,11 +983,12 @@ namespace :morphosource do
 
   # Rollback attachment migration (CarrierWave -> AttachmentService)
   desc "Rollback for Migrate attachments to use CarrierWave"
-  task :rollback_migrate_attachments, [:model, :field, :old_attachment_field, :option] => :environment do |task, args|
+  task :rollback_migrate_attachments, [:model, :field, :old_attachment_field, :option, :and_query] => :environment do |task, args|
     model_name = args[:model]
     field_name = args[:field]
     old_attachment_field = args[:old_attachment_field] 
     option = args[:option]
+    and_query = args[:and_query]
 
     unless model_name.present? && field_name.present? && old_attachment_field.present?
       puts "Valid arguments required: model, field, old_attachment_field"
@@ -1009,6 +1010,7 @@ namespace :morphosource do
     end
 
     solr_query = "has_model_ssim:#{model_name}"
+    solr_query += " AND #{and_query}" if and_query.present?
 
     puts "Querying Solr with: #{solr_query}"
     results = ActiveFedora::SolrService.query(solr_query, rows: 999999)

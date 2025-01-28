@@ -36,12 +36,14 @@ module Morphosource
         archive_type = :zip
         begin
           Zip::File.open(file) do |zip|
+            zip.restore_permissions = false # setting this as param on .open doesn't work
             yield(zip, archive_type) if block_given?
           end
         rescue Zip::CompressionMethodError
           # Create or find a non-DEFLATE64 temp file copy
           temp_file = Morphosource::ZipDeflate64.non_deflate_64_temp_file(file)
           Zip::File.open(temp_file) do |zip|
+            zip.restore_permissions = false # setting this as param on .open doesn't work
             yield(zip, archive_type) if block_given?
           end
         end
@@ -170,7 +172,7 @@ module Morphosource
         # Create dir(s) if needed
         dir_path = File.dirname(f_path)
         unless File.directory?(dir_path)
-          FileUtils.mkdir_p(dir_path)
+          FileUtils.mkdir_p(dir_path, mode: 0775)
         end
 
         zip.extract(f_data, f_path)
@@ -189,7 +191,7 @@ module Morphosource
         # Create dir(s) if needed
         dir_path = File.dirname(f_path)
         unless File.directory?(dir_path)
-          FileUtils.mkdir_p(dir_path)
+          FileUtils.mkdir_p(dir_path, mode: 0775)
         end
 
         File.new(f_path, 'wb')

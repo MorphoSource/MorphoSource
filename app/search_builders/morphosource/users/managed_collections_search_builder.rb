@@ -8,6 +8,7 @@ module Morphosource
       def initialize(scope)
         @current_ability = scope.current_ability
         @user = scope.user
+        scope.blacklight_config = blacklight_config
         super
       end
 

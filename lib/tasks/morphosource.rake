@@ -1005,7 +1005,6 @@ namespace :morphosource do
     puts "Found #{results.count} records for model #{model_name}"
 
     cw_attachment_count = 0
-    deleted_cw_attachment_count = 0
     created_old_attachment_count = 0
 
     results.each do |hit|
@@ -1019,36 +1018,11 @@ namespace :morphosource do
         if old_attachment_path.present?
           puts "#{model_name} ##{hit.id}: old attachment #{old_attachment_field} has not been deleted yet, no need to create the file again"
         else
-          cw_path = Rails.root.join('public').to_s + work.send(field_name) 
-          if cw_path.present? && File.exist?(cw_path)
-            cw_file = File.open(cw_path)
-            tempfile = Tempfile.new(File.basename(cw_file.path))
-            tempfile.write(cw_file.read)
-            tempfile.rewind
-            tempfile.close
-
-            file = ActionDispatch::Http::UploadedFile.new(
-              filename: File.basename(cw_path),
-              type: Marcel::MimeType.for(cw_path),
-              tempfile: tempfile
-            )
-
-            Morphosource::AttachmentService.create(hit.id, old_attachment_field, file, work.send("#{field_name}_formats"))
-
-            old_attachment_path = Morphosource::AttachmentService.get(hit.id, old_attachment_field)
-            if old_attachment_path.present?
-              puts "Old attachmemnt created for #{model_name} ##{hit.id}: #{old_attachment_field} -> #{old_attachment_path}"
-              created_old_attachment_count += 1
-            else
-              puts "Failed to create Old attachmemnt for #{model_name} ##{hit.id}: #{old_attachment_field}"              
-            end
-          end
+          puts "Migrating ##{hit.id} old attachment #{old_attachment_path}... "
+          Morphosource::RollbackMigrateAttachmentJob.perform_later(work, field_name, old_attachment_field, old_attachment_path, no_delete)
+          created_old_attachment_count += 1
         end
 
-        unless no_delete
-          work.send("#{field_name}=", nil)
-          deleted_cw_attachment_count += 1
-        end      
       rescue StandardError => e
         puts "Error processing #{model_name} ##{hit.id}: #{e.message}"
         next
@@ -1056,9 +1030,7 @@ namespace :morphosource do
     end # /result.each
     puts "Rolling back migration for attachment field #{field_name} -> #{old_attachment_field}"
     puts "CarrierWave attachments found: #{cw_attachment_count}"
-    puts "#{deleted_cw_attachment_count} CW attachments deleted"
-    puts "#{created_old_attachment_count} old attachments created"
-    puts "Rollback completed."
+    puts "#{created_old_attachment_count} old attachments creation in progress."
   end
 
   # Set and clear sitewide announcement messages and time until maintenance

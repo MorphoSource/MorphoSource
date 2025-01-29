@@ -935,8 +935,8 @@ namespace :morphosource do
         next if action == 'count_only'
 
         if action == 'delete_old_attachments'
-          Morphosource::AttachmentService.delete(hit.id, old_attachment_field)
-          puts "Deleted old attachment #{old_attachment_path}"
+          puts "Deleting old attachment #{old_attachment_path}"
+          Morphosource::MigrateAttachmentJob.perform_later(hit.id, field_name, old_attachment_field, old_attachment_path, delete_only: true)
           processed_attachment_count += 1
           next
         end
@@ -955,22 +955,10 @@ namespace :morphosource do
           next
         end
 
-        file = ActionDispatch::Http::UploadedFile.new(
-          filename: File.basename(old_attachment_path),
-          type: Marcel::MimeType.for(old_attachment_path),
-          tempfile: File.open(old_attachment_path)
-        )
+        puts "Migrating ##{hit.id} old attachment #{old_attachment_path}... "
+        Morphosource::MigrateAttachmentJob.perform_later(work, field_name, old_attachment_field, old_attachment_path)
+        processed_attachment_count += 1
 
-        work.send("#{field_name}=", file)
-
-        # verify new attachment before deleting old one
-        new_file_path = Rails.root.join('public').to_s + work.send(field_name)
-        if new_file_path.present? && File.exist?(new_file_path)
-          puts "Successfully migrated #{model_name} ##{hit.id}: #{field_name} -> #{new_file_path}"
-          processed_attachment_count += 1
-        else
-          puts "Error migrating #{model_name} ##{hit.id}"
-        end
       rescue StandardError => e
         puts "Error processing #{model_name} ##{hit.id}: #{e.message}"
         next
@@ -978,7 +966,7 @@ namespace :morphosource do
     end # /result.each
     puts "Migrating attachment #{old_attachment_field} to #{field_name}"
     puts "Old attachment #{old_attachment_field} count: #{old_attachment_count}"
-    puts "#{action} action completed for #{processed_attachment_count} attachments."
+    puts "#{action} action performed for #{processed_attachment_count} attachments."
   end
 
   # Rollback attachment migration (CarrierWave -> AttachmentService)

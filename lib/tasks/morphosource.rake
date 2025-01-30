@@ -971,15 +971,16 @@ namespace :morphosource do
 
   # Rollback attachment migration (CarrierWave -> AttachmentService)
   desc "Rollback for Migrate attachments to use CarrierWave"
-  task :rollback_migrate_attachments, [:model, :field, :old_attachment_field, :option, :and_query] => :environment do |task, args|
+  task :rollback_migrate_attachments, [:model, :field, :solr_field, :old_attachment_field, :option, :and_query] => :environment do |task, args|
     model_name = args[:model]
     field_name = args[:field]
+    solr_field = args[:solr_field]
     old_attachment_field = args[:old_attachment_field] 
     option = args[:option]
     and_query = args[:and_query]
 
-    unless model_name.present? && field_name.present? && old_attachment_field.present?
-      puts "Valid arguments required: model, field, old_attachment_field"
+    unless model_name.present? && field_name.present? && solr_field.present? && old_attachment_field.present?
+      puts "Valid arguments required: model, field, solr_field, old_attachment_field"
       exit
     end
 
@@ -1009,9 +1010,9 @@ namespace :morphosource do
 
     results.each do |hit|
       begin
+        next unless hit[solr_field].present? # no new migrated attachment
         work = model_class.find(hit.id)
         next unless work.present? 
-        next unless work.send(field_name).present? # no new migrated attachment
 
         cw_attachment_count += 1
         old_attachment_path = Morphosource::AttachmentService.get(hit.id, old_attachment_field)

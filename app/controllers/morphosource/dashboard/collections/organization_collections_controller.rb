@@ -18,12 +18,16 @@ module Morphosource
 
         def edit
           @tab = :details
+          add_breadcrumb t(:'hyrax.controls.home'), root_path
+          add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
+          add_breadcrumb t(:'morphosource.dashboard.collections.edit.header', type_title: 'Organization'), collection_edit_path(@collection), { "aria-current" => "page" }
           presenter
           form
         end
 
         def members
           @tab = :members
+          add_members_breadcrumbs
           presenter
           form
         end
@@ -32,6 +36,7 @@ module Morphosource
         def ownership
           @tab = :ownership
           @object_ids = collection_object_ids
+          add_ownership_breadcrumbs
           query_collection_counts
           query_media_management_counts
           presenter
@@ -40,6 +45,7 @@ module Morphosource
 
         def permissions
           @tab = :permissions
+          add_permissions_breadcrumbs
           presenter
           form
         end
@@ -47,7 +53,36 @@ module Morphosource
         def projects
           @tab = :projects
           @projects = member_subcollections
+          add_projects_breadcrumbs
           presenter
+        end
+
+        def add_members_breadcrumbs
+          add_breadcrumb t(:'hyrax.controls.home'), root_path
+          add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
+          add_breadcrumb t(:'morphosource.dashboard.collections.edit.header', type_title: 'Organization'), collection_edit_path(@collection)
+          add_breadcrumb t(:"morphosource.dashboard.collections.organization_collection.members.title"), organization_members_path(@collection)
+        end
+
+        def add_projects_breadcrumbs
+          add_breadcrumb t(:'hyrax.controls.home'), root_path
+          add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
+          add_breadcrumb t(:'morphosource.dashboard.collections.edit.header', type_title: @collection.collection_type.title), collection_edit_path(@collection)
+          add_breadcrumb t(:'morphosource.dashboard.collections.organization_collection.projects.title'), organization_projects_path(@collection)
+        end
+
+        def add_permissions_breadcrumbs
+          add_breadcrumb t(:'hyrax.controls.home'), root_path
+          add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
+          add_breadcrumb t(:'morphosource.dashboard.collections.edit.header', type_title: @collection.collection_type.title), collection_edit_path(@collection)
+          add_breadcrumb t(:'morphosource.dashboard.collections.organization_collection.permissions.title'), organization_permissions_path(@collection)
+        end
+
+        def add_ownership_breadcrumbs
+          add_breadcrumb t(:'hyrax.controls.home'), root_path
+          add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
+          add_breadcrumb t(:'morphosource.dashboard.collections.edit.header', type_title: @collection.collection_type.title), collection_edit_path(@collection)
+          add_breadcrumb t(:'morphosource.dashboard.collections.organization_collection.ownership.title'), organization_ownership_path(@collection)
         end
 
         private

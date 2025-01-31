@@ -6,11 +6,21 @@ module Morphosource
 
       with_themed_layout 'morphosource_dashboard'
 
+      def index
+        build_breadcrumbs
+      end
+
       def import_slides
         Morphosource::ImportSlideSeriesJob.perform_later(occurrence_key, @collection.id)
         redirect_to sequential_section_list_path(@collection.id), flash: { notice: I18n.t('morphosource.admin.import.slides.job_submitted') }
       rescue StandardError => e
         redirect_to admin_import_slides_path, flash: { error: e.message }
+      end
+
+      def build_breadcrumbs
+        add_breadcrumb t(:'hyrax.controls.home'), root_path
+        add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
+        add_breadcrumb t(:'morphosource.dashboard.sidebar.admin_tools.management.import_slides'), main_app.admin_import_slides_path
       end
 
       private

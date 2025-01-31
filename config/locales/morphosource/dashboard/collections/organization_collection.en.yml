@@ -17,6 +17,14 @@ en:
             roles:
               contributor: 'manager'
               non-contributor: 'viewer'
+          members:
+            title: Members
+          ownership:
+            title: Ownership
+          permissions:
+            title: Permissions
+          projects:
+            title: Projects
   simple_form:
     labels:
       organization_collection:

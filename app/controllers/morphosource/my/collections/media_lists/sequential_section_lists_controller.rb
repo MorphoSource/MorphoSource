@@ -38,7 +38,7 @@ module Morphosource
           private
 
             def add_collection_type_breadcrumb
-              add_breadcrumb t(:'hyrax.admin.sidebar.sequential_section_lists'), main_app.my_sequential_section_lists_path
+              add_breadcrumb t(:'morphosource.dashboard.sidebar.my_media_collections.sequential_section_lists'), main_app.my_sequential_section_lists_path, { "aria-current" => "page" }
             end
 
             # The url of the "more" link for additional facet values

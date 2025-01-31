@@ -4,6 +4,7 @@ en:
       collections:
         project:
           members:
+            title: Members
             roles:
               contributor: 'manager, editor, depositor'
               non-contributor: 'downloader, viewer'

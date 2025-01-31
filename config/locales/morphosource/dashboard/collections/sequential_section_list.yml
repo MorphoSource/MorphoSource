@@ -12,6 +12,7 @@ en:
             view: 'View List'
             collection_update_success: ' was successfully updated.'
           members:
+            title: Members
             roles:
               contributor: 'manager'
               non-contributor: 'viewer'

@@ -32,6 +32,12 @@ module Morphosource
 
       before_action :modify_search_builder_class_for_admin, only: [:index]
 
+      def add_breadcrumbs
+        add_breadcrumb t(:'hyrax.controls.home'), root_path
+        add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
+        add_breadcrumb t(:'morphosource.dashboard.sidebar.my_media.media_and_objects'), main_app.my_media_index_path, { "aria-current" => "page" }
+      end
+
       private
         # If user is admin, use different search builder class
         def modify_search_builder_class_for_admin

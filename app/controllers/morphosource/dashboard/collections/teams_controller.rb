@@ -19,6 +19,10 @@ module Morphosource
         def projects
           @tab = :projects
           @projects = member_subcollections
+          add_breadcrumb t(:'hyrax.controls.home'), root_path
+          add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
+          add_breadcrumb t(:'morphosource.dashboard.collections.edit.header', type_title: @collection.collection_type.title), collection_edit_path(@collection)
+          add_breadcrumb t(:'morphosource.dashboard.collections.team.projects.title'), team_projects_path(@collection)
           presenter
           render 'edit'
         end
@@ -26,6 +30,10 @@ module Morphosource
         def organization
           @tab = :organization
           @organization = @collection.organization
+          add_breadcrumb t(:'hyrax.controls.home'), root_path
+          add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
+          add_breadcrumb t(:'morphosource.dashboard.collections.edit.header', type_title: @collection.collection_type.title), collection_edit_path(@collection)
+          add_breadcrumb t(:'morphosource.dashboard.collections.team.organization.title'), team_organization_path(@collection)
           organization_presenter
           presenter
           form

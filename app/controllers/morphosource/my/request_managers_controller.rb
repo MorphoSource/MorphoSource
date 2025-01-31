@@ -13,6 +13,7 @@ module Morphosource
 
       def index
         get_items_for_tab
+        add_breadcrumbs
         render 'morphosource/my/request_manager/index'
       end
 
@@ -91,6 +92,12 @@ module Morphosource
             deliver_message(email_sender, requestor, message_to_requestor, "Your download request has been #{action}")
           end
         end
+      end
+
+      def add_breadcrumbs
+        add_breadcrumb t(:'hyrax.controls.home'), root_path
+        add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
+        add_breadcrumb t(:'morphosource.dashboard.sidebar.my_media.new_requests_for_my_media'), main_app.request_manager_path
       end
 
 

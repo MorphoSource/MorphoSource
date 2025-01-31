@@ -13,6 +13,7 @@ module Morphosource
 
       def index
         get_items('my_requests')
+        add_breadcrumbs
         render 'morphosource/my/requests/index'
       end
 
@@ -148,6 +149,12 @@ module Morphosource
           flash[:alert] = 'You are not authorized to request this work.'
         end
         redirect_back(fallback_location: my_requests_path)
+      end
+
+      def add_breadcrumbs
+        add_breadcrumb t(:'hyrax.controls.home'), root_path
+        add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
+        add_breadcrumb t(:'morphosource.dashboard.sidebar.my_downloads.requests_for_media'), main_app.my_requests_path
       end
 
       private

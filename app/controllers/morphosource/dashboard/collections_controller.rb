@@ -118,6 +118,7 @@ module Morphosource
 
       def members
         @tab = :members
+        add_members_breadcrumbs
         presenter
         form
         render 'edit'
@@ -148,6 +149,13 @@ module Morphosource
 
       def set_default_permissions
         set_morphosource_permissions
+      end
+
+      def add_members_breadcrumbs
+        add_breadcrumb t(:'hyrax.controls.home'), root_path
+        add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
+        add_breadcrumb t(:'morphosource.dashboard.collections.edit.header', type_title: @collection.collection_type.title), collection_edit_path(@collection)
+        add_breadcrumb t(:"morphosource.dashboard.collections.#{@collection.collection_type.machine_id}.members.title"), send("#{@collection.collection_type.machine_id}_members_path", @collection)
       end
 
       private

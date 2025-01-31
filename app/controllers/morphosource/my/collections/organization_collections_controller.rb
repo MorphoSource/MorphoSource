@@ -42,7 +42,7 @@ module Morphosource
         private
 
           def add_collection_type_breadcrumb
-            add_breadcrumb t(:'hyrax.admin.sidebar.organizations'), main_app.my_organizations_path
+            add_breadcrumb t(:'morphosource.dashboard.sidebar.my_media_collections.organizations'), main_app.my_organizations_path, { "aria-current" => "page" }
           end
       end
     end

@@ -6,6 +6,8 @@ module Hyrax
       helper_method :page_is_project?, :ms_dashboard_my_collection_link, :hidden_params_for_filters, :visibility_label,
         :page_is_team?, :collection_type, :hidden_params_for_pagination
 
+      before_action :get_collection_list_type, only: [:index]
+
       with_themed_layout 'morphosource_dashboard'
 
       class_attribute :presenter_class,
@@ -18,17 +20,8 @@ module Hyrax
       def index
         add_breadcrumb t(:'hyrax.controls.home'), root_path
         add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
+        add_breadcrumb t(:"morphosource.dashboard.sidebar.my_media_collections.#{@collection_list_type.pluralize}"), hyrax.my_collections_path.sub!('collection', @collection_list_type), { "aria-current" => "page" }
         collection_type_list_presenter
-        if page_is_project?
-          @collection_list_type = "project"
-          add_breadcrumb t(:'hyrax.admin.sidebar.projects'), hyrax.my_collections_path.sub!('collection', 'project')
-        elsif page_is_team?
-          @collection_list_type = "team"
-          add_breadcrumb t(:'hyrax.admin.sidebar.teams'), hyrax.my_collections_path.sub!('collection', 'team')
-        else
-          @collection_list_type = "collection"
-        end
-
         @page_collection_type_id = Morphosource::CollectionTypesService.collection_type_id_by_name(collection_type)
         collections_by_memberships
         query_collection_information
@@ -121,6 +114,12 @@ module Hyrax
       end
 
       private
+
+        def get_collection_list_type
+          return @collection_list_type = "project" if page_is_project?
+          return @collection_list_type = "team" if page_is_team?
+          @collection_list_type = "collection"
+        end
 
         def search_action_url(collection_list_type, *args)
           if collection_list_type == 'project'

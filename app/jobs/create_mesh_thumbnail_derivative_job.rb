@@ -1,4 +1,6 @@
-class CreateMeshThumbnailDerivativeJob < HeavyJob
+class CreateMeshThumbnailDerivativeJob < Hyrax::ApplicationJob
+  queue_as Hyrax.config.update_slow_queue_name
+  
   # @param [String] file_set_id identifier for FileSet
   def perform(file_set_id)
     file_set = FileSet.find(file_set_id)

@@ -1,13 +1,8 @@
 # Base analytics is Hyrax 2.x GA3 parameters, ga4 is Hyrax 3.x style for GA4\
 # TODO update to 3.x style and remove base
 analytics:
-    app_name: morphosource-analytics
-    app_version: 123
-    client_email: <%= ENV['GOOGLE_ANALYTICS_CLIENT_EMAIL'] %>
-    privkey_path: <%= ENV['GOOGLE_ANALYTICS_PRIVKEY_PATH'] %>
-    privkey_secret: <%= ENV['GOOGLE_ANALYTICS_PRIVKEY_SECRET'] %>
     ga4:
-        analytics_id: <%= ENV['GOOGLE_ANALYTICS_ID'] %>
+        analytics_id: <%= ENV['GOOGLE_ANALYTICS_PROPERTY_ID'] %>
         app_name: morphosource-analytics
         app_version: 123
         client_email: <%= ENV['GOOGLE_ANALYTICS_CLIENT_EMAIL'] %>

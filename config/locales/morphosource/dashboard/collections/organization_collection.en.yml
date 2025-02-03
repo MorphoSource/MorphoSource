@@ -3,8 +3,20 @@ en:
     dashboard:
       collections:
         organization_collection:
+          index:
+            title: Organizations
           new:
             header: 'New Organization'
+          edit:
+            title: Details
+          members:
+            title: Members
+          ownership:
+            title: Ownership
+          permissions:
+            title: Permissions
+          projects:
+            title: Projects
           action:
             edit: 'Edit Organization'
             delete: 'Delete Organization'
@@ -17,14 +29,6 @@ en:
             roles:
               contributor: 'manager'
               non-contributor: 'viewer'
-          members:
-            title: Members
-          ownership:
-            title: Ownership
-          permissions:
-            title: Permissions
-          projects:
-            title: Projects
   simple_form:
     labels:
       organization_collection:

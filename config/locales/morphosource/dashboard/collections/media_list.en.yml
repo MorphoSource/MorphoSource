@@ -3,6 +3,10 @@ en:
     dashboard:
       collections:
         media_list:
+          index:
+            title: Media Lists
+          edit:
+            title: Details
           new:
             header: 'New Media List'
           action:

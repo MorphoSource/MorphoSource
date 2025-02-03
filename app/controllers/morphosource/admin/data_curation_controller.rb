@@ -1,12 +1,11 @@
 module Morphosource
   module Admin
     class DataCurationController < ApplicationController
+      include Morphosource::Breadcrumbs
       before_action :require_permissions
       with_themed_layout 'morphosource_dashboard'
 
-      def index
-        add_breadcrumbs
-      end
+      PAGE_TITLE = I18n.t("morphosource.dashboard.admin.data_curation.page_title")
 
       def apply_permission_template
         begin

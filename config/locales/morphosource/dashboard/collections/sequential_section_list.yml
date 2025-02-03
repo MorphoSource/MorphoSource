@@ -3,6 +3,10 @@ en:
     dashboard:
       collections:
         sequential_section_list:
+          index:
+            title: Sequential Section Lists
+          edit:
+            title: Details
           new:
             header: 'New Sequential Section List'
           action:

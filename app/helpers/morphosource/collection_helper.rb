@@ -138,6 +138,8 @@ module Morphosource
           'media list'
         elsif page_is_sequential_section_list?
           'sequential section list'
+        elsif page_is_organization?
+          'organization'
         end
       end
     end

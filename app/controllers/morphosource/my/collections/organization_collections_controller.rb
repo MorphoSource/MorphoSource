@@ -3,8 +3,6 @@ module Morphosource
     module Collections
       class OrganizationCollectionsController < Morphosource::My::CollectionsController
 
-        before_action :build_breadcrumbs, only: []
-
         # Define collection specific filter facets.
         def self.configure_facets
           configure_blacklight do |config|

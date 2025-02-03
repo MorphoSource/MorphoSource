@@ -1,14 +1,13 @@
 module Morphosource
   module Admin
     class ImportSlidesController < ApplicationController
+      include Morphosource::Breadcrumbs
       before_action :require_admin
       before_action :initialize_service, only: :import_slides
 
       with_themed_layout 'morphosource_dashboard'
 
-      def index
-        build_breadcrumbs
-      end
+      PAGE_TITLE = I18n.t('morphosource.dashboard.admin.import_slides.page_title')
 
       def import_slides
         Morphosource::ImportSlideSeriesJob.perform_later(occurrence_key, @collection.id)

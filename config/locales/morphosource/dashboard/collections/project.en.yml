@@ -3,6 +3,12 @@ en:
     dashboard:
       collections:
         project:
+          index:
+            title: Projects
+          edit:
+            title: Details
+          new:
+            title: New Project
           members:
             title: Members
             roles:

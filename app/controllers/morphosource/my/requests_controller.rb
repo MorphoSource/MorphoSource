@@ -4,6 +4,7 @@ module Morphosource
       include Morphosource::CartItems
       include Morphosource::CartItems::ListItems
       include Morphosource::CartItems::RequestMessages
+      include Morphosource::Breadcrumbs
       with_themed_layout 'morphosource_dashboard'
 
       before_action :get_items_by_id, except: [:index]
@@ -11,9 +12,10 @@ module Morphosource
       before_action :check_blank_items, only: [:request_item, :request_again]
       before_action :check_request_terms_agree, only: [:request_item, :request_work]
 
+      PAGE_TITLE = I18n.t("morphosource.dashboard.my.requests.page_title")
+
       def index
         get_items('my_requests')
-        add_breadcrumbs
         render 'morphosource/my/requests/index'
       end
 
@@ -149,12 +151,6 @@ module Morphosource
           flash[:alert] = 'You are not authorized to request this work.'
         end
         redirect_back(fallback_location: my_requests_path)
-      end
-
-      def add_breadcrumbs
-        add_breadcrumb t(:'hyrax.controls.home'), root_path
-        add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
-        add_breadcrumb t(:'morphosource.dashboard.sidebar.my_downloads.requests_for_media'), main_app.my_requests_path
       end
 
       private

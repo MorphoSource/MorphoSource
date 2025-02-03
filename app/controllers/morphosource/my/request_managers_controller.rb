@@ -6,14 +6,16 @@ module Morphosource
       include Morphosource::CartItems::RequestManagerItems
       include Morphosource::CartItems::RequestItems
       include Morphosource::CartItems::RequestMessages
+      include Morphosource::Breadcrumbs
       with_themed_layout 'morphosource_dashboard'
 
       before_action :get_items_by_id, only: [:clear_request, :approve_download, :deny_download, :edit_expiration]
       before_action :get_expiration_date_for_approve, only: [:approve_download]
 
+      PAGE_TITLE = I18n.t("morphosource.dashboard.my.request_manager.page_title")
+
       def index
         get_items_for_tab
-        add_breadcrumbs
         render 'morphosource/my/request_manager/index'
       end
 
@@ -93,13 +95,6 @@ module Morphosource
           end
         end
       end
-
-      def add_breadcrumbs
-        add_breadcrumb t(:'hyrax.controls.home'), root_path
-        add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
-        add_breadcrumb t(:'morphosource.dashboard.sidebar.my_media.new_requests_for_my_media'), main_app.request_manager_path
-      end
-
 
       private
 

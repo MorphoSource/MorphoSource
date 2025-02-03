@@ -4,6 +4,7 @@ module Morphosource
       include Morphosource::My::WorksControllerBehavior
       include Morphosource::Facets::Collections
       include Morphosource::My::WorksHelper
+      include Morphosource::Breadcrumbs::Works
 
       class_attribute :create_work_presenter_class, :filtered_facets
 
@@ -17,7 +18,6 @@ module Morphosource
       def index
         # The user's collections for the "add to collection" form
         @user_collections = collections_service.search_results(:deposit)
-        add_breadcrumbs
         # media/object counts at top of page
         get_media_object_counts
         # managed_works_count

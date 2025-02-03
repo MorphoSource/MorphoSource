@@ -1,13 +1,5 @@
 <% provide :page_title, page_title %>
 
-<nav class="breadcrumb" role="region" aria-label="Breadcrumb">
-  <ol>
-    <li><a href="/?locale=en">Home</a></li>
-    <li><a href="/dashboard?locale=en">Dashboard</a></li>
-    <li class="active"><%= page_title %></li>
-  </ol>
-</nav>
-
 <%= render 'search_container' %>
 
 <% if @petition.present? %>
@@ -48,7 +40,7 @@
           <td><%= @petition.decision_state.capitalize %></td>
           <% decision_user = User.find(@petition.decision_by) %>
           <td>
-            <%= link_to decision_user.name_or_email, Hyrax::Engine.routes.url_helpers.user_path(decision_user) %> 
+            <%= link_to decision_user.name_or_email, Hyrax::Engine.routes.url_helpers.user_path(decision_user) %>
           </td>
           <td><%= @petition.date_approved %></td>
           <td><%= @petition.date_returned %></td>

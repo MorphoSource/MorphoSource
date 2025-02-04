@@ -55,8 +55,49 @@ class OrganizationCollection < Collection
     true
   end
 
-  def attachment(field_name)
-    Morphosource::AttachmentService.get(self, field_name)
+#  def attachment(field_name)
+#    Morphosource::AttachmentService.get(self, field_name)
+#  end
+
+  # Custom method to handle CarrierWave uploader
+  def agreement_uploader
+    @agreement_uploader ||= OrganizationCollectionAgreementAttachmentUploader.new.tap { |u| u.work_id = id }
+  end
+
+  # @param file [File, ActionDispatch::Http::UploadedFile] The file to be attached, or nil to delete the file
+  def agreement_attachment=(file)
+    if file.nil?
+      # delete attachment
+      return unless self.agreement_attachment_url.present?
+      file_name = File.basename(self.agreement_attachment_url)
+      agreement_uploader.retrieve_from_store!(file_name)
+      if agreement_uploader.file.present? && File.exist?(agreement_uploader.file.path)
+        Rails.logger.info "Deleting file: #{agreement_uploader.file.path}"
+        agreement_uploader.remove!
+      else
+        Rails.logger.warn "File not found: #{agreement_uploader.file&.path}"
+      end
+      self.agreement_attachment_url = nil
+      self.save
+    else
+      # add attachment
+      extension = File.extname(file.original_filename).downcase
+      if agreement_attachment_formats.include?(extension)
+        agreement_uploader.store!(file)
+        self.agreement_attachment_url = agreement_uploader.url
+        self.save
+      else
+        raise ArgumentError, "Invalid file format: #{extension}"
+      end
+    end
+  end
+
+  def agreement_attachment
+    self.agreement_attachment_url
+  end
+
+  def agreement_attachment_formats
+    @agreement_attachment_formats ||= Morphosource.attachment_formats
   end
 
   def is_device_organization?

@@ -30,19 +30,19 @@ module Morphosource
         def create_attachment_if_needed
           # Handle possible attachment upload
 
-#what is @params[:agreement_uri] supposed to be in work org?
+# is there a need to handle  @params[:agreement_uri] ? what is it supposed to be in work org?
 #          if @params[:agreement_uri].present? && Morphosource::AttachmentService.get(@organization.id, 'agreement').present?
 #            Morphosource::AttachmentService.delete(@organization.id, 'agreement')
 
           if params[:agreement] && Morphosource.attachment_formats.include?(File.extname(params[:agreement].original_filename))
 byebug
-            Morphosource::AttachmentService.create(@organization.id, 'agreement', params[:agreement])
+            @organization.agreement_attachment = params[:agreement]
             params.delete(:agreement)
 #            @params[:agreement_uri] = ''
           elsif params[:media_attachment_delete] == 'delete'
 byebug
 
-            Morphosource::AttachmentService.delete(@organization.id, 'agreement')
+            @organization.agreement_attachment = nil
             params.delete(:media_attachment_delete)
           end
 

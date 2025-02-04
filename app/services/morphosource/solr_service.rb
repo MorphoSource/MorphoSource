@@ -50,8 +50,11 @@ module Morphosource
     def get_facet_fields(query = nil, facet_fields = [], args = {})
       facet_fields = Array(facet_fields)
 
-      args = args.merge(facet: "on") if facet_fields.present?
-      args = args.merge("facet.field" => facet_fields) if facet_fields.present?
+      if facet_fields.present?
+        args = args.merge( { "facet" => "on",
+                             "facet.field" => facet_fields,
+                             "facet.mincount" => 1 } )
+      end
 
       get(query, args)
     end

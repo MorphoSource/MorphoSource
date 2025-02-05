@@ -109,7 +109,7 @@ module Morphosource
         preview_mode: preview_mode,
         agreement_uri: agreement_uri,
         attachment_url: agreement_attachment_url,
-        organization_for_attachment: attachment('agreement') ? id : nil
+        organization_for_attachment: agreement_attachment_url.present? ? id : nil
       }
     end
 

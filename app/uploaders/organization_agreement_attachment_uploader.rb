@@ -1,4 +1,4 @@
-class OrganizationCollectionAgreementAttachmentUploader < CarrierWave::Uploader::Base
+class OrganizationAgreementAttachmentUploader < CarrierWave::Uploader::Base
   # Include RMagick or MiniMagick support:
   # include CarrierWave::RMagick
   # include CarrierWave::MiniMagick

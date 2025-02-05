@@ -59,6 +59,11 @@ class Organization < Morphosource::Works::Base
     @old_collections = ActiveFedora::Base.where("linked_organization_id_ssi:#{id}")
   end
 
+  # Custom method to handle CarrierWave uploader
+  def agreement_uploader
+    @agreement_uploader ||= OrganizationAgreementAttachmentUploader.new.tap { |u| u.work_id = id }
+  end
+
   private
 
     def outside_team(works)

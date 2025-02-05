@@ -497,7 +497,16 @@ class SubmissionsController < ApplicationController
           end
           params.delete(field)
         elsif field == 'agreement' && submission_params[:organization_for_attachment].present?
-          Morphosource::AttachmentService.create_copy(id, field, submission_params[:organization_for_attachment])
+          organization_for_attachment = Organization.find(submission_params[:organization_for_attachment])
+          uploader = new_work_object.agreement_uploader
+          file_path = Rails.root.join('public').to_s + organization_for_attachment.agreement_attachment_url
+          if File.exist?(file_path)
+            uploader.store!(File.open(file_path))
+            new_work_object.agreement_attachment_url = uploader.url
+            new_work_object.save
+          else
+            Rails.logger.error("in SubmissionController: Unable to copy agreement attachment from organization. File not found: #{file_path}")
+          end
         end
       end
     end

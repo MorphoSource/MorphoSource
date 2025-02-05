@@ -7,12 +7,12 @@ class OrganizationCollectionAgreementAttachmentUploader < CarrierWave::Uploader:
   storage :file
   # storage :fog
 
-  attr_accessor :collection_id
+  attr_accessor :work_id
 
   # Override the directory where uploaded files will be stored.
   # This is a sensible default for uploaders that are meant to be mounted:
   def store_dir
-    "uploads/collections/organization_collection/#{collection_id}/attachments/agreement"
+    "uploads/works/organization/#{work_id}/attachments/agreement"
   end
 
   # Provide a default URL as a default if there hasn't been a file uploaded:

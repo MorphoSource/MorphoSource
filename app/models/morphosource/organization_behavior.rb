@@ -3,16 +3,20 @@
 module Morphosource
   module OrganizationBehavior
 
-    def agreement_attachment_url
-      if attachment('agreement')
-        Rails.application.routes.url_helpers.attachment_path(
-          id: id,
-          field: 'agreement'
-        )
-      else
-        nil
-      end
-    end
+    # todo: agreement_attachment_url is now an attribute returning a path 
+    # instead of a method returning a link
+    # remove this method later after all references are updated    
+    #
+    #def agreement_attachment_url
+    #  if attachment('agreement')
+    #    Rails.application.routes.url_helpers.attachment_path(
+    #      id: id,
+    #      field: 'agreement'
+    #    )
+    #  else
+    #    nil
+    #  end
+    #end
 
     def cultural_heritage_objects
       CulturalHeritageObject.where(organization_id_tesim: id)

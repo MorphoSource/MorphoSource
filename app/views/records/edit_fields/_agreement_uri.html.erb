@@ -16,7 +16,7 @@
       as: :string,
       placeholder: local_assigns[:placeholder] || 'Enter Agreement File URL',
       id: 'media_agreement_uri',
-      disabled: object.present? && object.persisted? && object.attachment('agreement') ? true : false,
+      disabled: object.present? && object.persisted? && object.agreement_attachment ? true : false,
       class: 'form-control string optional'
     %>
 

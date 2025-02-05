@@ -61,7 +61,7 @@ class OrganizationCollection < Collection
 
   # Custom method to handle CarrierWave uploader
   def agreement_uploader
-    @agreement_uploader ||= OrganizationCollectionAgreementAttachmentUploader.new.tap { |u| u.work_id = id }
+    @agreement_uploader ||= OrganizationCollectionAgreementAttachmentUploader.new.tap { |u| u.collection_id = id }
   end
 
   # @param file [File, ActionDispatch::Http::UploadedFile] The file to be attached, or nil to delete the file

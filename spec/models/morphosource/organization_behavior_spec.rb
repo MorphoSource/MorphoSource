@@ -129,3 +129,127 @@ RSpec.describe OrganizationCollection, type: :model do
     end
   end
 end
+
+describe 'agreement attachment methods' do
+  let(:organization) { Organization.create }
+  let(:valid_file) { Rack::Test::UploadedFile.new('spec/fixtures/text/text.txt', 'text/plain') }
+  let(:invalid_file) { Rack::Test::UploadedFile.new('spec/fixtures/images/ms.jpg', 'application/jpeg') }
+  let(:valid_file_upload_url_for_org_coll) { "/uploads/works/organization/attachments/agreement/text.txt" }
+
+  describe '#agreement_uploader' do
+    it 'initializes an agreement_uploader with the correct work_id' do
+      agreement_uploader = organization.agreement_uploader
+      expect(agreement_uploader).to be_an_instance_of(OrganizationAgreementAttachmentUploader)
+      expect(agreement_uploader.work_id).to eq(organization.id)
+    end
+  end
+
+  describe '#agreement_attachment=' do
+    context 'when assigning a valid file' do
+      it 'stores the file and sets the agreement_attachment_url' do
+        organization.agreement_attachment = valid_file
+        expect(organization.agreement_attachment_url).to eq(valid_file_upload_url_for_org_coll)
+        expect(File.exist?(organization.agreement_uploader.file.path)).to be_truthy
+      end
+    end
+
+    context 'when assigning an invalid file' do
+      it 'raises an error for unsupported file format' do
+        expect {
+          organization.agreement_attachment = invalid_file
+        }.to raise_error(ArgumentError, /Invalid file format: .jpg/)
+      end
+    end
+
+    context 'when assigning nil' do
+      before do
+        organization.agreement_attachment = valid_file
+        expect(organization.agreement_attachment_url).to be_present
+      end
+
+      it 'deletes the attachment and clears the agreement_attachment_url' do
+        file_path = organization.agreement_uploader.file.path
+        expect(File.exist?(file_path)).to be_truthy
+
+        organization.agreement_attachment = nil
+        expect(organization.agreement_attachment_url).to be_nil
+        expect(File.exist?(file_path)).to be_falsey
+      end
+
+      it 'logs a warning if the file does not exist' do
+        allow(File).to receive(:exist?).and_return(false)
+        expect(Rails.logger).to receive(:warn).with(/File not found/)
+        organization.agreement_attachment = nil
+      end
+    end
+  end
+
+  describe '#agreement_attachment' do
+    it 'returns the agreement_attachment_url' do
+      organization.agreement_attachment = valid_file
+      expect(organization.agreement_attachment).to eq(organization.agreement_attachment_url)
+    end
+  end
+end
+
+describe 'agreement attachment methods for OrganizationCollection' do
+  let(:organization_collection) { OrganizationCollection.create }
+  let(:valid_file) { Rack::Test::UploadedFile.new('spec/fixtures/text/text.txt', 'text/plain') }
+  let(:invalid_file) { Rack::Test::UploadedFile.new('spec/fixtures/images/ms.jpg', 'application/jpeg') }
+  let(:valid_file_upload_url_for_org_coll) { "/uploads/collections/organization_collection/attachments/agreement/text.txt" }
+
+  describe '#agreement_uploader' do
+    it 'initializes an agreement_uploader with the correct collection_id' do
+      agreement_uploader = organization_collection.agreement_uploader
+      expect(agreement_uploader).to be_an_instance_of(OrganizationCollectionAgreementAttachmentUploader)
+      expect(agreement_uploader.collection_id).to eq(organization_collection.id)
+    end
+  end
+
+  describe '#agreement_attachment=' do
+    context 'when assigning a valid file' do
+      it 'stores the file and sets the agreement_attachment_url' do
+        organization_collection.agreement_attachment = valid_file
+        expect(organization_collection.agreement_attachment_url).to eq(valid_file_upload_url_for_org_coll)
+        expect(File.exist?(organization_collection.agreement_uploader.file.path)).to be_truthy
+      end
+    end
+
+    context 'when assigning an invalid file' do
+      it 'raises an error for unsupported file format' do
+        expect {
+          organization_collection.agreement_attachment = invalid_file
+        }.to raise_error(ArgumentError, /Invalid file format: .jpg/)
+      end
+    end
+
+    context 'when assigning nil' do
+      before do
+        organization_collection.agreement_attachment = valid_file
+        expect(organization_collection.agreement_attachment_url).to be_present
+      end
+
+      it 'deletes the attachment and clears the agreement_attachment_url' do
+        file_path = organization_collection.agreement_uploader.file.path
+        expect(File.exist?(file_path)).to be_truthy
+
+        organization_collection.agreement_attachment = nil
+        expect(organization_collection.agreement_attachment_url).to be_nil
+        expect(File.exist?(file_path)).to be_falsey
+      end
+
+      it 'logs a warning if the file does not exist' do
+        allow(File).to receive(:exist?).and_return(false)
+        expect(Rails.logger).to receive(:warn).with(/File not found/)
+        organization_collection.agreement_attachment = nil
+      end
+    end
+  end
+
+  describe '#agreement_attachment' do
+    it 'returns the agreement_attachment_url' do
+      organization_collection.agreement_attachment = valid_file
+      expect(organization_collection.agreement_attachment).to eq(organization_collection.agreement_attachment_url)
+    end
+  end
+end

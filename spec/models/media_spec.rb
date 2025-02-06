@@ -613,11 +613,11 @@ RSpec.describe Media do
   end
 end
 
-describe 'agreement attachment methods' do
+describe 'description attachment methods' do
   let(:media) { Media.create }
   let(:valid_file) { Rack::Test::UploadedFile.new('spec/fixtures/text/text.txt', 'text/plain') }
   let(:invalid_file) { Rack::Test::UploadedFile.new('spec/fixtures/images/ms.jpg', 'application/jpeg') }
-  let(:valid_file_upload_url_for_org_coll) { "/uploads/works/media/attachments/agreement/text.txt" }
+  let(:valid_file_upload_url) { "/uploads/works/media/attachments/agreement/text.txt" }
 
   describe '#agreement_uploader' do
     it 'initializes an agreement_uploader with the correct work_id' do
@@ -631,7 +631,7 @@ describe 'agreement attachment methods' do
     context 'when assigning a valid file' do
       it 'stores the file and sets the agreement_attachment_url' do
         media.agreement_attachment = valid_file
-        expect(media.agreement_attachment_url).to eq(valid_file_upload_url_for_org_coll)
+        expect(media.agreement_attachment_url).to eq(valid_file_upload_url)
         expect(File.exist?(media.agreement_uploader.file.path)).to be_truthy
       end
     end

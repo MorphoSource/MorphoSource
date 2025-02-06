@@ -499,18 +499,7 @@ class SubmissionsController < ApplicationController
         elsif field == 'agreement' && submission_params[:organization_for_attachment].present?
           # copy agreement attachment from organization
           organization_for_attachment = ( Organization.find_by(id: submission_params[:organization_for_attachment]) || OrganizationCollection.find_by(id: submission_params[:organization_for_attachment]) )
-          uploader = new_work_object.agreement_uploader
-          file_path = Rails.root.join('public').to_s + organization_for_attachment.agreement_attachment_url
-          if File.exist?(file_path)
-            file = ActionDispatch::Http::UploadedFile.new(
-              filename: File.basename(file_path),
-              type: Marcel::MimeType.for(file_path),
-              tempfile: File.open(file_path)
-            )
-            new_work_object.agreement_attachment = file
-          else
-            Rails.logger.error("in SubmissionController: Unable to copy agreement attachment from organization. File not found: #{file_path}")
-          end
+          new_work_object.copy_organization_agreement_attachment(organization_for_attachment)
         end
       end
     end

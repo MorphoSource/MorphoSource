@@ -600,6 +600,20 @@ class Media < Morphosource::Works::Base
     @agreement_attachment_formats ||= Morphosource.attachment_formats
   end
 
+  def copy_organization_agreement_attachment(organization)
+    file_path = Rails.root.join('public').to_s + organization.agreement_attachment_url
+    if File.exist?(file_path)
+      file = ActionDispatch::Http::UploadedFile.new(
+        filename: File.basename(file_path),
+        type: Marcel::MimeType.for(file_path),
+        tempfile: File.open(file_path)
+      )
+      self.agreement_attachment = file
+    else
+      Rails.logger.error("Unable to copy agreement attachment from organization. File not found: #{file_path}")
+    end
+  end
+
   private
 
     def add_id_to_title

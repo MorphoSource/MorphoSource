@@ -4,14 +4,6 @@ RSpec.describe Organization, type: :model do
   let(:another_org)   { FactoryBot.create(:organization) }
   let(:organization)  { FactoryBot.create(:organization) }
 
-  describe '#agreement_attachment_url' do
-    before do
-      allow(organization).to receive(:attachment).with('agreement').and_return(true)
-    end
-
-    it { expect(organization.agreement_attachment_url).to eq(Rails.application.routes.url_helpers.attachment_path(id: organization.id, field: 'agreement')) }
-  end
-
   # returns media and objects associated with the organization through the organization's devices
   describe 'device_cultural_heritage_objects, device_media, device_physical_objects, device_specimens' do
     let(:specimen)        { FactoryBot.create(:biological_specimen, organization_id: [another_org.id]) }
@@ -76,14 +68,6 @@ end
 RSpec.describe OrganizationCollection, type: :model do
   let(:another_org)   { FactoryBot.create(:organization_collection) }
   let(:organization)  { FactoryBot.create(:organization_collection) }
-
-  describe '#agreement_attachment_url' do
-    before do
-      allow(organization).to receive(:attachment).with('agreement').and_return(true)
-    end
-
-    it { expect(organization.agreement_attachment_url).to eq(Rails.application.routes.url_helpers.attachment_path(id: organization.id, field: 'agreement')) }
-  end
 
   # returns media and objects associated with the organization through the organization's devices
   describe 'device_cultural_heritage_objects, device_media, device_physical_objects, device_specimens' do

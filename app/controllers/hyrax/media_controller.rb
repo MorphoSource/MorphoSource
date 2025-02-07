@@ -7,7 +7,6 @@ module Hyrax
     include Morphosource::CurationConcernControllerBehavior
     include Morphosource::TemporaryAccess::TemporaryAccessControllerBehavior
     include Hyrax::WorksControllerBehavior
-    include Hyrax::BreadcrumbsForWorks
     include Hyrax::ChildWorkRedirect
     include Morphosource::CustomThumbnails
     include Morphosource::MessageHelper
@@ -56,7 +55,7 @@ module Hyrax
       # note: most curation concern methods get concern from search_result_document(id: params[:id])
       # this refactors that - only for showcase method - to be more direct, like collections
       # if this works well, should refactor to use this across the board
-      curation_concern_solr_doc = curation_concern.present? ? 
+      curation_concern_solr_doc = curation_concern.present? ?
         ::SolrDocument.find(curation_concern.id) : ::SolrDocument.find(params[:id])
       raise CanCan::AccessDenied.new(nil, :show) unless (curation_concern && current_ability.can?(:read, curation_concern))
 
@@ -67,7 +66,7 @@ module Hyrax
 
     # dynamically loads archive file contents list for archive information modal
     def modal_file_archive_contents
-      curation_concern_solr_doc = curation_concern.present? ? 
+      curation_concern_solr_doc = curation_concern.present? ?
         ::SolrDocument.find(curation_concern.id) : ::SolrDocument.find(params[:id])
       raise CanCan::AccessDenied.new(nil, :show) unless (curation_concern && current_ability.can?(:read, curation_concern))
 
@@ -84,16 +83,16 @@ module Hyrax
     def edit
       build_form
       @presenter = show_presenter.new(search_result_document(id: params[:id]), current_ability, request)
-      @member_of_collections_json = member_of_collections_json(@presenter.member_of_collection_presenters)  
+      @member_of_collections_json = member_of_collections_json(@presenter.member_of_collection_presenters)
       if (
-        @presenter.imaging_event.present? && 
+        @presenter.imaging_event.present? &&
         (ie_work = ImagingEvent.find_by(id: @presenter.imaging_event.id)).present?
       )
         @imaging_event_form = Hyrax::WorkFormService.build(ie_work, current_ability, self)
       end
 
       if (
-        @presenter.this_media_processing_event.present? && 
+        @presenter.this_media_processing_event.present? &&
         (pe_work = ProcessingEvent.find_by(id: @presenter.this_media_processing_event[:id])).present?
       )
         @processing_event_form = Hyrax::WorkFormService.build(pe_work, current_ability, self)
@@ -199,16 +198,16 @@ module Hyrax
             #render 'edit', status: :unprocessable_entity
             # todo: make sure to handle error when changing media type
             @presenter = show_presenter.new(search_result_document(id: params[:id]), current_ability, request)
-            
+
             if (
-              @presenter.imaging_event.present? && 
+              @presenter.imaging_event.present? &&
               (ie_work = ImagingEvent.find_by(id: @presenter.imaging_event.id)).present?
             )
               @imaging_event_form = Hyrax::WorkFormService.build(ie_work, current_ability, self)
             end
-      
+
             if (
-              @presenter.this_media_processing_event.present? && 
+              @presenter.this_media_processing_event.present? &&
               (pe_work = ProcessingEvent.find_by(id: @presenter.this_media_processing_event[:id])).present?
             )
               @processing_event_form = Hyrax::WorkFormService.build(pe_work, current_ability, self)
@@ -316,8 +315,8 @@ module Hyrax
     def characterize
       if current_user.admin?
         media_work = Media.find(params[:id])
-        # Note: For remote file, the original_file.content is empty, therefore original_file.present? returns false 
-        if media_work.is_remote_backed? 
+        # Note: For remote file, the original_file.content is empty, therefore original_file.present? returns false
+        if media_work.is_remote_backed?
           if !media_work.file_sets.first.present?
             flash[:error] = "Media has no FileSet. Characterization job not created."
           elsif JobIoWrapper.find_by(file_set_id: media_work.file_sets.first.id)&.path.present?
@@ -340,7 +339,7 @@ module Hyrax
     def create_derivatives
       if current_user.admin?
         media_work = Media.find(params[:id])
-        if media_work.is_remote_backed? 
+        if media_work.is_remote_backed?
           if !media_work.file_sets.first.present?
             flash[:error] = "Media has no FileSet. Create derivatives job not created."
           elsif JobIoWrapper.find_by(file_set_id: media_work.file_sets.first.id)&.path.present?
@@ -374,7 +373,7 @@ module Hyrax
           end
         elsif attributes_for_actor["remote_files"].present?
           # files uploaded from cloud
-          attributes_for_actor["remote_files"].each do |f| 
+          attributes_for_actor["remote_files"].each do |f|
             files << f["file_name"]
           end
         end

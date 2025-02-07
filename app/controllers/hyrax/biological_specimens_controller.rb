@@ -7,7 +7,6 @@ module Hyrax
     include Morphosource::CurationConcernControllerBehavior
     include Hyrax::WorksControllerBehavior
     include Morphosource::WorksControllerBehavior
-    include Hyrax::BreadcrumbsForWorks
     include Hyrax::ChildWorkRedirect
     include Morphosource::LinkedTeams::LinkedTeamsManagement
     self.curation_concern_type = ::BiologicalSpecimen
@@ -82,7 +81,7 @@ module Hyrax
     def check_idigbio_update
       @idigbio_record_found = false
       if params[:biological_specimen].present?
-        if (param_occ_id = params[:biological_specimen][:occurrence_id]).present? && 
+        if (param_occ_id = params[:biological_specimen][:occurrence_id]).present? &&
           (curation_concern.occurrence_id&.first != param_occ_id)
           occurrence_id_results = Morphosource::IDigBio.search({'occurrenceid' => param_occ_id})
           @idigbio_record_found = (occurrence_id_results[:status] == :success && occurrence_id_results[:data].length > 0)

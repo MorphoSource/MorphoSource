@@ -6,7 +6,6 @@ module Hyrax
     # Adds Hyrax behaviors to the controller
     include Morphosource::CurationConcernControllerBehavior
     include Hyrax::WorksControllerBehavior
-    include Hyrax::BreadcrumbsForWorks
     include Hyrax::ChildWorkRedirect
     include Morphosource::LinkedTeams::LinkedTeamsManagement
     self.curation_concern_type = ::CulturalHeritageObject
@@ -77,7 +76,7 @@ module Hyrax
 
     def new_orgs
       Organization.find(Array(@curation_concern.organization_id))
-    end    
+    end
 
   end
 end

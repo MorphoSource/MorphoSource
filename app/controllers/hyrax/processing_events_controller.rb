@@ -21,11 +21,11 @@ module Hyrax
 
     def update
       # Handle possible new attachment upload, delete or replace attachment
-      if params[:description_attachment_delete] == 'delete'
+      if params[:pe_description_delete] == 'delete'
         curation_concern.description_attachment = nil
       end
-      if params[:description_attachment].present?
-        curation_concern.description_attachment = params[:description_attachment]
+      if params[:pe_description].present?
+        curation_concern.description_attachment = params[:pe_description]
       end      
       env = actor_environment
       emancipate_if_necessary(env)

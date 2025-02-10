@@ -10,9 +10,10 @@
     <% elsif term == :description && f.object.model.class == ImagingEvent %>
       <%= render_edit_field_partial(term, f: f) %>
       <%= render_edit_field_partial(
-        'attachment', 
+        'attachment_for_description', 
         f: f, 
         field: 'ie_description', 
+        work_attribute: 'description_attachment_url', 
         label: 'Description attachment file',
         curation_concern: nil
       ) %>
@@ -20,6 +21,7 @@
         'attachment_for_reference', 
         f: f, 
         field: 'ie_reference', 
+        work_attribute: 'reference_attachment_url', 
         label: 'Photographic reference file',
         curation_concern: nil
       ) %>

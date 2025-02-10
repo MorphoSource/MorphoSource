@@ -177,4 +177,129 @@ RSpec.describe ImagingEvent do
       expect(ie.objects).to match_array([specimen, cho])
     end
   end
+
+  describe 'description attachment methods' do
+    let(:imaging_event) { ImagingEvent.create }
+    let(:valid_file) { Rack::Test::UploadedFile.new('spec/fixtures/text/text.txt', 'text/plain') }
+    let(:invalid_file) { Rack::Test::UploadedFile.new('spec/fixtures/images/ms.jpg', 'application/jpeg') }
+    let(:valid_file_upload_url) { "/uploads/works/imaging_event/attachments/description/text.txt" }
+    let(:uploader) { imaging_event.description_uploader }
+
+    describe '#description_uploader' do
+      it 'initializes an uploader with the correct work_id' do
+        expect(uploader).to be_an_instance_of(ImagingEventDescriptionAttachmentUploader)
+        expect(uploader.work_id).to eq(imaging_event.id)
+      end
+    end
+
+    describe '#description_attachment=' do
+      context 'when assigning a valid file' do
+        it 'stores the file and sets the description_attachment_url' do
+          imaging_event.description_attachment = valid_file
+          expect(imaging_event.description_attachment_url).to eq(valid_file_upload_url)
+          expect(File.exist?(uploader.file.path)).to be_truthy
+        end
+      end
+
+      context 'when assigning an invalid file' do
+        it 'raises an error for unsupported file format' do
+          expect {
+            imaging_event.description_attachment = invalid_file
+          }.to raise_error(ArgumentError, /Invalid file format: .jpg/)
+        end
+      end
+
+      context 'when assigning nil' do
+        before do
+          imaging_event.description_attachment = valid_file
+          expect(imaging_event.description_attachment_url).to be_present
+        end
+
+        it 'deletes the attachment and clears the description_attachment_url' do
+          file_path = uploader.file.path
+          expect(File.exist?(file_path)).to be_truthy
+
+          imaging_event.description_attachment = nil
+          expect(imaging_event.description_attachment_url).to be_nil
+          expect(File.exist?(file_path)).to be_falsey
+        end
+
+        it 'logs a warning if the file does not exist' do
+          allow(File).to receive(:exist?).and_return(false)
+          expect(Rails.logger).to receive(:warn).with(/File not found/)
+          imaging_event.description_attachment = nil
+        end
+      end
+    end
+
+    describe '#description_attachment' do
+      it 'returns the description_attachment_url' do
+        imaging_event.description_attachment = valid_file
+        expect(imaging_event.description_attachment).to eq(imaging_event.description_attachment_url)
+      end
+    end
+  end
+
+  describe 'reference attachment methods' do
+    let(:imaging_event) { ImagingEvent.create }
+    let(:valid_file) { Rack::Test::UploadedFile.new('spec/fixtures/images/ms.jpg', 'application/jpeg') }
+    let(:invalid_file) { Rack::Test::UploadedFile.new('spec/fixtures/text/text.txt', 'text/plain') }
+    let(:valid_file_upload_url) { "/uploads/works/imaging_event/attachments/reference/ms.jpg" }
+    let(:uploader) { imaging_event.reference_uploader }
+
+    describe '#reference_uploader' do
+      it 'initializes an uploader with the correct work_id' do
+        expect(uploader).to be_an_instance_of(ImagingEventReferenceAttachmentUploader)
+        expect(uploader.work_id).to eq(imaging_event.id)
+      end
+    end
+
+    describe '#reference_attachment=' do
+      context 'when assigning a valid file' do
+        it 'stores the file and sets the reference_attachment_url' do
+          imaging_event.reference_attachment = valid_file
+          expect(imaging_event.reference_attachment_url).to eq(valid_file_upload_url)
+          expect(File.exist?(uploader.file.path)).to be_truthy
+        end
+      end
+
+      context 'when assigning an invalid file' do
+        it 'raises an error for unsupported file format' do
+          expect {
+            imaging_event.reference_attachment = invalid_file
+          }.to raise_error(ArgumentError, /Invalid file format: .txt/)
+        end
+      end
+
+      context 'when assigning nil' do
+        before do
+          imaging_event.reference_attachment = valid_file
+          expect(imaging_event.reference_attachment_url).to be_present
+        end
+
+        it 'deletes the attachment and clears the reference_attachment_url' do
+          file_path = uploader.file.path
+          expect(File.exist?(file_path)).to be_truthy
+
+          imaging_event.reference_attachment = nil
+          expect(imaging_event.reference_attachment_url).to be_nil
+          expect(File.exist?(file_path)).to be_falsey
+        end
+
+        it 'logs a warning if the file does not exist' do
+          allow(File).to receive(:exist?).and_return(false)
+          expect(Rails.logger).to receive(:warn).with(/File not found/)
+          imaging_event.reference_attachment = nil
+        end
+      end
+    end
+
+    describe '#reference_attachment' do
+      it 'returns the reference_attachment_url' do
+        imaging_event.reference_attachment = valid_file
+        expect(imaging_event.reference_attachment).to eq(imaging_event.reference_attachment_url)
+      end
+    end
+  end
+
 end

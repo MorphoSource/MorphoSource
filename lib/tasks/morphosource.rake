@@ -936,7 +936,7 @@ namespace :morphosource do
 
         if action == 'delete_old_attachments'
           puts "Deleting old attachment #{old_attachment_path}"
-          Morphosource::MigrateAttachmentJob.perform_later(hit.id, field_name, old_attachment_field, old_attachment_path, delete_only: true)
+          Morphosource::MigrateAttachmentJob.perform_later(model_name, hit.id, field_name, old_attachment_field, old_attachment_path, delete_only: true)
           processed_attachment_count += 1
           next
         end
@@ -956,7 +956,7 @@ namespace :morphosource do
         end
 
         puts "Migrating ##{hit.id} old attachment #{old_attachment_path}... "
-        Morphosource::MigrateAttachmentJob.perform_later(work, field_name, old_attachment_field, old_attachment_path)
+        Morphosource::MigrateAttachmentJob.perform_later(model_name, work.id, field_name, old_attachment_field, old_attachment_path)
         processed_attachment_count += 1
 
       rescue StandardError => e
@@ -1011,8 +1011,6 @@ namespace :morphosource do
     results.each do |hit|
       begin
         next unless hit[solr_field].present? # no new migrated attachment
-        work = model_class.find(hit.id)
-        next unless work.present? 
 
         cw_attachment_count += 1
         old_attachment_path = Morphosource::AttachmentService.get(hit.id, old_attachment_field)
@@ -1020,7 +1018,7 @@ namespace :morphosource do
           puts "#{model_name} ##{hit.id}: old attachment #{old_attachment_field} has not been deleted yet, no need to create the file again"
         else
           puts "Migrating ##{hit.id} old attachment #{old_attachment_path}... "
-          Morphosource::RollbackMigrateAttachmentJob.perform_later(work, field_name, old_attachment_field, old_attachment_path, no_delete)
+          Morphosource::RollbackMigrateAttachmentJob.perform_later(model_name, hit.id, field_name, old_attachment_field, old_attachment_path, no_delete)
           created_old_attachment_count += 1
         end
 

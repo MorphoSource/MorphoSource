@@ -50,6 +50,13 @@ module Morphosource
       self.agreement_attachment_url
     end
 
+    def agreement_attachment_full_path
+      # retrieve and return the full system path to the agreement attachment file
+      file_name = File.basename(self.agreement_attachment_url)
+      agreement_uploader.retrieve_from_store!(file_name)
+      agreement_uploader.file.path
+    end
+
     def agreement_attachment_formats
       @agreement_attachment_formats ||= Morphosource.attachment_formats
     end

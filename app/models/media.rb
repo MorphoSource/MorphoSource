@@ -602,7 +602,7 @@ class Media < Morphosource::Works::Base
 
   def copy_organization_agreement_attachment(organization)
     return unless organization.agreement_attachment_url.present?
-    file_path = Rails.root.join('public').to_s + organization.agreement_attachment_url
+    file_path = organization.agreement_attachment_full_path
     if File.exist?(file_path)
       file = ActionDispatch::Http::UploadedFile.new(
         filename: File.basename(file_path),

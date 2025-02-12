@@ -3,21 +3,6 @@
 module Morphosource
   module OrganizationBehavior
 
-    # todo: agreement_attachment_url is now an attribute returning a path 
-    # instead of a method returning a link
-    # remove this method later after all references are updated    
-    #
-    #def agreement_attachment_url
-    #  if attachment('agreement')
-    #    Rails.application.routes.url_helpers.attachment_path(
-    #      id: id,
-    #      field: 'agreement'
-    #    )
-    #  else
-    #    nil
-    #  end
-    #end
-
     # @param file [File, ActionDispatch::Http::UploadedFile] The file to be attached, or nil to delete the file
     def agreement_attachment=(file)
       if file.nil?

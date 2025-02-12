@@ -127,8 +127,6 @@ module Morphosource
       def create_attachment_if_needed
         # Handle possible attachment upload
         if @params[:agreement_uri].present? && Morphosource::AttachmentService.get(@organization.id, 'agreement').present?
-          # todo: Not sure if there is a need to handle  @params[:agreement_uri] 
-          # remove this condition later if not needed
           @organization.agreement_attachment = nil
         else
           if params[:media_attachment_delete] == 'delete'

@@ -127,8 +127,7 @@ module Morphosource
 
       @media.agreement_uri = @organization.agreement_uri
       @media.agreement_attachment = nil
-      if @organization.agreement_attachment_url
-        byebug
+      if @organization.agreement_attachment_url.present?
         @media.copy_organization_agreement_attachment(@organization)
       end
     end

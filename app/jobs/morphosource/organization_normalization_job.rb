@@ -123,12 +123,13 @@ module Morphosource
     end
 
     def update_attachment
-      return if (@organization.agreement_uri.blank? && @organization.attachment('agreement').blank?)
+      return if (@organization.agreement_uri.blank? && @organization.agreement_attachment_url.blank?)
 
       @media.agreement_uri = @organization.agreement_uri
-      Morphosource::AttachmentService.delete(@media.id, 'agreement')
-      if @organization.attachment('agreement')
-        Morphosource::AttachmentService.create_copy(@media, 'agreement', @organization)
+      @media.agreement_attachment = nil
+      if @organization.agreement_attachment_url
+        byebug
+        @media.copy_organization_agreement_attachment(@organization)
       end
     end
 

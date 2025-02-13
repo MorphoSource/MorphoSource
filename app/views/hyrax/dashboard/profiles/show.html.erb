@@ -1,23 +1,26 @@
 <% content_for :body_css_classes do %>showcase profile<% end %>
 
 <% provide :page_header do %>
-  <div class="col-6 no-horizontal-padding">
-    <h1><span class="fa fa-id-card" aria-hidden="true"></span> <%= t("hyrax.admin.sidebar.profile") %></h1>
+  <div class="col-12 no-horizontal-padding">
+    <h1>
+      <span class="fa fa-id-card" aria-hidden="true"></span>
+      <%= t("hyrax.admin.sidebar.profile") %>
+      <% if can? :edit, current_user %>
+        <div class="float-right">
+          <% if @user == current_user || current_user.admin? %>
+            <%= link_to hyrax.edit_dashboard_profile_path(@user), class: "btn btn-primary" do %>
+              <%= t("hyrax.edit_profile") %>
+            <% end %>
+          <% end %>
+          <% if @user == current_user %>
+            <%= link_to main_app.profile_edit_password_path(@user), class: "btn btn-primary" do %>
+              <%= t("hyrax.update_password") %>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+    </h1>
   </div>
-  <% if can? :edit, current_user %>
-    <div class="pull-right">
-      <% if @user == current_user || current_user.admin? %>
-        <%= link_to hyrax.edit_dashboard_profile_path(@user), class: "btn btn-primary" do %>
-          <%= t("hyrax.edit_profile") %>
-        <% end %>
-      <% end %>
-      <% if @user == current_user %>
-        <%= link_to main_app.profile_edit_password_path(@user), class: "btn btn-primary" do %>
-          <%= t("hyrax.update_password") %>
-        <% end %>
-      <% end %>
-    </div>
-  <% end %>
 <% end %>
 
 <div class="col-12 flash-wrapper">

@@ -1,20 +1,32 @@
-<li class="h5"><%= t('hyrax.admin.sidebar.my_media') %></li>
+<li class="h5 nav-item"><%= t('morphosource.dashboard.sidebar.my_media.title') %></li>
 
-<%= menu.nav_link(Rails.application.routes.url_helpers.my_media_index_path) do %>
-  <span class="fa fa-cube" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.media_and_objects') %></span>
+<%= menu.nav_link(Rails.application.routes.url_helpers.my_media_index_path, class: "nav-link") do %>
+  <span class="fa fa-cube" aria-hidden="true"></span>
+  <span class="sidebar-action-text">
+    <%= t('morphosource.dashboard.sidebar.my_media.media_and_objects') %>
+  </span>
 <% end %>
 
 <% if current_user.contributor? %>
-  <%= menu.nav_link(main_app.request_manager_path) do %>
-    <span class="fa fa-tasks" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.admin.sidebar.new_requests_for_my_media') %></span>
+  <%= menu.nav_link(main_app.request_manager_path, class: "nav-link") do %>
+    <span class="fa fa-tasks" aria-hidden="true"></span>
+    <span class="sidebar-action-text">
+      <%= t('morphosource.dashboard.sidebar.my_media.new_requests_for_my_media') %>
+    </span>
   <% end %>
 
-  <%= menu.nav_link(main_app.previous_requests_path) do %>
-    <span class="fa fas fa-stopwatch" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.admin.sidebar.previous_requests') %></span>
+  <%= menu.nav_link(main_app.previous_requests_path, class: "nav-link") do %>
+    <span class="fa fas fa-stopwatch" aria-hidden="true"></span>
+    <span class="sidebar-action-text">
+      <%= t('morphosource.dashboard.sidebar.my_media.previous_requests') %>
+    </span>
   <% end %>
 
-  <%= menu.nav_link(hyrax.transfers_path) do %>
-    <span class="fa fas fa-arrows-alt-h" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.ownership_transfers') %></span>
+  <%= menu.nav_link(hyrax.transfers_path, class: "nav-link") do %>
+    <span class="fa fas fa-arrows-alt-h" aria-hidden="true"></span>
+    <span class="sidebar-action-text">
+      <%= t('morphosource.dashboard.sidebar.my_media.ownership_transfers') %>
+    </span>
   <% end %>
 <% end %>
 

@@ -71,7 +71,7 @@
                   <%= form.label :remove_previous_reviewers, "Remove Previous Download Reviewers?" %>
                 </div>
                 <div>
-                  <%= form.select_tag(:remove_previous_reviewers, options_for_select([['No', false], ['Yes', true]])) %>
+                  <%= form.select(:remove_previous_reviewers, options_for_select([['No', false], ['Yes', true]])) %>
                 </div>
               </div>
               <div class="input-field">
@@ -79,7 +79,7 @@
                   <%= form.label :change_publication_status, "Change Publication Status?" %>
                 </div>
                 <div>
-                  <%= form.select_tag(:update_publication_status, options_for_select([['No','none'], ['Yes - All Media','all'], ['Yes - Published Media Only','published']])) %>
+                  <%= form.select(:update_publication_status, options_for_select([['No','none'], ['Yes - All Media','all'], ['Yes - Published Media Only','published']])) %>
                 </div>
               </div>
               <div>

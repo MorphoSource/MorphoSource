@@ -2,6 +2,8 @@ module Morphosource
   class UserProfilePresenter < Hyrax::UserProfilePresenter
     include Morphosource::UserProfile::ProfileHelper
 
+    attr_accessor :blacklight_config
+
     # returns the number of collections managed by @user viewable by @current_user
     def managed_collection_count
       search_builder = Morphosource::Users::ManagedCollectionsSearchBuilder.new(self)
@@ -27,7 +29,7 @@ module Morphosource
     #
     # All metadata fields with mapped profile types
     #
-    # @return [Hash] hash of: field => mapped profile types which has this field 
+    # @return [Hash] hash of: field => mapped profile types which has this field
     #
     def all_metadata_fields
       @all_metadata_fields ||= begin
@@ -60,7 +62,7 @@ module Morphosource
     #
     # All demographics values with mapped profile types
     #
-    # @return [Hash] hash of: demographic => mapped profile types associated with the demographic 
+    # @return [Hash] hash of: demographic => mapped profile types associated with the demographic
     #
     def all_demographics_values
       @all_demographics_values ||= begin
@@ -73,31 +75,31 @@ module Morphosource
       end
     end
 
-    # 
-    # Return name-specific fields to be displayed based on group / individual account 
+    #
+    # Return name-specific fields to be displayed based on group / individual account
     #
     def name_fields
       user.profile_type == GROUP_PROFILE_TYPE ? ["display_name"] : [
         "first_name",
-        "middle_name", 
+        "middle_name",
         "last_name"
       ]
     end
 
-    # 
+    #
     # Return a list of fields to be displayed on public user profile page
     #
     # @return [Array<String>] Field name
-    # 
+    #
     def display_fields_for_public
       display_fields - private_fields
     end
 
-    # 
+    #
     # Return a list of fields to be displayed on dashboard user profile page
     #
     # @return [Array<String>] Field name
-    # 
+    #
     def display_fields
       name_fields + [
         "email",
@@ -121,11 +123,11 @@ module Morphosource
     # Private Fields (fields that should not be shown to public) based on the user profile type
     #
     # @return [Array<String>] Field name
-    # 
+    #
     def private_fields
       @private_fields ||= begin
-        fields = []        
-        profile_metadata_settings.each do |field, settings|          
+        fields = []
+        profile_metadata_settings.each do |field, settings|
           next if settings.nil? || settings['private_for'].nil?
           private_for = settings['private_for']
           if private_for.include?("all") || private_for.include?(user.profile_type)
@@ -138,11 +140,14 @@ module Morphosource
 
     alias current_ability ability
 
+    # def blacklight_config
+    #   CollectionsCatalogController.blacklight_config
+    # end
 
     private
 
       #
-      # Keys (profile types) which contain the specified field 
+      # Keys (profile types) which contain the specified field
       #
       # @param [String] field Metadata field name
       # @param [:required, :optional, :either] type Whether the field is required / optional / either
@@ -176,7 +181,7 @@ module Morphosource
       end
 
       #
-      # Keys (profile types) which contain the demographic field 
+      # Keys (profile types) which contain the demographic field
       #
       # @param [String] field Demographic field name
       #
@@ -195,9 +200,7 @@ module Morphosource
       end
 
       def repository
-        catalog_controller = CatalogController.new
-        catalog_controller.instance_variable_set(:@current_ability, @ability)
-        catalog_controller.repository
+        CatalogController.new.blacklight_config.repository
       end
   end
 end

@@ -23,7 +23,7 @@
                           <label><%= t('.add_individual_user') %>:</label>
                         </div>
                         <div class="col-sm-6 col-md-3 col-lg-3">
-                          <%= f.hidden_field_tag('collection_roles[agent_type]', 'user') %>
+                          <%= hidden_field 'collection_roles[agent_type]', 'user' %>
                           <%= f.text_field 'collection_roles[agent_id]', placeholder: "Search for a user..." %>
                         </div>
                         <div class="col-sm-6 col-md-3 col-lg-3 text-nowrap">
@@ -49,7 +49,7 @@
                             <label><%= t('.add_users_from_project_or_team') %>:</label>
                           </div>
                           <div class="col-sm-6 col-md-3 col-lg-3">
-                            <%= f.hidden_field_tag('collection_roles[agent_type]', 'group') %>
+                            <%= hidden_field 'collection_roles[agent_type]', 'group' %>
                             <%= f.select 'collection_roles[team_collection_id]', collection_options, { prompt: "Select a group..." }, class: 'form-control' %>
                           </div>
                           <div class="col-sm-6 col-md-3 col-lg-3 text-nowrap">

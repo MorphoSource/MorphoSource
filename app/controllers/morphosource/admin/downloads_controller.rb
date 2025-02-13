@@ -4,7 +4,7 @@ module Morphosource
     class DownloadsController < Morphosource::ItemtableController
       before_action :require_permissions
 
-      PAGE_TITLE = I18n.t("hyrax.admin.sidebar.all_downloads")
+      PAGE_TITLE = I18n.t("morphosource.dashboard.sidebar.admin_tools.content.all_downloads")
 
       private
 

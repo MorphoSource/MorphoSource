@@ -1,11 +1,10 @@
 module Hyrax
   class TeamsController < ApplicationController
-
     include TeamsControllerBehavior
-    include BreadcrumbsForCollections
     include Morphosource::CollectionHelper
+
     helper_method :hidden_params_for_filters, :hidden_params_for_pagination, :publication_status_label,
-      :media_type_label, :filter_params, :ms_collection_view_link, :source_label, :bso_tab_url_for_collections, 
+      :media_type_label, :filter_params, :ms_collection_view_link, :source_label, :bso_tab_url_for_collections,
       :cho_tab_url_for_collections, :page_is_team?, :showpage_url, :ms_collection_view_link, :ms_collection_view_link_qs,
       :origin_label
 

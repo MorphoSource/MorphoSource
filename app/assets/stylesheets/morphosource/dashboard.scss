@@ -18,7 +18,7 @@ body.dashboard {
         padding-top: 0;
         padding-left: 5px;
       }
-    }  
+    }
   }
 
   &.profile .panel-body {
@@ -26,13 +26,13 @@ body.dashboard {
   }
 
   .collections-wrapper {
-    padding-top: 10px; 
+    padding-top: 10px;
 
     .collections-panel-wrapper.panel {
       width: unset;
     }
   }
-  
+
   .main-content {
     background-color: #fff;
   }
@@ -47,6 +47,17 @@ body.dashboard {
   .sidebar {
     // Sidebar should adjust for 55px masthead height
     min-height: calc(100vh - 55px);
+
+    a {
+      display: flex;
+      align-items: center;
+      padding-left: 10px;
+    }
+
+  }
+
+  .sidebar.maximized .nav-pills > li a {
+    padding: 12px 10px 12px 10px;
   }
 
   .panel.contributor_petitions {
@@ -71,6 +82,9 @@ body.dashboard {
   align-items: center;
   justify-content: center;
   margin-bottom: 20px;
+  flex-wrap: nowrap;
+  max-width: 90%;
+  margin-left: 15px;
 
   img {
     margin-right: 20px;
@@ -94,6 +108,7 @@ body.dashboard {
 
   .action-section {
     margin-bottom: 30px;
+    max-width: 100%;
   }
 
   .list-category {

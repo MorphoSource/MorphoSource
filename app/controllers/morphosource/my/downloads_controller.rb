@@ -5,10 +5,13 @@ module Morphosource
       include Morphosource::CartItems::ListItems
       include Morphosource::ItemtableControllerBehavior
       include Morphosource::ItemtableHelper
+      include Morphosource::Breadcrumbs
       with_themed_layout 'morphosource_dashboard'
 
       before_action :get_items, only: :index
       before_action :paginate_items, only: [:index]
+
+      PAGE_TITLE = I18n.t("morphosource.dashboard.my.downloads.page_title")
 
       def index
         @item_count = count_text(@items.total_count)

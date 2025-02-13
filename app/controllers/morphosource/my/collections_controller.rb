@@ -1,10 +1,9 @@
 module Morphosource
   module My
     class CollectionsController < Hyrax::My::CollectionsController
+      include Morphosource::Breadcrumbs::Collections
 
       helper_method :remove_constraint_url, :search_action_for_dashboard
-
-      before_action :build_breadcrumbs, only: []
       before_action :create_membership_facet
 
       with_themed_layout 'morphosource_dashboard'
@@ -31,9 +30,6 @@ module Morphosource
 
       def index
         @collections_type = collections_type
-        add_breadcrumb t(:'hyrax.controls.home'), root_path
-        add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
-        add_collection_type_breadcrumb
         collection_type_list_presenter
         managed_collections_count
         @user = current_user
@@ -46,6 +42,14 @@ module Morphosource
         respond_to do |format|
           format.html {}
         end
+      end
+
+      def collections_type
+        controller_name
+      end
+
+      def collection_type
+        controller_name.singularize
       end
 
       private
@@ -98,10 +102,6 @@ module Morphosource
             label: 'Viewer',
             fq: "(read_access_group_ssim:(#{viewer_groups.join(' OR ')}))" }
         }
-        end
-
-        def add_collection_type_breadcrumb
-          add_breadcrumb t(:'hyrax.admin.sidebar.collections'), hyrax.my_collections_path
         end
 
         def search_action_url(*args)

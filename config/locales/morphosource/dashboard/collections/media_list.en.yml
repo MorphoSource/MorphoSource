@@ -3,6 +3,10 @@ en:
     dashboard:
       collections:
         media_list:
+          index:
+            title: Media Lists
+          edit:
+            title: Details
           new:
             header: 'New Media List'
           action:
@@ -12,6 +16,7 @@ en:
             view: 'View List'
             collection_update_success: ' was successfully updated.'
           members:
+            title: Members
             roles:
               contributor: 'manager'
               non-contributor: 'viewer'

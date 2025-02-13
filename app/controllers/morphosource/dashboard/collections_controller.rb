@@ -8,10 +8,11 @@ module Morphosource
       with_themed_layout 'morphosource_dashboard'
 
       before_action :filter_docs_with_read_access!, only: []
-      before_action :build_breadcrumbs, only: []
       before_action :load_collection, except: [:create]
       before_action :redirect_to_collection_type, only: [:edit, :update, :new, :create]
       before_action :authorize_contributor, only: [:new]
+
+      include Morphosource::Breadcrumbs::Collections
 
       self.presenter_class = presenter_class
 
@@ -43,9 +44,6 @@ module Morphosource
       def edit
         @tab = :details
         presenter
-        add_breadcrumb t(:'hyrax.controls.home'), root_path
-        add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
-        add_breadcrumb t('.header', type_title: @collection.collection_type.title), request.path
         super
       end
 

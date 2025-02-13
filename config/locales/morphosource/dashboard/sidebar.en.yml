@@ -1,0 +1,53 @@
+en:
+  morphosource:
+    dashboard:
+      sidebar:
+        user:
+          title: User
+          profile: Profile
+          become_a_contributor: Become a Contributor
+          notifications: Notifications
+        my_media:
+          title: My Media
+          media_and_objects: Media and Objects
+          new_requests_for_my_media: New Requests for My Media
+          previous_requests: Previous Requests
+          ownership_transfers: Ownership Transfers
+        my_media_collections:
+          title: My Media Collections
+          projects: Projects
+          teams: Teams
+          media_lists: Media Lists
+          organizations: Organizations
+          sequential_section_lists: Sequential Section Lists
+        my_downloads:
+          title: My Downloads
+          media_cart: Media Cart
+          requests_for_media: Requests for Media
+          previous_downloads: Previous Downloads
+        contributor_tools:
+          title: Contributor Tools
+          background_jobs: Background Jobs
+          batch_submission: Batch Submission
+          manage_proxies: Manage Proxies
+        admin_tools:
+          title: Admin Tools
+          content:
+            title: Content
+            all_background_jobs: All Background Jobs
+            all_downloads: All Downloads
+            all_requests: All Requests
+            all_works: All Works
+            statistics: Statistics
+            remote_file_health: Remote File Health
+          management:
+            title: Management
+            contributor_applications: Contrib. Applications
+            data_curation: Data Curation
+            fund_codes: Fund Codes
+            fund_code_charges: Fund Code Charges
+            import_slides: Import Slides
+          settings:
+            title: Settings
+            appearance: Appearance
+            features: Features

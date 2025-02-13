@@ -6,12 +6,11 @@ module Hyrax
     # Adds Hyrax behaviors to the controller.
     include Hyrax::WorksControllerBehavior
     include Morphosource::WorksControllerBehavior
-    include Hyrax::BreadcrumbsForWorks
     include Hyrax::ChildWorkRedirect
     include Morphosource::LinkedTeams::LinkedTeamsManagement
 
     skip_authorize_resource only: :media_owner_update
-    
+
     self.curation_concern_type = ::ImagingEvent
 
     # Use this line if you want to use a custom presenter
@@ -58,8 +57,8 @@ module Hyrax
 
     def media_owner_update
       if (
-        params["media_id"].present? && 
-        curation_concern.media.map(&:id).include?(params["media_id"]) && 
+        params["media_id"].present? &&
+        curation_concern.media.map(&:id).include?(params["media_id"]) &&
         current_user.can?(:edit, params["media_id"])
       )
         update

@@ -4,7 +4,7 @@ module Morphosource
     class RequestsController < Morphosource::ItemtableController
       before_action :require_permissions
 
-      PAGE_TITLE = I18n.t("hyrax.admin.sidebar.all_requests")
+      PAGE_TITLE = I18n.t("morphosource.dashboard.sidebar.admin_tools.content.all_requests")
 
       private
 
@@ -18,10 +18,10 @@ module Morphosource
 
       def valid_sort_attributes
         [
-          'work_id', 
+          'work_id',
           'users.display_name',
           'reviewers',
-          'date_requested', 
+          'date_requested',
           'date_approved',
           'date_denied',
           'date_canceled',
@@ -42,11 +42,11 @@ module Morphosource
 
       def valid_filter_attributes
         [
-          'work_id', 
+          'work_id',
           'user_id',
           'reviewers',
-          'date_requested_start', 
-          'date_requested_end', 
+          'date_requested_start',
+          'date_requested_end',
           'date_approved_start',
           'date_approved_end',
           'date_denied_start',

@@ -1,7 +1,7 @@
 <% provide :page_title, 'Dashboard' %>
 
 <% provide :page_header do %>
-  <div class="col-xs-12">
+  <div class="col-12">
     <div class="row landing-header">
       <div>
         <%= image_tag(( Hyrax.config.logo_image_alternate || Hyrax.config.logo_image ), size: '60') %>
@@ -18,11 +18,11 @@
 
 <div class="landing panel">
   <div class="panel-body">
-  <div class="col-xs-12 actions">
+  <div class="col-12 actions">
     <div class="row horizontal-padding-15">
       <div class="action-column">
         <% if current_user.contributor? || current_user.admin? %>
-          <div class="col-xs-12 col-md-6 action-section">
+          <div class="col-12 col-lg-6 action-section">
             <div>
               <h2 style="font-size: large;">Contributor Actions</h2>
             </div>
@@ -102,7 +102,7 @@
         <% end %>
       </div>
       <div class="action-column">
-        <div class="col-xs-12 col-md-6 action-section">
+        <div class="col-12 col-lg-6 action-section">
           <div>
             <h2 style="font-size: large;">Standard Actions</h2>
           </div>
@@ -131,7 +131,7 @@
           </div>
         </div>
         <% if !current_user.contributor? && !current_user.admin? %>
-          <div class="col-xs-12 col-md-6 action-section">
+          <div class="col-12 col-lg-6 action-section">
             <div>
               <h2 style="font-size: large;">Become A Contributor</h2>
             </div>
@@ -144,7 +144,7 @@
           </div>
         <% end %>
         <% if current_user.admin? %>
-          <div class="col-xs-12 col-md-6 action-section">
+          <div class="col-12 col-lg-6 action-section">
             <div>
               <h2 style="font-size: large;">Administrator Actions</h2>
             </div>

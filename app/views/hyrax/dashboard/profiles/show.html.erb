@@ -52,11 +52,11 @@
           <div class="action-section">
             <div class="list-item">
               <%= link_to 'View API Key', main_app.profile_show_path, id: "view-api-key", style: "font-size: 16px;" %>
-              <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.dashboard.profiles.view_api_key") %></p></i>
+              <i class="material-icons md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.dashboard.profiles.view_api_key") %>"></i>
             </div>
             <div class="list-item">
               <%= link_to 'Generate New API Key', main_app.profile_generate_new_api_key_path, style: "font-size: 16px;" %>
-              <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.dashboard.profiles.generate_new_api_key") %></p></i>
+              <i class="material-icons md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.dashboard.profiles.generate_new_api_key")%>"></i>
             </div>
             <div class="list-item">
               <%= link_to 'API Documentation', 'https://morphosource.stoplight.io/docs/morphosource-api', style: "font-size: 16px;", target: :_blank %>

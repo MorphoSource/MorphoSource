@@ -140,9 +140,9 @@ module Morphosource
 
     alias current_ability ability
 
-    # def blacklight_config
-    #   CollectionsCatalogController.blacklight_config
-    # end
+    def blacklight_config
+      CollectionsCatalogController.blacklight_config
+    end
 
     private
 

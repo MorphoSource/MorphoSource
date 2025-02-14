@@ -17,7 +17,6 @@ module Morphosource
 
       facet_config = facet_configuration_for_field(field)
       url_field = facet_config.key
-
       value = facet_value_for_facet_item(item)
 
       # need to dup the facet values too,
@@ -64,6 +63,14 @@ module Morphosource
         p["f.#{url_field}"] = Array(p["f.#{url_field}"]).push(value)
       else
         p["f.#{url_field}"] = value
+      end
+    end
+
+    def facet_value_for_facet_item item
+      if item.respond_to? :value
+        item.value
+      else
+        item
       end
     end
   end

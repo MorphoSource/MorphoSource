@@ -1,13 +1,12 @@
 <% provide :page_header do %>
-  <div class="col-9 title">
+  <div class="col-12 title d-flex justify-content-between flex-wrap">
     <h1><span class="fa fa-cube %>" aria-hidden="true"></span> <%= @page_title || t("morphosource.dashboard.my.media_objects.title") %></h1>
-  </div>
-  <div class="col-3 show-actions text-right">
+    <div class="show-actions float-right">
     <% if can?(:create, Media) %>
       <%= link_to 'New media', main_app.new_submission_path(restart: true), class: 'btn btn-primary' %>
     <% end %>
   </div>
-
+  </div>
   <div class="row collection-count">
       <%= render 'membership_count' %>
   </div>

@@ -497,7 +497,9 @@ class SubmissionsController < ApplicationController
           end
           params.delete(field)
         elsif field == 'agreement' && submission_params[:organization_for_attachment].present?
-          Morphosource::AttachmentService.create_copy(id, field, submission_params[:organization_for_attachment])
+          # copy agreement attachment from organization
+          organization_for_attachment = ( Organization.find_by(id: submission_params[:organization_for_attachment]) || OrganizationCollection.find_by(id: submission_params[:organization_for_attachment]) )
+          new_work_object.copy_organization_agreement_attachment(organization_for_attachment)
         end
       end
     end

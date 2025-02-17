@@ -61,7 +61,7 @@ module Hyrax
       :preview_mode, :publication_status_label, :related_url, :remote_manifest_url,
       :remote_origin_url, :required_archival_of_published_derivatives, :rights_holder, :scale_bar,
       :series_type, :short_description, :side, :slice_thickness, :taxonomies_titles, :unit,
-      :user_with_ownership, :x_spacing, :y_spacing, :z_spacing, :short_title,
+      :user_with_ownership, :x_spacing, :y_spacing, :z_spacing, :short_title, :agreement_attachment_url,
       to: :solr_document
 
     attr_accessor :file_status
@@ -82,11 +82,12 @@ module Hyrax
 
     #
     # Media custom agreement attachment file (PDF, DOCX, or TXT) URL
+    # if a CarrierWave attachment is not present, fall back to legacy attachment
     #
     # @return [Array<String>] Media custom agreement attachment file (PDF, DOCX, or TXT) URL
     #
     def attachment_url
-      @attachment_url ||= get_attachment("agreement")
+      @attachment_url ||= agreement_attachment_url.presence || get_attachment("agreement")
     end
 
     #

@@ -2,7 +2,8 @@ module Morphosource
   #
   # RollbackMigrateAttachmentJob is responsible for migrating old attachments to CarrierWave attachments.
   #
-  # @param [Work] work The work object to which the attachment belongs. if delete_only, this is the work ID.
+  # @param [model_name] The name of the model class to which the attachment belongs.
+  # @param [id] The ID of the object to which the attachment belongs.
   # @param [String] field_name The name of the field where the new attachment will be stored.
   # @param [String] old_attachment_field The name of the field where the old attachment is stored.
   # @param [String] old_attachment_path The file path of the old attachment.
@@ -10,8 +11,16 @@ module Morphosource
   class RollbackMigrateAttachmentJob < Hyrax::ApplicationJob
     queue_as Hyrax.config.update_slow_queue_name
 
-    def perform(work, field_name, old_attachment_field, old_attachment_path, no_delete)
-      cw_path = Rails.root.join('public').to_s + work.send(field_name) 
+    def perform(model_name, id, field_name, old_attachment_field, old_attachment_path, no_delete)
+      begin
+        model_class = model_name.constantize
+      rescue StandardError => e
+        puts "Error resolving model '#{model_name}': #{e.message}"
+        return
+      end
+      obj = model_class.find(id)
+      return unless obj.present? 
+      cw_path = Rails.root.join('public').to_s + obj.send(field_name) 
       return unless cw_path.present? && File.exist?(cw_path)
 
       cw_file = File.open(cw_path)
@@ -26,17 +35,17 @@ module Morphosource
         tempfile: tempfile
       )
 
-      Morphosource::AttachmentService.create(work.id, old_attachment_field, file, work.send("#{field_name}_formats"))
+      Morphosource::AttachmentService.create(obj.id, old_attachment_field, file, obj.send("#{field_name}_formats"))
 
-      old_attachment_path = Morphosource::AttachmentService.get(work.id, old_attachment_field)
+      old_attachment_path = Morphosource::AttachmentService.get(obj.id, old_attachment_field)
       if old_attachment_path.present?
-        puts "Old attachmemnt created for ##{work.id}: #{old_attachment_field} -> #{old_attachment_path}"
+        puts "Old attachmemnt created for ##{obj.id}: #{old_attachment_field} -> #{old_attachment_path}"
       else
-        puts "Failed to create Old attachmemnt for ##{work.id}: #{old_attachment_field}"              
+        puts "Failed to create Old attachmemnt for ##{obj.id}: #{old_attachment_field}"              
       end
 
       unless no_delete
-        work.send("#{field_name}=", nil)
+        obj.send("#{field_name}=", nil)
       end      
 
     end

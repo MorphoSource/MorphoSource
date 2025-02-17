@@ -22,6 +22,23 @@ module Morphosource
           form
         end
 
+        def update
+          create_attachment_if_needed
+          super
+        end
+
+        def create_attachment_if_needed
+          # Handle possible attachment upload
+          if params[:media_attachment_delete] == 'delete'
+            @organization.agreement_attachment = nil
+            params.delete(:media_attachment_delete)
+          end
+          if params[:agreement] && Morphosource.attachment_formats.include?(File.extname(params[:agreement].original_filename))
+            @organization.agreement_attachment = params[:agreement]
+            params.delete(:agreement)
+          end
+        end
+
         def members
           @tab = :members
           presenter

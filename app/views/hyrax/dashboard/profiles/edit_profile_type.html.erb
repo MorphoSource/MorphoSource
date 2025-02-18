@@ -11,20 +11,20 @@
 </div>
 
 <div class="row">
-  <div class="col-sm-12 col-md-6">
+  <div class="col-md-12 col-lg-6">
     <%= render partial: 'hyrax/dashboard/profiles/edit_profile_name_section', locals: {f: f} %>
     <%= render partial: 'hyrax/dashboard/profiles/ms_profile', locals: {f: f} %>
   </div>
 
-  <div class="col-sm-12 col-md-6">
+  <div class="col-md-12 col-lg-6">
     <%= render partial: 'hyrax/dashboard/profiles/edit_profile_type_section', locals: {f: f} %>
-    <%= render partial: 'hyrax/dashboard/profiles/edit_intent', locals: {f: f} %>  
+    <%= render partial: 'hyrax/dashboard/profiles/edit_intent', locals: {f: f} %>
   </div>
 
 </div>
 
 <div class="row">
-  <div class='col-xs-12 text-center'>
+  <div class='col-12 text-center'>
     <p>
       <%= f.check_box :terms_read, {checked: false, required: true}, true %>
       <%= t("devise.passwords.edit.terms").html_safe %>

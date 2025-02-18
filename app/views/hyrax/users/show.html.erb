@@ -1,16 +1,16 @@
 <% if current_user.admin? %>
   <div class="row profile">
-    <div class="col-md-6 col-lg-7">
+    <div class="col-lg-6 col-xlg-7">
       <%= render 'left_sidebar' %>
     </div>
     <!-- right col -->
-    <div class="col-md-6 col-lg-5">
+    <div class="col-lg-6 col-xlg-5">
         <%= render 'profile_tabs', presenter: @presenter %>
     </div>
   </div>
 <% else %>
   <div class="row profile">
-    <div class="col-xs-12">
+    <div class="col-12">
       <%= render 'left_sidebar' %>
     </div>
   </div>

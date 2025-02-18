@@ -17,9 +17,11 @@ module Morphosource
           custom_list = YAML.load_file(Rails.root.join('config', 'authorities', 'licenses.yml'))
           matching_terms = custom_list['terms'].select { |term| term['term'].downcase.include?(contains_title.downcase) }
           matching_ids = matching_terms.map { |term| term['id'] }
+byebug
           if matching_ids.any?
             solr_params[:fq] ||= []
             solr_params[:fq] << "{!terms f=#{facet_config.field}}#{matching_ids.join(',')}"
+byebug
           else
             solr_params[:fq] ||= []
             solr_params[:fq] << "{!frange l=1 u=0}1"
@@ -36,13 +38,15 @@ module Morphosource
             solr_params[:fq] << "{!frange l=1 u=0}1"
           end          
         else
-          # Perform a lookup on the Solr title field to find matching IDs
-          response = fetch_ids_by_title_and_model(contains_title, facet_config.key)
+          response = fetch_ids_by_title(contains_title, facet_config.key)
           matching_ids = response['response']['docs'].map { |doc| doc['id'] }
+byebug
+
+
           if matching_ids.any?
-            # facet.contains does not support multiple values.  Use filter query (fq) instead
             solr_params[:fq] ||= []
             solr_params[:fq] << "{!terms f=#{facet_config.field}}#{matching_ids.join(',')}"
+byebug
           else
             # If no matching_ids, add an always-false filter query to ensure no results are returned
             solr_params[:fq] ||= []
@@ -53,6 +57,8 @@ module Morphosource
         solr_params[:"f.#{facet_config.field}.facet.contains"] = contains
         solr_params[:"f.#{facet_config.field}.facet.contains.ignoreCase"] = true
       end
+#byebug
+
     end
 
     private
@@ -65,12 +71,25 @@ module Morphosource
     end
 
     # Query Solr to fetch IDs by matching title and model
-    def fetch_ids_by_title_and_model(title, model)
+    def fetch_ids_by_title(title, facet_key)
+      # Perform a lookup on the Solr title field to find matching IDs
+      case facet_key
+      when 'device'
+        query = 'has_model_ssim:Device'
+      when 'project'
+        query = 'has_model_ssim:Collection AND human_readable_type_tesim:Project'
+      else
+        query = 'has_model_ssim:unknown'
+        Rails.logger.warn("Unknown model for facet key: #{facet_config.key}")
+      end
+
+      full_query = "#{query} AND title_tesim:\"#{title}\""
+byebug
       solr_service = Blacklight.default_index.connection
       solr_service.get('select', params: {
-        q: "title_tesim:\"#{title}\" AND has_model_ssim:#{model.camelcase}",
-        fl: 'id',
-        rows: 1000
+        q: full_query,
+        fl: 'id, has_model_ssim, title_tesim',
+        rows: 999999
       })
     end
 

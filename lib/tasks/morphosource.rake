@@ -920,7 +920,7 @@ namespace :morphosource do
     solr_query += " AND #{and_query}" if and_query.present?
 
     puts "Querying Solr with: #{solr_query}"
-    results = ActiveFedora::SolrService.query(solr_query, rows: 999999)
+    results = ActiveFedora::SolrService.query(solr_query, rows: 999999, fl: 'id')
     puts "Found #{results.count} records for model #{model_name}"
 
     old_attachment_count = 0
@@ -1000,9 +1000,10 @@ namespace :morphosource do
 
     solr_query = "has_model_ssim:#{model_name}"
     solr_query += " AND #{and_query}" if and_query.present?
+    fl_params = "id,#{solr_field}"
 
     puts "Querying Solr with: #{solr_query}"
-    results = ActiveFedora::SolrService.query(solr_query, rows: 999999)
+    results = ActiveFedora::SolrService.query(solr_query, rows: 999999, fl: fl_params)
     puts "Found #{results.count} records for model #{model_name}"
 
     cw_attachment_count = 0

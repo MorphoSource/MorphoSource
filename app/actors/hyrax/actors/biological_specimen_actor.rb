@@ -4,8 +4,11 @@ module Hyrax
       include Morphosource::LinkedTeams::LinkedTeamsManagement
 
       def create(env)
+        byebug
         env.attributes['title'] = [ generated_title(env) ]
+        byebug
         add_team_access(env)
+        byebug
         super
       end
 
@@ -35,7 +38,7 @@ module Hyrax
         else
           cnum = env.curation_concern.catalog_number&.first.presence || ''
         end
-        
+
         case
         when inst.present? || coll.present? || cnum.present?
           collection_catalog_generated_title(inst, coll, cnum)
@@ -65,7 +68,7 @@ module Hyrax
 
       def fallback_generated_title(vouchered, user)
         if vouchered.present? && vouchered.first == 'Yes'
-          voucher_term = 'Vouchered' 
+          voucher_term = 'Vouchered'
         else
           voucher_term = 'Unvouchered'
         end

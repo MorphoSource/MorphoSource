@@ -68,6 +68,7 @@ module SubmissionsControllerBehavior
   end
 
   def get_null_organization
+    byebug
     if Hyrax.config.null_organization_id.present? && OrganizationCollection.exists?(Hyrax.config.null_organization_id)
       o = OrganizationCollection.find(Hyrax.config.null_organization_id)
       @null_organization = {
@@ -153,6 +154,7 @@ module SubmissionsControllerBehavior
   end
 
   def find_organization(id=nil)
+    byebug
     id = @submission&.organization_id || params['organization_id'] unless id.present?
     @organization ||= Organization.where(id: id)&.first || OrganizationCollection.where(id: id)&.first
   end

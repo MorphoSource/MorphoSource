@@ -206,7 +206,6 @@ class SubmissionsController < ApplicationController
     @submission.taxonomy_params_array = []
     @submission.taxonomy_id_array = @submission.taxonomy_id_array.present? ? @submission.taxonomy_id_array.split(',') : []
     @submission.taxonomy_gbif_key_array = @submission.taxonomy_gbif_key_array.present? ? @submission.taxonomy_gbif_key_array.split(',') : []
-
     if @submission.idigbio_id.present?
       # What taxonomy does this specimen have? Do they exist in MS2 or create them?
       idb_taxonomy_param_sets = Morphosource::IDigBioSearchService.taxonomy_param_sets_from_idigbio(@submission.idigbio_id)
@@ -225,7 +224,6 @@ class SubmissionsController < ApplicationController
           @submission.taxonomy_params_array << ActionController::Parameters.new(provider_params)
         end
       end
-
       if gbif_params.present?
         gbif = Morphosource::TaxonomySearchService.call({ gbif_key: gbif_params['gbif_key'] })
         if gbif.present?
@@ -234,7 +232,6 @@ class SubmissionsController < ApplicationController
           @submission.taxonomy_params_array << ActionController::Parameters.new(gbif_params)
         end
       end
-
       # Get specimen params from iDigBio
       params[:biological_specimen] = ActionController::Parameters.new(
         Morphosource::IDigBioSearchService.biological_specimen_params_from_idigbio(
@@ -256,7 +253,6 @@ class SubmissionsController < ApplicationController
       end
 
     end
-
     # Is the media associated with an existing parent? If so, find organization ID
     # TODO refactor this, possibly put in JS defaultMediaFields code??
     if (
@@ -267,7 +263,6 @@ class SubmissionsController < ApplicationController
       parent_media = Media.find(@submission.parent_media_list&.split(',')&.first)
       @submission.organization_id = parent_media&.organizations&.first&.id
     end
-
     works.each do |work|
       if work == 'taxonomy' && @submission.taxonomy_params_array.present?
         @submission.taxonomy_params_array.each do |taxon_params|
@@ -280,8 +275,9 @@ class SubmissionsController < ApplicationController
         create_work_if_needed(work, params)
       end
     end
+    byebug
     reindex_catalog_works
-
+    byebug
     redirect_to main_app.hyrax_media_path(@submission.media_id, locale: 'en'), notice: flash_message, alert: alert_message if @submission.media_id
   end
 
@@ -309,9 +305,12 @@ class SubmissionsController < ApplicationController
   end
 
   def create_work_if_needed(work, params)
+    byebug
     if !@submission.public_send(to_id(work)).present? && params[work]
       #puts("Creating #{work}")
+      byebug
       new_work_id, new_work = prepare_and_create_work(work, params)
+      byebug
       @submission.public_send(to_id(work) + '=', new_work_id)
       create_attachment_if_needed(work, new_work_id, new_work) if ['imaging_event', 'processing_event', 'media'].include?(work)
       # Morphosource::CustomThumbnails
@@ -324,8 +323,11 @@ class SubmissionsController < ApplicationController
   end
 
   def prepare_and_create_work(work, params)
+    byebug
     model_params = create_model_params(work, params)
+    byebug
     attributes_for_actor = create_attributes_for_actor(to_model(work), model_params)
+    byebug
     create_work(to_model(work), attributes_for_actor)
   end
 
@@ -624,10 +626,14 @@ class SubmissionsController < ApplicationController
   end
 
   def create_work(model, attributes_for_actor)
+    byebug
     # TODO: Refactor this to rely on appropriate model methods and not submissions controller
     curation_concern = model.new
+    byebug
     env = Hyrax::Actors::Environment.new(curation_concern, current_ability, attributes_for_actor)
+    byebug
     Hyrax::CurationConcern.actor.create(env)
+    byebug
     return curation_concern.id, curation_concern
   end
 

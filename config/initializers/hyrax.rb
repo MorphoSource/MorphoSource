@@ -112,7 +112,7 @@ Hyrax.config do |config|
 
   # Imaging devices not associated with any specific organization are instead grouped under a "null" organization
   # This should be the ID of a specially created null organization
-  config.null_organization_id = ENV['NULL_ORGANIZATION_ID'] || ( Rails.env.production? ? '000710951' : nil )
+  config.null_organization_id = '000200018' || ( Rails.env.production? ? '000710951' : nil )
 
   # Device work ID for "unknown CT scanner"
   config.unknown_ct_scanner = ENV['UNKNOWN_CT_SCANNER'] || ( Rails.env.production? ? '00000D567' : nil )

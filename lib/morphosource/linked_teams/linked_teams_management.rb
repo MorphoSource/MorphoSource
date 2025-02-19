@@ -38,11 +38,13 @@ module Morphosource
         if env.present?
           # env passed from new submission (called from creating PO)
           @curation_concern = env.curation_concern
-          org = ActiveFedora::Base.find(env.attributes[:organization_id].first)
-          if org.present? && (org.organization? || org.organization_collection?)
-            team_ids = linked_team_ids([org])
-          else
-            team_ids = []
+          if env.attributes[:organization_id]&.first.present?
+            org = ActiveFedora::Base.find(env.attributes[:organization_id].first)
+            if org.present? && (org.organization? || org.organization_collection?)
+              team_ids = linked_team_ids([org])
+            else
+              team_ids = []
+            end
           end
         else
           # this should be only called from editing PO

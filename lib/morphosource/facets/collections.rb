@@ -11,9 +11,48 @@ module Morphosource
           alphabetized_facet(facet_type: 'collection')
         elsif @facet&.helper_method == :user_name_by_id && params["facet.sort"] == "index"
           alphabetized_facet(facet_type: 'user')
+        elsif @facet&.helper_method == :collection_title_by_id 
+          filter_facet(params["facet.containsTitle"])
         else
           super
         end
+      end
+
+      # Run a filter on the returned facet values to only include the IDs that match the title
+      def filter_facet(contains_title)
+        blacklight_config.default_more_limit = 999999
+        @response = get_facet_field_response(@facet.key, params)
+        title_search_response = fetch_ids_by_title(contains_title, @facet.key)
+        matching_ids = title_search_response['response']['docs'].map { |doc| doc['id'] }
+        set_display_facet_items(filtered_values: matching_ids)
+        # pass the modified display_facet to the facet_paginator
+        @pagination = facet_paginator(@facet, @display_facet)
+      end
+
+      # Query Solr to fetch IDs by matching title and model
+      def fetch_ids_by_title(title, facet_key)
+        # Perform a lookup on the Solr title field to find matching IDs
+        case facet_key
+        when 'team'
+          query = 'has_model_ssim:Collection AND human_readable_type_tesim:Team'
+        when 'project'
+          query = 'has_model_ssim:Collection AND human_readable_type_tesim:Project'
+        when 'media_list'
+          query = 'has_model_ssim:MediaList'
+        when 'seq_section_list'
+          query = 'has_model_ssim:SequentialSectionList'
+        else
+          query = 'has_model_ssim:unknown'
+          Rails.logger.warn("Unknown model for facet key: #{facet_config.key}")
+        end
+
+        full_query = "#{query} AND title_tesim:\"#{title}\""
+        solr_service = Blacklight.default_index.connection
+        solr_service.get('select', params: {
+          q: full_query,
+          fl: 'id, has_model_ssim, title_tesim',
+          rows: 999999
+        })
       end
 
       # modifies blacklight behavior to retrieve all values for a collection id facet instead of only the values for one page.
@@ -49,7 +88,7 @@ module Morphosource
         @response.aggregations[@facet.field].items.sort_by! { |i| filtered_display_name_by_id(i.value).downcase }
       end
 
-      def set_display_facet_items
+      def set_display_facet_items(filtered_values: nil)
         per_page_count = 20 # set this to the number of items to display per page
         limit = per_page_count + 1 # need to set this because we temporarily set blacklight_config.default_more_limit to 999999
         page = params["az_facet.page"]&.to_i || 1
@@ -60,8 +99,14 @@ module Morphosource
         options = @display_facet.instance_variable_get(:@options)
         options[:offset] = offset
         options[:limit] = limit
-        # remove items not from the page
-        @display_facet.instance_variable_set(:@items,@display_facet.items[offset,limit])
+
+        if (filtered_values).present?
+          filtered_items = @display_facet.items.select { |item| filtered_values.include?(item.value) }
+          @display_facet.instance_variable_set(:@items, filtered_items[offset, limit])
+        else
+          # remove items not from the page
+          @display_facet.instance_variable_set(:@items,@display_facet.items[offset,limit])
+        end
         # reset page params
         params["facet.page"] = params.delete("az_facet.page")
       end

@@ -129,6 +129,10 @@ module Morphosource
       def taxonomies_titles
         self["taxonomy_ssim"]
       end
+
+      def agreement_attachment_url
+        self['agreement_attachment_url_tesim']
+      end
     end
   end
 end

@@ -306,6 +306,14 @@ module Hyrax
         channels&.find { |c| c.include?('rgba') }.nil? ? 'image/jpeg' : 'image/png'
       end
 
+      ##
+      # Presentation 4 container type
+      #
+      # @return [symbol] :canvas or :scene
+      def container_type
+        model.mesh? || model.volume? ? :scene : :canvas
+      end
+
       def hostname
         @hostname || 'localhost'
       end

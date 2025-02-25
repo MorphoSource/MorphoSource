@@ -27,6 +27,14 @@ module Morphosource
         set_display_facet_items(filtered_values: matching_ids)
         # pass the modified display_facet to the facet_paginator
         @pagination = facet_paginator(@facet, @display_facet)
+        respond_to do |format|
+          format.html do
+            # Draw the partial for the "more" facet modal window:
+            return render layout: false if request.xhr?
+            # Otherwise draw the facet selector for users who have javascript disabled.
+          end
+          format.json
+        end
       end
 
       # Query Solr to fetch IDs by matching title and model

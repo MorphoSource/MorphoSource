@@ -11,42 +11,8 @@ module Morphosource
       contains = blacklight_params[request_keys[:contains]]
       contains_title = blacklight_params[:'facet.containsTitle']
       if contains_title.present?
-        # for certain facet keys (e.g. license, rights_statement), lookup an existing source (e.g. Yaml file) to find matching IDs
-        case facet_config.key
-        when 'license'
-          custom_list = YAML.load_file(Rails.root.join('config', 'authorities', 'licenses.yml'))
-          matching_terms = custom_list['terms'].select { |term| term['term'].downcase.include?(contains_title.downcase) }
-          matching_ids = matching_terms.map { |term| term['id'] }
-          if matching_ids.any?
-            solr_params[:fq] ||= []
-            solr_params[:fq] << "{!terms f=#{facet_config.field}}#{matching_ids.join(',')}"
-          else
-            solr_params[:fq] ||= []
-            solr_params[:fq] << "{!frange l=1 u=0}1"
-          end
-        when 'rights_statement'
-          rights_statements = YAML.load_file(Rails.root.join('config', 'authorities', 'rights_statements.yml'))
-          matching_terms = rights_statements['terms'].select { |term| term['term'].downcase.include?(contains_title.downcase) }
-          matching_ids = matching_terms.map { |term| term['id'] }
-          if matching_ids.any?
-            solr_params[:fq] ||= []
-            solr_params[:fq] << "{!terms f=#{facet_config.field}}#{matching_ids.join(',')}"
-          else
-            solr_params[:fq] ||= []
-            solr_params[:fq] << "{!frange l=1 u=0}1"
-          end
-        when 'device'          
-          response = fetch_ids_by_title(contains_title, facet_config.key)
-          matching_ids = response['response']['docs'].map { |doc| doc['id'] }
-          if matching_ids.any?
-            solr_params[:fq] ||= []
-            solr_params[:fq] << "{!terms f=#{facet_config.field}}#{matching_ids.join(',')}"
-          else
-            # If no matching_ids, add an always-false filter query to ensure no results are returned
-            solr_params[:fq] ||= []
-            solr_params[:fq] << "{!frange l=1 u=0}1"
-          end
-        end
+        # for certain facet keys (e.g. license, rights_statement, device), lookup an existing source (e.g. Yaml file) to find matching IDs
+        add_facet_filter(facet_config, contains_title, solr_params)
       elsif contains.present?
         solr_params[:"f.#{facet_config.field}.facet.contains"] = contains
         solr_params[:"f.#{facet_config.field}.facet.contains.ignoreCase"] = true
@@ -54,6 +20,30 @@ module Morphosource
     end
 
     private
+
+    def add_facet_filter(facet_config, contains_title, solr_params)
+      matching_terms = case facet_config.key
+                       when 'license'
+                         custom_list = Hyrax::LicenseService.new.select_all_options
+                         custom_list.select { |title, _url| title.downcase.include?(contains_title.downcase) }.map(&:last)
+                       when 'rights_statement'
+                         custom_list = Hyrax::RightsStatementService.new.select_all_options
+                         custom_list.select { |title, _url| title.downcase.include?(contains_title.downcase) }.map(&:last)
+                       when 'device'
+                         response = fetch_ids_by_title(contains_title, facet_config.key)
+                         response['response']['docs'].map { |doc| doc['id'] }
+                       else
+                         []
+                       end
+
+      if matching_terms.any?
+        solr_params[:fq] ||= []
+        solr_params[:fq] << "{!terms f=#{facet_config.field}}#{matching_terms.join(',')}"
+      else
+        solr_params[:fq] ||= []
+        solr_params[:fq] << "{!frange l=1 u=0}1"
+      end
+    end
 
     # from https://github.com/samvera/hyrax/blob/main/app/search_builders/hyrax/catalog_search_builder.rb
     # original contains a join statement to search work and members which slows down solr queries a ton
@@ -77,7 +67,7 @@ module Morphosource
       solr_service = Blacklight.default_index.connection
       solr_service.get('select', params: {
         q: full_query,
-        fl: 'id, has_model_ssim, title_tesim',
+        fl: 'id',
         rows: 999999
       })
     end

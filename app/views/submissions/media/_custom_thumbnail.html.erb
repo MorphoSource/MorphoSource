@@ -10,7 +10,7 @@
       <span class="label label-info"></span>
     </div>
     <div style="margin-top:15px; margin-left:15px">
-      <%= f.file_field_tag :custom_thumbnail %>
+      <%= f.input :custom_thumbnail, as: :file %>
       <br /><i id="custom_thumbnail_hint" class="hint-sm">(Max file size 500KB)</i>
     </div>
   </div>

@@ -23,6 +23,10 @@ $ms-blue: #003880;
 $ms-dark-blue: #002c64;
 $success-color: #387f38;
 
+.hide {
+  display: none !important;
+}
+
 ::placeholder {
   color: #ccc !important;
 }

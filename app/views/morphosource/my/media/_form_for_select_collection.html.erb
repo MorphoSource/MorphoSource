@@ -34,7 +34,7 @@ end
                               data: {
                                 placeholder: t('simple_form.placeholders.defaults.member_of_collection_ids'),
                                 autocomplete: 'collection',
-                                'autocomplete-url' => Rails.application.routes.url_helpers.qa_path + '/search/collections?access=deposit'
+                                'autocomplete-url' => find_collection_autocomplete_url
                               } %>
                 <% end %>
               </ul>
@@ -51,3 +51,19 @@ end
       </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+<script>
+  // Enable the Save Changes button inside the modal when a collection is selected
+  $(document).ready(function() {
+    $('#collection-list-container').on('shown.bs.modal', function () {
+      $('.btn.btn-primary.submits-batches').prop('disabled', true);      
+      $('#member_of_collection_ids').on('change', function() {
+        if ($(this).val()) {
+          $('.btn.btn-primary.submits-batches').prop('disabled', false);
+        } else {
+          $('.btn.btn-primary.submits-batches').prop('disabled', true);
+        }
+      });
+    });
+  });
+</script>

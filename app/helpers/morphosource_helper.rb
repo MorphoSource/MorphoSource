@@ -282,6 +282,10 @@ module MorphosourceHelper
     Rails.application.routes.url_helpers.qa_path + '/search/find_cultural_heritage_objects?type[]=CulturalHeritageObject&id=NA&q='
   end
 
+  def find_collection_autocomplete_url
+    Rails.application.routes.url_helpers.qa_path + '/search/find_collections'
+  end
+
   def collapse_expand_panel(block)
     content_tag :div, :class => "row collapse-button" do
       content_tag :div, :class => "panel-title" do

@@ -47,7 +47,19 @@ RSpec.describe Morphosource::OrganizationNormalizationJob do
       let(:organization)  { FactoryBot.create(:organization_collection) }
       it 'calls the correct normalization method' do
         expect_any_instance_of(described_class).to receive(:normalize_organization_media)
-        described_class.perform_now(media_id: media.id, organization_id: organization.id, remove_previous_reviewers: 'true', user_email: user.email, update_publication_status: 'all')
+        described_class.perform_now(media_id: media.id, organization_id: organization.id, remove_previous_reviewers: 'true', user_email: nil, update_publication_status: 'all')
+      end
+      context 'the argments are valid' do
+        let(:args)  { {media_id: media.id, organization_id: organization.id, remove_previous_reviewers: 'true', user_email: nil, update_publication_status: 'all'} }
+        it 'returns true' do
+          expect(described_class.perform_now(args)).to be true
+        end
+      end
+      context 'the arguments are invalid' do
+        let(:args)  { {media_id: media.id, organization_id: organization.id, remove_previous_reviewers: nil, user_email: nil, update_publication_status: 'all'} }
+        it 'returns false' do
+          expect(described_class.perform_now(args)).to be false
+        end
       end
     end
   end
@@ -540,7 +552,6 @@ RSpec.describe Morphosource::OrganizationNormalizationJob do
                                              license: ["https://creativecommons.org/licenses/by-nc/4.0/"],
                                              rights_statement: ["http://rightsstatements.org/vocab/UND/1.0/"],
                                              publisher: ["Publisher"]) }
-
 
     describe 'update_download_reviewer' do
       context 'media is open' do

@@ -28,7 +28,7 @@ end
                     <%= hidden_field_tag 'member_of_collection_ids', @collection.id %>
                   </div>
                 <% else %>
-                  <legend><%= t("hyrax.collection.select_form.select_heading") %></legend>
+                  <p><%= t("hyrax.collection.select_form.select_heading") %></p>
                   <%= text_field_tag 'member_of_collection_ids', nil,
                               prompt: :translate,
                               data: {

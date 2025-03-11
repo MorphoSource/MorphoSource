@@ -34,7 +34,7 @@ end
                               data: {
                                 placeholder: t('simple_form.placeholders.defaults.member_of_collection_ids'),
                                 autocomplete: 'collection',
-                                'autocomplete-url' => find_collection_autocomplete_url
+                                'autocomplete-url' => find_collection_to_add_media_autocomplete_url
                               } %>
                 <% end %>
               </ul>
@@ -53,9 +53,12 @@ end
 </div><!-- /.modal -->
 
 <script>
-  // Enable the Save Changes button inside the modal when a collection is selected
+  /*  
+  On Media and Objects page (with body.dashboard class), inside the modal for adding media to collection,
+  disable the Save Changes button by default, and enable the Save Changes button only when a collection is selected 
+  */
   $(document).ready(function() {
-    $('#collection-list-container').on('shown.bs.modal', function () {
+    $('body.dashboard #collection-list-container').on('shown.bs.modal', function () {
       $('.btn.btn-primary.submits-batches').prop('disabled', true);      
       $('#member_of_collection_ids').on('change', function() {
         if ($(this).val()) {

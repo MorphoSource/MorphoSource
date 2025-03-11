@@ -282,8 +282,8 @@ module MorphosourceHelper
     Rails.application.routes.url_helpers.qa_path + '/search/find_cultural_heritage_objects?type[]=CulturalHeritageObject&id=NA&q='
   end
 
-  def find_collection_autocomplete_url
-    Rails.application.routes.url_helpers.qa_path + '/search/find_collections'
+  def find_collection_to_add_media_autocomplete_url
+    Rails.application.routes.url_helpers.qa_path + '/search/find_collections_to_add_media?id=NA'
   end
 
   def collapse_expand_panel(block)

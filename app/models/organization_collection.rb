@@ -55,8 +55,9 @@ class OrganizationCollection < Collection
     true
   end
 
-  def attachment(field_name)
-    Morphosource::AttachmentService.get(self, field_name)
+  # Custom method to handle CarrierWave uploader
+  def agreement_uploader
+    @agreement_uploader ||= OrganizationCollectionAgreementAttachmentUploader.new.tap { |u| u.collection_id = id }
   end
 
   def is_device_organization?

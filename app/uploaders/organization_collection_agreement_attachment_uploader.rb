@@ -1,4 +1,4 @@
-class ProcessingEventAttachmentUploader < CarrierWave::Uploader::Base
+class OrganizationCollectionAgreementAttachmentUploader < CarrierWave::Uploader::Base
   # Include RMagick or MiniMagick support:
   # include CarrierWave::RMagick
   # include CarrierWave::MiniMagick
@@ -7,12 +7,12 @@ class ProcessingEventAttachmentUploader < CarrierWave::Uploader::Base
   storage :file
   # storage :fog
 
-  attr_accessor :work_id
+  attr_accessor :collection_id
 
   # Override the directory where uploaded files will be stored.
   # This is a sensible default for uploaders that are meant to be mounted:
   def store_dir
-    "uploads/works/processing_event/#{work_id}/attachments"
+    "uploads/collections/organization_collection/#{collection_id}/attachments/agreement"
   end
 
   # Provide a default URL as a default if there hasn't been a file uploaded:

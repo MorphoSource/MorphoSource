@@ -19,12 +19,12 @@
 <%= @presenter.attribute_to_html(:download_reviewer, label: t('morphosource.collections.view.about.permissions.download_reviewer'), render_as: :showcase_user_link, include_empty: true) %>
 <%# agreement uri %>
 <%= @presenter.attribute_to_html(
-	:agreement_uri,
+  :agreement_attachment_url,
   label: t('morphosource.collections.view.about.permissions.agreement_uri'),
   render_as: :showcase_agreement_uri_file,
   include_empty: true,
   text_if_empty: 'None',
-  attachment_file_url: @presenter.attachment_url)
+  attachment_file_url: @presenter.agreement_attachment_url)
 %>
 <%# morphosource use agreement type %>
 <%= @presenter.attribute_to_html(:morphosource_use_agreement_type, label: t('morphosource.collections.view.about.permissions.morphosource_use_agreement_type'), render_as: :showcase_default, include_empty: true, html_dl: false) %>

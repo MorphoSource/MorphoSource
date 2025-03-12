@@ -3,15 +3,47 @@
 module Morphosource
   module OrganizationBehavior
 
-    def agreement_attachment_url
-      if attachment('agreement')
-        Rails.application.routes.url_helpers.attachment_path(
-          id: id,
-          field: 'agreement'
-        )
+    # @param file [File, ActionDispatch::Http::UploadedFile] The file to be attached, or nil to delete the file
+    def agreement_attachment=(file)
+      if file.nil?
+        # delete attachment
+        return unless self.agreement_attachment_url.present?
+        file_name = File.basename(self.agreement_attachment_url)
+        agreement_uploader.retrieve_from_store!(file_name)
+        if agreement_uploader.file.present? && File.exist?(agreement_uploader.file.path)
+          Rails.logger.info "Deleting file: #{agreement_uploader.file.path}"
+          agreement_uploader.remove!
+        else
+          Rails.logger.warn "File not found: #{agreement_uploader.file&.path}"
+        end
+        self.agreement_attachment_url = nil
+        self.save
       else
-        nil
+        # add attachment
+        extension = File.extname(file.original_filename).downcase
+        if agreement_attachment_formats.include?(extension)
+          agreement_uploader.store!(file)
+          self.agreement_attachment_url = agreement_uploader.url
+          self.save
+        else
+          raise ArgumentError, "Invalid file format: #{extension}"
+        end
       end
+    end
+
+    def agreement_attachment
+      self.agreement_attachment_url
+    end
+
+    def agreement_attachment_full_path
+      # retrieve and return the full system path to the agreement attachment file
+      file_name = File.basename(self.agreement_attachment_url)
+      agreement_uploader.retrieve_from_store!(file_name)
+      agreement_uploader.file.path
+    end
+
+    def agreement_attachment_formats
+      @agreement_attachment_formats ||= Morphosource.attachment_formats
     end
 
     def cultural_heritage_objects
@@ -69,7 +101,7 @@ module Morphosource
         preview_mode: preview_mode,
         agreement_uri: agreement_uri,
         attachment_url: agreement_attachment_url,
-        organization_for_attachment: attachment('agreement') ? id : nil
+        organization_for_attachment: agreement_attachment_url.present? ? id : nil
       }
     end
 

@@ -71,6 +71,10 @@ module Morphosource
       property :rights_statement_blank, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/rightsStatementBlank") do |index|
         index.as :stored_searchable
       end
+
+      property :agreement_attachment_url, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/agreementAttachmentUrl"), multiple: false do |index|
+        index.as :stored_searchable
+      end
     end
   end
 end

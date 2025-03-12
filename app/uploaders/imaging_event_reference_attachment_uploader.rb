@@ -1,4 +1,4 @@
-class ProcessingEventAttachmentUploader < CarrierWave::Uploader::Base
+class ImagingEventReferenceAttachmentUploader < CarrierWave::Uploader::Base
   # Include RMagick or MiniMagick support:
   # include CarrierWave::RMagick
   # include CarrierWave::MiniMagick
@@ -12,7 +12,7 @@ class ProcessingEventAttachmentUploader < CarrierWave::Uploader::Base
   # Override the directory where uploaded files will be stored.
   # This is a sensible default for uploaders that are meant to be mounted:
   def store_dir
-    "uploads/works/processing_event/#{work_id}/attachments"
+    "uploads/works/imaging_event/#{work_id}/attachments/reference"
   end
 
   # Provide a default URL as a default if there hasn't been a file uploaded:
@@ -37,7 +37,7 @@ class ProcessingEventAttachmentUploader < CarrierWave::Uploader::Base
 
   # Add a white list of extensions which are allowed to be uploaded.
   def extension_whitelist
-    Morphosource.attachment_formats.map { |format| format.delete_prefix(".") }
+    Morphosource.reference_attachment_formats.map { |format| format.delete_prefix(".") }
   end
 
   # Override the filename of the uploaded files:

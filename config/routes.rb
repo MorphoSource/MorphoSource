@@ -117,7 +117,10 @@ Rails.application.routes.draw do
   scope module: :morphosource do
     resources :tags, param: :tag, only: [:index, :show]
     get '/attachments/:id', to: 'attachments#show', as: 'attachment'
-    get '/manifests/:id', to: 'manifests#show', as: 'manifest'
+    get '/manifests/:id', to: 'manifests#show', as: 'manifest', defaults: { version: 'v3'}
+    get '/manifests/v3/:id', to: 'manifests#show', as: 'manifest_v3', defaults: { version: 'v3'}
+    get '/manifests/v4/:id', to: 'manifests#show', as: 'manifest_v4', defaults: { version: 'v4'}
+
 
     # media ZIP downloads
     get '/download', to: 'media_downloads#show', as: 'media_download'
@@ -614,7 +617,9 @@ Rails.application.routes.draw do
     get 'media', to: 'media_catalog#index', as: 'media_search', defaults: { format: 'json' }
     get 'media/:id', to: 'media_catalog#show', as: 'media_show', defaults: { format: 'json' }
     get 'media/:id/file-metadata', to: 'media_catalog#show_file_metadata', as: 'media_show_file_metadata', defaults: { format: 'json' }
-    get 'media/:id/iiif/manifest', to: 'morphosource/manifests#get_manifest_link', as: 'media_get_manifest_link', defaults: { format: 'json' }
+    get 'media/:id/iiif/manifest', to: 'morphosource/manifests#get_manifest_link', as: 'media_get_manifest_link', defaults: { format: 'json', version: 'v3' }
+    get 'media/:id/iiif/manifest/v3', to: 'morphosource/manifests#get_manifest_link', as: 'media_get_manifest_link_v3', defaults: { format: 'json', version: 'v3' }
+    get 'media/:id/iiif/manifest/v4', to: 'morphosource/manifests#get_manifest_link', as: 'media_get_manifest_link_v4', defaults: { format: 'json', version: 'v4' }
 
     # Generate media download link for API
     post 'download/:id', to: 'morphosource/media_api_downloads#api_generate_download', as: 'media_generate_download', defaults: { format: 'json' }

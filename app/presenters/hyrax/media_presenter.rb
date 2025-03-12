@@ -29,7 +29,7 @@ module Hyrax
       to: :imaging_event, allow_nil: true
 
     # Attributes from imaging event solr document with prefix (imaging_event_$)
-    delegate :creator, :date_created, :software, :description,
+    delegate :creator, :date_created, :software, :description, :description_attachment_url, :reference_attachment_url,
       to: :imaging_event, prefix: true, allow_nil: true
 
     # Attributes from physical object solr document (biological specimen or cultural heritage object)
@@ -61,7 +61,7 @@ module Hyrax
       :preview_mode, :publication_status_label, :related_url, :remote_manifest_url,
       :remote_origin_url, :required_archival_of_published_derivatives, :rights_holder, :scale_bar,
       :series_type, :short_description, :side, :slice_thickness, :taxonomies_titles, :unit,
-      :user_with_ownership, :x_spacing, :y_spacing, :z_spacing, :short_title,
+      :user_with_ownership, :x_spacing, :y_spacing, :z_spacing, :short_title, :agreement_attachment_url,
       to: :solr_document
 
     attr_accessor :file_status
@@ -82,11 +82,12 @@ module Hyrax
 
     #
     # Media custom agreement attachment file (PDF, DOCX, or TXT) URL
+    # if a CarrierWave attachment is not present, fall back to legacy attachment
     #
     # @return [Array<String>] Media custom agreement attachment file (PDF, DOCX, or TXT) URL
     #
     def attachment_url
-      @attachment_url ||= get_attachment("agreement")
+      @attachment_url ||= agreement_attachment_url.presence || get_attachment("agreement")
     end
 
     #
@@ -445,26 +446,6 @@ module Hyrax
       @device_organization_institution ||= begin
         "#{ device_organization_title&.first || "Unknown Organization" } (#{ device_organization_institution_name&.first || "Unknown Institution"})"
       end
-    end
-
-    ### IMAGING EVENT FIELDS ###
-
-    #
-    # Attachment file URL for Imaging Event description document attachment
-    #
-    # @return [Array<String>] Attachment file URL for Imaging Event description attachment
-    #
-    def imaging_event_description_attachment
-      @imaging_event_description_attachment ||= get_attachment("ie_description", imaging_event.id)
-    end
-
-    #
-    # Attachment file URL for Imaging Event reference document attachment
-    #
-    # @return [Array<String>] Attachment file URL for Imaging Event reference attachment
-    #
-    def imaging_event_reference_attachment
-      @imaging_event_reference_attachment ||= get_attachment("ie_reference", imaging_event.id)
     end
 
     #

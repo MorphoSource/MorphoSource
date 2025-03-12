@@ -485,20 +485,21 @@ class SubmissionsController < ApplicationController
       if field == 'agreement' && params[:media][:agreement_uri].present?
         # skip since agreement url exists
       else
-        if field == 'ie_reference'
-          formats = Morphosource.reference_attachment_formats
-        else
-          formats = Morphosource.attachment_formats
-        end
+        formats = (field == 'ie_reference' ? Morphosource.reference_attachment_formats : Morphosource.attachment_formats)
         if params[field].present? && formats.include?(File.extname(params[field].original_filename))
-          if work == "processing_event" && field == 'description_attachment'
-            new_work_object.description_attachment = params[:description_attachment]
+          case field
+          when 'pe_description', 'ie_description'
+            new_work_object.description_attachment = params[field]
+          when 'ie_reference'
+            new_work_object.reference_attachment = params[field]
           else
             Morphosource::AttachmentService.create(id, field, params[field], formats)
           end
           params.delete(field)
         elsif field == 'agreement' && submission_params[:organization_for_attachment].present?
-          Morphosource::AttachmentService.create_copy(id, field, submission_params[:organization_for_attachment])
+          # copy agreement attachment from organization
+          organization_for_attachment = ( Organization.find_by(id: submission_params[:organization_for_attachment]) || OrganizationCollection.find_by(id: submission_params[:organization_for_attachment]) )
+          new_work_object.copy_organization_agreement_attachment(organization_for_attachment)
         end
       end
     end
@@ -507,7 +508,7 @@ class SubmissionsController < ApplicationController
   def attachment_fields
     {
       'imaging_event' => ['ie_description', 'ie_reference'],
-      'processing_event' => ['description_attachment'],
+      'processing_event' => ['pe_description'],
       'media' => ['agreement']
     }
   end

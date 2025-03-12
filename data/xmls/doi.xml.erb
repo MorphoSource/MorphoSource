@@ -20,10 +20,14 @@
       </database_metadata>
       <dataset dataset_type="record">
         <contributors>
+        <% if organization && !organization.blank? %>
+          <organization><%= organization %></organization>
+        <% elsif author_first && !author_first.blank? && author_last && !author_last.blank? %>
           <person_name contributor_role="author" sequence="first">
             <given_name><%= author_first %></given_name>
             <surname><%= author_last %></surname>
           </person_name>
+        <% end %>
         </contributors>
         <titles>
           <title><%= title %></title>

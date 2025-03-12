@@ -367,8 +367,10 @@ class Media < Morphosource::Works::Base
           'author_first' => depositor_user_name_components.first,
           'author_last' => depositor_user_name_components.drop(1).join(' ')
         }
-      else
+      elsif depositor_user_or_org.is_a?(OrganizationCollection)
         { 'organization' => depositor_user_or_org.display_name }
+      else 
+        { }
       end
       
       minted_doi = Morphosource::CrossrefDoiMinter.mint_doi( self.id,

@@ -1,5 +1,6 @@
 module Morphosource
   class UserProfilePresenter < Hyrax::UserProfilePresenter
+    include ActionView::Helpers::NumberHelper
     include Morphosource::UserProfile::ProfileHelper
 
     # returns the number of collections managed by @user viewable by @current_user
@@ -10,14 +11,24 @@ module Morphosource
 
     # returns the number of media deposited by @user viewable by @current_user
     def deposited_media_count
-      search_builder = Morphosource::Users::DepositedMediaSearchBuilder.new(self)
-      repository.search(search_builder.query).response["numFound"]
+      deposited_media_query_response["numFound"]
+    end
+
+    # returns the total file size (of files and derivatives) of media deposited by @user viewable by @current_user
+    def deposited_media_filesize
+      size_bytes = deposited_media_query_response["docs"].map { |doc| doc["all_files_file_size_lts"] }.compact.sum
+      size_bytes == 0 ? "" : number_to_human_size(size_bytes)
     end
 
     # returns the number of media managed by @user viewable by @current_user
     def managed_media_count
-      search_builder = Morphosource::Users::ManagedMediaSearchBuilder.new(self)
-      repository.search(search_builder.query).response["numFound"]
+      managed_media_query_response["numFound"]
+    end
+
+    # returns the total file size (of files and derivatives) of media managed by @user viewable by @current_user
+    def managed_media_filesize
+      size_bytes = managed_media_query_response["docs"].map { |doc| doc["all_files_file_size_lts"] }.compact.sum
+      size_bytes == 0 ? "" : number_to_human_size(size_bytes)
     end
 
     def user
@@ -140,63 +151,83 @@ module Morphosource
 
     private
 
-      #
-      # Keys (profile types) which contain the specified field
-      #
-      # @param [String] field Metadata field name
-      # @param [:required, :optional, :either] type Whether the field is required / optional / either
-      #
-      # @return [Array<String>] Keys matching the specified criteria
-      #
-      def find_keys_containing_field(field, type = :either)
-        matching_keys = []
-        profile_type_config.each do |prof_type, data|
-          next if prof_type == 'universal'
-
-          metadata_fields = data['metadata_fields'] || []
-          required_metadata_fields = data['required_metadata_fields'] || []
-
-          case type
-          when :required
-            if required_metadata_fields.include?(field)
-              matching_keys << prof_type
-            end
-          when :optional
-            if metadata_fields.include?(field)
-              matching_keys << prof_type
-            end
-          else # :either
-            if metadata_fields.include?(field) || required_metadata_fields.include?(field)
-              matching_keys << prof_type
-            end
-          end
-        end
-        matching_keys
+    def deposited_media_query_response
+      @deposited_media_query_response ||= begin
+        query = Morphosource::Users::DepositedMediaSearchBuilder.new(self).query.merge(
+          'fl' => ['id', 'all_files_file_size_lts'],
+          'rows' => 999_999
+        )
+        repository.search(query).response
       end
+    end
 
-      #
-      # Keys (profile types) which contain the demographic field
-      #
-      # @param [String] field Demographic field name
-      #
-      # @return [Array<String>] Keys contain the specified field
-      #
-      def find_keys_containing_demographic(field)
-        matching_keys = []
-        profile_type_config.each do |prof_type, data|
-          next if prof_type == 'universal'
-          demographic_fields = data['demographics'] || []
-          if demographic_fields.include?(field)
+    def managed_media_query_response
+      @managed_media_query_response ||= begin
+        query = Morphosource::Users::ManagedMediaSearchBuilder.new(self).query.merge(
+          'fl' => ['id', 'all_files_file_size_lts'],
+          'rows' => 999_999
+        )
+        repository.search(query).response
+      end
+    end
+
+    #
+    # Keys (profile types) which contain the specified field
+    #
+    # @param [String] field Metadata field name
+    # @param [:required, :optional, :either] type Whether the field is required / optional / either
+    #
+    # @return [Array<String>] Keys matching the specified criteria
+    #
+    def find_keys_containing_field(field, type = :either)
+      matching_keys = []
+      profile_type_config.each do |prof_type, data|
+        next if prof_type == 'universal'
+
+        metadata_fields = data['metadata_fields'] || []
+        required_metadata_fields = data['required_metadata_fields'] || []
+
+        case type
+        when :required
+          if required_metadata_fields.include?(field)
+            matching_keys << prof_type
+          end
+        when :optional
+          if metadata_fields.include?(field)
+            matching_keys << prof_type
+          end
+        else # :either
+          if metadata_fields.include?(field) || required_metadata_fields.include?(field)
             matching_keys << prof_type
           end
         end
-        matching_keys
       end
+      matching_keys
+    end
 
-      def repository
-        catalog_controller = CatalogController.new
-        catalog_controller.instance_variable_set(:@current_ability, @ability)
-        catalog_controller.repository
+    #
+    # Keys (profile types) which contain the demographic field
+    #
+    # @param [String] field Demographic field name
+    #
+    # @return [Array<String>] Keys contain the specified field
+    #
+    def find_keys_containing_demographic(field)
+      matching_keys = []
+      profile_type_config.each do |prof_type, data|
+        next if prof_type == 'universal'
+        demographic_fields = data['demographics'] || []
+        if demographic_fields.include?(field)
+          matching_keys << prof_type
+        end
       end
+      matching_keys
+    end
+
+    def repository
+      catalog_controller = CatalogController.new
+      catalog_controller.instance_variable_set(:@current_ability, @ability)
+      catalog_controller.repository
+    end
   end
 end

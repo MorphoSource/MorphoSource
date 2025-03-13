@@ -9,10 +9,16 @@
 
 <div class="list-group-item">
   <span class="badge"><%= @presenter.deposited_media_count %></span>
+  <% if @presenter.deposited_media_filesize.present? %>
+    <span class="badge"><%= @presenter.deposited_media_filesize %> </span>
+  <% end %>
   <span class="glyphicon glyphicon-upload" aria-hidden="true"></span> <%= link_to('Media Deposited', main_app.media_search_path({"f"=>{"depositor_ssim"=>["#{user.ms_id}"]}})) %>
 </div>
 
 <div class="list-group-item">
-  <span class="badge"><%= @presenter.managed_media_count %></span>
+  <span class="badge"><%= @presenter.managed_media_count %> </span>
+  <% if @presenter.managed_media_filesize.present? %>
+    <span class="badge"><%= @presenter.managed_media_filesize %> </span>
+  <% end %>
   <span class="glyphicon glyphicon-check" aria-hidden="true"></span> <%= link_to('Media Managed', main_app.media_search_path({"f"=>{"user_with_ownership_ssi"=>["#{user.ms_id}"]}})) %>
 </div>

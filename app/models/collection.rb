@@ -181,8 +181,11 @@ class Collection < ActiveFedora::Base
     end
     members.collect do |member|
       message = Hyrax::MultipleMembershipChecker.new(item: member).check(collection_ids: id, include_current_members: true)
+      object_id = member.physical_object_id&.first
       if message
         member.errors.add(:collections, message)
+      elsif self.sequential_section_list? && self.specimen_id.present? && (self.specimen_id != object_id)
+        member.errors.add(:collections, "Specimen ID does not match the specimen ID of the collection")
       else
         member.member_of_collections << self
         if media_inherit_permissions?
@@ -192,7 +195,6 @@ class Collection < ActiveFedora::Base
         else
           member.save!
         end
-        object_id = member.physical_object_id&.first
         UpdateWorkIndexJob.perform_later(object_id) if object_id.present?
       end
       member

@@ -33,6 +33,10 @@ class SequentialSectionList < MediaList
     id.present? ? SolrDocument.find(id) : nil
   end
 
+  def specimen_id
+    specimen_doc.present? ? specimen_doc['id'] : nil
+  end
+  
   def human_readable_type
     "Sequential Section List"
   end

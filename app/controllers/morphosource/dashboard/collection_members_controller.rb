@@ -43,7 +43,7 @@ module Morphosource
             end
             @batch_ids -= remove_ids
             if @batch_ids.empty?
-              return "None of the selected media has the same specimen that #{@collection.title.first} collection has"
+              return "None of the selected media has the same physical object of #{@collection.title.first} collection."
             end
           else
             # the sequential section list is empty
@@ -54,6 +54,16 @@ module Morphosource
             end
           end
           return nil
+        end
+
+        def err_return_path
+          if @collection.media_list?
+            media_list_path(@collection.id)
+          elsif @collection.sequential_section_list?
+            sequential_section_list_path(@collection.id)
+          else
+            dashboard_collections_path
+          end          
         end
 
         def filter_docs_with_access_by_collection_type

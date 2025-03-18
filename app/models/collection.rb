@@ -184,8 +184,6 @@ class Collection < ActiveFedora::Base
       object_id = member.physical_object_id&.first
       if message
         member.errors.add(:collections, message)
-      elsif self.sequential_section_list? && self.specimen_id.present? && (self.specimen_id != object_id)
-        member.errors.add(:collections, "Specimen ID does not match the specimen ID of the collection")
       else
         member.member_of_collections << self
         if media_inherit_permissions?

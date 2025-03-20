@@ -1312,7 +1312,7 @@
         closeIcon: null,
         closeIconClass: false,
         watchInterval: 100,
-        columnClass: 'col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3 col-xs-10 col-xs-offset-1',
+        columnClass: 'col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3 col-10 col-offset-1',
         boxWidth: '50%',
         scrollToPreviousElement: true,
         scrollToPreviousElementAnimate: true,

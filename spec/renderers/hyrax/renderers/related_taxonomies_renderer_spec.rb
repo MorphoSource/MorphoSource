@@ -35,8 +35,8 @@ RSpec.describe Hyrax::Renderers::RelatedTaxonomiesRenderer do
     let(:content) do
      %(
 <div class="row">
-<div class="col-xs-6 showcase-label">Biological specimens</div>
-<div class="col-xs-6 showcase-value ">
+<div class="col-6 showcase-label">Biological specimens</div>
+<div class="col-6 showcase-value ">
 <span></span> <span class="showcase-link"><a href="/concern/biological_specimens/abc123?locale=en">test biological specimen</a></span><ul>
 <span>Organizational </span><span class="showcase-link"><a href="/concern/taxonomies/ghi789?locale=en">Superclass &gt; Class &gt; Subclass</a></span>
 </ul>

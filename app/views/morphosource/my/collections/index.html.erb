@@ -4,12 +4,12 @@
 
 <% provide :page_header do %>
   <div class="row no-horizontal-padding row-no-gutters">
-    <div class="col-xs-9 title">
+    <div class="col-9 title">
       <h1>
         <span class="fa <%= @collections_type == "organizations"? 'fa-landmark' : 'fa-list'  %>" aria-hidden="true"></span> <%= t("morphosource.dashboard.my.#{@collections_type}.page_title") %>
       </h1>
     </div>
-    <div class="col-xs-3 no-horizontal-padding show-actions text-right">
+    <div class="col-3 no-horizontal-padding show-actions text-right">
       <% if (@collections_type == "organizations") %>
         <% if current_user.admin? %>
           <% # link directly to create collection form with type %>
@@ -36,7 +36,7 @@
   </div>
 <% end %>
 
-<div class="col-xs-12 collections-wrapper">
+<div class="col-12 collections-wrapper">
   <div class="panel panel-default panel-borders collections-panel-wrapper">
     <div class="panel-heading">
       <span class="count-display"><%= I18n.t("morphosource.dashboard.my.#{@collections_type}.count", total_count: @response.total_count).html_safe %></span>

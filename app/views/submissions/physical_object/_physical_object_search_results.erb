@@ -19,7 +19,7 @@
               </div>
             <% else %>
 
-              <div id="submission_link_po" class="<%= po_type == 'bso' ? 'col-xs-12 col-md-6' : 'col-sm-8 col-sm-offset-2' %>" style='margin-bottom: 2em;'>
+              <div id="submission_link_po" class="<%= po_type == 'bso' ? 'col-12 col-md-6' : 'col-sm-8 col-sm-offset-2' %>" style='margin-bottom: 2em;'>
                 <div class="row list-item">
                   <b><%= t('morphosource.submission.morphosource_search_results') %> (<%= docs.count %>)</b>
                 </div>
@@ -82,7 +82,7 @@
                   <%= t('morphosource.submission.idigbio_empty_search_results') %>
                 </div>
               <% else %>
-                <div id="submission_link_idigbio" class="col-xs-12 col-md-6" style='margin-bottom: 2em;'>
+                <div id="submission_link_idigbio" class="col-12 col-md-6" style='margin-bottom: 2em;'>
                   <div class="row list-item">
                     <b><%= t('morphosource.submission.idigbio_search_results') %>  (<%= idigbio[:data].count %>)</b>
                   </div>

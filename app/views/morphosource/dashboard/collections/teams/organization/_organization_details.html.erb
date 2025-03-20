@@ -9,58 +9,58 @@
 
 <% else %>
   <div class="row">
-    <div class="col-xs-6 showcase-label">
+    <div class="col-6 showcase-label">
       <%= t('simple_form.labels.organization.title') %>
       <i class="material-icons tooltip-icon" data-original-title="" title="">
         <p class="hint hide"><%= t('simple_form.hints.organization.title') %> </p>
       </i>
     </div>
-    <div class="col-xs-6 showcase-value "><%= @organization.title&.first %></div>
+    <div class="col-6 showcase-value "><%= @organization.title&.first %></div>
   </div>
   <div class="row">
-    <div class="col-xs-6 showcase-label">
+    <div class="col-6 showcase-label">
       <%= t('simple_form.labels.organization.organization_type') %>
       <i class="material-icons tooltip-icon" data-original-title="" title="">
         <p class="hint hide"><%= t('simple_form.hints.organization.organization_type') %> </p>
       </i>
     </div>
-    <div class="col-xs-6 showcase-value "><%= @organization.organization_type&.first %></div>
+    <div class="col-6 showcase-value "><%= @organization.organization_type&.first %></div>
   </div>
   <div class="row">
-    <div class="col-xs-6 showcase-label">
+    <div class="col-6 showcase-label">
       <%= t('simple_form.labels.organization.institution_name') %>
       <i class="material-icons tooltip-icon" data-original-title="" title="">
         <p class="hint hide"><%= t('simple_form.hints.organization.institution_name') %> </p>
       </i>
     </div>
-    <div class="col-xs-6 showcase-value "><%= @organization.institution_name&.first %></div>
+    <div class="col-6 showcase-value "><%= @organization.institution_name&.first %></div>
   </div>
   <div class="row">
-    <div class="col-xs-6 showcase-label">
+    <div class="col-6 showcase-label">
       <%= t('simple_form.labels.organization.institution_code') %>
       <i class="material-icons tooltip-icon" data-original-title="" title="">
         <p class="hint hide"><%= t('simple_form.hints.organization.institution_code') %> </p>
       </i>
     </div>
-    <div class="col-xs-6 showcase-value "><%= @organization.institution_code&.join('; ') %></div>
+    <div class="col-6 showcase-value "><%= @organization.institution_code&.join('; ') %></div>
   </div>
   <div class="row">
-    <div class="col-xs-6 showcase-label">
+    <div class="col-6 showcase-label">
       <%= t('simple_form.labels.organization.collection_code') %>
       <i class="material-icons tooltip-icon" data-original-title="" title="">
         <p class="hint hide"><%= t('simple_form.hints.organization.collection_code') %> </p>
       </i>
     </div>
-    <div class="col-xs-6 showcase-value "><%= @organization.collection_code&.join('; ') %></div>
+    <div class="col-6 showcase-value "><%= @organization.collection_code&.join('; ') %></div>
   </div>
   <div class="row">
-    <div class="col-xs-6 showcase-label">
+    <div class="col-6 showcase-label">
       <%= t('simple_form.labels.organization.recordset_id') %>
       <i class="material-icons tooltip-icon" data-original-title="" title="">
         <p class="hint hide"><%= t('simple_form.hints.organization.recordset_id') %> </p>
       </i>
     </div>
-    <div class="col-xs-6 showcase-value "><%= @organization.recordset_id&.join('; ') %></div>
+    <div class="col-6 showcase-value "><%= @organization.recordset_id&.join('; ') %></div>
   </div>
 <% end %>
 <%= render_edit_field_partial('description', f: f) %>

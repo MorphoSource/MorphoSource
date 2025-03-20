@@ -4,14 +4,14 @@
   <% object = @collection.organization %>
 <% end %>
 <div class="form-group row string optional media_agreement_uri attachment-container">
-  <div class="col-xs-6 showcase-label">
+  <div class="col-6 showcase-label">
     <label class="control-label string optional" for="media_agreement_uri">Additional usage agreement</label>
     <i class="material-icons tooltip-icon" data-original-title="" title="">
       <p class="hint hide"><%= t('simple_form.hints.defaults.agreement_uri') %></p>
     </i>
   </div>
 
-  <div class="col-xs-6 showcase-value">
+  <div class="col-6 showcase-value">
     <%= f.input_field :agreement_uri,
       as: :string,
       placeholder: local_assigns[:placeholder] || 'Enter Agreement File URL',

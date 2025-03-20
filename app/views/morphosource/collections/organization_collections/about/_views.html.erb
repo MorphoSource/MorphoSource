@@ -3,30 +3,30 @@
   <%# total media views %>
   <div class="row view-stat">
     <% if @collection.manages_objects_and_devices? %>
-      <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.views.total_media') %></div>
+      <div class="col-6 showcase-label"><%= t('morphosource.collections.view.about.views.total_media') %></div>
     <% else %>
-      <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.views.media') %></div>
+      <div class="col-6 showcase-label"><%= t('morphosource.collections.view.about.views.media') %></div>
     <% end %>
-    <div class="col-xs-6 showcase-value "><%= @stats.view_count %></div>
+    <div class="col-6 showcase-value "><%= @stats.view_count %></div>
   </div>
   <%# object media views, device media views %>
   <% if @collection.manages_objects_and_devices? %>
     <%# object media views %>
     <div class="row view-stat">
-      <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.views.object_media') %></div>
-      <div class="col-xs-6 showcase-value "><%= @stats.object_media_view_count %></div>
+      <div class="col-6 showcase-label"><%= t('morphosource.collections.view.about.views.object_media') %></div>
+      <div class="col-6 showcase-value "><%= @stats.object_media_view_count %></div>
     </div>
     <%# device media views %>
     <div class="row view-stat">
-      <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.views.device_media') %></div>
-      <div class="col-xs-6 showcase-value "><%= @stats.device_media_view_count %></div>
+      <div class="col-6 showcase-label"><%= t('morphosource.collections.view.about.views.device_media') %></div>
+      <div class="col-6 showcase-value "><%= @stats.device_media_view_count %></div>
     </div>
   <% end %>
   <%# most viewed media %>
   <% if @stats.top_view&.first.present? %>
     <div class="row view-stat">
-      <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.views.most_viewed_media') %></div>
-      <div class="col-xs-6 showcase-value "><%= @stats.top_view&.last %></div>
+      <div class="col-6 showcase-label"><%= t('morphosource.collections.view.about.views.most_viewed_media') %></div>
+      <div class="col-6 showcase-value "><%= @stats.top_view&.last %></div>
     </div>
     <div class="row view-stat">
       <%= render 'morphosource/collections/organization_collections/about/top_media', media_id: @stats.top_view&.first %>
@@ -37,8 +37,8 @@
     <%# top object media %>
     <% if @stats.top_object_media_view&.first.present? %>
       <div class="row view-stat">
-        <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.views.most_viewed_object_media') %></div>
-        <div class="col-xs-6 showcase-value "><%= @stats.top_object_media_view&.last %></div>
+        <div class="col-6 showcase-label"><%= t('morphosource.collections.view.about.views.most_viewed_object_media') %></div>
+        <div class="col-6 showcase-value "><%= @stats.top_object_media_view&.last %></div>
       </div>
       <div class="row view-stat">
         <%= render 'morphosource/collections/organization_collections/about/top_media', media_id: @stats.top_object_media_view&.first %>
@@ -47,8 +47,8 @@
     <%# top device media %>
     <% if @stats.top_device_media_view&.first.present? %>
       <div class="row view-stat">
-        <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.views.most_viewed_device_media') %></div>
-        <div class="col-xs-6 showcase-value "><%= @stats.top_device_media_view&.last %></div>
+        <div class="col-6 showcase-label"><%= t('morphosource.collections.view.about.views.most_viewed_device_media') %></div>
+        <div class="col-6 showcase-value "><%= @stats.top_device_media_view&.last %></div>
       </div>
       <div class="row view-stat">
         <%= render 'morphosource/collections/organization_collections/about/top_media', media_id: @stats.top_device_media_view&.first %>

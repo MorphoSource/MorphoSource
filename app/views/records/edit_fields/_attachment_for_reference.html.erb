@@ -1,5 +1,5 @@
 <div class="form-group row string optional attachment-container">
-  <div class="col-xs-6 showcase-label">
+  <div class="col-6 showcase-label">
     <label class="control-label string optional" for="attachment-container">
       <%= label.present? ? label : 'Attachment File' %>
     </label>
@@ -7,7 +7,7 @@
       <p class="hint hide"><%= t("simple_form.hints.#{curation_concern&.model_name&.to_s&.underscore}.#{field}") %></p>
     </i>
   </div>
-  <div class="col-xs-6 showcase-value">
+  <div class="col-6 showcase-value">
     <div class='attachment'>
       <% if curation_concern.present? && curation_concern.attachment(field).present? %>
         <div class='attachment-link'>

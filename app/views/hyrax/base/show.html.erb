@@ -3,7 +3,7 @@
 <%= render 'shared/citations' %>
 
 <div class="row work-type">
-  <div class="col-xs-12">
+  <div class="col-12">
     <%= render 'work_type', presenter: @presenter %>
     <div class="pull-right">
       <% if @presenter.model_name.name == "Media" %>
@@ -11,8 +11,8 @@
       <% end %>
     </div>
   </div>
-  <div class="col-xs-12">&nbsp;</div>
-  <div itemscope itemtype="http://schema.org/CreativeWork" class="col-xs-12">
+  <div class="col-12">&nbsp;</div>
+  <div itemscope itemtype="http://schema.org/CreativeWork" class="col-12">
     <div class="panel panel-default">
       <div class="panel-heading">
         <%= render 'work_title', presenter: @presenter %>

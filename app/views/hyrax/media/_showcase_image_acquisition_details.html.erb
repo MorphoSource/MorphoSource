@@ -3,7 +3,7 @@
     <h2>IMAGE ACQUISITION AND PROCESSING IN DETAIL</h2>
     <div>
       <div>
-        <div class="content-block-lg col-xs-12 mb-1">
+        <div class="content-block-lg col-12 mb-1">
 
           <div class="row" style="background-color: #efefef; margin-bottom: 20px">
             <h3 style='font-weight: 500; padding-left: 15px; margin-top: 10px;'><i class="fas fa-camera fa-lg" style="width: 30px; text-align: center;"></i> <span>STEP 1: IMAGE ACQUISITION</span></h3>
@@ -72,7 +72,7 @@
                   <h2>Media produced by this event on MorphoSource</h2>
                   <% if raw_media.present? %>
                     <div class="row media-block">
-                      <div class="thumbnail col-xs-4">
+                      <div class="thumbnail col-4">
                         <% if raw_media == presenter %>
                           <%= render_thumbnail_tag presenter, {}, { suppress_link: true } %>
                           <%= presenter.link_name_long %> (this media)

@@ -1,13 +1,13 @@
 <div class="row showcase2-row media-showcase" id="showcase-title-wrapper">
-  <div class="col-xs-12 flash-wrapper">
+  <div class="col-12 flash-wrapper">
     <%= render "flash_msg" %>
   </div>
   <h1>
-    <div class="col-xs-12 col-md-8 title-block">
+    <div class="col-12 col-md-8 title-block">
       <%= render partial: "work_title", locals: { presenter: presenter } %>
     </div>
   </h1>
-  <div class="col-xs-12 col-md-4 btn-wrapper">
+  <div class="col-12 col-md-4 btn-wrapper">
       <%= render @presenter.showcase_show_actions_partial, presenter: presenter %>
   </div>
 </div>

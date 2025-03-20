@@ -1,11 +1,11 @@
 <div class="form-group row string optional organization_data_manager">
-  <div class="col-xs-6 showcase-label">
+  <div class="col-6 showcase-label">
     <label class="control-label string optional" for="organization_data_manager"><%= t('simple_form.labels.organization.data_manager') %></label>
     <i class="material-icons tooltip-icon" data-original-title="" title="" style="margin-left: -1px;">
       <p class="hint hide"><%= t('simple_form.hints.defaults.data_manager') %></p>
     </i>
   </div>
-  <div class="col-xs-6 showcase-value">
+  <div class="col-6 showcase-value">
     <%= f.text_field :data_manager,
       id: 'organization_data_manager',
       name: "#{f.object_name}[data_manager]",

@@ -1,5 +1,5 @@
 <div class="form-group row multi_value optional organization_rights_holder value-blank-container">
-  <div class="col-xs-6 showcase-label">
+  <div class="col-6 showcase-label">
     <label class="control-label multi_value optional" for="organization_rights_holder">
       IP holder
     </label>
@@ -7,7 +7,7 @@
       <p class="hint hide"><%= t('simple_form.hints.defaults.rights_holder') %></p>
     </i>
   </div>
-  <div class="col-xs-6 showcase-value"> 
+  <div class="col-6 showcase-value"> 
     <%= f.input_field :rights_holder, as: :multi_value, placeholder: local_assigns[:placeholder] %>
     <div class="form-group boolean optional organization_rights_holder_blank value-blank-check">
       <div class="checkbox">

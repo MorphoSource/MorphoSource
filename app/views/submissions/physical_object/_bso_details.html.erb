@@ -9,7 +9,7 @@
     <% end %>
     <div class="row">
       <!-- left column  -->
-      <div class="col-xs-12 col-md-6">
+      <div class="col-12 col-md-6">
 
         <div class="block showcase-edit showcase-section">
           <div class="row showcase-section-header">
@@ -56,8 +56,8 @@
 
           <div class="content-block">
             <div class="row">
-              <div class="col-xs-6 showcase-label">Object collection date</div>
-              <div class="col-xs-6 showcase-value">
+              <div class="col-6 showcase-label">Object collection date</div>
+              <div class="col-6 showcase-value">
               <%= f.date_field :date_created, wrapper: :inline, value: f.object.date_created, class: 'datepicker form-control' %>
                 </div>
             </div>
@@ -73,7 +73,7 @@
       <!-- /left column  -->
 
       <!-- right column  -->
-      <div class="col-xs-12 col-md-6">
+      <div class="col-12 col-md-6">
         <div class="block showcase-edit showcase-section">
           <div class="row showcase-section-header">
             <span class="h2">SPECIMEN ORIGINAL LOCATION</span>
@@ -89,7 +89,7 @@
             <%= render "records/edit_fields/tgn", f: f, key: 'tgn' %>
             <!--  todo: the html below can be removed if simpleform config wrapper can be used.  In that case, we need to figure out pass the content for the tooltip
             <div class="form-group row">
-                <div class="col-xs-12 showcase-label">
+                <div class="col-12 showcase-label">
                     <label class="control-label">Geographical coordinates</label><span class="glyphicon glyphicon-question-sign tooltip-icon" data-original-title="" title=""></span>
                 </div>
             </div>

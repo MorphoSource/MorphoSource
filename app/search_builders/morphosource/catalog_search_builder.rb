@@ -29,7 +29,7 @@ module Morphosource
                        when 'rights_statement'
                          custom_list = Hyrax::RightsStatementService.new.select_all_options
                          custom_list.select { |title, _url| title.downcase.include?(contains_title.downcase) }.map(&:last)
-                       when 'device'
+                       when 'device', 'team', 'project', 'media_list', 'seq_section_list'
                          response = fetch_ids_by_title(contains_title, facet_config.key)
                          response['response']['docs'].map { |doc| doc['id'] }
                        else
@@ -58,6 +58,12 @@ module Morphosource
       case facet_key
       when 'device'
         query = 'has_model_ssim:Device'
+      when 'team', 'project'
+        query = 'has_model_ssim:Collection'
+      when 'media_list'
+        query = 'has_model_ssim:MediaList'
+      when 'seq_section_list'
+        query = 'has_model_ssim:SequentialSectionList'
       else
         query = 'has_model_ssim:unknown'
         Rails.logger.warn("Unknown model for facet key: #{facet_config.key}")

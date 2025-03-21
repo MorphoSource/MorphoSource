@@ -2,11 +2,11 @@ body.dashboard {
   background-color: #fff;
   padding-top: 0;
 
-  &.ms-collection-edit .panel#collection-edit-controls {
+  &.ms-collection-edit .card#collection-edit-controls {
     margin-left: 0;
     margin-right: 0;
 
-    .panel {
+    .card {
       margin-left: 0;
       margin-right: 0;
 
@@ -28,7 +28,7 @@ body.dashboard {
   .collections-wrapper {
     padding-top: 10px;
 
-    .collections-panel-wrapper.panel {
+    .collections-panel-wrapper.card {
       width: unset;
     }
   }
@@ -38,7 +38,7 @@ body.dashboard {
   }
 
   .ownership-transfer {
-    .panel {
+    .card {
       float: unset;
       width: unset;
     }
@@ -60,11 +60,11 @@ body.dashboard {
     padding: 12px 10px 12px 10px;
   }
 
-  .panel.contributor_petitions {
+  .card.contributor_petitions {
     width: fit-content;
   }
 
-  .panel#collection-edit-controls {
+  .card#collection-edit-controls {
     padding:20px;
   }
 

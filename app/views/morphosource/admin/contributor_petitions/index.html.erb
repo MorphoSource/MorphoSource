@@ -3,7 +3,7 @@
 <%= render 'search_container' %>
 
 <% if @petition.present? %>
-<div class="panel panel-default" style="display: table;">
+<div class="card panel-default" style="display: table;">
   <div class="card-body">
     <h2 class="panel-title h2">Update Contributor Application Decision</h2>
     <table class="table table-striped" style="font-size: smaller;">
@@ -70,7 +70,7 @@
 </div>
 <% end #if @petition present? %>
 
-<div class="panel panel-default tabs itemtable <%= controller.controller_name %>">
+<div class="card panel-default tabs itemtable <%= controller.controller_name %>">
 
   <ul class="nav nav-tabs" id="my_nav" role="navigation">
     <li<%= ' class="active"'.html_safe if @tab == 'current' %>>

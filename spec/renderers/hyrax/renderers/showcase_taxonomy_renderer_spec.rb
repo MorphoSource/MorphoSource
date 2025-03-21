@@ -61,7 +61,7 @@ RSpec.describe Hyrax::Renderers::ShowcaseTaxonomyRenderer do
       let(:renderer)                   { described_class.new(field, [canonical_taxonomy_object], data_parent: "taxonomy-accordion-group", label: label, is_collapsed: true) }
 
       let(:content) do
-        %( <div class="panel">
+        %( <div class="card">
        <div class="row">
        <div class="col-6 showcase-label taxonomy-label">Organizational</div>
        <div class="col-5 showcase-value taxonomy-title">genus subgenus species subspecies</div>
@@ -154,7 +154,7 @@ RSpec.describe Hyrax::Renderers::ShowcaseTaxonomyRenderer do
       let(:renderer)            { described_class.new(field, trusted_taxonomies, data_parent: "taxonomy-accordion-group", label: label, is_collapsed: true) }
 
       let(:content) do
-      %(  <div class='panel'>
+      %(  <div class='card'>
             <div class="row">
               <div class="col-6 showcase-label taxonomy-label">#{label}</div>
               <div class="col-5 showcase-value taxonomy-title">

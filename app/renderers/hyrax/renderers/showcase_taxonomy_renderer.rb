@@ -11,7 +11,7 @@ module Hyrax
         return markup if values.blank? && !options[:include_empty]
         Array(values).each do |value|
           block = create_block
-          markup << "<div class='panel'>"
+          markup << "<div class='card'>"
           markup << taxonomy_title(block, options[:data_parent], options[:label], value, options[:is_collapsed])
           markup << collapse_accordion_panel(block, options[:is_collapsed])
           markup << taxonomy_ranks(value)

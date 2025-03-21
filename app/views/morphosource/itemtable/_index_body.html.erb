@@ -2,11 +2,11 @@
 
 <%= render 'search_container' %>
 
-<div class="panel panel-default itemtable <%= controller.controller_name %>">
+<div class="card panel-default itemtable <%= controller.controller_name %>">
   <%= render 'heading' %>
   <div class="card-body showcase">
     <% if page_description && !@search %>
-      <div class="panel card-header">
+      <div class="card card-header">
         <%= page_description %>
       </div>
     <% end %>

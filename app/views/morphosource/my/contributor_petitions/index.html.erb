@@ -4,7 +4,7 @@
   <div class="row">
     <div class="col-md-12">
       <% if @petition.decision_required %>
-        <div class="panel panel-default">
+        <div class="card panel-default">
           <div class="card-header">
               <h2 class="panel-title h2">Contributor Application Submitted, Awaiting Decision</h2>
           </div>
@@ -17,7 +17,7 @@
       <% else %>
         <% if @petition.decision_state == 'approve' %> 
           <%# Fallback code, this should never be displayed! %>
-          <div class="panel panel-default">
+          <div class="card panel-default">
             <div class="card-header">
                 <h2 class="panel-title h2">Contributor Application Approved</h2>
             </div>
@@ -28,7 +28,7 @@
             </div>
           </div>
         <% elsif @petition.decision_state == 'deny' %>
-          <div class="panel panel-default">
+          <div class="card panel-default">
             <div class="card-header">
                 <h2 class="panel-title h2">Contributor Application Denied</h2>
             </div>
@@ -39,7 +39,7 @@
             </div>
           </div>
         <% elsif @petition.decision_state == 'return' %>
-          <div class="panel panel-default">
+          <div class="card panel-default">
             <div class="card-header">
                 <h2 class="panel-title h2">Contributor Application Must Be Resubmitted</h2>
             </div>
@@ -55,7 +55,7 @@
         <% end %>
 
         <% if @petition.decision_state.nil? || @petition.decision_state == 'return' %>
-          <div class="panel panel-default">
+          <div class="card panel-default">
             <div class="card-header">
               <h2 class="panel-title h2">Become A Contributor or Data Manager</h2>
             </div>

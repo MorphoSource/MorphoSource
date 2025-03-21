@@ -9,7 +9,7 @@
             my_name = current_user.display_name.present? ? "(#{current_user.display_name})" : ""
           %>
           <div class="row">
-            <div class="col-sm-6 col-sm-offset-3 no-padding">
+            <div class="col-sm-6 offset-sm-3 no-padding">
               <%= f.input :on_behalf_of, label: 'Which user are you depositing this media for?', 
                 collection: current_user.can_make_deposits_for.map{ |u| [u.display_name, u.user_key] }, prompt: "Myself #{my_name}" %>
             </div>
@@ -18,7 +18,7 @@
 
         <% if current_user.fund_codes.present? %>
           <div class="row">
-            <div class="col-sm-6 col-sm-offset-3 no-padding">
+            <div class="col-sm-6 offset-sm-3 no-padding">
               <%= f.input :fund_code, label: 'What fund code supports this deposit?', 
                 collection: current_user.fund_codes.where(can_add_media: true), prompt: "None (Data Supported By MorphoSource)" %>
             </div>
@@ -27,18 +27,18 @@
         <% end %>
 
       	<div class="row mt-2">
-          <div class="col-sm-6 col-sm-offset-3 no-padding">
+          <div class="col-sm-6 offset-sm-3 no-padding">
       		  <%= render_edit_field_partial('submission_media_type', f: f) %>
           </div>
       	</div>
       	<div class="row">
-          <div class="col-sm-6 col-sm-offset-3 no-padding">
+          <div class="col-sm-6 offset-sm-3 no-padding">
       		  <%= render_edit_field_partial('submission_modality', f: f) %>
       	  </div>
         </div>
       
       <div id="submission-suggestions-container" class="row hide">
-    		<div class="col-sm-6 col-sm-offset-3 block">
+    		<div class="col-sm-6 offset-sm-3 block">
     			<div class="row">
             <b><%= t('morphosource.submission.raw_or_derived_suggestions') %></b>
           </div>
@@ -59,7 +59,7 @@
     	</div>
 
       <div id="submission-raw-or-derived-section" class="row hide">
-        <div class="col-sm-4 col-sm-offset-4 raw-or-derived-form-group">
+        <div class="col-sm-4 offset-sm-4 raw-or-derived-form-group">
           <div>
             <label class="control-label" for="raw-or-derived-btn-group">
               <%= t('morphosource.submission.raw_or_derived') %>

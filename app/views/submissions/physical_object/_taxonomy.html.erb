@@ -8,7 +8,7 @@
     <div id="submission_select_taxonomy_section">
       <%= simple_form_for @submission, html: { id: :taxonomy_search_form } do |f| %>
         <div class="row">
-          <div class="col-sm-6 col-sm-offset-3 no-padding submission-select2-container">
+          <div class="col-sm-6 offset-sm-3 no-padding submission-select2-container">
             <%= f.input_field :taxonomy_search %>
           </div>
         </div>
@@ -37,7 +37,7 @@
       
 
       <div class="row form-group">
-        <div id="submission_show_create_taxonomy" class="col-sm-6 col-sm-offset-3 block clickable">
+        <div id="submission_show_create_taxonomy" class="col-sm-6 offset-sm-3 block clickable">
           <span>
             <%= t('morphosource.submission.create_custom_taxonomy') %>
           </span>

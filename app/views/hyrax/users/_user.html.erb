@@ -1,5 +1,5 @@
 <div class="panel panel-default panel-user">
-  <div class="panel-heading">
+  <div class="card-header">
     <% if user.avatar.present? %>
       <%= image_tag user.avatar.url(:thumb), width: 120, class: "float-left block-padding" %>
       <h1><%= user.name %></h1>

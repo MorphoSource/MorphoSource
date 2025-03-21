@@ -14,7 +14,7 @@
   <%= render 'heading' %>
   <div class="card-body showcase">
     <% if page_description && !@search %>
-      <div class="panel panel-heading">
+      <div class="panel card-header">
         <%= page_description %>
         <p>Last system-wide verification completed: <%= @last_checked %></p>
         <%= link_to 'Start system-wide verification', main_app.remote_file_health_verify_all_path, class: 'btn btn-sm', data: { confirm: "This will clear the existing issue report and start another verification.  Click OK to continue, or Cancel to return to the page." }, disabled: @disable_verify_button %>

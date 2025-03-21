@@ -72,6 +72,9 @@ namespace :morphosource do
 
     Rails.logger.info('Initiate dev caching')
     Rake::Task['morphosource:dev_cache_on'].invoke
+
+    Rails.logger.info('Create null organization')
+    Rake::Task['morphosource:create_null_organization'].invoke
   end
 
   desc 'MorphoSource Docker Test Suite Setup'
@@ -547,6 +550,17 @@ namespace :morphosource do
     Role.find_or_create_by(name: 'charge_api')
   end
 
+  # For development use only
+  # For production environments, create a null organization manually then update Hyrax.config.null_organization_id with its id.
+  # ENV['NULL_ORGANIZATION_ID'] is set in vendor/docker-compose.env
+  desc 'Create Null Organization'
+  task :create_null_organization => :environment do
+    unless OrganizationCollection.find_by(id: ENV['NULL_ORGANIZATION_ID'])
+      admin = Role.find_by(name: 'admin').users.first.ms_id
+      OrganizationCollection.create(id: ENV['NULL_ORGANIZATION_ID'], depositor: admin, institution_name: ['No Organization'], title: ['No Institution'], organization_type: ["Collection and Scanning Facility"])
+    end
+  end
+
   desc 'Update reviewers column for all cart items'
   task :update_cartitem_reviewers => :environment do
     CartItem.find_each do |item|
@@ -885,7 +899,7 @@ namespace :morphosource do
   task :migrate_attachments, [:model, :field, :old_attachment_field, :action, :and_query] => :environment do |task, args|
     model_name = args[:model]
     field_name = args[:field]
-    old_attachment_field = args[:old_attachment_field] 
+    old_attachment_field = args[:old_attachment_field]
     case args[:action]
     when "migrate"
       action = 'migrate'
@@ -929,8 +943,8 @@ namespace :morphosource do
     results.each do |hit|
       begin
         old_attachment_path = Morphosource::AttachmentService.get(hit.id, old_attachment_field)
-        next unless old_attachment_path.present? 
-        
+        next unless old_attachment_path.present?
+
         old_attachment_count += 1
         next if action == 'count_only'
 
@@ -943,7 +957,7 @@ namespace :morphosource do
 
         # action == 'migrate'
         work = model_class.find(hit.id)
-        next unless work.present? 
+        next unless work.present?
 
         if work.send(field_name).present?
           puts "Skipping #{model_name} ##{hit.id}: #{field_name} already has a new attachment"
@@ -975,7 +989,7 @@ namespace :morphosource do
     model_name = args[:model]
     field_name = args[:field]
     solr_field = args[:solr_field]
-    old_attachment_field = args[:old_attachment_field] 
+    old_attachment_field = args[:old_attachment_field]
     option = args[:option]
     and_query = args[:and_query]
 

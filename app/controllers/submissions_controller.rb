@@ -341,7 +341,8 @@ class SubmissionsController < ApplicationController
       addl_params = { device_id: [@submission.device_id] }
       finalize_model_params(work, model_params, addl_params)
     elsif work == 'biological_specimen' || work == 'cultural_heritage_object'
-      addl_params = { organization_id: [@submission.organization_id] }
+      organization_id = @submission.organization_id.present? ? @submission.organization_id : Hyrax.config.null_organization_id
+      addl_params = { organization_id: [organization_id] }
       finalize_model_params(work, model_params, addl_params)
     else
       finalize_model_params(work, model_params)

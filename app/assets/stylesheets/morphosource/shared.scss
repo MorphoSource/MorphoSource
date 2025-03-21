@@ -94,10 +94,10 @@ label.required::after {
 }
 
 /* override jquery-confirm styles */
-.jconfirm.jconfirm-white .jconfirm-box .jconfirm-buttons button.btn-default, 
-.jconfirm.jconfirm-white .jconfirm-box .jconfirm-buttons button.btn-default:hover, 
-.jconfirm.jconfirm-light .jconfirm-box .jconfirm-buttons button.btn-default,
-.jconfirm.jconfirm-light .jconfirm-box .jconfirm-buttons button.btn-default:hover {
+.jconfirm.jconfirm-white .jconfirm-box .jconfirm-buttons button.btn-secondary, 
+.jconfirm.jconfirm-white .jconfirm-box .jconfirm-buttons button.btn-secondary:hover, 
+.jconfirm.jconfirm-light .jconfirm-box .jconfirm-buttons button.btn-secondary,
+.jconfirm.jconfirm-light .jconfirm-box .jconfirm-buttons button.btn-secondary:hover {
   background-color: $button-color !important;
   color: $button-font-color !important;
   border-color: $button-border-color !important;

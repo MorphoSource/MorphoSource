@@ -63,46 +63,46 @@ module Morphosource::CartItemHelper
   end
 
   def edit_work_button
-    link_to "Edit", edit_polymorphic_path([main_app, media]), class: 'btn btn-default'
+    link_to "Edit", edit_polymorphic_path([main_app, media]), class: 'btn btn-secondary'
   end
 
   def download_button
     mediaId = media&.id || ''
-    link_to t('hyrax.file_sets.actions.download'), 'javascript:void(0)', class: 'btn btn-default btn-download-item', id: 'btn-download-item', data: { media_id: mediaId }
+    link_to t('hyrax.file_sets.actions.download'), 'javascript:void(0)', class: 'btn btn-secondary btn-download-item', id: 'btn-download-item', data: { media_id: mediaId }
   end
 
   def download_requested_button
-    link_to 'DL Request Sent', 'javascript:void(0)', class: 'btn btn-default', role: 'button', disabled: true
+    link_to 'DL Request Sent', 'javascript:void(0)', class: 'btn btn-secondary', role: 'button', disabled: true
   end
 
   def request_download_button
     mediaId = media&.id || ''
-    button_tag("Request Download", class: 'btn btn-default btn-request-download-item', id: 'btn-request-download-item', data: {toggle: 'modal', target: '#pageModal', work_id: mediaId, media_id: mediaId})
+    button_tag("Request Download", class: 'btn btn-secondary btn-request-download-item', id: 'btn-request-download-item', data: {toggle: 'modal', target: '#pageModal', work_id: mediaId, media_id: mediaId})
   end
 
   def disabled_request_download_button
-    link_to "Request Download", 'javascript:void(0)', class: 'btn btn-default', role: 'button', disabled: true
+    link_to "Request Download", 'javascript:void(0)', class: 'btn btn-secondary', role: 'button', disabled: true
   end
 
   def disabled_download_button
-    link_to "Download", 'javascript:void(0)', class: 'btn btn-default', role: 'button', style: 'flex-grow: 1;' ,disabled: true
+    link_to "Download", 'javascript:void(0)', class: 'btn btn-secondary', role: 'button', style: 'flex-grow: 1;' ,disabled: true
   end
 
   def in_cart_button
-    link_to "Item in Cart", main_app.my_cart_path, class: 'btn btn-default'
+    link_to "Item in Cart", main_app.my_cart_path, class: 'btn btn-secondary'
   end
 
   def add_to_cart_button
-    link_to "Add to Cart", main_app.add_to_cart_path(work_id: media.id), class: 'btn btn-default', method: :post
+    link_to "Add to Cart", main_app.add_to_cart_path(work_id: media.id), class: 'btn btn-secondary', method: :post
   end
 
   def disabled_cart_button
-    link_to "Add to Cart", 'javascript:void(0)', class: 'btn btn-default', role: 'button', style: 'flex-grow: 1;', disabled: true
+    link_to "Add to Cart", 'javascript:void(0)', class: 'btn btn-secondary', role: 'button', style: 'flex-grow: 1;', disabled: true
   end
 
   # No longer used
   def unavailable_for_download_button
-    link_to 'Download Unavailable','', class: 'btn btn-default', role: 'button', disabled: true
+    link_to 'Download Unavailable','', class: 'btn btn-secondary', role: 'button', disabled: true
   end
 
   # When user is not signed in, appears below disabled download/cart buttons

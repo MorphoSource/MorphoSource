@@ -5,7 +5,7 @@
     <%
     qs = ms_collection_view_link_qs("cultural_heritage_objects", "c_")
     document_index_views.each do |view, config| %>
-      <%= link_to ms_collection_view_link(params[:id], view: view) + qs, title: t("blacklight.search.view_title.#{view}", default: t("blacklight.search.view.#{view}", default: blacklight_config.view[view].title)), class: "btn btn-default view-type-#{view.to_s.parameterize } #{"active" if document_index_view_type == view}" do %>
+      <%= link_to ms_collection_view_link(params[:id], view: view) + qs, title: t("blacklight.search.view_title.#{view}", default: t("blacklight.search.view.#{view}", default: blacklight_config.view[view].title)), class: "btn btn-secondary view-type-#{view.to_s.parameterize } #{"active" if document_index_view_type == view}" do %>
         <%= render_view_type_group_icon view %>
         <span class="caption"><%= t("blacklight.search.view.#{view}") %></span>
       <% end %>

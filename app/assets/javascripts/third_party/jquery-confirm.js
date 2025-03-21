@@ -680,7 +680,7 @@
                 }
 
                 that.buttons[key].text = button.text || key;
-                that.buttons[key].btnClass = button.btnClass || 'btn-default';
+                that.buttons[key].btnClass = button.btnClass || 'btn-secondary';
                 that.buttons[key].action = button.action || function(){
                 };
                 that.buttons[key].keys = button.keys || [];

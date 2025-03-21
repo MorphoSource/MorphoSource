@@ -456,7 +456,7 @@ nav#masthead {
 
   .view-type-group {
     white-space: nowrap;
-    .btn-primary, .btn-default, .btn-sm, .btn-xs, .btn-big {
+    .btn-primary, .btn-secondary, .btn-sm, .btn-xs, .btn-big {
       background-color: transparent;
       color: $font-color;
       border-color: transparent;
@@ -873,8 +873,8 @@ nav#masthead {
     padding: 16px;
   }
 
-  .btn-primary, .btn-default, .btn-sm, .btn-xs, .btn-big,
-  .btn-primary:hover, .btn-default:hover, .btn-sm:hover, .btn-xs:hover, .btn-big:hover {
+  .btn-primary, .btn-secondary, .btn-sm, .btn-xs, .btn-big,
+  .btn-primary:hover, .btn-secondary:hover, .btn-sm:hover, .btn-xs:hover, .btn-big:hover {
     background-color: $button-color;
     color: $button-font-color;
     border-color: $button-border-color;

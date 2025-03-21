@@ -1,5 +1,5 @@
 <%= render 'form_for_select_collection', user_collections: @user_collections %>
 
 <%= button_tag t("morphosource.dashboard.my.add_media.add_media_button") + @collection.title.first,
-    class: 'btn btn-sm btn-default submits-batches submits-batches-add disabled', disabled: 'disabled',
+    class: 'btn btn-sm btn-secondary submits-batches submits-batches-add disabled', disabled: 'disabled',
     data: { toggle: "modal", target: "#collection-list-container" } %>

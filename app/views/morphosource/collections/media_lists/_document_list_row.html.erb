@@ -61,10 +61,10 @@
         <%=
           link_to "View",
             url_for(request.params.merge(preview: document.id)),
-            class: "view-media btn btn-sm btn-default"
+            class: "view-media btn btn-sm btn-secondary"
         %>
       <% else %>
-        <div class="view-media dynamic btn btn-sm btn-default">View</div>
+        <div class="view-media dynamic btn btn-sm btn-secondary">View</div>
         <div class="currently-viewing hide">
           Currently Viewing
         </div>

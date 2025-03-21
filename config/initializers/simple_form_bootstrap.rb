@@ -5,7 +5,7 @@
 
 SimpleForm.setup do |config|
   config.error_notification_class = 'alert alert-danger'
-  config.button_class = 'btn btn-default'
+  config.button_class = 'btn btn-secondary'
   config.boolean_label_class = nil
 
   config.wrappers :showcase_default, tag: 'div', class: 'form-group row', error_class: 'has-error' do |b|

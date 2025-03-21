@@ -49,7 +49,7 @@
   <td><%= date(item,'expired') %></td>
   <td>
     <% if document["file_set_ids_ssim"].present? %>
-      <a class="btn-download-item btn btn-info btn-xs" data-media-id="<%= document.id %>" data-item-id="<%= item.id %>" href="javascript:void(0)">Download Item</a>
+      <a class="btn-download-item btn btn-info btn-sm" data-media-id="<%= document.id %>" data-item-id="<%= item.id %>" href="javascript:void(0)">Download Item</a>
     <% end %>
   </td>
   <%= render 'morphosource/my/cart/download_agreements_container', presenter: presenter, item_id: item.id %>

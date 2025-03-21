@@ -44,12 +44,12 @@ po_taxonomy = media_extra['po_taxonomy']
       if current_user and can? :edit, @collection
       %>
         <form></form>
-        <%= button_for_remove_from_collection @collection, document, label: "Remove", btn_class: "btn-remove-media btn-danger btn-xs" %>
+        <%= button_for_remove_from_collection @collection, document, label: "Remove", btn_class: "btn-remove-media btn-danger btn-sm" %>
 
       <%# if media_extra["source_of_result"] == 'team' ||
         media_extra["source_of_result"] == 'project' %>
         <%#form></form>
-        <%#= button_for_remove_from_collection @collection, document, label: "Remove", btn_class: "btn-remove-media btn-danger btn-xs" %>
+        <%#= button_for_remove_from_collection @collection, document, label: "Remove", btn_class: "btn-remove-media btn-danger btn-sm" %>
       <%#else %>
         <%# show info instead of remove button if the media is not in the team bucket %>
         <%#i class="material-icons tooltip-icon" data-original-title="" title="">

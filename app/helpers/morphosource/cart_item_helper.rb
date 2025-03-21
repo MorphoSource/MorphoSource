@@ -204,7 +204,7 @@ module Morphosource::CartItemHelper
     media = Media.find(item.work_id)
     if media.present?
       if media.file_sets.present?
-        tags = ( button_tag("Download Item", class: "btn-download-item btn btn-info btn-xs", data: {item_id: item.id}) ) +
+        tags = ( button_tag("Download Item", class: "btn-download-item btn btn-info btn-sm", data: {item_id: item.id}) ) +
           ( link_to item.id, main_app.download_items_path(item_id: item.id), class: "hide", id: 'link-to-download-item-'+item.id.to_s, method: :get )
       end
     end

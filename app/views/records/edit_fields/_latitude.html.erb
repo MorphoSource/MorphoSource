@@ -2,8 +2,8 @@
 
 <div id="geographic_coordinates_wrapper" class="form-group physical_object_geographic_coordinates" style="display:flex; flex-direction:column;">
   <label class="col-form-label" for="physical_object_geographic_coordinates">Geographic Coordinates</label>
-  <p class="help-block">Please enter decimal degrees between -90 and 90 for latitude, -180 and 180 for longitude.</p>
-  <p class="help-block">Ex: 35.994034, -78.898621</p>
+  <p class="form-text text-muted">Please enter decimal degrees between -90 and 90 for latitude, -180 and 180 for longitude.</p>
+  <p class="form-text text-muted">Ex: 35.994034, -78.898621</p>
   <div id="physical_object_geographic_coordinates" style="display:flex; flex-direction:row; justify-content:space-evenly; border:solid 1px lightgray; border-radius: 5px;">
     <%= f.input :latitude, as: :string, :pattern => '-?(90|[0-8]?[0-9]\.[0-9]{0,6})',
         wrapper_html: { style: 'width: 45%; margin-top: 10px; margin-bottom: 20px;' } %>

@@ -403,7 +403,7 @@ input[type=checkbox].disabled {
   .tab-content > #physical-object-details {
 
     .form-group {
-      .help-block {
+      .form-text text-muted {
         display:none;
       }
       .form-control {

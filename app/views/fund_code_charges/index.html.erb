@@ -13,7 +13,7 @@
             <label class="col-form-label" for="search_start_date">
               <%= t('simple_form.labels.fund_code_charges.start_date') %>
             </label>
-            <p class="help-block">
+            <p class="form-text text-muted">
               <%= t('simple_form.hints.fund_code_charges.start_date') %>
             </p>
             <%= f.date_field :start_date, value: @start_date, class: 'datepicker form-control' %>
@@ -23,7 +23,7 @@
             <label class="col-form-label" for="search_end_date">
               <%= t('simple_form.labels.fund_code_charges.end_date') %>
             </label>
-            <p class="help-block">
+            <p class="form-text text-muted">
               <%= t('simple_form.hints.fund_code_charges.end_date') %>
             </p>
             <%= f.date_field :end_date, value: @end_date, class: 'datepicker form-control' %>

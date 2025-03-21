@@ -35,7 +35,7 @@
     <div class="dropdown nav-item">
       <%= link_to hyrax.dashboard_profile_path(current_user), class: 'dropdown-toggle nav-link', role: 'button', data: { toggle: 'dropdown' }, aria: { haspopup: true, expanded: false, controls: 'user-util-links' } do %>
         <span class="sr-only"><%= t("hyrax.toolbar.profile.sr_action") %></span>
-        <!-- span class="hidden-xs">&nbsp;<%# = current_user.name %></span-->
+        <!-- span class="d-none d-sm-block">&nbsp;<%# = current_user.name %></span-->
         <span class="sr-only"> <%= t("hyrax.toolbar.profile.sr_target") %></span>
         <span class="fa <%= has_become ? "fas fa-user-cog" : "fa-user" %>" aria-hidden="true"></span>
       <% end %>

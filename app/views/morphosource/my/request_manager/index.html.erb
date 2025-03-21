@@ -5,7 +5,7 @@
   <div class="panel-heading">
     <h2 class="panel-title h2">New Requests For My Media (<%= @item_count %>)</h2>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <h2 class="sr-only">Works listing</h2>
     <%= render 'morphosource/my/request_manager/batch_actions' %>
     <% if @item_count.to_i > 0 %>

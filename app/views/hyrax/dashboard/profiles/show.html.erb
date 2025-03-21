@@ -28,7 +28,7 @@
 </div>
 
 <div class="panel panel-default">
-  <div class="panel-body">
+  <div class="card-body">
     <div class="list-group">
       <div class="list-group-item">
         <%= render partial: 'hyrax/users/user_info', locals: { user: @user, field_list: @presenter.display_fields } %>
@@ -45,7 +45,7 @@
 
 <% if can? :edit, current_user %>
   <div class="landing panel panel-default">
-    <div class="panel-body">
+    <div class="card-body">
       <div class="list-group">
         <div class="list-group-item">
           <div><h2>Advanced User Functions</h2></div>

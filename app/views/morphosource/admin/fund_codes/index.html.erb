@@ -7,7 +7,7 @@
         <div class="panel-heading">
           <h2 class="panel-title h2"><%= "#{@form_type} Fund Code" %></h2>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
           <%= simple_form_for @current_fund_code, url: @form_url do |f| %>
             <%= f.input :title, required: true %>
             <%= f.input :description, required: true %>
@@ -65,7 +65,7 @@
         <div class="panel-heading">
           <h2 class="panel-title h2"><%= t('.current_fund_codes') %></h3>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
           <table class="table table-striped datatable" style="font-size: smaller;">
             <thead>
               <th><%= t('.header.fund_code') %></th>

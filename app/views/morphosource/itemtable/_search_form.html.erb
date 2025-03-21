@@ -2,7 +2,7 @@
   <div class="panel-heading">
     <h2 class="panel-title h2"><%= "Search #{page_title.pluralize}" %></h2>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <%= simple_form_for :filter_items, url: url_for, method: "GET" do |f| %>
       <%= render partial: 'search_form_fields', locals: {f: f} %>
 

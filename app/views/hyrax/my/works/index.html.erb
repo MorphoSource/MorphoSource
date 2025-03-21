@@ -28,7 +28,7 @@
           <span class="count-display"><%= I18n.t('hyrax.my.count.works.in_repo', total_count: @response.total_count).html_safe %></span>
         <% end %>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <%= render 'search_header' %>
         <h2 class="sr-only">Works listing</h2>
         <%= render 'document_list' %>

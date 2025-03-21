@@ -14,14 +14,14 @@ body.dashboard {
         border: none;
       }
 
-      .panel-body {
+      .card-body {
         padding-top: 0;
         padding-left: 5px;
       }
     }
   }
 
-  &.profile .panel-body {
+  &.profile .card-body {
     padding: 0;
   }
 

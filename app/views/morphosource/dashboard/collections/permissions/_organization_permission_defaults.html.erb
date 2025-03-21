@@ -2,7 +2,7 @@
   <% if @collection.organization? %>
     <div class="form-group row">
       <div class="col-6 showcase-label">
-        <label class="control-label" for="">Institution</label>
+        <label class="col-form-label" for="">Institution</label>
       </div>
       <div class="col-6 showcase-value">
         <%= @organization.institution_name.first %>
@@ -22,7 +22,7 @@
   <% if @collection.team? %>
     <div class="form-group row mb-2">
       <div class="col-6 showcase-label">
-        <label class="control-label select optional" for="data_manager"><%= t('simple_form.labels.organization.data_manager') %></label>
+        <label class="col-form-label select optional" for="data_manager"><%= t('simple_form.labels.organization.data_manager') %></label>
         <i class="material-icons tooltip-icon" data-original-title="" title="">
           <p class="hint hide">
             <%= t('simple_form.hints.defaults.data_manager') %>

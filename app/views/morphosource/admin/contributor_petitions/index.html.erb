@@ -51,7 +51,7 @@
     <%= simple_form_for @petition, url: main_app.admin_contributor_petitions_decide_path(:id => @petition.id), method: :patch do |f| %>
       <div class="row">
         <div class="col-12">
-          <%= f.label :decision_message, class: 'control-label' do %>
+          <%= f.label :decision_message, class: 'col-form-label' do %>
             Message to send with decision or already sent with decision:
           <% end %>
           <%= f.text_area :decision_message, class: "form-control", placeholder: 'Send a message to user with decision.', rows: 2 %>

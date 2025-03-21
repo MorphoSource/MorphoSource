@@ -10,7 +10,7 @@
                 <%= render_edit_field_partial(term, f: f) %>
               <% end %>
 
-              <label class="control-label text required" for="collection_visibility">Visibility</label>
+              <label class="col-form-label text required" for="collection_visibility">Visibility</label>
               <%= render 'form_visibility_component_for_collection', f: f %>
             </div>
             <% if f.object.display_additional_fields? %>

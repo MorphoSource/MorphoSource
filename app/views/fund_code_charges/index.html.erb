@@ -10,7 +10,7 @@
         <%= simple_form_for :search, url: main_app.fund_code_charges_path, method: "GET" do |f| %>
           
           <div class="form-group search_start_date">
-            <label class="control-label" for="search_start_date">
+            <label class="col-form-label" for="search_start_date">
               <%= t('simple_form.labels.fund_code_charges.start_date') %>
             </label>
             <p class="help-block">
@@ -20,7 +20,7 @@
           </div>
 
           <div class="form-group search_end_date">
-            <label class="control-label" for="search_end_date">
+            <label class="col-form-label" for="search_end_date">
               <%= t('simple_form.labels.fund_code_charges.end_date') %>
             </label>
             <p class="help-block">

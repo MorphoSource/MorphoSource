@@ -7,7 +7,7 @@
     <%= render partial: 'hyrax/dashboard/profiles/edit_email', locals: {f: f} %>
 
     <div class="form-group">
-      <%= f.label :avatar, t("morphosource.dashboard.profiles.edit_primary.change_picture").html_safe, class: "col-md-4 control-label" %>
+      <%= f.label :avatar, t("morphosource.dashboard.profiles.edit_primary.change_picture").html_safe, class: "col-md-4 col-form-label" %>
       <div class="col-md-8">
         <div>
           <%= f.file_field :avatar %>

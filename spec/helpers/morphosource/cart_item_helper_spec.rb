@@ -19,7 +19,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
 
     context 'the item is canceled' do
       let(:label_content) do
-        %(<span class=\"label label-danger\" style=\"background-color: gray;\">Canceled</span>)
+        %(<span class=\"badge badge-danger\" style=\"background-color: gray;\">Canceled</span>)
       end
       let(:button_content) do
         %(<button name=\"button\" type=\"submit\" id=\"request-button\" class=\"btn btn-info btn-request-download-item\" data-toggle=\"modal\" data-target=\"#pageModal\" data-item-id=\"0\">Request Download</button>)
@@ -41,7 +41,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
 
     context 'the request is denied' do
       let(:label_content) do
-        %(<span class=\"label label-danger\" style=\"\">Denied</span>)
+        %(<span class=\"badge badge-danger\" style=\"\">Denied</span>)
       end
       let(:button_content) do
         %(<a class=\"btn btn-danger\" style=\"\" rel=\"nofollow\" data-method=\"delete\" href=\"/remove_from_cart?item_id=#{item.id}\">Remove from Cart</a>)
@@ -79,7 +79,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
 
     context 'the request approval is expired' do
       let(:label_content) do
-        %(<span class=\"label label-warning\" style=\"background-color: orange;\">Expired</span>)
+        %(<span class=\"badge badge-warning\" style=\"background-color: orange;\">Expired</span>)
       end
       let(:button_content) do
         %(<a class=\"btn btn-primary\" style=\"\" data-method=\"get\" href=\"/request_again?item_id=#{item.id}\">Request Again</a>)
@@ -100,7 +100,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
 
     context 'the request is approved' do
       let(:label_content) do
-        %(<span class=\"label label-success\" style=\"\">Approved</span>)
+        %(<span class=\"badge badge-success\" style=\"\">Approved</span>)
       end
       before do
         item.date_requested = Date.yesterday
@@ -115,7 +115,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
 
     context 'the item status is requested' do
       let(:label_content) do
-        %(<span class=\"label label-primary\" style=\"\">Requested</span>)
+        %(<span class=\"badge badge-primary\" style=\"\">Requested</span>)
       end
       let(:button_content) do
         %(<a class=\"btn btn-danger\" style=\"background-color: gray;\" rel=\"nofollow\" data-method=\"put\" href=\"/cancel_request?item_id=#{item.id}\">Cancel</a>)
@@ -134,7 +134,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
 
     context 'the item is not requested' do
       let(:label_content) do
-        %(<span class=\"label label-info\" style=\"background-color: teal;\">Not Requested</span>)
+        %(<span class=\"badge badge-info\" style=\"background-color: teal;\">Not Requested</span>)
       end
       let(:button_content) do
         %(<button name=\"button\" type=\"submit\" id=\"request-button\" class=\"btn btn-info btn-request-download-item\" data-toggle=\"modal\" data-target=\"#pageModal\" data-item-id=\"0\" data-media-id=\"#{work.id}\">Request Download</button>)

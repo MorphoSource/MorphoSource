@@ -15,7 +15,7 @@ body.showcase2 {
       margin-right: 10px;
     }
 
-    >div,>.label {
+    >div,>.badge {
       margin-bottom: 8px;
     }
   }
@@ -81,7 +81,7 @@ body.showcase2 {
       text-transform: uppercase;
     }
 
-    span.label.short-collection-badge {
+    span.badge.short-collection-badge {
       border-radius: 0;
       display: inline-block;
       min-width: 26px;
@@ -135,7 +135,7 @@ body.showcase2 {
     align-items: center;
   }
 
-  .label-info, .label-success, .label-danger {
+  .badge-info, .badge-success, .badge-danger {
     display: inline;
     padding: .2em .6em .3em;
     font-weight: 700;
@@ -148,7 +148,7 @@ body.showcase2 {
     border-radius: 0;
   }
 
-  .label-info:empty, .label-success:empty, .label-danger:empty {
+  .badge-info:empty, .badge-success:empty, .badge-danger:empty {
     display: none;
   }
 

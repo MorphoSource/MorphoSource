@@ -162,10 +162,10 @@ input[type=checkbox].disabled {
   }
 
   .required-flag, .recommended-flag, .optional-flag {
-    .label:empty {
+    .badge:empty {
       display:inline-block !important;
     }
-    .label {
+    .badge {
       background-color: #528253;
       font-size: 60%;
       font-weight: normal;
@@ -175,22 +175,22 @@ input[type=checkbox].disabled {
     }
   }
   .required-flag {
-    .label {
+    .badge {
       background-color: #528253;
     }
-    .label:before {
+    .badge:before {
       content: 'Required';
     }
   }
 
   .recommended-flag {
-    .label:before {
+    .badge:before {
       content: 'Recommended';
     }
   }
 
   .optional-flag {
-    .label:before {
+    .badge:before {
       content: 'Optional';
     }
   }

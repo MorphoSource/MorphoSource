@@ -32,9 +32,9 @@
           <div class="m-0 p-0 text-nowrap">
           <a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block-visibility" class="btn collapse-block-visibility pl-0">
           <% if f.object.embargo_release_date %>
-            <span class="label label-warning">Embargo</span>
+            <span class="badge badge-warning">Embargo</span>
           <% elsif f.object.lease_expiration_date %>
-            <span class="label label-warning">Lease</span>
+            <span class="badge badge-warning">Lease</span>
           <% else %>
             <span class="label" id="current_visibility_value"></span>
           <% end %>

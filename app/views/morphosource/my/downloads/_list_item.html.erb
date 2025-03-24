@@ -33,9 +33,9 @@
     </td>
     <td>
       <% if document.fileset_accessibility&.first == "restricted_download" %>
-        <span class="label label-danger">Restricted</span>
+        <span class="badge badge-danger">Restricted</span>
       <% elsif document.fileset_accessibility&.first == "open" %>
-        <span class="label label-success">Open</span>
+        <span class="badge badge-success">Open</span>
       <% end %>
     </td>
     <td class="date"><%= date(item,'downloaded') %></td>

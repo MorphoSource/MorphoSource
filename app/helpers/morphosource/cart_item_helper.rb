@@ -115,19 +115,19 @@ module Morphosource::CartItemHelper
   def item_status_label(item)
     case item.request_status
     when 'Canceled'
-      make_label("Canceled","label label-danger","background-color: gray;")
+      make_label("Canceled","badge badge-danger","background-color: gray;")
     when 'Denied'
-      make_label("Denied","label label-danger",'')
+      make_label("Denied","badge badge-danger",'')
     when 'Expired'
-      make_label("Expired","label label-warning","background-color: orange;")
+      make_label("Expired","badge badge-warning","background-color: orange;")
     when 'Approved'
-      make_label("Approved","label label-success",'')
+      make_label("Approved","badge badge-success",'')
     when 'Cleared'
-      make_label("Cleared","label label-info",'')
+      make_label("Cleared","badge badge-info",'')
     when 'Requested'
-      make_label("Requested","label label-primary",'')
+      make_label("Requested","badge badge-primary",'')
     else
-      make_label("Not Requested",'label label-info',"background-color: teal;")
+      make_label("Not Requested",'badge badge-info',"background-color: teal;")
     end
   end
 

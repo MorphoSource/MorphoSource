@@ -327,7 +327,7 @@ nav#masthead {
   }
 
   .team-title {
-    .label, td.status span {
+    .badge, td.status span {
       display: inline;
       padding: .2em .6em .3em;
       font-weight: 700;
@@ -611,7 +611,7 @@ nav#masthead {
 
   .collection-count {
     span {font-size: 12px}
-    span.label {
+    span.badge {
       width: 77px;
       font-size: 11px;
       margin-right: 4px;
@@ -934,7 +934,7 @@ nav#masthead {
       display: inline-block;
     }
 
-    .label {
+    .badge {
       vertical-align: text-top;
       @media (min-width: 1200px) {
         vertical-align: baseline;
@@ -1342,7 +1342,7 @@ nav#masthead {
 
   .row.indent {padding-left: 32px}
 
-  .visibility-link .label, .visibility-link td.status span, td.status .visibility-link span {
+  .visibility-link .badge, .visibility-link td.status span, td.status .visibility-link span {
     font-size: .65em;
   }
 

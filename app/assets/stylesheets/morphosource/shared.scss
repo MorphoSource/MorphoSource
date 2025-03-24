@@ -80,7 +80,7 @@ label.required::after {
   content: " *";
 }
 
-.label, .label-info, .label-success, .label-danger, td.status span {
+.badge, .badge-info, .badge-success, .badge-danger, td.status span {
   display: inline;
   padding: .2em .6em .3em;
   font-weight: 700;

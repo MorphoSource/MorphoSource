@@ -6,15 +6,15 @@
     <%= simple_form_for :filter_items, url: url_for(request.params), method: "GET" do |f| %>
       <%= render partial: 'search_form_fields', locals: {f: f} %>
 
-      <%= link_to 'Close', url_for, class: 'btn btn-danger pull-right', style: 'margin-left: 20px;' %>
-      <%= link_to 'Start Over', url_for(search: true), class: 'btn btn-danger pull-right', style: 'margin-left: 20px;' %>
-      <%= link_to 'Export CSV', url_for(request.params.merge(format: :csv)), class: 'btn btn-primary pull-right', style: 'margin-left: 20px;'  %>
+      <%= link_to 'Close', url_for, class: 'btn btn-danger float-right', style: 'margin-left: 20px;' %>
+      <%= link_to 'Start Over', url_for(search: true), class: 'btn btn-danger float-right', style: 'margin-left: 20px;' %>
+      <%= link_to 'Export CSV', url_for(request.params.merge(format: :csv)), class: 'btn btn-primary float-right', style: 'margin-left: 20px;'  %>
       <% if get_resque_data? %>
-        <%= link_to 'Exclude Resque Tools', url_for(request.params.merge(resque: nil)), class: 'btn btn-primary pull-right', style: 'margin-left: 20px;'  %>
+        <%= link_to 'Exclude Resque Tools', url_for(request.params.merge(resque: nil)), class: 'btn btn-primary float-right', style: 'margin-left: 20px;'  %>
       <% else %>
-        <%= link_to 'Include Resque Tools (May Be Slow)', url_for(request.params.merge(resque: true)), class: 'btn btn-primary pull-right', style: 'margin-left: 20px;'  %>
+        <%= link_to 'Include Resque Tools (May Be Slow)', url_for(request.params.merge(resque: true)), class: 'btn btn-primary float-right', style: 'margin-left: 20px;'  %>
       <% end %>
-      <%= f.submit 'Search', class: 'btn btn-primary pull-right' %>
+      <%= f.submit 'Search', class: 'btn btn-primary float-right' %>
     <% end %>
   </div>
 </div>

@@ -17,7 +17,7 @@
             <span id='selected-search-label' aria-hidden="true" style='display:none;' ><%= t("morphosource.search.form.option.media.label") %></span>
           </button>
 
-          <div class="dropdown-menu pull-right">
+          <div class="dropdown-menu float-right">
             <%= link_to t("morphosource.search.form.option.media.label", application_name: application_name), "#", class: 'dropdown-item', 
                   data: { "search-option" => main_app.media_search_path, "search-label" => t("morphosource.search.form.option.media.label") } %>
             <%= link_to t("morphosource.search.form.option.physical_objects.label_long"), "#", class: 'dropdown-item', 

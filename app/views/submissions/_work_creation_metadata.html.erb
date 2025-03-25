@@ -2,8 +2,8 @@
   <% f.object.primary_terms.each do |term| %>
     <% if term == :date_created %>
       <div class="row">
-        <div class="col-xs-6 showcase-label">Date created</div>
-        <div class="col-xs-6 showcase-value">
+        <div class="col-6 showcase-label">Date created</div>
+        <div class="col-6 showcase-value">
           <%= f.date_field :date_created, wrapper: :inline, value: f.object.date_created, class: 'datepicker form-control' %>
         </div>
       </div>

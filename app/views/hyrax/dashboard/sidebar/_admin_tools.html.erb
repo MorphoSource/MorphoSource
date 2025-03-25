@@ -55,7 +55,7 @@
           <span class="fa fa-award" aria-hidden="true"></span> <span class="sidebar-action-text">
             <%= t('morphosource.dashboard.sidebar.admin_tools.management.contributor_applications') %>
             <% if ( petition_count = ContributorPetition.where(decision_required: true).count ) > 0 %>
-              <span class="count label label-danger" style="vertical-align: text-top;">
+              <span class="count badge badge-danger" style="vertical-align: text-top;">
                 <%= number_with_delimiter(petition_count, :delimiter => ',') %>
               </span>
             <% end %>

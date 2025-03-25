@@ -227,9 +227,9 @@ RSpec.describe MorphosourceHelper, type: :helper do
           media.fileset_accessibility = ["open"]
         end
 
-        it { expect(helper.render_publication_status_badge(document)).to eq("<span class=\"label label-success\">Open Download</span>") }
+        it { expect(helper.render_publication_status_badge(document)).to eq("<span class=\"badge badge-success\">Open Download</span>") }
 
-        it { expect(helper.render_view_link_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa\"><span class=\"label label-success\">Open Download</span></a>") }
+        it { expect(helper.render_view_link_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa\"><span class=\"badge badge-success\">Open Download</span></a>") }
       end
 
       context 'media is open, files are restricted' do
@@ -237,9 +237,9 @@ RSpec.describe MorphosourceHelper, type: :helper do
           media.fileset_accessibility = ["restricted_download"]
         end
 
-        it { expect(helper.render_publication_status_badge(document)).to eq("<span class=\"label label-info\">Restricted Download</span>") }
+        it { expect(helper.render_publication_status_badge(document)).to eq("<span class=\"badge badge-info\">Restricted Download</span>") }
 
-        it { expect(helper.render_view_link_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa\"><span class=\"label label-info\">Restricted Download</span></a>") }
+        it { expect(helper.render_view_link_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa\"><span class=\"badge badge-info\">Restricted Download</span></a>") }
       end
 
       context 'media is open, files are preview only' do
@@ -247,9 +247,9 @@ RSpec.describe MorphosourceHelper, type: :helper do
           media.fileset_accessibility = ["preview_only"]
         end
 
-        it { expect(helper.render_publication_status_badge(document)).to eq("<span class=\"label label-info\">No Download</span>") }
+        it { expect(helper.render_publication_status_badge(document)).to eq("<span class=\"badge badge-info\">No Download</span>") }
 
-        it { expect(helper.render_view_link_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa\"><span class=\"label label-info\">No Download</span></a>") }
+        it { expect(helper.render_view_link_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa\"><span class=\"badge badge-info\">No Download</span></a>") }
       end
 
       context 'media is open, files are hidden' do
@@ -258,9 +258,9 @@ RSpec.describe MorphosourceHelper, type: :helper do
           media.fileset_accessibility = ['hidden']
         end
 
-        it { expect(helper.render_publication_status_badge(document)).to eq("<span class=\"label label-info\">Hidden</span>") }
+        it { expect(helper.render_publication_status_badge(document)).to eq("<span class=\"badge badge-info\">Hidden</span>") }
 
-        it { expect(helper.render_view_link_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa\"><span class=\"label label-info\">Hidden</span></a>") }
+        it { expect(helper.render_view_link_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa\"><span class=\"badge badge-info\">Hidden</span></a>") }
       end
 
       context 'media and files are both private' do
@@ -269,9 +269,9 @@ RSpec.describe MorphosourceHelper, type: :helper do
           media.fileset_accessibility = ["private"]
         end
 
-        it { expect(helper.render_publication_status_badge(document)).to eq("<span class=\"label label-danger\">Private</span>") }
+        it { expect(helper.render_publication_status_badge(document)).to eq("<span class=\"badge badge-danger\">Private</span>") }
 
-        it { expect(helper.render_view_link_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa\"><span class=\"label label-danger\">Private</span></a>") }
+        it { expect(helper.render_view_link_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa\"><span class=\"badge badge-danger\">Private</span></a>") }
       end
 
       # disable tests for leases and embargoes for now since MS doesn't use them.
@@ -286,9 +286,9 @@ RSpec.describe MorphosourceHelper, type: :helper do
       #     allow(media).to receive(:embargo).and_return(embargo)
       #   end
       #
-      #   it { expect(helper.render_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa/edit#share\"><span class=\"label label-warning\">Embargo</span></a>") }
+      #   it { expect(helper.render_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa/edit#share\"><span class=\"badge badge-warning\">Embargo</span></a>") }
       #
-      #   it { expect(helper.render_view_link_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa\"><span class=\"label label-warning\">Embargo</span></a>") }
+      #   it { expect(helper.render_view_link_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa\"><span class=\"badge badge-warning\">Embargo</span></a>") }
       # end
 
   #     context 'media and files are under a lease' do
@@ -300,9 +300,9 @@ RSpec.describe MorphosourceHelper, type: :helper do
   #         allow(media).to receive(:lease).and_return(lease)
   #       end
   #
-  #       it { expect(helper.render_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa/edit#share\"><span class=\"label label-warning\">Lease</span></a>") }
+  #       it { expect(helper.render_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa/edit#share\"><span class=\"badge badge-warning\">Lease</span></a>") }
   #
-  #       it { expect(helper.render_view_link_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa\"><span class=\"label label-warning\">Lease</span></a>") }
+  #       it { expect(helper.render_view_link_publication_status_badge(document)).to eq("<a id=\"permission_aaa\" class=\"visibility-link\" href=\"/concern/media/aaa\"><span class=\"badge badge-warning\">Lease</span></a>") }
   #     end
     end
   end

@@ -8,10 +8,10 @@
 
     <div class="form-group row">
       <div class="allowed-remote-source-wrapper <%= @form.can_submit_remote_files == "Yes" ? "" : "hide" %>">
-        <div class="col-xs-6 showcase-label">
+        <div class="col-6 showcase-label">
         <%= k.label :allowed_remote_source, t("morphosource.dashboard.profiles.edit_primary.allowed_remote_source").html_safe %>
         </div>
-        <div class="col-xs-6 showcase-value">
+        <div class="col-6 showcase-value">
           <%= k.text_area :allowed_remote_source,
           cols: 30,
           rows: 4,

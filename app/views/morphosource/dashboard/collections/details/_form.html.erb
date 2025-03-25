@@ -1,5 +1,5 @@
 <div id="details" class="tab-pane active">
-  <div class="panel panel-default labels">
+  <div class="card panel-default labels">
     <div class="container-fluid mb-1">
       <%= simple_form_for @form, url: collection_form_url(@form), wrapper: :showcase_default, html: { class: 'editor' } do |f| %>
 
@@ -20,10 +20,10 @@
               <%= render_edit_field_partial('related_url', f: f) %>
 
               <div class="row">
-                <div class="col-xs-6 showcase-label">
+                <div class="col-6 showcase-label">
                   Visibility
                 </div>
-                <div class="col-xs-6 showcase-value">
+                <div class="col-6 showcase-value">
 
                   <div class="m-0 p-0 text-nowrap">
                   <a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block-visibility" class="btn collapse-block-visibility pl-0">

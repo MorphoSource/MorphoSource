@@ -4,11 +4,11 @@
   <div class="row">
     <div class="col-md-12">
       <% if @petition.decision_required %>
-        <div class="panel panel-default">
-          <div class="panel-heading">
+        <div class="card panel-default">
+          <div class="card-header">
               <h2 class="panel-title h2">Contributor Application Submitted, Awaiting Decision</h2>
           </div>
-          <div class="panel-body">
+          <div class="card-body">
             <div class="row">
               <p>Your contributor application has been submitted. A decision should be made soon. When a decision is made, you will be notified via email and site notification. If your application has not been decided after 3 business days, please feel free to <a href="mailto:morphosource@duke.edu">contact us</a>.</p>
             </div>
@@ -17,33 +17,33 @@
       <% else %>
         <% if @petition.decision_state == 'approve' %> 
           <%# Fallback code, this should never be displayed! %>
-          <div class="panel panel-default">
-            <div class="panel-heading">
+          <div class="card panel-default">
+            <div class="card-header">
                 <h2 class="panel-title h2">Contributor Application Approved</h2>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
               <div class="row">
                 <p>Your contributor application has already been approved, and you should have contributor privileges. If you do not, please <a href="mailto:morphosource@duke.edu">contact us</a>.</p>
               </div>
             </div>
           </div>
         <% elsif @petition.decision_state == 'deny' %>
-          <div class="panel panel-default">
-            <div class="panel-heading">
+          <div class="card panel-default">
+            <div class="card-header">
                 <h2 class="panel-title h2">Contributor Application Denied</h2>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
               <div class="row">
                 <p>Your application has been denied. You will not be able to resubmit a contributor application while your application is denied. You should contact the <a href='mailto:morphosource@duke.edu'>MorphoSource administrators</a> to learn what (if anything) may be done to resolve this situation.</p>
               </div>
             </div>
           </div>
         <% elsif @petition.decision_state == 'return' %>
-          <div class="panel panel-default">
-            <div class="panel-heading">
+          <div class="card panel-default">
+            <div class="card-header">
                 <h2 class="panel-title h2">Contributor Application Must Be Resubmitted</h2>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
               <div class="row">
                 <p style="margin-left: 15px;">Your application has been temporarily returned to you, likely with a request for further or modified information. If a message is present below, you should consult it, as it likely has instructions for you to follow. Please resubmit your application to become a contributor or data manager, making any necessary changes.</p>
                 <% if @petition.decision_message.present? %>
@@ -55,11 +55,11 @@
         <% end %>
 
         <% if @petition.decision_state.nil? || @petition.decision_state == 'return' %>
-          <div class="panel panel-default">
-            <div class="panel-heading">
+          <div class="card panel-default">
+            <div class="card-header">
               <h2 class="panel-title h2">Become A Contributor or Data Manager</h2>
             </div>
-            <div class="panel-body">
+            <div class="card-body">
               <div class="row">
                 <p style="margin-left: 15px; margin-bottom: 30px;">Fill out the following form to apply for contributor or data manager status on MorphoSource. After your application has been accepted and you have been granted contributor status, you will be able to upload media, participate in projects and teams, and manage media that have been shared with or transferred to you. Some fields may be auto-filled from your user profile. Similarly, information from certain fields of this form - e.g., organization, department - will be saved back to your user profile if what you enter here differs from your profile. <b>Please Note: All fields are required, unless indicated otherwise.</b></p>
               </div>
@@ -71,7 +71,7 @@
               <% method = @petition.id.present? ? :patch : :put %>
               <%= simple_form_for @petition, url: url, method: method do |f| %>
                 <div class="form-group row">
-                  <%= f.label :reason, class: 'col-sm-4 control-label' do %>
+                  <%= f.label :reason, class: 'col-sm-4 col-form-label' do %>
                     <%= t("morphosource.dashboard.my.contributor_petitions.reason").html_safe %>
                   <% end %>
                   <div class="col-sm-8">
@@ -80,7 +80,7 @@
                 </div><!-- .form-group -->
 
                 <div class="form-group row">
-                  <%= f.label :user_affiliation, class: 'col-sm-4 control-label' do %>
+                  <%= f.label :user_affiliation, class: 'col-sm-4 col-form-label' do %>
                     <%= t("morphosource.dashboard.my.contributor_petitions.user_affiliation").html_safe %>
                   <% end %>
                   <div class="col-sm-8">
@@ -92,7 +92,7 @@
                 </div><!-- .form-group -->
 
                 <div class="form-group row">
-                  <%= f.label :user_department, class: 'col-sm-4 control-label' do %>
+                  <%= f.label :user_department, class: 'col-sm-4 col-form-label' do %>
                     <%= t("morphosource.dashboard.my.contributor_petitions.user_department").html_safe %>
                   <% end %>
                   <div class="col-sm-8">
@@ -104,14 +104,14 @@
                 </div><!-- .form-group -->
              
                 <div class="checkbox-form-group">
-                  <%= f.label :user_demographics, t("morphosource.dashboard.profiles.edit_primary.demographics").html_safe, class: 'col-sm-4 control-label' %>
+                  <%= f.label :user_demographics, t("morphosource.dashboard.profiles.edit_primary.demographics").html_safe, class: 'col-sm-4 col-form-label' %>
                   <div class="col-sm-8">
                     <%= render partial: 'checkbox_columns', locals: {field: 'user_demographics', values: Morphosource::UserProfile::CheckboxValues::DEMOGRAPHICS, f: f} %>
                   </div>
                 </div>
 
                 <div class="form-group row">
-                  <%= f.label :user_advisor, class: 'col-sm-4 control-label' do %>
+                  <%= f.label :user_advisor, class: 'col-sm-4 col-form-label' do %>
                     <%= t("morphosource.dashboard.my.contributor_petitions.user_advisor").html_safe %>
                   <% end %>
                   <div class="col-sm-8">
@@ -120,7 +120,7 @@
                 </div><!-- .form-group -->
 
                 <div class="form-group row">
-                  <%= f.label :contribution_amount, class: 'col-sm-4 control-label' do %>
+                  <%= f.label :contribution_amount, class: 'col-sm-4 col-form-label' do %>
                     <%= t("morphosource.dashboard.my.contributor_petitions.contribution_amount").html_safe %>
                   <% end %>
                   <div class="col-sm-8">
@@ -131,7 +131,7 @@
 
                 <div class="row">
                   <div class="col-sm-4">
-                    <%= f.label :terms_agree, t("morphosource.dashboard.my.contributor_petitions.terms_agree").html_safe, class: 'control-label' %>
+                    <%= f.label :terms_agree, t("morphosource.dashboard.my.contributor_petitions.terms_agree").html_safe, class: 'col-form-label' %>
                   </div>
                   <div class="col-sm-8">
                     <%= f.check_box :terms_agree, {checked: false, required: true}, true %>

@@ -162,10 +162,10 @@ input[type=checkbox].disabled {
   }
 
   .required-flag, .recommended-flag, .optional-flag {
-    .label:empty {
+    .badge:empty {
       display:inline-block !important;
     }
-    .label {
+    .badge {
       background-color: #528253;
       font-size: 60%;
       font-weight: normal;
@@ -175,22 +175,22 @@ input[type=checkbox].disabled {
     }
   }
   .required-flag {
-    .label {
+    .badge {
       background-color: #528253;
     }
-    .label:before {
+    .badge:before {
       content: 'Required';
     }
   }
 
   .recommended-flag {
-    .label:before {
+    .badge:before {
       content: 'Recommended';
     }
   }
 
   .optional-flag {
-    .label:before {
+    .badge:before {
       content: 'Optional';
     }
   }
@@ -287,13 +287,13 @@ input[type=checkbox].disabled {
     min-width: 80px;
   }
 
-  .panel {
+  .card {
     border: none;
     margin-left: -15px;
     margin-right: -15px;
   }
 
-  // Hyrax .dashboard .panel has borders, showcase-edit overwrites this, this allows to put back in
+  // Hyrax .dashboard .card has borders, showcase-edit overwrites this, this allows to put back in
   .panel-borders {
     border: 1px solid #dedede;
   }
@@ -303,7 +303,7 @@ input[type=checkbox].disabled {
     padding-top: 44px !important;
   }
 
-  .panel-full-width .panel {
+  .panel-full-width .card {
     border: none;
     margin-left: 0;
     margin-right: 0;
@@ -403,7 +403,7 @@ input[type=checkbox].disabled {
   .tab-content > #physical-object-details {
 
     .form-group {
-      .help-block {
+      .form-text text-muted {
         display:none;
       }
       .form-control {
@@ -670,7 +670,7 @@ input[type=checkbox].disabled {
     }
   }
 
-  .btn-xs {
+  .btn-sm {
     font-size: 9px;
   }
 

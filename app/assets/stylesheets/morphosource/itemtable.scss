@@ -1,18 +1,18 @@
-div.panel.itemtable {
+div.card.itemtable {
   min-width: 1200px;
 
   // Rules for optional description heading within body
-  .panel-body .panel-heading {
+  .card-body .card-header {
     background-color: #f5f5f5
   }
 }
 
-// Panel has controller name class, can override general behavior by controller
-div.panel.itemtable.requests {
+// card has controller name class, can override general behavior by controller
+div.card.itemtable.requests {
   min-width: 1600px;
 }
 
-div.panel.itemtable.background_jobs {
+div.card.itemtable.background_jobs {
   min-width: 600px;
 }
 

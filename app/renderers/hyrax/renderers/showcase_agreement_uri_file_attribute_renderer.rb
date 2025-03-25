@@ -12,10 +12,10 @@ module Hyrax
 
         label_content = options[:label].present? ? options[:label] : label
         hint_content  = options[:show_hint] ? hint : ""
-        markup << %(<div class='col-xs-6 showcase-label'>#{label_content}#{hint_content}</div>)
+        markup << %(<div class='col-6 showcase-label'>#{label_content}#{hint_content}</div>)
 
         attributes = microdata_object_attributes(field).merge(class: "attribute attribute-#{field}")
-        markup << %(<div class='col-xs-6 showcase-value #{css_classes}'>)
+        markup << %(<div class='col-6 showcase-value #{css_classes}'>)
         if options[:attachment_file_url].present?
           if options[:link_label].present?
             link_label = options[:link_label]

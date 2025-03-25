@@ -11,8 +11,8 @@
   <tr>
     <td>
         <div class="row">
-            <div class="col-xs-6 showcase-label">Organization</div>
-            <div class="col-xs-6 showcase-value" id="device-organization-title-value">
+            <div class="col-6 showcase-label">Organization</div>
+            <div class="col-6 showcase-value" id="device-organization-title-value">
             <%= presenter.device_organization_institution %>
             </div>
         </div>
@@ -22,16 +22,16 @@
           link: main_app.hyrax_device_path(presenter.device_id),
           render_as: :showcase_link, include_empty: false, value_per_line: true) %>
         <div class="row">
-            <div class="col-xs-6 showcase-label">Manufacturer</div>
-            <div class="col-xs-6 showcase-value" id="device-title-value"><%= presenter.device_creator&.first %></div>
+            <div class="col-6 showcase-label">Manufacturer</div>
+            <div class="col-6 showcase-value" id="device-title-value"><%= presenter.device_creator&.first %></div>
         </div>
         <div class="row">
-            <div class="col-xs-6 showcase-label">Modality</div>
-            <div class="col-xs-6 showcase-value break-all" id="device-modality-value" data-modality-id="<%= presenter.device_modality&.join(", ") %>"><%= presenter.device_modality_labels %></div>
+            <div class="col-6 showcase-label">Modality</div>
+            <div class="col-6 showcase-value break-all" id="device-modality-value" data-modality-id="<%= presenter.device_modality&.join(", ") %>"><%= presenter.device_modality_labels %></div>
         </div>
         <div class="row">
-            <div class="col-xs-6 showcase-label">Description</div>
-            <div class="col-xs-6 showcase-value break-all" id="device-description-value"><%= presenter.device_description&.first %></div>
+            <div class="col-6 showcase-label">Description</div>
+            <div class="col-6 showcase-value break-all" id="device-description-value"><%= presenter.device_description&.first %></div>
         </div>
     </td>
   </tr>

@@ -13,28 +13,28 @@ function set_visibility_for_collection(val) {
     case 'new':
       select_visibility_for_collection(open);
       display_value = "Public";
-      display_class = "label-success";
+      display_class = "badge-success";
       break;
     case 'open':
       select_visibility_for_collection(open);
       display_value = "Public";
-      display_class = "label-success";
+      display_class = "badge-success";
       break;
     case 'restricted':
       select_visibility_for_collection(restricted);
       display_value = "Private";
-      display_class = "label-danger";
+      display_class = "badge-danger";
       break;
     default:
       display_value = "Public";
-      display_class = "label-success";
+      display_class = "badge-success";
   }
 
   if (current_visibility_value.length) {
     current_visibility_value.text(display_value);
     current_visibility_value
-      .removeClass('label-success')
-      .removeClass('label-danger');
+      .removeClass('badge-success')
+      .removeClass('badge-danger');
     current_visibility_value.addClass(display_class);
   }
 }

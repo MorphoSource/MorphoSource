@@ -12,8 +12,8 @@
 <%= @presenter.attribute_to_html(:rights_statement, label: t('morphosource.collections.view.about.permissions.rights_statement'), render_as: :showcase_rights_statement_link, include_empty: true )%>
 <%# publication status %>
 <div class="row">
-  <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.permissions.download_permission') %></div>
-  <div class="col-xs-6 showcase-value"><%= publication_status_label(@presenter.download_permission&.first) || '--' %></div>
+  <div class="col-6 showcase-label"><%= t('morphosource.collections.view.about.permissions.download_permission') %></div>
+  <div class="col-6 showcase-value"><%= publication_status_label(@presenter.download_permission&.first) || '--' %></div>
 </div>
 <%# download reviewer %>
 <%= @presenter.attribute_to_html(:download_reviewer, label: t('morphosource.collections.view.about.permissions.download_reviewer'), render_as: :showcase_user_link, include_empty: true) %>

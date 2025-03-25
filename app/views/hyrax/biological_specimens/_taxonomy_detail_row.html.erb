@@ -1,85 +1,85 @@
 <div class="panel-group taxonomy-accordion-group" data-taxonomy-id="<%= t.id %>" data-gbif-key="<%= t.gbif_key&.first %>">
   <input name="biological_specimen[taxonomy_id][]" id="taxonomy_id" type="hidden" value="<%= t.id %>" />
-  <div class="panel m-0">
+  <div class="card m-0">
     <div class="row">
-      <div class="col-xs-5 showcase-label taxonomy-label"><%= label %></div>
-      <div class="col-xs-5 showcase-value taxonomy-title"><i><%= t.title&.first %></i></div>
-      <div class="col-xs-1 pl-0"><span data-toggle="collapse" data-parent="#taxonomy-accordion-group" href="#collapse-taxonomy-<%= t.id %>" class="col-xs-1 glyphicon collapse-taxonomy-<%= t.id %> glyphicon-triangle-bottom collapsed" aria-expanded="false"></span></div>
-      <div class="col-xs-1 p-0"><i class="fa fa-times-circle" aria-hidden="true" id="remove-taxonomy"></i></div>
+      <div class="col-5 showcase-label taxonomy-label"><%= label %></div>
+      <div class="col-5 showcase-value taxonomy-title"><i><%= t.title&.first %></i></div>
+      <div class="col-1 pl-0"><span data-toggle="collapse" data-parent="#taxonomy-accordion-group" href="#collapse-taxonomy-<%= t.id %>" class="col-1 glyphicon collapse-taxonomy-<%= t.id %> glyphicon-triangle-bottom collapsed" aria-expanded="false"></span></div>
+      <div class="col-1 p-0"><i class="fa fa-times-circle" aria-hidden="true" id="remove-taxonomy"></i></div>
     </div>
 
     <div id="collapse-taxonomy-<%= t.id %>" class="panel-collapse collapse-accordion collapse" aria-expanded="false" style="height: 0px;">
       <div class="row taxonomy-rank">
-          <div class="col-xs-6 showcase-label">Domain</div>
-          <div class="col-xs-6 showcase-value"><%= t.taxonomy_domain&.first %></div>
+          <div class="col-6 showcase-label">Domain</div>
+          <div class="col-6 showcase-value"><%= t.taxonomy_domain&.first %></div>
       </div>
       <div class="row taxonomy-rank">
-          <div class="col-xs-6 showcase-label">Kingdom</div>
-          <div class="col-xs-6 showcase-value"><%= t.taxonomy_kingdom&.first %></div>
+          <div class="col-6 showcase-label">Kingdom</div>
+          <div class="col-6 showcase-value"><%= t.taxonomy_kingdom&.first %></div>
       </div>
       <div class="row taxonomy-rank">
-          <div class="col-xs-6 showcase-label">Phylum</div>
-          <div class="col-xs-6 showcase-value"><%= t.taxonomy_phylum&.first %></div>
+          <div class="col-6 showcase-label">Phylum</div>
+          <div class="col-6 showcase-value"><%= t.taxonomy_phylum&.first %></div>
       </div>
       <div class="row taxonomy-rank">
-          <div class="col-xs-6 showcase-label">Superclass</div>
-          <div class="col-xs-6 showcase-value"><%= t.taxonomy_superclass&.first %></div>
+          <div class="col-6 showcase-label">Superclass</div>
+          <div class="col-6 showcase-value"><%= t.taxonomy_superclass&.first %></div>
       </div>
       <div class="row taxonomy-rank">
-          <div class="col-xs-6 showcase-label">Class</div>
-          <div class="col-xs-6 showcase-value"><%= t.taxonomy_class&.first %></div>
+          <div class="col-6 showcase-label">Class</div>
+          <div class="col-6 showcase-value"><%= t.taxonomy_class&.first %></div>
       </div>
       <div class="row taxonomy-rank">
-          <div class="col-xs-6 showcase-label">Subclass</div>
-          <div class="col-xs-6 showcase-value"><%= t.taxonomy_subclass&.first %></div>
+          <div class="col-6 showcase-label">Subclass</div>
+          <div class="col-6 showcase-value"><%= t.taxonomy_subclass&.first %></div>
       </div>
       <div class="row taxonomy-rank">
-          <div class="col-xs-6 showcase-label">Superorder</div>
-          <div class="col-xs-6 showcase-value"><%= t.taxonomy_superorder&.first %></div>
+          <div class="col-6 showcase-label">Superorder</div>
+          <div class="col-6 showcase-value"><%= t.taxonomy_superorder&.first %></div>
       </div>
       <div class="row taxonomy-rank">
-          <div class="col-xs-6 showcase-label">Order</div>
-          <div class="col-xs-6 showcase-value"><%= t.taxonomy_order&.first %></div>
+          <div class="col-6 showcase-label">Order</div>
+          <div class="col-6 showcase-value"><%= t.taxonomy_order&.first %></div>
       </div>
       <div class="row taxonomy-rank">
-          <div class="col-xs-6 showcase-label">Suborder</div>
-          <div class="col-xs-6 showcase-value"><%= t.taxonomy_suborder&.first %></div>
+          <div class="col-6 showcase-label">Suborder</div>
+          <div class="col-6 showcase-value"><%= t.taxonomy_suborder&.first %></div>
       </div>
       <div class="row taxonomy-rank">
-          <div class="col-xs-6 showcase-label">Superfamily</div>
-          <div class="col-xs-6 showcase-value"><%= t.taxonomy_superfamily&.first %></div>
+          <div class="col-6 showcase-label">Superfamily</div>
+          <div class="col-6 showcase-value"><%= t.taxonomy_superfamily&.first %></div>
       </div>
       <div class="row taxonomy-rank">
-          <div class="col-xs-6 showcase-label">Family</div>
-          <div class="col-xs-6 showcase-value"><%= t.taxonomy_family&.first %></div>
+          <div class="col-6 showcase-label">Family</div>
+          <div class="col-6 showcase-value"><%= t.taxonomy_family&.first %></div>
       </div>
       <div class="row taxonomy-rank">
-          <div class="col-xs-6 showcase-label">Subfamily</div>
-          <div class="col-xs-6 showcase-value"><%= t.taxonomy_subfamily&.first %></div>
+          <div class="col-6 showcase-label">Subfamily</div>
+          <div class="col-6 showcase-value"><%= t.taxonomy_subfamily&.first %></div>
       </div>
       <div class="row taxonomy-rank">
-          <div class="col-xs-6 showcase-label">Tribe</div>
-          <div class="col-xs-6 showcase-value"><%= t.taxonomy_tribe&.first %></div>
+          <div class="col-6 showcase-label">Tribe</div>
+          <div class="col-6 showcase-value"><%= t.taxonomy_tribe&.first %></div>
       </div>
       <div class="row taxonomy-rank">
-          <div class="col-xs-6 showcase-label">Genus</div>
-          <div class="col-xs-6 showcase-value"><i><%= t.taxonomy_genus&.first %></i></div>
+          <div class="col-6 showcase-label">Genus</div>
+          <div class="col-6 showcase-value"><i><%= t.taxonomy_genus&.first %></i></div>
       </div>
       <div class="row taxonomy-rank">
-          <div class="col-xs-6 showcase-label">Subgenus</div>
-          <div class="col-xs-6 showcase-value"><i><%= t.taxonomy_subgenus&.first %></i></div>
+          <div class="col-6 showcase-label">Subgenus</div>
+          <div class="col-6 showcase-value"><i><%= t.taxonomy_subgenus&.first %></i></div>
       </div>
       <div class="row taxonomy-rank">
-          <div class="col-xs-6 showcase-label">Species</div>
-          <div class="col-xs-6 showcase-value"><i><%= t.taxonomy_species&.first %></i></div>
+          <div class="col-6 showcase-label">Species</div>
+          <div class="col-6 showcase-value"><i><%= t.taxonomy_species&.first %></i></div>
       </div>
       <div class="row taxonomy-rank">
-          <div class="col-xs-6 showcase-label">Subspecies</div>
-          <div class="col-xs-6 showcase-value"><i><%= t.taxonomy_subspecies&.first %></i></div>
+          <div class="col-6 showcase-label">Subspecies</div>
+          <div class="col-6 showcase-value"><i><%= t.taxonomy_subspecies&.first %></i></div>
       </div>
       <div class="row taxonomy-rank">
-          <div class="col-xs-6 showcase-label">Contributing User</div>
-          <div class="col-xs-6 showcase-value"><a class="contributing-user" href="/users/<%= t.depositor %>"><%= t.contributing_user.display_name %></a></div>
+          <div class="col-6 showcase-label">Contributing User</div>
+          <div class="col-6 showcase-value"><a class="contributing-user" href="/users/<%= t.depositor %>"><%= t.contributing_user.display_name %></a></div>
       </div>
     </div>
   </div>

@@ -1,13 +1,13 @@
-<% provide :page_title, 'Fund Code Control Panel' %>
+<% provide :page_title, 'Fund Code Control card' %>
 
 <div class="fund-codes">
   <div class="row">
     <div class="col-md-12">
-      <div class="panel panel-default">
-        <div class="panel-heading">
+      <div class="card panel-default">
+        <div class="card-header">
           <h2 class="panel-title h2"><%= "#{@form_type} Fund Code" %></h2>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
           <%= simple_form_for @current_fund_code, url: @form_url do |f| %>
             <%= f.input :title, required: true %>
             <%= f.input :description, required: true %>
@@ -18,10 +18,10 @@
             <%= f.input :standard_members, input_html: { data: { standard_members: @standard_members_select2 } } %>
 
             <div class="form-group fund_code_expires_at">
-              <label class="control-label" for="fund_code_expires_at">
+              <label class="col-form-label" for="fund_code_expires_at">
                 <%= t('simple_form.labels.fund_code.expires_at') %>
               </label>
-              <p class="help-block">
+              <p class="form-text text-muted">
                 <%= t('simple_form.hints.fund_code.expires_at') %>
               </p>
               <%= f.date_field :expires_at, class: 'datepicker form-control' %>
@@ -39,7 +39,7 @@
             <div class="form-group">
               <label>Fund Code File Attachments</label>
               <div>
-                <p class="help-block">Files associated with this fund code.</p>
+                <p class="form-text text-muted">Files associated with this fund code.</p>
                 <ul>
                 <% f.object.attachments.each_with_index do |attachment, idx| %>
                   <li><%= link_to File.basename(attachment.url), attachment.url %> (<%= link_to 'delete', admin_fund_codes_delete_attachment_path(id: f.object.id, index: idx), method: :delete %>)</li>
@@ -47,7 +47,7 @@
                 </ul>
               </div>
               <div>
-                <p class="help-block">Upload new attachments:</p>
+                <p class="form-text text-muted">Upload new attachments:</p>
                 <%= f.file_field :attachments, multiple: true %>
               </div>
             </div>
@@ -61,11 +61,11 @@
 
   <div class="row fund-codes-table-container">
     <div class="col-md-12">
-      <div class="panel panel-default">
-        <div class="panel-heading">
+      <div class="card panel-default">
+        <div class="card-header">
           <h2 class="panel-title h2"><%= t('.current_fund_codes') %></h3>
         </div>
-        <div class="panel-body">
+        <div class="card-body">
           <table class="table table-striped datatable" style="font-size: smaller;">
             <thead>
               <th><%= t('.header.fund_code') %></th>

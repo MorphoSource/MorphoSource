@@ -7,7 +7,7 @@
 
   <div class="row collection-header">
 
-    <div class="col-xs-9 flex">
+    <div class="col-9 flex">
       <div class="team-title">
          <h1>
             <div id="showcase-title">
@@ -22,7 +22,7 @@
         </h1>
       </div>
     </div>
-    <div class="col-xs-3 show-actions text-right">
+    <div class="col-3 show-actions text-right">
       <% if current_user&.admin? %>
         <%= link_to 'Edit', main_app.edit_hyrax_organization_path(@presenter.id), class: 'btn w-50 btn-primary' %>
       <% end %>
@@ -30,7 +30,7 @@
 
   </div><!-- /row -->
 
-  <div class="panel panel-default tabs" role="main">
+  <div class="card panel-default tabs" role="main">
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
       <li role="presentation" class="active">
@@ -79,10 +79,10 @@
             <%= render 'hyrax/organizations/bso_filters' %>
             <div class="row">
               <!-- Search bar -->
-              <div class="col-xs-6">
+              <div class="col-6">
                 <%= render 'hyrax/organizations/search_form', tab: "biological_specimens" %>
               </div>
-              <div class="col-xs-6">
+              <div class="col-6">
                 <%= render 'hyrax/organizations/sort_and_per_page_bso' %>
               </div>
             </div>
@@ -103,10 +103,10 @@
             <%= render 'hyrax/organizations/cho_filters' %>
             <div class="row">
               <!-- Search bar -->
-              <div class="col-xs-6">
+              <div class="col-6">
                 <%= render 'hyrax/organizations/search_form', tab: "cultural_heritage_objects" %>
               </div>
-              <div class="col-xs-6">
+              <div class="col-6">
                 <%= render 'hyrax/organizations/sort_and_per_page_cho' %>
               </div>
             </div>
@@ -129,6 +129,6 @@
 
     </div><!-- /tab-content -->
 
-  </div><!-- /panel panel-default tabs -->
+  </div><!-- /card panel-default tabs -->
 
 </div><!-- div hyc-container -->

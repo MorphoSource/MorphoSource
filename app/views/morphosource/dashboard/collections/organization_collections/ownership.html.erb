@@ -13,7 +13,7 @@
       <%= render 'hyrax/base/flash_msg' %>
       <% content_for :body_css_classes do %>showcase showcase-edit teams ms-collection-edit<% end %>
 
-      <div class="col-xs-9 no-horizontal-padding title team-title">
+      <div class="col-9 no-horizontal-padding title team-title">
         <div>
           <span class="fa fa-edit" aria-hidden="true"></span>
           <h1 style="margin-bottom:20px;"><%= @collection.title.first %>
@@ -28,14 +28,14 @@
         </div>
       </div>
 
-      <div class="panel panel-default panel-borders tabs teams" id="collection-edit-controls">
+      <div class="card panel-default panel-borders tabs teams" id="collection-edit-controls">
         <%= render 'nav_tabs' %>
         <div class="row tab-action-buttons">
           <div class="float-right"></div>
         </div>
 
-        <div class="panel-body no-horizontal-padding">
-          <div class="col-xs-12 mb-2">
+        <div class="card-body no-horizontal-padding">
+          <div class="col-12 mb-2">
             <%= t("hyrax.organization.dashboard.ownership.introduction", org_name: @collection.title.first)%>
           </div>
 
@@ -50,7 +50,7 @@
                 @media_count, 
                 render_options.merge(link: main_app.organization_path(@collection.id))
               ).render %>
-              <div class="row mb-1 csv-export-link"><div class="col-xs-8">
+              <div class="row mb-1 csv-export-link"><div class="col-8">
                 <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.media_object"), media_export_csv_url(@collection) %>
               </div></div>
             
@@ -61,7 +61,7 @@
                 @device_media_count, 
                 render_options.merge(link: main_app.organization_device_media_path(@collection.id))
               ).render %>
-              <div class="row mb-1 csv-export-link"><div class="col-xs-8">
+              <div class="row mb-1 csv-export-link"><div class="col-8">
                 <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.media_device"), device_media_export_csv_url(@collection) %>
               </div></div>
             <% end %>
@@ -71,7 +71,7 @@
               @managed_media_count, 
               render_options.merge(link: main_app.organization_path(@collection.id, "f.transfer" => :managed))
             ).render %>
-            <div class="row mb-1 csv-export-link"><div class="col-xs-8">
+            <div class="row mb-1 csv-export-link"><div class="col-8">
               <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.media_managed"), 
               main_app.organization_media_export_path(@collection, :format => :csv, :per_page => 1000000, "f.transfer" => :managed)
             %>
@@ -88,7 +88,7 @@
                 @unmanaged_media_untransferable_count, 
                 render_options.merge(link: main_app.organization_path(@collection.id, "f.transfer" => :unready))
               ).render %>
-              <div class="row mb-1 csv-export-link"><div class="col-xs-8">
+              <div class="row mb-1 csv-export-link"><div class="col-8">
                 <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.media_transfer_status"), main_app.team_media_organization_transfer_status_path(request.parameters.merge(id: @collection.id, :format => :csv, :per_page => 1000000)) %>
               </div></div>
             <% end %>
@@ -100,7 +100,7 @@
                 @specimen_count, 
                 render_options.merge(link: main_app.organization_specimens_path(@collection.id))
               ).render %>
-              <div class="row mb-1 csv-export-link"><div class="col-xs-8">
+              <div class="row mb-1 csv-export-link"><div class="col-8">
                 <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.objects_bso"), specimens_export_csv_url(@collection) %>
               </div></div>
             <% end %>
@@ -110,7 +110,7 @@
                 @cho_count, 
                 render_options.merge(link: main_app.organization_chos_path(@collection.id))
               ).render %>
-              <div class="row mb-1 csv-export-link"><div class="col-xs-8">
+              <div class="row mb-1 csv-export-link"><div class="col-8">
                 <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.objects_cho"), chos_export_csv_url(@collection) %>
               </div></div>
             <% end %>
@@ -121,7 +121,7 @@
                 @device_count, 
                 render_options.merge(link: main_app.organization_devices_path(@collection.id))
               ).render %>
-              <div class="row mb-1 csv-export-link"><div class="col-xs-8">
+              <div class="row mb-1 csv-export-link"><div class="col-8">
                 <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.devices"), devices_export_csv_url(@collection) %>
               </div></div>
             <% end %>

@@ -16,7 +16,7 @@ provide :page_title, construct_page_title(@presenter.title)
   </div>
 
   <div class="row collection-header">
-    <div class="col-xs-12 col-sm-8 col-md-8 title-wrapper">
+    <div class="col-12 col-sm-8 col-md-8 title-wrapper">
       <div class="col-sm-12 col-md-12 flex title-content">
         <div class="team-logo">
           <% unless @presenter.logo_record.blank? %>
@@ -56,7 +56,7 @@ provide :page_title, construct_page_title(@presenter.title)
       </div>
     </div>
 
-    <div class="col-xs-12 col-sm-4 col-md-4 btn-wrapper">
+    <div class="col-12 col-sm-4 col-md-4 btn-wrapper">
       <% if @can_deposit %>
         <%= render 'collection_manage_buttons' %>
       <% end %>
@@ -75,13 +75,13 @@ provide :page_title, construct_page_title(@presenter.title)
     <%= render 'subcollections' %>
   <% end %>
 
-  <div class="panel panel-default tabs" role="main">
+  <div class="card panel-default tabs" role="main">
     <!-- Nav tabs -->
     <%= render 'nav_tabs' %>
     <!-- Tab panes -->
     <!-- <div class="tab-content"> -->
 
-      <div class="collection panel-body">
+      <div class="collection card-body">
         <%= render 'search_header' %>
         <%= render_document_index %>
         <%# <%= render 'document_list' %>
@@ -91,5 +91,5 @@ provide :page_title, construct_page_title(@presenter.title)
 
     <!-- </div><!-- /tab-content -->
 
-  </div><!-- /panel panel-default tabs -->
+  </div><!-- /card panel-default tabs -->
 </div><!-- div hyc-container -->

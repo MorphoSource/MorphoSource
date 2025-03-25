@@ -2,8 +2,8 @@
 <%# Override how the 'tabs' variable is set in this partial by using a helper method. %>
 <% tabs ||= ms_work_form_tabs(curation_concern) %>
 <div class="row">
-  <div class="col-xs-12 col-sm-8">
-    <div class="panel panel-default tabs" role="main">
+  <div class="col-12 col-sm-8">
+    <div class="card panel-default tabs" role="main">
       <!-- Nav tabs -->
       <ul class="nav nav-tabs" role="tablist">
         <% tabs.each_with_index do | tab, i | %>
@@ -50,7 +50,7 @@
       </div>
     </div>
 
-    <div id="savewidget" class="col-xs-12 col-sm-4 fixedsticky" role="complementary">
+    <div id="savewidget" class="col-12 col-sm-4 fixedsticky" role="complementary">
       <%= render 'form_progress', f: f %>
     </div>
   </div>

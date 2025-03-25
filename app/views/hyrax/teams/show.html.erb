@@ -14,7 +14,7 @@ provide :page_title, construct_page_title(@presenter.title)
 
   <div class="row collection-header">
 
-    <div class="col-xs-12 col-sm-9 col-md-10">
+    <div class="col-12 col-sm-9 col-md-10">
 
       <% if @presenter.collection_type.machine_id == 'team' && @presenter.collection.organization %>
         <div class="col-sm-12 col-md-6 flex">
@@ -60,9 +60,9 @@ provide :page_title, construct_page_title(@presenter.title)
 
     </div>
 
-    <div class="col-xs-12 col-sm-3 col-md-2 btn-wrapper">
+    <div class="col-12 col-sm-3 col-md-2 btn-wrapper">
       <% if can?(:edit, @presenter.solr_document) %>
-        <%= link_to t('hyrax.collection.actions.edit.' + @presenter.collection_type.machine_id), hyrax.edit_dashboard_collection_path(@presenter), title: t('hyrax.collection.actions.edit.desc'), class: 'btn btn-primary col-xs-12' %>
+        <%= link_to t('hyrax.collection.actions.edit.' + @presenter.collection_type.machine_id), hyrax.edit_dashboard_collection_path(@presenter), title: t('hyrax.collection.actions.edit.desc'), class: 'btn btn-primary col-12' %>
       <% end %>
     </div>
 
@@ -78,7 +78,7 @@ provide :page_title, construct_page_title(@presenter.title)
       </div>
   <% end %>
 
-  <div class="panel panel-default tabs" role="main">
+  <div class="card panel-default tabs" role="main">
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
       <li role="presentation" class="active">
@@ -122,10 +122,10 @@ provide :page_title, construct_page_title(@presenter.title)
             <%= render 'bso_filters' %>
             <div class="row">
               <!-- Search bar -->
-              <div class="col-xs-6">
+              <div class="col-6">
                 <%= render 'search_form', presenter: @presenter, url: @presenter.search_form_url, tab: 'biological_specimens' %>
               </div>
-              <div class="col-xs-6">
+              <div class="col-6">
                 <%= render 'sort_and_per_page_bso', collection: @presenter %>
               </div>
             </div>
@@ -141,10 +141,10 @@ provide :page_title, construct_page_title(@presenter.title)
             <%= render 'cho_filters' %>
             <div class="row">
               <!-- Search bar -->
-              <div class="col-xs-6">
+              <div class="col-6">
                 <%= render 'search_form', presenter: @presenter, url: @presenter.search_form_url, tab: 'cultural_heritage_objects' %>
               </div>
-              <div class="col-xs-6">
+              <div class="col-6">
                 <%= render 'sort_and_per_page_cho', collection: @presenter %>
               </div>
             </div>
@@ -164,6 +164,6 @@ provide :page_title, construct_page_title(@presenter.title)
 
     </div><!-- /tab-content -->
 
-  </div><!-- /panel panel-default tabs -->
+  </div><!-- /card panel-default tabs -->
 
 </div><!-- div hyc-container -->

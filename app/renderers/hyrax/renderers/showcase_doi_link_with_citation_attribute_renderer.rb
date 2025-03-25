@@ -5,7 +5,7 @@ module Hyrax
         markup = ''
         return markup if values.blank? && !options[:include_empty]
         markup << %(<div class='row'>)
-        markup << %(<div class='col-xs-6 showcase-label'>)
+        markup << %(<div class='col-6 showcase-label'>)
         if values.blank?
           markup << %(--)
         else
@@ -15,7 +15,7 @@ module Hyrax
         end
         markup << %(</div>)
         attributes = microdata_object_attributes(field).merge(class: "attribute attribute-#{field}")
-        markup << %(<div class='col-xs-6 showcase-value'>)
+        markup << %(<div class='col-6 showcase-value'>)
         # todo: auto-populated citation text information on the right, e.g.: https://crosscite.org/docs.html
         markup << %(Not yet implemented)
         markup << %(</div>)

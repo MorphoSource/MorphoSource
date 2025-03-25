@@ -16,8 +16,8 @@
   </div>
 <% end %>
 
-<div class="landing panel">
-  <div class="panel-body">
+<div class="landing card">
+  <div class="card-body">
   <div class="col-12 actions">
     <div class="row horizontal-padding-15">
       <div class="action-column">
@@ -153,7 +153,7 @@
               <div class="list-item">
                 <%= link_to "Decide contributor applications", main_app.admin_contributor_petitions_path %>
                 <% if ( petition_count = ContributorPetition.where(decision_required: true).count ) > 0 %>
-                    <span class="count label label-danger" style="vertical-align: text-top; margin-left: 5px; font-size: small;">
+                    <span class="count badge badge-danger" style="vertical-align: text-top; margin-left: 5px; font-size: small;">
                       <%= number_with_delimiter(petition_count, :delimiter => ',') %>
                     </span>
                   <% end %>

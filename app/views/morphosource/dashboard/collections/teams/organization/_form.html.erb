@@ -1,8 +1,8 @@
 <%= simple_form_for @form, url: collection_form_url(@form), wrapper: :showcase_default, html: { class: 'editor' } do |c| %>
 
   <div id="organization" class="tab-pane">
-    <div class="panel panel-default labels" id="collection_permissions" data-param-key="<%= c.object.model_name.param_key %>">
-      <div class="panel-body">
+    <div class="card panel-default labels" id="collection_permissions" data-param-key="<%= c.object.model_name.param_key %>">
+      <div class="card-body">
 
         <%# taken from _ms_linked_organization.html %>
 

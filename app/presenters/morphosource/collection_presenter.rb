@@ -51,11 +51,11 @@ module Morphosource
     end
 
     def id_badge
-      content_tag(:span, "ID: #{id}", class: "label label-info")
+      content_tag(:span, "ID: #{id}", class: "badge badge-info")
     end
 
     def organization_badge
-      content_tag(:span, "Organization", class: "label label-success")
+      content_tag(:span, "Organization", class: "badge badge-success")
     end
 
     def team_managed_badge
@@ -63,7 +63,7 @@ module Morphosource
     end
 
     def collection_type_badge_short
-      content_tag(:span, collection_type.title&.first || "C", class: "label label-info short-collection-badge", style: "background-color: " + collection_type.badge_color + ";", title: collection_type.title || "Unknown Collection Type")
+      content_tag(:span, collection_type.title&.first || "C", class: "badge badge-info short-collection-badge", style: "background-color: " + collection_type.badge_color + ";", title: collection_type.title || "Unknown Collection Type")
     end
 
     def collection_type_title

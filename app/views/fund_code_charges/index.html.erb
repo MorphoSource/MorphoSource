@@ -2,28 +2,28 @@
 
 <div class="row">
   <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
+    <div class="card panel-default">
+      <div class="card-header">
         <h2 class="panel-title h2"><%= "Search Fund Code Charges" %></h2>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <%= simple_form_for :search, url: main_app.fund_code_charges_path, method: "GET" do |f| %>
           
           <div class="form-group search_start_date">
-            <label class="control-label" for="search_start_date">
+            <label class="col-form-label" for="search_start_date">
               <%= t('simple_form.labels.fund_code_charges.start_date') %>
             </label>
-            <p class="help-block">
+            <p class="form-text text-muted">
               <%= t('simple_form.hints.fund_code_charges.start_date') %>
             </p>
             <%= f.date_field :start_date, value: @start_date, class: 'datepicker form-control' %>
           </div>
 
           <div class="form-group search_end_date">
-            <label class="control-label" for="search_end_date">
+            <label class="col-form-label" for="search_end_date">
               <%= t('simple_form.labels.fund_code_charges.end_date') %>
             </label>
-            <p class="help-block">
+            <p class="form-text text-muted">
               <%= t('simple_form.hints.fund_code_charges.end_date') %>
             </p>
             <%= f.date_field :end_date, value: @end_date, class: 'datepicker form-control' %>
@@ -45,11 +45,11 @@
 
 <div class="row">
   <div class="col-md-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
+    <div class="card panel-default">
+      <div class="card-header">
         <h2 class="panel-title h2"><%= t('.fund_code_charges') %></h3>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <table class="table table-striped datatable" style="font-size: smaller;">
           <thead>
             <th><%= t('.header.fund_code_identifier') %></th>

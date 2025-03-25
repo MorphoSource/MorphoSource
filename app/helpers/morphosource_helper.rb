@@ -305,9 +305,9 @@ module MorphosourceHelper
     end
     content_tag :a, :data => {:toggle => "collapse", :parent => %(##{data_parent})}, :href => %(##{block}), :aria => {:label => "collapse/expand"} do
       content_tag :div, :class => "row" do
-        concat content_tag(:div, label, class: "col-xs-6 showcase-label")
-        concat content_tag(:div, value, class: "col-xs-5 showcase-value")
-        concat content_tag(:span, "", class: "col-xs-1 glyphicon #{icon} #{block}")
+        concat content_tag(:div, label, class: "col-6 showcase-label")
+        concat content_tag(:div, value, class: "col-5 showcase-value")
+        concat content_tag(:span, "", class: "col-1 glyphicon #{icon} #{block}")
       end
     end
   end

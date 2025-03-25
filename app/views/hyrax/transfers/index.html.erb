@@ -5,7 +5,7 @@
 <% end %>
 
 <div class="col-md-12 ownership-transfer">
-  <div class="panel panel-default panel-borders tabs" role="main">
+  <div class="card panel-default panel-borders tabs" role="main">
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
       <li role="presentation" id="tab-received" class="active">
@@ -27,9 +27,9 @@
         <div class="form-tab-content" style="margin: 15px;">
           <div class="row">
             <div class="col-md-12">
-              <div class="panel panel-default">
+              <div class="card panel-default">
                 <div class="row row-no-gutters no-horizontal-padding">
-                  <div class="pull-left">
+                  <div class="float-left">
                     <button type="button" class="btn btn-sm btn-primary dropdown-toggle" id="batch-decision-button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" disabled="disabled" style="max-width: unset;">
                       Decide selected transfers <span class="caret"></span>
                     </button>
@@ -48,7 +48,7 @@
                       </li>
                     </ul>
                   </div>
-                  <div class="pull-right">
+                  <div class="float-right">
                     <%= form_tag '', method: :get, :id => 'number_of_days' do %>
                         <span style="font-size: 12px">Show transfers for <%= select_tag :days, options_for_select(Hyrax.config.select_number_of_days, selected: params[:days] || 30), onchange: "$('#number_of_days').submit();" %> days</span>
                     <% end %>
@@ -70,13 +70,13 @@
         <div class="form-tab-content">
           <div class="row">
             <div class="col-md-12">
-              <div class="panel panel-default">
-                <div class="pull-right">
+              <div class="card panel-default">
+                <div class="float-right">
                   <%= form_tag '', method: :get, :id => 's_number_of_days' do %>
                       <span style="font-size: 12px">Show transfers for <%= select_tag :sdays, options_for_select(Hyrax.config.select_number_of_days, selected: params[:sdays] || 30), onchange: "$('#s_number_of_days').submit();" %> days</span>
                   <% end %>
                 </div>
-                <div class="panel-body">
+                <div class="card-body">
                   <%= @presenter.render_sent_transfers %>
                 </div>
               </div>

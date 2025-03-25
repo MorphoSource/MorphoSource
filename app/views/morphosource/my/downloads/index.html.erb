@@ -6,7 +6,7 @@
 <% end %>
 
 <div class="row no-horizontal-padding">
-  <div class="col-xs-12 main-header">
+  <div class="col-12 main-header">
     <h1>
       <% if @cart %>
         <span class="fa fa-shopping-cart" aria-hidden="true"></span>
@@ -20,8 +20,8 @@
   </div>
 </div>
 
-<div class="panel">
-  <div class="panel-body">
+<div class="card">
+  <div class="card-body">
     <h2 class="sr-only">Works listing</h2>
     <%= render 'batch_actions' %>
     <%= render 'morphosource/itemtable/document_list' %>

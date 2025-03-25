@@ -2,7 +2,7 @@
 <% provide :page_title, "My Requests" %>
 
 <div class="row no-horizontal-padding">
-  <div class="col-xs-12 main-header">
+  <div class="col-12 main-header">
     <h1>
       <span class="fa fa-tasks" aria-hidden="true"></span>
       My Requests ( <%= @item_count %> )
@@ -10,8 +10,8 @@
   </div>
 </div>
 
-<div class="panel">
-  <div class="panel-body">
+<div class="card">
+  <div class="card-body">
     <h2 class="sr-only">Works listing</h2>
     <%= render 'morphosource/my/requests/batch_actions' %>
     <%= render 'morphosource/my/requests/document_list' %>

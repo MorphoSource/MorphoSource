@@ -7,11 +7,11 @@
     <%# todo: render date_field in simple_form_bootstrap
     = render_edit_field_partial('date_created', f: i) %>
     <div class="row">
-        <div class="col-xs-6 showcase-label">
+        <div class="col-6 showcase-label">
           <%= t("blacklight.search.fields.imaging_event.show.date_created") %>
           <%= render_hint_tag(t("simple_form.hints.imaging_event.date_created")) %>
         </div>
-        <div class="col-xs-6 showcase-value">
+        <div class="col-6 showcase-value">
         <%= i.date_field :date_created, wrapper: :inline, value: i.object.date_created, class: 'datepicker form-control' %>
         </div>
     </div>

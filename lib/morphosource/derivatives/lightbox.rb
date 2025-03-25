@@ -36,7 +36,7 @@ module Morphosource::Derivatives
       )
 
       if response.code == 200
-        File.new(out_path, 'wb').write(response.body)
+        File.open(out_path, 'wb') { |file| file.write(response.body) }
         return response.code
       else
         raise Morphosource::Derivatives::LightboxError.new("Lightbox request returned non-successful response: Code #{response.code} with content #{response.body}")

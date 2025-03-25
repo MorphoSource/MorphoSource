@@ -68,8 +68,8 @@ module SubmissionsControllerBehavior
   end
 
   def get_null_organization
-    if Hyrax.config.null_organization_id.present? && Organization.exists?(Hyrax.config.null_organization_id)
-      o = Organization.find(Hyrax.config.null_organization_id)
+    if Hyrax.config.null_organization_id.present? && OrganizationCollection.exists?(Hyrax.config.null_organization_id)
+      o = OrganizationCollection.find(Hyrax.config.null_organization_id)
       @null_organization = {
         id: o.id,
         text: "#{[o.institution_name&.first, o.title&.first].compact.join(', ')} (#{o.institution_code&.join('/')}:#{o.collection_code&.join('/')})",

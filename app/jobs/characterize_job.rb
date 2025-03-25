@@ -30,7 +30,7 @@ class CharacterizeJob < HeavyJob
     # For mesh files, gltf-inspect/blender overwrites mime type output from FITS
 
     begin
-      ext = File.extname(filepath)
+      ext = ( File.extname(filepath) || "" ).downcase
       if (ext =~ /\.(glb|gltf)$/)
         gltf_inspect_options = {
           "parser_class" => Hydra::Works::Characterization::BlenderDocument, 

@@ -246,16 +246,17 @@ $( document ).ready(function() {
     }
 
     var thumbField = document.getElementById("custom_thumbnail");
-    thumbField.onchange = function() {
-      if (this.files[0].size > 500000) {
-        $.alert('Thumbnail size must be 500KB or smaller.  Please upload another thumbnail image.');
-        $('#custom_thumbnail_hint').addClass('text-alert');
-        this.value = "";
-      } else {
-        $('#custom_thumbnail_hint').removeClass('text-alert');
-      }
-    };
-
+    if (thumbField) {
+      thumbField.onchange = function() {
+        if (this.files[0].size > 500000) {
+          $.alert('Thumbnail size must be 500KB or smaller.  Please upload another thumbnail image.');
+          $('#custom_thumbnail_hint').addClass('text-alert');
+          this.value = "";
+        } else {
+          $('#custom_thumbnail_hint').removeClass('text-alert');
+        }
+      };
+    }
   } // end if media form page
 
   jQuery.fn.extend({

@@ -834,12 +834,8 @@ nav#masthead {
   .nav-tabs {
     border-bottom: 1px solid $line-inactive-color;
     li {
-      border-bottom: 3px solid transparent;
-    }
-    li.active {
-      border-bottom: 3px solid $line-color;
-      a, a:hover {
-        margin-right: 0;
+      a.active {
+        border-bottom: 3px solid $line-color;
       }
     }
     .nav-link:hover {

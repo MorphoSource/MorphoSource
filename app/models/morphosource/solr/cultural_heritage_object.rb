@@ -18,7 +18,17 @@ module Morphosource
                                                short_title
                                                tgn_label].freeze
 
+      def combined_attribute_terms
+        (Array(self['cho_attribute_tesim']) + Array(self['aat_attribute_label_tesim'])).compact.sort_by{|t| t.downcase}
+      end
 
+      def combined_material_terms
+        (Array(self['material_tesim']) + Array(self['aat_material_label_tesim'])).compact.sort_by{|t| t.downcase}
+      end
+
+      def combined_type_terms
+        (Array(self['cho_type_tesim']) + Array(self['aat_type_label_tesim'])).compact.sort_by{|t| t.downcase}
+      end
     end
   end
 end

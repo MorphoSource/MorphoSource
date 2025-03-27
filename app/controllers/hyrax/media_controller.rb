@@ -656,11 +656,11 @@ module Hyrax
       end
 
       def preview_fields_changed?
-        curation_concern.unit != @saved_unit ||
-        curation_concern.x_spacing != @saved_x_spacing ||
-        curation_concern.y_spacing != @saved_y_spacing ||
-        curation_concern.z_spacing != @saved_z_spacing ||
-        curation_concern.slice_thickness != @saved_slice_thickness
+        curation_concern.unit&.first != @saved_unit ||
+        curation_concern.x_spacing&.first != @saved_x_spacing ||
+        curation_concern.y_spacing&.first != @saved_y_spacing ||
+        curation_concern.z_spacing&.first != @saved_z_spacing ||
+        curation_concern.slice_thickness&.first != @saved_slice_thickness
       end
   end
 end

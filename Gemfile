@@ -26,7 +26,7 @@ gem 'bootstrap', '~> 4.0'
 gem 'riiif', '~> 2.2'
 
 # pull iiif_manifest fork that can handle 3D manifests
-gem 'iiif_manifest', :git => 'https://github.com/MorphoSource/iiif_manifest.git', :tag => 'v1.0.1'
+gem 'iiif_manifest', :git => 'https://github.com/MorphoSource/iiif_manifest.git', :tag => 'v1.1.0'
 
 # used for XML validation in Crossref DOI deposit
 gem 'nokogiri'
@@ -36,6 +36,7 @@ gem 'hyrax', '5.0.1'
 gem 'hydra-role-management', '~> 1.1.0'
 
 gem 'resque'
+gem 'resque-kubernetes'
 gem 'resque-pool'
 gem 'resque-web', github: 'MorphoSource/resque-web', ref: '58ea4361c09cc94b1fbf4a1c9bb39e69eab25077'
 

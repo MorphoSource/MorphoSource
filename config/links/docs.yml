@@ -15,6 +15,10 @@
   url: https://duke.atlassian.net/wiki/spaces/MD/pages/35422310/Contributor+User+Docs
   header: true
   footer: true
+- label: hyrax.controls.links.docs.deposit_costs
+  url: https://duke.atlassian.net/wiki/spaces/MD/pages/274268722/Data+Deposit+Costs
+  header: true
+  footer: false
 - label: hyrax.controls.links.docs.citation
   url: https://duke.atlassian.net/wiki/spaces/MD/pages/35422721/Reference+and+Citation+of+Media+and+Projects
   header: true

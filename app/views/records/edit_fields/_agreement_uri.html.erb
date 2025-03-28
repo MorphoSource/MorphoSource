@@ -16,16 +16,16 @@
       as: :string,
       placeholder: local_assigns[:placeholder] || 'Enter Agreement File URL',
       id: 'media_agreement_uri',
-      disabled: object.present? && object.persisted? && object.attachment('agreement') ? true : false,
+      disabled: object.present? && object.persisted? && object.agreement_attachment ? true : false,
       class: 'form-control string optional'
     %>
 
     <div style='text-align: center;'><b>- OR -</b></div>
 
     <div class='attachment'>
-      <% if object.present? && object.persisted? && object.attachment('agreement').present? %>
+      <% if object.present? && object.persisted? && object.agreement_attachment.present? %>
         <div class='attachment-link'>
-          <%= link_to main_app.attachment_path(id: object.id, field: 'agreement'), target: :blank do %>
+          <%= link_to object.agreement_attachment, target: :blank do %>
             <span>Agreement File</span>
           <% end %>
           <span class='input-group-btn field-controls' style='display: inline;'>
@@ -35,7 +35,7 @@
           </span>
         </div>
       <% end %>
-      <div class='attachment-input <%= object.present? && object.persisted? && object.attachment('agreement').present? ? 'hide' : '' %>'>
+      <div class='attachment-input <%= object.present? && object.persisted? && object.agreement_attachment.present? ? 'hide' : '' %>'>
         <%= file_field_tag :agreement, accept: 'text/plain,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document', class: 'file-field-input agreement-attachment' %>
         <span class='hint'>Accepted Formats: .txt, .pdf, .docx</span>
         <input name='media_attachment_delete' class='attachment_delete hide'></input>

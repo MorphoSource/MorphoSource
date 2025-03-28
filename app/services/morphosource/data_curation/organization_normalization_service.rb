@@ -17,11 +17,7 @@ module Morphosource
           # verify all objects exist
           @team = Collection.find(team_id) # organization-linked team or organization collection
           @organization = select_organization # organization work or organization collection
-          if @team.team?
-            @user_email = User.find_by(email: email).email
-          else
-            @user_email = nil
-          end
+          @user_email = @team.team? ? User.find_by(email: email).email : nil # data manager email for org collections doesn't exist
           @remove_previous_reviewers = remove_previous_reviewers
           @update_publication_status = update_publication_status
           if project_id.blank? && old_manager_email.blank?

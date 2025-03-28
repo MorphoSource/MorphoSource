@@ -32,20 +32,18 @@
                 <%= presenter.attribute_to_html(:imaging_event_software, render_as: :showcase_default, include_empty: true, work_type: "imaging_event") %>
                 <%= presenter.attribute_to_html(:imaging_event_description, render_as: :showcase_default, include_empty: true, work_type: "imaging_event") %>
                 <%= presenter.attribute_to_html(
-                  :imaging_event_description_attachment,
-                  link_label: 'Description Attachment',
+                  :imaging_event_description_attachment_url,
+                  label: 'Description Attachment',
                   render_as: :showcase_attachment,
                   include_empty: true,
-                  text_if_empty: 'None',
-                  work_type: "imaging_event")
+                  text_if_empty: 'None')
                 %>
                 <%= presenter.attribute_to_html(
-                  :imaging_event_reference_attachment,
-                  link_label: 'Photographic Reference',
+                  :imaging_event_reference_attachment_url,
+                  label: 'Photographic Reference',
                   render_as: :showcase_attachment,
                   include_empty: true,
-                  text_if_empty: 'None',
-                  work_type: "imaging_event")
+                  text_if_empty: 'None')
                 %>
                 <%= presenter.attribute_to_html(:filter, render_as: :showcase_default, include_empty: true, work_type: "imaging_event") %>
                 <% if presenter.imaging_event_modality.presence %>
@@ -119,7 +117,7 @@
 <% fields = [
   :imaging_event_modality, :device_label, :device_organization_institution, :imaging_event_creator, 
   :imaging_event_date_created, :imaging_event_software, :imaging_event_description, 
-  :imaging_event_description_attachment, :imaging_event_reference_attachment, :filter, :lens, 
+  :imaging_event_reference_attachment, :filter, :lens, 
   :other_details, :exposure_time, :flux_normalization, :pixel_spacing_calibration, 
   :shading_correction, :frame_averaging, :projections, :voltage, :power, :amperage, 
   :surrounding_material, :xray_tube_type, :target_type, :detector_type, :detector_pixels_x,

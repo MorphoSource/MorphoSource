@@ -74,6 +74,8 @@ en:
         edit:
           project: Edit project
           team: Edit team
+      select_form:
+        select_heading: Select a project, team, or media list. You must have deposit access to the project, team, or media list to add media.
     toolbar:
       browse:
         projects: Projects
@@ -158,6 +160,7 @@ en:
           guide: Standard Users
           glossary: Glossary of Terms
           contributors: Contributor Users
+          deposit_costs: Data Deposit Costs
           citation: Citation
           faq: FAQ
         resources:

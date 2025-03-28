@@ -1,9 +1,7 @@
 require 'hydra/works/services/crc32_characterization_service.rb'
 require 'hydra/works/services/archive_contents_characterization_service.rb'
 
-class CharacterizeJob < Hyrax::ApplicationJob
-  queue_as Hyrax.config.heavy_queue_name
-
+class CharacterizeJob < HeavyJob
   # Characterizes the file at 'filepath' if available, otherwise, pulls a copy from the repository
   # and runs characterization on that file.
   # @param [FileSet] file_set
@@ -32,7 +30,7 @@ class CharacterizeJob < Hyrax::ApplicationJob
     # For mesh files, gltf-inspect/blender overwrites mime type output from FITS
 
     begin
-      ext = File.extname(filepath)
+      ext = ( File.extname(filepath) || "" ).downcase
       if (ext =~ /\.(glb|gltf)$/)
         gltf_inspect_options = {
           "parser_class" => Hydra::Works::Characterization::BlenderDocument, 

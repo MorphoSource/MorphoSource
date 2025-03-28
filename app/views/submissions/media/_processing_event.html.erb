@@ -34,9 +34,10 @@
               <%= f.input :software, as: :multi_value %>
               <%= render_edit_field_partial('description', f: f) %>
               <%= render_edit_field_partial(
-                'attachment', 
+                'attachment_for_description', 
                 f: f, 
                 field: 'pe_description', 
+                work_attribute: 'description_attachment_url', 
                 label: 'Description attachment file',
                 curation_concern: nil
               ) %>

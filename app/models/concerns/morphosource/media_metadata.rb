@@ -150,6 +150,10 @@ module Morphosource
       property :map_type, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/mapType") do |index|
         index.as :stored_searchable, :symbol
       end
+
+      property :agreement_attachment_url, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/agreementAttachmentUrl"), multiple: false do |index|
+        index.as :stored_searchable
+      end
     end
   end
 end

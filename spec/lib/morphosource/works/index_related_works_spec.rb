@@ -8,6 +8,8 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
   let(:organization)            { Organization.create(title: ['organization'], team_id: [team.id]) }
   let(:new_organization)        { Organization.create(title: ['new organization'])}
 
+  let(:organization_collection) { FactoryBot.create(:organization_collection) }
+
   let(:taxonomy)                { Taxonomy.create(title: ['taxonomy']) }
 
   let(:specimen)                { BiologicalSpecimen.create(title: ['specimen'], vouchered: ['Yes'], organization_id: [organization.id], taxonomy_id: [taxonomy.id]) }
@@ -69,7 +71,6 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
       end
     end
     context 'work is a cho' do
-      let(:cho_media) { [media2a, media2b] }
       before do
         allow(cho).to receive(:index_related)
       end
@@ -140,12 +141,13 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
       let(:projectB)                { Collection.create(title: ['project B'], collection_type_gid: project_collection_type.to_global_id) }
       let(:team_projects)           { [projectA, projectB] }
       before do
-        team_projects.each do |p|
+        [projectA, projectB].each do |p|
           p.member_of_collections << team
           p.save
         end
         allow(organization).to receive(:index_related)
       end
+
       context 'title is updated' do
         it 'updates related media, objects, linked team, and team child projects' do
           skip if !Hyrax.config.index_related_works
@@ -158,10 +160,12 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
           organization.save
         end
       end
+
       context 'team_id is updated' do
         let(:projectC)          { Collection.create(title: ['project C'], collection_type_gid: project_collection_type.to_global_id) }
         let(:projectD)          { Collection.create(title: ['project D'], collection_type_gid: project_collection_type.to_global_id) }
         let(:new_team_projects) { [projectC, projectD] }
+
         before do
           new_team_projects.each do |p|
             p.member_of_collections << new_team
@@ -186,6 +190,7 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
           allow(organization).to receive(:index_related)
           allow(UpdateRelatedWorksIndexJob).to receive(:perform_later)
         end
+
         it 'updates related media, objects, and linked team' do
           skip if !Hyrax.config.index_related_works
           expect(organization).not_to receive(:index_related)
@@ -194,6 +199,48 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
 
           organization.city = ['Fargo']
           organization.save
+        end
+      end
+    end
+
+    context 'work is an organization collection' do
+      let(:organization)  { organization_collection }
+      let(:projectA)      { FactoryBot.create(:project, title: ['project A']) }
+      let(:projectB)      { FactoryBot.create(:project, title: ['project B']) }
+
+      before do
+        [projectA, projectB].each do |p|
+          p.member_of_collections << organization_collection
+          p.save
+        end
+        allow(organization_collection).to receive(:index_related)
+      end
+
+      context 'title is updated' do
+        it 'updates related media, objects, linked team, and team child projects' do
+          skip if !Hyrax.config.index_related_works
+          expect(organization_collection).to receive(:index_related).ordered.with(contain_exactly(media1a, media1b, media2a, media2b)).and_call_original
+          expect(organization_collection).to receive(:index_related).ordered.with(contain_exactly(specimen, cho)).and_call_original
+          expect(organization_collection).to receive(:index_related_collections).ordered.with(contain_exactly(projectA, projectB)).and_call_original
+          # update title to trigger reindex
+          organization_collection.title = ['new title']
+          organization_collection.save
+        end
+      end
+
+      context 'another attribute is updated' do
+        before do
+          allow(organization_collection).to receive(:index_related)
+          allow(UpdateRelatedWorksIndexJob).to receive(:perform_later)
+        end
+        it 'updates related media, objects, and linked team' do
+          skip if !Hyrax.config.index_related_works
+          expect(organization_collection).not_to receive(:index_related).ordered.with(contain_exactly(media1a, media1b, media2a, media2b)).and_call_original
+          expect(organization_collection).not_to receive(:index_related).ordered.with(contain_exactly(specimen, cho)).and_call_original
+          expect(organization_collection).not_to receive(:index_related).ordered.with(contain_exactly(projectA, projectB))
+
+          organization_collection.city = ['Fargo']
+          organization_collection.save
         end
       end
     end

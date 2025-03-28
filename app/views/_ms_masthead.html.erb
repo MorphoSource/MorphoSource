@@ -1,28 +1,27 @@
 <header>
-    <nav id="masthead" class="navbar navbar-dark bg-dark navbar-expand-md"
-    role="navigation">
-        <div class="container" style="color:white">
-          <!-- Brand and toggle get grouped for better mobile display -->
-          <div class="col-1 col-md-3 logo no-horizontal-padding">
-            <%= render '/logo' %>
-          </div>
-          <div class="col-10 col-md-6">
-            <%= content_for?(:search_form) ? yield(:search_form) : render('/catalog/search_form') %>
-          </div>
+  <nav id="masthead" class="navbar navbar-dark bg-dark navbar-expand-md" role="navigation">
+    <div class="container" style="color:white">
+      <!-- Brand and toggle get grouped for better mobile display -->
+      <div class="col-1 col-md-3 logo no-horizontal-padding">
+        <%= render '/logo' %>
+      </div>
+      <div class="col-10 col-md-6">
+        <%= content_for?(:search_form) ? yield(:search_form) : render('/catalog/search_form') %>
+      </div>
 
-          <div class="col-1 col-md-3 ml-auto no-horizontal-padding navbar-toggler" style="border: none;">
-            <!-- mobile hamburger menu -->
-            <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#top-navbar-collapse" aria-expanded="false" style="color: white;">
-              <span class="sr-only">Toggle navigation</span>
-              <i class="fas fa-bars"></i> 
-            </button>
-          </div>
+      <div class="col-1 col-md-3 ml-auto no-horizontal-padding navbar-toggler" style="border: none;">
+        <!-- mobile hamburger menu -->
+        <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#top-navbar-collapse" aria-expanded="false" style="color: white;">
+          <span class="sr-only">Toggle navigation</span>
+          <i class="fas fa-bars"></i> 
+        </button>
+      </div>
 
-          <div class="col-12 col-md-3 ml-auto no-horizontal-padding collapse navbar-collapse" id="top-navbar-collapse">
-              <%= content_for?(:user_util_links) ? yield(:user_util_links) : render('/user_util_links') %>
-          </div>
-        </div>
-    </nav>
+      <div class="col-12 col-md-3 ml-auto no-horizontal-padding collapse navbar-collapse" id="top-navbar-collapse">
+          <%= content_for?(:user_util_links) ? yield(:user_util_links) : render('/user_util_links') %>
+      </div>
+    </div>
+  </nav>
 </header>
 
 <%= content_for(:navbar) %>

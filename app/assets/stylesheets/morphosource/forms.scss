@@ -1,0 +1,10 @@
+// Global form styles
+form {
+  label {
+    font-weight: bold; // Re-add after removal in Hyrax 5.x
+
+    @media only screen and (min-width: 640px) {
+      text-align: left;
+    } // Unset Hyrax 5.x change to text-align right at some screen widths
+  }
+}

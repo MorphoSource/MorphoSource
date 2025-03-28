@@ -1,23 +1,25 @@
-<div class="container-fluid">
-  <div class="nav navbar-nav flex-row">
-    <div class="dropdown nav-item">
-      <%= link_to hyrax.root_path, class: 'dropdown-toggle nav-link', role: 'button', data: { toggle: 'dropdown' }, aria: { haspopup: true, expanded: false, controls: "about-links" } do %>
-        <span><%= t("hyrax.controls.about")%></span>
-      <% end %>
-      <div id="about-links" class="dropdown-menu dropdown-menu-left" role="menu">
-        <%= link_to t("docs.about.title"), 
-          Rails.application.routes.url_helpers.about_docs_path, class: 'dropdown-item',
-          aria: current_page?(Rails.application.routes.url_helpers.about_docs_path) ? {current: 'page'} : nil 
-        %>
-        <div class="dropdown-divider"></div>
-        <%= link_to t("docs.mission.title"), 
-          Rails.application.routes.url_helpers.mission_docs_path, class: 'dropdown-item',
-          aria: current_page?(Rails.application.routes.url_helpers.mission_docs_path) ? {current: 'page'} : nil 
-        %>
-      </div> 
-    </div>
-    <%= render partial: "control", locals: { links_yml: Hyrax.config.header_community, label: "community" } %>
-    <%= render partial: "control", locals: { links_yml: Hyrax.config.header_docs, label: "docs" } %>
-    <%= render partial: "control", locals: { links_yml: Hyrax.config.header_resources, label: "resources" } %>
-  </div><!-- /.nav -->
-</div>
+<nav class="navbar navbar-inverse-dark secondary-nav navbar-expand-md no-vertical-padding" role="navigation">
+  <div class="container-fluid">
+    <div class="nav navbar-nav flex-row">
+      <div class="dropdown nav-item">
+        <%= link_to hyrax.root_path, class: 'dropdown-toggle nav-link', role: 'button', data: { toggle: 'dropdown' }, aria: { haspopup: true, expanded: false, controls: "about-links" } do %>
+          <span><%= t("hyrax.controls.about")%></span>
+        <% end %>
+        <div id="about-links" class="dropdown-menu dropdown-menu-left" role="menu">
+          <%= link_to t("docs.about.title"), 
+            Rails.application.routes.url_helpers.about_docs_path, class: 'dropdown-item',
+            aria: current_page?(Rails.application.routes.url_helpers.about_docs_path) ? {current: 'page'} : nil 
+          %>
+          <div class="dropdown-divider"></div>
+          <%= link_to t("docs.mission.title"), 
+            Rails.application.routes.url_helpers.mission_docs_path, class: 'dropdown-item',
+            aria: current_page?(Rails.application.routes.url_helpers.mission_docs_path) ? {current: 'page'} : nil 
+          %>
+        </div> 
+      </div>
+      <%= render partial: "control", locals: { links_yml: Hyrax.config.header_community, label: "community" } %>
+      <%= render partial: "control", locals: { links_yml: Hyrax.config.header_docs, label: "docs" } %>
+      <%= render partial: "control", locals: { links_yml: Hyrax.config.header_resources, label: "resources" } %>
+    </div><!-- /.nav -->
+  </div>
+</nav>

@@ -18,6 +18,7 @@ module Hyrax
     self.show_presenter = Hyrax::ProcessingEventPresenter
 
     before_action :record_original_parents, only: :update
+    before_action :check_processing_activity, only: :media_owner_update
 
     def update
       # Handle possible new attachment upload, delete or replace attachment
@@ -115,6 +116,16 @@ module Hyrax
 
     def new_parents
       @curation_concern.member_of
+    end
+
+    def check_processing_activity
+      if params["processing_event"]["processing_activity"].present?
+        steps = params["processing_event"]["processing_activity"].map { |activity| activity.split(',').first.strip }
+        if steps.uniq.length != steps.length
+          params["processing_event"].delete("processing_activity")
+          flash[:alert] = "Processing activity steps must be unique.  Please correct and try again."
+        end
+      end
     end
   end
 end

@@ -181,6 +181,7 @@ class Collection < ActiveFedora::Base
     end
     members.collect do |member|
       message = Hyrax::MultipleMembershipChecker.new(item: member).check(collection_ids: id, include_current_members: true)
+      object_id = member.physical_object_id&.first
       if message
         member.errors.add(:collections, message)
       else
@@ -192,7 +193,6 @@ class Collection < ActiveFedora::Base
         else
           member.save!
         end
-        object_id = member.physical_object_id&.first
         UpdateWorkIndexJob.perform_later(object_id) if object_id.present?
       end
       member

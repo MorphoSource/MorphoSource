@@ -275,13 +275,17 @@
         }
 
         &.selected {
-          background-color: #d3d3d3;
+          background-color: #eeeeee;
+          border-left: 6px solid #003880;
           color: #000000;
           cursor: default;
+          padding-left: 24px !important;
         }
     
         &.sidebar-clickable {
+          margin-bottom: 5px;
           margin-right: 0;
+          padding-left: 30px;
         }
 
         .fa {

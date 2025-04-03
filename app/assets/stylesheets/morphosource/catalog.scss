@@ -1,18 +1,19 @@
 body.catalog-body {
-  h2.facets-heading {
-    font-size: 18px;
-  }
-  
-  div.card.facet-limit {
-    margin-bottom: 5px;
-  }
-  
-  h3.card-header {
-    margin-top: 0;
-  }
-  
-  div.constraints-container {
-    margin: 0.625rem 0 !important;
+  div#documents.documents-gallery {
+    padding-top: 0; 
+    
+    div.thumbnail-container {
+      border: 1px solid #ddd;
+      margin-bottom: 20px;
+
+      div.caption.container {
+        margin-top: 0 !important;
+      }
+
+      img.img-thumbnail {
+        border: none;
+      }
+    }
   }
   
   div#facets {
@@ -50,6 +51,14 @@ body.catalog-body {
     }
   }
 
+  div.card.facet-limit {
+    margin-bottom: 5px;
+  }
+    
+  div.constraints-container {
+    margin: 0.625rem 0 !important;
+  }
+
   div.search-result-wrapper.row {
     div.collection-counts-wrapper {
       div.collection-counts-item {
@@ -80,6 +89,14 @@ body.catalog-body {
   
   div.sort-pagination {
     padding-top: 14px;
+  }
+
+  h2.facets-heading {
+    font-size: 18px;
+  }
+
+  h3.card-header {
+    margin-top: 0;
   }
   
   ul.list-unstyled.catalog {

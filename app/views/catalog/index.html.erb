@@ -7,15 +7,18 @@
 <% end %>
 
 <div class="row" style="padding: 0; padding-top: 6px;">
-  <div id="content" class="order-2 order-md-2 col-md-9 col-12">
+  <div id="sidebar" class="col-md-3 col-12">
+    <%= render 'facets' %>
+    <div class="d-none d-md-block">
+      <%= render 'search_export' %>
+    </div>
+  </div>
+
+  <div id="content" class="col-md-9 col-12">
       <%= render 'search_results' %>
   </div>
 
-  <div id="sidebar" class="order-1 order-md-1 col-md-3 col-12">
-    <%= render 'facets' %>
-  </div>
-
-  <div class="order-3 order-md-3 col-md-3 col-12">
+  <div class="d-block d-md-none col-md-2 col-12">
     <%= render 'search_export' %>
   </div>
 </div>

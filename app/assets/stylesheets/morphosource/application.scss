@@ -26,7 +26,6 @@ h1, .h1, h2, .modal-title, .h2, h3, .h3 {
 }
 
 .navbar + .container {
-  margin-top: 20px; // todo5 this is questionable, may not work on non-homepage pages
-  padding-top: 0 !important;
+  padding-top: 20px !important; // todo5 this is questionable, may not work on non-homepage pages
   padding-bottom: 0 !important;
 }

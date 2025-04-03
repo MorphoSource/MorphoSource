@@ -1,5 +1,5 @@
 class Hyrax::BrowseTaxonomiesController < ApplicationController
-	with_themed_layout 'morphosource_1_column' 
+	with_themed_layout '1_column' 
 
 	def index
     @higher_names = taxonomy_names

@@ -347,14 +347,6 @@ nav#masthead {
   .text-muted {
     font-size: 13px;
   }
-  @media (max-width: 767px) {
-    #showcase-title {
-      font-size: 4.5vw;
-    }
-    .text-muted {
-      font-size: 2.4vw;
-    }
-  }
   @media (min-width: 768px) {
     #showcase-title {
       font-size: 28px;
@@ -722,10 +714,6 @@ nav#masthead {
     min-height: 30px !important;
   }
 
-  .navbar-inverse-dark {
-    background-color: $ms-dark-blue;
-  }
-
   .controls {
     .navbar {
       background-color: transparent;
@@ -943,14 +931,7 @@ nav#masthead {
       border: 1px solid $font-color;
       border-radius: .75em;
       background-color: transparent;
-      font-size: 1.6vw;
-      @media (min-width: 768px) {
-        font-size: 1.3vw;
-      }
-      @media (min-width: 1200px) {
-        font-size: 16px;
-      }
-
+      font-size: 16px;
     }
   }
 
@@ -962,13 +943,7 @@ nav#masthead {
     overflow-wrap: break-word;
     margin-bottom: 0.5vw;
     padding-bottom: 8px;
-    font-size: 4vw;
-    @media (min-width: 768px) {
-      font-size: 3vw;
-    }
-    @media (min-width: 1200px) {
-      font-size: 36px;
-    }
+    font-size: 36px;
   }
 
   h1, .main-header h1 {
@@ -979,16 +954,7 @@ nav#masthead {
   h2 {
     border-bottom: 3px solid $line-color;
     padding: 6px 0 6px 0;
-    font-size:13px;
-    @media (min-width: 414px) {
-      font-size: 2.6vw;
-    }
-    @media (min-width: 768px) {
-      font-size: 1.2vw;
-    }
-    @media (min-width: 1200px) {
-      font-size: 17px;
-    }
+    font-size: 17px;
     a.btn {
       float: right;
       color: $font-color;
@@ -1009,31 +975,13 @@ nav#masthead {
   }
   h3 {
     padding: 0 14px;
-    font-size:13px;
+    font-size: 17px;
     font-weight: normal;
-    @media (min-width: 414px) {
-      font-size: 2.6vw;
-    }
-    @media (min-width: 768px) {
-      font-size: 1.2vw;
-    }
-    @media (min-width: 1200px) {
-      font-size: 17px;
-    }
   }
   h4, .content-block-intro {
     padding: 0 12px;
-    font-size: 12px;
+    font-size: 16px;
     font-weight: normal;
-    @media (min-width: 414px) {
-      font-size: 2.5vw;
-    }
-    @media (min-width: 768px) {
-      font-size: 1.1vw;
-    }
-    @media (min-width: 1200px) {
-      font-size: 16px;
-    }
   }
   .content-block-intro {
     margin-bottom: 30px;
@@ -1047,17 +995,7 @@ nav#masthead {
     text-align: center;
 
     a.btn {
-      font-size:12px;
-      /* font-size: 1.4vw;  */
-      @media (min-width: 414px) {
-        font-size: 2.4vw;
-      }
-      @media (min-width: 768px) {
-        font-size: 1.3vw;
-      }
-      @media (min-width: 1200px) {
-        font-size: 16px;
-      }
+      font-size: 16px;
       padding: 2px 0;
     }
 
@@ -1231,35 +1169,14 @@ nav#masthead {
   .showcase-label, .showcase-value,
   .content-block-lg .row > div,
   .content-block .row > div {
-    font-size: 12px;
-    @media (min-width: 414px) {
-      font-size: 2.4vw;
-    }
-    @media (min-width: 768px) {
-      font-size: 1.3vw;
-    }
-    @media (min-width: 1200px) {
-      font-size: 16px;
-    }
+    font-size: 16px;
   }
 
   .content-block-lg .media-block .row > div,
   .content-block .media-block .row > div,
   .content-block-lg .row.media-block > div,
   .content-block .row.media-block > div {
-    font-size: 11px;
-    @media (min-width: 414px) {
-      font-size: 2.2vw;
-    }
-    @media (min-width: 768px) {
-      font-size: 1.1vw;
-    }
-    @media (min-width: 1200px) {
-      font-size: 12px;
-    }
-    .link {
-      font-size: 14px;
-    }
+    font-size: 14px;
   }
 
   .content-block-lg {

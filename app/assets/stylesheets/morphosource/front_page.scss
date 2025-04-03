@@ -55,63 +55,6 @@ div#user_utility_links {
   }
 }
 
-/* Navbar styles */
-
-div.controls .navbar {
-  background-color: $ms-dark-blue;
-  color: #fff;
-  border: none;
-}
-
-div.controls .navbar-nav {
-  margin: 0;
-  padding-left: 15px;
-  padding-right: 15px;
-}
-
-div.controls .navbar-nav li {
-  float: left;
-}
-
-/* Navbar menu specific styles */
-
-div.controls .navbar-nav > li > a {
-  color: #fff !important;
-  height: 50px !important;
-  padding-top: 15px !important;
-}
-
-div.controls .navbar-nav > li.open > a {
-  color: black !important;
-}
-
-div.controls .navbar-nav > li.active > a,
-div.controls .navbar-nav > li > a:hover,
-div.controls .navbar-nav > li > a:focus {
-  color: #fff;
-  background-color: $ms-blue;
-}
-
-/* Navbar submenu specific styles */
- 
-div.controls .navbar-nav li ul.dropdown-menu {
-  background-color: white;
-  border-top-width: 0px;
-}
-
-div.controls .navbar-nav li ul.dropdown-menu li {
-  float: none;
-}
-
-div.controls .navbar-nav li ul.dropdown-menu a {
-  color: black !important;
-}
-
-div.controls .navbar-nav li ul.dropdown-menu a:hover, 
-div.controls .navbar-nav li ul.dropdown-menu a:focus  {
-  background-color: #f5f5f5 !important;
-}
-
 /* Other styles */
 
 div#front-banner {

@@ -3,7 +3,7 @@ module Hyrax
   class BrowseOrganizationsController < My::WorksController
     before_action :authenticate_user!, except: [:index]  
 
-    with_themed_layout 'morphosource_1_column'
+    with_themed_layout '1_column'
 
     def self.configure_facets
       configure_blacklight do |config|

@@ -16,17 +16,17 @@
 
       <%= render partial: 'hyrax/dashboard/profiles/edit_email', locals: {f: f} %>
 
-      <div class="form-group">
+      <div class="form-group row">
         <%= f.label :password, class: 'col-sm-4 col-form-label required' %>
         <div class="col-sm-8">
-          <%= f.password_field :password, autocomplete: "new-password", class: "form-control w-100", minlength: @minimum_password_length.to_s %>
+          <%= f.password_field :password, autocomplete: "new-password", class: "form-control w-100", minlength: @minimum_password_length.to_s, required: true %>
         </div>
       </div>
 
-      <div class="form-group">
+      <div class="form-group row">
         <%= f.label :password_confirm, class: 'col-sm-4 col-form-label required' %>
         <div class="col-sm-8">
-          <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control", minlength: @minimum_password_length.to_s %>
+          <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control", minlength: @minimum_password_length.to_s, required: true %>
         </div>
       </div>
 

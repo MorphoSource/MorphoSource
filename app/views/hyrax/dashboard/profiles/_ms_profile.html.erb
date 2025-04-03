@@ -1,35 +1,35 @@
-<div class="form-group">
+<div class="form-group row">
   <%= f.label :address, t("morphosource.dashboard.profiles.edit_primary.address").html_safe, class: 'col-md-4 col-form-label' %>
   <div class="col-md-8">
      <%= f.text_field :address, class: "form-control" %>
   </div>
 </div>
 
-<div class="form-group">
+<div class="form-group row">
   <%= f.label :city, t("morphosource.dashboard.profiles.edit_primary.city").html_safe, class: 'col-md-4 col-form-label' %>
   <div class="col-md-8">
      <%= f.text_field :city, class: "form-control" %>
   </div>
 </div>
 
-<div class="form-group">
+<div class="form-group row">
   <%= f.label :country, t("morphosource.dashboard.profiles.edit_primary.country").html_safe, class: 'col-md-4 col-form-label required' %>
   <div class="col-md-8">
-    <%= f.select 'country', options_for_select(Morphosource::UserProfile::LocationHelper::COUNTRY, @user.country), class: "form-control", include_blank: true, required: true, :onchange => "updateStates();" %>
+    <%= f.select 'country', options_for_select(Morphosource::UserProfile::LocationHelper::COUNTRY, @user.country), { include_blank: true }, { class: 'form-control', required: true, :onchange => "updateStates();" } %>
   </div>
 </div>
 
-<div class="form-group">
+<div class="form-group row">
   <%= f.label :state, t("morphosource.dashboard.profiles.edit_primary.state").html_safe, class: 'col-md-4 col-form-label required' %>
   <div id='state-select' class="col-md-8">
-    <%= f.select_tag 'user[state]', options_for_select(Morphosource::UserProfile::LocationHelper::STATE['US'].sort, @user.state), class: "form-control", include_blank: true, required: true %>
+    <%= f.select 'user[state]', options_for_select(Morphosource::UserProfile::LocationHelper::STATE['US'].sort, @user.state), { include_blank: true, required: true }, { class: 'form-control', required: true } %>
   </div>
   <div id='province-select' class="col-md-8">
-    <%= f.select_tag 'user[state]', options_for_select(Morphosource::UserProfile::LocationHelper::STATE['CA'].sort, @user.state), class: "form-control", include_blank: true, required: true %>
+    <%= f.select 'user[state]', options_for_select(Morphosource::UserProfile::LocationHelper::STATE['CA'].sort, @user.state), { include_blank: true, required: true }, { class: 'form-control', required: true } %>
   </div>
 </div>
 
-<div class="form-group">
+<div class="form-group row">
   <%= f.label :orcid, class: 'col-md-4 col-form-label' do %>
     <%= orcid_label %>
   <% end %>
@@ -38,21 +38,21 @@
   </div>
 </div>
 
-<div class="form-group">
+<div class="form-group row">
   <%= f.label :twitter_handle, t("morphosource.dashboard.profiles.edit_primary.twitter_handle").html_safe, class: 'col-md-4 col-form-label' %>
   <div class="col-md-8">
      <%= f.text_field :twitter_handle, class: "form-control" %>
   </div>
 </div>
 
-<div class="form-group">
+<div class="form-group row">
   <%= f.label :facebook_handle, t("morphosource.dashboard.profiles.edit_primary.facebook_handle").html_safe, class: 'col-md-4 col-form-label' %>
   <div class="col-md-8">
      <%= f.text_field :facebook_handle, class: "form-control" %>
   </div>
 </div>
 
-<div class="form-group">
+<div class="form-group row">
   <%= f.label :website, t("morphosource.dashboard.profiles.edit_primary.website").html_safe, class: 'col-md-4 col-form-label' %>
   <div class="col-md-8">
      <%= f.text_field :website, class: "form-control" %>

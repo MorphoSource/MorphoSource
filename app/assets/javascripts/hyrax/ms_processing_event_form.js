@@ -166,18 +166,18 @@ function buildProcessingActivity() {
     $('input[name="processing_event[processing_activity_software][]"]')[i].value = '';
     $('input[name="processing_event[processing_activity_description][]"]')[i].value = '';
   }
-
   // validate the step values
-  if (processingActivity.length == 0) {
-    // no need to validate if there is no processingActivity
-    return true;
-  } else if (!stepsValid(steps.sort())) {
+//  if (processingActivity.length == 0) {
+//    // no need to validate if there is no processingActivity
+//    return true;
+//  } else 
+  
+  if (!stepsValid(steps.sort())) {
     alert('Please select the processing steps in sequence.');
     return false;
   } else {
     return true;
   }
-
 }
 
 // Puts concatenated values into processingActivityHolder on submit.
@@ -221,7 +221,6 @@ var processingActivityStepChanged = function() {
   } else {
     $('input[type="submit"], button[type="submit"]').attr("disabled", false);
   }
-
 };
 
 function stepsValid(steps) {

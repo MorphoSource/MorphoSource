@@ -352,6 +352,12 @@ module Hyrax
       @fiji_script_command ||= nil
     end
 
+    # URL for lightbox REST webapp endpoint (used for creating 3D model thumbnails)
+    attr_writer :lightbox_url
+    def lightbox_url
+      @lightbox_url ||= 'http://lightbox:3000/capture'
+    end
+
     attr_writer :python_path
     def python_path
       @python_path ||= 'python3'

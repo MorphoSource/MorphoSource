@@ -545,6 +545,8 @@ function submitProcessingEvent() {
     var isProcessingActivityValid = buildProcessingActivity(); // populate the PA field before saving PE
     if (isProcessingActivityValid) {
       $("form#related_form_processing_event").submitRelatedWork(saveMediaIfReady);
+    } else {
+      enablePageAndSave(".btn-save-media");
     }
   } else {
     IsProcessingEventOK = true;

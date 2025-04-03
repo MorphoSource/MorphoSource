@@ -1,6 +1,4 @@
-class CalculateFileSetCrc32Job < Hyrax::ApplicationJob
-  queue_as Hyrax.config.heavy_queue_name
-
+class CalculateFileSetCrc32Job < HeavyJob
   def perform(work_id)
     return unless FileSet.exists?(work_id) &&
                   (file_set = FileSet.find(work_id)).present?

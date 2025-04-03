@@ -24,14 +24,25 @@ RSpec.describe Morphosource::CatalogHelper, type: :helper do
   end
 
   describe 'link_to_user_with_ownership' do
-    let(:args) { { value: [1234], document: {} } }
-
+    let(:owner_name)  { "Owner Name" }
+    let(:owner_id)    { "1234" }
+    let(:args) { { value: [owner_id], document: {} } }
 
     context 'media has a user with ownership and name' do
-      let(:args2) { args.merge(document: { "user_with_ownership_name_tesim" => ["User Name"] } ) }
+      context 'owner is a user' do
+        let(:args2) { args.merge(document: { "user_with_ownership_name_tesim" => [owner_name] } ) }
 
-      it 'returns a link to the owner with their name' do
-        expect(helper.link_to_user_with_ownership(args2)).to eq("<a href=\"/users/1234\">User Name</a>")
+        it 'returns a link to the owner with their name' do
+          expect(helper.link_to_user_with_ownership(args2)).to eq("<a href=\"/users/#{owner_id}\">#{owner_name}</a>")
+        end
+      end
+
+      context 'owner is an organization collection' do
+        let(:args2) { args.merge(document: { "user_with_ownership_name_tesim" => [owner_name], "owner_type_ssi" => "OrganizationCollection" } ) }
+
+        it 'returns a link to the organization with its title' do
+          expect(helper.link_to_user_with_ownership(args2)).to eq("<a href=\"/organizations/#{owner_id}\">#{owner_name}</a>")
+        end
       end
     end
 

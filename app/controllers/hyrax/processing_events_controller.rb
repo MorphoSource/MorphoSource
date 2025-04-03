@@ -17,17 +17,16 @@ module Hyrax
     self.show_presenter = Hyrax::ProcessingEventPresenter
 
     before_action :record_original_parents, only: :update
+    before_action :check_processing_activity, only: :media_owner_update
 
     def update
-      # Handle possible attachment upload
-      if params[:pe_description] && Morphosource.attachment_formats.include?(File.extname(params[:pe_description].original_filename))
-        Morphosource::AttachmentService.create(curation_concern.id, 'pe_description', params[:pe_description])
-        params.delete(:pe_description)
-      elsif params[:pe_description_attachment_delete] == 'delete'
-        Morphosource::AttachmentService.delete(curation_concern.id, 'pe_description')
-        params.delete(:pe_description_attachment_delete)
+      # Handle possible new attachment upload, delete or replace attachment
+      if params[:pe_description_delete] == 'delete'
+        curation_concern.description_attachment = nil
       end
-
+      if params[:pe_description].present?
+        curation_concern.description_attachment = params[:pe_description]
+      end      
       env = actor_environment
       emancipate_if_necessary(env)
       if actor.update(env)
@@ -116,6 +115,16 @@ module Hyrax
 
     def new_parents
       @curation_concern.member_of
+    end
+
+    def check_processing_activity
+      if params["processing_event"]["processing_activity"].present?
+        steps = params["processing_event"]["processing_activity"].map { |activity| activity.split(',').first.strip }
+        if steps.uniq.length != steps.length
+          params["processing_event"].delete("processing_activity")
+          flash[:alert] = "Processing activity steps must be unique.  Please correct and try again."
+        end
+      end
     end
   end
 end

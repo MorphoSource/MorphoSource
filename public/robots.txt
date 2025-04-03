@@ -4,6 +4,10 @@ Disallow: /browse/taxonomies
 Disallow: /browse/projects
 Disallow: /browse/teams
 Disallow: /browse/organizations
+Disallow: /media_catalog/facet
+Disallow: /objects_catalog/facet
+Disallow: /*_paging
+Disallow: /sequential_section_lists
 #
 # The following pages are allowed but query parameters for search are disallowed
 #
@@ -60,3 +64,12 @@ Allow: /sequential-section-lists/*?utf8=*&locale=
 Disallow: /sequential-section-lists/*?utf8=*&locale=*&*
 Allow: /sequential-section-lists/*?locale=
 Disallow: /sequential-section-lists/*?locale=*&*
+#
+# All collection pages
+#
+Allow: /collections/
+Disallow: /collections/*?*
+Allow: /collections/*?utf8=*&locale=
+Disallow: /collections/*?utf8=*&locale=*&*
+Allow: /collections/*?locale=
+Disallow: /collections/*?locale=*&*

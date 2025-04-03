@@ -1,10 +1,9 @@
 <nav>
-  <ul class="nav nav-pills nav-stacked">
-    <li>
+  <ul class="nav nav-pills flex-column">
+    <li class="nav-item">
       <div class="profile">
         <div class="profile-data">
           <div class="profile-data-name">
-            <span class="fa fas fa-cube" aria-hidden="true"></span>
             <span>
               <%= t('morphosource.submission.sidebar.media_upload') %> 
             </span>
@@ -13,8 +12,10 @@
       </div>
     </li>
 
-    <li>
-      <%= link_to new_submission_path(restart: true) do %>
+    <li class="h5">Submit New Media</li>
+
+    <li class="nav-itemr">
+      <%= link_to new_submission_path(restart: true), class: 'nav-link' do %>
         <span class="fa fas fa-redo" aria-hidden="true"></span>
         <span class="sidebar-action-text">
           <%= t('morphosource.submission.sidebar.start_over') %> 

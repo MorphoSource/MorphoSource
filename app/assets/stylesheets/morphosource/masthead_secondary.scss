@@ -62,3 +62,9 @@ div.controls .navbar-nav li ul.dropdown-menu a:focus  {
     margin-bottom: 0;
   }
 }
+
+@media (min-width: 768px) {
+  div.dropdown.browse-links.nav-item .dropdown-toggle.nav-link {
+    padding-left: 0;
+  }
+}

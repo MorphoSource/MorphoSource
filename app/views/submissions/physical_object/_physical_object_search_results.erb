@@ -1,121 +1,127 @@
 <div id="submission_po_search_ajax" class="mt-1 <%= show ? 'show' : 'hide' %>">
   <div id="submission_po_search_loading" class="ui-loading <%= loading ? 'show' : 'hide' %>"></div>
-  <div id="submission_po_search_results" class="row <%= loading ? 'hide' : 'show' %>">
-    <div class="container-fluid">
-      <div class="col-sm-10 offset-sm-1 block">
-        <div class="row">
-          <span class="h4"><%= t('morphosource.submission.search_results') %></span>
-          <i id="po-search-results-close" class="fas fa-times clickable" style='float: right;'></i>
-        </div>
-        <div class="row">
-          <% if (docs.nil? || docs.empty?) && ( ( idigbio[:status] == :error ) || idigbio[:data].nil? || idigbio[:data].empty? ) %>
-            <div id="empty_search_results">
-                <%= t('morphosource.submission.po_empty_search_results') %>
+  <div id="submission_po_search_results" class="<%= loading ? 'hide' : 'show' %>">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-sm-10">
+          <div class="block p-4">
+            <div class="row justify-content-center align-items-center">
+              <div class="col-12">
+                <span class="h5"><%= t('morphosource.submission.search_results') %></span>
+                <i id="po-search-results-close" class="float-right fa-lg fas fa-times clickable" style="margin-top: 5px;"></i>
+              </div>
             </div>
-          <% else %>
-            <% if (docs.nil? || docs.empty?) %>
-              <div id="empty_search_results">
-                <%= t('morphosource.submission.morphosource_empty_search_results') %>
-              </div>
-            <% else %>
-
-              <div id="submission_link_po" class="<%= po_type == 'bso' ? 'col-12 col-md-6' : 'col-sm-8 offset-sm-2' %>" style='margin-bottom: 2em;'>
-                <div class="row list-item">
-                  <b><%= t('morphosource.submission.morphosource_search_results') %> (<%= docs.count %>)</b>
-                </div>
-
-                <% if docs.count >= 100 %>
-                  <div class="row vertical-align list-item object-search-result row-striped" style="font-size: smaller; text-align: left;">
-                    <i>You have reached the maximum number of search results for physical objects in MorphoSource. You may find additional results if you narrow your search further.</i>
-                  </div>
-                <% end %>
-
-                <% docs.each do |doc| %>
-                  <div class="row vertical-align list-item object-search-result row-striped">
-                    <div class="col-sm-9 text-left">
-                      <div><span><%= doc.sortable_title %></span></div>
-                      <% if po_type == 'bso' %>
-                        <div><em><%= doc['taxonomy_tesim']&.first %></em></div>
-                        <% obj_url = Rails.application.routes.url_helpers.hyrax_biological_specimen_path(doc.id) %>
-                      <% else %>
-                        <% obj_url = Rails.application.routes.url_helpers.hyrax_cultural_heritage_object_path(doc.id)%>
-                      <% end %>
-
-                      <div style='font-size: smaller;'>
-                        <% if doc.idigbio_uuid.present? %>
-                          <%= link_to doc.idigbio_url, target: '_blank' do %>
-                            iDigBio Linked
-                          <% end %>
-                          ·
-                        <% end %>
-                        <%= link_to obj_url, target: '_blank' do %>
-                          In MorphoSource
-                        <% end %>
-
-                      </div>
-
-
-                    </div>
-
-                    <div class="col-sm-3 no-padding">
-                      <a href="#" id="<%= doc.id %>" data-organization-id="<%= doc['organization_id_tesim']&.first || '' %>" class="btn btn-primary use-morphosource-object">Use</a>
-                    </div>
-                  </div>
-                <% end %>
-
-              </div>
-            <% end %>
-
-            <% if po_type == 'bso' %>
-              <% if idigbio[:status] == :error %>
-                <div id="empty_search_results">
-                  <% if idigbio[:message].present? %>
-                    An error occurred searching specimens from iDigBio:
-                    <br/><br/>
-                    <%= idigbio[:message] %>
-                  <% else %>
-                    An error occurred searching specimens from iDigBio.
-                  <% end %>
-                </div>
-              <% elsif (idigbio[:data].nil? || idigbio[:data].empty?) %>
-                <div id="empty_search_results">
-                  <%= t('morphosource.submission.idigbio_empty_search_results') %>
+            <div class="row mt-2">
+              <% if (docs.nil? || docs.empty?) && ( ( idigbio[:status] == :error ) || idigbio[:data].nil? || idigbio[:data].empty? ) %>
+                <div id="empty_search_results" class="col-12">
+                  <%= t('morphosource.submission.po_empty_search_results') %>
                 </div>
               <% else %>
-                <div id="submission_link_idigbio" class="col-12 col-md-6" style='margin-bottom: 2em;'>
-                  <div class="row list-item">
-                    <b><%= t('morphosource.submission.idigbio_search_results') %>  (<%= idigbio[:data].count %>)</b>
+                <% if (docs.nil? || docs.empty?) %>
+                  <div id="empty_search_results" class="col-12 col-lg-6">
+                    <%= t('morphosource.submission.morphosource_empty_search_results') %>
                   </div>
+                <% else %>
 
-                  <% if idigbio[:data].count >= 100 %>
-                    <div class="row vertical-align list-item object-search-result row-striped" style="font-size: smaller; text-align: left;">
-                      <i>You have reached the maximum number of search results for biological specimens in iDigBio. You may find additional results if you narrow your search further.</i>
+                  <div id="submission_link_po" class="<%= po_type == 'bso' ? 'col-12 col-lg-6' : 'col-lg-8' %>" style='margin-bottom: 2em;'>
+                    <div class="list-item">
+                      <b><%= t('morphosource.submission.morphosource_search_results') %> (<%= docs.count %>)</b>
                     </div>
-                  <% end %>
 
-                  <% idigbio[:data].each do |idb| %>
-                    <div class="row vertical-align list-item object-search-result row-striped">
-                      <div class="col-sm-9 text-left">
-                        <div><span><%= "#{idb['data']['dwc:institutionCode']}:" %><wbr><%= "#{idb['data']['dwc:collectionCode']}:" %><wbr><%= "#{idb['data']['dwc:catalogNumber']}" %></span></div>
-                        <div><em><%= "#{idb['data']['dwc:genus']} #{idb['data']['dwc:specificEpithet']}" %></em></div>
-                        <div style="font-size: smaller;"><a href="https://www.idigbio.org/portal/records/<%= idb['uuid'] %>" target="_blank">View at iDigBio</a></div>
+                    <% if docs.count >= 100 %>
+                      <div class="vertical-align list-item object-search-result row-striped" style="font-size: smaller; text-align: left;">
+                        <i>You have reached the maximum number of search results for physical objects in MorphoSource. You may find additional results if you narrow your search further.</i>
+                      </div>
+                    <% end %>
+
+                    <% docs.each do |doc| %>
+                      <div class="vertical-align list-item object-search-result row-striped">
+                        <div class="col-sm-9 text-left">
+                          <div><span><%= doc.sortable_title %></span></div>
+                          <% if po_type == 'bso' %>
+                            <div><em><%= doc['taxonomy_tesim']&.first %></em></div>
+                            <% obj_url = Rails.application.routes.url_helpers.hyrax_biological_specimen_path(doc.id) %>
+                          <% else %>
+                            <% obj_url = Rails.application.routes.url_helpers.hyrax_cultural_heritage_object_path(doc.id)%>
+                          <% end %>
+
+                          <div style='font-size: smaller;'>
+                            <% if doc.idigbio_uuid.present? %>
+                              <%= link_to doc.idigbio_url, target: '_blank' do %>
+                                iDigBio Linked
+                              <% end %>
+                              ·
+                            <% end %>
+                            <%= link_to obj_url, target: '_blank' do %>
+                              In MorphoSource
+                            <% end %>
+
+                          </div>
+
+
+                        </div>
+
+                        <div class="col-sm-3 no-padding">
+                          <a href="#" id="<%= doc.id %>" data-organization-id="<%= doc['organization_id_tesim']&.first || '' %>" class="btn btn-primary use-morphosource-object">Use</a>
+                        </div>
+                      </div>
+                    <% end %>
+
+                  </div>
+                <% end %>
+
+                <% if po_type == 'bso' %>
+                  <% if idigbio[:status] == :error %>
+                    <div id="empty_search_results" class="col-12 col-lg-6">
+                      <% if idigbio[:message].present? %>
+                        An error occurred searching specimens from iDigBio:
+                        <br/><br/>
+                        <%= idigbio[:message] %>
+                      <% else %>
+                        An error occurred searching specimens from iDigBio.
+                      <% end %>
+                    </div>
+                  <% elsif (idigbio[:data].nil? || idigbio[:data].empty?) %>
+                    <div id="empty_search_results" class="col-12 col-lg-6">
+                      <%= t('morphosource.submission.idigbio_empty_search_results') %>
+                    </div>
+                  <% else %>
+                    <div id="submission_link_idigbio" class="col-12 col-lg-6" style='margin-bottom: 2em;'>
+                      <div class="list-item">
+                        <b><%= t('morphosource.submission.idigbio_search_results') %>  (<%= idigbio[:data].count %>)</b>
                       </div>
 
-                      <div class="col-sm-3 no-padding" >
-                        <% if docs_idigbio_uuids.include?(idb['uuid']) %>
-                          <span style="font-size: smaller;"><i>Previously imported. Select from other column.</i></span>
-                        <% else %>
-                          <a href="#" id="<%= idb['uuid'] %>" data-recordset="<%= idb['indexTerms']['recordset'] %>" class="btn btn-primary import-idigbio-object">Import</a>
-                        <% end %>
-                      </div>
+                      <% if idigbio[:data].count >= 100 %>
+                        <div class="vertical-align list-item object-search-result row-striped" style="font-size: smaller; text-align: left;">
+                          <i>You have reached the maximum number of search results for biological specimens in iDigBio. You may find additional results if you narrow your search further.</i>
+                        </div>
+                      <% end %>
+
+                      <% idigbio[:data].each do |idb| %>
+                        <div class="vertical-align list-item object-search-result row-striped">
+                          <div class="col-sm-9 text-left">
+                            <div><span><%= "#{idb['data']['dwc:institutionCode']}:" %><wbr><%= "#{idb['data']['dwc:collectionCode']}:" %><wbr><%= "#{idb['data']['dwc:catalogNumber']}" %></span></div>
+                            <div><em><%= "#{idb['data']['dwc:genus']} #{idb['data']['dwc:specificEpithet']}" %></em></div>
+                            <div style="font-size: smaller;"><a href="https://www.idigbio.org/portal/records/<%= idb['uuid'] %>" target="_blank">View at iDigBio</a></div>
+                          </div>
+
+                          <div class="col-sm-3 no-padding" >
+                            <% if docs_idigbio_uuids.include?(idb['uuid']) %>
+                              <span style="font-size: smaller;"><i>Previously imported. Select from other column.</i></span>
+                            <% else %>
+                              <a href="#" id="<%= idb['uuid'] %>" data-recordset="<%= idb['indexTerms']['recordset'] %>" class="btn btn-primary import-idigbio-object">Import</a>
+                            <% end %>
+                          </div>
+                        </div>
+                      <% end %>
+
                     </div>
                   <% end %>
+                <% end %>
 
-                </div>
               <% end %>
-            <% end %>
-
-          <% end %>
+            </div>
+          </div>
         </div>
       </div>
     </div>

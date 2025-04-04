@@ -9,7 +9,7 @@ en:
       raw: 'Raw'
       derived: 'Derived'
       raw_or_derived: 'Is your media raw or derived?'
-      raw_or_derived_suggestions: 'Based on your media type and modality...'
+      raw_or_derived_suggestions: 'Based on your media type and modality:'
       continue_with_selected_parent: 'Continue With Selected Parent(s)'
       parents_not_in_morphosource: 'Parent(s) Not In MorphoSource'
       new_specimen: New Specimen
@@ -39,10 +39,10 @@ en:
       organization_data_manager_submission: You are a manager for <b><span class="organization-name">Organization name</span></b> or you are uploading on their behalf, and the media you are uploading represents a physical object from that organization. By default, this media will be managed by <span class="organization-name">Organization name</span></b></a>. You can change this during the Media Details step of submission.
       header_text:
         initial_information: 'We need to collect some initial information about your media.'
-        parent_media: 'Got it. Since your media is derived, we need to ask about the parent media it derived from. If the parent is in MorphoSource, search for the parent''s media ID number. If not, indicate that. But if you have parent media available, please upload it first.'
-        object_type: 'Please select the type of object this media represents.'
-        bso_search: 'Thanks for that. Now we need to learn more about the physical object your media represents. If the object is already on MorphoSource or the iDigBio specimen aggregator, this will be easy - just search for your specimen and select it. Otherwise, create a new biological object record.'
-        cho_search: 'Thanks for that. Now we need to learn more about the physical object your media represents. If the object is already on MorphoSource, this will be easy - just search for your specimen and select it. Otherwise, create a new cultural heritage object record.'
+        parent_media: 'Since your media is derived, enter parent information. If the parent is in MorphoSource, search for the parent''s media ID. If not, indicate that. But if you have parent media available, please upload it first.'
+        object_type: 'Select the type of object this media represents.'
+        bso_search: 'If a record for the object is already on MorphoSource or the iDigBio aggregator, search and select the object. Otherwise, create a new biological object record.'
+        cho_search: 'If a record for the object is already on MorphoSource, search and select the object. Otherwise, create a new cultural heritage object record.'
         po_organization: 'Is this physical object managed by a collection, department, lab, or other group? We call these organizations. If the object is managed by an organization, please search for the organization and select it.'
         po_taxonomy: 'If this biological specimen has been associated with a taxonomy, you can indicate that here. Specimens can be linked to one or more taxonomies. First, search for the taxonomy of your specimen. If a GBIF taxonomy is available, select that. Otherwise, select or create a more specific MorphoSource taxonomy. If you select or create a MorphoSource taxonomy, consider also associating your specimen with a GBIF-available higher term (order, family, etc.) that applies. This will allow your specimen to be discoverable in our taxonomic browse tree.'
         po_details: 'You''re almost done creating a physical object record. After providing this information, we will move on to media record creation. Please note the required and recommended fields.'

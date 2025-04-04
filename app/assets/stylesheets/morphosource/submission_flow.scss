@@ -1,7 +1,27 @@
+@import 'variables';
 @import 'shared';
 
 .submission_flow {
   background-color: white;
+
+  div.fileinput-button {
+    display: inline-block;
+    float: none;
+    margin-right: 0;
+  }
+
+  form .form-group > label {
+    text-align: left;
+  }
+
+
+  input#media_agreement_uri.disabled {
+    margin: 0;
+  }
+
+  .container {
+    padding-top: 20px;
+  }
 
   .submission-select2-container .select2-container, .select2-choice, .select2-arrow {
     height: 34px;
@@ -19,16 +39,6 @@
 
   .submission_section {
    text-align: center; 
-  }
-
-  div.fileinput-button {
-    display: inline-block;
-    float: none;
-    margin-right: 0;
-  }
-
-  input#media_agreement_uri.disabled {
-    margin: 0;
   }
 
   #fileupload {
@@ -173,11 +183,6 @@
       margin-bottom: 30px;
     }
 
-    .row {
-      margin-left: -10px;
-      margin-right: -10px;
-    }
-
     .raw-or-derived-form-group {
       padding-top: 10px;
     }
@@ -302,7 +307,7 @@
   .main-content {
     margin-top: 0px !important;
     margin-bottom: 0px !important;
-    background-color: #003880;
+    background-color: #5c5c5c;
     padding-right: 0px;
     padding-left: 224px;
   }
@@ -340,10 +345,6 @@
 
 .submission_footer {
   margin-top:20px;
-}
-
-.row {
-  padding:4px 10px;
 }
 
 #masthead {

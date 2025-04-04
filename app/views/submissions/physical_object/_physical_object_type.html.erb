@@ -1,19 +1,21 @@
 <div id="submission_choose_bso_or_cho" class="submission-v2">
-  <div class="container-fluid">
-    <div class="row">
-      <h4><%= t('morphosource.submission.header_text.object_type') %></h4>
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-6">
+        <span class="h5"><%= t('morphosource.submission.header_text.object_type') %></h5>
+      </div>
     </div>
 
-    <div class="row">
+    <div class="row justify-content-center mt-3">
       <a id="btn_object_type_biological" class="btn btn-primary btn-continue"><%= t('morphosource.submission.biological_specimen') %></a> 
     </div>
       
 
-    <div class="row">
+    <div class="row justify-content-center mt-1">
       <b><%= t('morphosource.submission.or') %></b>
     </div>
 
-    <div class="row">
+    <div class="row justify-content-center mt-1">
       <a id="btn_object_type_cultural" class="btn btn-primary btn-continue">
         <%= t('morphosource.submission.cultural_heritage') %>
       </a>

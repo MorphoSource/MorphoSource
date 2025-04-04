@@ -1,15 +1,17 @@
 <div id="submission_choose_raw_or_derived_media" class="submission_section submission-v2">	
   <%= simple_form_for @submission, html: {id: :raw_or_derived_form } do |f| %>
-    <div class="container-fluid">
-      <div class="row">
-        <h4><%= t('morphosource.submission.header_text.initial_information') %></h4>
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-md-6">
+          <span class="h5"><%= t('morphosource.submission.header_text.initial_information') %></span>
+        </div>
       </div>
 
         <% if Flipflop.proxy_deposit? && current_user.can_make_deposits_for.any? 
             my_name = current_user.display_name.present? ? "(#{current_user.display_name})" : ""
           %>
-          <div class="row">
-            <div class="col-sm-6 offset-sm-3 no-padding">
+          <div class="row justify-content-center">
+            <div class="col-md-6">
               <%= f.input :on_behalf_of, label: 'Which user are you depositing this media for?', 
                 collection: current_user.can_make_deposits_for.map{ |u| [u.display_name, u.user_key] }, prompt: "Myself #{my_name}" %>
             </div>
@@ -17,8 +19,8 @@
         <% end %>
 
         <% if current_user.fund_codes.present? %>
-          <div class="row">
-            <div class="col-sm-6 offset-sm-3 no-padding">
+          <div class="row justify-content-center">
+            <div class="col-md-6">
               <%= f.input :fund_code, label: 'What fund code supports this deposit?', 
                 collection: current_user.fund_codes.where(can_add_media: true), prompt: "None (Data Supported By MorphoSource)" %>
             </div>
@@ -26,40 +28,42 @@
           
         <% end %>
 
-      	<div class="row mt-2">
-          <div class="col-sm-6 offset-sm-3 no-padding">
+      	<div class="row justify-content-center mt-2">
+          <div class="col-md-6">
       		  <%= render_edit_field_partial('submission_media_type', f: f) %>
           </div>
       	</div>
-      	<div class="row">
-          <div class="col-sm-6 offset-sm-3 no-padding">
+      	<div class="row justify-content-center">
+          <div class="col-md-6">
       		  <%= render_edit_field_partial('submission_modality', f: f) %>
       	  </div>
         </div>
       
-      <div id="submission-suggestions-container" class="row hide">
-    		<div class="col-sm-6 offset-sm-3 block">
-    			<div class="row">
-            <b><%= t('morphosource.submission.raw_or_derived_suggestions') %></b>
-          </div>
-          <div class="row">
-            <span id="submission-suggestions"></span>
-          </div>
-          <div id="submission-suggestions-examples" class="row mt-1 text-left hide raw-derived-list">
-            <div class="col-sm-6">
-              <div><b>Raw</b></div>
-              <div><ul id="submission-suggestions-examples-raw"></ul></div>
+      <div id="submission-suggestions-container" class="row justify-content-center mt-2 hide">
+    		<div class="col-md-6">
+          <div class="block p-4">
+            <div>
+              <b><%= t('morphosource.submission.raw_or_derived_suggestions') %></b>
             </div>
-            <div class="col-sm-6">
-              <div><b>Derived</b></div>
-              <div><ul id="submission-suggestions-examples-derived"></ul></div>
+            <div class="mt-1">
+              <span id="submission-suggestions"></span>
+            </div>
+            <div id="submission-suggestions-examples" class="row mt-2 text-left hide raw-derived-list">
+              <div class="col-md-6">
+                <div><b>Raw</b></div>
+                <div><ul id="submission-suggestions-examples-raw"></ul></div>
+              </div>
+              <div class="col-md-6">
+                <div><b>Derived</b></div>
+                <div><ul id="submission-suggestions-examples-derived"></ul></div>
+              </div>
             </div>
           </div>
     		</div>
     	</div>
 
-      <div id="submission-raw-or-derived-section" class="row hide">
-        <div class="col-sm-4 offset-sm-4 raw-or-derived-form-group">
+      <div id="submission-raw-or-derived-section" class="row justify-content-center hide">
+        <div class="col-md-4 raw-or-derived-form-group">
           <div>
             <label class="col-form-label" for="raw-or-derived-btn-group">
               <%= t('morphosource.submission.raw_or_derived') %>
@@ -78,7 +82,7 @@
         </div>
       </div>
 
-      <div class="row mt-2">
+      <div class="row  justify-content-center mt-3">
         <%= f.submit t('morphosource.submission.continue'), class: "btn btn-primary btn-continue" %>
       </div>
   	</div class="container">

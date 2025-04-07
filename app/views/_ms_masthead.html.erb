@@ -5,9 +5,12 @@
       <div class="col-1 col-md-3 logo no-horizontal-padding">
         <%= render '/logo' %>
       </div>
-      <div class="col-10 col-md-6">
-        <%= content_for?(:search_form) ? yield(:search_form) : render('/catalog/search_form') %>
-      </div>
+
+      <% if !controller_name.downcase.include? "catalog" %>
+        <div class="col-10 col-md-6">
+          <%= content_for?(:search_form) ? yield(:search_form) : render('/catalog/search_form') %>
+        </div>
+      <% end %>
 
       <div class="col-1 col-md-3 ml-auto no-horizontal-padding navbar-toggler" style="border: none;">
         <!-- mobile hamburger menu -->

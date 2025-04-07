@@ -34,7 +34,12 @@ class SolrDocument
   # @param opts  [Hash] Optional Solr configuration parameters, such as :rows or :page
   #
   # @return [Array<SolrDocument>] Array of queried SolrDocument instances
-  def self.where(query = {}, opts: {})
+  def self.where(query = nil, **opts)
+    # Support both a query hash or keyword args
+    # this is a fix after upgrading RSolr to 2.6.0
+    query ||= opts
+    return [] if query.blank?
+  
     if query.instance_of?(String)
       q = query
     else
@@ -44,12 +49,12 @@ class SolrDocument
       return [] if !query.present?
       q = query.map { |k, v| "#{k}:#{v}" }.join(" AND ")
     end
-
+  
     default_params = { rows: 1000 }
-    params = default_params.merge(q: q).merge(opts)
+    params = default_params.merge(q: q)
     repository.search(params).documents
   end
-
+  
   # self.unique_key = 'id'
 
   # Email uses the semantic field mappings below to generate the body of an email.

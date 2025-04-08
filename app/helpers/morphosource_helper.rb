@@ -140,7 +140,7 @@ module MorphosourceHelper
   def device_organization
     return unless organization_id = @presenter&.device&.to_h&.dig("device_organization_id_ssim")&.first
 
-    SolrDocument.where('id' =>  organization_id)&.first
+    SolrDocument.where({'id' =>  organization_id})&.first
   end
 
   def files_required?(work)

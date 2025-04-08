@@ -8,7 +8,7 @@ module Morphosource
       before_action :authenticate_api_key_optional, only: [
         :media_export, :objects_export, :media_download_counts, :media_downloads, :media_requests
       ]
-      before_action :remove_page_param, only: [:media_downloads, :media_requests, :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet, :objects_export]
+      before_action :remove_page_param, only: [:media_downloads, :media_requests, :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet, :objects_export, :media_export, :media_download_counts]
     end
 
     def export_render(csv_response_header=nil)

@@ -45,7 +45,7 @@ describe Morphosource::Derivatives::Processors::MeshThumbnail do
 
         it "produces the derivative 2D image thumbnail with a non-zero filesize" do
           subject.process
-          expect(File.exists?(derivative_path)).to be true
+          expect(File.exist?(derivative_path)).to be true
           expect(File.size(derivative_path)).to be > 0
         end
       end
@@ -55,7 +55,7 @@ describe Morphosource::Derivatives::Processors::MeshThumbnail do
 
         it "produces the derivative 2D image thumbnail with a non-zero filesize" do
           subject.process
-          expect(File.exists?(derivative_path)).to be true
+          expect(File.exist?(derivative_path)).to be true
           expect(File.size(derivative_path)).to be > 0
         end
       end

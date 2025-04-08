@@ -9,13 +9,9 @@
     <% end %>
     <div class="row">
       <!-- left column  -->
-      <div class="col-12 col-md-6">
-
-        <div class="block showcase-edit showcase-section">
-          <div class="row showcase-section-header">
-            <span class="h2">GENERAL DETAILS</span>
-          </div>
-
+      <div class="col-lg-6">
+        <div class="showcase showcase-edit showcase-section mt-2">
+          <h2>GENERAL DETAILS</h2>
           <div class="content-block">
             <%= f.input :vouchered, as: :select,
                 collection: ['Yes','No'],
@@ -33,11 +29,8 @@
           </div>
         </div>
 
-        <div class="block showcase-edit showcase-section">
-          <div class="row showcase-section-header">
-            <span class="h2">SPECIMEN IDENTIFIERS AND EXTERNAL LINKS</span>
-          </div>
-
+        <div class="showcase showcase-edit showcase-section mt-2">
+          <h2>SPECIMEN IDENTIFIERS AND EXTERNAL LINKS</h2>
           <div class="content-block">
             <%= f.input :institution_code, collection: [], label_wrapper_html: { class: 'recommended-flag' }  %>
             <%= f.input :collection_code, collection: [], label_wrapper_html: { class: 'recommended-flag' }  %>
@@ -49,38 +42,28 @@
           </div>
         </div>
 
-        <div class="block showcase-edit showcase-section">
-          <div class="row showcase-section-header">
-            <span class="h2">SPECIMEN DATING</span>
-          </div>
-
+        <div class="showcase showcase-edit showcase-section mt-2">
+          <h2>SPECIMEN DATING</h2>
           <div class="content-block">
             <div class="row">
               <div class="col-6 showcase-label">Object collection date</div>
               <div class="col-6 showcase-value">
-              <%= f.date_field :date_created, wrapper: :inline, value: f.object.date_created, class: 'datepicker form-control' %>
-                </div>
+                <%= f.date_field :date_created, wrapper: :inline, value: f.object.date_created, class: 'datepicker form-control' %>
+              </div>
             </div>
             <%= f.input :periodic_time, label: 'Time Period', as: :multi_value %>
             <%= f.input :numeric_time, label: 'Absolute Age' %>
             <%= f.input :dating_method, label: 'Dating Method' %>
+          </div>
         </div>
-      </div>
-
-
-
       </div>
       <!-- /left column  -->
 
       <!-- right column  -->
-      <div class="col-12 col-md-6">
-        <div class="block showcase-edit showcase-section">
-          <div class="row showcase-section-header">
-            <span class="h2">SPECIMEN ORIGINAL LOCATION</span>
-          </div>
-
-          <div class="content-block">
-            <div class="row">
+      <div class="col-lg-6">
+        <div class="showcase showcase-edit showcase-section mt-2">
+          <h2>SPECIMEN ORIGINAL LOCATION</h2>
+          <div class="content-block"> 
             <%= f.input :original_location, label: 'Locality' %>
             <%= f.input :address, label: 'Address' %>
             <%= f.input :city, label: 'City' %>
@@ -97,14 +80,10 @@
             <%= f.input 'Locality Geographical Coordinates', tooltip_wrapper: false, value_wrapper: false %>
             <%= f.input :latitude, tooltip_wrapper: false, label_wrapper_html: { class: 'indent' } %>
             <%= f.input :longitude, tooltip_wrapper: false, label_wrapper_html: { class: 'indent' } %>
-            </div>
         </div>
       </div>
-        <div class="block showcase-edit showcase-section">
-          <div class="row showcase-section-header">
-            <span class="h2">EXCAVATION DETAILS</span>
-          </div>
-
+        <div class="showcase showcase-edit showcase-section mt-2">
+          <h2>EXCAVATION DETAILS</h2>
           <div class="content-block">
             <%= f.input :provenance_name, label: 'Excavation Name' %>
             <%= f.input :provenance_details, label: 'Excavation/Collection Details', as: :text, input_html: { rows: 4, style: 'height: auto;' } %>
@@ -112,11 +91,11 @@
             <%= f.input :context, label: 'Stratigraphic Context' %>
           </div>
         </div>
-
       </div>
       <!-- / right column -->
     </div>
-    <div class="row">
+
+    <div class="row justify-content-center mt-3">
       <%= f.submit t('morphosource.submission.continue'),
         class: "btn btn-primary btn-continue",
         id: 'submission_create_bso_continue'

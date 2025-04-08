@@ -1,7 +1,7 @@
 <div id="submission_parents_in_ms" class="submission_section submission-v2 derived_media hide">  
   
   <div class="container">
-    <div class="row justify-content-center">
+    <div class="row justify-content-center text-center">
       <div class="col-md-9">
         <span class="h5"><%= t('morphosource.submission.header_text.parent_media') %></span>
       </div>
@@ -9,13 +9,13 @@
 
     <%= simple_form_for @submission, html: { id: :parent_search_form } do |f| %>
       <div class="row justify-content-center mt-2">
-        <div class="col-md-6 submission-select2-container">
+        <div class="col-md-9 col-lg-6 submission-select2-container">
           <%= f.input_field :parent_media_search %>
         </div>
       </div>
 
       <div id="parents" class="row form-group justify-content-center">
-        <div class="col-md-6">
+        <div class="col-md-9 col-lg-6">
           <input class="parent_title" type="hidden" name="parent_title" value="" />
           <input class="parent_id" type="hidden" name="parent_id" value="" />
           <div class="parent_row"></div>

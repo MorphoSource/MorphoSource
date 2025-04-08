@@ -14,31 +14,32 @@
     text-align: left;
   }
 
+  h2 {
+    font-size: 14px;
+    text-transform: uppercase;
+    margin-top: 0;
+  }
 
   input#media_agreement_uri.disabled {
     margin: 0;
   }
 
   .container {
+    padding-bottom: 20px;
     padding-top: 20px;
   }
 
-  .submission-select2-container .select2-container, .select2-choice, .select2-arrow {
-    height: 34px;
-  }
-
-  .submission-select2-container .select2-choice, .select2-arrow {
-    padding-top: 4px;
+  .submission-select2-container .select2-container,
+  .submission-select2-container .select2-choice,
+  .submission-select2-container .select2-arrow {
+    height: 34px !important;
+    padding-top: 4px !important;
   }
 
   .ui-loading {
     background: image-url('loading.gif') center center no-repeat;
     background-size: 30px;
     min-height: 90px; 
-  }
-
-  .submission_section {
-   text-align: center; 
   }
 
   #fileupload {
@@ -231,15 +232,24 @@
     }
 
     .showcase-edit .row {
-      /*margin-top: 5px;*/
-      /*margin-bottom: 5px;*/
-      text-align: left;
+      padding-left: 0 !important;
+      padding-right: 0 !important;
+
+      .material-icons.tooltip-icon {
+        font-size: 14px;
+      }
+
+      .showcase-label {
+        display: flex;
+        align-items: center;
+      }
+    }
+
+    .showcase-label, .showcase-value {
+      font-size: 14px;
     }
 
     .showcase-section {
-      padding: 0;
-      padding-bottom: 1em;
-      margin-bottom: 1em;
       overflow-wrap: break-word;
     }
 

@@ -8,7 +8,7 @@ RSpec.describe CalculateFileSetCrc32Job do
   describe 'perform' do
     context 'file is remote' do
       # thumbnail for https://www.morphosource.org/concern/media/000530653?locale=en
-      let(:file_path) { "https://www.morphosource.org/downloads/000530688853?file=thumbnail&t=1686760977"}
+      let(:file_path) { "https://www.morphosource.org/downloads/000530653?file=thumbnail&t=1686760977"}
       let(:file_set)  { FileSet.create(import_url: file_path) }
 
       before do

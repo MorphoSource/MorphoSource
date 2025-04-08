@@ -17,9 +17,11 @@ RSpec.describe OrganizationCollection, type: :model do
     subject.collection_type_gid = organization_collection_type.gid
     subject.contact_person = ['Pam Beasley pam@beasley.com']
     subject.country = ['United States']
+    subject.continent = 'North America'
     subject.creator = ['Donald Duck']
     subject.contributor = ['Mickey Mouse']
     subject.data_manager = ['f95e50']
+    subject.date_managed = '2023-10-01'
     subject.depositor = '1234'
     subject.description = ['lorem ipsum']
     subject.download_permission = ['restricted_download']

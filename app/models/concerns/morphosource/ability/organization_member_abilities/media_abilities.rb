@@ -48,7 +48,7 @@ module Morphosource
         end
 
         def file_set_media_id(file_set)
-          ( SolrDocument.where({"file_set_ids_ssim" => "#{file_set.id}"})&.first || {} )['id']
+          ( SolrDocument.where({file_set_ids_ssim: file_set.id})&.first || {} )['id']
         end
 
         # return an array of organization role names corresponding to organization_fields

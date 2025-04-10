@@ -163,6 +163,16 @@ module Hyrax
       []
     end
 
+    # Fields for all imaging events regardless of modality
+    def universal_terms
+      primary_terms[..4]
+    end
+
+    # Fields that are specific to a modality
+    def modality_specific_terms
+      primary_terms[5..]
+    end
+
     def self.build_permitted_params
       super + [:device_id, :physical_object_id]
     end

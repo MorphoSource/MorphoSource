@@ -1,0 +1,30 @@
+<div class="<%= term_group || 'base-terms' %>">
+  <% terms.each do |term| %>
+    <% if term == :date_created %>
+      <div class="row">
+        <div class="col-6 showcase-label">Date created</div>
+        <div class="col-6 showcase-value">
+          <%= f.date_field :date_created, wrapper: :inline, value: f.object.date_created, class: 'datepicker form-control' %>
+        </div>
+      </div>
+    <% elsif term == :description && f.object.model.class == ImagingEvent %>
+      <%= render_edit_field_partial(term, f: f) %>
+      <%= render_edit_field_partial(
+        'attachment', 
+        f: f, 
+        field: 'ie_description', 
+        label: 'Description attachment file',
+        curation_concern: nil
+      ) %>
+      <%= render_edit_field_partial(
+        'attachment_for_reference', 
+        f: f, 
+        field: 'ie_reference', 
+        label: 'Photographic reference file',
+        curation_concern: nil
+      ) %>
+    <% else %>
+      <%= render_edit_field_partial(term, f: f) %>
+    <% end %>
+  <% end %>
+</div>

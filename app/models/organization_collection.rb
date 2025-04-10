@@ -9,6 +9,7 @@ class OrganizationCollection < Collection
 
   before_validation :normalize_download_reviewer
   before_save :convert_media_ownership_transfer
+  before_save :record_date_managed
   after_create :create_collection_groups
   after_create :create_organization_project
   after_update :update_ark_status
@@ -137,6 +138,13 @@ class OrganizationCollection < Collection
       name = id.concat("_#{role}")
       Role.create(name: name) unless Role.find_by(name: name)
     end
+  end
+
+  # before_save callback to set date_managed if needed
+  def record_date_managed
+    return self.date_managed if self.managers.present? && self.date_managed.present?
+
+    self.date_managed = self.managers.present? ? Date.today : nil
   end
 
   private

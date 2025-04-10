@@ -472,7 +472,7 @@ module Morphosource
           end
 
           # Destroy user groups now so we can check that these are gone before completing migration
-          organization_team.user_groups.each(&:destroy!) if organization_team.user_groups.present?
+          organization_team.user_groups.compact.each(&:destroy!) if organization_team.user_groups.compact.present?
 
           if organization_team.user_groups.compact.present? # this should be [nil, nil, ...]
             raise "STEP 4 FAILED. Organization team user groups present."

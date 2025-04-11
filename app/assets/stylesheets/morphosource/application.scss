@@ -35,6 +35,10 @@ h1, .h1, h2, .modal-title, .h2, h3, .h3 {
   margin-left: 2px;
 }
 
+.multi_value .listing, .controlled_vocabulary .listing {
+  max-width: unset;
+}
+
 // Hyrax has a strange width restriction on multi-value fields of 83.333%, makes field look constricted
 .multi_value .listing li:first-of-type, .controlled_vocabulary .listing li:first-of-type {
   width: unset;

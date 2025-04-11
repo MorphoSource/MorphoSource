@@ -214,10 +214,6 @@ input[type=checkbox].disabled {
       color: #286090;
   }
 
-  .processing_event_processing_activity_step {
-    width: 95%;
-  }
-
   .showcase-label, .showcase-value {
     padding-right: 6px;
   }
@@ -332,13 +328,9 @@ input[type=checkbox].disabled {
   }
 
   .processing_activity_items {
-    .field-controls {
-      vertical-align: top;
-      padding-top: 10px;
-    }
     .row:not(:first-child) {
       .showcase-label {
-        padding-left:30px;
+        padding-left: 20px;
       }
     }
   }

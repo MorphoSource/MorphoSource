@@ -23,13 +23,34 @@ module Morphosource
         end
 
         def object_ids
-          ids = my_media_object_ids
+          ids =  my_edit_object_ids + my_organizations_edit_object_ids
           ids.blank? ? ['none'] : ids
         end
 
-        def my_media_object_ids
+        def my_edit_object_ids
+          # ensure to get objects with edit access even if the objects have no media
           repository.blacklight_config.max_per_page = 999999
-          repository.search(Morphosource::Users::MyMediaObjectsSearchBuilder.new(@scope).rows(999999).query).response['docs'].map { |d| d["physical_object_id_ssim"].try(:first) }.compact
+          repository.search(Morphosource::Users::EditObjectsSearchBuilder.new(@scope).rows(999999).query).response['docs'].map { |d| d["id"] }
+        end
+
+        def my_organizations_edit_object_ids
+          # ensure to get objects from organizations with edit access even if the objects have no media
+          edit_access_groups = current_user.manager_groups + current_user.editor_groups + current_user.depositor_groups
+          return [] if edit_access_groups.empty?
+
+          organization_ids = []
+          edit_access_groups.each do |group|
+            if group.match?(/^\d+_(managers|editors|depositors)$/)
+              id = group.split('_').first
+              if Organization.exists?(id: id) || OrganizationCollection.exists?(id: id)
+                organization_ids << id
+              end
+            end
+          end  
+          return [] if organization_ids.empty?
+
+          repository.blacklight_config.max_per_page = 999999
+          repository.search(Hyrax::PhysicalObjectsSearchBuilder.new(@scope).where("organization_id_ssim": organization_ids).rows(999999).query).response['docs'].map { |d| d["id"] }
         end
 
         def models

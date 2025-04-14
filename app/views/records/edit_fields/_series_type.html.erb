@@ -3,6 +3,5 @@
 <%= f.input :series_type, as: :select,
     collection: series_types_service.select_all_options(f.object.series_type),
     include_blank: true,
-    input_html: { class: 'form-control' },
-    label_wrapper_html: { class: 'parsed' } 
+    input_html: { class: 'form-control' }
 %>

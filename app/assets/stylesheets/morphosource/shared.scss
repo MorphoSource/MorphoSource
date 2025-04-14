@@ -338,6 +338,10 @@ ul.align-li {
 
 }
 
+.form-group.hidden .material-icons.tooltip-icon {
+  display: none;
+}
+
 .material-icons.tooltip-icon:before {
   content: 'help_outline';
 }

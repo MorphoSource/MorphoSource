@@ -246,11 +246,13 @@ input[type=checkbox].disabled {
   // styling for media tags
   // hide label for keyword input
   .single-input .showcase-label {
-    display: none;
+    display: none !important;
   }
 
   .single-input .showcase-value {
     width: 100%;
+    max-width: 100%;
+    flex: unset;
   }
 
   // remove extra border around tags select

@@ -1,17 +1,17 @@
 <!-- submission file upload section -->
 <!-- submissions/media/custom_thumbnail -->
-<div class="content-block" style="margin-top:30px;">
-  <div class="block showcase-edit showcase-section">
-    <div class="row showcase-section-header">
-      <span class="h2">CUSTOM THUMBNAIL</span>
-      <i class="material-icons tooltip-icon" data-original-title="" title="">
-        <p class="hint hide"><%= t('morphosource.media.custom_thumbnail.hint') %></p>
-      </i>
-      <span class="badge badge-info"></span>
-    </div>
-    <div style="margin-top:15px; margin-left:15px">
-      <%= f.input :custom_thumbnail, as: :file %>
-      <br /><i id="custom_thumbnail_hint" class="hint-sm">(Max file size 500KB)</i>
+<div class="mt-2">
+  <h2 class="d-flex align-items-center">
+    Custom Thumbnail
+    <i class="material-icons tooltip-icon" data-toggle="tooltip" title="<%= t('morphosource.media.custom_thumbnail.hint') %>" style="font-size: 14px;"></i>
+    <span class="badge badge-info"></span>
+  </h2>
+  <div class="content-block">
+    <div class="showcase showcase-edit showcase-section">
+      <div>
+        <%= f.input :custom_thumbnail, as: :file %>
+        <br /><i id="custom_thumbnail_hint" class="hint-sm">(Max file size 500KB)</i>
+      </div>
     </div>
   </div>
 </div>

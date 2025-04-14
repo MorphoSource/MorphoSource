@@ -94,6 +94,10 @@
     width: 100%;
   }
 
+  .media_custom_thumbnail label.col-form-label {
+    width: 100%;
+  }
+
   .raw-derived-list ul {
     padding-inline-start: 20px;
   }
@@ -231,17 +235,23 @@
       margin-top: 2em;
     }
 
-    .showcase-edit .row {
-      padding-left: 0 !important;
-      padding-right: 0 !important;
-
-      .material-icons.tooltip-icon {
-        font-size: 14px;
+    .showcase-edit {
+      .nav-tabs {
+        background-color: unset;
       }
+    
+      .row {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
 
-      .showcase-label {
-        display: flex;
-        align-items: center;
+        .material-icons.tooltip-icon {
+          font-size: 14px;
+        }
+
+        .showcase-label {
+          display: flex;
+          align-items: center;
+        }
       }
     }
 

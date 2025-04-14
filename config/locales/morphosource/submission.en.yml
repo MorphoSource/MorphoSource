@@ -49,7 +49,7 @@ en:
         media_device: 'Enter details about the device that imaged your media. If the device is managed by a facility, department, or lab group organization, search and select that organization. If the device is a personal scanner or camera, or if it is not managed by an organization, select No Organization. Then select from the device list.'
         media_imaging: 'Enter details about initial parameters used to image your media. Some fields are specific to imaging modality.'
         media_processing: 'Enter details about how parent raw data was processed to produce your derived media.'
-        media_details: 'This is the last step, you''re almost done. First, upload your media. Then provide us with some final details about the media. You can also control publication settings and access to the media here.'
+        media_details: First, upload the media file. Then enter some final details about your media, including publication and access settings.
       body_text:
         device_no_organization: 'If your device is a personal scanner, camera, and/or is not managed by a department, facility, collection, or other organization, enter "No Organization" and select the first result.'
       sidebar:

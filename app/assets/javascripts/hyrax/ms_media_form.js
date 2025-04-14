@@ -196,13 +196,11 @@ $( document ).ready(function() {
     }
 
     function adjust_form_media_type() {
-      $('.media_type_block').hide();
-      $('#file-object-details').hide();
+      hide_fields(['.media_type_block', '#file-object-details'], false);
+
       // All references to #file-object-details relate to work submission UI section
       if ($('#media_media_type').val() == 'CTImageSeries') {
-
-        $('.CTImageSeries').show();
-        $('#file-object-details').show();
+        show_fields(['.CTImageSeries', '#file-object-details']);
 
         // show/hide/require/un-require in hyrax add media form
         show_fields(['.media_series_type', '.media_x_spacing', '.media_y_spacing', '.media_z_spacing', '.media_slice_thickness', '.media_unit']);
@@ -210,8 +208,7 @@ $( document ).ready(function() {
         require_fields(['.media_x_spacing', '.media_y_spacing', '.media_z_spacing', '.media_unit']);
 
       } else if ($('#media_media_type').val() == 'SequentialSectionImageSeries') {
-        $('.SequentialSectionImageSeries').show();
-        $('#file-object-details').show();
+        show_fields(['.SequentialSectionImageSeries', '#file-object-details']);
 
         // show/hide in hyrax add media form
         show_fields(['.media_series_type', '.media_x_spacing', '.media_y_spacing', '.media_z_spacing', '.media_slice_thickness', '.media_unit']);
@@ -219,8 +216,7 @@ $( document ).ready(function() {
         unrequire_fields(['.media_x_spacing', '.media_y_spacing', '.media_z_spacing', '.media_unit']);
 
       } else if ($('#media_media_type').val() == 'PhotogrammetryImageSeries') {
-        $('.PhotogrammetryImageSeries').show();
-        $('#file-object-details').show();
+        show_fields(['.PhotogrammetryImageSeries', '#file-object-details']);
 
         // show/hide in hyrax add media form
         show_fields(['#media_scale_bar_wrapper', '#media_scale_bar_target_type', '#media_scale_bar_distance', '#media_scale_bar_units']);
@@ -228,8 +224,7 @@ $( document ).ready(function() {
         unrequire_fields(['.media_x_spacing', '.media_y_spacing', '.media_z_spacing', '.media_unit']);
 
       } else if ($('#media_media_type').val() == 'Mesh') {
-        $('.Mesh').show();
-        $('#file-object-details').show();
+        show_fields(['.Mesh', '#file-object-details']);
 
         // show/hide in hyrax add media form
         show_fields(['.media_unit', '.media_map_type']);
@@ -237,7 +232,7 @@ $( document ).ready(function() {
         unrequire_fields(['.media_x_spacing', '.media_y_spacing', '.media_z_spacing', '.media_unit']);
 
       } else {
-        $('.media_type_block').hide();
+        hide_fields(['.media_type_block'], false);
 
         // show/hide in hyrax add media form
         hide_fields(['.media_series_type', '.media_x_spacing', '.media_y_spacing', '.media_z_spacing', '.media_slice_thickness', '.media_unit', '.media_map_type', '#media_scale_bar_wrapper', '#media_scale_bar_target_type', '#media_scale_bar_distance', '#media_scale_bar_units']);

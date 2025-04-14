@@ -26,6 +26,10 @@ class Collection < ActiveFedora::Base
   # depositors can add works to the collection, but do not have additional access to other works in the collection
   DEFAULT_GROUP_ROLES = %w[managers editors depositors downloaders viewers].freeze
 
+  def admin_set_id
+    Hyrax::AdminSetCreateService::DEFAULT_ID
+  end
+
   def presenter_class
     team? ? Morphosource::Collections::TeamPresenter : Morphosource::Collections::ProjectPresenter
   end

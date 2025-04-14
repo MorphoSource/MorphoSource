@@ -49,9 +49,24 @@ module Morphosource
         super
       end
 
-      def update
-        update_thumbnail
-        super
+      # def update
+      #   update_thumbnail
+      #   super
+      # end
+
+      def update_active_fedora_collection
+        process_member_changes
+        process_branding
+
+        @collection.visibility = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE unless @collection.discoverable?
+        # we don't have to reindex the full graph when updating collection
+        @collection.try(:reindex_extent=, Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX)
+        byebug
+        if @collection.update(collection_params.except(:members))
+          after_update_response
+        else
+          after_update_errors(@collection.errors)
+        end
       end
 
       def after_update

@@ -15,7 +15,7 @@ module Hyrax
       def create(env)
         remote_files = env.attributes.delete(:remote_files)
         # set file attributes for remote backed media
-        if env.curation_concern.media? && env.attributes["remote_origin_url"]&.present?
+        if env.curation_concern.is_a?(Media) && env.attributes["remote_origin_url"]&.present?
           remote_manifest_info = env.attributes.delete(:remote_manifest_info).to_h
           remote_files = remote_files_from_remote_origin_url(env.attributes["remote_origin_url"], remote_manifest_info)
         end
@@ -28,7 +28,7 @@ module Hyrax
       def update(env)
         remote_files = env.attributes.delete(:remote_files)
         # set file attributes for remote backed media
-        if env.curation_concern.media? && env.attributes["remote_origin_url"].present?
+        if env.curation_concern.is_a?(Media) && env.attributes["remote_origin_url"].present?
           remote_manifest_info = env.attributes.delete(:remote_manifest_info).to_h
           remote_files = remote_files_from_remote_origin_url(env.attributes["remote_origin_url"], remote_manifest_info)
         end

@@ -38,7 +38,7 @@ module Hyrax
 
         # @return [TrueClass]
         def attach_files(files, env)
-          if env.curation_concern.media? && env.curation_concern.is_remote_backed?
+          if env.curation_concern.is_a?(Media) && env.curation_concern.is_remote_backed?
             # if remote file url is empty or same as the current one, no need to call AttachFilesToWorkJob
             if (
               !env.curation_concern.remote_origin_url.present? ||

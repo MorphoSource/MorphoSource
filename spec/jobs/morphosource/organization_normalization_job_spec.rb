@@ -47,7 +47,19 @@ RSpec.describe Morphosource::OrganizationNormalizationJob do
       let(:organization)  { FactoryBot.create(:organization_collection) }
       it 'calls the correct normalization method' do
         expect_any_instance_of(described_class).to receive(:normalize_organization_media)
-        described_class.perform_now(media_id: media.id, organization_id: organization.id, remove_previous_reviewers: 'true', user_email: user.email, update_publication_status: 'all')
+        described_class.perform_now(media_id: media.id, organization_id: organization.id, remove_previous_reviewers: 'true', user_email: nil, update_publication_status: 'all')
+      end
+      context 'the argments are valid' do
+        let(:args)  { {media_id: media.id, organization_id: organization.id, remove_previous_reviewers: 'true', user_email: nil, update_publication_status: 'all'} }
+        it 'returns true' do
+          expect(described_class.perform_now(args)).to be true
+        end
+      end
+      context 'the arguments are invalid' do
+        let(:args)  { {media_id: media.id, organization_id: organization.id, remove_previous_reviewers: nil, user_email: nil, update_publication_status: 'all'} }
+        it 'returns false' do
+          expect(described_class.perform_now(args)).to be false
+        end
       end
     end
   end
@@ -421,7 +433,7 @@ RSpec.describe Morphosource::OrganizationNormalizationJob do
         let(:uploaded_file)         { Rack::Test::UploadedFile.new(file_path) }
 
         before do
-          Morphosource::AttachmentService.create(organization, 'agreement', uploaded_file)
+          organization.agreement_attachment = uploaded_file
         end
 
         it 'copies the organization permissions' do
@@ -434,7 +446,7 @@ RSpec.describe Morphosource::OrganizationNormalizationJob do
           expect(media.preview_mode).to match_array(organization.preview_mode)
           expect(media.license).to match_array(organization.license)
           expect(media.rights_statement).to match_array(organization.rights_statement)
-          expect(media.attachment('agreement')).to include("agreement.txt")
+          expect(media.agreement_attachment_url).to include("text.txt")
         end
       end
       context 'all organization permissions are no preference' do
@@ -458,7 +470,7 @@ RSpec.describe Morphosource::OrganizationNormalizationJob do
           license_blank: [],
           rights_holder_blank: [])
 
-          Morphosource::AttachmentService.delete(organization, 'agreement')
+          organization.agreement_attachment = nil
         end
 
         it 'does not change the media permissions' do
@@ -497,7 +509,7 @@ RSpec.describe Morphosource::OrganizationNormalizationJob do
           license_blank: ["1"],
           rights_holder_blank: ["1"])
 
-          Morphosource::AttachmentService.delete(organization, 'agreement')
+          organization.agreement_attachment = nil
         end
 
         it 'does not change the media permissions except for license, rights_statement, and rights_holder' do
@@ -540,7 +552,6 @@ RSpec.describe Morphosource::OrganizationNormalizationJob do
                                              license: ["https://creativecommons.org/licenses/by-nc/4.0/"],
                                              rights_statement: ["http://rightsstatements.org/vocab/UND/1.0/"],
                                              publisher: ["Publisher"]) }
-
 
     describe 'update_download_reviewer' do
       context 'media is open' do
@@ -886,7 +897,7 @@ RSpec.describe Morphosource::OrganizationNormalizationJob do
         let(:uploaded_file)         { Rack::Test::UploadedFile.new(file_path) }
 
         before do
-          Morphosource::AttachmentService.create(organization, 'agreement', uploaded_file)
+          organization.agreement_attachment = uploaded_file
         end
 
         it 'copies the organization permissions' do
@@ -899,7 +910,7 @@ RSpec.describe Morphosource::OrganizationNormalizationJob do
           expect(media.preview_mode).to match_array(organization.preview_mode)
           expect(media.license).to match_array(organization.license)
           expect(media.rights_statement).to match_array(organization.rights_statement)
-          expect(media.attachment('agreement')).to include("agreement.txt")
+          expect(media.agreement_attachment_url).to include("text.txt")
         end
       end
       context 'all organization permissions are no preference' do
@@ -922,7 +933,7 @@ RSpec.describe Morphosource::OrganizationNormalizationJob do
           license_blank: [],
           rights_holder_blank: [])
 
-          Morphosource::AttachmentService.delete(organization, 'agreement')
+          organization.agreement_attachment = nil
         end
 
         it 'does not change the media permissions' do
@@ -961,7 +972,7 @@ RSpec.describe Morphosource::OrganizationNormalizationJob do
           license_blank: ["1"],
           rights_holder_blank: ["1"])
 
-          Morphosource::AttachmentService.delete(organization, 'agreement')
+          organization.agreement_attachment = nil
         end
 
         it 'does not change the media permissions except for license, rights_statement, and rights_holder' do

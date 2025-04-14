@@ -1,4 +1,12 @@
-<%# todo: change content to team / project %>
+<% 
+# For Media & Objects page, check if user has any collections (user_collection) that the user can add media to
+# For add media to collection page, collection (@collection) is already selected in previous page, therefore no need to check
+if controller.controller_name == "media" && user_collections.blank?
+  no_collections_can_be_added = true
+else
+  no_collections_can_be_added = false
+end
+%>
 <div role="dialog" class="modal collection-list-modal fade" id="collection-list-container" tabindex="-1" aria-labelledby="col_add_title">
   <div class="modal-dialog text-left">
       <div class="modal-content">
@@ -7,7 +15,7 @@
           <span class="modal-title" id="col_add_title"><%= t("hyrax.collection.select_form.title") %></span>
         </div>
         <div class="modal-body">
-          <% if user_collections.blank? %>
+          <% if no_collections_can_be_added %>
             <em> <%= t("hyrax.collection.select_form.no_collections") %></em><br /><br /><br /><br />
           <% else %>
             <div class="collection-list">
@@ -20,13 +28,13 @@
                     <%= hidden_field_tag 'member_of_collection_ids', @collection.id %>
                   </div>
                 <% else %>
-                  <legend><%= t("hyrax.collection.select_form.select_heading") %></legend>
+                  <p><%= t("hyrax.collection.select_form.select_heading") %></p>
                   <%= text_field_tag 'member_of_collection_ids', nil,
                               prompt: :translate,
                               data: {
                                 placeholder: t('simple_form.placeholders.defaults.member_of_collection_ids'),
                                 autocomplete: 'collection',
-                                'autocomplete-url' => Rails.application.routes.url_helpers.qa_path + '/search/collections?access=deposit'
+                                'autocomplete-url' => find_collection_to_add_media_autocomplete_url
                               } %>
                 <% end %>
               </ul>
@@ -35,7 +43,7 @@
           <% end %> <!-- else -->
         </div>
         <div class="modal-footer-center">
-          <% if !user_collections.blank? %>
+          <% unless no_collections_can_be_added %>
             <%= render 'hyrax/dashboard/collections/button_for_update_collection', label: t("hyrax.collection.select_form.update"), collection_id: 'collection_replace_id' %>
           <% end %>
           <button type="button" class="btn btn-secondary" data-dismiss="modal"><%= t("hyrax.collection.select_form.close") %></button>
@@ -43,3 +51,22 @@
       </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+
+<script>
+  /*  
+  On Media and Objects page (with body.dashboard class), inside the modal for adding media to collection,
+  disable the Save Changes button by default, and enable the Save Changes button only when a collection is selected 
+  */
+  $(document).ready(function() {
+    $('body.dashboard #collection-list-container').on('shown.bs.modal', function () {
+      $('.btn.btn-primary.submits-batches').prop('disabled', true);      
+      $('#member_of_collection_ids').on('change', function() {
+        if ($(this).val()) {
+          $('.btn.btn-primary.submits-batches').prop('disabled', false);
+        } else {
+          $('.btn.btn-primary.submits-batches').prop('disabled', true);
+        }
+      });
+    });
+  });
+</script>

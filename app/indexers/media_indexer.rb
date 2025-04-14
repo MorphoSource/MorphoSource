@@ -203,7 +203,31 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['generic_type_ssim'] = ['Work']
       solr_doc['human_readable_type_ssi'] = object.human_readable_type
       solr_doc['publisher_ssim'] = object.publisher
-   end
+
+      # file sizes
+      file_sets = object.file_set_ids.present? ? 
+        SolrDocument.where(
+          { 'id' => object.file_set_ids.join(' OR '), 'has_model_ssim' => 'FileSet' }, 
+          opts: { fl: [ 'id', 'file_size_lts' ] }
+        ) : []
+
+      # Add file size for fileset binary and derivatives
+      all_files_file_size = file_sets.reduce(0) do |sum, fs| 
+        fs_deriv_size = Morphosource::DerivativePath.derivatives_for_reference(fs['id']).map { |p| 
+          File.size?(p) 
+        }.compact.sum
+
+        sum + ( fs['file_size_lts'] || 0 ) + fs_deriv_size
+      end
+
+      # Add file size for media derivatives
+      all_files_file_size += Morphosource::DerivativePath.derivatives_for_reference(object.id).map { |p| 
+        File.size?(p) 
+      }.compact.sum
+
+      solr_doc['all_files_file_size_lts'] = all_files_file_size
+
+    end
   end
 
   def publication_status

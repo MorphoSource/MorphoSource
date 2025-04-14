@@ -5,11 +5,14 @@ class OrganizationCollection < Collection
   include Morphosource::LocationMetadata
   include Morphosource::OrganizationBehavior
   include Morphosource::PersistentIdentifiersBehavior
+  include Morphosource::Works::IndexRelatedWorks
 
+  before_validation :normalize_download_reviewer
   before_save :convert_media_ownership_transfer
   after_create :create_collection_groups
   after_create :create_organization_project
   after_update :update_ark_status
+  after_update :index_related_works
   after_create :mint_ark
   after_destroy :delete_ark_if_reserved
 
@@ -52,8 +55,9 @@ class OrganizationCollection < Collection
     true
   end
 
-  def attachment(field_name)
-    Morphosource::AttachmentService.get(self, field_name)
+  # Custom method to handle CarrierWave uploader
+  def agreement_uploader
+    @agreement_uploader ||= OrganizationCollectionAgreementAttachmentUploader.new.tap { |u| u.collection_id = id }
   end
 
   def is_device_organization?

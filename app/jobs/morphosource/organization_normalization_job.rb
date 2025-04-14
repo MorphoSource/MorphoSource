@@ -4,8 +4,8 @@ module Morphosource
     queue_as Hyrax.config.update_medium_queue_name
 
     def perform(media_id: nil, organization_id: nil, user_email: nil, remove_previous_reviewers: false, update_publication_status: nil)
-      return false if [media_id, organization_id, user_email, remove_previous_reviewers, update_publication_status].any?(&:blank?)
-      @organization = select_organization(organization_id)
+      return false unless @organization = select_organization(organization_id)
+
       if @organization.is_a? Organization
         normalize_team_media(media_id, user_email, remove_previous_reviewers, update_publication_status)
       elsif @organization.is_a? OrganizationCollection
@@ -15,6 +15,8 @@ module Morphosource
 
     # refactor to remove this method when organizations have been migrated to collections
     def normalize_team_media(media_id, user_email, remove_previous_reviewers, update_publication_status)
+      return false if [media_id, user_email, remove_previous_reviewers, update_publication_status].any?(&:blank?)
+
       @media = Media.find(media_id)
       @team = Collection.find_by(id: @organization&.team_id&.first)
       @user = User.find_by(email: user_email)
@@ -26,9 +28,12 @@ module Morphosource
       update_permissions
       add_media_to_team if @team.present?
       save_and_reindex
+      true
     end
 
     def normalize_organization_media(media_id, remove_previous_reviewers, update_publication_status)
+      return false if [media_id, remove_previous_reviewers, update_publication_status].any?(&:blank?)
+
       @media = Media.find(media_id)
       @team = Collection.find_by(id: @organization&.team_id&.first)
       @remove_previous_reviewers = remove_previous_reviewers
@@ -38,6 +43,7 @@ module Morphosource
       update_data_manager
       update_permissions
       save_and_reindex
+      true
     end
 
     def update_download_reviewer
@@ -123,12 +129,12 @@ module Morphosource
     end
 
     def update_attachment
-      return if (@organization.agreement_uri.blank? && @organization.attachment('agreement').blank?)
+      return if (@organization.agreement_uri.blank? && @organization.agreement_attachment_url.blank?)
 
       @media.agreement_uri = @organization.agreement_uri
-      Morphosource::AttachmentService.delete(@media.id, 'agreement')
-      if @organization.attachment('agreement')
-        Morphosource::AttachmentService.create_copy(@media, 'agreement', @organization)
+      @media.agreement_attachment = nil
+      if @organization.agreement_attachment_url.present?
+        @media.copy_organization_agreement_attachment(@organization)
       end
     end
 

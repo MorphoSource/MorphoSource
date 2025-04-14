@@ -3,15 +3,68 @@
 module Morphosource
   module OrganizationBehavior
 
-    def agreement_attachment_url
-      if attachment('agreement')
-        Rails.application.routes.url_helpers.attachment_path(
-          id: id,
-          field: 'agreement'
-        )
+    # @param file [File, ActionDispatch::Http::UploadedFile] The file to be attached, or nil to delete the file
+    def agreement_attachment=(file)
+      if file.nil?
+        # delete attachment
+        return unless self.agreement_attachment_url.present?
+        file_name = File.basename(self.agreement_attachment_url)
+        agreement_uploader.retrieve_from_store!(file_name)
+        if agreement_uploader.file.present? && File.exist?(agreement_uploader.file.path)
+          Rails.logger.info "Deleting file: #{agreement_uploader.file.path}"
+          agreement_uploader.remove!
+        else
+          Rails.logger.warn "File not found: #{agreement_uploader.file&.path}"
+        end
+        self.agreement_attachment_url = nil
+        self.save
       else
-        nil
+        # add attachment
+        extension = File.extname(file.original_filename).downcase
+        if agreement_attachment_formats.include?(extension)
+          agreement_uploader.store!(file)
+          self.agreement_attachment_url = agreement_uploader.url
+          self.save
+        else
+          raise ArgumentError, "Invalid file format: #{extension}"
+        end
       end
+    end
+
+    def agreement_attachment
+      self.agreement_attachment_url
+    end
+
+    def agreement_attachment_full_path
+      # retrieve and return the full system path to the agreement attachment file
+      file_name = File.basename(self.agreement_attachment_url)
+      agreement_uploader.retrieve_from_store!(file_name)
+      agreement_uploader.file.path
+    end
+
+    def agreement_attachment_formats
+      @agreement_attachment_formats ||= Morphosource.attachment_formats
+    end
+
+    def cultural_heritage_objects
+      CulturalHeritageObject.where(organization_id_tesim: id)
+    end
+
+    # Media associated with the organization via devices and imaging events
+    def device_media
+      Media.where(media_device_facility_organization_id_ssim: id)
+    end
+
+    def device_specimens
+      device_media.map(&:specimens).flatten.uniq { |s| s.id }
+    end
+
+    def device_cultural_heritage_objects
+      device_media.map(&:cultural_heritage_objects).flatten.uniq { |s| s.id }
+    end
+
+    def device_physical_objects
+      device_specimens + device_cultural_heritage_objects
     end
 
     def enforced_permissions_fields
@@ -24,6 +77,15 @@ module Morphosource
       blank_fields.include?(field) &&
         ActiveModel::Type::Boolean.new.cast(send("#{field.to_s}_blank")&.first)
     end
+
+    def media
+      physical_objects.map(&:media).flatten
+    end
+
+    def physical_objects
+      specimens + cultural_heritage_objects
+    end
+    alias objects physical_objects
 
     def permissions_fields
       {
@@ -39,8 +101,16 @@ module Morphosource
         preview_mode: preview_mode,
         agreement_uri: agreement_uri,
         attachment_url: agreement_attachment_url,
-        organization_for_attachment: attachment('agreement') ? id : nil
+        organization_for_attachment: agreement_attachment_url.present? ? id : nil
       }
+    end
+
+    def specimens
+      BiologicalSpecimen.where(organization_id_tesim: id)
+    end
+
+    def normalize_download_reviewer
+      self.download_reviewer = self.download_reviewer.map { |x| x.split(',') }.flatten
     end
   end
 end

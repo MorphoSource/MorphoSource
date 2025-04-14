@@ -9,23 +9,36 @@ module Morphosource
     before_action :set_access_control_headers
 
     class_attribute :iiif_manifest_builder
+    class_attribute :iiif_manifest_builder_v4
     class_attribute :remote_manifest_builder
 
     self.iiif_manifest_builder = Hyrax::ManifestBuilderService.new(
       iiif_manifest_factory: ::IIIFManifest::V3::ManifestFactory
     )
+    self.iiif_manifest_builder_v4 = Hyrax::ManifestBuilderService.new(
+      iiif_manifest_factory: ::IIIFManifest::V4::ManifestFactory
+    )
     self.remote_manifest_builder = Morphosource::RemoteManifestBuilderService
     self.temporary_access_link_class = TemporaryMediaAccessLink
 
-    def show
+     # Show IIIF Presentation API manifest
+    def show(version: 'v3')
       if params.include?(:id) && (m = media_from_access_control(params[:id]))
         authorize_media_with_temporary_link m.id
         authorize! :read, m.id
 
+        if params[:version]&.downcase == 'v3'
+          builder = iiif_manifest_builder
+        elsif params[:version]&.downcase == 'v4'
+          builder = iiif_manifest_builder_v4
+        else 
+          raise CanCan::AccessDenied
+        end
+
         if m.has_remote_manifest?
           json = remote_manifest_builder.manifest_for(m)
         else
-          json = iiif_manifest_builder.manifest_for(
+          json = builder.manifest_for(
             presenter: iiif_manifest_presenter(m)
           )
         end
@@ -48,10 +61,18 @@ module Morphosource
       )
         authorize! :read, m.id
 
+        if params[:version]&.downcase == 'v3'
+          manifest_url = main_app.manifest_url(m.access_control_id.first)
+        elsif params[:version]&.downcase == 'v4'
+          manifest_url = main_app.manifest_v4_url(m.access_control_id.first)
+        else 
+          raise CanCan::AccessDenied
+        end
+
         response = {
           media: {
             id: m.id,
-            manifest_url: main_app.manifest_url(m.access_control_id.first)
+            manifest_url: manifest_url
           }
         }
 
@@ -75,6 +96,10 @@ module Morphosource
 
       def iiif_manifest_builder
         self.class.iiif_manifest_builder
+      end
+
+      def iiif_manifest_builder_v4
+        self.class.iiif_manifest_builder_v4
       end
 
       def iiif_manifest_presenter(work)

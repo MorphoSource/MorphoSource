@@ -20,9 +20,13 @@ module Morphosource::CatalogHelper
 
   def link_to_user_with_ownership(args)
     return nil unless args[:value].present?
-    
+
     display_name = args[:document]["user_with_ownership_name_tesim"]&.first || "User Name Unknown"
-    link_to display_name, Hyrax::Engine.routes.url_helpers.user_path(args[:value]&.first)
+    if args[:document]["owner_type_ssi"] == "OrganizationCollection"
+      link_to display_name, main_app.organization_path(args[:value]&.first)
+    else
+      link_to display_name, Hyrax::Engine.routes.url_helpers.user_path(args[:value]&.first)
+    end
   end
 
   # Blacklight index field helper_method to determine field visibility based on permissions
@@ -43,7 +47,7 @@ module Morphosource::CatalogHelper
   def modalities_service_instance
     @modalities_service_instance ||= Morphosource::ModalitiesService.new
   end
-  
+
   def modality_label_by_id(id)
     modalities_service_instance.label(id) { "Modality Not Found" }
   end

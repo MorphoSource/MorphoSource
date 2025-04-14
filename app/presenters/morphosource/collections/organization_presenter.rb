@@ -4,6 +4,7 @@ module Morphosource
 
       delegate :address,
                :agreement_uri,
+               :agreement_attachment_url,
                :city,
                :collection_code,
                :contact_person,
@@ -51,7 +52,7 @@ module Morphosource
       end
 
       def attachment_url
-        @attachment_url ||= get_attachment("agreement")
+        @attachment_url ||= agreement_attachment_url
       end
 
       private

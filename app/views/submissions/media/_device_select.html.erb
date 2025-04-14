@@ -3,7 +3,7 @@
     <div class="col-md-9 col-lg-6">
 
       <div class="submission-select2-container">
-        <%= f.input :organization_search, 
+        <%= f.input :organization_search,
           label: 'First, find the organization that manages the device.',
           input_html: {
             id: :submission_device_select_organization_search
@@ -13,6 +13,7 @@
 
       <% if Hyrax.config.null_organization_id.present? && ( Organization.exists?(Hyrax.config.null_organization_id) || OrganizationCollection.exists?(Hyrax.config.null_organization_id) ) %>
         <div class='mt-1'>
+
           <b><%= t('morphosource.submission.or') %></b>
         </div>
 

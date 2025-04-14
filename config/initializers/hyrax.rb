@@ -71,7 +71,7 @@ Hyrax.config do |config|
   ### Initial users and system users (should be customized for repository instances) ###
 
   # Initial user accounts that will be created when running rake task create_development_users
-  
+
   # Single user email set by ENV["MS_TEST_USR"]
   config.ms_test_usr = Morphosource.ms_test_usr
   # Set by ENV["MS_TEST_PW"]
@@ -112,7 +112,7 @@ Hyrax.config do |config|
 
   # Imaging devices not associated with any specific organization are instead grouped under a "null" organization
   # This should be the ID of a specially created null organization
-  config.null_organization_id = ENV['NULL_ORGANIZATION_ID'] || ( Rails.env.production? ? '000332114' : nil )
+  config.null_organization_id = ENV['NULL_ORGANIZATION_ID'] || ( Rails.env.production? ? '000710951' : nil )
 
   # Device work ID for "unknown CT scanner"
   config.unknown_ct_scanner = ENV['UNKNOWN_CT_SCANNER'] || ( Rails.env.production? ? '00000D567' : nil )
@@ -125,9 +125,11 @@ Hyrax.config do |config|
   # config.analytics = false
   config.analytics = ENV['TRACK_GOOGLE_ANALYTICS'] == 'true'
 
-  # Google Analytics tracking ID to gather usage statistics
-  # config.google_analytics_id = 'UA-99999999-1'
-  config.google_analytics_id = ENV['GOOGLE_ANALYTICS_TRACKING_ID']
+  # Analytics provider, Hyrax supports ga4, google (ga3, defunct) and matomo
+  config.analytics_provider = ENV.fetch('HYRAX_ANALYTICS_PROVIDER', 'ga4')
+
+  # Google Analytics GA4 Measurement ID
+  config.google_analytics_id = ENV['GOOGLE_ANALYTICS_ID']
 
   # Date you wish to start collecting Google Analytic statistics for
   # Leaving it blank will set the start date to when ever the file was uploaded by
@@ -258,7 +260,7 @@ Hyrax.config do |config|
   # config.iiif_image_size_default = '600,'
 
   # Fields to display in the IIIF metadata section; default is the required fields
-  config.iiif_metadata_fields = [:title, :part, :physical_object_title, :taxonomies_titles, 
+  config.iiif_metadata_fields = [:title, :part, :physical_object_title, :taxonomies_titles,
     :media_organization, :human_readable_media_type, :human_readable_modality,
     :depositor_name, :rights_holder, :rights_statement, :license, :funding
   ]

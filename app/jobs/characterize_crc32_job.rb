@@ -1,9 +1,7 @@
 require 'hydra/works/services/crc32_characterization_service.rb'
 require 'hydra/works/services/archive_contents_characterization_service.rb'
 
-class CharacterizeCrc32Job < Hyrax::ApplicationJob
-  queue_as Hyrax.config.heavy_queue_name
-
+class CharacterizeCrc32Job < HeavyJob
   def perform(file_set, file_id, filepath = nil)
     raise "#{file_set.class.characterization_proxy} was not found for FileSet #{file_set.id}" unless file_set.characterization_proxy?
 

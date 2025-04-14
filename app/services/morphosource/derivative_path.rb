@@ -20,12 +20,13 @@ module Morphosource
     # @param [ActiveFedora::Base, String] object either the AF object or its id
     # @param [String] destination_name
     def initialize(object, destination_name = nil, dest_sub_index = nil)
-      @id = object.is_a?(String) ? object : object.id
+      @id = object.is_a?(String) ? object : object&.id
       @destination_name = destination_name.gsub(/^original_file_/, '') if destination_name
       @dest_sub_index = dest_sub_index
     end
 
     def derivative_path
+      return [] if id.nil? || id.blank?
       dest_sub_index ? sub_derivative_path : core_derivative_path
     end
 
@@ -38,6 +39,7 @@ module Morphosource
     end
 
     def all_paths
+      return [] if id.nil? || id.blank?
       Dir.glob(root_path.join("*")).select do |path|
         path.start_with?(path_prefix.to_s)
       end

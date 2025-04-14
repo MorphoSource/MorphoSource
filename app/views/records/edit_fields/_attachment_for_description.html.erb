@@ -1,0 +1,33 @@
+<%# partial for attachments using CarrierWave %>
+<% current_value = curation_concern&.send(work_attribute) %>
+<div class="form-group row string optional attachment-container">
+  <div class="col-xs-6 showcase-label">
+    <label class="control-label string optional" for="attachment-container">
+      <%= label.present? ? label : 'Attachment File' %>
+    </label>
+    <i class="material-icons tooltip-icon" data-original-title="" title="">
+      <p class="hint hide"><%= t("simple_form.hints.#{curation_concern&.model_name&.to_s&.underscore}.#{field}") %></p>
+    </i>
+  </div>
+  <div class="col-xs-6 showcase-value">
+    <div class='attachment'>
+      <% if curation_concern.present? && current_value.present? %>
+        <div class='attachment-link'>
+          <%= link_to current_value, target: :blank do %>
+            <span>Attachment File</span>
+          <% end %>
+          <span class='input-group-btn field-controls' style='display: inline;'>
+            <button type='button' class='btn btn-link btn-remove-attachment' style='float: right;'>
+              <i class="fa fa-times-circle" style='font-size: 15px;' aria-hidden="true"></i>
+            </button>
+          </span>
+        </div>
+      <% end %>
+      <div class='attachment-input <%= curation_concern.present? && current_value.present? ? 'hide' : '' %>'>
+        <%= file_field_tag field.to_sym, accept: 'text/plain,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document', class: 'file-field-input' %>
+        <span class='hint'>Accepted Formats: <%= "#{Morphosource.attachment_formats.join(', ')}" %></span>
+        <input name='<%= "#{field.downcase}_delete" %>' class='attachment_delete hide'></input>
+      </div>
+    </div>
+  </div>
+</div>

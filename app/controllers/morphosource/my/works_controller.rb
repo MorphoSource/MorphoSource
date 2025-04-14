@@ -17,7 +17,9 @@ module Morphosource
 
       def index
         # The user's collections for the "add to collection" form
-        @user_collections = collections_service.search_results(:deposit)
+        all_memberships_collection_ids, manager_collection_ids, editor_collection_ids, depositor_collection_ids, downloader_collection_ids, viewer_collection_ids = current_user.collections_with_membership_role_ids
+        @user_collections = manager_collection_ids + editor_collection_ids + depositor_collection_ids
+        add_breadcrumbs
         # media/object counts at top of page
         get_media_object_counts
         # managed_works_count

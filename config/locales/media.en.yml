@@ -171,7 +171,7 @@ en:
         side: Side of larger object on which is located the represented component part, if Media represents a component part of a larger whole object
         slice_thickness: The thickness of each image slice comprising the 3D stack
         taxonomy_title: For physical objects that are organisms, the biological taxonomy associated with that organism
-        unit: Unit of measurement used for the distance between pixels
+        unit: Unit of measurement used for the distance between pixels. If no unit value has been entered, millimeters will be assumed by default.
         user_with_ownership: User with highest level of management control over Media
         vertex_color: Whether or not a 3D object has color information encoded into vertices or points that comprise a mesh or point cloud
         work_id: MorphoSource-specific unique ID identifier for Media

@@ -169,6 +169,15 @@ module Morphosource
       property :slide_type, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/slideType") do |index|
           index.as :stored_searchable, :facetable
       end
+
+      property :description_attachment_url, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/descriptionAttachmentUrl"), multiple: false do |index|
+        index.as :stored_searchable
+      end
+
+      property :reference_attachment_url, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/referenceAttachmentUrl"), multiple: false do |index|
+        index.as :stored_searchable
+      end
+
     end
   end
 end

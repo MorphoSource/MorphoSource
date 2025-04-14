@@ -8,26 +8,26 @@
         <div>Media <%= presenter.id %>: <%= presenter.title.first %></div>
       <% else %>
         <div>Media <%= presenter.id %>: <%= presenter.part&.join(", ")&.titleize.presence || "Element Unspecified" %></div>
-      <% end %> 
+      <% end %>
       <%= presenter.permission_badge %>
     </div>
     <div class="text-muted" style="margin-bottom: 0;">
       <div class="text-muted-item mr-1" style="margin-bottom: 8px;">
         Type
         <span class="text-muted-value"><%= presenter.human_readable_media_type || "Unknown Type" %></span>
-      </div> 
+      </div>
       <div class="text-muted-item mr-1" style="margin-bottom: 8px;">
         Modality
         <span class="text-muted-value"><%= presenter.imaging_event_modality %></span>
-      </div> 
-      
+      </div>
+
     </div>
     <% if presenter.physical_object_type.present? %>
       <div class="text-muted">
         <div class="text-muted-item">
           Media represents <%= presenter.physical_object_type.downcase %>
         </div>
-        <div class="text-muted-item"> 
+        <div class="text-muted-item">
           <%= link_to presenter.physical_object_link do  %>
             <%= presenter.physical_object_title&.first %> <i><%= presenter.taxonomies_titles&.first || "" %></i>
           <% end %>
@@ -37,10 +37,10 @@
     <div class="text-muted">
       <div class="text-muted-item">
         Managed by
-      </div> 
+      </div>
       <div class="text-muted-item">
-        <%= presenter.attribute_to_html(:user_with_ownership, render_as: :showcase_user_link_simple, include_empty: true, html_dl: false) %>
-      </div> 
+        <%= presenter.attribute_to_html(:user_with_ownership, render_as: :showcase_owner_link_simple, include_empty: true, html_dl: false) %>
+      </div>
     </div>
   </div>
 </div>

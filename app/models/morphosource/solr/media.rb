@@ -40,6 +40,10 @@ module Morphosource
         self['has_model_ssim'] == ['Media']
       end
 
+      def all_files_file_size
+        self['all_files_file_size_lts']
+      end
+
       def depositor_name
         self['depositor_name_tesim']
       end
@@ -128,6 +132,10 @@ module Morphosource
 
       def taxonomies_titles
         self["taxonomy_ssim"]
+      end
+
+      def agreement_attachment_url
+        self['agreement_attachment_url_tesim']
       end
     end
   end

@@ -40,7 +40,9 @@ module Morphosource
                                     target_material
                                     target_type
                                     voltage
-                                    xray_tube_type].freeze
+                                    xray_tube_type
+                                    description_attachment_url
+                                    reference_attachment_url].freeze
 
       def imaging_event?
         self['has_model_ssim'] == ['ImagingEvent']

@@ -33,6 +33,7 @@ en:
         detector_pixel_size_x: *detector_pixel_size_x
         detector_pixels_y: *detector_pixels_y
         detector_pixel_size_y: *detector_pixel_size_y
+        ie_filter: Filter
         xray_tube_type: *xray_tube_type
     hints:
       imaging_event:

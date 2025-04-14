@@ -47,6 +47,9 @@ module Morphosource
         ProxyDepositRequest.where(receiving_user_id: id)
       end
 
+      def agreement_attachment_url
+        self['agreement_attachment_url_tesim']
+      end
     end
   end
 end

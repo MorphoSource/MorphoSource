@@ -18,6 +18,10 @@ module Morphosource
         self['has_model_ssim'] == ['Organization']
       end
 
+      def agreement_attachment_url
+        self['agreement_attachment_url_tesim']
+      end
+
     end
   end
 end

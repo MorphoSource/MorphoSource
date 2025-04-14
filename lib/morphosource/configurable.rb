@@ -52,7 +52,7 @@ module Morphosource
 
       # Allowed formats for attachments (default for documents)
       mattr_accessor :attachment_formats do
-        [".txt", ".pdf", ".docx"]
+        [".txt", ".pdf", ".doc", ".docx"]
       end
 
       # Allowed formats for Photographic reference attachments

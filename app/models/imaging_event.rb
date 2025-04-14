@@ -70,6 +70,87 @@ class ImagingEvent < Morphosource::Works::Base
   # schema (by adding accepts_nested_attributes)
   include ::Hyrax::BasicMetadata
 
+  # Custom method to handle CarrierWave uploader
+  def description_uploader
+    @description_uploader ||= ImagingEventDescriptionAttachmentUploader.new.tap { |u| u.work_id = id }
+  end
+
+  # @param file [File, ActionDispatch::Http::UploadedFile] The file to be attached, or nil to delete the file
+  def description_attachment=(file)
+    if file.nil?
+      # delete attachment
+      return unless self.description_attachment_url.present?
+      file_name = File.basename(self.description_attachment_url)
+      description_uploader.retrieve_from_store!(file_name)
+      if description_uploader.file.present? && File.exist?(description_uploader.file.path)
+        Rails.logger.info "Deleting file: #{description_uploader.file.path}"
+        description_uploader.remove!
+      else
+        Rails.logger.warn "File not found: #{description_uploader.file&.path}"
+      end
+      self.description_attachment_url = nil
+      self.save
+    else
+      # add attachment
+      extension = File.extname(file.original_filename).downcase
+      if description_attachment_formats.include?(extension)
+        description_uploader.store!(file)
+        self.description_attachment_url = description_uploader.url
+        self.save
+      else
+        raise ArgumentError, "Invalid file format: #{extension}"
+      end
+    end
+  end
+
+  def description_attachment
+    self.description_attachment_url
+  end
+
+  def description_attachment_formats
+    @description_attachment_formats ||= Morphosource.attachment_formats
+  end
+
+  def reference_uploader
+    @reference_uploader ||= ImagingEventReferenceAttachmentUploader.new.tap { |u| u.work_id = id }
+  end
+
+  # @param file [File, ActionDispatch::Http::UploadedFile] The file to be attached, or nil to delete the file
+  def reference_attachment=(file)
+    if file.nil?
+      # delete attachment
+      return unless self.reference_attachment_url.present?
+      file_name = File.basename(self.reference_attachment_url)
+      reference_uploader.retrieve_from_store!(file_name)
+      if reference_uploader.file.present? && File.exist?(reference_uploader.file.path)
+        Rails.logger.info "Deleting file: #{reference_uploader.file.path}"
+        reference_uploader.remove!
+      else
+        Rails.logger.warn "File not found: #{reference_uploader.file&.path}"
+      end
+      self.reference_attachment_url = nil
+      self.save
+    else
+      # add attachment
+      extension = File.extname(file.original_filename).downcase
+      if reference_attachment_formats.include?(extension)
+        reference_uploader.store!(file)
+        self.reference_attachment_url = reference_uploader.url
+        self.save
+      else
+        raise ArgumentError, "Invalid file format: #{extension}"
+      end
+    end
+  end
+
+  def reference_attachment
+    self.reference_attachment_url
+  end
+
+  def reference_attachment_formats
+    @reference_attachment_formats ||= Morphosource.reference_attachment_formats
+  end
+
   def device
     Device.find(device_id.first)
   end

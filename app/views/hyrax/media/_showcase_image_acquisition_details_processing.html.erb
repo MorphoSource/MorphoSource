@@ -57,7 +57,7 @@
             ).render %>
             <%= Hyrax::Renderers::ShowcaseDefaultAttributeRenderer.new(
               :software,
-              @presenter.processing_events_data&.first&.dig(:software),
+              software,
               { include_empty: true, work_type: "processing_event" }
             ).render %>
             <%= Hyrax::Renderers::ShowcaseDefaultAttributeRenderer.new(
@@ -69,7 +69,7 @@
               <div class="col-6 showcase-label">Description attachment</div>
               <div class="col-6 showcase-value">
                 <% if description_attachment.present? %>
-                  <span class='showcase-link'><%= link_to('Description Attachment', description_attachment) %></span>
+                  <span class='showcase-link'><%= link_to('Description Attachment', description_attachment, target: '_blank') %></span>
                 <% else %>
                   <%= 'None' %>
                 <% end %>

@@ -1,3 +1,4 @@
+require 'rails/tasks'
 require 'morphosource'
 require 'ms1to2'
 require 'importer'
@@ -71,6 +72,9 @@ namespace :morphosource do
 
     Rails.logger.info('Initiate dev caching')
     Rake::Task['morphosource:dev_cache_on'].invoke
+
+    Rails.logger.info('Create null organization')
+    Rake::Task['morphosource:create_null_organization'].invoke
   end
 
   desc 'MorphoSource Docker Test Suite Setup'
@@ -79,8 +83,6 @@ namespace :morphosource do
     Rake::Task['db:create'].invoke
     Rake::Task['morphosource:db_schema_load_if_needed'].invoke
     Rake::Task['db:migrate'].invoke
-    Rails.logger.info('Clear cache')
-    Rake::Task['tmp:cache:clear'].invoke
     Rails.logger.info('Load workflow')
     Rake::Task['hyrax:workflow:load'].invoke
     Rails.logger.info('Create collection types')
@@ -548,6 +550,17 @@ namespace :morphosource do
     Role.find_or_create_by(name: 'charge_api')
   end
 
+  # For development use only
+  # For production environments, create a null organization manually then update Hyrax.config.null_organization_id with its id.
+  # ENV['NULL_ORGANIZATION_ID'] is set in vendor/docker-compose.env
+  desc 'Create Null Organization'
+  task :create_null_organization => :environment do
+    unless OrganizationCollection.find_by(id: ENV['NULL_ORGANIZATION_ID'])
+      admin = Role.find_by(name: 'admin').users.first.ms_id
+      OrganizationCollection.create(id: ENV['NULL_ORGANIZATION_ID'], depositor: admin, institution_name: ['No Organization'], title: ['No Institution'], organization_type: ["Collection and Scanning Facility"])
+    end
+  end
+
   desc 'Update reviewers column for all cart items'
   task :update_cartitem_reviewers => :environment do
     CartItem.find_each do |item|
@@ -879,6 +892,159 @@ namespace :morphosource do
       logging: true,
       retries: 3
     }).import
+  end
+
+  # Attachment migration (AttachmentService -> CarrierWave)
+  desc "Migrate attachments to use CarrierWave"
+  task :migrate_attachments, [:model, :field, :old_attachment_field, :action, :and_query] => :environment do |task, args|
+    model_name = args[:model]
+    field_name = args[:field]
+    old_attachment_field = args[:old_attachment_field]
+    case args[:action]
+    when "migrate"
+      action = 'migrate'
+    when "count_only"
+      action = 'count_only'
+    when "delete_old_attachments"
+      action = 'delete_old_attachments'
+    else
+      puts "invalid action"
+      exit
+    end
+    and_query = args[:and_query]
+
+    unless model_name.present? && field_name.present? && old_attachment_field.present?
+      puts "Valid arguments required: model, field, old_attachment_field"
+      exit
+    end
+
+    begin
+      model_class = model_name.constantize
+    rescue StandardError => e
+      puts "Error resolving model '#{model_name}': #{e.message}"
+      exit
+    end
+
+    unless model_class.method_defined?(field_name)
+      puts "Field '#{field_name}' is not defined on model '#{model_name}'"
+      exit
+    end
+
+    solr_query = "has_model_ssim:#{model_name}"
+    solr_query += " AND #{and_query}" if and_query.present?
+
+    puts "Querying Solr with: #{solr_query}"
+    results = ActiveFedora::SolrService.query(solr_query, rows: 999999, fl: 'id')
+    puts "Found #{results.count} records for model #{model_name}"
+
+    old_attachment_count = 0
+    processed_attachment_count = 0
+
+    results.each do |hit|
+      begin
+        old_attachment_path = Morphosource::AttachmentService.get(hit.id, old_attachment_field)
+        next unless old_attachment_path.present?
+
+        old_attachment_count += 1
+        next if action == 'count_only'
+
+        if action == 'delete_old_attachments'
+          puts "Deleting old attachment #{old_attachment_path}"
+          Morphosource::MigrateAttachmentJob.perform_later(model_name, hit.id, field_name, old_attachment_field, old_attachment_path, delete_only: true)
+          processed_attachment_count += 1
+          next
+        end
+
+        # action == 'migrate'
+        work = model_class.find(hit.id)
+        next unless work.present?
+
+        if work.send(field_name).present?
+          puts "Skipping #{model_name} ##{hit.id}: #{field_name} already has a new attachment"
+          next
+        end
+
+        unless File.exist?(old_attachment_path)
+          puts "Skipping #{model_name} ##{hit.id}: Old attachment file does not exist #{old_attachment_path}"
+          next
+        end
+
+        puts "Migrating ##{hit.id} old attachment #{old_attachment_path}... "
+        Morphosource::MigrateAttachmentJob.perform_later(model_name, work.id, field_name, old_attachment_field, old_attachment_path)
+        processed_attachment_count += 1
+
+      rescue StandardError => e
+        puts "Error processing #{model_name} ##{hit.id}: #{e.message}"
+        next
+      end
+    end # /result.each
+    puts "Migrating attachment #{old_attachment_field} to #{field_name}"
+    puts "Old attachment #{old_attachment_field} count: #{old_attachment_count}"
+    puts "#{action} action performed for #{processed_attachment_count} attachments."
+  end
+
+  # Rollback attachment migration (CarrierWave -> AttachmentService)
+  desc "Rollback for Migrate attachments to use CarrierWave"
+  task :rollback_migrate_attachments, [:model, :field, :solr_field, :old_attachment_field, :option, :and_query] => :environment do |task, args|
+    model_name = args[:model]
+    field_name = args[:field]
+    solr_field = args[:solr_field]
+    old_attachment_field = args[:old_attachment_field]
+    option = args[:option]
+    and_query = args[:and_query]
+
+    unless model_name.present? && field_name.present? && solr_field.present? && old_attachment_field.present?
+      puts "Valid arguments required: model, field, solr_field, old_attachment_field"
+      exit
+    end
+
+    no_delete = (option.present? && option == "no_delete")
+
+    begin
+      model_class = model_name.constantize
+    rescue StandardError => e
+      puts "Error resolving model '#{model_name}': #{e.message}"
+      exit
+    end
+
+    unless model_class.method_defined?(field_name)
+      puts "Field '#{field_name}' is not defined on model '#{model_name}'"
+      exit
+    end
+
+    solr_query = "has_model_ssim:#{model_name}"
+    solr_query += " AND #{and_query}" if and_query.present?
+    fl_params = "id,#{solr_field}"
+
+    puts "Querying Solr with: #{solr_query}"
+    results = ActiveFedora::SolrService.query(solr_query, rows: 999999, fl: fl_params)
+    puts "Found #{results.count} records for model #{model_name}"
+
+    cw_attachment_count = 0
+    created_old_attachment_count = 0
+
+    results.each do |hit|
+      begin
+        next unless hit[solr_field].present? # no new migrated attachment
+
+        cw_attachment_count += 1
+        old_attachment_path = Morphosource::AttachmentService.get(hit.id, old_attachment_field)
+        if old_attachment_path.present?
+          puts "#{model_name} ##{hit.id}: old attachment #{old_attachment_field} has not been deleted yet, no need to create the file again"
+        else
+          puts "Migrating ##{hit.id} old attachment #{old_attachment_path}... "
+          Morphosource::RollbackMigrateAttachmentJob.perform_later(model_name, hit.id, field_name, old_attachment_field, old_attachment_path, no_delete)
+          created_old_attachment_count += 1
+        end
+
+      rescue StandardError => e
+        puts "Error processing #{model_name} ##{hit.id}: #{e.message}"
+        next
+      end
+    end # /result.each
+    puts "Rolling back migration for attachment field #{field_name} -> #{old_attachment_field}"
+    puts "CarrierWave attachments found: #{cw_attachment_count}"
+    puts "#{created_old_attachment_count} old attachments creation in progress."
   end
 
   # Set and clear sitewide announcement messages and time until maintenance

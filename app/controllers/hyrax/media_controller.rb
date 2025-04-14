@@ -25,6 +25,7 @@ module Hyrax
     before_action :validate_individual_access, only: [:update]
     before_action :save_individual_access, only: [:update]
     before_action :save_fileset_visibility, only: [:update]
+    before_action :save_preview_fields, only: [:update]
     before_action :set_fileset_visibility, only: [:create, :update]
     before_action :authorize_media_with_temporary_link, only: [:showcase]
     before_action :set_fund_code, only: [:update]
@@ -456,9 +457,15 @@ module Hyrax
       end
 
       def after_update_response
+        if preview_fields_changed?
+          flash[:alert] = I18n.t("morphosource.media.alert.rederive_preview")
+          PrepareCreateDerivativesJob.perform_later(curation_concern.id)
+        end
+
         if browse_everything_file_present
           flash[:alert] = I18n.t("morphosource.media.alert.browse_everything")
         end
+
         if (fileset_visibility_changed? || curation_concern.visibility_changed?)
           if curation_concern.attributes["fileset_visibility"] == [""]
             if permissions_changed?
@@ -474,6 +481,7 @@ module Hyrax
             return redirect_to [main_app, curation_concern], notice: flash_message
           end
         end
+
         respond_to do |wants|
           wants.html { redirect_to [main_app, curation_concern], notice: "Work \"#{curation_concern}\" successfully updated." }
           wants.json { render :show, status: :ok, location: polymorphic_path([main_app, curation_concern]) }
@@ -638,5 +646,20 @@ module Hyrax
 
       end
 
+      def save_preview_fields
+        @saved_unit = curation_concern.unit&.first
+        @saved_x_spacing = curation_concern.x_spacing&.first
+        @saved_y_spacing = curation_concern.y_spacing&.first
+        @saved_z_spacing = curation_concern.z_spacing&.first
+        @saved_slice_thickness = curation_concern.slice_thickness&.first
+      end
+
+      def preview_fields_changed?
+        curation_concern.unit&.first != @saved_unit ||
+        curation_concern.x_spacing&.first != @saved_x_spacing ||
+        curation_concern.y_spacing&.first != @saved_y_spacing ||
+        curation_concern.z_spacing&.first != @saved_z_spacing ||
+        curation_concern.slice_thickness&.first != @saved_slice_thickness
+      end
   end
 end

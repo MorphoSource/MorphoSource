@@ -313,7 +313,7 @@ class SubmissionsController < ApplicationController
       #puts("Creating #{work}")
       new_work_id, new_work = prepare_and_create_work(work, params)
       @submission.public_send(to_id(work) + '=', new_work_id)
-      create_attachment_if_needed(work, new_work_id) if ['imaging_event', 'processing_event', 'media'].include?(work)
+      create_attachment_if_needed(work, new_work_id, new_work) if ['imaging_event', 'processing_event', 'media'].include?(work)
       # Morphosource::CustomThumbnails
       if work == 'media'
         create_thumbnail
@@ -341,7 +341,8 @@ class SubmissionsController < ApplicationController
       addl_params = { device_id: [@submission.device_id] }
       finalize_model_params(work, model_params, addl_params)
     elsif work == 'biological_specimen' || work == 'cultural_heritage_object'
-      addl_params = { organization_id: [@submission.organization_id] }
+      organization_id = @submission.organization_id.present? ? @submission.organization_id : Hyrax.config.null_organization_id
+      addl_params = { organization_id: [organization_id] }
       finalize_model_params(work, model_params, addl_params)
     else
       finalize_model_params(work, model_params)
@@ -409,7 +410,6 @@ class SubmissionsController < ApplicationController
         model_params = assign_model_params_parents(model_params, parents)
       end
       @processing_event_create_params = model_params
-
     when 'media'
       if @submission.raw_or_derived_media == 'raw'
         parent = @submission.imaging_event_id
@@ -480,22 +480,27 @@ class SubmissionsController < ApplicationController
     model_params.merge!(new_params)
   end
 
-  def create_attachment_if_needed(work, id)
+  def create_attachment_if_needed(work, id, new_work_object)
     fields = attachment_fields[work]
     fields.each do |field|
       if field == 'agreement' && params[:media][:agreement_uri].present?
         # skip since agreement url exists
       else
-        if field == 'ie_reference'
-          formats = Morphosource.reference_attachment_formats
-        else
-          formats = Morphosource.attachment_formats
-        end
+        formats = (field == 'ie_reference' ? Morphosource.reference_attachment_formats : Morphosource.attachment_formats)
         if params[field].present? && formats.include?(File.extname(params[field].original_filename))
-          Morphosource::AttachmentService.create(id, field, params[field], formats)
+          case field
+          when 'pe_description', 'ie_description'
+            new_work_object.description_attachment = params[field]
+          when 'ie_reference'
+            new_work_object.reference_attachment = params[field]
+          else
+            Morphosource::AttachmentService.create(id, field, params[field], formats)
+          end
           params.delete(field)
         elsif field == 'agreement' && submission_params[:organization_for_attachment].present?
-          Morphosource::AttachmentService.create_copy(id, field, submission_params[:organization_for_attachment])
+          # copy agreement attachment from organization
+          organization_for_attachment = ( Organization.find_by(id: submission_params[:organization_for_attachment]) || OrganizationCollection.find_by(id: submission_params[:organization_for_attachment]) )
+          new_work_object.copy_organization_agreement_attachment(organization_for_attachment)
         end
       end
     end

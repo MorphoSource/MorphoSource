@@ -166,10 +166,18 @@ module Morphosource
           end
 
           # Does organization have agreement URI attachment supplied?
-          if organization_work.attachment("agreement").present?
-            Morphosource::AttachmentService.create_copy(organization_collection.id, "agreement", organization_work.id)   
-            raise "Issue creating agreement attachment for organization collection" if !organization_collection.attachment("agreement").present?
-          end
+          if organization_work.agreement_attachment_url.present?
+            file_path = organization_work.agreement_attachment_full_path
+            if File.exist?(file_path)
+              file = ActionDispatch::Http::UploadedFile.new(
+                filename: File.basename(file_path),
+                type: Marcel::MimeType.for(file_path),
+                tempfile: File.open(file_path)
+              )
+              organization_collection.agreement_attachment = file
+            end
+            raise "Issue creating agreement attachment for organization collection" if !organization_collection.agreement_attachment_url.present?
+            end
         end
 
         # Save after steps 2-5
@@ -484,7 +492,7 @@ module Morphosource
 
           if (
             CollectionBrandingInfo.where(collection_id: organization_team.id).count > 0 ||
-            (organization_work.attachment("agreement").present? && !organization_collection.attachment("agreement").present?)
+            (organization_work.agreement_attachment_url.present? && !organization_collection.agreement_attachment_url.present?)
           )
             raise "STEP 9 FAILED. Branding file or agreement attachment not copied to organization collection."
           end

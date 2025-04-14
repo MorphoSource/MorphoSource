@@ -1,0 +1,11 @@
+<%# TODO5: Hyrax 5 may change this, check and address %> 
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=<%= Hyrax.config.google_analytics_id %>"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', '<%= Hyrax.config.google_analytics_id %>');
+</script>
+<meta name="analytics-provider" content="ga4">

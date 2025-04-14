@@ -31,6 +31,10 @@ nav#masthead {
     }
   }
 
+  .dropdown-toggle {
+    min-width: unset;
+  }
+
   input#search-field-header {
     font-size: 14px;
     height: 34px;

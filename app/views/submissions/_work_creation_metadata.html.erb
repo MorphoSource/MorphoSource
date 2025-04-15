@@ -1,39 +1,5 @@
-<div class="base-terms">
-  <% f.object.primary_terms.each do |term| %>
-    <% if term == :date_created %>
-      <div class="row">
-        <div class="col-6 showcase-label">Date created</div>
-        <div class="col-6 showcase-value">
-          <%= f.date_field :date_created, wrapper: :inline, value: f.object.date_created, class: 'datepicker form-control' %>
-        </div>
-      </div>
-    <% elsif term == :description && f.object.model.class == ImagingEvent %>
-      <%= render_edit_field_partial(term, f: f) %>
-      <%= render_edit_field_partial(
-        'attachment_for_description', 
-        f: f, 
-        field: 'ie_description', 
-        work_attribute: 'description_attachment_url', 
-        label: 'Description attachment file',
-        curation_concern: nil
-      ) %>
-      <%= render_edit_field_partial(
-        'attachment_for_reference', 
-        f: f, 
-        field: 'ie_reference', 
-        work_attribute: 'reference_attachment_url', 
-        label: 'Photographic reference file',
-        curation_concern: nil
-      ) %>
-    <% else %>
-      <%= render_edit_field_partial(term, f: f) %>
-    <% end %>
-  <% end %>
-</div>
+<%= render partial: 'work_creation_metadata_terms', locals: { f: f, terms: f.object.primary_terms, term_group: 'base-terms' } %>
+
 <% if f.object.display_additional_fields? %>
-  <div class="additional-terms">
-    <% f.object.secondary_terms.each do |term| %>
-      <%= render_edit_field_partial(term, f: f) %>
-    <% end %>
-  </div>
+  <%= render partial: 'work_creation_metadata_terms', locals: { f: f, terms: f.object.secondary_terms, term_group: 'additional-terms' } %>
 <% end %>

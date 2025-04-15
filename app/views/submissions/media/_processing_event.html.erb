@@ -10,18 +10,17 @@
         prompt: "Myself" %>
       </div>
     <% end %>
-    <div class="container-fluid wider">
-
-      <div class="row">
-        <h4><%= t('morphosource.submission.header_text.media_processing') %></h4>
+    <div class="container">
+      <div class="row justify-content-center text-center">
+        <div class="col-md-9">
+          <span class="h5"><%= t('morphosource.submission.header_text.media_processing') %></span>
+        </div>
       </div>
 
       <div class="row">
-        <div class="col-12 col-md-6">
-          <div class="block showcase-edit showcase-section">
-            <div class="row showcase-section-header">
-              <span class="h2">PROCESSING DETAILS</span>
-            </div>
+        <div class="col-lg-6">
+          <div class="showcase showcase-edit showcase-section mt-2">
+            <h2>Processing Details</h2>
             <div class="content-block">
               <%= f.input :creator, as: :multi_value %>
               <%# todo: render date_field in simple_form_bootstrap %>
@@ -45,11 +44,9 @@
           </div>
         </div>
 
-        <div class="col-12 col-md-6">
-          <div class="block showcase-edit showcase-section">
-            <div class="row showcase-section-header">
-              <span class="h2">INDIVIDUAL PROCESSING STEPS</span>
-            </div>
+        <div class="col-lg-6">
+          <div class="showcase showcase-edit showcase-section mt-2">
+            <h2>Individual Processing Steps</h2>
 
             <div class="content-block">
               <%= render_edit_field_partial('processing_activity', f: f) %>
@@ -58,7 +55,7 @@
         </div>
       </div>
 
-      <div class="row mt-1">
+      <div class="row justify-content-center mt-3">
         <%= f.submit t('morphosource.submission.continue'), 
           class: "btn btn-primary btn-continue", 
           id: 'submission_create_processing_event_submit' 

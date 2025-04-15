@@ -1,3 +1,4 @@
+@import 'variables';
 @import 'shared';
 
 /*    .hide {display: block !important} */
@@ -213,10 +214,6 @@ input[type=checkbox].disabled {
       color: #286090;
   }
 
-  .processing_event_processing_activity_step {
-    width: 95%;
-  }
-
   .showcase-label, .showcase-value {
     padding-right: 6px;
   }
@@ -249,11 +246,13 @@ input[type=checkbox].disabled {
   // styling for media tags
   // hide label for keyword input
   .single-input .showcase-label {
-    display: none;
+    display: none !important;
   }
 
   .single-input .showcase-value {
     width: 100%;
+    max-width: 100%;
+    flex: unset;
   }
 
   // remove extra border around tags select
@@ -331,13 +330,9 @@ input[type=checkbox].disabled {
   }
 
   .processing_activity_items {
-    .field-controls {
-      vertical-align: top;
-      padding-top: 10px;
-    }
     .row:not(:first-child) {
       .showcase-label {
-        padding-left:30px;
+        padding-left: 20px;
       }
     }
   }

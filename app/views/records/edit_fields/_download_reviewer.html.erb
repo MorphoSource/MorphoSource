@@ -1,9 +1,7 @@
 <div class="form-group row string optional media_download_reviewer">
   <div class="col-6 showcase-label">
     <label class="col-form-label string optional" for="media_download_reviewer"><%= t('simple_form.labels.media.download_reviewer') %></label>
-    <i class="material-icons tooltip-icon" data-original-title="" title="">
-      <p class="hint hide"><%= t('simple_form.hints.defaults.download_reviewer') %></p>
-    </i>
+    <i class="material-icons tooltip-icon" data-toggle="tooltip" title="<%= t('simple_form.hints.defaults.download_reviewer') %>"></i>
   </div>
   <div class="col-6 showcase-value">
     <%= f.text_field :download_reviewer,

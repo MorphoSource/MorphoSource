@@ -1,25 +1,8 @@
+@import 'variables';
 @import 'shared';
 
 .submission_flow {
   background-color: white;
-
-  .submission-select2-container .select2-container, .select2-choice, .select2-arrow {
-    height: 34px;
-  }
-
-  .submission-select2-container .select2-choice, .select2-arrow {
-    padding-top: 4px;
-  }
-
-  .ui-loading {
-    background: image-url('loading.gif') center center no-repeat;
-    background-size: 30px;
-    min-height: 90px; 
-  }
-
-  .submission_section {
-   text-align: center; 
-  }
 
   div.fileinput-button {
     display: inline-block;
@@ -27,8 +10,36 @@
     margin-right: 0;
   }
 
+  form .form-group > label {
+    text-align: left;
+  }
+
+  h2 {
+    font-size: 14px;
+    text-transform: uppercase;
+    margin-top: 0;
+  }
+
   input#media_agreement_uri.disabled {
     margin: 0;
+  }
+
+  .container {
+    padding-bottom: 20px;
+    padding-top: 20px;
+  }
+
+  .submission-select2-container .select2-container,
+  .submission-select2-container .select2-choice,
+  .submission-select2-container .select2-arrow {
+    height: 34px !important;
+    padding-top: 4px !important;
+  }
+
+  .ui-loading {
+    background: image-url('loading.gif') center center no-repeat;
+    background-size: 30px;
+    min-height: 90px; 
   }
 
   #fileupload {
@@ -80,6 +91,10 @@
   }
 
   .content-block table {
+    width: 100%;
+  }
+
+  .media_custom_thumbnail label.col-form-label {
     width: 100%;
   }
 
@@ -173,11 +188,6 @@
       margin-bottom: 30px;
     }
 
-    .row {
-      margin-left: -10px;
-      margin-right: -10px;
-    }
-
     .raw-or-derived-form-group {
       padding-top: 10px;
     }
@@ -188,12 +198,8 @@
     }
 
     .container-fluid {
-      max-width: 910px;
+      max-width: 1200px;
       min-width: 350px;
-    }
-
-    .container-fluid.wider {
-      max-width: 1010px;
     }
 
     .clickable {
@@ -229,16 +235,31 @@
       margin-top: 2em;
     }
 
-    .showcase-edit .row {
-      /*margin-top: 5px;*/
-      /*margin-bottom: 5px;*/
-      text-align: left;
+    .showcase-edit {
+      .nav-tabs {
+        background-color: unset;
+      }
+    
+      .row {
+        padding-left: 0 !important;
+        padding-right: 0 !important;
+
+        .material-icons.tooltip-icon {
+          font-size: 14px;
+        }
+
+        .showcase-label {
+          display: flex;
+          align-items: center;
+        }
+      }
+    }
+
+    .showcase-label, .showcase-value {
+      font-size: 14px;
     }
 
     .showcase-section {
-      padding: 0;
-      padding-bottom: 1em;
-      margin-bottom: 1em;
       overflow-wrap: break-word;
     }
 
@@ -265,38 +286,48 @@
     width: 224px;
     margin-top: 0px !important;
     margin-bottom: 0px !important;
-    background-color: #003880 !important;
+    // background-color: #003880 !important;
 
-    a {
-      cursor: pointer;
-    }
+    nav ul.nav li.nav-item {
+      a {
+        cursor: pointer;
 
-    .fa-check {
-      visibility: hidden;
-    }
+        &.inactive {
+          opacity: 30%;
+          background-color: initial;
+          color: #ffffff;
+          cursor: default;
+        }
 
-    .profile {
-      background-color: #002c64;
-    }
+        &.selected {
+          background-color: #eeeeee;
+          border-left: 6px solid #003880;
+          color: #000000;
+          cursor: default;
+          padding-left: 24px !important;
+        }
+    
+        &.sidebar-clickable {
+          margin-bottom: 5px;
+          margin-right: 0;
+          padding-left: 30px;
+        }
 
-    .selected {
-      background-color: #002c64;
-      color: #ffffff;
-      cursor: default;
-    }
-
-    .inactive {
-      opacity: 30%;
-      background-color: #003880;
-      color: #ffffff;
-      cursor: default;
+        .fa {
+          margin-right: 12px;
+        }
+    
+        .fa-check {
+          visibility: hidden;
+        }
+      }
     }
   }
 
   .main-content {
     margin-top: 0px !important;
     margin-bottom: 0px !important;
-    background-color: #003880;
+    background-color: #5c5c5c;
     padding-right: 0px;
     padding-left: 224px;
   }
@@ -334,10 +365,6 @@
 
 .submission_footer {
   margin-top:20px;
-}
-
-.row {
-  padding:4px 10px;
 }
 
 #masthead {

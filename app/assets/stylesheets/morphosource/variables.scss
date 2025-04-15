@@ -1,4 +1,38 @@
 // This can be used to override Hyrax default SCSS variables.
-// It gets loaded before Hyrax stylesheets.
+// It gets loaded before anything else.
+
+// Bootstrap 4 variables
+
+$primary: #286090;
+$success: #387f38;
+
+// Hyrax variables
 
 $footer-height: 164px;
+
+// Misc variables from shared.scss
+
+$tablet-max: 768px;
+$desktop-min: 769px;
+$font-color: #333;
+$button-color: $primary;
+$button-font-color: #fff;
+$button-border-color: #265b89;
+$button-danger-color: #c4302b;
+$button-hover-color: $primary;
+$button-hover-font-color: #fff;
+$button-hover-border-color: #265b89;
+$button-hover-danger-color: #d33a35;
+$button-disabled-color: #ccc;
+$button-disabled-font-color: #eee;
+$button-disabled-border-color: #ccc;
+$link-disabled-font-color: #ccc;
+$link-font-color: #2e74b2;
+$disabled-font-color: #999;
+$line-color: #337ab7;
+$line-inactive-color: #d4d4d4;
+$block-background-color: #efefef;
+$block-border-color: #d4d4d4;
+$ms-blue: #003880;
+$ms-dark-blue: #002c64;
+$success-color: $success;

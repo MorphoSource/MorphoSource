@@ -1,39 +1,35 @@
 <%= simple_form_for @submission, html: { id: :submission_device_select_form } do |f| %>
-  <div class="row form-group">
-    <div class="col-12 col-sm-6 offset-sm-3">
+  <div class="row justify-content-center text-center mt-2">
+    <div class="col-md-9 col-lg-6">
 
       <div class="submission-select2-container">
         <%= f.input :organization_search,
           label: 'First, find the organization that manages the device.',
           input_html: {
-            id: :submission_device_select_organization_search,
-            class: 'mb-1',
-            style: 'padding: 0; border: none;'
+            id: :submission_device_select_organization_search
           }
         %>
       </div>
 
-      <% if Hyrax.config.null_organization_id.present? && OrganizationCollection.exists?(Hyrax.config.null_organization_id) %>
-        <div class='mb-1'>
+      <% if Hyrax.config.null_organization_id.present? && ( Organization.exists?(Hyrax.config.null_organization_id) || OrganizationCollection.exists?(Hyrax.config.null_organization_id) ) %>
+        <div class='mt-1'>
+
           <b><%= t('morphosource.submission.or') %></b>
         </div>
 
-        <div>
+        <div class="mt-1">
           <a href="#" id="submission_select_device_no_organization" class="btn btn-primary btn-continue">
             <%= t('morphosource.submission.no_organization') %>
           </a>
         </div>
       <% end %>
 
-      <div class="submission-select2-container mt-3">
+      <div class="submission-select2-container mt-2">
         <%= f.input :device_id,
           collection: [],
           label: 'Then select from devices associated with the organization.',
           required: true,
           wrapper_html: { class: 'required-flag-hidden' },
-          input_html: {
-            style: 'padding: 0; border: none;'
-          },
           disabled: true
         %>
       </div>
@@ -41,7 +37,7 @@
   </div>
 <% end %>
 
-<div class="row">
+<div class="row justify-content-center mt-3">
   <a href="#" id="submission_select_device_continue" class="btn btn-primary btn-continue" disabled="disabled">
     <%= t('morphosource.submission.continue') %>
   </a>

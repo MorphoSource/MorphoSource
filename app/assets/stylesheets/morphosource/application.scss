@@ -19,10 +19,38 @@ h1, .h1, h2, .modal-title, .h2, h3, .h3 {
   font-size: 14px;
 }
 
+.dropzone {
+  height: 50px;
+  line-height: 50px;
+}
+
 .form-control {
   font-size: 14px;
   height: 34px;
   line-height: 1.428571429;
+}
+
+.input-group.input-append.field-wrapper {
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+// Hyrax has a strange left margin on multi-value field controls, fixing it
+.multi_value .field-controls, .controlled_vocabulary .field-controls {
+  margin-left: 2px;
+}
+
+.multi_value .listing, .controlled_vocabulary .listing {
+  max-width: unset;
+}
+
+// Hyrax has a strange width restriction on multi-value fields of 83.333%, makes field look constricted
+.multi_value .listing li:first-of-type, .controlled_vocabulary .listing li:first-of-type {
+  width: unset;
+}
+
+.multi_value .listing li:not(:first-of-type), .controlled_vocabulary .listing li:not(:first-of-type) {
+  margin-top: 5px;
 }
 
 .navbar + .container {

@@ -4,6 +4,7 @@
  *= require_self
 */
 
+@import 'morphosource/variables';
 @import "bootstrap-default-overrides";
 @import 'bootstrap';
 @import 'blacklight/blacklight';
@@ -12,6 +13,5 @@
 @import "blacklight_gallery/slideshow";
 @import "blacklight_gallery/osd_viewer";
 @import "hyrax/blacklight_gallery";
-@import 'morphosource/variables';
 @import 'hyrax/hyrax';
 @import 'morphosource/*';

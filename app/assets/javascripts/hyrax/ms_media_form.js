@@ -477,9 +477,8 @@ $( document ).ready(function() {
 
     // when page is loaded, show/hide content based on which tab is active
     $(".related_form").hide();
-    var activeTab = $('.nav-tabs > li.active').find("a").attr("aria-controls");
+    var activeTab = $('.nav-tabs > .nav-item > a.active').attr("aria-controls");
     $(".related_form." + activeTab).show();
-
 
     form.addEventListener("submit", function(mediaSubmitEvent) {
       mediaSubmitEvent.preventDefault();

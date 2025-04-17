@@ -26,6 +26,8 @@ module Hyrax
       # @param [Hyrax::Actors::Environment] env
       # @return [Boolean] true if update was successful
       def update(env)
+        Rails.logger.error("CREATE WITH FILES ACTOR ENV.ATTRIBUTES: " + "#{env.attributes.inspect}")
+
         remote_files = env.attributes.delete(:remote_files)
         # set file attributes for remote backed media
         if env.curation_concern.media? && env.attributes["remote_origin_url"].present?

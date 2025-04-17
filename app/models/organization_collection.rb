@@ -140,7 +140,7 @@ class OrganizationCollection < Collection
   end
 
   def assign_attributes(new_attributes)
-    puts "ATTRIBUTES: " + "#{new_attributes.stringify_keys}"
+    Rails.logger.error("ATTRIBUTES: " + "#{new_attributes.stringify_keys}")
     raise ArgumentError, "When assigning attributes, you must pass a hash as an argument." unless new_attributes.respond_to?(:stringify_keys)
     return if new_attributes.blank?
 

@@ -40,6 +40,20 @@ module Morphosource
         end
 
         def collection_params
+          Rails.logger.error("COLLECTION_PARAMS_CREATION: ")
+          Rails.logger.error("PARAMS: #{params}")
+          Rails.logger.error("FORM_CLASS: #{form_class}")
+          Rails.logger.error("SNAKE_CASE_COLLECTION_CLASS: #{snake_case_collection_class}")
+          Rails.logger.error("PARAMS_SNAKE_CASE_COLLECTION_CLASS: #{params[snake_case_collection_class]}")
+          Rails.logger.error("FORM_CLASS.MODEL_ATTRIBUTES_PARAMS_NAKE_CASE_COLLECTION_CLASS: #{form_class.model_attributes(params[snake_case_collection_class])}")
+
+          puts "COLLECTION_PARAMS_CREATION: "
+          puts "PARAMS: #{params}"
+          puts "FORM_CLASS: #{form_class}"
+          puts "SNAKE_CASE_COLLECTION_CLASS: #{snake_case_collection_class}"
+          puts "PARAMS_SNAKE_CASE_COLLECTION_CLASS: #{params[snake_case_collection_class]}"
+          puts "FORM_CLASS.MODEL_ATTRIBUTES_PARAMS_NAKE_CASE_COLLECTION_CLASS: #{form_class.model_attributes(params[snake_case_collection_class])}"
+
           form_class.model_attributes(params[snake_case_collection_class])
         end
 

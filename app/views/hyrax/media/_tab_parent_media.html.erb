@@ -10,21 +10,21 @@ end
   <% if @presenter.parent_media.present? %>
     <%= render partial: 'edit_parent_media_list', collection: @presenter.parent_media, as: :member %>
   <% else %>
-    <div class="row p-0">
+    <div class="p-0">
       <div class="indicators line solid table-cell">
         <p><span class="circle first"></span></p>
       </div>
-      <div class="table-cell">
+      <div class="table-cell media-title">
         <p>Raw undeposited parent media</p>
       </div>
     </div>
   <% end %>
 
-  <div class="row p-0">
+  <div class="p-0">
     <div class="indicators line solid <%= added_class %> table-cell">
-      <p><span class="circle last"></span></p>
+      <p><span class="circle"></span></p>
     </div>
-    <div class="table-cell">
+    <div class="table-cell media-title">
       <p><%= @presenter.link_name_long %> (this media)</p>
     </div>
   </div>

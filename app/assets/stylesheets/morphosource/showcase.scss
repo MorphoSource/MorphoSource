@@ -1086,6 +1086,11 @@ nav#masthead {
         display: table-cell;
         vertical-align: top;
     }
+    .table-cell.media-title {
+      p {
+        margin-top: -5px;
+      }
+    }
   }
 
   .line {
@@ -1120,10 +1125,10 @@ nav#masthead {
     border-radius: 50%;
     float:right;
     margin-right:17px;
-    margin-top:8px;
+    margin-top:5px;
     position:relative;
     z-index:2;
-      bottom:5px;
+    bottom:5px;
   }
   .circle.first:before,
   .circle.last:before {

@@ -38,8 +38,6 @@ module Hyrax
 
         # @return [TrueClass]
         def attach_files(files, env)
-          Rails.logger.error(puts "ACTOR UPDATE ATTRIBUTES: " + "#{env.attributes.inspect}")
-
           if env.curation_concern.media? && env.curation_concern.is_remote_backed?
             # if remote file url is empty or same as the current one, no need to call AttachFilesToWorkJob
             if (

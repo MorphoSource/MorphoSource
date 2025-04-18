@@ -61,13 +61,13 @@ module Morphosource
         @collection.visibility = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE unless @collection.discoverable?
         # we don't have to reindex the full graph when updating collection
         @collection.try(:reindex_extent=, Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX)
-        Rails.logger.error("PARAMS: " + params.inspect)
-        Rails.logger.error("COLLECTION_PARAMS: " + collection_params.inspect)
-        Rails.logger.error("COLLECTION: " + @collection.inspect)
+        puts "PARAMS: " + params.inspect
+        puts "COLLECTION_PARAMS: " + collection_params.inspect
+        puts "COLLECTION: " + @collection.inspect
         if @collection.update(collection_params.except(:members))
-          Rails.logger.error("PARAMS: " + params.inspect)
-          Rails.logger.error("COLLECTION_PARAMS: " + collection_params.inspect)
-          Rails.logger.error("COLLECTION: " + @collection.inspect)
+          puts "PARAMS: " + params.inspect
+          puts "COLLECTION_PARAMS: " + collection_params.inspect
+          puts "COLLECTION: " + @collection.inspect
           after_update_response
         else
           after_update_errors(@collection.errors)

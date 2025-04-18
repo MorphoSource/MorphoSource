@@ -1,10 +1,10 @@
-<div class="col-12 not-editable">
+<div class="col-sm-12 not-editable">
     <p>Physical object settings can not be edited here. These fields are associated with the parent 
 <%= link_to(@presenter.link_name_long_from_object(@presenter.top_parent_media), main_app.media_showcase_path(@presenter.top_parent_media)) %>. <br />
 To change these settings, edit the parent media.</p>
 </div>
 
-<div class="col-6">
+<div class="col-sm-6">
   <div class="content-block">
     <h2>CURRENT CULTURAL HERITAGE OBJECT</h2>
     <%= @presenter.attribute_to_html(:vouchered, label: 'Vouchered?', render_as: :showcase_default, include_empty: true, html_dl: false) %>
@@ -16,7 +16,7 @@ To change these settings, edit the parent media.</p>
     <%= @presenter.attribute_to_html(:material, label: 'Material', render_as: :showcase_default, include_empty: true, html_dl: false) %>
   </div>
 </div>
-<div class="col-6">
+<div class="col-sm-6">
   <div class="content-block">
 
 

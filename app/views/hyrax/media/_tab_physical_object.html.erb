@@ -1,12 +1,17 @@
-<div id="parent-relationships-physical-object" class="form-group row align-items-start">
-  <div class="col-6">
-    <div class="content-block">
+<div id="parent-relationships-physical-object" class="form-group">
+
+
+    <div class="col-sm-6">
+      <div class="content-block">
       <%= render 'physical_object_details', presenter: @presenter %>
+      </div>
     </div>
-  </div>
-  <div class="col-6">
-    <div class="content-block">
-      <%= render 'form_select_physical_object', i: i %>
+
+    <div class="col-sm-6">
+      <div class="content-block">
+        <%= render 'form_select_physical_object', i: i %>
+      </div>
     </div>
-  </div>
+
+
 </div>

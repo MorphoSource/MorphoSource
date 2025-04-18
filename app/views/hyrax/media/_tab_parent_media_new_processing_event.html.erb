@@ -1,8 +1,8 @@
-<div class="col-12 not-editable">
+<div class="col-sm-12 not-editable">
 	<p>You are currently editing a raw (parentless) media. To convert this media from raw to derived, you must indicate a media already on MorphoSource to serve as the new parent. Search for the new parent media and select it below. You will be asked to supply new processing details as part of this process.</p>
 </div>
 
-<div class="col-6 indicators-wrapper">
+<div class="col-sm-6 indicators-wrapper">
   <h2>PARENT MEDIA HIERARCHY</h2>
 
   <div class="p-0">
@@ -16,18 +16,18 @@
 
 </div>
 
-<div class="col-6">
+<div class="col-sm-6">
   <div class="content-block">
     <h2>SELECT OR CHANGE PARENT MEDIA</h2>
     <%= render 'form_parent_work_relationships_media', p: p, has_processing_event: 'false' %>
   </div>
 </div>
 
-  <div class="col-12 new-processing-event-wrapper" style="display: none;">
+  <div class="col-sm-12 new-processing-event-wrapper" style="display: none;">
 
     <%= render 'form_new_processing_event', p: p %>
 
-		<div class="col-12 text-center">
+		<div class="col-sm-12 text-center">
 		  <%= p.submit 'Save processing details', class: "btn btn-primary" %>
 		  <button type="button" class="btn btn-secondary cancel">Cancel</button>
 		</div>

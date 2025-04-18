@@ -89,12 +89,13 @@
     <div id="embedded_div_new_processing_event" class="embedded_div persist_with_tab related_form parent-media" data-relationship-control="#parent-relationships-processing-events" data-add-button="#btn-add-processing-event">
       <div class="col-12">
         <div class="content-block">
-          <%= simple_form_for [main_app, @new_processing_event_form],
-                              wrapper: :showcase_default,
-                              url: @new_processing_event_submit_submissions_url,
-                              html: {
-                                data: { behavior: 'work-form' }
-                              } do |p| %>
+            <%= simple_form_for [main_app, @new_processing_event_form],
+                      wrapper: :showcase_default,
+                      url: @new_processing_event_submit_submissions_url,
+                      html: {
+                      class: 'row',
+                      data: { behavior: 'work-form' }
+                      } do |p| %>
               <%= render 'tab_parent_media_new_processing_event', p: p %>
           <% end %>
         </div>

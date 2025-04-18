@@ -36,12 +36,7 @@ module SingleValuedForm
     end
 
     def model_attributes(form_params)
-      Rails.logger.error("MODEL_ATTRIBUTES_CREATION: ")
-      Rails.logger.error("FORM_PARAMS: #{form_params}")
-
       super.tap do |params|
-        Rails.logger.error("PARAMS: #{params}")
-        Rails.logger.error("SINGLE_VALUED_FIELDS: #{single_valued_fields}")
         single_valued_fields.each do |field|
           if params.key?(field) || params.key?(field.to_s)
             params[field.to_s] = Array.wrap(params[field.to_s])

@@ -323,7 +323,7 @@ module MorphosourceHelper
   end
 
   def render_hint_tag(text)
-    content_tag :i, class: ["material-icons", "tooltip-icon"] do
+    content_tag :i, class: ["material-icons", "tooltip-icon"], title: text do
       content_tag :p, class: ["hint", "hide"] do
         text
       end

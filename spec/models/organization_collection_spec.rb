@@ -119,4 +119,47 @@ RSpec.describe OrganizationCollection, type: :model do
       it { expect(organization.can_manage_devices?).to be(true) }
     end
   end
+
+  describe 'record_date_managed' do
+    let!(:organization) { FactoryBot.create(:organization_collection, depositor: user.ms_id) }
+
+    context 'collection does not have managers' do
+      context 'collection has a date_managed' do
+        before do
+          organization.date_managed = Date.today
+        end
+        it 'removes date_managed' do
+          expect(organization.date_managed).to eq(Date.today)
+          expect { organization.record_date_managed }.to change { organization.date_managed }.from(Date.today).to(nil)
+        end
+      end
+      context 'collection does not have a date_managed' do
+        it 'does not change date_managed' do
+          expect(organization.date_managed).to be_nil
+          expect { organization.record_date_managed }.not_to change { organization.date_managed }
+        end
+      end
+    end
+    context 'collection has managers' do
+      before do
+        organization.managers << user
+        organization.managers_group.save!
+      end
+      context 'collection has a date_managed' do
+        before do
+          organization.date_managed = Date.today
+        end
+        it 'does not change the date_managed' do
+          expect(organization.date_managed).to eq(Date.today)
+          expect { organization.record_date_managed }.not_to change { organization.date_managed }
+        end
+      end
+      context 'collections does not have a date_managed' do
+        it 'adds a date_managed' do
+          expect(organization.date_managed).to be_nil
+          expect { organization.record_date_managed }.to change { organization.date_managed }.from(nil).to(Date.today)
+        end
+      end
+    end
+  end
 end

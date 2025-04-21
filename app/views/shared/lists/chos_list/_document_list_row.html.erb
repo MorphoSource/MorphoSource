@@ -4,8 +4,8 @@
       <%= document['title_tesim']&.first %>
     <% end %>
   </td>
-  <td><%= document["material_tesim"]&.first %></td>
-  <td><%= document["cho_type_tesim"]&.first %></td>
+  <td><%= document.combined_material_terms.join(', ') %></td>
+  <td><%= document.combined_type_terms.join(', ') %></td>
   <td><%= document["vouchered_tesim"]&.first %></td>
   <td><%= total_viewable_media(document.id) %></td>
   <td><%= document.date_uploaded %> </td>

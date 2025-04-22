@@ -133,9 +133,9 @@ class Collection < ActiveFedora::Base
 
   def organization
     if parent_id
-      Organization.where(team_id: parent_id).first
+      Organization.where(team_id: parent_id)&.first
     else
-      Organization.where(team_id: id).first
+      Organization.where(team_id: id)&.first
     end
   end
 

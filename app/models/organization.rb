@@ -6,6 +6,7 @@ class Organization < Morphosource::Works::Base
   validates_with Morphosource::ParentChildValidator
 
   before_validation :normalize_download_reviewer
+  before_save :record_date_managed
 
   self.indexer = OrganizationIndexer
   # Change this to restrict which works can be added as a child.
@@ -62,6 +63,13 @@ class Organization < Morphosource::Works::Base
   # Custom method to handle CarrierWave uploader
   def agreement_uploader
     @agreement_uploader ||= OrganizationAgreementAttachmentUploader.new.tap { |u| u.work_id = id }
+  end
+
+  # before_save callback to set date_managed if needed
+  def record_date_managed
+    return self.date_managed if self.team&.managers.present? && self.date_managed.present?
+
+    self.date_managed = self.team&.managers.present? ? Date.today : nil
   end
 
   private

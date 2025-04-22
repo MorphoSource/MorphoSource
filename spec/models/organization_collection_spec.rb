@@ -17,7 +17,6 @@ RSpec.describe OrganizationCollection, type: :model do
     subject.collection_type_gid = organization_collection_type.gid
     subject.contact_person = ['Pam Beasley pam@beasley.com']
     subject.country = ['United States']
-    subject.continent = 'North America'
     subject.creator = ['Donald Duck']
     subject.contributor = ['Mickey Mouse']
     subject.data_manager = ['f95e50']

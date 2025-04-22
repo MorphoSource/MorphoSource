@@ -71,12 +71,18 @@ RSpec.describe Morphosource::Forms::Collections::OrganizationCollectionForm do
      :state_province]
   end
 
+  let(:required_fields) do
+    [:country,
+     :organization_type,
+     :title]
+  end
+
   it "has expected metadata terms" do
     expect(subject.terms).to match_array(collection_form.terms + organization_terms)
   end
 
   it "has expected required metadata terms" do
-    expect(subject.required_fields).to match_array(collection_form.required_fields)
+    expect(subject.required_fields).to match_array(required_fields)
   end
 
   it "has expected single valued metadata terms" do

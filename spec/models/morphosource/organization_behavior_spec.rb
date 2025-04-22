@@ -252,4 +252,27 @@ describe 'agreement attachment methods for OrganizationCollection' do
       expect(organization_collection.agreement_attachment).to eq(organization_collection.agreement_attachment_url)
     end
   end
+
+  describe '#continent' do
+    let(:organization)      { OrganizationCollection.new }
+    let(:organization_work) { Organization.new }
+
+    context 'the organization does not have a country' do
+      it 'returns an empty array' do
+        expect(organization.continent).to eq([])
+        expect(organization_work.continent).to eq([])
+      end
+    end
+
+    context 'the organization has a country' do
+      before do
+        organization.country = ['United States']
+        organization_work.country = ['United States']
+      end
+      it 'returns the continent' do
+        expect(organization.continent).to eq(['North America'])
+        expect(organization_work.continent).to eq(['North America'])
+      end
+    end
+  end
 end

@@ -77,7 +77,7 @@ module Morphosource
 
       # For these attributes, value from org is primary
       def attributes_copied_from_organization
-        ["title", "organization_type", "institution_code", "postal_code", "contact_person", "institution_name", "collection_code", "recordset_id", "permissions_enforcement_mode", "download_permission", "rights_holder_blank", "license_blank", "rights_statement_blank", "download_reviewer", "agreement_uri", "morphosource_use_agreement_type", "required_archival_of_published_derivatives", "permits_commercial_use", "permits_3d_use", "rights_holder", "preview_mode", "address", "city", "state_province", "country", "license", "rights_statement"]
+        ["title", "organization_type", "institution_code", "postal_code", "contact_person", "institution_name", "collection_code", "recordset_id", "permissions_enforcement_mode", "download_permission", "rights_holder_blank", "license_blank", "rights_statement_blank", "download_reviewer", "agreement_uri", "morphosource_use_agreement_type", "required_archival_of_published_derivatives", "permits_commercial_use", "permits_3d_use", "rights_holder", "preview_mode", "address", "city", "state_province", "country", "license", "rights_statement", "date_managed"]
       end
 
       # @!endgroup

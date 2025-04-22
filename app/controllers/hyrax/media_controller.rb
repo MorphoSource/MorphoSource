@@ -521,7 +521,7 @@ module Hyrax
           delete_thumbnail
         end
         # add custom thumbnail
-        if params[:custom_thumbnail].present?
+        if params[:media][:custom_thumbnail].present?
           create_thumbnail
         end
       end

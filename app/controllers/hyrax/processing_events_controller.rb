@@ -119,7 +119,7 @@ module Hyrax
 
     def check_processing_activity
       if params["processing_event"]["processing_activity"].present?
-        steps = params["processing_event"]["processing_activity"].map { |activity| activity.split(',').first.strip }
+        steps = params["processing_event"]["processing_activity"].map { |activity| activity.split(',')&.first&.strip }
         if steps.uniq.length != steps.length
           params["processing_event"].delete("processing_activity")
           flash[:alert] = "Processing activity steps must be unique.  Please correct and try again."

@@ -123,6 +123,9 @@ terms:
   - id: Congo (Republic of)
     term: Congo (Republic of)
     active: true
+  - id: Congo (Democratic Republic of)
+    term: Congo (Democratic Republic of)
+    active: true
   - id: Costa Rica
     term: Costa Rica
     active: true

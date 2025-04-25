@@ -14,7 +14,8 @@
     },
     "centerPanel": {
       "options": {
-        "titleEnabled": false
+        "titleEnabled": false,
+        "toolbarsEnabled": false
       }
     },
     "footerPanel": {

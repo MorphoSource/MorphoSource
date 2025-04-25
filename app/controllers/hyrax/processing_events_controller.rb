@@ -31,7 +31,7 @@ module Hyrax
       emancipate_if_necessary(env)
       if actor.update(env)
         update_media_team_access
-        update_child_media_if_necessary
+        reindex_related_media
         after_update_response
       else
         respond_to do |wants|
@@ -50,7 +50,6 @@ module Hyrax
         curation_concern.media.map(&:id).include?(params["media_id"]) &&
         current_user.can?(:edit, params["media_id"])
       )
-        @update_child_media_after_pe_update = true
         update
       else
         # unauthorized, return
@@ -88,10 +87,15 @@ module Hyrax
       end
     end
 
-    # If request from media edit page, update associated media
-    def update_child_media_if_necessary
-      if @update_child_media_after_pe_update
-        curation_concern.media.find { |m| m.id == params["media_id"] }.save!
+    def reindex_related_media
+      if params["processing_event"]["work_parents_attributes"].present? &&
+        (media_id = params["media_id"]).present?
+        # parent media changed in the media edit page
+        # reindex all related media
+        UpdateWorkIndexJob.perform_later(media_id)
+        Media.find(media_id).related_media_ids.each do |related_media_id|
+          UpdateWorkIndexJob.perform_later(related_media_id)
+        end
       end
     end
 

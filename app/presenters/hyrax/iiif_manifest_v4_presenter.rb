@@ -2,7 +2,7 @@
 
 module Hyrax
   ##
-  # This presenter wraps objects in the interface required by `IIIFManifiest`.
+  # This presenter wraps objects in the interface required by `IIIFManifest`.
   # It will accept either a Work-like resource or a SolrDocument.
   # It is very similar to the IIIF Prezi V3 Hyrax::IiifManifestPresenter.
   #

@@ -88,7 +88,7 @@ module Hyrax
     end
 
     def reindex_related_media
-      if params["processing_event"]["work_parents_attributes"].present? &&
+      if params["processing_event"] && params["processing_event"]["work_parents_attributes"].present? &&
         (media_id = params["media_id"]).present?
         # parent media changed in the media edit page
         # reindex all related media

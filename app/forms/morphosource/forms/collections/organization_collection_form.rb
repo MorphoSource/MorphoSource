@@ -70,6 +70,9 @@ module Morphosource
                                       :rights_statement_blank,
                                       :state_province]
 
+        self.required_fields += [:country,
+                                 :organization_type]
+
       end
     end
   end

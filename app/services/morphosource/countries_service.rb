@@ -5,5 +5,10 @@ module Morphosource
     def initialize(_authority_name = nil)
       super('countries')
     end
+
+    # @raise [KeyError] when no 'term' value is present for the id
+    def continent(id, &block)
+      authority.find(id).fetch('continent', &block)
+    end
   end
 end

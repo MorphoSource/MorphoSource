@@ -75,6 +75,8 @@ module Morphosource
       property :agreement_attachment_url, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/agreementAttachmentUrl"), multiple: false do |index|
         index.as :stored_searchable
       end
+
+      property :date_managed, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/dateManaged"), multiple: false
     end
   end
 end

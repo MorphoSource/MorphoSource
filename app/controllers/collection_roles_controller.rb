@@ -235,9 +235,10 @@ class CollectionRolesController < ApplicationController
   end
 
   def update_collection_managed_date
-    return unless @collection.organization_collection?
+    organization = @collection.organization || @collection
+    return unless organization.organization? || organization.organization_collection?
 
-    @collection.record_date_managed
-    @collection.save! if @collection.date_managed_changed?
+    organization.record_date_managed
+    organization.save! if organization.date_managed_changed?
   end
 end

@@ -112,5 +112,12 @@ module Morphosource
     def normalize_download_reviewer
       self.download_reviewer = self.download_reviewer.map { |x| x.split(',') }.flatten
     end
+
+    # some countries have multiple continents
+    def continent
+      return [] unless self.country.present?
+
+      Array(Morphosource::CountriesService.new.continent(self.country.first))
+    end
   end
 end

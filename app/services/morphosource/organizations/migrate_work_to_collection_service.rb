@@ -246,7 +246,7 @@ module Morphosource
               ModifyCollectionMembershipJob.set(
                 queue: Hyrax.config.update_slow_queue_name
               ).perform_later(
-                work_id: non_organization_team_media_id,
+                media_id: non_organization_team_media_id,
                 add_to_collection_ids: [custom_project.id],
                 remove_from_collection_ids: [organization_team.id]
               )

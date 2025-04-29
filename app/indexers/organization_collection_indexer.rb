@@ -8,6 +8,8 @@ class OrganizationCollectionIndexer < Hyrax::CollectionWithBasicMetadataIndexer
       solr_doc['display_name_ssi'] = object.display_name
       solr_doc['ark_tesim'] = object.ark
       solr_doc['ark_ssim'] = object.ark
+      solr_doc['date_managed_dtsi'] = object.date_managed
+      solr_doc['continent_ssim'] = object.continent # some countries have multiple continents
     end
   end
 end

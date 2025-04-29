@@ -15,6 +15,7 @@ class CollectionRolesController < ApplicationController
     if users_are_eligible?
       update_subcollections
       update_agent_access
+      update_collection_managed_date
     else
       update_notice('user_status')
     end
@@ -231,5 +232,13 @@ class CollectionRolesController < ApplicationController
   def find_subcollections
     presenter
     @subcollection_docs = Morphosource::SolrService.new.get_docs("has_model_ssim:Collection AND member_of_collection_ids_ssim:#{@collection.id}")
+  end
+
+  def update_collection_managed_date
+    organization = @collection.organization || @collection
+    return unless organization.organization? || organization.organization_collection?
+
+    organization.record_date_managed
+    organization.save! if organization.date_managed_changed?
   end
 end

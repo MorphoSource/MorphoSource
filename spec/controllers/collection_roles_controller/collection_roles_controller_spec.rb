@@ -23,11 +23,13 @@ RSpec.describe CollectionRolesController, type: :controller do
     before do
       team.create_collection_groups
     end
+
     context 'current_user is not a collection manager' do
+      let(:params) { { collection_roles: { agent_type: 'user', remove: 'false', access: 'managers', agent_id: another_user.ms_id }, id: team.id } }
+
       before do
         allow(subject).to receive(:can?).with(:edit, team).and_return(false)
       end
-      let(:params) { { collection_roles: { agent_type: 'user', remove: 'false', access: 'managers', agent_id: another_user.ms_id }, id: team.id } }
 
       it 'does not update the collection groups' do
         expect { process :update_collection_groups, method: :post, params: params }.not_to change { team.group_members.count }
@@ -36,6 +38,7 @@ RSpec.describe CollectionRolesController, type: :controller do
 
     context 'adding an individual user' do
       let(:params) { { collection_roles: { agent_type: 'user', remove: 'false', access: '', agent_id: another_user.ms_id }, id: team.id } }
+
       before do
         allow(subject).to receive(:can?).with(:edit, team).and_return(true)
         allow(subject).to receive(:update_subcollections).and_return(true)
@@ -760,6 +763,131 @@ RSpec.describe CollectionRolesController, type: :controller do
             expect(project_b.viewers).not_to include(user3, user4)
           end
         end
+      end
+    end
+
+    describe 'update_collection_managed_date' do
+      before do
+        allow(subject).to receive(:users_are_eligible?).and_return(true)
+        allow(subject).to receive(:update_subcollections).and_return(true)
+        Timecop.freeze(Time.local(1999, 9, 9, 9))
+      end
+
+      after do
+        Timecop.return
+      end
+
+      context 'organization is a collection' do
+        let(:params)        { { collection_roles: { agent_type: 'user', remove: 'false', access: 'managers', agent_id: manager.ms_id }, id: organization.id } }
+        let(:organization)  { FactoryBot.create(:organization_collection, title: ['Organization'], depositor: manager.ms_id) }
+
+        before do
+          allow(subject).to receive(:can?).with(:edit, organization).and_return(true)
+        end
+
+        it 'is called by update_collection_groups' do
+          allow(subject).to receive(:collection_role_values).and_return(true)
+          allow(subject).to receive(:update_agent_access).and_return(true)
+
+          expect(subject).to receive(:update_collection_managed_date)
+          post :update_collection_groups, params: { id: organization.id }
+        end
+
+        context 'adding a manager for the first time' do
+          it 'updates the organization date_managed' do
+            expect { post :update_collection_groups, params: params }.to change(organization, :date_managed).from(nil).to(Date.today)
+          end
+        end
+
+        context 'adding additional managers' do
+          before do
+            organization.managers << another_user
+            organization.managers_group.save
+            organization.date_managed = Date.yesterday
+            organization.save
+          end
+
+          it 'does not update the organization date managed' do
+            expect { post :update_collection_groups, params: params }.not_to change(organization, :date_managed)
+          end
+        end
+
+        context 'removing all managers from the collection' do
+          let(:params)  { { collection_roles: { agent_type: 'user', new_access: 'remove', access: 'managers', agent_id: another_user.ms_id }, id: organization.id } }
+
+          before do
+            organization.managers << another_user
+            organization.managers_group.save
+            organization.date_managed = Date.yesterday
+            organization.save
+          end
+
+          it 'sets date_managed as nil' do
+            expect { post :update_collection_groups, params: params }.to change(organization, :date_managed).from(Date.yesterday).to(nil)
+          end
+        end
+      end
+
+      context 'organization is a work' do
+        let!(:team)         { FactoryBot.create(:team, title: ['Team'], depositor: manager.ms_id) }
+        let!(:organization) { FactoryBot.create(:organization, title: ['Organization'], team_id: [team.id], depositor: manager.ms_id) }
+        let(:params)        { { collection_roles: { agent_type: 'user', remove: 'false', access: 'managers', agent_id: manager.ms_id }, id: team.id } }
+
+        before do
+          allow(subject).to receive(:can?).with(:edit, team).and_return(true)
+          allow(team).to receive(:organization).and_return(organization)
+          team.create_collection_groups
+          team.managers_group.users = []
+          team.managers_group.save!
+        end
+
+        it 'is called by update_collection_groups' do
+          allow(subject).to receive(:collection_role_values).and_return(true)
+          allow(subject).to receive(:update_agent_access).and_return(true)
+
+          expect(subject).to receive(:update_collection_managed_date)
+          post :update_collection_groups, params: { id: team.id }
+        end
+
+        context 'adding a manager for the first time' do
+          before do
+            organization.date_managed = nil
+            organization.save!
+          end
+
+          it 'updates the organization date_managed' do
+            expect { post :update_collection_groups, params: params }.to change(organization, :date_managed).from(nil).to(Date.today)
+          end
+        end
+
+        context 'adding additional managers' do
+          before do
+            team.managers << manager
+            team.managers_group.save
+            organization.date_managed = Date.yesterday
+            organization.save
+          end
+
+          it 'does not update the organization date managed' do
+            expect { post :update_collection_groups, params: params }.not_to change(organization, :date_managed)
+          end
+        end
+
+        context 'removing all managers from the collection' do
+          let(:params)  { { collection_roles: { agent_type: 'user', new_access: 'remove', access: 'managers', agent_id: manager.ms_id }, id: team.id } }
+
+          before do
+            team.managers << manager
+            team.managers_group.save
+            organization.date_managed = Date.yesterday
+            organization.save!
+          end
+
+          it 'sets date_managed as nil' do
+            expect { post :update_collection_groups, params: params }.to change(organization, :date_managed).from(Date.yesterday).to(nil)
+          end
+        end
+
       end
     end
   end

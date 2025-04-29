@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe OrganizationIndexer do
-  subject(:solr_document)    { OrganizationIndexer.new(organization).generate_solr_document }
-  let(:organization)             { Organization.create(title: ['organization title'], organization_type: ['Scanning Facility'], institution_name: ['Institution Name'], institution_code: ['Institution Code'], country: ['Country'], state_province: ['State'], city: ['City']) }
+  subject(:solr_document) { OrganizationIndexer.new(organization).generate_solr_document }
+  let(:organization)      { Organization.create(title: ['organization title'], organization_type: ['Scanning Facility'], institution_name: ['Institution Name'], institution_code: ['Institution Code'], country: ['United States'], state_province: ['State'], city: ['City']) }
 
   describe 'custom fields' do
     it 'indexes organization_type' do

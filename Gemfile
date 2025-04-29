@@ -69,6 +69,8 @@ gem 'axlsx'
 
 gem 'dalli' # mem_cache_store support
 
+gem 'okcomputer' # Hyrax health checks
+
 # Sentry.io error tracking
 gem "sentry-ruby"
 gem "sentry-rails"

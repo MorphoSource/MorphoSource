@@ -11,8 +11,11 @@ class CulturalHeritageObjectIndexer < Morphosource::PhysicalObjectIndexer
 
   def generate_solr_document
    super.tap do |solr_doc|
-     solr_doc['material_si'] = object.material&.first&.downcase
-     solr_doc['cho_type_si'] = object.cho_type&.first&.downcase
+     combined_material_terms = (object.material + Array(solr_doc['aat_material_label_tesim'])).compact.sort_by{|t| t.downcase}
+     combined_type_terms = (object.cho_type + Array(solr_doc['aat_type_label_tesim'])).compact.sort_by{|t| t.downcase}
+
+     solr_doc['material_si'] = combined_material_terms&.first&.downcase
+     solr_doc['cho_type_si'] = combined_type_terms&.first&.downcase
      solr_doc['vouchered_si'] = object.vouchered&.first&.downcase
    end
   end

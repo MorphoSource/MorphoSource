@@ -77,7 +77,7 @@ module Morphosource
 
       # For these attributes, value from org is primary
       def attributes_copied_from_organization
-        ["title", "organization_type", "institution_code", "postal_code", "contact_person", "institution_name", "collection_code", "recordset_id", "permissions_enforcement_mode", "download_permission", "rights_holder_blank", "license_blank", "rights_statement_blank", "download_reviewer", "agreement_uri", "morphosource_use_agreement_type", "required_archival_of_published_derivatives", "permits_commercial_use", "permits_3d_use", "rights_holder", "preview_mode", "address", "city", "state_province", "country", "license", "rights_statement"]
+        ["title", "organization_type", "institution_code", "postal_code", "contact_person", "institution_name", "collection_code", "recordset_id", "permissions_enforcement_mode", "download_permission", "rights_holder_blank", "license_blank", "rights_statement_blank", "download_reviewer", "agreement_uri", "morphosource_use_agreement_type", "required_archival_of_published_derivatives", "permits_commercial_use", "permits_3d_use", "rights_holder", "preview_mode", "address", "city", "state_province", "country", "license", "rights_statement", "date_managed"]
       end
 
       # @!endgroup
@@ -251,6 +251,34 @@ module Morphosource
                 remove_from_collection_ids: [organization_team.id]
               )
             end
+
+            # all organization media owned by the team should be removed from the team
+            # doing this here instead of at team deletion so we can check that the media are removed before completing migration
+            # Use ModifyCollectionMembershipJob instead of RemoveCollectionMembersJob to bypass reapply_org_team_access method
+            organization_team_media_ids = all_media_ids - non_organization_team_media_ids
+
+            organization_team_media_ids.each do |organization_team_media_id|
+              ModifyCollectionMembershipJob.set(
+                queue: Hyrax.config.update_slow_queue_name
+              ).perform_later(
+                media_id: organization_team_media_id,
+                add_to_collection_ids: [],
+                remove_from_collection_ids: [organization_team.id]
+              )
+            end
+
+
+            # all media with team access grants need to have those grants removed
+            team_access_media_ids = SolrDocument.where("has_model_ssim:Media AND
+                                                        read_access_group_ssim:#{organization_team.id}_* OR
+                                                        download_access_group_ssim:#{organization_team.id}_* OR
+                                                        edit_access_group_ssim:#{organization_team.id}_*").map{|d| d["id"] }
+
+            team_access_media_ids -= all_media_ids # team member media should have their access grants removed above by the ModifyCollectionMembershipJob
+
+            team_access_media_ids.each do |team_access_media_id|
+              RemoveCollectionAccessGrantsJob.perform_later(collection_id: organization_team.id, work_id: team_access_media_id)
+            end
           end
         end
 
@@ -409,21 +437,11 @@ module Morphosource
 
         if organization_team.present?
           if Collection.where("member_of_collection_ids_ssim:#{organization_team.id}").present?
-            raise "STEP 3 FAILED. Organization team still retains media, physical objects, or child projects."
+            raise "STEP 3 FAILED. Organization team still retains child projects."
           end
-        end
 
-        ### STEP 3.5. Have all team non-organization media been removed from the organization team? ###
-        Rails.logger.info "STEP 3.5. Have all team non-organization media been removed from the organization team? "
-
-        if organization_team.present?
-          non_organization_team_media_docs = ActiveFedora::SolrService.query(
-            "member_of_collection_ids_ssim:#{organization_team.id} AND -media_organization_id_ssim:#{organization_work.id} AND -media_organization_id_ssim:#{organization_collection.id}",
-            rows: 999999
-          )
-
-          if non_organization_team_media_docs.present?
-            raise "STEP 3.5 FAILED. Organization team still retains non-organization media."
+          if organization_team.media_docs.present?
+            raise "STEP 3 FAILED. Organization team still retains media."
           end
         end
 
@@ -451,6 +469,13 @@ module Morphosource
 
           if !conditions.all?
             raise "STEP 4 FAILED. Some organization team members not copied."
+          end
+
+          # Destroy user groups now so we can check that these are gone before completing migration
+          organization_team.user_groups.compact.each(&:destroy!) if organization_team.user_groups.compact.present?
+
+          if organization_team.user_groups.compact.present? # this should be [nil, nil, ...]
+            raise "STEP 4 FAILED. Organization team user groups present."
           end
         end
 
@@ -512,6 +537,19 @@ module Morphosource
           end
         end
 
+        ### STEP 10. Are all are all team roles and access grants destroyed?
+        Rails.logger.info "STEP 10. Are all are all team roles and access grants destroyed?"
+        # any media with remaining team access grants need to have those grants removed
+        if organization_team.present?
+          team_access_media = SolrDocument.where("has_model_ssim:Media AND
+                                                  read_access_group_ssim:#{organization_team.id}_* OR
+                                                  download_access_group_ssim:#{organization_team.id}_* OR
+                                                  edit_access_group_ssim:#{organization_team.id}_*")
+          if team_access_media.present?
+            raise "STEP 10 FAILED. Found #{team_access_media.count} media with team access grants."
+          end
+        end
+
         Rails.logger.info "---"
         Rails.logger.info "Validation successful!"
         Rails.logger.info "---"
@@ -520,7 +558,7 @@ module Morphosource
       # Complete migration by deleting legacy org work and org team
       def complete_migration
         if is_migrated?
-          Rails.logger.info "STEP 10. Delete organization work."
+          Rails.logger.info "STEP 11. Delete organization work."
 
           begin
             if organization_team.present?
@@ -536,7 +574,7 @@ module Morphosource
             Rails.logger.warn "Raised ActiveTriples::ParentStrategy::UnmutableParentError on organization destruction, ignoring"
           end
 
-          Rails.logger.info "FINISHED STEP 10. Delete organization work."
+          Rails.logger.info "FINISHED STEP 11. Delete organization work."
         end
       end
 

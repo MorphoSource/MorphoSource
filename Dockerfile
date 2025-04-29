@@ -199,7 +199,7 @@ pip3 install --no-cache-dir pymeshlab; \
 fi 
 
 # Install GLTF Pipeline 3D mesh derivative tool, used for creating Draco GLBs
-RUN npm install --global gltf-pipeline
+RUN npm install --global gltf-pipeline --legacy-peer-deps
 
 # Install GLTF Transform 3D mesh derivative tool, used for simplifying GLTF derivatives and creating Draco GLBs
 RUN npm install --global @gltf-transform/cli

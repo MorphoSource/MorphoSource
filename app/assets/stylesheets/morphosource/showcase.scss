@@ -628,6 +628,14 @@ nav#masthead {
   }
 
   table.dataTable {
+    th[class^="sorting"]:before,
+    th[class^="sorting"]:after {
+      bottom: 0.6em;
+    }
+    th.no-sort:before, 
+    th.no-sort:after {
+      opacity: 0;
+    }
     tr {
       border-bottom: none;
     }

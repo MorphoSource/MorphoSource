@@ -21,11 +21,11 @@ module Hyrax
     ##
     # @!attribute [w] ability
     #   @return [Ability]
-    # @!attribute [w] hostname
-    #   @return [String]
     # @!attribute [w] access_control_id
     #   @return [String]
-    attr_writer :ability, :hostname, :access_control_id
+    # @!attribute [w] hostname
+    #   @return [String]
+    attr_writer :ability, :access_control_id, :hostname
 
     class << self
       ##
@@ -248,8 +248,7 @@ module Hyrax
         return display_content_video if model.video?
         
         # Some mime types overlap for mesh/volume, have to check parent media type
-        if ( model.mesh? || model.volume? ) && model.id.present? && ::FileSet.exists?(model.id)
-          parent_work = ::FileSet.find(id).parent
+        if ( model.mesh? || model.volume? ) && model.id.present?
           return display_content_mesh if parent_work&.media_type&.first == 'Mesh'
           return display_content_volume if parent_work&.media_type&.first == 'CTImageSeries'
         end
@@ -318,6 +317,10 @@ module Hyrax
         @hostname || 'localhost'
       end
 
+      def parent_work
+        @parent_work ||= ::FileSet.exists?(model.id) && ::FileSet.find(id).parent
+      end
+
       ##
       # @return [Boolean] false
       def work?
@@ -327,22 +330,22 @@ module Hyrax
 
     private
 
-      def hostname
-        @hostname || 'localhost'
-      end
+    def exclude_fields_if_blank
+      [:taxonomies_titles]
+    end
 
-      def metadata_fields
-        Hyrax.config.iiif_metadata_fields.select do |field_name|
-          !exclude_fields_if_blank.include?(field_name) || send(field_name).present?
-        end
-      end
+    def hostname
+      @hostname || 'localhost'
+    end
 
-      def exclude_fields_if_blank
-        [:taxonomies_titles]
+    def metadata_fields
+      Hyrax.config.iiif_metadata_fields.select do |field_name|
+        !exclude_fields_if_blank.include?(field_name) || send(field_name).present?
       end
+    end
 
-      def scrub(value)
-        Loofah.fragment(value).scrub!(:whitewash).to_s
-      end
+    def scrub(value)
+      Loofah.fragment(value).scrub!(:whitewash).to_s
+    end
   end
 end

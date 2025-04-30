@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2024_09_01_195803) do
+ActiveRecord::Schema.define(version: 2025_04_17_213645) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -457,6 +457,13 @@ ActiveRecord::Schema.define(version: 2024_09_01_195803) do
     t.index ["role_id"], name: "index_roles_users_on_role_id"
     t.index ["user_id", "role_id"], name: "index_roles_users_on_user_id_and_role_id"
     t.index ["user_id"], name: "index_roles_users_on_user_id"
+  end
+
+  create_table "scenes", force: :cascade do |t|
+    t.string "media_id", null: false
+    t.jsonb "aleph_scene", null: false
+    t.jsonb "iiif_annotations"
+    t.jsonb "iiif_transforms"
   end
 
   create_table "searches", force: :cascade do |t|

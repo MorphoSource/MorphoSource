@@ -330,19 +330,10 @@ input[type=checkbox].disabled {
   }
 
   .processing_activity_items {
-
-    display: table;
-
-    .field-controls {
-      display: table-cell;
-    }
     .row:not(:first-child) {
       .showcase-label {
         padding-left: 20px;
       }
-    }
-    .row {
-      width: 100%;
     }
   }
 

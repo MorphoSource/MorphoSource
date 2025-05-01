@@ -223,7 +223,7 @@ $( document ).ready(function() {
       if (isProfileUsed) {
         $('form#download-form')[0].reset(); // this will re-populate the checkboxes and text field
         $('.modal-body .checkbox-form-group input').attr("disabled", true);
-        $(this).prop('checked', true);
+        this.checked = true;
       } else {
         clearProfileForm();        
         $('.modal-body .checkbox-form-group input').attr("disabled", false);

@@ -221,7 +221,7 @@ $( document ).ready(function() {
     $(document).on('click', '#get-profile-intent', function(){
       isProfileUsed = $(this).prop('checked');
       if (isProfileUsed) {
-        $('form#download-form')[0].reset(); // this will re-populated the checkboxes and text field
+        $('form#download-form')[0].reset(); // this will re-populate the checkboxes and text field
         $('.modal-body .checkbox-form-group input').attr("disabled", true);
         $(this).prop('checked', true);
       } else {

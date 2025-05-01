@@ -89,6 +89,11 @@ module MorphosourceHelper
 
   end
 
+  def show_sitewide_modal?
+    true
+    # @sitewide_modal &! cookies[:hide_donation_modal]
+  end
+
   def solr_doc_find(id)
     begin
       return SolrDocument.find(id)

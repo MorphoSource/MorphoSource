@@ -1,10 +1,12 @@
 module Morphosource
   module Admin
     class ImportSlidesController < ApplicationController
-      before_action :require_admin
+      include Morphosource::Admin::AdminBehavior
+
+      # before_action :require_admin
       before_action :initialize_service, only: :import_slides
 
-      with_themed_layout 'morphosource_dashboard'
+      # with_themed_layout 'morphosource_dashboard'
 
       def import_slides
         Morphosource::ImportSlideSeriesJob.perform_later(occurrence_key, @collection.id)
@@ -27,9 +29,9 @@ module Morphosource
           params["occurrence_key"]
         end
 
-        def require_admin
-          authorize! :read, :admin_dashboard
-        end
+        # def require_admin
+        #   authorize! :read, :admin_dashboard
+        # end
     end
   end
 end

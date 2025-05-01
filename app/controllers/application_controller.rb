@@ -12,14 +12,15 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
 
   before_action :set_sitewide_announcement
+  before_action :set_sitewide_modal
 
   # Blacklight discarding flash messages - see https://github.com/samvera/hyrax/issues/1596
   skip_after_action :discard_flash_if_xhr
 
   rescue_from CanCan::AccessDenied, ActiveFedora::ObjectNotFoundError, Ldp::Gone do |exception|
     respond_to do |format|
-      format.json { 
-        render json: { code: 404, message: t("cancan.not_found.message"), description: t("cancan.not_found.description")}, status: :not_found 
+      format.json {
+        render json: { code: 404, message: t("cancan.not_found.message"), description: t("cancan.not_found.description")}, status: :not_found
       }
       format.html { redirect_to main_app.root_url, notice: "#{t("cancan.not_found.message")}: #{t("cancan.not_found.description")}" }
       format.js   { render nothing: true, status: :not_found }
@@ -42,6 +43,13 @@ class ApplicationController < ActionController::Base
       else
         Redis.current.del("morphosource:maintenance_time")
       end
+    end
+  end
+
+  def set_sitewide_modal
+    modal_frequency = Morphosource::Forms::Admin::Modal.new.sitewide_modal_frequency.to_f
+    if rand < modal_frequency
+      @sitewide_modal = true
     end
   end
 

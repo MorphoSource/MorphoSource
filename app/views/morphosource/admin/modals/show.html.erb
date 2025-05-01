@@ -1,0 +1,38 @@
+<% provide :page_header do %>
+  <h1><span class="fas fa-pager" aria-hidden="true"></span> Site Modals </h1>
+<% end %>
+<% provide :page_title, "Modal Configuration" %>
+
+<% content_for :body_css_classes do %>modal-config<% end %>
+
+<%= simple_form_for @form, html: { id: "modal-form" }, url: admin_modal_path do |f| %>
+  <div class="form-group" style="display: flex; flex-direction: row-reverse;">
+
+    <%= f.submit class: 'btn btn-primary', style: "margin-left:10px;"%>
+
+    <%= submit_tag "Test Modal", :type => 'button', class: "btn btn-primary", data: { toggle: "modal", target: "#testModal" } %>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <%= f.input :sitewide_modal_frequency, collection: @form.modal_frequencies, include_blank: false, required: false %>
+      <%= f.input :sitewide_modal_template, collection: @form.modal_templates, include_blank: false, required: false %>
+      <%= f.input :sitewide_modal_title, required: false %>
+      <%= f.input :sitewide_modal_body, as: :text, required: false %>
+      <% # f.input :sitewide_modal_pause_length, collection: @form.modal_pause_lengths, include_blank: false, required: false %>
+      <%= f.input :guilt_trip_template, collection: @form.modal_templates, include_blank: true, required: false %>
+    </div>
+  </div>
+
+<% end %>
+
+<% @form.modal_templates.each do |filename| %>
+    <div class= "<%= "modal-example card #{filename}" %>" style="display: none;">
+      <div class="card-body">
+        <%= render partial: "application/modals/#{filename}", locals: { modal_title: @form.sitewide_modal_title, modal_body: @form.sitewide_modal_body } %>
+      </div>
+    </div>
+<% end %>
+
+<div id="testModal" class="modal fade"></div>
+
+<%= render partial: "application/site_modal_content" %>

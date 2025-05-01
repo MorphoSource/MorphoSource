@@ -31,9 +31,9 @@
           <%= content_for?(:content) ? yield(:content) : yield %>
 
       </div>
-
     </div><!-- /#content-wrapper -->
     <%= render 'shared/ajax_modal' %>
     <%= content_for :render_async %>
+    <%= render partial: "application/site_modal_wrapper" %>
   </body>
 </html>

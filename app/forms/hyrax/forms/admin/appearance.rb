@@ -124,7 +124,7 @@ module Hyrax
 
           def block_for(name, default_value)
             block = ContentBlock.find_by(name: name)
-            block ? block.value : default_value
+            block.value || default_value
           end
 
           # Persist a key/value tuple as a ContentBlock

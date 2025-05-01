@@ -92,6 +92,11 @@
                                    id: 'collapseSettings',
                                    open: menu.settings_section? do %>
         <% if can?(:update, :appearance) %>
+          <%= menu.nav_link(main_app.admin_modal_path) do %>
+            <span class="fa fa-pager" aria-hidden="true"></span> <span class="sidebar-action-text"><%= "Site Modal" %></span>
+          <% end %>
+        <% end %>
+        <% if can?(:update, :appearance) %>
           <%= menu.nav_link(hyrax.admin_appearance_path) do %>
             <span class="fa fa-paint-brush" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.appearance') %></span>
           <% end %>

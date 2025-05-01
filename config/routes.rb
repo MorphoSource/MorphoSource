@@ -168,6 +168,13 @@ Rails.application.routes.draw do
       # all requests
       get 'requests', action: :index, controller: :requests, as: 'admin_requests'
 
+      # modal configuration
+      get 'modal', action: :show, controller: :modals, as: 'admin_modal'
+      patch 'modal', action: :update, controller: :modals, as: 'admin_modal_update'
+      post 'modal/snooze_hour', action: :snooze_hour, controller: :modals, as: 'admin_modal_snooze_hour'
+      post 'modal/snooze_day', action: :snooze_day, controller: :modals, as: 'admin_modal_snooze_day'
+      post 'modal/snooze_week', action: :snooze_week, controller: :modals, as: 'admin_modal_snooze_week'
+
       # remote file health dashboard
       get 'remote_file_health', action: :index, controller: :remote_file_healths, as: 'remote_file_health'
       get 'remote_file_health/verify_all', action: :verify_all, controller: :remote_file_healths, as: 'remote_file_health_verify_all'

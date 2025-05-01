@@ -107,6 +107,14 @@ RUN apt update && \
   zip && \
   rm -rf /var/lib/apt/lists/*
 
+# Update node/npm
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
+  apt install -yq nodejs build-essential && \
+  npm install -g npm
+
+# Install yarn # todo add yarn install step to build stage
+RUN npm install --global yarn
+
 RUN adduser --system --gid 0 --uid 1001 --home /app app
 USER app
 
@@ -179,11 +187,6 @@ RUN apt update && \
   python3 \
   python3-pip \
   7zip
-
-# Update node/npm
-RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
-  apt install -yq nodejs build-essential && \
-  npm install -g npm
 
 # Install Python packages
 RUN pip3 install --no-cache-dir --upgrade pip && \

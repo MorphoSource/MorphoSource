@@ -91,10 +91,14 @@ module Hyrax
       if params["processing_event"] && params["processing_event"]["work_parents_attributes"].present? &&
         (media_id = params["media_id"]).present?
         # parent media changed in the media edit page
-        # reindex all related media
+        # reindex current media first (which is needed before reindexing the related media)
+        # then reindex the related media
         UpdateWorkIndexJob.perform_later(media_id)
-        Media.find(media_id).related_media_ids.each do |related_media_id|
-          UpdateWorkIndexJob.perform_later(related_media_id)
+        qry = "#{ActiveFedora.index_field_mapper.solr_name('imaging_event_id', :stored_searchable)}:#{@curation_concern.imaging_event.id} AND has_model_ssim:Media"
+        related_media_solr = ::Morphosource::SolrService.new().get_docs(qry, args: { fl: 'id' } )
+        related_media_ids = related_media_solr.map { |d| d['id'] }.reject { |id| id == media_id }
+        related_media_ids.each do |id|
+          UpdateWorkIndexJob.perform_later(id)
         end
       end
     end

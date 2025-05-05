@@ -75,7 +75,7 @@
                           <%= render_thumbnail_tag presenter, {}, { suppress_link: true } %>
                           <%= presenter.link_name_long %> (this media)
                         <% elsif can? :read, raw_media %>
-                          <%= render_thumbnail_tag raw_media %>
+                            <%= render_thumbnail_tag raw_media, class: "d-block text-center mx-auto" %>
                           <%= link_to(presenter.link_name_long_from_object(raw_media), main_app.media_showcase_path(raw_media)) %>
                         <% else %>
                           <%= render_default_thumbnail %>

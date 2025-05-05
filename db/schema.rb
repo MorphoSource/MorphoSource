@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_05_01_151710) do
+ActiveRecord::Schema.define(version: 2025_05_05_175543) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -44,14 +44,6 @@ ActiveRecord::Schema.define(version: 2025_05_01_151710) do
     t.string "checksum", null: false
     t.datetime "created_at", null: false
     t.index ["key"], name: "index_active_storage_blobs_on_key", unique: true
-  end
-
-  create_table "articles", force: :cascade do |t|
-    t.string "slug"
-    t.string "title"
-    t.integer "visibility", default: 0
-    t.string "timestamps"
-    t.index ["slug"], name: "index_articles_on_slug", unique: true
   end
 
   create_table "background_jobs", force: :cascade do |t|
@@ -390,6 +382,16 @@ ActiveRecord::Schema.define(version: 2025_05_01_151710) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["namespace"], name: "index_minter_states_on_namespace", unique: true
+  end
+
+  create_table "pages", force: :cascade do |t|
+    t.string "slug"
+    t.string "title"
+    t.integer "visibility", default: 0
+    t.datetime "created_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.datetime "updated_at", default: -> { "CURRENT_TIMESTAMP" }, null: false
+    t.integer "page_type", default: 0
+    t.index ["slug"], name: "index_pages_on_slug", unique: true
   end
 
   create_table "permission_template_accesses", force: :cascade do |t|

@@ -8,6 +8,7 @@ class Ability
 
     if admin?
       can [:create, :show, :add_user, :remove_user, :index, :edit, :update, :destroy], Role
+      can [:new, :create, :edit, :update, :destroy, :manage], Page
       can [:manage], ::User
       can [:manage], BackgroundJob
       can [:manage], RemoteFileHealth

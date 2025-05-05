@@ -25,6 +25,7 @@ services:
       - .:/app/samvera/hyrax-webapp
       - app-vendor-bundle:/app/samvera/hyrax-webapp/vendor/bundle
       - app-bundle:/app/samvera/hyrax-webapp/.bundle/
+      - app-node-modules:/app/samvera/hyrax-webapp/node_modules
       - hyrax-derivatives:/app/samvera/hyrax-webapp/derivatives
       - hyrax-uploads:/app/samvera/hyrax-webapp/uploads
       - rails-tmp:/app/samvera/hyrax-webapp/tmp
@@ -51,6 +52,7 @@ services:
       - .:/app/samvera/hyrax-webapp
       - app-vendor-bundle:/app/samvera/hyrax-webapp/vendor/bundle
       - app-bundle:/app/samvera/hyrax-webapp/.bundle/
+      - app-node-modules:/app/samvera/hyrax-webapp/node_modules
       - hyrax-derivatives:/app/samvera/hyrax-webapp/derivatives
       - hyrax-uploads:/app/samvera/hyrax-webapp/uploads
       - rails-tmp:/app/samvera/hyrax-webapp/tmp
@@ -80,6 +82,7 @@ services:
       - .:/app/samvera/hyrax-webapp
       - app-vendor-bundle:/app/samvera/hyrax-webapp/vendor/bundle
       - app-bundle:/app/samvera/hyrax-webapp/.bundle/
+      - app-node-modules:/app/samvera/hyrax-webapp/node_modules
       - test-derivatives:/app/samvera/hyrax-webapp/derivatives
       - test-uploads:/app/samvera/hyrax-webapp/uploads
       - test-public:/app/samvera/hyrax-webapp/public
@@ -107,6 +110,7 @@ services:
       - .:/app/samvera/hyrax-webapp
       - app-vendor-bundle:/app/samvera/hyrax-webapp/vendor/bundle
       - app-bundle:/app/samvera/hyrax-webapp/.bundle/
+      - app-node-modules:/app/samvera/hyrax-webapp/node_modules
       - rails-tmp:/app/samvera/hyrax-webapp/tmp
     networks:
       - morphosource
@@ -135,6 +139,7 @@ services:
       - .:/app/samvera/hyrax-webapp
       - app-vendor-bundle:/app/samvera/hyrax-webapp/vendor/bundle
       - app-bundle:/app/samvera/hyrax-webapp/.bundle/
+      - app-node-modules:/app/samvera/hyrax-webapp/node_modules
       - test-tmp:/app/samvera/hyrax-webapp/tmp
     networks:
       - morphosource
@@ -203,6 +208,7 @@ services:
 
 volumes:
   app-bundle:
+  app-node-modules:
   app-vendor-bundle:
   db:
   fcrepo:

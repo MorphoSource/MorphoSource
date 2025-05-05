@@ -110,10 +110,8 @@ RUN apt update && \
 # Update node/npm
 RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
   apt install -yq nodejs build-essential && \
-  npm install -g npm
-
-# Install yarn # todo add yarn install step to build stage
-RUN npm install --global yarn
+  npm install -g npm --silent && \
+  npm install -g yarn --silent
 
 RUN adduser --system --gid 0 --uid 1001 --home /app app
 USER app
@@ -140,6 +138,7 @@ RUN gem install bundler -v 2.0.2
 FROM morphosource-base as morphosource-dev
 
 COPY --chown=1001:0 --from=morphosource-build-dev $RAILS_ROOT $RAILS_ROOT
+RUN yarn install
 
 ENTRYPOINT ["hyrax-entrypoint.sh"]
 CMD ["bundle", "exec", "puma", "-v", "-b", "tcp://0.0.0.0:3000"]
@@ -152,6 +151,7 @@ CMD ["bundle", "exec", "puma", "-v", "-b", "tcp://0.0.0.0:3000"]
 FROM morphosource-base as morphosource-prod
 
 COPY --chown=1001:0 --from=morphosource-build-prod $RAILS_ROOT $RAILS_ROOT
+RUN yarn install
 
 ENTRYPOINT ["hyrax-entrypoint.sh"]
 CMD ["bundle", "exec", "puma", "-v", "-b", "tcp://0.0.0.0:3000"]
@@ -261,6 +261,7 @@ RUN mkdir -p /app/fiji && \
 FROM morphosource-worker-base as morphosource-worker-dev
 
 COPY --chown=1001:0 --from=morphosource-build-dev $RAILS_ROOT $RAILS_ROOT
+RUN yarn install
 
 ENTRYPOINT ["hyrax-entrypoint.sh"]
 CMD ["bundle", "exec", "resque-pool"]
@@ -273,6 +274,7 @@ CMD ["bundle", "exec", "resque-pool"]
 FROM morphosource-worker-base as morphosource-worker-prod
 
 COPY --chown=1001:0 --from=morphosource-build-prod $RAILS_ROOT $RAILS_ROOT
+RUN yarn install
 
 ENTRYPOINT ["hyrax-entrypoint.sh"]
 CMD ["bundle", "exec", "resque-pool"]

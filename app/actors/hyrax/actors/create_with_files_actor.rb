@@ -51,7 +51,7 @@ module Hyrax
             # this block is for other work type (e.g. PE) and media that is not remote-backed (which includes local/cloud upload)
             return true if files.blank?
           end
-          AttachFilesToWorkJob.perform_later(env.curation_concern, files, env.attributes.to_h.symbolize_keys)
+          AttachFilesToWorkJob.perform_later(env.curation_concern, files, **env.attributes.to_h.symbolize_keys)
           true
         end
 

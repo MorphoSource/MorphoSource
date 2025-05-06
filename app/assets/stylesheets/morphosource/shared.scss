@@ -12,6 +12,10 @@
 }
 /* /global styles added to accommodate Hyrax 5 update */
 
+.hidden {
+  display: none !important;
+}
+
 ::placeholder {
   color: #ccc !important;
 }

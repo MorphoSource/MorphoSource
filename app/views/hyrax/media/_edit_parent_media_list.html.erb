@@ -7,11 +7,11 @@ else
   class_name = 'circle'
 end
 %>
-<div class="row p-0">
+<div class="p-0">
   <div class="indicators line solid table-cell">
     <p><span class="<%= class_name %>"></span></p>
   </div>
-  <div class="table-cell">
+  <div class="table-cell media-title">
     <p>
      <%= raw_or_derived %> parent
     <%= link_to(@presenter.link_name_long_from_object(member), main_app.media_showcase_path(member)) %>

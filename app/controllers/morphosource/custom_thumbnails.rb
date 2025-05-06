@@ -28,7 +28,7 @@ module Morphosource
     end
 
     def custom_thumbnail
-      @custom_thumbnail ||= params[:custom_thumbnail]
+      @custom_thumbnail ||= params[:media][:custom_thumbnail]
     end
 
     # media == new_media if new submission

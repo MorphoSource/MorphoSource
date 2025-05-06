@@ -65,7 +65,7 @@ $( document ).ready(function() {
       description = (description) ? description[1] : '';
       // Assemble new triple fields
       var li = document.createElement('li');
-      li.className =  'field-wrapper input-group input-append processing_activity_items';
+      li.className =  'field-wrapper input-group input-append processing_activity_items d-block';
       li.setAttribute('data-step', step);
 
       appendProcessingActivityStepSelect(li);

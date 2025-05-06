@@ -20,6 +20,12 @@ RUN apt update && \
   $EXTRA_APK_PACKAGES && \
   rm -rf /var/lib/apt/lists/* 
 
+# Update node/npm
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
+  apt install -yq nodejs build-essential && \
+  npm install -g npm --silent && \
+  npm install -g yarn --silent
+
 RUN adduser --system --gid 0 --uid 1001 --home /app app
 USER app
 
@@ -55,6 +61,10 @@ COPY --chown=1001:0 $APP_PATH/Gemfile.lock $RAILS_ROOT/Gemfile.lock
 RUN bundle config --global && \
   bundle install --jobs "$(nproc)" --path=vendor/bundle
 
+COPY --chown=1001:0 $APP_PATH/package.json $RAILS_ROOT/package.json
+COPY --chown=1001:0 $APP_PATH/yarn.lock $RAILS_ROOT/yarn.lock
+RUN yarn install
+
 COPY --chown=1001:0 $APP_PATH $RAILS_ROOT
 
 # Set directories as executable for writeability
@@ -75,6 +85,10 @@ COPY --chown=1001:0 $APP_PATH/Gemfile $RAILS_ROOT/Gemfile
 COPY --chown=1001:0 $APP_PATH/Gemfile.lock $RAILS_ROOT/Gemfile.lock
 RUN bundle config --global && \
   bundle install --jobs "$(nproc)" --path=vendor/bundle --without development
+
+COPY --chown=1001:0 $APP_PATH/package.json $RAILS_ROOT/package.json
+COPY --chown=1001:0 $APP_PATH/yarn.lock $RAILS_ROOT/yarn.lock
+RUN yarn install
 
 COPY --chown=1001:0 $APP_PATH $RAILS_ROOT
 
@@ -138,7 +152,6 @@ RUN gem install bundler -v 2.0.2
 FROM morphosource-base as morphosource-dev
 
 COPY --chown=1001:0 --from=morphosource-build-dev $RAILS_ROOT $RAILS_ROOT
-RUN yarn install
 
 ENTRYPOINT ["hyrax-entrypoint.sh"]
 CMD ["bundle", "exec", "puma", "-v", "-b", "tcp://0.0.0.0:3000"]
@@ -151,7 +164,6 @@ CMD ["bundle", "exec", "puma", "-v", "-b", "tcp://0.0.0.0:3000"]
 FROM morphosource-base as morphosource-prod
 
 COPY --chown=1001:0 --from=morphosource-build-prod $RAILS_ROOT $RAILS_ROOT
-RUN yarn install
 
 ENTRYPOINT ["hyrax-entrypoint.sh"]
 CMD ["bundle", "exec", "puma", "-v", "-b", "tcp://0.0.0.0:3000"]
@@ -261,7 +273,6 @@ RUN mkdir -p /app/fiji && \
 FROM morphosource-worker-base as morphosource-worker-dev
 
 COPY --chown=1001:0 --from=morphosource-build-dev $RAILS_ROOT $RAILS_ROOT
-RUN yarn install
 
 ENTRYPOINT ["hyrax-entrypoint.sh"]
 CMD ["bundle", "exec", "resque-pool"]
@@ -274,7 +285,6 @@ CMD ["bundle", "exec", "resque-pool"]
 FROM morphosource-worker-base as morphosource-worker-prod
 
 COPY --chown=1001:0 --from=morphosource-build-prod $RAILS_ROOT $RAILS_ROOT
-RUN yarn install
 
 ENTRYPOINT ["hyrax-entrypoint.sh"]
 CMD ["bundle", "exec", "resque-pool"]

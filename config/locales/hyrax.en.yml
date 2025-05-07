@@ -51,6 +51,9 @@ en:
       collection:
         new: "New Collection"
   hyrax:
+    admin:
+      sidebar:
+        teams: "Teams"
     user_profile:
       tab_administration: User Administration
     media:

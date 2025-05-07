@@ -20,8 +20,8 @@
         <%= render_breadcrumbs builder: Hyrax::BootstrapBreadcrumbsBuilder %>
         <%= render '/flash_msg' %>
         <% if content_for?(:page_header) %>
-          <div class="row no-horizontal-padding">
-            <div class="col-12 main-header">
+          <div class="text-padding">
+            <div class="row main-header">
               <%= yield(:page_header) %>
             </div>
           </div>

@@ -858,7 +858,7 @@ nav#masthead {
   }
 
   [class*="choose-columns"] {
-    button, button * {
+    button, button:hover, button * {
       color: $button-color;
       background-color: #fff !important;
       outline: none;

@@ -113,11 +113,11 @@ module Morphosource
         #end
 
         def is_project?
-          @collection_list_type_id == 2
+          @collection_list_type_id == Morphosource::CollectionTypesService.project_collection_type_id
         end
 
         def is_team?
-          @collection_list_type_id == 1
+          @collection_list_type_id == Morphosource::CollectionTypesService.team_collection_type_id
         end
 
         def organization_docs(organization_title = '')

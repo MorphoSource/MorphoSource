@@ -88,11 +88,11 @@ module Morphosource
       end
 
       def is_project?(collection_type)
-        collection_type.split('/').last == '2'
+        collection_type.split('/').last == Morphosource::CollectionTypesService.project_collection_type_id
       end
 
       def is_team?(collection_type)
-        collection_type.split('/').last == '1'
+        collection_type.split('/').last == Morphosource::CollectionTypesService.team_collection_type_id
       end
 
       private

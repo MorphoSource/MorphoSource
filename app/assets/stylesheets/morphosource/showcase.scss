@@ -1182,7 +1182,26 @@ nav#masthead {
     word-break: break-all;
   }
 
-  .dropdown-menu {
+  .dropdown-menu-right {
+    a.itemicon {
+      display: block;
+      padding: 3px 20px;
+      clear: both;
+      font-weight: 400;
+      line-height: 1.428571429;
+      color: #333333;
+      white-space: nowrap;      
+    }
+    a.itemicon:hover,
+    a.itemicon:focus {
+      color: #262626;
+      text-decoration: none;
+      background-color: #f5f5f5;
+    }
+  }
+
+  .navbar .dropdown-menu {
+    /* styles for the dropdown menu under navbar only */
     background-color: #fff;
     min-width: 82px;
     right: 0;

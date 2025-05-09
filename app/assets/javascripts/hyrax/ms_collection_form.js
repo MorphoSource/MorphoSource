@@ -138,9 +138,10 @@ $(document).ready(function() {
 
   // the following are taken from and overridden for teams and projects
   // https://raw.githubusercontent.com/samvera/hyrax/v2.7.0/app/assets/javascripts/hyrax/collections.js
-  $('.delete-collection-button').on('click', handleDeleteCollection);
+  // note that there is a similar method handleDeleteCollection in https://github.com/MorphoSource/MorphoSource/blob/main/app/assets/javascripts/morphosource/my/collections.js
+  $('.delete-team-or-project-button').on('click', handleDeleteTeamOrProject);
 
-  function handleDeleteCollection(e) {
+  function handleDeleteTeamOrProject(e) {
     e.preventDefault();
     var $self = $(this),
       $tr = $self.parents('tr'),

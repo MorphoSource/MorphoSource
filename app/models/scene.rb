@@ -177,9 +177,9 @@ class Scene < ApplicationRecord
       self.iiif_transforms = [
         {
           type: "RotateTransform",
-          x: Float(rotation[0]),
-          y: Float(rotation[1]),
-          z: Float(rotation[2])
+          x: Float(rotation[0]) * (180.0 / Math::PI),
+          y: Float(rotation[1]) * (180.0 / Math::PI),
+          z: Float(rotation[2]) * (180.0 / Math::PI)
         }
       ]
     else

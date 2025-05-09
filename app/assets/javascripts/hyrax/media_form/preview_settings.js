@@ -3,14 +3,20 @@ document.addEventListener("DOMContentLoaded", function() {
   const alephSceneInput = document.getElementById('media_aleph_scene');
 
   if (mediaEditForm && alephSceneInput) {
+    parsePreviewSettings(alephSceneInput);
+
     // JSON validation for aleph scene input
     alephSceneInput.addEventListener('input', function() {
-      const jsonValid = validateJson(this);
-      if (jsonValid && this.value) {
-        parseRotation(this.value);
-        parseAnnotations(this.value);
-      };
+      parsePreviewSettings(this);
     });
+
+    function parsePreviewSettings(element) {
+      const jsonValid = validateJson(element);
+      if (jsonValid && element.value) {
+        parseRotation(element.value);
+        parseAnnotations(element.value);
+      };
+    }
 
     function validateJson(element) {
       if (element.value) {

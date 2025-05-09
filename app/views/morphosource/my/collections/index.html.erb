@@ -3,23 +3,21 @@
 <% provide :page_title, t("morphosource.dashboard.my.#{@collections_type}.page_title") %>
 
 <% provide :page_header do %>
-  <div class="row no-horizontal-padding row-no-gutters">
-    <div class="col-9 title">
-      <h1>
-        <span class="fa <%= @collections_type == "organizations"? 'fa-landmark' : 'fa-list'  %>" aria-hidden="true"></span> <%= t("morphosource.dashboard.my.#{@collections_type}.page_title") %>
-      </h1>
-    </div>
-    <div class="col-3 no-horizontal-padding show-actions text-right">
-      <% if (@collections_type == "organizations") %>
-        <% if current_user.admin? %>
-          <% # link directly to create collection form with type %>
-          <%= link_to(t("morphosource.dashboard.my.#{@collections_type}.action.new"), new_collection_url(@collections_type), class: 'btn btn-primary') %>
-        <% end %>
-      <% elsif (@collections_type == "media_lists" && current_user.registered?) || can?(:create_any, Collection) %>
+  <div class="col-9 no-horizontal-padding title">
+    <h1>
+      <span class="fa <%= @collections_type == "organizations"? 'fa-landmark' : 'fa-list'  %>" aria-hidden="true"></span> <%= t("morphosource.dashboard.my.#{@collections_type}.page_title") %>
+    </h1>
+  </div>
+  <div class="col-3 no-horizontal-padding show-actions text-right">
+    <% if (@collections_type == "organizations") %>
+      <% if current_user.admin? %>
         <% # link directly to create collection form with type %>
         <%= link_to(t("morphosource.dashboard.my.#{@collections_type}.action.new"), new_collection_url(@collections_type), class: 'btn btn-primary') %>
       <% end %>
-    </div>
+    <% elsif (@collections_type == "media_lists" && current_user.registered?) || can?(:create_any, Collection) %>
+      <% # link directly to create collection form with type %>
+      <%= link_to(t("morphosource.dashboard.my.#{@collections_type}.action.new"), new_collection_url(@collections_type), class: 'btn btn-primary') %>
+    <% end %>
   </div>
 
   <div class="row no-horizontal-padding row-no-gutters">

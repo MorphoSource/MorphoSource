@@ -54,6 +54,7 @@ en:
     admin:
       sidebar:
         teams: "Teams"
+        projects: "Projects"
     user_profile:
       tab_administration: User Administration
     media:

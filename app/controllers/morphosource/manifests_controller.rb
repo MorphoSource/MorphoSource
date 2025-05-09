@@ -22,24 +22,18 @@ module Morphosource
     self.temporary_access_link_class = TemporaryMediaAccessLink
 
      # Show IIIF Presentation API manifest
-    def show(version: 'v3')
+    def show
       if params.include?(:id) && (m = media_from_access_control(params[:id]))
         authorize_media_with_temporary_link m.id
         authorize! :read, m.id
 
-        if params[:version]&.downcase == 'v3'
-          builder = iiif_manifest_builder
-        elsif params[:version]&.downcase == 'v4'
-          builder = iiif_manifest_builder_v4
-        else 
-          raise CanCan::AccessDenied
-        end
+        builder = version == 'v4' ? iiif_manifest_builder_v4 : iiif_manifest_builder
 
         if m.has_remote_manifest?
           json = remote_manifest_builder.manifest_for(m)
         else
           json = builder.manifest_for(
-            presenter: iiif_manifest_presenter(m)
+            presenter: version == 'v4' ? iiif_manifest_presenter_v4(m) : iiif_manifest_presenter(m)
           )
         end
 
@@ -104,10 +98,22 @@ module Morphosource
 
       def iiif_manifest_presenter(work)
         Hyrax::IiifManifestPresenter.new(work).tap do |p|
-          p.hostname = request.base_url
           p.ability = current_ability
           p.access_control_id = params[:id]
+          p.hostname = request.base_url
         end
+      end
+
+      def iiif_manifest_presenter_v4(work)
+        Hyrax::IiifManifestV4Presenter.new(work).tap do |p|
+          p.ability = current_ability
+          p.access_control_id = params[:id]
+          p.hostname = request.base_url
+        end
+      end
+
+      def version
+        params[:version]&.downcase == 'v4' ? 'v4' : 'v3'
       end
   end
 end

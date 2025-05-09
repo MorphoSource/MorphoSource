@@ -5,13 +5,23 @@
       <ul class="nav nav-tabs" role="tablist">
         <li role="presentation" id="tab-media-details" class="active">
           <a href="#media-details" aria-controls="media-details" role="tab" data-toggle="tab" aria-expanded="false">
-            <i class="fa fa-cube"></i> Media Details
+            <i class="fa fa-cube"></i> Details
           </a>
         </li>
 
+        <% if @presenter.media_type&.first == 'Mesh' %>
+          <li role="presentation" id="tab-preview-settings" class="">
+            <a href="#preview-settings" aria-controls="preview-settings" role="tab" data-toggle="tab" aria-expanded="false" style="display: flex; align-items: center; gap: 5px;">
+              <i class="fa fa-tv"></i> 
+              Preview 
+              <span class="label label-warning">BETA</span>
+            </a>
+          </li>
+        <% end %>
+
         <li role="presentation" id="tab-file-upload" class="">
           <a href="#file-upload" aria-controls="file-upload" role="tab" data-toggle="tab" aria-expanded="false">
-            <i class="fa fa-upload"></i> File Upload
+            <i class="fa fa-upload"></i> Upload
           </a>
         </li>
 
@@ -45,16 +55,16 @@
 
         <li role="presentation" id="tab-parent-media" class="">
           <a href="#parent-media" aria-controls="parent-media" role="tab" data-toggle="tab" aria-expanded="false">
-            <i class="fa fa-code-branch"></i> Parent Media
+            <i class="fa fa-code-branch"></i> Parent
           </a>
         </li>
 
         <li role="presentation" id="tab-physical-object-details" class="">
           <a href="#physical-object-details" aria-controls="physical-object-details" role="tab" data-toggle="tab" aria-expanded="false">
             <% if @presenter.physical_object_type == "Biological Specimen" %>
-              <i class="fas fa-frog"></i> Physical Object
+              <i class="fas fa-frog"></i> Object
             <% elsif @presenter.physical_object_type == "Cultural Heritage Object" %>
-              <i class="ms2-icon-bowl icon-bowl"></i> Physical Object
+              <i class="ms2-icon-bowl icon-bowl"></i> Object
             <% end %>
           </a>
         </li>
@@ -123,10 +133,26 @@
           </div>
         </div>
 
+        <% if @presenter.media_type&.first == 'Mesh' %>
+          <div role="tabpanel" class="tab-pane" id="preview-settings">
+            <div class="form-tab-content">
+
+              <%= render 'tab_preview_settings', f: f %>
+
+            </div>
+          </div>
+        <% end %>
+
         <div role="tabpanel" class="tab-pane active" id="media-details">
           <div class="form-tab-content">
 
-            <%= render 'tab_media_details', f: f %>
+            <%# Trial new media details page sans preview (with preview tab) for Meshes %>
+            <%# Decide if this should be the default for all moving forward %>
+            <% if @presenter.media_type&.first == 'Mesh' %>
+              <%= render 'tab_media_details_no_preview', f: f %>
+            <% else %>
+              <%= render 'tab_media_details', f: f %>
+            <% end %>
 
           </div>
         </div>

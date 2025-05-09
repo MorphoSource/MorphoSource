@@ -117,7 +117,7 @@ Rails.application.routes.draw do
   scope module: :morphosource do
     resources :tags, param: :tag, only: [:index, :show]
     get '/attachments/:id', to: 'attachments#show', as: 'attachment'
-    get '/manifests/:id', to: 'manifests#show', as: 'manifest', defaults: { version: 'v3'}
+    get '/manifests/:id', to: 'manifests#show', as: 'manifest', defaults: { version: 'v4'}
     get '/manifests/v3/:id', to: 'manifests#show', as: 'manifest_v3', defaults: { version: 'v3'}
     get '/manifests/v4/:id', to: 'manifests#show', as: 'manifest_v4', defaults: { version: 'v4'}
 

@@ -1,0 +1,17 @@
+<div class="form-group row">
+  <div class="col-xs-6 showcase-label">
+    <label class="control-label string optional " for="media_aleph_scene" data-toggle="collapse" href="#media_aleph_scene">
+      Aleph Scene JSON
+      <span class="glyphicon glyphicon-triangle-bottom media_aleph_scene"></span>
+    </label>
+    <i class="material-icons tooltip-icon" data-original-title="" title="">
+      <p class="hint hide"><%= t('simple_form.hints.defaults.aleph_scene') %></p>
+    </i>
+  </div>
+</div>
+
+<div class="form-group row">
+  <div class="col-xs-12 showcase-value">
+    <%= text_area_tag 'media[aleph_scene]', JSON.pretty_generate(@presenter.aleph_scene), rows: 15, id: 'media_aleph_scene', class: 'form-control string optional collapse collapse-accordion', placeholder: "Paste some JSON here", style: "font-family: monospace;" %>
+  </div>
+</div>

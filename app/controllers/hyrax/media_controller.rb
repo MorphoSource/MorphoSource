@@ -30,6 +30,7 @@ module Hyrax
     before_action :set_fileset_visibility, only: [:create, :update]
     before_action :authorize_media_with_temporary_link, only: [:showcase]
     before_action :set_fund_code, only: [:update]
+    before_action :set_scene_attributes, only: [:update]
     after_action :update_thumbnail, only: [:update]
     after_action :deliver_individual_access_messages, only: [:update]
 
@@ -555,6 +556,45 @@ module Hyrax
           fc = FundCode.find(fc_id)
           media.new_fund_code_association(fc)
         end
+      end
+
+      def set_scene_attributes
+        if (params.dig(:media)&.key?(:aleph_scene) && current_user&.can?(:edit, curation_concern))
+          aleph_scene = params[:media][:aleph_scene]
+          scene = Scene.find_by(media_id: curation_concern.id)
+
+          if aleph_scene.present?
+            if is_json?(aleph_scene)
+              if !scene.present?
+                scene = Scene.new(media_id: curation_concern.id)
+              end
+
+              scene.aleph_scene = aleph_scene
+              scene.valid?
+              if scene.errors.present?
+                flash[:error] = "Encountered error while saving Aleph Scene JSON: #{scene.errors.full_messages.join(', ')}"
+              else
+                scene.save!
+                flash[:info] = "Aleph Scene JSON has been saved"
+              end
+              
+            else
+              # somehow bad JSON was passed in, throw flash error to user
+              flash[:error] = "Invalid Aleph Scene JSON"
+            end
+          elsif scene.present?
+            # scene exists and aleph_scene is blank, delete the scene
+            scene.destroy
+          end
+          # aleph_scene is blank and scene doesn't exist, no-op
+        end
+      end
+
+      def is_json?(json)
+        JSON.parse(json)
+        true
+      rescue JSON::ParserError, TypeError => e
+        false
       end
 
       def validate_individual_access

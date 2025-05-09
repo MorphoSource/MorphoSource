@@ -1,1 +1,0 @@
-(self.webpackChunkUV=self.webpackChunkUV||[]).push([[5772],{5772:(e,r,n)=>{var o={"./uv-ebook-reader_2.entry.js":[250,250]};function t(e){if(!n.o(o,e))return Promise.resolve().then((()=>{var r=new Error("Cannot find module '"+e+"'");throw r.code="MODULE_NOT_FOUND",r}));var r=o[e],t=r[0];return n.e(r[1]).then((()=>n(t)))}t.keys=()=>Object.keys(o),t.id=5772,e.exports=t}}]);

@@ -74,8 +74,8 @@ class Scene < ApplicationRecord
         target = {
           type: "SpecificResource",
           source: [{
-            id: nil, # This will be rewritten with correct scene URI
-            type: "Scene"
+            id: nil, # This will be rewritten with correct painting annotation URI
+            type: "Annotation"
           }]
         }
 
@@ -122,8 +122,8 @@ class Scene < ApplicationRecord
                 target: {
                   type: "SpecificResource",
                   source: [{
-                    id: nil, # This will be rewritten with correct scene URI
-                    type: "Scene"
+                    id: nil, # This will be rewritten with correct painting annotation URI
+                    type: "Annotation"
                   }],
                   selector: [{
                     type: "PointSelector",
@@ -143,10 +143,17 @@ class Scene < ApplicationRecord
             ['x', 'y', 'z'].all? { |v| is_numeric? annotation.dig('cameraTarget', v) }
           )
             scope[:target][:items][0][:body][:lookAt] = {
-              type: "PointSelector",
-              x: Float(annotation['cameraTarget']['x']),
-              y: Float(annotation['cameraTarget']['y']),
-              z: Float(annotation['cameraTarget']['z'])
+              type: "SpecificResource",
+              source: [{
+                id: nil, # This will be rewritten with correct painting annotation URI
+                type: "Annotation"
+              }],
+              selector: [{
+                type: "PointSelector",
+                x: Float(annotation['cameraTarget']['x']),
+                y: Float(annotation['cameraTarget']['y']),
+                z: Float(annotation['cameraTarget']['z'])
+              }]
             }
           end
 

@@ -99,7 +99,7 @@ module Morphosource
             fl: ['id'],
             fq: [
               "#{solrize('has_model', :symbol)}:Collection",
-              "(#{solrize('collection_type_gid', :symbol)}:\"gid://morpho-source-sf/hyrax-collectiontype/#{@collection_list_type_id}\")",
+              "(#{solrize('collection_type_gid', :symbol)}:\"gid://morphosource/Hyrax::CollectionType/#{@collection_list_type_id}\")",
               assemble_or_query('id', collection_ids)
             ],
             "facet.limit": -1
@@ -107,10 +107,6 @@ module Morphosource
           solr.get_facet_fields(nil, facet_fields, params)
           return solr.facet_fields(facet_fields)
         end
-
-        #def is_project?(collection_type)
-        #  collection_type.split('/').last == '2'
-        #end
 
         def is_project?
           @collection_list_type_id == Morphosource::CollectionTypesService.project_collection_type_id

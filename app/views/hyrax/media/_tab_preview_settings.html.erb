@@ -33,6 +33,27 @@
         </div>
         <div id="media_preview_annotations" class="col-xs-6 showcase-value">--</div>
       </div>
+
+      <div class="form-group row mt-2">
+        <div class="col-xs-12 showcase-label">
+          <label class="control-label string optional" data-toggle="collapse" href="#sketchfab-instructions">
+            Annotation import from SketchFab
+            <span class="glyphicon glyphicon-triangle-bottom sketchfab-instructions"></span>
+          </label>
+        </div>
+
+        <div id="sketchfab-instructions" class="col-xs-12 showcase-value collapse collapse-accordion">
+          If you have a model in SketchFab corresponding to this media with annotations you want to import, follow these steps:
+          <ol class="mt-1">
+            <li class="mt-1">Get the URL for the SketchFab model.</li>
+            <li class="mt-1">Use our tool to <a href="https://morphosource.github.io/export-sketchfab-annotations/" target="_blank">Export SketchFab Annotations</a> from your model URL. SketchFab annotations will be automatically converted to MorphoSource annotation format. Input your URL and copy the MorphoSource annotation format JSON to your clipboard using the button provided. Return to this page when you have copied the JSON.</li>
+            <li class="mt-1">Expand the Aleph Scene JSON field below these instructions. </li>
+            <li class="mt-1">In the Aleph Scene JSON field, replace the contents of <span style="font-family: monospace">"annotations"</span> (by default this is <span style="font-family: monospace">[]</span>) with your data. Paste the MorphoSource annotation format JSON you previously copied to clipboard to this location in this field. When you are done, it should read <span style="font-family: monospace">"annotations": [your_annotation_data_here]</span>. Be sure you don't forget the outer square brackets! After pasting your annotation data, the count of annotations above should update to reflect the number of annotations you imported.</li>
+            <li class="mt-1">Save the media record. Your annotations will appear after saving.</li>
+          </ol>
+          <span class="mt-2">This workflow is in beta, you may experience issues. This process works best with models that are centered at the origin, since MorphoSource previews are automatically centered as well.</span>
+        </div>
+      </div>
       
       <div class="mt-2">
         <%= render_edit_field_partial('aleph_scene', f: f) %>

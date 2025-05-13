@@ -1,12 +1,17 @@
 @import 'variables';
 @import 'shared';
 
+.ms-collection .collection-page .hyc-header {
+  margin-bottom: 0;
+}
+
 div.collection-header {
   display: flex;
   width: 100%;
   justify-content: space-between;
   margin-right: 0;
   margin-left: 0;
+  margin-bottom: 8px;
   padding: 4px 0 !important;
 
   .btn-wrapper.col-12 {

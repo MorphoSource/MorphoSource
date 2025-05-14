@@ -593,6 +593,11 @@ input[type=checkbox].disabled {
 
 /* styles for dashboard collection edit page */
 .dashboard.ms-collection-edit {
+
+  .select2-drop {
+    margin-top: -4px;
+  }  
+
   .material-icons.tooltip-icon {
     font-size: 14px;
   }

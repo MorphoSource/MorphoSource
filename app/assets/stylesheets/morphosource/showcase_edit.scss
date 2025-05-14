@@ -462,6 +462,10 @@ input[type=checkbox].disabled {
     }
   }
 
+  .btn.collapse-block-visibility:focus {
+    box-shadow: unset;
+  }
+
   .banner-image img {
     border:1px solid red;
     width:100%;
@@ -715,7 +719,14 @@ input[type=checkbox].disabled {
     position: relative;
     left: 15px;
   }
-
+  
+  button.branding-logo-remove, 
+  button.branding-logo-remove:hover, 
+  button.branding-banner-remove, 
+  button.branding-banner-remove:hover {
+    color: $button-color;
+  }
+  
   .form-add-organization-wrapper {
     > div {
       text-align: center;

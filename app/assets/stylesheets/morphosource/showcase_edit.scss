@@ -89,6 +89,18 @@ input[type=checkbox].disabled {
     font-size: 14px;
   }
 
+  .showcase-value {
+    padding-top: 8px; /* vertically align with the field label */
+  }
+  
+  .form-group.value-blank-check {
+    margin-top: 10px; /* add some space between the field and the checkbox */
+  }
+
+  div.checkbox label > span {
+    font-weight: normal; /* do not set fonts to bold for checkbox labels */
+  }
+  
   h2 {
     text-transform: uppercase;
     font-size: 15px;
@@ -112,6 +124,7 @@ input[type=checkbox].disabled {
   }
 
   .form-group {
+    align-items: flex-start; /* vertically align fields to the top */
     margin-bottom: 0;
   }
 

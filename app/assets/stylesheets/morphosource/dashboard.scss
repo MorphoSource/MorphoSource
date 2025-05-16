@@ -21,6 +21,10 @@ body.dashboard {
     }
   }
 
+  .card.panel-default {
+    border: none; /* remove border for dashboard new page (e.g. new Project) */
+  } 
+
   &.profile .card-body {
     padding: 0;
   }

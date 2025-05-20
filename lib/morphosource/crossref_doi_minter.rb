@@ -85,7 +85,7 @@ module Morphosource
         end
       end
 
-      if params['organization'].blank? || (params['author_first'].blank? && params['author_last'].blank?)
+      if params['organization'].blank? && (params['author_first'].blank? || params['author_last'].blank?)
         raise "CrossrefDoiMinter.generate_metadata_deposit_xml call missing required parameter: organization OR author_first and author_last"
       end
 

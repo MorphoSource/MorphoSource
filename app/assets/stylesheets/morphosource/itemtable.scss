@@ -27,7 +27,24 @@ table.itemtable {
       opacity:  0.3;
     }
 
-    span.fa-sort-by-attributes,span.fa-sort-by-attributes-alt {
+    span.fa-sort:before,
+    span.fa-sort-by-attributes:before,
+    span.fa-sort-by-attributes-alt:before {
+      content: "↑";
+      opacity:  0.3;
+    }
+
+    span.fa-sort:after,
+    span.fa-sort-by-attributes:after,
+    span.fa-sort-by-attributes-alt:after {
+      content: "↓";
+      opacity:  0.3;
+    }
+
+    span.fa-sort-up.fa-sort-by-attributes:after, 
+    span.fa-sort-up.fa-sort-by-attributes-alt:after, 
+    span.fa-sort-down.fa-sort-by-attributes:before,
+    span.fa-sort-down.fa-sort-by-attributes-alt:before {
       opacity:  0.7;
     }
   }

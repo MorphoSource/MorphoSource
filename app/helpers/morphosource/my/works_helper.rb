@@ -77,15 +77,15 @@ module Morphosource
         sort_col, sort_dir = sort_parameters
         if sort_col == param_name && sort_dir.downcase == 'asc'
           link_to request.params.merge(sort: "#{param_name} desc"), class: 'table-sort-header' do
-            (label + ' <span class="glyphicon glyphicon-sort-by-attributes" aria-hidden="true"></span>').html_safe
+            (label + ' <span class="fas fa-sort-down fa-sort-by-attributes" aria-hidden="true"></span>').html_safe
           end
         elsif sort_col == param_name && sort_dir.downcase == 'desc'
           link_to request.params.merge(sort: "#{param_name} asc"), class: 'table-sort-header' do
-            (label + ' <span class="glyphicon glyphicon-sort-by-attributes-alt" aria-hidden="true"></span>').html_safe
+            (label + ' <span class="fas fa-sort-up fa-sort-by-attributes-alt" aria-hidden="true"></span>').html_safe
           end
         else
           link_to request.params.merge(sort: "#{param_name} asc"), class: 'table-sort-header' do
-            (label + ' <span class="glyphicon glyphicon-sort" aria-hidden="true"></span>').html_safe
+            (label + ' <span class="fas fa-sort" aria-hidden="true"></span>').html_safe
           end
         end
       end

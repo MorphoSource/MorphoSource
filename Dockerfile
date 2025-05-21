@@ -92,7 +92,7 @@ RUN yarn install
 
 COPY --chown=1001:0 $APP_PATH $RAILS_ROOT
 
-RUN RAILS_ENV=development bundle exec rake assets:precompile
+RUN NODE_OPTIONS=--openssl-legacy-provider RAILS_ENV=development bundle exec rails assets:precompile
 
 # Set directories as executable for writeability
 RUN chmod -R g+rwX $RAILS_ROOT

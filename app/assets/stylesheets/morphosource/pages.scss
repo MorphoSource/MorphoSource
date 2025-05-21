@@ -1,0 +1,32 @@
+div.page-content {
+  max-width: 800px;
+  width: 100%;
+
+  h1 {
+    font-size: 32px;
+    font-weight: 400;
+  }
+
+  .text-muted {
+    font-size: 14px;
+  }
+
+  
+
+  .trix-wrapper {
+    padding-bottom: 20px;
+    border-bottom: 1px solid lightgray;
+
+    .trix-content {
+      margin-bottom: 15px;
+
+      li {
+        margin-bottom: 1em;
+      }
+    } 
+  }
+}
+
+trix-editor.form-control {
+  height: unset;
+}

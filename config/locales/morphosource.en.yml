@@ -5,6 +5,8 @@ en:
       banner_text_2: 'Data are contributed by museums, researchers, and scholars to share findings, increase impact, and improve access to material critical for scientific discovery and the advancement of human knowledge.'
       featured_collections: 'Featured Collections'
     admin:
+      pages:
+        page_title: 'All Simple Pages'
       background_jobs:
         page_title: All Background Jobs
         page_description: This is a new page listing all tracked background jobs corresponding to Resque jobs. For now, only batch submissions are tracked with this system. You can optionally choose to include Resque data, adding new information and features to this page, but this will slow page loads when many Resque jobs are present or when many rows are viewed per page. You may want to search for your desired subset of background jobs prior to including Resque data.

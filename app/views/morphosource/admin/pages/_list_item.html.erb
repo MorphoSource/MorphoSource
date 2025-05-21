@@ -1,0 +1,13 @@
+<tr id="item_<%= item.id %>">
+  <td data-sort="<%= item.title %>" style="text-align: left;">
+    <%= link_to item.title, item.docs? ? docs_path(item) : page_path(item) %>
+  </td>
+  <td data-sort="<%= item.page_type %>"><%= item.page_type.titleize %></td>
+  <td data-sort="<%= item.visibility %>"><%= item.visibility.titleize %></td>
+  <td data-sort="<%= item.created_at %>"><%= item.created_at.strftime('%b %d, %Y') %></td>
+  <td data-sort="<%= item.updated_at %>"><%= item.updated_at.strftime('%b %d, %Y') %></td>
+  <td>
+    <%= link_to t('.actions.edit'), edit_page_path(item), class: 'btn btn-sm btn-primary' %>
+    <%= link_to t('page.delete.button'), page_path(item), method: :delete, data: { confirm: t('page.delete.confirm') }, class: 'btn btn-sm btn-danger' %>
+  </td>
+</tr>

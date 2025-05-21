@@ -194,6 +194,12 @@ Rails.application.routes.draw do
       post 'data_curation/apply_permission_template', action: :apply_permission_template, controller: :data_curation, as: 'admin_apply_permission_template'
       get 'import_slides', action: :index, controller: :import_slides, as: 'admin_import_slides'
       post 'import_slides', action: :import_slides, controller: :import_slides, as: 'import_slides'
+
+      scope module: :appearance do
+        # banner configuration
+        get 'banner', action: :show, controller: :banners, as: 'admin_banner'
+        patch 'banner', action: :update, controller: :banners, as: 'admin_banner_update'
+      end
     end
 
     ### COLLECTION SHOW (NON-DASHBOARD) ###

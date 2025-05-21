@@ -97,6 +97,14 @@ module MorphosourceHelper
     end
   end
 
+  def sitewide_banner?
+    ActiveModel::Type::Boolean.new.cast(Morphosource::Forms::Admin::Banner.new.sitewide_banner)
+  end
+
+  def sitewide_banner_text
+    Morphosource::Forms::Admin::Banner.new.sitewide_banner_text.body.to_html
+  end
+
   def current_controller
     current_uri = request.env['PATH_INFO']
     # to-do: might need to catch exception here for route not found

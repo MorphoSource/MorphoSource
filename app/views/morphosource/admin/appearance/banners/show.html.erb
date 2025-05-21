@@ -1,0 +1,22 @@
+<% provide :page_header do %>
+  <h1><span class="fa fa-flag" aria-hidden="true"></span> Sitewide Banner </h1>
+<% end %>
+<% provide :page_title, "Banner Configuration" %>
+
+<% content_for :body_css_classes do %>banner-config<% end %>
+
+<%= simple_form_for @form, html: { id: "banner-form" }, url: admin_banner_path do |f| %>
+  <div class="form-group" style="display: flex; flex-direction: row-reverse;">
+
+    <%= f.submit class: 'btn btn-primary', style: "margin-left:10px;"%>
+  </div>
+  <div class="card">
+    <div class="card-body">
+      <%= f.input :sitewide_banner, label: 'Display Sitewide Banner?', collection: [["No", false],["Yes", true]], include_blank: false, required: false %>
+      <%= f.input :sitewide_banner_text, as: :rich_text_area, required: false %>
+    </div>
+  </div>
+
+<% end %>
+
+<h4>Preview Banner</h4>

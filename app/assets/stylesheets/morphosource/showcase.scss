@@ -797,6 +797,10 @@ nav#masthead {
     font-size: 13px; 
   }
 
+  .search-query-form .input-group-btn {
+    min-width: 100px; /* prevent GO button cut off in smaller screen  */
+  }
+
   .main-content {
     background-color: #fff;
   }

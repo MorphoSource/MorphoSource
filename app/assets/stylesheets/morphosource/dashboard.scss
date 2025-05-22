@@ -225,6 +225,10 @@ body.dashboard {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  select {
+    margin-left: 4px;
+    margin-right: 4px;
+  }
 }
 
 .collection-description {

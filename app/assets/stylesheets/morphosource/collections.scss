@@ -242,7 +242,15 @@ div.collection-page {
   }
 }
 
-.ms-collections-list .per-page-container form select {
-  margin-left: 4px;
-  margin-right: 4px;
+.ms-collections-list {
+
+  .per-page-container, .showing-container {
+    
+    font-size: 11px;
+    
+    form select {
+      margin-left: 4px;
+      margin-right: 4px;
+    }
+  }   
 }

@@ -6,6 +6,8 @@
 <% if facets.present? %>
   <div class="list-filters" role="group">
     <span class="list-filters-label"><%= t("hyrax.dashboard.my.facet_label.works") %></span>
-    <%= facets %>
+    <div class='ms-facets'>
+      <%= facets %>
+    </div>
   </div>
 <% end %>

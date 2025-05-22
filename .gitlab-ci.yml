@@ -1,6 +1,7 @@
 variables:
   MIGRATE_DB: "false"
   SKIP_TESTS: "false"
+  SPLIT_TESTS: "true"
 
 stages:
   - build
@@ -45,6 +46,7 @@ test:
   except:
     variables:
       - $SKIP_TESTS == "true"
+      - $SPLIT_TESTS == "true"
   services:
     - name: docker:20.10-dind
   needs:
@@ -58,6 +60,33 @@ test:
     - docker run --name fcrepo --network test-network -v $(pwd)/vendor/docker/fcrepo/fedora.xml:/var/lib/jetty/webapps/fedora.xml -d ghcr.io/samvera/fcrepo4:4.7.5
     - docker run --name redis --network test-network -d redis:5-alpine
     - docker run --name morphosource --network test-network --env-file ./vendor/docker/docker-compose.env -e RAILS_ENV=test -e SOLR_TEST_URL=http://solr:8983/solr/hydra-test -e FCREPO_BASE_PATH=/test -e FIJI_SCRIPT_COMMAND= gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA docker-test.sh
+  tags:
+    - oit-shared
+
+test_controllers:
+  stage: test
+  variables:
+    DOCKER_HOST: tcp://docker:2375/
+    DOCKER_DRIVER: overlay2
+    DOCKER_TLS_CERTDIR: ''
+    RAILS_ENV: test
+  except:
+    variables:
+      - $SKIP_TESTS == "true"
+      - $SPLIT_TESTS == "false"
+  services:
+    - name: docker:20.10-dind
+  needs:
+    - build_worker
+  before_script:
+    - echo "$CONTAINER_REGISTRY_TOKEN_GITLAB" | docker login -u containerwrite --password-stdin gitlab-registry.oit.duke.edu
+  script:
+    - docker network create test-network
+    - docker run --name postgres --network test-network -e POSTGRES_USER=hydra -e POSTGRES_PASSWORD=hydra -e POSTGRES_DB=test -d postgres
+    - docker run --name solr --network test-network -v $(pwd)/solr/conf:/core_config/conf -d solr:7.7.3 sh -c "solr-precreate hydra-test /core_config"
+    - docker run --name fcrepo --network test-network -v $(pwd)/vendor/docker/fcrepo/fedora.xml:/var/lib/jetty/webapps/fedora.xml -d ghcr.io/samvera/fcrepo4:4.7.5
+    - docker run --name redis --network test-network -d redis:5-alpine
+    - docker run --name morphosource --network test-network --env-file ./vendor/docker/docker-compose.env -e RAILS_ENV=test -e SOLR_TEST_URL=http://solr:8983/solr/hydra-test -e FCREPO_BASE_PATH=/test -e FIJI_SCRIPT_COMMAND= -e TEST_GROUP=1 gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA docker-test.sh
   tags:
     - oit-shared
 

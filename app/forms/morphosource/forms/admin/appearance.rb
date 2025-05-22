@@ -21,7 +21,6 @@ module Morphosource
           @attributes = attributes
         end
 
-        # This allows this object to route to the correct
         def self.model_name
           ActiveModel::Name.new(self, Morphosource, "Morphosource::Admin::#{self.name.demodulize}")
         end

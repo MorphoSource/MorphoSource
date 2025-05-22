@@ -7,7 +7,6 @@ module Morphosource
         def show
           add_breadcrumbs
           @form = form_class.new
-          # @form.sitewide_banner_text = banner_text
         end
 
         def update

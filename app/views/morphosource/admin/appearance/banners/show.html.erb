@@ -7,7 +7,6 @@
 
 <%= simple_form_for @form, html: { id: "banner-form" }, url: admin_banner_path do |f| %>
   <div class="form-group" style="display: flex; flex-direction: row-reverse;">
-
     <%= f.submit class: 'btn btn-primary', style: "margin-left:10px;"%>
   </div>
   <div class="card">
@@ -20,3 +19,4 @@
 <% end %>
 
 <h4>Preview Banner</h4>
+<%= render 'sitewide_banner_contents' %>

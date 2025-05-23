@@ -199,6 +199,13 @@ Rails.application.routes.draw do
         # banner configuration
         get 'banner', action: :show, controller: :banners, as: 'admin_banner'
         patch 'banner', action: :update, controller: :banners, as: 'admin_banner_update'
+
+        # modal configuration
+        get 'modal', action: :show, controller: :modals, as: 'admin_modal'
+        patch 'modal', action: :update, controller: :modals, as: 'admin_modal_update'
+        post 'modal/snooze_hour', action: :snooze_hour, controller: :modals, as: 'admin_modal_snooze_hour'
+        post 'modal/snooze_day', action: :snooze_day, controller: :modals, as: 'admin_modal_snooze_day'
+        post 'modal/snooze_week', action: :snooze_week, controller: :modals, as: 'admin_modal_snooze_week'
       end
     end
 
@@ -702,10 +709,10 @@ Rails.application.routes.draw do
   get '/docs/survey', to: 'docs#survey', as: 'survey_docs'
 
   ### PAGES ###
-  
+
   resources :pages, param: :slug, only: [ :new, :create, :show, :edit, :update, :destroy ]
   get '/docs/:slug', to: 'pages#show', as: 'docs', defaults: { page_type: 'docs' }
-  
+
   # special routes for vanity URLs, /terms overrides Hyrax::PagesController
   get '/about', to: 'pages#show', as: 'about', defaults: { slug: 'about-morphosource' }
   get '/mission', to: 'pages#show', as: 'mission', defaults: { slug: 'our-mission' }

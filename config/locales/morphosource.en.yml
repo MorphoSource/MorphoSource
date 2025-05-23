@@ -4,6 +4,7 @@ en:
       banner_text_1: 'Find, view, and download 3D data representing the world''s natural history, cultural heritage, and scientific collections.'
       banner_text_2: 'Data are contributed by museums, researchers, and scholars to share findings, increase impact, and improve access to material critical for scientific discovery and the advancement of human knowledge.'
       featured_collections: 'Featured Collections'
+      donate_button_text: 'Donate'
     admin:
       pages:
         page_title: 'All Simple Pages'

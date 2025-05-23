@@ -1,18 +1,7 @@
 module Morphosource
   module Admin
     module Appearance
-      class BannersController < ApplicationController
-        include Morphosource::Admin::AdminBehavior
-
-        def show
-          add_breadcrumbs
-          @form = form_class.new
-        end
-
-        def update
-          form_class.new(update_params).update!
-          redirect_to({ action: :show }, notice: "Sitewide banner updated successfully.")
-        end
+      class BannersController < Morphosource::Admin::AppearanceController
 
         private
 
@@ -29,9 +18,7 @@ module Morphosource
         end
 
         def add_breadcrumbs
-          add_breadcrumb t(:'hyrax.controls.home'), root_path
-          add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
-          add_breadcrumb t(:'hyrax.admin.sidebar.configuration'), '#'
+          super
           add_breadcrumb "Banner", request.path
         end
       end

@@ -49,6 +49,11 @@ module Morphosource
         def update_block(name, value)
           ContentBlock.find_or_create_by(name: name).update!(value: value)
         end
+
+        def rich_text_for(name, default_value)
+          body = block_for(name, default_value)
+          ActionText::RichText.new(record_id: name.to_s, record_type: 'Appearance', body: body)
+        end
       end
     end
   end

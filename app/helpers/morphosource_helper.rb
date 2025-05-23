@@ -86,7 +86,6 @@ module MorphosourceHelper
         ""
       end
     end
-
   end
 
   def solr_doc_find(id)
@@ -102,7 +101,31 @@ module MorphosourceHelper
   end
 
   def sitewide_banner_text
-    Morphosource::Forms::Admin::Banner.new.sitewide_banner_text.body.to_html
+    Morphosource::Forms::Admin::Banner.new.sitewide_banner_text&.body&.to_html
+  end
+
+  # returns true if the sitewide modal should be shown
+  # first check that the user has not temporarily opted out of seeing the modal
+  # then check how often the modal should be shown
+  # rand creates a random number between 0 and 1
+  # if the random number is less than the frequency, show the modal
+  def sitewide_modal?
+    modal_form = Morphosource::Forms::Admin::Modal.new
+    return false if cookies[:hide_donation_modal]
+
+    rand < modal_form.sitewide_modal_frequency.to_f
+  end
+
+  def sitewide_modal_text
+    Morphosource::Forms::Admin::Modal.new.sitewide_modal_body&.body&.to_html
+  end
+
+  def guilt_trip_text
+    Morphosource::Forms::Admin::Modal.new.guilt_trip_body&.body&.to_html
+  end
+
+  def donate_link
+    "https://www.gifts.duke.edu/?designation=391001239"
   end
 
   def current_controller

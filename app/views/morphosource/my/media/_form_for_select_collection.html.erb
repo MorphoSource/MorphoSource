@@ -11,8 +11,8 @@ end
   <div class="modal-dialog text-left">
       <div class="modal-content">
         <div class="modal-header">
+          <h1><%= t("hyrax.collection.select_form.title") %></h1>
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <span class="modal-title" id="col_add_title"><%= t("hyrax.collection.select_form.title") %></span>
         </div>
         <div class="modal-body">
           <% if no_collections_can_be_added %>
@@ -42,7 +42,7 @@ end
             </div><!-- collection-list -->
           <% end %> <!-- else -->
         </div>
-        <div class="modal-footer-center">
+        <div class="modal-footer">
           <% unless no_collections_can_be_added %>
             <%= render 'hyrax/dashboard/collections/button_for_update_collection', label: t("hyrax.collection.select_form.update"), collection_id: 'collection_replace_id' %>
           <% end %>

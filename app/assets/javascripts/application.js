@@ -20,6 +20,8 @@
 // Important: the order of loadng dataTables js matters
 //= require jquery.dataTables
 //= require dataTables.bootstrap4
+//= require third_party/dataTables.responsive
+//= require third_party/responsive.bootstrap4
 //= require blacklight/blacklight
 //= require blacklight_gallery
 

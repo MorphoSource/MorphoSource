@@ -1,11 +1,11 @@
-<div class="row tab-action-buttons">
+<div class="tab-action-buttons mt-1">
   <% if current_user.admin? && @collection.organization %>
-  <div class="float-right ml-1">
+  <div class="d-inline-block">
     <%= render 'morphosource/dashboard/collections/teams/organization/unlink_organization'%>
   </div>
   <% end %>
 
-  <div class="float-right">
+  <div class="d-inline-block">
   <% org_form = Hyrax::OrganizationForm.new(@organization, @current_ability, controller) %>
   <%= simple_form_for org_form,
     wrapper: :showcase_default,
@@ -19,29 +19,30 @@
   </div>
 </div>
 
-<!-- left column -->
-<div class="col-sm-6">
-  <h2 style="margin-top: 0px;">ORGANIZATION PERMISSION DEFAULTS</h2>
-  <%= render 'morphosource/dashboard/collections/permissions/organization_permission_defaults', f: f %>
-  <%= render 'morphosource/dashboard/collections/permissions/organization_permission_admin_settings', f: f %>
-</div>
+<div class="row">
+  <!-- left column -->
+  <div class="col-sm-6">
+    <h2 style="margin-top: 0px;">ORGANIZATION PERMISSION DEFAULTS</h2>
+    <%= render 'morphosource/dashboard/collections/permissions/organization_permission_defaults', f: f %>
+    <%= render 'morphosource/dashboard/collections/permissions/organization_permission_admin_settings', f: f %>
+  </div>
 
-<!-- right column -->
-<div class="col-sm-6" style="padding-left:25px;">
-  <% if @collection.team? %>
-    <%= render 'morphosource/dashboard/collections/teams/organization/organization_details', f: f %>
-    <% if current_user.admin? %>
-      <%= render 'morphosource/dashboard/collections/permissions/admin_form', f: f %>
+  <!-- right column -->
+  <div class="col-sm-6" style="padding-left:25px;">
+    <% if @collection.team? %>
+      <%= render 'morphosource/dashboard/collections/teams/organization/organization_details', f: f %>
+      <% if current_user.admin? %>
+        <%= render 'morphosource/dashboard/collections/permissions/admin_form', f: f %>
+      <% end %>
     <% end %>
-  <% end %>
-  <% end #form %>
-  <% if current_user.admin? %>
-    <div class="form-group row">
-      <div class="block-fill block-padding">
-        <h2 class="mt-0">Remote File Submission Settings</h2>
-        <%= render 'morphosource/dashboard/collections/permissions/remote_file_permissions' %>
+    <% end #form %>
+    <% if current_user.admin? %>
+      <div class="form-group">
+        <div class="block-fill block-padding">
+          <h2 class="mt-0">Remote File Submission Settings</h2>
+          <%= render 'morphosource/dashboard/collections/permissions/remote_file_permissions' %>
+        </div>
       </div>
-    </div>
-  <% end %>
-
-</div><!-- /right column -->
+    <% end %>
+  </div><!-- /right column -->
+</div>

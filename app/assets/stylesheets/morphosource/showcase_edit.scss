@@ -89,6 +89,18 @@ input[type=checkbox].disabled {
     font-size: 14px;
   }
 
+  .showcase-value {
+    padding-top: 8px; /* vertically align with the field label */
+  }
+  
+  .form-group.value-blank-check {
+    margin-top: 10px; /* add some space between the field and the checkbox */
+  }
+
+  div.checkbox label > span {
+    font-weight: normal; /* do not set fonts to bold for checkbox labels */
+  }
+  
   h2 {
     text-transform: uppercase;
     font-size: 15px;
@@ -112,6 +124,7 @@ input[type=checkbox].disabled {
   }
 
   .form-group {
+    align-items: flex-start; /* vertically align fields to the top */
     margin-bottom: 0;
   }
 
@@ -299,7 +312,6 @@ input[type=checkbox].disabled {
 
   .panel-borders.tabs {
     margin-top: 0 !important;
-    padding-top: 44px !important;
   }
 
   .panel-full-width .card {
@@ -463,6 +475,10 @@ input[type=checkbox].disabled {
     }
   }
 
+  .btn.collapse-block-visibility:focus {
+    box-shadow: unset;
+  }
+
   .banner-image img {
     border:1px solid red;
     width:100%;
@@ -590,6 +606,11 @@ input[type=checkbox].disabled {
 
 /* styles for dashboard collection edit page */
 .dashboard.ms-collection-edit {
+
+  .select2-drop {
+    margin-top: -4px;
+  }  
+
   .material-icons.tooltip-icon {
     font-size: 14px;
   }
@@ -716,7 +737,14 @@ input[type=checkbox].disabled {
     position: relative;
     left: 15px;
   }
-
+  
+  button.branding-logo-remove, 
+  button.branding-logo-remove:hover, 
+  button.branding-banner-remove, 
+  button.branding-banner-remove:hover {
+    color: $button-color;
+  }
+  
   .form-add-organization-wrapper {
     > div {
       text-align: center;

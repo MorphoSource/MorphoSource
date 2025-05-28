@@ -21,6 +21,10 @@ body.dashboard {
     }
   }
 
+  .card.panel-default {
+    border: none; /* remove border for dashboard new page (e.g. new Project) */
+  } 
+
   &.profile .card-body {
     padding: 0;
   }
@@ -62,10 +66,6 @@ body.dashboard {
 
   .card.contributor_petitions {
     width: fit-content;
-  }
-
-  .card#collection-edit-controls {
-    padding:20px;
   }
 
   .card-footer {

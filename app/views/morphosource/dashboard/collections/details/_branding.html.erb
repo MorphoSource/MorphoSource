@@ -16,7 +16,7 @@ https://github.com/samvera/hyrax/blob/v2.7.0/app/views/hyrax/dashboard/collectio
       <div class="col-4">
         <!-- The fileinput-button span is used to style the file input field as button -->
         <span class="btn btn-success fileinput-button">
-          <span class="glyphicon glyphicon-plus"></span>
+          <span class="fas fa-plus"></span>
           <span>Choose File</span>
           <input type="file" name="files[]" single />
         </span>
@@ -34,7 +34,7 @@ https://github.com/samvera/hyrax/blob/v2.7.0/app/views/hyrax/dashboard/collectio
     </div> <!-- end row fileupload-buttonbar -->
 
     <div class="row branding-logo-list">
-      <div class="col-12">
+      <div class="col-11">
 
           <% i = 0 %>
           <% f.object.logo_info.each_with_index do |linfo, i| %>
@@ -52,14 +52,14 @@ https://github.com/samvera/hyrax/blob/v2.7.0/app/views/hyrax/dashboard/collectio
                   <span class="col-8"><input id="linkurl_<%= i %>" class="branding-logo-input" type="text" name="linkurl[]" value="<%= linfo[:linkurl] %>" /></span>
                 </label>
                 <label for="alttext_<%= i %>">
-                  <span class="col-3">Alt Text:</span>
-                  <span class="col-9"><input id="alttext_<%= i %>" class="branding-logo-input" type="text" name="alttext[]" value="<%= linfo[:alttext] %>" /></span>
+                  <span class="col-4">Alt Text:</span>
+                  <span class="col-8"><input id="alttext_<%= i %>" class="branding-logo-input" type="text" name="alttext[]" value="<%= linfo[:alttext] %>" /></span>
                 </label>
               </div>
 
               <div class="col-sm-1">
                 <button class="btn delete branding-logo-remove" data-type="DELETE" data-url="/" onclick='$("#logorow_<%= i %>").remove();enableUpload("fileuploadlogo");'>
-                  <span class="fa fa-times-circle"></span>
+                  <span class="fas fa-times-circle"></span>
                   <span class="controls-remove-text">Remove</span>
                    <span class="sr-only">
                     previous
@@ -73,7 +73,7 @@ https://github.com/samvera/hyrax/blob/v2.7.0/app/views/hyrax/dashboard/collectio
 
         <!-- The global file processing state -->
         <span class="fileupload-process"></span>
-      </div> <!-- end col-12 -->
+      </div> <!-- end col-11 -->
     </div> <!-- end row branding-logo-list -->
   </div> <!-- end fileuploadlogo -->
 
@@ -92,7 +92,7 @@ https://github.com/samvera/hyrax/blob/v2.7.0/app/views/hyrax/dashboard/collectio
       <div class="col-4">
         <!-- The fileinput-button span is used to style the file input field as button -->
         <span class="btn btn-success fileinput-button">
-          <span class="glyphicon glyphicon-plus"></span>
+          <span class="fas fa-plus"></span>
           <span>Choose File</span>
           <input type="file" name="files[]" single />
         </span>
@@ -110,21 +110,21 @@ https://github.com/samvera/hyrax/blob/v2.7.0/app/views/hyrax/dashboard/collectio
     </div> <!-- end row fileupload-buttonbar -->
 
     <div class="row branding-banner-list">
-      <div class="col-12">
+      <div class="col-11">
 
         <% if f.object.banner_info[:file] %>
           <div id="banner">
             <div class="row branding-banner-row">
-              <div class="col-sm-5">
+              <div class="col-sm-11">
                 <span class="name break-all">
                   <span><%= f.object.banner_info[:file] %></span>
                   <input type="hidden" name="banner_unchanged" value="true" />
                 </span>
               </div>
 
-              <div class="col-sm-7">
+              <div class="col-sm-1">
                 <button class="btn delete branding-banner-remove" data-type="DELETE" data-url="/" onclick='$("#banner").remove(); enableUpload("fileuploadbanner")';>
-                  <span class="fa fa-times-circle"></span>
+                  <span class="fas fa-times-circle"></span>
                   <span class="controls-remove-text">Remove</span>
                   <span class="sr-only">
                     previous

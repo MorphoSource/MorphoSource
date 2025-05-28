@@ -3,6 +3,7 @@ module Morphosource
   module Users
     class EditMediaSearchBuilder < Hyrax::WorksSearchBuilder
       include Hyrax::My::SearchBuilderBehavior
+      include Morphosource::SearchBuilderBehavior
       # enable f.field facet format
       include Morphosource::Facets::SearchBuilderFacetParamsBehavior
 

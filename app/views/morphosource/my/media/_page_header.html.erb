@@ -1,5 +1,5 @@
 <% provide :page_header do %>
-  <div class="col-12 title d-flex justify-content-between flex-wrap">
+  <div class="col-12 title d-flex justify-content-between flex-wrap no-horizontal-padding">
     <h1><span class="fa fa-cube %>" aria-hidden="true"></span> <%= @page_title || t("morphosource.dashboard.my.media_objects.title") %></h1>
     <div class="show-actions float-right">
     <% if can?(:create, Media) %>
@@ -7,7 +7,7 @@
     <% end %>
   </div>
   </div>
-  <div class="row collection-count">
+  <div class="row collection-count no-horizontal-padding">
       <%= render 'membership_count' %>
   </div>
 <% end %>

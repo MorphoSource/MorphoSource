@@ -10,7 +10,7 @@ body.dashboard {
       margin-left: 0;
       margin-right: 0;
 
-      &.panel-default {
+      &.panel-default:not(.panel-borders) {
         border: none;
       }
 
@@ -21,7 +21,7 @@ body.dashboard {
     }
   }
 
-  .card.panel-default {
+  .card.panel-default:not(.panel-borders) {
     border: none; /* remove border for dashboard new page (e.g. new Project) */
   } 
 

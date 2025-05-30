@@ -308,9 +308,11 @@ input[type=checkbox].disabled {
   }
 
   .card {
-    border: none;
     margin-left: -15px;
     margin-right: -15px;
+  }
+  .card:not(.panel-borders) {
+    border: none;
   }
 
   // Hyrax .dashboard .card has borders, showcase-edit overwrites this, this allows to put back in
@@ -334,7 +336,6 @@ input[type=checkbox].disabled {
   }
 
   .nav-tabs {
-    background-color: #efefef;
     padding-top: 20px;
     .active {
       .fa, .fas, [class^="ms2-icon-"] {

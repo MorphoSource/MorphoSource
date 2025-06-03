@@ -5,6 +5,10 @@
   margin-bottom: 0;
 }
 
+.ms-collection .collection-manage-buttons .dropdown-menu.show {
+  transform: none !important;
+}
+
 div.collection-header {
   display: flex;
   width: 100%;

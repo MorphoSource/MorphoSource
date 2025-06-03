@@ -232,3 +232,17 @@
     width: 425px;
   }
 }
+
+.ms-facets {
+  .facet-label {
+    display: table-cell;
+    width: 1%; 
+    white-space: nowrap;
+    box-sizing: border-box;
+  }
+  .facet-count {
+    display: table-cell;
+    padding-left: 20px;
+    text-align: right;
+  }
+}

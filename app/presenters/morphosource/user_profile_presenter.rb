@@ -7,6 +7,7 @@ module Morphosource
 
     # returns the number of collections managed by @user viewable by @current_user
     def managed_collection_count
+      byebug
       search_builder = Morphosource::Users::ManagedCollectionsSearchBuilder.new(self)
       repository.search(search_builder.query).response["numFound"]
     end

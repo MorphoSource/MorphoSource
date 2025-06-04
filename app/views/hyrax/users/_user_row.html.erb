@@ -3,14 +3,15 @@
         <%= image_tag(user.avatar.url(:thumb), width: 30) if user.avatar.file %>
       <% end %>
   </td>
-   <td><%= link_to user.name, hyrax.user_path(user) %></td>
-   <td><%= link_to user.id, hyrax.user_path(user) %></td>
-   <td><%= link_to user.user_key, hyrax.user_path(user) %></td>
+   <td><%= link_to (user.first_name || ''), hyrax.user_path(user) %></td>
+   <td><%= link_to (user.last_name || ''), hyrax.user_path(user) %></td>
+   <td><%= user.id %></td>
+   <td><%= user.user_key %></td>
    <td><%= link_to user.email, "mailto:#{user.email}" if user.email.present? %></td>
    <td><%= user.academic_institution_or_school %></td>
    <td><%= user.department %></td>
    <td><%= user.created_at.to_date %></td>
-   <td><%= presenter.managed_collection_count %></td>
-   <td><%= presenter.deposited_media_count %></td>
-   <td><%= presenter.managed_media_count %></td>
+   <td><%= link_to presenter.managed_collection_count, main_app.managed_collections_search_path(user) %></td>
+   <td><%= link_to presenter.deposited_media_count, main_app.media_search_path({"f"=>{"depositor_ssim"=>["#{user.ms_id}"]}}) %></td>
+   <td><%= link_to presenter.managed_media_count, main_app.media_search_path({"f"=>{"user_with_ownership_ssi"=>["#{user.ms_id}"]}}) %></td>
 </tr>

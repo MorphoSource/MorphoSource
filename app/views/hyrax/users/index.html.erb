@@ -6,11 +6,12 @@
     <thead>
         <tr>
             <th>Avatar</th>
-            <th class="sorts"><i id="name" class="<%= params[:sort].blank? ? 'caret up' : params[:sort] == "name desc" ? 'caret' : params[:sort] == "name" ? 'caret up' : '' %>"></i> User Name</th>
-            <th>ID</th>
+            <th class="sorts"><i id="first_name" class="<%= params[:sort].blank? ? 'caret up' : params[:sort] == "first_name desc" ? 'caret' : params[:sort] == "first_name" ? 'caret up' : '' %>"></i>First Name</th>
+            <th class="sorts"><i id="last_name" class="<%= params[:sort].blank? ? 'caret up' : params[:sort] == "last_name desc" ? 'caret' : params[:sort] == "last_name" ? 'caret up' : '' %>"></i>Last Name</th>
+            <th class="sorts"><i id="id" class="<%= params[:sort] == "id desc" ? 'caret' : params[:sort] == "id" ? 'caret up' : '' %>"></i>ID</th>
             <th class="sorts"><i id="login" class="<%= params[:sort] == "login desc" ? 'caret' : params[:sort] == "login" ? 'caret up' : '' %>"></i>MS_ID</th>
-            <th>Email</th>
-            <th>Institution</th>
+            <th class="sorts"><i id="email" class="<%= params[:sort].blank? ? 'caret up' : params[:sort] == "email desc" ? 'caret' : params[:sort] == "email" ? 'caret up' : '' %>"></i>Email</th>
+            <th class="sorts"><i id="academic_institution_or_school" class="<%= params[:sort].blank? ? 'caret up' : params[:sort] == "academic_institution_or_school desc" ? 'caret' : params[:sort] == "academic_institution_or_school" ? 'caret up' : '' %>"></i>Institution</th>
             <th class="sorts"><i id="department" class="<%= params[:sort] == "department desc" ? 'caret' : params[:sort] == "department" ? 'caret up' : '' %>"></i> Department</th>
             <th class="sorts"><i id="created_at" class="<%= params[:sort] == "created_at desc" ? 'caret' : params[:sort] == "created_at" ? 'caret up' : '' %>"></i> Account Created</th>
             <th>Collections Managed</th>

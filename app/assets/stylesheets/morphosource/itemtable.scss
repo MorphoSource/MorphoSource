@@ -32,7 +32,6 @@ table.itemtable {
     span.fa-sort-by-attributes-alt:before {
       content: "↑";
       opacity:  0.3;
-      letter-spacing: -2px; 
     }
 
     span.fa-sort:after,
@@ -40,7 +39,6 @@ table.itemtable {
     span.fa-sort-by-attributes-alt:after {
       content: "↓";
       opacity:  0.3;
-      letter-spacing: -2px; 
     }
 
     span.fa-sort-up.fa-sort-by-attributes:after, 
@@ -48,7 +46,6 @@ table.itemtable {
     span.fa-sort-down.fa-sort-by-attributes:before,
     span.fa-sort-down.fa-sort-by-attributes-alt:before {
       opacity:  0.7;
-      letter-spacing: -2px; 
     }
   }
 

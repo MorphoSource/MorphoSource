@@ -7,16 +7,24 @@
         <tr>
             <th>Avatar</th>
             <th class="sorts"><i id="name" class="<%= params[:sort].blank? ? 'caret up' : params[:sort] == "name desc" ? 'caret' : params[:sort] == "name" ? 'caret up' : '' %>"></i> User Name</th>
-            <th class="sorts"><i id="login" class="<%= params[:sort] == "login desc" ? 'caret' : params[:sort] == "login" ? 'caret up' : '' %>"></i> User Id</th>
+            <th>ID</th>
+            <th class="sorts"><i id="login" class="<%= params[:sort] == "login desc" ? 'caret' : params[:sort] == "login" ? 'caret up' : '' %>"></i>MS_ID</th>
+            <th>Email</th>
+            <th>Institution</th>
             <th class="sorts"><i id="department" class="<%= params[:sort] == "department desc" ? 'caret' : params[:sort] == "department" ? 'caret up' : '' %>"></i> Department</th>
             <th class="sorts"><i id="created_at" class="<%= params[:sort] == "created_at desc" ? 'caret' : params[:sort] == "created_at" ? 'caret up' : '' %>"></i> Account Created</th>
-            <th>Works Created</th>
+            <th>Collections Managed</th>
+            <th>Works Deposited</th>
+            <th>Works Managed</th>
         </tr>
     </thead>
     <tbody>
-    <%= render partial: 'user_row', collection: @users, as: :user %>
+    <% @users.each do |user| %>
+      <% presenter = Morphosource::UserProfilePresenter.new(user, current_ability) %>
+      <%= render 'user_row', user: user, presenter: presenter %>
+    <% end %>
     </tbody>
 </table>
-<div class="pager">
+<div class="pagination justify-content-center">
   <%= paginate @users, theme: 'blacklight', route_set: hyrax %>
 </div>

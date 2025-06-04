@@ -4,8 +4,13 @@
       <% end %>
   </td>
    <td><%= link_to user.name, hyrax.user_path(user) %></td>
+   <td><%= link_to user.id, hyrax.user_path(user) %></td>
    <td><%= link_to user.user_key, hyrax.user_path(user) %></td>
+   <td><%= link_to user.email, "mailto:#{user.email}" if user.email.present? %></td>
+   <td><%= user.academic_institution_or_school %></td>
    <td><%= user.department %></td>
-   <td><%= user.created_at %></td>
-   <td><%= number_of_works(user) %></td>
+   <td><%= user.created_at.to_date %></td>
+   <td><%= presenter.managed_collection_count %></td>
+   <td><%= presenter.deposited_media_count %></td>
+   <td><%= presenter.managed_media_count %></td>
 </tr>

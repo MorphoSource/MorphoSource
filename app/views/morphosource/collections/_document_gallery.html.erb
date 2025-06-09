@@ -1,9 +1,5 @@
-<%# Taken from https://github.com/projectblacklight/blacklight-gallery/blob/v4.6.1/app/views/catalog/_document_gallery.html.erb %>
-
-<% view_config = local_assigns[:view_config] || blacklight_config&.view_config(document_index_view_type) %>
 <div class="container mt-4">
-  <div id="documents" class="<%= (Array(view_config.classes || 'row-cols-1 row-cols-sm-3 row-cols-md-4') + ["row documents-#{view_config.key}"]).join(' ') %>">
-    <% document_presenters = Blacklight::VERSION > '8' ? documents.map { |doc| document_presenter(doc) } : documents %>
-    <%= render view_config.document_component.with_collection(document_presenters, counter_offset: @response&.start || 0) %>
+  <div id="documents" class="row-cols-1 row-cols-sm-3 row-cols-md-5 row documents-gallery">
+    <%= render partial: 'document_gallery_item', collection: @document_list, as: :document %>
   </div>
 </div>

@@ -482,7 +482,7 @@ nav#masthead {
     }
     dd {
       text-align: center;
-      height: 18px;
+      line-height: 1.4;
     }
   }
 
@@ -1530,5 +1530,23 @@ nav#masthead {
   .form-horizontal .col-form-label {
     padding-top: 0;
     text-align: left;
+  }
+}
+
+.documents-gallery {
+  .document {
+      margin-top: 15px;
+      padding: 6px 6px 0 6px;
+      max-height: 350px;
+  } 
+  .thumbnail {
+    padding: 4px;
+    margin-bottom: 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: border 0.2s ease-in-out;
+    height: 100%;
+    max-width: 200px;
   }
 }

@@ -43,7 +43,7 @@ Rails.application.configure do
   config.action_mailer.delivery_method = :smtp
   config.action_mailer.smtp_settings = {
     address: 'smtp.duke.edu',
-    port: '587',
+    port: '25',
     enable_starttls_auto: true
   }
   # pull the host from env variable later (see http://samvera.github.io/email_notifications.html)

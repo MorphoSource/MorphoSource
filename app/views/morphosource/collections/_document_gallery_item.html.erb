@@ -1,19 +1,17 @@
   <div class="document media">
     <div class="thumbnail text-center">
-      <div class="media text-center flex-wrap justify-content-center">
+      <div class="media text-center d-inline-block justify-content-center">
         <span class='gallery-badge'><%= render_publication_status_badge(document) %></span>
-        <div class="media">
-          <%= link_to [main_app, document], target: :_blank, class: "media-left" do %>
-            <%= render_thumbnail_tag document, { class: "file_listing_thumbnail" }, { suppress_link: true } %>
-          <% end %>
-        </div>
+        <%= link_to [main_app, document], target: :_blank, class: "d-block" do %>
+          <%= render_thumbnail_tag document, { class: "file_listing_thumbnail" }, { suppress_link: true } %>
+        <% end %>
       </div>
       <div class="caption text-center">
         <dl class="document-metadata dl-horizontal dl-invert">
           <dd>
-<a target="_blank" href="/concern/media/000748890?locale=en">
+            <%= link_to [main_app, document], target: :_blank do %>
               <div><%= document.id %></div>
-  </a>
+            <% end %>
           </dd>
           <dd class="text-truncate"><%= document.part&.first %></dd>
           <dd class="text-truncate-lines two-lines"><%= document["physical_object_title_ssim"]&.first %></dd>

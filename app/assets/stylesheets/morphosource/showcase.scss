@@ -1533,11 +1533,11 @@ nav#masthead {
   }
 }
 
-.documents-gallery {
+#documents.gallery {
   .document {
-      margin-top: 15px;
-      padding: 6px 6px 0 6px;
-      max-height: 350px;
+    margin-top: 15px;
+    padding: 6px 6px 0 6px;
+    max-height: 350px;
   } 
   .thumbnail {
     padding: 4px;
@@ -1548,5 +1548,8 @@ nav#masthead {
     transition: border 0.2s ease-in-out;
     height: 100%;
     max-width: 200px;
+    .caption {
+      margin-top: 10px;
+    }
   }
 }

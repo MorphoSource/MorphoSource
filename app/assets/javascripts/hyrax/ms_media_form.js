@@ -263,6 +263,7 @@ $( document ).ready(function() {
       var relatedFormId = $(this).attr('id');
       console.log('submitting '+ relatedFormId );
       var postData = new FormData($(this)[0]);
+      var self = this;
       $.ajax({
         type: "POST",
         url: $(this).attr('action'),
@@ -272,28 +273,30 @@ $( document ).ready(function() {
         dataType: "json",
         success: function(data){
           console.log("submitted work ID: " + data.id );
+          // Only after AJAX completes, update flags and call callback
+          // Otherwise NS_BINDING_ABORTED error in Firefox as network request is canceled 
+          if (relatedFormId.indexOf('imaging_event') > 0) {
+            IsImagingEventOK = true;
+          } else if (relatedFormId.indexOf('processing_event') > 0) {
+            IsProcessingEventOK = true;
+          }
+          if (callback) callback();
         }
       }).fail(function(data) {
         console.log("getting a fail status ", data );
-        var errors = data.responseJSON.errors;
         var msg = "";
-        if (errors !== undefined) {
-          $.map(errors, function( errorsArray, field ) {
-            $.map(errorsArray, function( errorMsg ) {
-              msg += errorMsg + '\n';
+        if (data.responseText != "") {
+          var errors = data.responseJSON && data.responseJSON.errors;
+          if (errors !== undefined) {
+            $.map(errors, function( errorsArray, field ) {
+              $.map(errorsArray, function( errorMsg ) {
+                msg += errorMsg + '\n';
+              });
             });
-          });
+          }
         }
         if (msg) $.alert(msg);
       });
-      // Call the next function (to save PE form or media form) 
-      // NO need to wait for ajax post response
-      if (relatedFormId.indexOf('imaging_event') > 0) {
-        IsImagingEventOK = true;
-      } else if (relatedFormId.indexOf('processing_event') > 0) {
-        IsProcessingEventOK = true;
-      }
-      if (callback) callback();
     }
   });
 

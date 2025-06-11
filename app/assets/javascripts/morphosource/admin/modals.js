@@ -42,7 +42,7 @@ $(document).ready(function() {
   $('#test-modal').empty().append(outerHTML);
 
   // Populate the example guilt trip modal with initial form values
-  var initialValue = $('#admin_modal_guilt_trip_template').val()
+  var initialValue = $('#admin_modal_guilt_trip_template').val();
   if (initialValue.length) {
     $("." + initialValue + "2").show();
     var clonedElement = $("." + initialValue).clone();

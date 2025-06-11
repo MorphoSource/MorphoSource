@@ -251,7 +251,7 @@ $( document ).ready(function() {
               idb_records = results.idb_records;
               var li = "";
               $(idb_records).each(function() {
-                li += '<li><a href="//www.idigbio.org/portal/records/' + $(this)[0].uuid + '" target="_blank" id="idb-link">iDigBio UUID ' + $(this)[0].uuid + '</a> <i class="fa fa-external-link-alt"></i></li>';
+                li += '<li><a href="//www.idigbio.org/portal/records/' + $(this)[0].uuid + '" target="_blank" id="idb-link">iDigBio UUID ' + $(this)[0].uuid + '</a> <i class="fas fa-external-link-alt"></i></li>';
               });
               $('#idb-records').append(li);
               $('#modal-idigbio-multi-result').modal();

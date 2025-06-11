@@ -71,7 +71,7 @@ module Hyrax
         content_tag :div, :class => "row align-items-center" do
           concat content_tag(:div, label, class: "col-6 showcase-label taxonomy-label")
           concat content_tag(:div, title, class: "col-5 showcase-value taxonomy-title")
-          concat content_tag(:i, "", :data => {:toggle => "collapse", :parent => %(##{data_parent})}, :href => %(##{block}), class: "col-1 fa fa-chevron-#{icon} #{block}")
+          concat content_tag(:i, "", :data => {:toggle => "collapse", :parent => %(##{data_parent})}, :href => %(##{block}), class: "col-1 fas fa-chevron-#{icon} #{block}")
         end
       end
 

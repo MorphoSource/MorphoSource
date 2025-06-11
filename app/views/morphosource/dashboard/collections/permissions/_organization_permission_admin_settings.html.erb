@@ -71,7 +71,6 @@
     <%= t("hyrax.organization.permissions.contact_us").html_safe %>
   </div>
 </div>
-
-<% if @collection.organization? %>
+<% if @collection.organization_collection? %>
   <%= render 'morphosource/dashboard/collections/permissions/admin_form', f: f %>
 <% end %>

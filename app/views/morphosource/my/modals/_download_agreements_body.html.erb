@@ -1,9 +1,9 @@
       <div class="modal-header">
+        <h1>Download Usage</h1>
         <button type="button" class="close" data-dismiss="modal"><span id="close-modal" aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h2>Download Usage</h2>
-        <p><%= t("morphosource.modal.request.subtitle").html_safe %></p>
       </div>
       <div class="modal-body">
+        <p><%= t("morphosource.modal.request.subtitle").html_safe %></p>
 
         <textarea id="custom-usage" rows="3" class="w-100"></textarea>
         <i id="char-alert">50 characters minimum: <span id="rchars">0</span></i>
@@ -25,7 +25,7 @@
         <div class="checkbox-form-group row">
 
 
-              <div class="profile-checkbox-list">
+              <div class="profile-checkbox-list row">
                 <% intended_use = Morphosource::UserProfile::CheckboxValues::INTENT %>
                 <% intended_use.each do |use| %>
                   <div class="col-12 col-sm-6">

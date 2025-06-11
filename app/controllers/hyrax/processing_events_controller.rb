@@ -31,7 +31,7 @@ module Hyrax
       emancipate_if_necessary(env)
       if actor.update(env)
         update_media_team_access
-        update_child_media_if_necessary
+        reindex_related_media
         after_update_response
       else
         respond_to do |wants|
@@ -50,7 +50,6 @@ module Hyrax
         curation_concern.media.map(&:id).include?(params["media_id"]) &&
         current_user.can?(:edit, params["media_id"])
       )
-        @update_child_media_after_pe_update = true
         update
       else
         # unauthorized, return
@@ -88,10 +87,19 @@ module Hyrax
       end
     end
 
-    # If request from media edit page, update associated media
-    def update_child_media_if_necessary
-      if @update_child_media_after_pe_update
-        curation_concern.media.find { |m| m.id == params["media_id"] }.save!
+    def reindex_related_media
+      if params["processing_event"] && params["processing_event"]["work_parents_attributes"].present? &&
+        (media_id = params["media_id"]).present?
+        # parent media changed in the media edit page
+        # reindex current media first (which is needed before reindexing the related media)
+        # then reindex the related media
+        UpdateWorkIndexJob.perform_later(media_id)
+        qry = "#{ActiveFedora.index_field_mapper.solr_name('imaging_event_id', :stored_searchable)}:#{@curation_concern.imaging_event.id} AND has_model_ssim:Media"
+        related_media_solr = ::Morphosource::SolrService.new().get_docs(qry, args: { fl: 'id' } )
+        related_media_ids = related_media_solr.map { |d| d['id'] }.reject { |id| id == media_id }
+        related_media_ids.each do |id|
+          UpdateWorkIndexJob.perform_later(id)
+        end
       end
     end
 
@@ -119,7 +127,7 @@ module Hyrax
 
     def check_processing_activity
       if params["processing_event"]["processing_activity"].present?
-        steps = params["processing_event"]["processing_activity"].map { |activity| activity.split(',').first.strip }
+        steps = params["processing_event"]["processing_activity"].map { |activity| activity.split(',')&.first&.strip }
         if steps.uniq.length != steps.length
           params["processing_event"].delete("processing_activity")
           flash[:alert] = "Processing activity steps must be unique.  Please correct and try again."

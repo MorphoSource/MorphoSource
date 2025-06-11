@@ -140,7 +140,7 @@ module MorphosourceHelper
   def device_organization
     return unless organization_id = @presenter&.device&.to_h&.dig("device_organization_id_ssim")&.first
 
-    SolrDocument.where('id' =>  organization_id)&.first
+    SolrDocument.where({'id' =>  organization_id})&.first
   end
 
   def files_required?(work)
@@ -323,11 +323,7 @@ module MorphosourceHelper
   end
 
   def render_hint_tag(text)
-    content_tag :i, class: ["material-icons", "tooltip-icon"] do
-      content_tag :p, class: ["hint", "hide"] do
-        text
-      end
-    end
+    content_tag(:i, "", class: ["material-icons", "tooltip-icon"], title: text, data: { toggle: "tooltip" })
   end
 
   def render_publication_status_badge(document)

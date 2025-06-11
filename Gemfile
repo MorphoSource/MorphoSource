@@ -38,7 +38,7 @@ gem 'hydra-role-management', '~> 1.1.0'
 gem 'resque'
 gem 'resque-kubernetes'
 gem 'resque-pool'
-gem 'resque-web', github: 'MorphoSource/resque-web', ref: '58ea4361c09cc94b1fbf4a1c9bb39e69eab25077'
+gem 'resque-web', github: 'MorphoSource/resque-web', ref: '58ea4361c09cc94b1fbf4a1c9bb39e69eab25077', require: 'resque_web'
 
 # for storing and reading ActiveJob status
 gem 'activejob-status'

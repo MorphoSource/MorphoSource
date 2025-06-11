@@ -197,49 +197,49 @@ $( document ).ready(function() {
   // Event triggers using the above functions
 
   // When a copyright statement is selected, check against license and prune available license options
-  $('select[name="media[rights_statement]"]').change(function() {
+  $('select[name="media[rights_statement]"]').change(function(event) {
     event.preventDefault();
     rightsStatementChange('media');
   });
 
-  $('select[name="organization[rights_statement]"]').change(function() {
+  $('select[name="organization[rights_statement]"]').change(function(event) {
     event.preventDefault();
     rightsStatementChange('organization');
   });
 
-  $('select[name="batch_submission[media][rights_statement]"]').change(function() {
+  $('select[name="batch_submission[media][rights_statement]"]').change(function(event) {
     event.preventDefault();
     rightsStatementChange('batch_submission_media');
   });
 
   // When a license statement is selected, prune commercial use options
-  $('select[name="media[license]"]').change(function() {
+  $('select[name="media[license]"]').change(function(event) {
     event.preventDefault();
     licenseChange('media');
   });
 
-  $('select[name="organization[license]"]').change(function() {
+  $('select[name="organization[license]"]').change(function(event) {
     event.preventDefault();
     licenseChange('organization');
   });
 
-  $('select[name="batch_submission[media][license]"]').change(function() {
+  $('select[name="batch_submission[media][license]"]').change(function(event) {
     event.preventDefault();
     licenseChange('batch_submission_media');
   });
 
   // When a MorphoSource Use Agreement is selected, prune commercial/3D/rearchival options
-  $('select[name="media[morphosource_use_agreement_type]"]').change(function() {
+  $('select[name="media[morphosource_use_agreement_type]"]').change(function(event) {
     event.preventDefault();
     morphoSourceUseAgreementChange('media');
   });
 
-  $('select[name="organization[morphosource_use_agreement_type]"]').change(function() {
+  $('select[name="organization[morphosource_use_agreement_type]"]').change(function(event) {
     event.preventDefault();
     morphoSourceUseAgreementChange('organization');
   });
 
-  $('select[name="batch_submission[media][morphosource_use_agreement_type]"]').change(function() {
+  $('select[name="batch_submission[media][morphosource_use_agreement_type]"]').change(function(event) {
     event.preventDefault();
     morphoSourceUseAgreementChange('batch_submission_media');
   });

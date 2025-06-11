@@ -5,22 +5,22 @@ $(document).ready(function() {
     setupTooltip();
     
     // switching icons and button labels for expand / collapse
-    $(".collapse-block").not(".collapse-icon-only").on("hide.bs.collapse", function(){
+    $(".collapse-block").not(".fa-only").on("hide.bs.collapse", function(){
       var thisId = $(this).attr('id');
-      $("a."+thisId).html('<i class="fas fa-chevron-down"></i> Show more <i class="fas fa-chevron-down"></i>');
+      $("a."+thisId).html('<span class="fas fa-caret-down"></span> Show more <span class="fas fa-caret-down"></span>');
     });
-    $(".collapse-block").not(".collapse-icon-only").on("show.bs.collapse", function(){
+    $(".collapse-block").not(".fa-only").on("show.bs.collapse", function(){
       var thisId = $(this).attr('id');
-      $("a."+thisId).html('<i class="fas fa-chevron-up"></i> Show less <i class="fas fa-chevron-up"></i>');
+      $("a."+thisId).html('<span class="fas fa-caret-up"></span> Show less <span class="fas fa-caret-up"></span>');
     });
 
     // switching icons and button label for simple expand / collapse
     $(".collapse-simple").on("hide.bs.collapse show.bs.collapse", function(event) { 
       let newHtml = '';
       if (event.type == "hide") {
-        newHtml = 'Show more <i class="fas fa-chevron-down"></i>';
+        newHtml = 'Show more <span class="fas fa-caret-down"></span>';
       } else if (event.type == "show") {
-        newHtml = 'Show less <i class="fas fa-chevron-up"></i>';
+        newHtml = 'Show less <span class="fas fa-caret-up"></span>';
       }
 
       if (newHtml) {
@@ -29,13 +29,13 @@ $(document).ready(function() {
     });
 
     // switching icons only for expand / collapse
-    $(".collapse-accordion, .collapse-icon-only").on("hide.bs.collapse", function(){
+    $(".collapse-accordion, .fa-only").on("hide.bs.collapse", function(){
       var thisId = $(this).attr('id');
-      $("i."+thisId).removeClass("fa-chevron-up").addClass("fa-chevron-down");
+      $("span."+thisId).removeClass("fa-caret-up").addClass("fa-caret-down")
     });
-    $(".collapse-accordion, .collapse-icon-only").on("show.bs.collapse", function(){
+    $(".collapse-accordion, .fa-only").on("show.bs.collapse", function(){
       var thisId = $(this).attr('id');
-      $("i."+thisId).removeClass("fa-chevron-down").addClass("fa-chevron-up");
+      $("span."+thisId).removeClass("fa-caret-down").addClass("fa-caret-up")
     });
 
     if ($('#back-to-top').length) {

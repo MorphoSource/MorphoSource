@@ -150,9 +150,9 @@ RSpec.describe AllCatalogController, :type => :controller do
         it 'does not redirect to catalog/media' do
           expect(subject).not_to redirect_to(media_search_path)
         end
-        it 'renders the catalog layout' do
+        it 'renders the morphosource_1_column layout' do
           subject
-          expect(response).to render_template("layouts/catalog")
+          expect(response).to render_template("layouts/hyrax/morphosource_1_column")
         end
       end
     end

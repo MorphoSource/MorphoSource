@@ -4,8 +4,8 @@
     <div class="row">
       <div class="col-5 showcase-label taxonomy-label"><%= label %></div>
       <div class="col-5 showcase-value taxonomy-title"><i><%= t.title&.first %></i></div>
-      <div class="col-1 pl-0"><span data-toggle="collapse" data-parent="#taxonomy-accordion-group" href="#collapse-taxonomy-<%= t.id %>" class="col-1 glyphicon collapse-taxonomy-<%= t.id %> glyphicon-triangle-bottom collapsed" aria-expanded="false"></span></div>
-      <div class="col-1 p-0"><i class="fa fa-times-circle" aria-hidden="true" id="remove-taxonomy"></i></div>
+      <div class="col-1 pl-0 text-right"><i data-toggle="collapse" data-parent=".taxonomy-accordion-group" data-target="#collapse-taxonomy-<%= t.id %>" class="col-1 fas collapse-taxonomy-<%= t.id %> fa-chevron-down collapsed" aria-expanded="false"></i></div>
+      <div class="col-1 p-0 text-center"><i class="fas fa-times-circle" aria-hidden="true" id="remove-taxonomy"></i></div>
     </div>
 
     <div id="collapse-taxonomy-<%= t.id %>" class="panel-collapse collapse-accordion collapse" aria-expanded="false" style="height: 0px;">

@@ -1,7 +1,11 @@
 // New set of styles for work show and edit pages (media, physical objects)
 // Since showcase is used by many different pages across the site, forking specific styles to new showcase2
 
-body.showcase2 {
+body.showcase2 #content-wrapper {
+  &.fixed-width {
+    border: 0;
+  }
+
   #showcase-title {
     font-size: 24px;
     margin-bottom: 0;
@@ -126,10 +130,6 @@ body.showcase2 {
     }
   }
 
-  .content-wrapper.fixed-width {
-    border: 0;
-  }
-
   // For div, h2, h3, etc. tags with text and hint icon
   .has-hint {
     display: flex;
@@ -240,13 +240,13 @@ body.showcase2 {
 
 }
 
-body.showcase2-edit {
+body.showcase2-edit #content-wrapper {
   .btn.w-100 {
     width: 100%;
   }
 
   .form-tab-content {
-    margin: 15px;
+    margin: 15px 0;
   }
 
   .nav-tabs {

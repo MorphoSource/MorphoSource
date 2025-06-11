@@ -49,7 +49,7 @@ module Hyrax
       def attribute_value_to_html(value, link_label)
         return '' if value.blank?
         link_label = value unless link_label.present?
-        markup = "<span class='glyphicon glyphicon-new-window'></span>&nbsp;<span class='showcase-link'>#{link_to(link_label, value, target: :_blank)}</span>"
+        markup = "<i class='fas fa-external-link-alt'></i>&nbsp;<span class='showcase-link'>#{link_to(link_label, value, target: :_blank)}</span>"
         markup.html_safe
       end
 

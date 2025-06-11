@@ -57,7 +57,7 @@ module Hyrax
           return markup if value.blank? 
           # if url, show idigbio link
           if link.present? && link =~ URI.regexp(['http', 'https'])
-            markup << "<span class='glyphicon glyphicon-new-window'></span>&nbsp;<span class='showcase-link'>#{link_to(value, link, target: :_blank)}</span>"
+            markup << "<i class='fas fa-external-link-alt'></i>&nbsp;<span class='showcase-link'>#{link_to(value, link, target: :_blank)}</span>"
           else
             markup << "<span>#{value}</span>"
           end

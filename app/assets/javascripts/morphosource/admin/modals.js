@@ -35,7 +35,7 @@ $(document).ready(function() {
   }
 
   // Populate the example modal with initial form values
-  var initialValue = $('#admin_modal_sitewide_modal_template').val()
+  var initialValue = $('#admin_modal_sitewide_modal_template').val();
   $("." + initialValue).show();
   var clonedElement = $("." + initialValue).clone();
   outerHTML = clonedElement[0].outerHTML;

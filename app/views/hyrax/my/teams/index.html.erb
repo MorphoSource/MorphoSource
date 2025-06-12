@@ -18,9 +18,11 @@
     <% end %>
   </div>
 
+<div class="row no-horizontal-padding row-no-gutters">
   <% @collection_counts.each do |membership, count| %>
     <%= render 'membership_count', membership: membership, count: count %>
   <% end %>
+</div>
 
 <% end %>
 <div class="col-12 collections-wrapper">

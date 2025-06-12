@@ -6,7 +6,7 @@ provide :page_title, construct_page_title(@presenter.title)
 %>
 <%= render '/flash_msg' %>
 
-<div class="hyc-container collection-page" style="margin-top: 10px;" data-collection-id="<%= @presenter.id %>" itemscope itemtype="http://schema.org/CollectionPage">
+<div class="hyc-container collection-page" data-collection-id="<%= @presenter.id %>" itemscope itemtype="http://schema.org/CollectionPage">
   <div class="hyc-header">
     <% unless @presenter.banner_file.blank? %>
         <header class="hyc-banner" style="background-image:url(<%= @presenter.banner_file %>)"></header>
@@ -16,7 +16,7 @@ provide :page_title, construct_page_title(@presenter.title)
   </div>
 
   <div class="row collection-header">
-    <div class="col-12 col-sm-8 col-md-8 title-wrapper">
+    <div class="col-12 col-md-9 title-wrapper">
       <div class="col-sm-12 col-md-12 flex title-content">
         <div class="team-logo">
           <% unless @presenter.logo_record.blank? %>
@@ -56,7 +56,7 @@ provide :page_title, construct_page_title(@presenter.title)
       </div>
     </div>
 
-    <div class="col-12 col-sm-4 col-md-4 btn-wrapper">
+    <div class="col-12 col-md-3 btn-wrapper">
       <% if @can_deposit %>
         <%= render 'collection_manage_buttons' %>
       <% end %>

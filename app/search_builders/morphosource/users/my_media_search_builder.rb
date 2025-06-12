@@ -2,6 +2,7 @@
 module Morphosource
   module Users
     class MyMediaSearchBuilder < Hyrax::WorksSearchBuilder
+      include Morphosource::SearchBuilderBehavior
       # filter_collection_facet_for_access
       include Morphosource::Facets::CollectionsSearchBuilderBehavior
       # enable f.field facet format

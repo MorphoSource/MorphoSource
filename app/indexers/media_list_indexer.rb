@@ -3,6 +3,8 @@ class MediaListIndexer < Hyrax::CollectionWithBasicMetadataIndexer
   def generate_solr_document
     super.tap do |solr_doc|
       # sorting
+      solr_doc['title_ssi'] = object.title.first if object.title.present?
+      solr_doc['date_modified_dtsi'] = object.modified_date if object.modified_date.present?
       solr_doc['publication_status_si'] = publication_status
     end
   end

@@ -533,7 +533,7 @@ nav#masthead {
     }
   }
 
-  div.filters, div.filter-by {
+  div.filters, div.filter-by, div.list-filters, div.ms-constraints-container {
     background-color: $block-background-color;
     border: 1px solid $block-border-color;
     padding: 6px;
@@ -557,12 +557,6 @@ nav#masthead {
     .remove-filter-all {
       font-size: 11px;
       color: $font-color;
-    }
-  }
-
-  .dropdown-toggle {
-    @media (min-width: 768px) {
-      max-width: 100px;
     }
   }
 
@@ -605,7 +599,7 @@ nav#masthead {
   .collection-count {
     span {font-size: 12px}
     span.badge {
-      width: 77px;
+      width: 86px;
       font-size: 11px;
       margin-right: 4px;
     }
@@ -803,6 +797,10 @@ nav#masthead {
     font-size: 13px; 
   }
 
+  .search-query-form .input-group-btn {
+    min-width: 100px; /* prevent GO button cut off in smaller screen  */
+  }
+
   .main-content {
     background-color: #fff;
   }
@@ -862,7 +860,7 @@ nav#masthead {
   }
 
   [class*="choose-columns"] {
-    button, button * {
+    button, button:hover, button * {
       color: $button-color;
       background-color: #fff !important;
       outline: none;
@@ -1182,7 +1180,26 @@ nav#masthead {
     word-break: break-all;
   }
 
-  .dropdown-menu {
+  .dropdown-menu-right {
+    a.itemicon {
+      display: block;
+      padding: 3px 20px;
+      clear: both;
+      font-weight: 400;
+      line-height: 1.428571429;
+      color: #333333;
+      white-space: nowrap;      
+    }
+    a.itemicon:hover,
+    a.itemicon:focus {
+      color: #262626;
+      text-decoration: none;
+      background-color: #f5f5f5;
+    }
+  }
+
+  .navbar .dropdown-menu {
+    /* styles for the dropdown menu under navbar only */
     background-color: #fff;
     min-width: 82px;
     right: 0;
@@ -1404,13 +1421,31 @@ nav#masthead {
     color: inherit;
     text-decoration: none;
 
-    span.glyphicon-sort {
+    span.fa-sort {
       opacity:  0.3;
     }
 
-    span.glyphicon-sort-by-attributes,span.glyphicon-sort-by-attributes-alt {
+    span.fa-sort:before,
+    span.fa-sort-by-attributes:before,
+    span.fa-sort-by-attributes-alt:before {
+      content: "↑";
+      opacity:  0.3;
+    }
+
+    span.fa-sort:after,
+    span.fa-sort-by-attributes:after,
+    span.fa-sort-by-attributes-alt:after {
+      content: "↓";
+      opacity:  0.3;
+    }
+
+    span.fa-sort-up.fa-sort-by-attributes:after, 
+    span.fa-sort-up.fa-sort-by-attributes-alt:after, 
+    span.fa-sort-down.fa-sort-by-attributes:before,
+    span.fa-sort-down.fa-sort-by-attributes-alt:before {
       opacity:  0.7;
     }
+
   }
 }
 

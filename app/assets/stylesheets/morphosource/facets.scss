@@ -1,9 +1,49 @@
 .showcase {
 
   .list-filters {
+
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
     background-color: #f5f5f5;
     margin-bottom: 20px;
     padding: 10px 15px;
+    fieldset {
+      margin-right: 10px;
+      margin-bottom: 10px;
+      min-width: 150px;
+    }
+    button {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+    }
+    .dropdown-toggle:after {
+      margin: 6px;
+    }
+    .dropdown-toggle {
+      background-color: #fff !important;
+      color: black !important;
+      border: 1px solid #d4d4d4 !important;
+      padding: 2px 3px 2px 8px;
+      font-size: 12px;
+    }
+    ul {
+      padding: 3px 0px;
+      font-weight: 400;
+      line-height: 1.42857143;
+      color: #333;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      li {
+        padding: 4px 8px;
+        font-size: 12px;
+      }
+      li:hover {
+        background-color: #fff;
+      }
+    } 
   }
 
   .list-filters-label {
@@ -105,12 +145,17 @@
   }
 
   .ms-constraints-container {
+
+    margin-bottom: 10px;
+    min-height: 20px;
+    background-color: #f5f5f5;
+
     .constraint-value {
       background-color: #fff !important;
       color: black !important;
       border: 1px solid #d4d4d4 !important;
       color: black !important;
-      font-size: 12px;
+      font-size: 11px;
       padding: 2px 8px 2px 8px !important;
     }
     // caret in filtering by

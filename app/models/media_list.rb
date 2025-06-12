@@ -1,6 +1,8 @@
 class MediaList < Collection
   include Morphosource::MediaListMetadata
 
+  self.indexer = MediaListIndexer
+
   after_create :create_collection_groups
 
   DEFAULT_GROUP_ROLES = %w[managers viewers].freeze

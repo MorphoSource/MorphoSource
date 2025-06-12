@@ -10,7 +10,7 @@ body.dashboard {
       margin-left: 0;
       margin-right: 0;
 
-      &.panel-default {
+      &.panel-default:not(.panel-borders) {
         border: none;
       }
 
@@ -21,7 +21,7 @@ body.dashboard {
     }
   }
 
-  .card.panel-default {
+  .card.panel-default:not(.panel-borders) {
     border: none; /* remove border for dashboard new page (e.g. new Project) */
   } 
 
@@ -225,11 +225,14 @@ body.dashboard {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  select {
+    margin-left: 4px;
+    margin-right: 4px;
+  }
 }
 
 .collection-description {
-  padding: 10px 0 15px 0;
-  max-width: 85%;
+  padding: 10px 15px 15px;
 }
 
 // Have to re-introduce some default hyrax modal styling for dashboard, because .showcase removes it

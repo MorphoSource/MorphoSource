@@ -1,12 +1,17 @@
 @import 'variables';
 @import 'shared';
 
+.ms-collection .collection-page .hyc-header {
+  margin-bottom: 0;
+}
+
 div.collection-header {
   display: flex;
   width: 100%;
   justify-content: space-between;
   margin-right: 0;
   margin-left: 0;
+  margin-bottom: 8px;
   padding: 4px 0 !important;
 
   .btn-wrapper.col-12 {
@@ -50,7 +55,6 @@ div.collection-header {
   }
 
   .title-wrapper {
-    min-width: 67%;
     flex-grow: 1;
   }
 
@@ -236,4 +240,17 @@ div.collection-page {
       padding-right: 8px;
     }
   }
+}
+
+.ms-collections-list {
+
+  .per-page-container, .showing-container {
+    
+    font-size: 11px;
+    
+    form select {
+      margin-left: 4px;
+      margin-right: 4px;
+    }
+  }   
 }

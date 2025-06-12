@@ -1,7 +1,8 @@
 // styles for sitewide modals and modal configuration
 @import 'shared';
 
-#sitewide-modal, #sitewide-modal-2, .modal-example, .guilt-trip-example {
+.configured-modal,
+.configured-modal-example {
   background-color: unset;
 
   .modal-content {
@@ -15,6 +16,9 @@
 
     .modal-text {
       margin-bottom: 40px;
+      text-align: justify;
+      padding-left: 15px;
+      padding-right: 15px;
     }
 
     .modal-dismiss-options {
@@ -27,7 +31,8 @@
   }
 }
 
-#sitewide-modal-2 {
+#sitewide-modal-2,
+#download-modal-2 {
   background-color: unset;
 
   #modal-donate-wrapper {
@@ -36,4 +41,20 @@
     align-items: center;
     gap: 30px;
   }
+}
+
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* Transparent black */
+  z-index: 999;
+}
+
+.configured-modal {
+  position: fixed;
+  z-index: 2000;
+  /* other modal styles */
 }

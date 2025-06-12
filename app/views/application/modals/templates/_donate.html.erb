@@ -3,12 +3,12 @@
     <div class="modal-body">
       <h5 class="modal-title mb-3"><%= modal_title %></h5>
       <div class="modal-text">
-        <%= sitewide_modal_text&.html_safe %>
+        <%= modal_body&.html_safe %>
       </div>
       <a href=<%= donate_link %> class="btn btn-primary mb-3">Donate Now</a>
       <div class="modal-dismiss-options">
-        <%= link_to "Already Donated", main_app.admin_modal_snooze_week_path, method: :post, remote: true, class: "already-donated d-block" %>
-        <%= link_to "Maybe Later", main_app.admin_modal_snooze_day_path, method: :post, remote: true, class: "maybe-later d-block" %>
+        <%= link_to "Already Donated", modal.snooze_week_path, method: :post, remote: true, class: "already-donated d-block" %>
+        <%= link_to "Maybe Later", modal.snooze_day_path, method: :post, remote: true, class: "maybe-later d-block" %>
         <a href="#" class="no-thanks d-block text-danger">No Thanks</a>
       </div>
     </div>

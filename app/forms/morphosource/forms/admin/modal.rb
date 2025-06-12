@@ -3,6 +3,7 @@ module Morphosource
     module Admin
       class Modal < Morphosource::Forms::Admin::Appearance
         # extend ActiveModel::Naming
+        include Rails.application.routes.url_helpers
 
        SETTINGS = %w[sitewide_modal_frequency
                      sitewide_modal_template
@@ -24,8 +25,13 @@ module Morphosource
           rich_text_for(:guilt_trip_body, nil)
         end
 
+        alias modal_frequency sitewide_modal_frequency
+        alias modal_template sitewide_modal_template
+        alias modal_title sitewide_modal_title
+        alias modal_body sitewide_modal_body
+
         def modal_templates
-          files = Dir.glob("app/views/application/modals/*")
+          files = Dir.glob("app/views/application/modals/templates/*")
           files.map do |file|
             file_name = File.basename(file, ".html.erb").split("_").drop(1).join("_")
           end
@@ -33,6 +39,27 @@ module Morphosource
 
         def modal_frequencies
           [["never", 0]] + (1..10).map { |i| ["#{i * 10}%", i / 10.0] }
+        end
+
+        def snooze_week_path
+          send("admin_#{form_name}_snooze_week_path")
+        end
+
+        def snooze_day_path
+          send("admin_#{form_name}_snooze_day_path")
+        end
+
+        def snooze_hour_path
+          send("admin_#{form_name}_snooze_hour_path")
+        end
+
+        # Used to differentiate this from from download modal form when present on the same view
+        def dash_case_name
+          "sitewide-" + form_name
+        end
+
+        def form_name
+          self.class.name.demodulize.underscore
         end
 
       end

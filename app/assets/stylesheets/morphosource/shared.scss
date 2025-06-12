@@ -56,7 +56,7 @@ $success-color: #387f38;
   background-color: transparent;
   border: none;
   i {
-    font-size: 19px;    
+    font-size: 19px;
   }
   span {
     font-size: 14px;
@@ -82,8 +82,8 @@ label.required::after {
 }
 
 /* override jquery-confirm styles */
-.jconfirm.jconfirm-white .jconfirm-box .jconfirm-buttons button.btn-default, 
-.jconfirm.jconfirm-white .jconfirm-box .jconfirm-buttons button.btn-default:hover, 
+.jconfirm.jconfirm-white .jconfirm-box .jconfirm-buttons button.btn-default,
+.jconfirm.jconfirm-white .jconfirm-box .jconfirm-buttons button.btn-default:hover,
 .jconfirm.jconfirm-light .jconfirm-box .jconfirm-buttons button.btn-default,
 .jconfirm.jconfirm-light .jconfirm-box .jconfirm-buttons button.btn-default:hover {
   background-color: $button-color !important;
@@ -215,7 +215,7 @@ label.required::after {
   content: '';
 }
 .link-alert, .link-alert:hover, .link-alert:visited {
-  color: red !important;  
+  color: red !important;
 }
 
 ul.align-li {
@@ -261,7 +261,7 @@ ul.align-li {
   background-size: 90px;
   opacity: .7;
   z-index: 9999;
-  .overlay-message { 
+  .overlay-message {
     padding: 1px 12px;
     background-color: rgba(245, 245, 245, 0.8);
     color: #555;
@@ -271,6 +271,11 @@ ul.align-li {
 }
 .break-all {
   word-break: break-all;
+}
+.break-overflow {
+  /* wraps long urls while allowing other text to break normally */
+  overflow-wrap: anywhere;
+  word-break: normal;
 }
 .navbar-brand {
   padding: 15px 0;
@@ -304,12 +309,12 @@ ul.align-li {
   line-height: 2rem;
   max-height: 4rem; /* number of lines x line height */
   -webkit-line-clamp: 2;
-}  
+}
 .text-truncate-lines.three-lines {
   line-height: 2rem;
   max-height: 6rem;
   -webkit-line-clamp: 3;
-}  
+}
 .no-result {
   text-align: center;
   margin:50px auto;
@@ -342,7 +347,7 @@ ul.align-li {
     }
     .agreement-items-wrapper {
       font-size: 12px;
-    }      
+    }
   }
   .rc-wrapper { /* reCAPTCHA wrapper */
     margin-bottom: 4px;
@@ -488,7 +493,7 @@ div.wrapper_for_2 span.input-group-bt.field-controls {
   height: 16px;
 }
 
-.switch input { 
+.switch input {
   opacity: 0;
   width: 0;
   height: 0;

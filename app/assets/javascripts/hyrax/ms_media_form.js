@@ -284,18 +284,12 @@ $( document ).ready(function() {
         }
       }).fail(function(data) {
         console.log("getting a fail status ", data );
-        var msg = "";
-        if (data.responseText != "") {
-          var errors = data.responseJSON && data.responseJSON.errors;
-          if (errors !== undefined) {
-            $.map(errors, function( errorsArray, field ) {
-              $.map(errorsArray, function( errorMsg ) {
-                msg += errorMsg + '\n';
-              });
-            });
-          }
+        var msg = "There was an error submitting the form.  Please contact MorphoSource team if the problem persists. ";
+        if (typeof data.statusText !== "undefined" && data.statusText != "") {
+          msg += " Message: " +  data.statusText;
         }
-        if (msg) $.alert(msg);
+        $.alert(msg);
+        enablePageAndSave(".btn-save-media");
       });
     }
   });

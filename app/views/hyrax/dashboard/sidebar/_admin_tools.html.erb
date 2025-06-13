@@ -94,6 +94,12 @@
         <%= menu.nav_link(hyrax.admin_appearance_path) do %>
           <span class="fa fa-paint-brush" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.appearance') %></span>
         <% end %>
+        <%= menu.nav_link(main_app.admin_banner_path) do %>
+          <span class="fa fa-flag" aria-hidden="true"></span> <span class="sidebar-action-text"><%= "Sitewide Banner" %></span>
+        <% end %>
+        <%= menu.nav_link(main_app.admin_modal_path) do %>
+          <span class="fa fa-pager" aria-hidden="true"></span> <span class="sidebar-action-text"><%= "Sitewide Modal" %></span>
+        <% end %>
         <%= menu.nav_link(hyrax.admin_features_path) do %>
           <span class="fa fa-wrench" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.technical') %></span>
         <% end %>

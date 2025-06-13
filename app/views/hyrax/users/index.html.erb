@@ -17,6 +17,6 @@
     <%= render partial: 'user_row', collection: @users, as: :user %>
     </tbody>
 </table>
-<div class="pager">
+<div class="pagination justify-content-center">
   <%= paginate @users, theme: 'blacklight', route_set: hyrax %>
 </div>

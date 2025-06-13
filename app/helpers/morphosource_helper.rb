@@ -125,7 +125,7 @@ module MorphosourceHelper
   end
 
   def donate_link
-    "https://www.gifts.duke.edu/?designation=391001239"
+    Hyrax.config.donation_url
   end
 
   def current_controller

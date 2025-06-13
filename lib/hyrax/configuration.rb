@@ -454,7 +454,7 @@ module Hyrax
       ActiveModel::Type::Boolean.new.cast(ENV.fetch('HYRAX_VALKYRIE', false))
     end
     # @!endgroup
-    
+
     attr_writer :feature_config_path
     def feature_config_path
       @feature_config_path ||= Rails.root.join('config', 'features.yml')
@@ -689,7 +689,7 @@ module Hyrax
     def box_client_secret
       @box_client_secret ||= nil
     end
-    
+
     # @!attribute [w] dropbox_client_id
     # Dropbox API client ID credential
     attr_writer :dropbox_client_id
@@ -1480,6 +1480,11 @@ module Hyrax
     attr_writer :unused_storage_fund_code_id
     def unused_storage_fund_code_id
       @unused_storage_fund_code_id ||= nil
+    end
+
+    attr_accessor :donation_url
+    def donation_url
+      @donation_url ||= nil
     end
 
     def use_solr_graph_for_collection_nesting

@@ -58,7 +58,7 @@ module Hyrax
       # note: most curation concern methods get concern from curation_concern_from_search_results
       # this refactors that - only for showcase method - to be more direct, like collections
       # if this works well, should refactor to use this across the board
-      curation_concern_solr_doc = curation_concern.present? ? 
+      curation_concern_solr_doc = curation_concern.present? ?
         ::SolrDocument.find(curation_concern.id) : ::SolrDocument.find(params[:id])
       raise CanCan::AccessDenied.new(nil, :show) unless (curation_concern && current_ability.can?(:read, curation_concern))
 
@@ -69,7 +69,7 @@ module Hyrax
 
     # dynamically loads archive file contents list for archive information modal
     def modal_file_archive_contents
-      curation_concern_solr_doc = curation_concern.present? ? 
+      curation_concern_solr_doc = curation_concern.present? ?
         ::SolrDocument.find(curation_concern.id) : ::SolrDocument.find(params[:id])
       raise CanCan::AccessDenied.new(nil, :show) unless (curation_concern && current_ability.can?(:read, curation_concern))
 
@@ -86,16 +86,16 @@ module Hyrax
     def edit
       build_form
       @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
-      @member_of_collections_json = member_of_collections_json(@presenter.member_of_collection_presenters)  
+      @member_of_collections_json = member_of_collections_json(@presenter.member_of_collection_presenters)
       if (
-        @presenter.imaging_event.present? && 
+        @presenter.imaging_event.present? &&
         (ie_work = ImagingEvent.find_by(id: @presenter.imaging_event.id)).present?
       )
         @imaging_event_form = Hyrax::WorkFormService.build(ie_work, current_ability, self)
       end
 
       if (
-        @presenter.this_media_processing_event.present? && 
+        @presenter.this_media_processing_event.present? &&
         (pe_work = ProcessingEvent.find_by(id: @presenter.this_media_processing_event[:id])).present?
       )
         @processing_event_form = Hyrax::WorkFormService.build(pe_work, current_ability, self)
@@ -201,16 +201,16 @@ module Hyrax
             #render 'edit', status: :unprocessable_entity
             # todo: make sure to handle error when changing media type
             @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
-            
+
             if (
-              @presenter.imaging_event.present? && 
+              @presenter.imaging_event.present? &&
               (ie_work = ImagingEvent.find_by(id: @presenter.imaging_event.id)).present?
             )
               @imaging_event_form = Hyrax::WorkFormService.build(ie_work, current_ability, self)
             end
-      
+
             if (
-              @presenter.this_media_processing_event.present? && 
+              @presenter.this_media_processing_event.present? &&
               (pe_work = ProcessingEvent.find_by(id: @presenter.this_media_processing_event[:id])).present?
             )
               @processing_event_form = Hyrax::WorkFormService.build(pe_work, current_ability, self)
@@ -318,8 +318,8 @@ module Hyrax
     def characterize
       if current_user.admin?
         media_work = Media.find(params[:id])
-        # Note: For remote file, the original_file.content is empty, therefore original_file.present? returns false 
-        if media_work.is_remote_backed? 
+        # Note: For remote file, the original_file.content is empty, therefore original_file.present? returns false
+        if media_work.is_remote_backed?
           if !media_work.file_sets.first.present?
             flash[:error] = "Media has no FileSet. Characterization job not created."
           elsif JobIoWrapper.find_by(file_set_id: media_work.file_sets.first.id)&.path.present?
@@ -342,7 +342,7 @@ module Hyrax
     def create_derivatives
       if current_user.admin?
         media_work = Media.find(params[:id])
-        if media_work.is_remote_backed? 
+        if media_work.is_remote_backed?
           if !media_work.file_sets.first.present?
             flash[:error] = "Media has no FileSet. Create derivatives job not created."
           elsif JobIoWrapper.find_by(file_set_id: media_work.file_sets.first.id)&.path.present?
@@ -376,7 +376,7 @@ module Hyrax
           end
         elsif attributes_for_actor["remote_files"].present?
           # files uploaded from cloud
-          attributes_for_actor["remote_files"].each do |f| 
+          attributes_for_actor["remote_files"].each do |f|
             files << f["file_name"]
           end
         end
@@ -559,40 +559,45 @@ module Hyrax
       end
 
       def set_scene_attributes
-        if (params.dig(:media)&.key?(:aleph_scene) && current_user&.can?(:edit, curation_concern))
-          aleph_scene = params[:media][:aleph_scene]
-          scene = Scene.find_by(media_id: curation_concern.id)
+        # return if user does not have edit access
+        return unless current_user&.can?(:edit, curation_concern)
 
-          if aleph_scene.present?
-            if is_json?(aleph_scene)
-              if !scene.present?
-                scene = Scene.new(media_id: curation_concern.id)
-              end
+        # return if the aleph_scene parameter is not present
+        return unless params.dig(:media)&.key?(:aleph_scene)
 
-              scene.aleph_scene = aleph_scene
-              scene.valid?
-              if scene.errors.present?
-                flash[:error] = "Encountered error while saving Aleph Scene JSON: #{scene.errors.full_messages.join(', ')}"
-              else
-                scene.save!
-                flash[:info] = "Aleph Scene JSON has been saved"
-              end
-              
-            else
-              # somehow bad JSON was passed in, throw flash error to user
-              flash[:error] = "Invalid Aleph Scene JSON"
-            end
-          elsif scene.present?
-            # scene exists and aleph_scene is blank, delete the scene
-            scene.destroy
-          end
-          # aleph_scene is blank and scene doesn't exist, no-op
+        scene = Scene.find_by(media_id: curation_concern.id)
+        aleph_scene = params.dig(:media).dig(:aleph_scene)
+
+        # if aleph_scene is blank, delete the media scene if it exists and return
+        # Don't send an invalid json error if aleph_scene is blank
+        if aleph_scene.blank? || %w[null {}].include?(aleph_scene)
+          scene&.destroy
+          return
+        end
+
+        # somehow bad JSON was passed in, throw flash error to user and return
+        unless is_json?(aleph_scene)
+          flash[:error] = I18n.t('morphosource.media.annotations.aleph_scene.invalid_json')
+          return
+        end
+
+        # if scene does not exist, create a new one
+        scene ||= Scene.new(media_id: curation_concern.id)
+
+        scene.aleph_scene = aleph_scene
+        scene.valid?
+        if scene.errors.present?
+          error_messages = scene.errors.full_messages.join(', ')
+          flash[:error] = I18n.t('morphosource.media.annotations.aleph_scene.invalid_scene', errors: error_messages)
+        else
+          scene.save!
+          flash[:info] = I18n.t('morphosource.media.annotations.aleph_scene.save_success')
         end
       end
 
       def is_json?(json)
-        JSON.parse(json)
-        true
+        parsed = JSON.parse(json)
+        parsed.is_a?(Hash) || parsed.is_a?(Array)
       rescue JSON::ParserError, TypeError => e
         false
       end

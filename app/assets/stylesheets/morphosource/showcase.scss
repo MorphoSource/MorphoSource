@@ -482,7 +482,7 @@ nav#masthead {
     }
     dd {
       text-align: center;
-      height: 18px;
+      line-height: 1.4;
     }
   }
 
@@ -667,8 +667,8 @@ nav#masthead {
   }
 
   table.dataTable thead > tr > th {
-    padding-left: 30px;
-    padding-right: 30px;
+    padding-left:  clamp(5px, 5vw, 20px); /* reduce padding to avoid column wrapping */
+    padding-right: clamp(5px, 5vw, 20px);
   }
 
   .flash-wrapper {
@@ -1225,6 +1225,7 @@ nav#masthead {
     list-style-type: none;
     padding: 2px 8px;
     white-space: nowrap;
+    width: fit-content
   }
 
   i.dropdown-toggle:hover {
@@ -1531,5 +1532,26 @@ nav#masthead {
   .form-horizontal .col-form-label {
     padding-top: 0;
     text-align: left;
+  }
+}
+
+#documents.gallery {
+  .document {
+    margin-top: 15px;
+    padding: 6px 6px 0 6px;
+    max-height: 350px;
+  } 
+  .thumbnail {
+    padding: 12px 9px;
+    margin-bottom: 20px;
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    transition: border 0.2s ease-in-out;
+    height: 100%;
+    width: 200px;
+    .caption {
+      margin-top: 10px;
+    }
   }
 }

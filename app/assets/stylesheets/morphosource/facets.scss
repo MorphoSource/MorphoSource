@@ -29,6 +29,7 @@
       font-size: 12px;
     }
     ul {
+      width: fit-content;
       padding: 3px 0px;
       font-weight: 400;
       line-height: 1.42857143;
@@ -230,5 +231,19 @@
   }
   #intersections + ul {
     width: 425px;
+  }
+}
+
+.ms-facets {
+  .facet-label {
+    display: table-cell;
+    width: 1%; 
+    white-space: nowrap;
+    box-sizing: border-box;
+  }
+  .facet-count {
+    display: table-cell;
+    padding-left: 20px;
+    text-align: right;
   }
 }

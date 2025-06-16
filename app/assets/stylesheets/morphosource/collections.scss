@@ -5,6 +5,10 @@
   margin-bottom: 0;
 }
 
+.ms-collection .collection-manage-buttons .dropdown-menu.show {
+  transform: none !important;
+}
+
 div.collection-header {
   display: flex;
   width: 100%;
@@ -132,6 +136,7 @@ div.collection-page {
         margin-top: 15px;
         padding: 6px 6px 0 6px;
         max-height: 350px;
+        min-height: 200px;
 
         dl {
           width: 190px;

@@ -12,7 +12,7 @@ class PagesController < ApplicationController
     end
 
     authorize! :manage, @page if !@page.published?
-    render layout: 'hyrax/morphosource_1_column'
+    render layout: 'homepage'
   end
 
   def new

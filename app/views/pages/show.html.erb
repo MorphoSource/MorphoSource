@@ -2,7 +2,7 @@
 <% provide :page_title, @page.title %>
 
 <div class="page-wrapper" style="display: flex; flex-direction: column; align-items: center;">
-  <div class="page-content mt-2">
+  <div class="page-content">
     <h1 style="font-size: 32px; font-weight: 400;"><%= @page.title %></h1>
     <div class="text-muted">
       <i class="far fa-clock" aria-hidden="true"></i> <%= @page.updated_at.strftime('%b %d, %Y') %>

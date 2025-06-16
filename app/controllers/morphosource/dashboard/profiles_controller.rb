@@ -122,6 +122,7 @@ module Morphosource
               :affiliation,
               :sftp_share,
               :avatar,
+              :communication_preference,
               :country,
               :department,
               :display_name,

@@ -4,7 +4,7 @@
   <div class="col-xs-6 no-horizontal-padding">
     <h1><span class="fa fa-id-card" aria-hidden="true"></span> <%= t("hyrax.admin.sidebar.profile") %></h1>
   </div>
-  <% if can? :edit, current_user %>
+  <% if can? :edit, @user %>
     <div class="pull-right">
       <% if @user == current_user || current_user.admin? %>
         <%= link_to hyrax.edit_dashboard_profile_path(@user), class: "btn btn-primary" do %>
@@ -40,7 +40,29 @@
   </div>
 </div>
 
-<% if can? :edit, current_user %>
+<% if can? :edit, @user %>
+  <div class="landing panel panel-default">
+    <div class="panel-body">
+      <div class="list-group">
+        <div class="list-group-item">
+          <div><h2>User Settings</h2></div>
+            <%= form_for @user, url: hyrax.dashboard_profile_path(@user) do |f| %>
+              <div class="row form-group no-horizontal-padding">
+                <%= f.label :communication_preference, class: "col-4 col-xs-4 control-label", style: "display: flex; align-items: center" do |l| %>
+                  <%= t("morphosource.dashboard.profiles.communication_preference") %>
+                  <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.dashboard.profiles.communication_preference_hint") %></p></i> 
+                <% end %>
+                <div class="col-8 col-xs-8">
+                  <%= f.select :communication_preference, User.communication_preferences.keys.map { |k| [k.humanize, k] }, {}, class: "form-control" %>
+                </div>
+              </div>
+              <%= f.submit t("morphosource.dashboard.profiles.save_settings"), class: "btn btn-primary pull-right" %>
+            <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+  
   <div class="landing panel panel-default">
     <div class="panel-body">
       <div class="list-group">
@@ -48,15 +70,15 @@
           <div><h2>Advanced User Functions</h2></div>
           <div class="action-section">
             <div class="list-item">
-              <%= link_to 'View API Key', main_app.profile_show_path, id: "view-api-key", style: "font-size: 16px;" %>
+              <%= link_to 'View API Key', main_app.profile_show_path, id: "view-api-key" %>
               <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.dashboard.profiles.view_api_key") %></p></i> 
             </div>
             <div class="list-item">
-              <%= link_to 'Generate New API Key', main_app.profile_generate_new_api_key_path, style: "font-size: 16px;" %>
+              <%= link_to 'Generate New API Key', main_app.profile_generate_new_api_key_path %>
               <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.dashboard.profiles.generate_new_api_key") %></p></i> 
             </div>
             <div class="list-item">
-              <%= link_to 'API Documentation', 'https://morphosource.stoplight.io/docs/morphosource-api', style: "font-size: 16px;", target: :_blank %>
+              <%= link_to 'API Documentation', 'https://morphosource.stoplight.io/docs/morphosource-api', target: :_blank %>
               <i class="fas fa-external-link-alt fa-sm" style="margin-left: 5px;"></i> 
             </div>
           </div>

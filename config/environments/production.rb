@@ -106,18 +106,20 @@ Rails.application.configure do
 
   # these collections appear in the featured projects section on the homepage. If this is empty, the homepage shows 6 random collections that the user has access to view.
   # Current featured collections:
+  # Ozboneviz
+  # https://www.morphosource.org/projects/000394988?locale=en
   # The oVert Thematic Collections Network
   # https://www.morphosource.org/projects/000368762?locale=en
   # 3D-Cipher - Digitizing the Deutsches Museum's crypto collection
   # https://www.morphosource.org/projects/000474834?locale=en
   # Anthropology Division, Yale Peabody Museum
   # https://www.morphosource.org/teams/000392215?locale=en
-  # Primate Phenotypes (media list)
-  # https://www.morphosource.org/media-lists/000656244?locale=en
   # Colors of Skull Anatomy
   # https://www.morphosource.org/projects/000358382?locale=en
+  # Primate Phenotypes (media list)
+  # https://www.morphosource.org/media-lists/000656244?locale=en
   # ETH Zurich Library
-  # https://www.morphosource.org/concern/organizations/000600967?locale=en
-  config.featured_project_ids = ['000368762','000392215','000474834','000656244','000358382','000600967']
+  # https://www.morphosource.org/organizations/000710240?locale=en
+  config.featured_project_ids = ['000394988','000368762','000392215','000474834','000358382','000656244','000710240']
 
 end

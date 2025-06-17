@@ -43,9 +43,9 @@
 
     <li>
       <%= menu.collapsable_section t('hyrax.admin.sidebar.management'),
-          icon_class: "fa fa-gavel",
-          id: 'collapseManagement',
-          open: [
+        icon_class: "fa fa-gavel",
+        id: 'collapseManagement',
+        open: [
           main_app.admin_contributor_petitions_path,
           main_app.admin_data_curation_path,
           main_app.admin_fund_codes_path,
@@ -82,24 +82,29 @@
       <% end %>
     </li>
 
-
-
-
-
     <li>
       <%= menu.collapsable_section t('hyrax.admin.sidebar.settings'),
-                                   icon_class: "fa fa-cog",
-                                   id: 'collapseSettings',
-                                   open: menu.settings_section? do %>
-        <% if can?(:update, :appearance) %>
-          <%= menu.nav_link(hyrax.admin_appearance_path) do %>
-            <span class="fa fa-paint-brush" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.appearance') %></span>
-          <% end %>
+        icon_class: "fa fa-cog",
+        id: 'collapseSettingsMS',
+        open: [
+          hyrax.admin_appearance_path,
+          hyrax.admin_features_path
+        ].any? { |path| current_page?(path) } do %>
+
+        <%= menu.nav_link(hyrax.admin_appearance_path) do %>
+          <span class="fa fa-paint-brush" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.appearance') %></span>
         <% end %>
-        <% if can?(:manage, Hyrax::Feature) %>
-          <%= menu.nav_link(hyrax.admin_features_path) do %>
-            <span class="fa fa-wrench" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.technical') %></span>
-          <% end %>
+        <%= menu.nav_link(main_app.admin_banner_path) do %>
+          <span class="fa fa-flag" aria-hidden="true"></span> <span class="sidebar-action-text"><%= "Sitewide Banner" %></span>
+        <% end %>
+        <%= menu.nav_link(main_app.admin_modal_path) do %>
+          <span class="fa fa-pager" aria-hidden="true"></span> <span class="sidebar-action-text"><%= "Sitewide Modal" %></span>
+        <% end %>
+        <%= menu.nav_link(hyrax.admin_features_path) do %>
+          <span class="fa fa-wrench" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.technical') %></span>
+        <% end %>
+        <%= menu.nav_link(Rails.application.routes.url_helpers.admin_pages_path) do %>
+          <span class="fa fa-newspaper" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.simple_pages') %></span>
         <% end %>
       <% end %>
     </li>

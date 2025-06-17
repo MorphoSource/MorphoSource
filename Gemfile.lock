@@ -7,6 +7,15 @@ GIT
       activesupport (>= 4)
 
 GIT
+  remote: https://github.com/kobaltz/actiontext.git
+  revision: cfe4674d3637c746cdb3c2b5131e2de498775529
+  branch: archive
+  specs:
+    actiontext (0.1.0)
+      nokogiri
+      rails (>= 5.2.0)
+
+GIT
   remote: https://github.com/rails/activerecord-session_store.git
   revision: 50e81319339d847a07a67eb32d77dbbbe4636317
   specs:
@@ -706,6 +715,8 @@ GEM
       rack (>= 0.4)
     rack-protection (2.0.3)
       rack
+    rack-proxy (0.7.7)
+      rack
     rack-test (2.0.2)
       rack (>= 1.3)
     rails (5.2.8)
@@ -1063,6 +1074,10 @@ GEM
       addressable (>= 2.3.6)
       crack (>= 0.3.2)
       hashdiff
+    webpacker (4.3.0)
+      activesupport (>= 4.2)
+      rack-proxy (>= 0.6.1)
+      railties (>= 4.2)
     webrick (1.8.1)
     websocket-driver (0.7.5)
       websocket-extensions (>= 0.1.0)
@@ -1082,6 +1097,7 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  actiontext!
   activejob-status
   activerecord-session_store!
   axe-matchers (~> 2.3.0)
@@ -1150,6 +1166,7 @@ DEPENDENCIES
   vcr
   web-console (>= 3.3.0)
   webmock (~> 3.5.0)
+  webpacker (~> 4.x)
   zip-zip
   zip_tricks
   zipline (~> 1.0)

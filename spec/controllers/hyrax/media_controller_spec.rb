@@ -147,35 +147,35 @@ RSpec.describe Hyrax::MediaController, type: :controller do
       let(:main_app) { Rails.application.routes.url_helpers }
 
       describe 'via URL' do
-        let(:temporary_link) { create(:temporary_media_access_link, user: user, media_id: work.id )} 
+        let(:temporary_link) { create(:temporary_media_access_link, user: user, media_id: work.id )}
 
-        context 'user is not logged in but has a temporary access URL' do 
+        context 'user is not logged in but has a temporary access URL' do
           it 'user is authorized with temp link flash msg' do
             get :showcase, params: { id: work.id, token: temporary_link.token }
             expect(response.status).to eq(200)
             expect(response.flash[:notice]).to eq(I18n.t('morphosource.media.view.temporary_access'))
           end
         end
-  
+
         context 'user is logged in, has temporary access URL, but already has access to media' do
           before do
             sign_in user
             work.read_users += [user]
             work.save
           end
-  
+
           it 'user is authorized with temp link flash msg' do
             get :showcase, params: { id: work.id, token: temporary_link.token }
             expect(response.status).to eq(200)
             expect(response.flash[:notice]).to eq(I18n.t('morphosource.media.view.temporary_access'))
           end
         end
-  
+
         context 'user is logged in, has temporary access URL, and does not have access to media' do
           before do
             sign_in user
           end
-  
+
           it 'user is authorized with temp link flash msg' do
             get :showcase, params: { id: work.id, token: temporary_link.token }
             expect(response.status).to eq(200)
@@ -197,57 +197,57 @@ RSpec.describe Hyrax::MediaController, type: :controller do
       describe 'via cookie' do
         let(:cookie_jar) { ActionDispatch::Request.new(Rails.application.env_config.deep_dup).cookie_jar }
         let(:main_app) { Rails.application.routes.url_helpers }
-  
+
         before do
           allow(subject).to receive(:cookies).and_return(cookie_jar)
         end
-  
+
         describe 'for individual media access' do
-          let(:temporary_link) { create(:temporary_media_access_link, user: user, media_id: work.id )} 
+          let(:temporary_link) { create(:temporary_media_access_link, user: user, media_id: work.id )}
 
           context 'user is not logged in but has a temporary access cookie' do
             it 'user is authorized with temp link flash msg' do
-              cookie_jar.encrypted["ta_#{temporary_link.media_id}"] = { 
-                value: temporary_link.token, 
+              cookie_jar.encrypted["ta_#{temporary_link.media_id}"] = {
+                value: temporary_link.token,
                 expires: temporary_link.expires_at
               }
-    
+
               get :showcase, params: { id: work.id }
               expect(response.status).to eq(200)
               expect(response.flash[:notice]).to eq(I18n.t('morphosource.media.view.temporary_access'))
             end
           end
-    
+
           context 'user is logged in, has temporary access cookie, but already has access to media' do
             before do
               sign_in user
               work.read_users += [user]
               work.save
             end
-    
+
             it 'user is authorized without temp link flash msg' do
-              cookie_jar.encrypted["ta_#{temporary_link.media_id}"] = { 
-                value: temporary_link.token, 
+              cookie_jar.encrypted["ta_#{temporary_link.media_id}"] = {
+                value: temporary_link.token,
                 expires: temporary_link.expires_at
               }
-    
+
               get :showcase, params: { id: work.id }
               expect(response.status).to eq(200)
               expect(response.flash[:notice]).to eq('')
             end
           end
-    
+
           context 'user is logged in, has temporary access cookie, and does not have access to media' do
             before do
               sign_in user
             end
-    
+
             it 'user is authorized with temp link flash msg' do
-              cookie_jar.encrypted["ta_#{temporary_link.media_id}"] = { 
-                value: temporary_link.token, 
+              cookie_jar.encrypted["ta_#{temporary_link.media_id}"] = {
+                value: temporary_link.token,
                 expires: temporary_link.expires_at
               }
-    
+
               get :showcase, params: { id: work.id }
               expect(response.status).to eq(200)
               expect(response.flash[:notice]).to eq(I18n.t('morphosource.media.view.temporary_access'))
@@ -258,8 +258,8 @@ RSpec.describe Hyrax::MediaController, type: :controller do
             it 'user is redirected to site root with not found flash without authorization' do
               temporary_link.destroy!
 
-              cookie_jar.encrypted["ta_#{temporary_link.media_id}"] = { 
-                value: temporary_link.token, 
+              cookie_jar.encrypted["ta_#{temporary_link.media_id}"] = {
+                value: temporary_link.token,
                 expires: temporary_link.expires_at
               }
 
@@ -279,27 +279,27 @@ RSpec.describe Hyrax::MediaController, type: :controller do
 
           context 'user is not logged in but has a temporary access cookie' do
             it 'user is authorized' do
-              cookie_jar.encrypted["ta_#{temporary_link.collection_id}"] = { 
-                value: temporary_link.token, 
+              cookie_jar.encrypted["ta_#{temporary_link.collection_id}"] = {
+                value: temporary_link.token,
                 expires: temporary_link.expires_at
               }
-    
+
               get :showcase, params: { id: work.id }
               expect(response.status).to eq(200)
             end
           end
-   
+
           context 'user is logged in, has temporary access cookie, and does not have access to media' do
             before do
               sign_in user
             end
-    
+
             it 'user is authorized with temp link flash msg' do
-              cookie_jar.encrypted["ta_#{temporary_link.collection_id}"] = { 
-                value: temporary_link.token, 
+              cookie_jar.encrypted["ta_#{temporary_link.collection_id}"] = {
+                value: temporary_link.token,
                 expires: temporary_link.expires_at
               }
-    
+
               get :showcase, params: { id: work.id }
               expect(response.status).to eq(200)
             end
@@ -309,8 +309,8 @@ RSpec.describe Hyrax::MediaController, type: :controller do
             it 'user is redirected to to site root with not found flash without authorization' do
               temporary_link.destroy!
 
-              cookie_jar.encrypted["ta_#{temporary_link.collection_id}"] = { 
-                value: temporary_link.token, 
+              cookie_jar.encrypted["ta_#{temporary_link.collection_id}"] = {
+                value: temporary_link.token,
                 expires: temporary_link.expires_at
               }
 
@@ -318,7 +318,7 @@ RSpec.describe Hyrax::MediaController, type: :controller do
               expect(response.status).to eq(302)
               expect(response).to redirect_to main_app.root_path(locale: 'en')
             end
-          end  
+          end
         end
       end
     end
@@ -706,9 +706,9 @@ RSpec.describe Hyrax::MediaController, type: :controller do
       end
     end
 
-    context 'fund code setting and creation' do 
+    context 'fund code setting and creation' do
       context 'media has no current fund code' do
-        before do 
+        before do
           allow(subject.current_user).to receive(:admin?).and_return(true)
         end
 
@@ -719,7 +719,7 @@ RSpec.describe Hyrax::MediaController, type: :controller do
       end
 
       context 'media has already been associated to fund codes' do
-        before do 
+        before do
           allow(subject.current_user).to receive(:admin?).and_return(true)
           patch :update, params: { id: curation_concern, media: {select_new_fund_code: fund_code1.id}, action: "update" }
           patch :update, params: { id: curation_concern, media: {select_new_fund_code: fund_code2.id}, action: "update" }
@@ -733,6 +733,231 @@ RSpec.describe Hyrax::MediaController, type: :controller do
           inactive_fund_code = curation_concern.fund_code_associations.where(active: false).first
           patch :update, params: { id: curation_concern, media: {select_fund_code: inactive_fund_code.id}, action: "update" }
           expect(curation_concern.active_fund_code_association.fund_code_id).to eq(fund_code1.id)
+        end
+      end
+    end
+  end
+
+  describe '#set_scene_attributes' do
+    let(:media)           { FactoryBot.create(:media, title: ['Test Media']) }
+    let(:params)          { ActionController::Parameters.new( { "media" =>{} } ) }
+    let(:scene)           { Scene.new(media_id: media.id, aleph_scene: old_aleph_scene) }
+    let(:old_aleph_scene) { { "scene"=>{"rotation"=>[0, 0, 0] } } }
+    let(:aleph_scene)     { { "scene"=>{"rotation"=>[1, 2, 3] } }.to_json}
+
+    before do
+      allow(subject).to receive(:params).and_return(params)
+      allow(subject).to receive(:curation_concern).and_return(media)
+      params["media"]["aleph_scene"] = aleph_scene
+    end
+
+    context 'current_user does not exist' do
+      before do
+        allow(subject).to receive(:current_user).and_return(nil)
+        scene.save
+      end
+
+      it 'does not change the media scene' do
+        expect(media.scene.aleph_scene).to eq(old_aleph_scene)
+        subject.send(:set_scene_attributes)
+        expect(media.scene.aleph_scene).to eq(old_aleph_scene)
+      end
+    end
+
+    context 'current_user exists' do
+      context 'current_user does not have edit access to the media' do
+        before do
+          allow(subject).to receive_message_chain(:current_user, :can?).with(:edit, media).and_return(false)
+          scene.save
+        end
+
+        it 'does not change the media scene' do
+          expect(media.scene.aleph_scene).to eq(old_aleph_scene)
+          subject.send(:set_scene_attributes)
+          expect(media.scene.aleph_scene).to eq(old_aleph_scene)
+        end
+      end
+
+      context 'current_user has edit access to the media' do
+        before do
+          allow(subject).to receive_message_chain(:current_user, :can?).with(:edit, media).and_return(true)
+        end
+        context 'aleph scene parameters are not present' do
+          before do
+            scene.save
+            params["media"].delete("aleph_scene")
+          end
+
+          it 'does not change the media scene' do
+            expect(media.scene.aleph_scene).to eq(old_aleph_scene)
+            subject.send(:set_scene_attributes)
+            expect(media.scene.aleph_scene).to eq(old_aleph_scene)
+          end
+        end
+
+        context 'aleph scene parameters are present' do
+          context 'aleph scene is blank' do
+            context 'aleph scene is nil or empty string' do
+              let(:aleph_scene) { '' }
+
+              context 'a scene is already set' do
+                before do
+                  scene.save
+                end
+
+                it 'destroys the existing scene' do
+                  expect(media.scene).to eq(scene)
+                  subject.send(:set_scene_attributes)
+                  expect(media.scene).to be_nil
+                end
+              end
+
+              context 'no scene is set' do
+                it 'does not set an aleph scene' do
+                  expect(media.scene).to be_nil
+                  subject.send(:set_scene_attributes)
+                  expect(media.scene).to be_nil
+                end
+              end
+            end
+
+            context 'aleph scene is a "null" string' do
+              let(:aleph_scene) { "null" }
+
+              context 'a scene is already set' do
+                before do
+                  scene.save
+                end
+
+                it 'destroys the existing scene' do
+                  expect(media.scene).to eq(scene)
+                  subject.send(:set_scene_attributes)
+                  expect(media.scene).to be_nil
+                  # No error flash message
+                  expect(subject.flash[:error]).to be_nil
+                end
+              end
+
+              context 'no scene is set' do
+                it 'does not set an aleph scene' do
+                  expect(media.scene).to be_nil
+                  subject.send(:set_scene_attributes)
+                  expect(media.scene).to be_nil
+                  # No error flash message
+                  expect(subject.flash[:error]).to be_nil
+                end
+              end
+            end
+          end
+
+          context 'aleph scene is not valid JSON' do
+            let(:aleph_scene) { 'not valid JSON' }
+
+            context 'a scene is already set' do
+              before do
+                scene.save
+              end
+
+              it 'does not change the media scene' do
+                expect(media.scene.aleph_scene).to eq(old_aleph_scene)
+                subject.send(:set_scene_attributes)
+                expect(media.scene.aleph_scene).to eq(old_aleph_scene)
+                expect(subject.flash[:error]).to eq(I18n.t('morphosource.media.annotations.aleph_scene.invalid_json'))
+              end
+            end
+
+            context 'no scene is set' do
+              it 'does not set an aleph scene' do
+                expect(media.scene).to be_nil
+                subject.send(:set_scene_attributes)
+                expect(media.scene).to be_nil
+              end
+            end
+          end
+
+          context 'scene is not a valid Scene' do
+            before do
+              scene.save
+              allow_any_instance_of(Scene).to receive(:media_id).and_return(nil)
+            end
+
+            it 'does not change the media scene' do
+              expect(media.scene.aleph_scene).to eq(old_aleph_scene)
+              subject.send(:set_scene_attributes)
+              expect(media.scene.aleph_scene).to eq(old_aleph_scene)
+              expect(subject.flash[:error]).to eq(I18n.t('morphosource.media.annotations.aleph_scene.invalid_scene', errors: "Media can't be blank"))
+            end
+          end
+
+          context 'aleph scene is the default sketchfab export' do
+            let(:aleph_scene) { {  "scene"=> {
+                                     "rotation"=>[0, 0, 0],
+                                     "environmentMap"=>"warehouse",
+                                     "ambientLightIntensity"=>0},
+                                     "annotations"=>[]
+                                }.to_json
+                              }
+
+            it 'sets an aleph scene' do
+              expect(media.scene).to be_nil
+              subject.send(:set_scene_attributes)
+              expect(media.scene.aleph_scene).to eq(JSON.parse(aleph_scene))
+              expect(subject.flash[:info]).to eq(I18n.t('morphosource.media.annotations.aleph_scene.save_success'))
+            end
+          end
+
+          context 'aleph scene is a valid scene' do
+            let(:aleph_scene) { {"annotations"=> [
+                                  { "label"=>"Travel theodolite, Billwiller Kradolfer",
+                                      "position"=> {
+                                        "x"=>0.008011947585648348,
+                                        "y"=>0.18567544695353352,
+                                        "z"=>-0.04208944511806261
+                                      },
+                                      "cameraPosition"=> {
+                                        "x"=>0.011442087529826544,
+                                        "y"=>0.17435838282847727,
+                                        "z"=>-0.3011810526256875
+                                      },
+                                      "cameraTarget"=> {
+                                        "x"=>0.006860075647615113,
+                                        "y"=>0.11044281525164128,
+                                        "z"=>-0.005897521905248231
+                                      }
+                                    },
+                                    { "label"=>"Manufacturer",
+                                      "position"=> {
+                                        "x"=>-0.021920588724995194,
+                                        "y"=>0.09161361045876201,
+                                        "z"=>-0.0008553354323913129
+                                      },
+                                      "cameraPosition"=> {
+                                        "x"=>-0.06860750404834369,
+                                        "y"=>0.17280698445153886,
+                                        "z"=>0.03357261536142791
+                                      },
+                                      "cameraTarget"=> {
+                                        "x"=>0.006860075647615112,
+                                        "y"=>0.11044281525164128,
+                                        "z"=>-0.005897521905248228
+                                      }
+                                    },
+                                  ],
+                                  "scene"=> {
+                                    "ambientLightIntensity"=>0,
+                                    "environmentMap"=>"warehouse",
+                                    "rotation"=>[0, 0, 0]
+                                  }
+                                }.to_json
+                              }
+
+            it 'sets an aleph scene' do
+              expect(media.scene).to be_nil
+              subject.send(:set_scene_attributes)
+              expect(media.scene.aleph_scene).to eq(JSON.parse(aleph_scene))
+              expect(subject.flash[:info]).to eq(I18n.t('morphosource.media.annotations.aleph_scene.save_success'))
+            end
+          end
         end
       end
     end

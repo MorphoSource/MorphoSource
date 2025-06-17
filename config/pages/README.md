@@ -1,0 +1,1 @@
+YML files in this directory will be processed to generate initial static page pages on app setup. See about_morphosource.yml for file structure.

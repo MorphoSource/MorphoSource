@@ -1,17 +1,10 @@
 {
-  "name": "morphosource",
-  "description": "This is a simple package file to help developers periodically install or update the Universal Viewer packaged with MorphoSource. It is not part of regular install or setup processes.",
-  "private": true,
-  "repository": "git@github.com:MorphoSource/MorphoSource.git",
-  "dependencies": {
-    "universalviewer": "MorphoSource/universalviewer#ca9fa33c18ab88e919e6b1a229351b2ec43c44e4"
-},
-"scripts": {
-  "preinstall": "rm -rf ./node_modules/ && rm -rf ./public/uv/",
-  "postinstall": "yarn run uv-build && yarn run uv-deploy && yarn run uv-config && rm -rf ./node_modules/",
-  "uv-build": "cd ./node_modules/universalviewer && npm install && npm run build && cd ../..",
-  "uv-deploy": "cp -r ./node_modules/universalviewer/dist ./public/uv",
-  "uv-config": "cp ./config/uv/uv.html ./public/uv/uv.html && cp ./config/uv/uv-config.json ./public/uv/uv-config.json && cp ./config/uv/uv-config-front-page.json ./public/uv/uv-config-front-page.json"
+  "devDependencies": {
+    "@rails/webpacker": "^5.4.4",
+    "webpack-dev-server": "^5.2.1"
   },
-  "devDependencies": {}
+  "dependencies": {
+    "@babel/plugin-proposal-private-methods": "^7.18.6",
+    "actiontext": "https://github.com/rails/actiontext#archive"
+  }
 }

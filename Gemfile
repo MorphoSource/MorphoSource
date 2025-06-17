@@ -43,6 +43,10 @@ gem 'resque-web', require: 'resque_web'
 # for storing and reading ActiveJob status
 gem 'activejob-status'
 
+# ActionText (todo5 remove this when we upgrade to Rails 6)
+gem 'webpacker', '~> 4.x'
+gem 'actiontext', github: 'kobaltz/actiontext', branch: 'archive', require: 'action_text'
+
 gem 'puma', '~> 5.5.0'
 gem 'puma_worker_killer'
 

@@ -165,6 +165,9 @@ Rails.application.routes.draw do
       # all downloads
       get 'downloads', action: :index, controller: :downloads, as: 'admin_downloads'
 
+       # all pages
+      get 'pages', action: :index, controller: :pages, as: 'admin_pages'
+
       # all requests
       get 'requests', action: :index, controller: :requests, as: 'admin_requests'
 
@@ -191,6 +194,19 @@ Rails.application.routes.draw do
       post 'data_curation/apply_permission_template', action: :apply_permission_template, controller: :data_curation, as: 'admin_apply_permission_template'
       get 'import_slides', action: :index, controller: :import_slides, as: 'admin_import_slides'
       post 'import_slides', action: :import_slides, controller: :import_slides, as: 'import_slides'
+
+      scope module: :appearance do
+        # banner configuration
+        get 'banner', action: :show, controller: :banners, as: 'admin_banner'
+        patch 'banner', action: :update, controller: :banners, as: 'admin_banner_update'
+
+        # modal configuration
+        get 'modal', action: :show, controller: :modals, as: 'admin_modal'
+        patch 'modal', action: :update, controller: :modals, as: 'admin_modal_update'
+        post 'modal/snooze_hour', action: :snooze_hour, controller: :modals, as: 'admin_modal_snooze_hour'
+        post 'modal/snooze_day', action: :snooze_day, controller: :modals, as: 'admin_modal_snooze_day'
+        post 'modal/snooze_week', action: :snooze_week, controller: :modals, as: 'admin_modal_snooze_week'
+      end
     end
 
     ### COLLECTION SHOW (NON-DASHBOARD) ###
@@ -687,28 +703,35 @@ Rails.application.routes.draw do
   get '/data-managers', to: 'morphosource/data_managers#index', as: 'data_managers', constraints: { format: 'json' }
 
   ### DOCS ###
-  resources :docs do
-    collection do
-      get 'about'
-      get 'mission'
-      get 'survey'
-    end
-  end
+  # Docs is deprecated, should use pages instead
+  get '/docs/about', to: redirect('/about', status: 301)
+  get '/docs/mission', to: redirect('/mission', status: 301)
+  get '/docs/survey', to: 'docs#survey', as: 'survey_docs'
 
-  # override Hyrax::PagesController
-  get '/contributor_terms', to: 'docs#contributor_terms', as: 'contributor_terms'
-  get '/terms', to: 'docs#terms', as: 'terms'
+  ### PAGES ###
+
+  resources :pages, param: :slug, only: [ :new, :create, :show, :edit, :update, :destroy ]
+  get '/docs/:slug', to: 'pages#show', as: 'docs', defaults: { page_type: 'docs' }
+
+  # special routes for vanity URLs, /terms overrides Hyrax::PagesController
+  get '/about', to: 'pages#show', as: 'about', defaults: { slug: 'about-morphosource' }
+  get '/mission', to: 'pages#show', as: 'mission', defaults: { slug: 'our-mission' }
+  get '/terms', to: 'pages#show', as: 'terms', defaults: { slug: 'terms' }
+  get '/contributor-terms', to: 'pages#show', as: 'contributor_terms', defaults: { slug: 'contributor-terms' }
+
+  # redirects for legacy static pages to latest routes
+  get '/contributor_terms', to: redirect('/contributor-terms', status: 301)
 
   ### STATIC REDIRECTS ###
 
   # MS1 About/ redirects
   scope path: 'About', as: 'About' do
-    get 'home', to: redirect('/docs/about', status: 301)
-    get 'contact', to: redirect('/docs/about', status: 301)
+    get 'home', to: redirect('/about', status: 301)
+    get 'contact', to: redirect('/about', status: 301)
     get 'userInfo', to: redirect('/', status: 301)
     get 'userGuide', to: redirect('/', status: 301)
     get 'contributorInfo', to: redirect('/', status: 301)
-    get 'terms', to: redirect('/docs/about', status: 301)
+    get 'terms', to: redirect('/about', status: 301)
     get 'howToCite', to: redirect('/', status: 301)
     get 'API', to: redirect('/', status: 301)
     get 'report', to: redirect('/', status: 301)

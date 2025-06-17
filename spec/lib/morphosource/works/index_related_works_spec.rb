@@ -49,14 +49,13 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
 
   describe 'index_related_works' do
     context 'work is a specimen' do
-      let(:specimen_media) { [media1a, media1b] }
       before do
         allow(specimen).to receive(:index_related)
       end
       context 'organization id is updated' do
         it 'updates related media' do
           skip if !Hyrax.config.index_related_works
-          expect(specimen).to receive(:index_related).with(specimen_media)
+          expect(specimen).to receive(:index_related).with(contain_exactly(media1a, media1b))
           specimen.organization_id = [new_organization.id]
           specimen.save
         end
@@ -64,7 +63,7 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
       context 'another attribute is updated' do
         it 'does not update related media' do
           skip if !Hyrax.config.index_related_works
-          expect(specimen).not_to receive(:index_related).with(specimen_media)
+          expect(specimen).not_to receive(:index_related).with(contain_exactly(media1a, media1b))
           specimen.title = ["new title"]
           specimen.save
         end
@@ -98,8 +97,8 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
       end
       it 'updates related media and objects' do
         skip if !Hyrax.config.index_related_works
-        expect(imaging_event1).to receive(:index_related).with(ie_media).and_call_original
-        expect(imaging_event1).to receive(:index_related).with(ie_media + [cho, specimen])
+        expect(imaging_event1).to receive(:index_related).with(contain_exactly(media1a, media1b)).and_call_original
+        expect(imaging_event1).to receive(:index_related).with(contain_exactly(media1a, media1b, cho, specimen))
         imaging_event1.device_id = [device2.id]
         imaging_event1.ie_modality = ['Photography']
         imaging_event1.physical_object_id = [cho.id]

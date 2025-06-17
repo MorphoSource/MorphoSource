@@ -131,7 +131,7 @@ nav#masthead {
       font-weight: 500;
       margin-bottom: 5px;
     }
-  
+
     li.file-item > i.far, li.dir-item > i.far {
       margin-right: 5px;
     }
@@ -179,7 +179,7 @@ nav#masthead {
     vertical-align: bottom;
   }
 
-  .checkbox-list label, 
+  .checkbox-list label,
   label[for="user_Other: "] {
     font-weight: normal !important;
   }
@@ -410,7 +410,7 @@ nav#masthead {
   }
 
   .collections-wrapper .collections-list-table {
-    th:nth-child(1), th:nth-child(2), 
+    th:nth-child(1), th:nth-child(2),
     td:nth-child(1), td:nth-child(2) {
       text-align: center;
     }
@@ -625,9 +625,9 @@ nav#masthead {
 
   /* hide the collapse/expand buttons when responsive */
   table.dataTable.dtr-inline.collapsed > tbody {
-    tr.parent > td:first-child:before, 
+    tr.parent > td:first-child:before,
     tr.parent > th:first-child:before,
-    tr > td:first-child:before, 
+    tr > td:first-child:before,
     tr > th:first-child:before {
       content: none;
       display: none;
@@ -729,9 +729,12 @@ nav#masthead {
   .controls {
     .navbar {
       background-color: transparent;
-      height: 30px !important;
       margin-bottom: 0;
+      @media (min-width: 481px) {
+        height: 30px !important;
+      }
     }
+
     .navbar-nav > li > a {
       color: #fff;
       height: 30px;
@@ -741,7 +744,6 @@ nav#masthead {
 
   .logo {
         white-space: nowrap;
-
   }
 
   .secondary-nav * {
@@ -831,7 +833,7 @@ nav#masthead {
   }
 
   #search-field-header::placeholder {
-    font-size: 13px; 
+    font-size: 13px;
   }
 
   .main-content {
@@ -1593,7 +1595,7 @@ nav#masthead {
   }
   .form-group {
     min-height: 26px;
-  }  
+  }
   .form-horizontal .control-label {
     padding-top: 0;
     text-align: left;

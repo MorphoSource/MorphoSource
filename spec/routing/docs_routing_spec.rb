@@ -1,14 +1,19 @@
 require 'rails_helper'
 
 RSpec.describe 'docs routing', type: :routing do
-
-  it 'has a terms route' do
-    route = { controller: 'docs', action: 'terms' }
-    expect(:get => '/terms').to route_to(route)
+  it 'routes /terms to pages#show with correct slug' do
+    expect(get: '/terms').to route_to(
+      controller: 'pages',
+      action: 'show',
+      slug: 'terms'
+    )
   end
-
-  it 'has a contributor terms route' do
-    route = { controller: 'docs', action: 'contributor_terms' }
-    expect(:get => '/contributor_terms').to route_to(route)
+  
+  it 'routes /contributor-terms to pages#show with correct slug' do
+    expect(get: '/contributor-terms').to route_to(
+      controller: 'pages',
+      action: 'show',
+      slug: 'contributor-terms'
+    )
   end
 end

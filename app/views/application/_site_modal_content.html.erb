@@ -1,0 +1,12 @@
+<% modal = Morphosource::Forms::Admin::Modal.new %>
+ <% if lookup_context.find_all("application/modals/_#{ modal.sitewide_modal_template }").any? %>
+  <div id="sitewide-modal" class="modal-backdrop d-block" style="display: none;">
+    <%= render partial: "application/modals/#{modal.sitewide_modal_template }", locals: { modal_title: modal.sitewide_modal_title } %>
+  </div>
+<% end %>
+
+<% if lookup_context.find_all("application/modals/_#{ modal.guilt_trip_template }").any? %>
+  <div id="sitewide-modal-2" class="modal-backdrop d-block" style="display: none;">
+    <%= render partial: "application/modals/#{modal.guilt_trip_template }", locals: { modal_title: modal.guilt_trip_title } %>
+  </div>
+<% end %>

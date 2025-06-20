@@ -1,11 +1,10 @@
 module Morphosource
   module Admin
     class ImportSlidesController < ApplicationController
+      include Morphosource::Admin::AdminBehavior
       include Morphosource::Breadcrumbs
-      before_action :require_admin
-      before_action :initialize_service, only: :import_slides
 
-      with_themed_layout 'morphosource_dashboard'
+      before_action :initialize_service, only: :import_slides
 
       PAGE_TITLE = I18n.t('morphosource.dashboard.admin.import_slides.page_title')
 
@@ -34,10 +33,6 @@ module Morphosource
 
         def occurrence_key
           params["occurrence_key"]
-        end
-
-        def require_admin
-          authorize! :read, :admin_dashboard
         end
     end
   end

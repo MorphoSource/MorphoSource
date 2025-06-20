@@ -26,7 +26,7 @@ gem 'bootstrap', '~> 4.0'
 gem 'riiif', '~> 2.2'
 
 # pull iiif_manifest fork that can handle 3D manifests
-gem 'iiif_manifest', :git => 'https://github.com/MorphoSource/iiif_manifest.git', :tag => 'v1.1.0'
+gem 'iiif_manifest', :git => 'https://github.com/MorphoSource/iiif_manifest.git', :tag => 'v1.3.1'
 
 # used for XML validation in Crossref DOI deposit
 gem 'nokogiri'
@@ -42,6 +42,10 @@ gem 'resque-web', github: 'MorphoSource/resque-web', ref: '58ea4361c09cc94b1fbf4
 
 # for storing and reading ActiveJob status
 gem 'activejob-status'
+
+# ActionText (todo5 remove this when we upgrade to Rails 6)
+gem 'webpacker', '~> 4.x'
+gem 'actiontext', github: 'kobaltz/actiontext', branch: 'archive', require: 'action_text'
 
 gem 'puma', '~> 5.5.0'
 gem 'puma_worker_killer'
@@ -70,6 +74,8 @@ gem 'zip-zip'
 gem 'caxlsx'
 
 gem 'dalli' # mem_cache_store support
+
+gem 'okcomputer' # Hyrax health checks
 
 # Sentry.io error tracking
 gem "sentry-ruby"

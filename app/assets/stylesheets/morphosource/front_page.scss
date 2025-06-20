@@ -52,6 +52,82 @@ div#user_utility_links {
   }
 }
 
+/* Navbar styles */
+
+div.controls .navbar {
+  background-color: $ms-dark-blue;
+  color: #fff;
+  border: none;
+}
+
+div.controls .navbar-nav {
+  margin: 0;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+div.controls .navbar-nav li {
+  float: left;
+}
+
+/* Navbar menu specific styles */
+
+div.controls .navbar-nav > li > a {
+  color: #fff !important;
+  height: 50px !important;
+  padding-top: 15px !important;
+}
+
+div.controls .navbar-nav > li.open > a {
+  color: black !important;
+}
+
+div.controls .navbar-nav > li.active > a,
+div.controls .navbar-nav > li > a:hover,
+div.controls .navbar-nav > li > a:focus {
+  color: #fff;
+  background-color: $ms-blue;
+}
+
+div.controls .nav-left {
+  display: flex;
+  flex-grow: 15;
+  justify-content: center;
+}
+
+div.controls .nav-right {
+  display: flex;
+  flex-grow: 1;
+  justify-content: center;
+}
+
+div.controls .donate-button-wrapper {
+  height: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Navbar submenu specific styles */
+
+div.controls .navbar-nav li ul.dropdown-menu {
+  background-color: white;
+  border-top-width: 0px;
+}
+
+div.controls .navbar-nav li ul.dropdown-menu li {
+  float: none;
+}
+
+div.controls .navbar-nav li ul.dropdown-menu a {
+  color: black !important;
+}
+
+div.controls .navbar-nav li ul.dropdown-menu a:hover,
+div.controls .navbar-nav li ul.dropdown-menu a:focus  {
+  background-color: #f5f5f5 !important;
+}
+
 /* Other styles */
 
 div#front-banner {
@@ -92,7 +168,7 @@ div#front-banner iframe {
 .col-align {
   float: none;
   display: inline-block;
-  
+
   &--top {
     vertical-align: top;
   }
@@ -160,19 +236,19 @@ div.front {
     border-bottom:  1px solid lightgray;
     margin-bottom:  15px;
   }
-  
+
   .post-title-container {
     border-bottom:  1px solid lightgray;
   }
-  
+
   .post-title {
     font-weight: 500;
   }
-  
+
   .post-excerpt {
     margin-top:  14px;
     word-break: break-word;
-  
+
     // override h2 tag to normal text
     h2 {
       border-bottom: 0 !important;
@@ -181,7 +257,7 @@ div.front {
       margin: 0;
       padding: 0 !important;
     }
-  
+
     ul {
       padding-left: 20px;
     }
@@ -201,12 +277,12 @@ div.front {
       }
     }
   }
-  
+
   .view-all-link {
     font-weight: 500;
     margin-top: -5px;
     margin-bottom:  40px;
-    text-align: center; 
+    text-align: center;
   }
 }
 

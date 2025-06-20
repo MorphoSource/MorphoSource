@@ -7,11 +7,11 @@ module Hyrax
     delegate :aat_attribute, :aat_attribute_label, :aat_material, :aat_material_label, :aat_period,
       :aat_period_label, :aat_type, :aat_type_label, :address, :bibliographic_citation,
       :catalog_number, :cho_attribute, :cho_type, :city, :collection_code, :context, :country,
-      :current_location, :dating_method, :dimensions, :formation, :geographic_coordinates, 
-      :institution_code, :material, :numeric_time, :original_location, :periodic_time, 
+      :current_location, :dating_method, :dimensions, :formation, :geographic_coordinates,
+      :institution_code, :material, :numeric_time, :original_location, :periodic_time,
       :periodic_time_label, :provenance_date, :provenance_details, :provenance_location,
-      :provenance_name, :short_title, :state_province, :tgn, :tgn_label, :vouchered, 
-      :public_media_ids, 
+      :provenance_name, :short_title, :state_province, :tgn, :tgn_label, :vouchered,
+      :public_media_ids,
       to: :solr_document
 
     def related_media_ids
@@ -83,27 +83,19 @@ module Hyrax
     end
 
     def object_material
-      aat = aat_material_label.present? ? aat_material_label : []
-      custom = material.present? ? material : []
-      aat + custom
+      (Array(aat_material_label) + Array(material)).compact.sort_by{|t| t.downcase}
     end
 
     def object_period
-      aat = aat_period_label.present? ? aat_period_label : []
-      periodic_time = periodic_time.present? ? periodic_time : []
-      aat + periodic_time
+      (Array(aat_period_label) + Array(periodic_time)).compact.sort_by{|t| t.downcase}
     end
 
     def object_type
-      aat = aat_type_label.present? ? aat_type_label : []
-      custom = cho_type.present? ? cho_type : []
-      aat + custom
+      (Array(aat_type_label) + Array(cho_type)).compact.sort_by{|t| t.downcase}
     end
 
     def object_attributes
-      aat = aat_attribute_label.present? ? aat_attribute_label : []
-      custom = cho_attribute.present? ? cho_attribute : []
-      aat + custom
+      (Array(aat_attribute_label) + Array(cho_attribute)).compact.sort_by{|t| t.downcase}
     end
 
   end

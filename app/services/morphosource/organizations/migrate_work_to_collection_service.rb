@@ -11,15 +11,23 @@ module Morphosource
       def initialize(organization_work_id)
         @organization_work_id = organization_work_id
         @organization_work = Organization.find(organization_work_id)
-      
+
         @organization_team = organization_work.team
         @organization_team_id = organization_team&.id
-    
+
+        if organization_team.present?
+          organization_team.reindex_extent = Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
+        end
+
         @organization_collection = OrganizationCollection.where(
           legacy_organization_work_id: organization_work_id
         )&.first
         @organization_collection_id = organization_collection&.id
-    
+
+        if organization_collection.present?
+          organization_collection.reindex_extent = Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
+        end
+
         @all_media_ids = []
         @organization_metadata = get_organization_metadata
       end
@@ -69,7 +77,7 @@ module Morphosource
 
       # For these attributes, value from org is primary
       def attributes_copied_from_organization
-        ["title", "organization_type", "institution_code", "postal_code", "contact_person", "institution_name", "collection_code", "recordset_id", "permissions_enforcement_mode", "download_permission", "rights_holder_blank", "license_blank", "rights_statement_blank", "download_reviewer", "agreement_uri", "morphosource_use_agreement_type", "required_archival_of_published_derivatives", "permits_commercial_use", "permits_3d_use", "rights_holder", "preview_mode", "address", "city", "state_province", "country", "license", "rights_statement"]
+        ["title", "organization_type", "institution_code", "postal_code", "contact_person", "institution_name", "collection_code", "recordset_id", "permissions_enforcement_mode", "download_permission", "rights_holder_blank", "license_blank", "rights_statement_blank", "download_reviewer", "agreement_uri", "morphosource_use_agreement_type", "required_archival_of_published_derivatives", "permits_commercial_use", "permits_3d_use", "rights_holder", "preview_mode", "address", "city", "state_province", "country", "license", "rights_statement", "date_managed"]
       end
 
       # @!endgroup
@@ -80,11 +88,11 @@ module Morphosource
       def migrate
         ### STEP 1. Create Organization Collection ###
         Rails.logger.info "STEP 1. Create Organization Collection"
-        
+
         if !organization_collection.present?
           @organization_collection = OrganizationCollection.create(
             organization_metadata.merge(
-              visibility: 'open', 
+              visibility: 'open',
               depositor: batch_user.user_key,
               legacy_organization_work_id: organization_work.id
           ))
@@ -92,7 +100,7 @@ module Morphosource
           Morphosource::Collections::PermissionsCreateService.create_default(collection: organization_collection)
           @organization_collection_id = organization_collection.id
         end
-        
+
         ### STEP 2. If data manager present, make that user an org manager and turn org transfer ON ###
         Rails.logger.info "STEP 2. If data manager present, make that user an org manager and turn org transfer ON"
 
@@ -112,7 +120,7 @@ module Morphosource
           roles.each do |role|
             (organization_team.send(role) || []).each do |user|
               if user.id.present? && (user.id != org_data_manager&.id) && (!organization_collection.send(role).include?(user))
-                organization_collection.send(role) << user 
+                organization_collection.send(role) << user
               end
             end
           end
@@ -130,8 +138,8 @@ module Morphosource
             organization_team.save!
           end
         end
-        
-        
+
+
 
         ### STEP 4. All media associated with the org and owned by the data manager should be owned by the organization directly ###
         # Note: Because we have to check org association, this has to be done before moving records to associate with new org
@@ -194,7 +202,7 @@ module Morphosource
 
           # Need to search negative condition, can't use Media.where
           non_organization_team_media_docs = ActiveFedora::SolrService.query(
-            "member_of_collection_ids_ssim:#{organization_team.id} AND -media_organization_id_ssim:#{organization_work.id}", 
+            "member_of_collection_ids_ssim:#{organization_team.id} AND -media_organization_id_ssim:#{organization_work.id}",
             rows: 999999
           )
 
@@ -217,7 +225,7 @@ module Morphosource
             roles = [:managers, :editors, :depositors, :downloaders, :viewers]
             roles.each do |role|
               (organization_collection.send(role) || []).each do |user|
-                custom_project.send(role) << user 
+                custom_project.send(role) << user
               end
             end
             custom_project.managers.delete(batch_user)
@@ -232,10 +240,38 @@ module Morphosource
               ModifyCollectionMembershipJob.set(
                 queue: Hyrax.config.update_slow_queue_name
               ).perform_later(
-                work_id: non_organization_team_media_id,
+                media_id: non_organization_team_media_id,
                 add_to_collection_ids: [custom_project.id],
                 remove_from_collection_ids: [organization_team.id]
               )
+            end
+
+            # all organization media owned by the team should be removed from the team
+            # doing this here instead of at team deletion so we can check that the media are removed before completing migration
+            # Use ModifyCollectionMembershipJob instead of RemoveCollectionMembersJob to bypass reapply_org_team_access method
+            organization_team_media_ids = all_media_ids - non_organization_team_media_ids
+
+            organization_team_media_ids.each do |organization_team_media_id|
+              ModifyCollectionMembershipJob.set(
+                queue: Hyrax.config.update_slow_queue_name
+              ).perform_later(
+                media_id: organization_team_media_id,
+                add_to_collection_ids: [],
+                remove_from_collection_ids: [organization_team.id]
+              )
+            end
+
+
+            # all media with team access grants need to have those grants removed
+            team_access_media_ids = SolrDocument.where("has_model_ssim:Media AND
+                                                        read_access_group_ssim:#{organization_team.id}_* OR
+                                                        download_access_group_ssim:#{organization_team.id}_* OR
+                                                        edit_access_group_ssim:#{organization_team.id}_*").map{|d| d["id"] }
+
+            team_access_media_ids -= all_media_ids # team member media should have their access grants removed above by the ModifyCollectionMembershipJob
+
+            team_access_media_ids.each do |team_access_media_id|
+              RemoveCollectionAccessGrantsJob.perform_later(collection_id: organization_team.id, work_id: team_access_media_id)
             end
           end
         end
@@ -245,7 +281,7 @@ module Morphosource
 
         # Gather devices based on parent/child and ID relationships
         devices = (
-          organization_work.devices + 
+          organization_work.devices +
           Device.where(organization_id: organization_work.id)
         ).uniq { |device| device.id }
 
@@ -320,8 +356,8 @@ module Morphosource
         # As a last check to find any media missed, query all media associated with the organization work
         org_media_ids = ActiveFedora::SolrService.query(
           "has_model_ssim:Media && media_organization_id_ssim:#{organization_work.id}", rows: 999999, fl: ["id"]
-        ).map { |doc| doc['id'] }  
-        all_media_ids.concat org_media_ids   
+        ).map { |doc| doc['id'] }
+        all_media_ids.concat org_media_ids
 
         # Wait until step 8 and 9 complete before moving on
         wait_until_no_jobs("UpdateBiologicalSpecimenMetadataJob")
@@ -345,7 +381,7 @@ module Morphosource
         Rails.logger.info "Reindexing media to catch changes from objects, devices, and/or org team/project"
         all_media_ids.compact.uniq.sort.each { |id| SaveWorkJob.set( queue: Hyrax.config.update_slow_queue_name ).perform_later(id) }
 
-        # Reindex objects one more time (yes, duplicate reindex) to catch changes in media 
+        # Reindex objects one more time (yes, duplicate reindex) to catch changes in media
         # Objects index team membership from media, so only needed if org team/project exists
         if organization_team.present?
           wait_until_no_jobs("SaveWorkJob")
@@ -392,24 +428,14 @@ module Morphosource
 
         ### STEP 3. Have all team sub-projects been removed from the organization team? ###
         Rails.logger.info "STEP 3. Have all media, objects, and sub-projects been removed from the organization team?"
-        
+
         if organization_team.present?
           if Collection.where("member_of_collection_ids_ssim:#{organization_team.id}").present?
-            raise "STEP 3 FAILED. Organization team still retains media, physical objects, or child projects."
+            raise "STEP 3 FAILED. Organization team still retains child projects."
           end
-        end
 
-        ### STEP 3.5. Have all team non-organization media been removed from the organization team? ###
-        Rails.logger.info "STEP 3.5. Have all team non-organization media been removed from the organization team? "
-        
-        if organization_team.present?
-          non_organization_team_media_docs = ActiveFedora::SolrService.query(
-            "member_of_collection_ids_ssim:#{organization_team.id} AND -media_organization_id_ssim:#{organization_work.id} AND -media_organization_id_ssim:#{organization_collection.id}", 
-            rows: 999999
-          )
-
-          if non_organization_team_media_docs.present?
-            raise "STEP 3.5 FAILED. Organization team still retains non-organization media."
+          if organization_team.media_docs.present?
+            raise "STEP 3 FAILED. Organization team still retains media."
           end
         end
 
@@ -438,6 +464,13 @@ module Morphosource
           if !conditions.all?
             raise "STEP 4 FAILED. Some organization team members not copied."
           end
+
+          # Destroy user groups now so we can check that these are gone before completing migration
+          organization_team.user_groups.compact.each(&:destroy!) if organization_team.user_groups.compact.present?
+
+          if organization_team.user_groups.compact.present? # this should be [nil, nil, ...]
+            raise "STEP 4 FAILED. Organization team user groups present."
+          end
         end
 
         ### STEP 5. Has automated media transfer been enabled if necessary? ###
@@ -445,7 +478,7 @@ module Morphosource
 
         if org_data_manager.present? && !organization_collection.media_ownership_transfer
           raise "STEP 5 FAILED. Organization work had data manager but media transfer not enabled for collection."
-        elsif organization_collection.media_ownership_transfer && !org_data_manager.present? 
+        elsif organization_collection.media_ownership_transfer && !org_data_manager.present?
           raise "STEP 5 FAILED. Organization work did not have data manager but media transfer is enabled for collection."
         end
 
@@ -453,7 +486,7 @@ module Morphosource
         Rails.logger.info "STEP 6. Does data manager user still retain ownership of organization media?"
 
         if (
-          org_data_manager.present? && 
+          org_data_manager.present? &&
           Media.where("media_organization_id_ssim": organization_work.id, "user_with_ownership_ssi": org_data_manager.user_key).count > 0
         )
           raise "STEP 6 FAILED. Data manager user retains ownership of organization media."
@@ -463,7 +496,7 @@ module Morphosource
         Rails.logger.info "STEP 7. Do any organization transfers exist naming data manager as the receiving user?"
 
         if (
-          org_data_manager.present? && 
+          org_data_manager.present? &&
           ProxyDepositRequest.where(receiving_user_id: org_data_manager.id, organization_transfer: true).count > 0
         )
           raise "STEP 7 FAILED. Data manager user is still named on organization transfer requests."
@@ -498,6 +531,19 @@ module Morphosource
           end
         end
 
+        ### STEP 10. Are all are all team roles and access grants destroyed?
+        Rails.logger.info "STEP 10. Are all are all team roles and access grants destroyed?"
+        # any media with remaining team access grants need to have those grants removed
+        if organization_team.present?
+          team_access_media = SolrDocument.where("has_model_ssim:Media AND
+                                                  read_access_group_ssim:#{organization_team.id}_* OR
+                                                  download_access_group_ssim:#{organization_team.id}_* OR
+                                                  edit_access_group_ssim:#{organization_team.id}_*")
+          if team_access_media.present?
+            raise "STEP 10 FAILED. Found #{team_access_media.count} media with team access grants."
+          end
+        end
+
         Rails.logger.info "---"
         Rails.logger.info "Validation successful!"
         Rails.logger.info "---"
@@ -508,7 +554,7 @@ module Morphosource
       # Complete migration by deleting legacy org work and org team
       def complete_migration
         if is_migrated?
-          Rails.logger.info "STEP 10. Delete organization work."
+          Rails.logger.info "STEP 11. Delete organization work."
 
           begin
             if organization_team.present?
@@ -523,7 +569,7 @@ module Morphosource
             Rails.logger.warn "Raised ActiveTriples::ParentStrategy::UnmutableParentError on organization destruction, ignoring"
           end
 
-          Rails.logger.info "FINISHED STEP 10. Delete organization work."
+          Rails.logger.info "FINISHED STEP 11. Delete organization work."
         end
       end
 
@@ -534,7 +580,7 @@ module Morphosource
       def wait_until_no_jobs(job_class)
         sleep(10) until !active_jobs(job_class).present?
       end
-    
+
       def batch_user
         @batch_user ||= User.batch_user
       end

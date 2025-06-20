@@ -164,8 +164,8 @@ class BatchSubmissionsController < ApplicationController
 
   def initial_error_message
     # basic validation: check field names, column count
-    if @xlsx.last_column != 86
-      return "The columns are invalid.  Please check the file or download the blank submission manifest again."
+    if @xlsx.last_column != 85
+      return "The columns are invalid.  Please check the file or download the latest blank submission manifest again."
     elsif @xlsx.last_row > 5007
       return "The number of rows has exceeded the maximum."
     end
@@ -487,9 +487,6 @@ class BatchSubmissionsController < ApplicationController
           error_msg = "biological_specimen.ms_id: Existing biological specimen #{val} not found."
         end
         ignored_values = []
-        if cell_value(current_row, field_column("biological_specimen.idigbio_uuid")).present?
-          ignored_values << "biological_specimen.idigbio_uuid"
-        end
         if cell_value(current_row, field_column("biological_specimen.occurrence_id")).present?
           ignored_values << "biological_specimen.occurrence_id"
         end
@@ -506,44 +503,13 @@ class BatchSubmissionsController < ApplicationController
           warn_msg += "The following fields are ignored since biological_specimen.ms_id exists: " + ignored_values.join(', ')
         end
       else
-        if !cell_value(current_row, field_column("biological_specimen.idigbio_uuid")).present? &&
-           !cell_value(current_row, field_column("biological_specimen.occurrence_id")).present? &&
+        if !cell_value(current_row, field_column("biological_specimen.occurrence_id")).present? &&
            !cell_value(current_row, field_column("biological_specimen.institution_code")).present? &&
            !cell_value(current_row, field_column("biological_specimen.collection_code")).present? &&
            !cell_value(current_row, field_column("biological_specimen.catalog_number")).present?
 
-          error_msg = "One of the following must have a value: biological_specimen.ms_id, biological_specimen.idigbio_uuid, biological_specimen.occurrence_id, biological_specimen.institution_code, biological_specimen.collection_code, and biological_specimen.catalog_number."
+          error_msg = "One of the following must have a value: biological_specimen.ms_id, biological_specimen.occurrence_id, biological_specimen.institution_code, biological_specimen.collection_code, and biological_specimen.catalog_number."
         end
-      end
-    when "biological_specimen.idigbio_uuid"
-      if val.present? && !cell_value(current_row, field_column("biological_specimen.ms_id")).present?
-        idb_result = Morphosource::IDigBio.view(val)
-        if idb_result[:status] == :success && idb_result[:data].present?
-          idb = idb_result[:data]
-
-          # If the pre-selected organization has a recordset_id, specimen matching UUID via iDigBio API must have a
-          # recordset_id matching the recordset_id of the pre-selected organization
-          organization_recordset_id = @params["organization_recordset_id"]
-          if organization_recordset_id.present?
-            idb_recordset = idb["indexTerms"]["recordset"] # todo: might need to check if this will return multiple values
-            unless organization_recordset_id.upcase.split(', ').include? idb_recordset.upcase
-              error_msg += "Specimen in iDigBio has recordset id #{idb_recordset} which does not match the pre-selected organization's recordset id: #{organization_recordset_id}. "
-            end
-          end
-
-          # If the pre-selected organization has existing institution codes, specimen matching UUID via iDigBio API
-          # must have iDigBio-supplied institution code matching pre-selected organization (case-insensitive)
-          organization_institution_code = @params["organization_institution_code"]
-          if organization_institution_code.present?
-            idb_institution_code = idb["indexTerms"]["institutioncode"] # todo: might need to check if this will return multiple values
-            unless organization_institution_code.upcase.split(', ').include? idb_institution_code.upcase
-              error_msg += "Specimen in iDigBio has institution code #{idb_institution_code} which does not match the pre-selected organization's institution code: #{organization_institution_code}"
-            end
-          end
-        else
-          error_msg = "Cannot find specimen in iDigBio."
-        end
-        error_msg = "biological_specimen.idigbio_uuid: " + error_msg if error_msg.present?
       end
     when "biological_specimen.institution_code"
       # If pre-selected organization has existing institution codes, value must match one of the institution codes from the pre-selected organization
@@ -688,7 +654,6 @@ class BatchSubmissionsController < ApplicationController
       "media.parent_file" => "text",
       "media.parent_ms_id" => "text",
       "biological_specimen.ms_id" => "text",
-      "biological_specimen.idigbio_uuid" => "text",
       "biological_specimen.occurrence_id" => "text",
       "biological_specimen.institution_code" => "text",
       "biological_specimen.collection_code" => "text",

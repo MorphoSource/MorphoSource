@@ -64,3 +64,17 @@ body.dashboard nav#masthead {
     max-width: unset;
   }
 }
+
+.banner-text {
+  text-align: center;
+}
+
+#donate-button {
+  border: 2px solid white;
+  padding: 5px;
+  color: white;
+  text-align: center;
+  min-width: 100px;
+  border-radius: 3px;
+  text-decoration: none;
+}

@@ -64,6 +64,10 @@ module Hyrax
       :user_with_ownership, :x_spacing, :y_spacing, :z_spacing, :short_title, :agreement_attachment_url,
       to: :solr_document
 
+    # Attributes from Scene for preview
+    delegate :aleph_scene, 
+      to: :scene, allow_nil: true
+
     attr_accessor :file_status
 
     self.collection_presenter_class = Morphosource::CollectionPresenter
@@ -845,6 +849,15 @@ module Hyrax
       rescue Blacklight::Exceptions::RecordNotFound
         raise "Error loading device associated with media, device returned Blacklight::Exceptions::RecordNotFound"
       end
+    end
+
+    #
+    # Preview scene
+    #
+    # @return [Scene, nil] Preview scene configuration
+    #
+    def scene
+      Scene.find_by(media_id: id)
     end
 
     ### VIEW PRESENTATION METHODS ###

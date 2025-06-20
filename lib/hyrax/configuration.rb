@@ -1567,6 +1567,11 @@ module Hyrax
       @unused_storage_fund_code_id ||= nil
     end
 
+    attr_accessor :donation_url
+    def donation_url
+      @donation_url ||= nil
+    end
+
     attr_writer :solr_select_path
     def solr_select_path
       @solr_select_path ||= ActiveFedora.solr_config.fetch(:select_path, 'select')

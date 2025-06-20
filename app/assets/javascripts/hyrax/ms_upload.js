@@ -105,6 +105,41 @@ $( document ).ready(function() {
         $.blueimp.fileupload.prototype.options.fail.call(this, e, data);
       }
     };
+  
+    $.blueimp.fileupload.prototype.options.processQueue.push(
+        {
+            action: 'validateMediaType',
+            acceptFileTypes: '@'
+        }
+    );
+    $.blueimp.fileupload.prototype.processActions.validateMediaType = function(data, options) {
+      const dfd = $.Deferred();
+      const file = data.files[data.index];
+      
+      // Reject if media type formats list exists and file doesn't match it
+      if (typeof mediaTypeFormats === 'function') {
+        const formats = mediaTypeFormats();
+        if (
+          formats && 
+          formats.regex && 
+          !(
+            formats.regex.test(file.type) ||
+            formats.regex.test(file.name)
+          )
+        ) {
+          file.error = `File type not allowed for ${formats.title}`;
+        }
+      }
+
+      if (file.error || data.files.error) {
+        data.files.error = true;
+        dfd.rejectWith(this, [data]);
+      } else {
+        dfd.resolveWith(this, [data]);
+      }
+      return dfd.promise();
+    };
+    
     $('#fileupload').hyraxUploader(options);
 
     // show / hide file upload buttons
@@ -179,7 +214,7 @@ $( document ).ready(function() {
 // This code governs uploads of logos and banners on the collection dashboard.
 // hyraxUploader with other options (like afterSubmit), then override this file.
 Blacklight.onLoad(function() {
-  var options = {};
+  const options = {};
   $('#fileuploadbanner').hyraxUploader(options);
   $('#fileuploadlogo').hyraxUploader({downloadTemplateId: 'logo-template-download'});
 });

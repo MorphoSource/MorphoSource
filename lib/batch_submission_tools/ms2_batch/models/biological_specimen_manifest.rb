@@ -20,7 +20,6 @@ module BatchSubmissionTools
           # match, import, or create BSO
           if attrs.present?
             @occurrence_id = @attrs[:occurrence_id]&.first || @attrs['occurrence_id']
-            @idigbio_uuid = @attrs[:idigbio_uuid]&.first || @attrs['idigbio_uuid']
             @institution_code = @attrs[:institution_code]&.first || @attrs['institution_code']
             @collection_code = @attrs[:collection_code]&.first || @attrs['collection_code']
             @catalog_number = @attrs[:catalog_number]&.first || @attrs['catalog_number']
@@ -42,7 +41,6 @@ module BatchSubmissionTools
             )
             @work_imported = true
             @occurrence_id = @attrs['occurrence_id']
-            @idigbio_uuid = @attrs['idigbio_uuid']
             @institution_code = @attrs['institution_code']
             @collection_code = @attrs['collection_code']
             @catalog_number = @attrs['catalog_number']
@@ -55,7 +53,6 @@ module BatchSubmissionTools
             )
             @work_imported = false
             @occurrence_id = @attrs[:occurrence_id]&.first
-            @idigbio_uuid = @attrs[:idigbio_uuid]&.first
             @institution_code = @attrs[:institution_code]&.first
             @collection_code = @attrs[:collection_code]&.first
             @catalog_number = @attrs[:catalog_number]&.first

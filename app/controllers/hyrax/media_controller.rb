@@ -29,6 +29,7 @@ module Hyrax
     before_action :set_fileset_visibility, only: [:create, :update]
     before_action :authorize_media_with_temporary_link, only: [:showcase]
     before_action :set_fund_code, only: [:update]
+    before_action :set_scene_attributes, only: [:update]
     after_action :update_thumbnail, only: [:update]
     after_action :deliver_individual_access_messages, only: [:update]
 
@@ -554,6 +555,50 @@ module Hyrax
           fc = FundCode.find(fc_id)
           media.new_fund_code_association(fc)
         end
+      end
+
+      def set_scene_attributes
+        # return if user does not have edit access
+        return unless current_user&.can?(:edit, curation_concern)
+
+        # return if the aleph_scene parameter is not present
+        return unless params.dig(:media)&.key?(:aleph_scene)
+
+        scene = Scene.find_by(media_id: curation_concern.id)
+        aleph_scene = params.dig(:media).dig(:aleph_scene)
+
+        # if aleph_scene is blank, delete the media scene if it exists and return
+        # Don't send an invalid json error if aleph_scene is blank
+        if aleph_scene.blank? || %w[null {}].include?(aleph_scene)
+          scene&.destroy
+          return
+        end
+
+        # somehow bad JSON was passed in, throw flash error to user and return
+        unless is_json?(aleph_scene)
+          flash[:error] = I18n.t('morphosource.media.annotations.aleph_scene.invalid_json')
+          return
+        end
+
+        # if scene does not exist, create a new one
+        scene ||= Scene.new(media_id: curation_concern.id)
+
+        scene.aleph_scene = aleph_scene
+        scene.valid?
+        if scene.errors.present?
+          error_messages = scene.errors.full_messages.join(', ')
+          flash[:error] = I18n.t('morphosource.media.annotations.aleph_scene.invalid_scene', errors: error_messages)
+        else
+          scene.save!
+          flash[:info] = I18n.t('morphosource.media.annotations.aleph_scene.save_success')
+        end
+      end
+
+      def is_json?(json)
+        parsed = JSON.parse(json)
+        parsed.is_a?(Hash) || parsed.is_a?(Array)
+      rescue JSON::ParserError, TypeError => e
+        false
       end
 
       def validate_individual_access

@@ -1,0 +1,33 @@
+<% content_for :body_css_classes do %>showcase<% end %>
+<% provide :page_title, @page.title %>
+
+<div class="page-wrapper" style="display: flex; flex-direction: column; align-items: center;">
+  <div class="page-content">
+    <h1 style="font-size: 32px; font-weight: 400;"><%= @page.title %></h1>
+    <div class="text-muted">
+      <i class="far fa-clock" aria-hidden="true"></i> <%= @page.updated_at.strftime('%b %d, %Y') %>
+    </div>
+
+    <div class="mt-2 trix-wrapper">
+      <%= @page.content %>
+    </div>
+
+    <% if current_user&.admin? %>
+      <div class="mt-1">
+        
+        <div>
+          <%= link_to 'Edit', edit_page_path(@page), class: 'btn btn-primary' %>
+          <%= link_to t('page.delete.button'), page_path(@page), method: :delete, data: { confirm: t('page.delete.confirm') }, class: 'btn btn-danger' %>
+          <%= link_to t('morphosource.admin.pages.page_title'), Rails.application.routes.url_helpers.admin_pages_path, class: 'btn btn-primary pull-right' %>
+        </div>
+        <div class="mt-1">
+          <% if @page.published? %>
+            Page is currently <span class="text-success">published</span>.
+          <% else %>
+            Page is currently <span class="text-danger">unpublished</span>.
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

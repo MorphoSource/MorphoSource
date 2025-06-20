@@ -19,6 +19,7 @@ RSpec.describe Organization do
       subject.institution_name = ['foo']
       subject.collection_code = ['foo']
       subject.team_id = ['foo']
+      subject.date_managed = 'foo'
       # permissions defaults metadata
       subject.download_permission = ['foo']
       subject.download_reviewer = ['foo']
@@ -39,8 +40,9 @@ RSpec.describe Organization do
     subject.state_province = ['foo']
     subject.postal_code = ['foo']
     subject.country = ['foo']
-    subject.download_permission = ['foo']
+    subject.date_managed = 'foo'
     # permissions defaults metadata
+    subject.download_permission = ['foo']
     subject.download_reviewer = ['foo']
     subject.agreement_uri = ['foo']
     subject.rights_statement = ['foo']
@@ -189,6 +191,95 @@ RSpec.describe Organization do
 
         it '#outside_media returns specimens not owned by team' do
           expect(subject.outside_media).to match_array([media1, media2])
+        end
+      end
+    end
+  end
+
+  describe 'record_original_team' do
+    let(:team1)         { Collection.create(title: ['team1'], collection_type_gid: team_collection_type.gid) }
+    let(:team2)         { Collection.create(title: ['team2'], collection_type_gid: team_collection_type.gid) }
+    let(:project)         { Collection.create(title: ['project'], collection_type_gid: project_collection_type.gid) }
+    let(:organization) { Organization.create(title: ['org'], team_id: [team1.id]) }
+
+    before do
+      project.member_of_collections << team1
+      project.save
+    end
+
+    context 'updating a team' do
+      it 'records the original team' do
+        organization.update(team_id: [team2.id])
+        expect(organization.instance_variable_get(:@old_collections)).to match_array([team1, project])
+        expect(organization.team).to eq(team2)
+      end
+    end
+  end
+
+  describe 'record_date_managed' do
+    let(:user)          { FactoryBot.create(:contributor) }
+
+    context 'organization does not have a team' do
+      let!(:organization) { FactoryBot.create(:organization, depositor: user.ms_id) }
+
+      context 'organization has a date_managed' do
+        before do
+          organization.date_managed = Date.today
+        end
+        it 'removes date_managed' do
+          expect(organization.date_managed).to eq(Date.today)
+          expect { organization.record_date_managed }.to change { organization.date_managed }.from(Date.today).to(nil)
+        end
+      end
+      context 'organization does not have a date_managed' do
+        it 'does not change date_managed' do
+          expect(organization.date_managed).to be_nil
+          expect { organization.record_date_managed }.not_to change { organization.date_managed }
+        end
+      end
+    end
+    context 'organization has a team' do
+      let!(:team)         { FactoryBot.create(:collection, collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+      let!(:organization) { FactoryBot.create(:organization, depositor: user.ms_id, team_id: [team.id]) }
+      before do
+        team.create_collection_groups
+      end
+      context 'team does not have managers' do
+        before do
+          team.managers_group.users = []
+          team.managers_group.save!
+        end
+        context 'team has a date_managed' do
+          before do
+            organization.date_managed = Date.today
+          end
+          it 'removes date_managed' do
+            expect(organization.date_managed).to eq(Date.today)
+            expect { organization.record_date_managed }.to change { organization.date_managed }.from(Date.today).to(nil)
+          end
+        end
+        context 'collection does not have a date_managed' do
+          it 'does not change date_managed' do
+            expect(organization.date_managed).to be_nil
+            expect { organization.record_date_managed }.not_to change { organization.date_managed }
+          end
+        end
+      end
+      context 'collection has managers' do
+        context 'collection has a date_managed' do
+          before do
+            organization.date_managed = Date.today
+          end
+          it 'does not change the date_managed' do
+            expect(organization.date_managed).to eq(Date.today)
+            expect { organization.record_date_managed }.not_to change { organization.date_managed }
+          end
+        end
+        context 'collections does not have a date_managed' do
+          it 'adds a date_managed' do
+            expect(organization.date_managed).to be_nil
+            expect { organization.record_date_managed }.to change { organization.date_managed }.from(nil).to(Date.today)
+          end
         end
       end
     end

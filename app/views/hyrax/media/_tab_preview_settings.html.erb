@@ -1,0 +1,70 @@
+<div class="row media-showcase">
+  <!-- left column  -->
+  <div class="col-sm-6">
+    <div class="content-block">
+      <h2>Preview Settings</h2>
+      <div>This is a BETA page to customize initial preview settings. For now, you can set the initial model rotation and save annotations. Changes will be displayed with the preview for all users. Here's how to do it:</div> 
+      <div class="mt-1">1. Configure desired scene settings using the viewer. You may want to expand the viewer to full screen. Open the tools menu. Use rotation controls to set custom rotation. Create annotations by navigating to the annotation tab and double-clicking on the model. For each annotation you can customize the title, description, and default view.</div>
+      <div class="mt-1">2. Once you have the desired scene settings, export scene settings from the viewer with the button below. Changes will be stored when the media record is saved.</div>
+      <div class="mt-1">Please note: Rotation will be applied to the model behind the scenes, details of custom rotations will not appear in the rotation controls within the viewer. Rotations are applied to original model position and subsequent changes are not cumulative.</div>
+      
+      <div class="mt-2">
+        <a id="request-iframe-json-emit" href="#" class="btn btn-primary">Export viewer scene settings</a>
+      </div>
+
+      <!-- rotation -->
+      <div class="form-group row mt-2">
+        <div class="col-xs-6 showcase-label">
+          <label class="control-label string optional" for="media_preview_rotation">Rotation</label>
+          <i class="material-icons tooltip-icon" data-original-title="" title="">
+            <p class="hint hide"><%= t('simple_form.hints.defaults.preview_rotation') %></p>
+          </i>
+        </div>
+        <div id="media_preview_rotation" class="col-xs-6 showcase-value">--</div>
+      </div>
+
+      <!-- annotations -->
+      <div class="form-group row">
+        <div class="col-xs-6 showcase-label">
+          <label class="control-label string optional" for="media_preview_annotations">Annotations</label>
+          <i class="material-icons tooltip-icon" data-original-title="" title="">
+            <p class="hint hide"><%= t('simple_form.hints.defaults.preview_annotations') %></p>
+          </i>
+        </div>
+        <div id="media_preview_annotations" class="col-xs-6 showcase-value">--</div>
+      </div>
+
+      <div class="form-group row mt-2">
+        <div class="col-xs-12 showcase-label">
+          <label class="control-label string optional" data-toggle="collapse" href="#sketchfab-instructions">
+            Annotation import from SketchFab
+            <span class="glyphicon glyphicon-triangle-bottom sketchfab-instructions"></span>
+          </label>
+        </div>
+
+        <div id="sketchfab-instructions" class="col-xs-12 showcase-value collapse collapse-accordion">
+          If you have a model in SketchFab corresponding to this media with annotations you want to import, follow these steps:
+          <ol class="mt-1">
+            <li class="mt-1">Get the URL for the SketchFab model.</li>
+            <li class="mt-1">Use our tool to <a href="https://morphosource.github.io/export-sketchfab-annotations/" target="_blank">Export SketchFab Annotations</a> from your model URL. SketchFab annotations will be automatically converted to MorphoSource annotation format. Input your URL and copy the MorphoSource annotation format JSON to your clipboard using the button provided. Return to this page when you have copied the JSON.</li>
+            <li class="mt-1">Expand the Aleph Scene JSON field below these instructions. </li>
+            <li class="mt-1">In the Aleph Scene JSON field, replace the contents of <span style="font-family: monospace">"annotations"</span> (by default this is <span style="font-family: monospace">[]</span>) with your data. Paste the MorphoSource annotation format JSON you previously copied to clipboard to this location in this field. When you are done, it should read <span style="font-family: monospace">"annotations": [your_annotation_data_here]</span>. Be sure you don't forget the outer square brackets! After pasting your annotation data, the count of annotations above should update to reflect the number of annotations you imported.</li>
+            <li class="mt-1">Save the media record. Your annotations will appear after saving.</li>
+          </ol>
+          <span class="mt-2">This workflow is in beta, you may experience issues. This process works best with models that are centered at the origin, since MorphoSource previews are automatically centered as well.</span>
+        </div>
+      </div>
+      
+      <div class="mt-2">
+        <%= render_edit_field_partial('aleph_scene', f: f) %>
+      </div>
+    </div>
+  </div>
+
+  <!-- right column  -->
+  <div class="col-sm-6">
+    <div class="content-block preview">
+      <%= render @presenter.showcase_viewer_partial, presenter: @presenter %>
+    </div>
+  </div>
+</div>

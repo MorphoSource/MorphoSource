@@ -8,6 +8,7 @@ module Morphosource
       before_action :authenticate_api_key_optional, only: [
         :media_export, :objects_export, :media_download_counts, :media_downloads, :media_requests
       ]
+      before_action :remove_page_param, only: [:media_downloads, :media_requests, :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet, :objects_export, :media_export, :media_download_counts]
     end
 
     def export_render(csv_response_header=nil)
@@ -196,6 +197,11 @@ module Morphosource
       deny_access_unauthorized and return unless current_user.present?
       deny_access_forbidden    and return unless current_user.can?(:edit, @collection)
       true
+    end
+
+    # remove page param from request to return all results in export
+    def remove_page_param
+      params.delete(:page)
     end
 
     def downloads_report(media_ids)

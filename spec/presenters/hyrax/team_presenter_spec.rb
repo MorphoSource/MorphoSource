@@ -24,7 +24,7 @@ RSpec.describe Hyrax::TeamPresenter do
       city: ["city"],
       state_province: ["state_province"],
       postal_code: ["postal_code"],
-      country: ["country"],
+      country: ["United States"],
       team_id: [team.id]
     )
   }
@@ -41,16 +41,16 @@ RSpec.describe Hyrax::TeamPresenter do
   describe "presenter methods" do
     subject { presenter }
     it '#set_organization_data' do
-      expect(presenter.organization_title.first).to eq('title')
-      expect(presenter.organization_institution_name.first).to eq("institution_name")
-      expect(presenter.organization_institution_code.first).to eq("institution_code")
-      expect(presenter.organization_collection_code.first).to eq("collection_code")
-      expect(presenter.organization_description.first).to eq("description")
-      expect(presenter.organization_address.first).to eq("address")
-      expect(presenter.organization_city.first).to eq("city")
-      expect(presenter.organization_state_province.first).to eq("state_province")
-      expect(presenter.organization_postal_code.first).to eq("postal_code")
-      expect(presenter.organization_country.first).to eq("country")
+      expect(presenter.organization_title.first).to eq(org1.title.first)
+      expect(presenter.organization_institution_name.first).to eq(org1.institution_name.first)
+      expect(presenter.organization_institution_code.first).to eq(org1.institution_code.first)
+      expect(presenter.organization_collection_code.first).to eq(org1.collection_code.first)
+      expect(presenter.organization_description.first).to eq(org1.description.first)
+      expect(presenter.organization_address.first).to eq(org1.address.first)
+      expect(presenter.organization_city.first).to eq(org1.city.first)
+      expect(presenter.organization_state_province.first).to eq(org1.state_province.first)
+      expect(presenter.organization_postal_code.first).to eq(org1.postal_code.first)
+      expect(presenter.organization_country.first).to eq(org1.country.first)
     end
 
     it '#collection_type' do

@@ -8,6 +8,7 @@ RSpec.describe Morphosource::Dashboard::CollectionMembersController, type: :cont
   let(:work)                    { Media.create(title: ['test work']) }
   let(:ability)                 { Ability.new(user) }
   let(:media_list)              { FactoryBot.create(:media_list, depositor: user.ms_id) }
+  let(:sequential_section_list) { FactoryBot.create(:sequential_section_list, depositor: user.ms_id) }
 
   before do
     sign_in user
@@ -338,5 +339,100 @@ RSpec.describe Morphosource::Dashboard::CollectionMembersController, type: :cont
         end
       end
     end
+  end
+
+  describe '#validate_for_sequential_section_list' do
+    let(:specimen_id) { '123' }
+    let!(:specimen1) { FactoryBot.create(:biological_specimen, id: specimen_id) }
+    let!(:specimen2) { FactoryBot.create(:biological_specimen, id: '456') }
+
+    let!(:media1)          { FactoryBot.create(:media) }
+    let!(:device)   { FactoryBot.create(:device) }
+    let!(:imaging_event1)  { FactoryBot.create(:imaging_event, physical_object_id: [specimen_id], device_id: [device.id]) }
+    let!(:processing_event1)  { FactoryBot.create(:processing_event) }
+
+    let!(:media2)          { FactoryBot.create(:media) }
+    let!(:imaging_event2)  { FactoryBot.create(:imaging_event, physical_object_id: ['456'], device_id: [device.id]) }
+    let!(:processing_event2)  { FactoryBot.create(:processing_event) }  
+
+    let!(:media3)          { FactoryBot.create(:media) }
+    let!(:imaging_event3)  { FactoryBot.create(:imaging_event, physical_object_id: [specimen_id], device_id: [device.id]) }
+    let!(:processing_event3)  { FactoryBot.create(:processing_event) }
+
+    before do
+      imaging_event1.ordered_members << processing_event1
+      imaging_event1.save
+      processing_event1.ordered_members << media1
+      processing_event1.save
+      media1.save
+      imaging_event2.ordered_members << processing_event2
+      imaging_event2.save
+      processing_event2.ordered_members << media2
+      processing_event2.save
+      media2.save
+      imaging_event3.ordered_members << processing_event3
+      imaging_event3.save
+      processing_event3.ordered_members << media3
+      processing_event3.save
+      media3.save
+
+      controller.instance_variable_set(:@batch_ids, batch_ids)
+      controller.instance_variable_set(:@collection, sequential_section_list)
+    end
+
+    context 'when collection has a specimen_id' do
+      before do
+        allow(sequential_section_list).to receive(:specimen_id) { specimen_id }
+      end
+
+      context 'and all media have the same specimen_id' do
+        let(:batch_ids) { [media1.id, media3.id] }
+
+        it 'does not return an error message' do
+          expect(controller.send(:validate_for_sequential_section_list)).to be_nil
+        end
+      end
+
+      context 'and some media have different specimen_ids' do
+        let(:batch_ids) { [media1.id, media2.id] }
+
+        it 'removes media with different specimen_ids' do
+          expect(controller.send(:validate_for_sequential_section_list)).to be_nil
+          expect(controller.instance_variable_get(:@batch_ids)).to eq([media1.id])
+        end
+      end
+
+      context 'and all media have different specimen_ids' do
+        let(:batch_ids) { [media2.id] }
+
+        it 'returns an error message' do
+          expect(controller.send(:validate_for_sequential_section_list)).to eq("None of the selected media has the same physical object of #{sequential_section_list.title.first} collection.")
+          expect(controller.instance_variable_get(:@batch_ids)).to eq([])
+        end
+      end
+    end
+
+    context 'when collection does not have a specimen_id' do
+      before do
+        allow(sequential_section_list).to receive(:specimen_id) { nil }
+      end
+
+      context 'and all media have the same specimen_id' do
+        let(:batch_ids) { [media1.id, media3.id] }
+
+        it 'does not return an error message' do
+          expect(controller.send(:validate_for_sequential_section_list)).to be_nil
+        end
+      end
+
+      context 'and media have different specimen_ids' do
+        let(:batch_ids) { [media1.id, media2.id] }
+
+        it 'returns an error message' do
+          expect(controller.send(:validate_for_sequential_section_list)).to eq("Please select media from the same physical object to be added to the #{sequential_section_list.title.first} collection.  Currently the selected media are associated with these objects: 123, 456. ")
+        end
+      end
+    end
+
   end
 end

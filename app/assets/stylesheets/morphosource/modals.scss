@@ -1,0 +1,39 @@
+// styles for sitewide modals and modal configuration
+@import 'shared';
+
+#sitewide-modal, #sitewide-modal-2, .modal-example, .guilt-trip-example {
+  background-color: unset;
+
+  .modal-content {
+    border: 3px #286090 solid;
+    border-radius: 0;
+
+    .modal-title {
+      margin-bottom: 20px !important;
+      font-size: 22px !important;
+    }
+
+    .modal-text {
+      margin-bottom: 40px;
+    }
+
+    .modal-dismiss-options {
+      width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 30px;
+    }
+  }
+}
+
+#sitewide-modal-2 {
+  background-color: unset;
+
+  #modal-donate-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+  }
+}

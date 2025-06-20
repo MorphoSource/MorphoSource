@@ -20,6 +20,12 @@ RUN apt update && \
   $EXTRA_APK_PACKAGES && \
   rm -rf /var/lib/apt/lists/* 
 
+# Update node/npm
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
+  apt install -yq nodejs build-essential && \
+  npm install -g npm --silent && \
+  npm install -g yarn --silent
+
 RUN adduser --system --gid 0 --uid 1001 --home /app app
 USER app
 
@@ -57,6 +63,10 @@ ENV BUNDLE_PATH=/app/samvera/hyrax-webapp/vendor/bundle
 RUN bundle config --global && \
   bundle install --jobs "$(nproc)"
 
+COPY --chown=1001:0 $APP_PATH/package.json $RAILS_ROOT/package.json
+COPY --chown=1001:0 $APP_PATH/yarn.lock $RAILS_ROOT/yarn.lock
+RUN yarn install
+
 COPY --chown=1001:0 $APP_PATH $RAILS_ROOT
 
 # Set directories as executable for writeability
@@ -79,9 +89,13 @@ ENV BUNDLE_PATH=/app/samvera/hyrax-webapp/vendor/bundle
 RUN bundle config --global && \
   bundle install --jobs "$(nproc)" --without development
 
+COPY --chown=1001:0 $APP_PATH/package.json $RAILS_ROOT/package.json
+COPY --chown=1001:0 $APP_PATH/yarn.lock $RAILS_ROOT/yarn.lock
+RUN yarn install
+
 COPY --chown=1001:0 $APP_PATH $RAILS_ROOT
 
-RUN RAILS_ENV=development bundle exec rake assets:precompile
+RUN NODE_OPTIONS=--openssl-legacy-provider RAILS_ENV=development bundle exec rails assets:precompile
 
 # Set directories as executable for writeability
 RUN chmod -R g+rwX $RAILS_ROOT
@@ -109,6 +123,12 @@ RUN apt update && \
   tzdata \
   zip && \
   rm -rf /var/lib/apt/lists/*
+
+# Update node/npm
+RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
+  apt install -yq nodejs build-essential && \
+  npm install -g npm --silent && \
+  npm install -g yarn --silent
 
 RUN adduser --system --gid 0 --uid 1001 --home /app app
 USER app
@@ -184,11 +204,6 @@ RUN apt update && \
   python3-pip \
   7zip
 
-# Update node/npm
-RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
-  apt install -yq nodejs build-essential && \
-  npm install -g npm
-
 # Install Python packages
 RUN pip3 install --break-system-packages --no-cache-dir --upgrade pip && \
   pip3 install --break-system-packages --no-cache-dir numpy Pillow pydicom
@@ -204,7 +219,8 @@ RUN if [ "$TARGETPLATFORM" != "linux/arm64" ]; then \
     fi
 
 # Install GLTF Pipeline 3D mesh derivative tool, used for creating Draco GLBs
-RUN npm install --global gltf-pipeline
+RUN npm install --global only-allow
+RUN npm install --global gltf-pipeline --legacy-peer-deps
 
 # Install GLTF Transform 3D mesh derivative tool, used for simplifying GLTF derivatives and creating Draco GLBs
 RUN npm install --global @gltf-transform/cli

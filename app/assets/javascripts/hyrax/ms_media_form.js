@@ -295,12 +295,20 @@ $( document ).ready(function() {
 
   if ($('form[id*="edit_media"]').length) { // if edit media form page
 
-    $('#tab-media-details[class!="active"] a').on('click', function(){
-      var uvIframe = document.getElementById("uv-iframe");
-      if (this.ariaExpanded == "false" && uvIframe) {
+    $('#tab-media-details[class!="active"] a').one('click', function(){
+      reloadUV('media-details', this.ariaExpanded == "false");
+    })
+
+    $('#tab-preview-settings[class!="active"] a').one('click', function(){
+      reloadUV('preview-settings', this.ariaExpanded == "false");
+    })
+
+    function reloadUV(parentId, ariaExpandedFalse) {
+      var uvIframe = document.getElementById(parentId)?.querySelector("#uv-iframe");
+      if (ariaExpandedFalse && uvIframe) {
         uvIframe.contentDocument.location.reload(true);
       }
-    })
+    }
 
     setupTooltip();
     removeLastRepeatable();

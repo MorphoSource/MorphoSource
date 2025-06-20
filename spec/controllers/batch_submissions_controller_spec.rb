@@ -134,7 +134,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
           html = response.body
           expect(html).to include 'media.media_file: File ANSP_Fish_53046_Head.zip cannot be found. Please check your shared folder.'
           expect(html).to include 'media.media_type: Please enter a valid value: "Image", "Video", "CTImageSeries", "PhotogrammetryImageSeries", "Mesh", "SequentialSectionImageSeries", "Other"'
-          expect(html).to include 'One of the following must have a value: biological_specimen.ms_id, biological_specimen.idigbio_uuid, biological_specimen.occurrence_id, biological_specimen.institution_code, biological_specimen.collection_code, and biological_specimen.catalog_number.'
+          expect(html).to include 'One of the following must have a value: biological_specimen.ms_id, biological_specimen.occurrence_id, biological_specimen.institution_code, biological_specimen.collection_code, and biological_specimen.catalog_number.'
           expect(html).to include 'biological_specimen.date_created: Please enter a valid date in YYYY-MM-DD or MM-DD-YYYY format.'
           expect(html).to include 'biological_specimen.is_type_specimen: Please enter a valid value: "Yes", "No", "Y", "N", "true", "false", "0", "1"'
           expect(html).to include 'biological_specimen.sex: Please enter a valid value: "Female", "Male", "Unknowable", "Undetermined", "Hermaphrodite", "Gynandromorph"'
@@ -152,12 +152,9 @@ RSpec.describe BatchSubmissionsController, type: :controller do
           expect(html).to include 'A value can be present in media.parent_file or media.parent_ms_id, but not in both.'
           expect(html).to include 'media.parent_ms_id: Existing media not_found not found.'
           expect(html).to include 'biological_specimen.ms_id: Existing biological specimen not_found not found.'
-          expect(html).to include 'biological_specimen.idigbio_uuid: Cannot find specimen in iDigBio.'
           expect(html).to include 'biological_specimen.institution_code: It does not match the institution code from the pre-selected organization: ' + organization_institution_code
           expect(html).to include 'media.parent_file parent_file_not_found.zip not found in another row.'
           expect(html).to include 'media.parent_file ANSP_Fish_193352_Head.zip cannot be media.media_file in the same row.'
-          expect(html).to include 'Specimen in iDigBio has institution code cm which does not match the pre-selected organization\'s institution code: ' + organization_institution_code
-          expect(html).to include 'Specimen in iDigBio has recordset id 71b8ffab-444e-43f9-9a9c-5c42b0eaa5eb which does not match the pre-selected organization\'s recordset id: ' + organization_recordset_id
           expect(html).to include 'media.raw_or_derived: Please enter a valid value.'
           expect(html).to include "A value cannot be present in media.parent_file if media.raw_or_derived value is set to 'Raw'."
           expect(html).to include 'imaging_event.ct.pixel_spacing_calibration: Please enter a valid value: "Geometry", "Fiducial"'
@@ -224,7 +221,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
       it "displays column count invalid message" do
         expect(response).to render_template 'validation_fail'
         html = response.body
-        expect(html).to include 'The columns are invalid.  Please check the file or download the blank submission manifest again.'
+        expect(html).to include 'The columns are invalid.  Please check the file or download the latest blank submission manifest again.'
       end
     end
     context "columns have invalid field name" do

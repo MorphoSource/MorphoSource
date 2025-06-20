@@ -55,6 +55,14 @@ en:
       sidebar:
         teams: "Teams"
         projects: "Projects"
+        works: 'All Works'
+        all_downloads: 'All Downloads'
+        all_requests: 'All Requests'
+        organizations: 'Organizations'
+        media_lists: 'Media Lists'
+        sequential_section_lists: 'Sequential Section Lists'
+        settings: Configuration
+        simple_pages: Simple Pages
     user_profile:
       tab_administration: User Administration
     media:

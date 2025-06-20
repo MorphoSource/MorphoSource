@@ -298,7 +298,7 @@ Hyrax.config do |config|
   # config.arkivo_api = false
 
   # Stream realtime notifications to users in the browser
-  # config.realtime_notifications = true
+  config.realtime_notifications = true
 
   # Should the acceptance of the licence agreement be active (checkbox), or
   # implied when the save button is pressed? Set to true for active
@@ -450,6 +450,10 @@ Hyrax.config do |config|
   # Fund code reporting fields (if not using fund code reporting features, these fields are unnecessary)
   config.subsidizing_fund_code_id = ENV.fetch('SUBSIDIZING_FUND_CODE_ID', Rails.env.production? ? 4 : nil)
   config.unused_storage_fund_code_id = ENV.fetch('UNUSED_STORAGE_FUND_CODE_ID', Rails.env.production? ? 18 : nil)
+
+  # URL for donation links
+  # 'Donate' buttons on the front page and in fundraising modals will link to this URL
+  config.donation_url = ENV.fetch('DONATION_URL', "https://www.gifts.duke.edu/?designation=391001239")
 end
 
 Date::DATE_FORMATS[:standard] = "%m/%d/%Y"

@@ -52,10 +52,9 @@ module Morphosource
 
     # Required keys in params hash:
     # - title
-    # - author_first
-    # - author_last
     # - url
     # - resource_type
+    # Also, either organization must be present OR both author_first and author_last must be present
     def self.generate_metadata_deposit_xml(identifier, params={})
       doi = identifier_to_doi(identifier)
 
@@ -68,13 +67,16 @@ module Morphosource
       if params['author_last'] && params['author_last'].length > 60
         params['author_last'] = params['author_last'].truncate(60)
       end
+      if params['organization'] && params['organization'].length > 511
+        params['organization'] = params['organization'].truncate(511)
+      end
 
       # set timestamp and publication_year if not passed in
       params.reverse_merge!({'timestamp' => Time.now.to_i, 'publication_year' => Time.now.year})
       # always set doi_batch_id and doi
       params.merge!({'doi_batch_id' => SecureRandom.uuid, 'doi' => doi})
 
-      required_params = %w{ doi_batch_id author_first author_last title doi url resource_type timestamp publication_year }
+      required_params = %w{ doi_batch_id title doi url resource_type timestamp publication_year }
       required_params.each do |required_param|
         if params[required_param].blank?
           raise "CrossrefDoiMinter.generate_metadata_deposit_xml call missing required parameter: #{required_param}"
@@ -82,6 +84,11 @@ module Morphosource
           params[required_param] = params[required_param].to_s.encode(xml: :text)
         end
       end
+
+      if params['organization'].blank? && (params['author_first'].blank? || params['author_last'].blank?)
+        raise "CrossrefDoiMinter.generate_metadata_deposit_xml call missing required parameter: organization OR author_first and author_last"
+      end
+
       template_path = Rails.root.join('data','xmls','doi.xml.erb')
       rendered_xml = CrossrefMetadataTemplate.new(params).render(File.new(template_path).read)
       Rails.logger.info("CrossrefDoiMinter.generate_metadata_deposit_xml rendered deposit XML: #{rendered_xml}")

@@ -550,6 +550,54 @@ namespace :morphosource do
     Role.find_or_create_by(name: 'charge_api')
   end
 
+  desc 'Create Initial Simple Pages'
+  task :create_simple_pages, [:force] => :environment do |task, args|
+    # Iteratively read all yml files in config/pages and load each YML as hash
+    # If force is 'true', overwrite any existing pages matching the slug
+    force = args[:force] == 'true'
+
+    Dir.glob(Rails.root.join('config', 'pages', '*.yml')).each do |file|
+      begin
+        page_data = YAML.load_file(file)
+        Rails.logger.info("Loaded page data from #{file}")
+
+        if page_data['pages'].present? && page_data['pages'].is_a?(Array)
+          page_data['pages'].each do |page|
+            if (
+              page['title'].present? &&
+              page['slug'].present? &&
+              page['visibility'].present? &&
+              page['markdown_content'].present?
+            )
+              @page = Page.find_or_initialize_by(slug: page['slug'])
+              if @page.persisted? && !force
+                Rails.logger.info("Skipping page creation, page already exists: #{@page.slug}")
+                next
+              end
+
+              @page.title = page['title']
+              @page.visibility = page['visibility'].to_sym
+              @page.content = Redcarpet::Markdown.new(Redcarpet::Render::HTML).render(page['markdown_content']).html_safe
+
+              if @page.save
+                Rails.logger.info("Page created/updated: #{@page.slug}")
+              else 
+                Rails.logger.error("Failed to save page: #{@page.slug}")
+                Rails.logger.error(@page.errors.full_messages.join(', '))
+              end
+            else
+              Rails.logger.error("Invalid page data in #{file}: #{page.inspect}")
+            end
+          end
+        else 
+          Rails.logger.error("Invalid pages data in #{file}: #{page_data.inspect}")
+        end
+      rescue StandardError => e
+        Rails.logger.error("Failed to load page data from #{file}: #{e.message}")
+      end
+    end
+  end
+
   # For development use only
   # For production environments, create a null organization manually then update Hyrax.config.null_organization_id with its id.
   # ENV['NULL_ORGANIZATION_ID'] is set in vendor/docker-compose.env

@@ -87,3 +87,14 @@ vendor/alembic/__pycache__/*
 
 # For temporary local files (e.g., batch submission files) that should not be checked into repo
 /docker_files/*
+
+# ---------------------------------------------------
+# Webpacker related rules
+# ---------------------------------------------------
+
+/public/packs
+/public/packs-test
+/node_modules
+/yarn-error.log
+yarn-debug.log*
+.yarn-integrity

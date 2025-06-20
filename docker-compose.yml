@@ -5,7 +5,7 @@ services:
       target: morphosource-dev
       args:
         - EXTRA_APK_PACKAGES=git less
-    container_name: app
+    container_name: dev5-app
     stdin_open: true
     tty: true
     user: "101292838:0"
@@ -35,7 +35,7 @@ services:
     build:
       context: .
       target: morphosource-worker-dev
-    container_name: app_worker
+    container_name: dev5-app_worker
     user: "101292838:0"
     env_file:
       - ./vendor/docker/credentials.env
@@ -61,7 +61,7 @@ services:
     build:
       context: .
       target: morphosource-worker-dev
-    container_name: app_test
+    container_name: dev5-app_test
     user: "101292838:0"
     env_file:
       - ./vendor/docker/credentials.env
@@ -93,7 +93,7 @@ services:
       target: morphosource-dev
       args:
         - EXTRA_APK_PACKAGES=git less
-    container_name: db_migrate
+    container_name: dev5-db_migrate
     user: "101292838:0"
     env_file:
       - ./vendor/docker/credentials.env
@@ -117,7 +117,7 @@ services:
       target: morphosource-worker-dev
       args:
         - EXTRA_APK_PACKAGES=git less
-    container_name: db_migrate_test
+    container_name: dev5-db_migrate_test
     user: "101292838:0"
     env_file:
       - ./vendor/docker/credentials.env
@@ -141,7 +141,7 @@ services:
 
   lightbox:
     image: gitlab-registry.oit.duke.edu/morphosource/lightbox:0.0.2
-    container_name: lightbox
+    container_name: dev5-lightbox
     # ports:
     #   - 4000:3000
     networks:
@@ -149,7 +149,7 @@ services:
 
   postgres:
     image: postgres:latest
-    container_name: postgres
+    container_name: dev5-postgres
     env_file:
       - ./vendor/docker/credentials.env
       - ./vendor/docker/docker-compose.env
@@ -162,7 +162,7 @@ services:
 
   fcrepo:
     image: ghcr.io/samvera/fcrepo4:4.7.5
-    container_name: fcrepo
+    container_name: dev5-fcrepo
     volumes:
       - fcrepo:/data
       - ./vendor/docker/fcrepo/fedora.xml:/var/lib/jetty/webapps/fedora.xml
@@ -173,7 +173,7 @@ services:
 
   memcached:
     image: memcached
-    container_name: memcached
+    container_name: dev5-memcached
     # ports:
     #  - '11211:11211'
     networks:
@@ -189,7 +189,7 @@ services:
 
   solr:
     image: bitnami/solr:8.11.2-debian-11-r233
-    container_name: solr
+    container_name: dev5-solr
     environment:
       SOLR_CORES: "hyrax, hyrax_test"
       SOLR_CORE_CONF_DIR: /core_config/conf

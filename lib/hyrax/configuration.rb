@@ -406,6 +406,22 @@ module Hyrax
     end
     attr_writer :disable_wings
 
+    ##
+    # @return [Boolean]
+    def disable_freyja
+      return @disable_freyja unless @disable_freyja.nil?
+      ActiveModel::Type::Boolean.new.cast(ENV.fetch('HYRAX_SKIP_FREYJA', false))
+    end
+    attr_writer :disable_freyja
+
+    ##
+    # @return [Boolean]
+    def disable_frigg
+      return @disable_frigg unless @disable_frigg.nil?
+      ActiveModel::Type::Boolean.new.cast(ENV.fetch('HYRAX_SKIP_FRIGG', false))
+    end
+    attr_writer :disable_frigg
+
     attr_writer :display_media_download_link
     def display_media_download_link?
       return @display_media_download_link unless @display_media_download_link.nil?
@@ -514,6 +530,14 @@ module Hyrax
     attr_writer :file_set_file_service
     def file_set_file_service
       @file_set_file_service ||= Hyrax::FileSetFileService
+    end
+
+    # This value determines whether to use load the Freyja adapter in dassie
+    attr_writer :valkyrie_transition
+    attr_reader :valkyrie_transition
+    def valkyrie_transition?
+      @valkyrie_transition ||=
+        ActiveModel::Type::Boolean.new.cast(ENV.fetch('VALKYRIE_TRANSITION', false))
     end
 
     attr_writer :max_days_between_fixity_checks
@@ -1069,6 +1093,21 @@ module Hyrax
       collection_model.safe_constantize
     end
 
+    ##
+    # @api private
+    #
+    # There are assumptions baked into {Wings} and tests regarding what the
+    # correct conceptual collection will be.  This helps provide that connective
+    # tissue.
+    #
+    # It is definitely a hack to appease tests and the Double Combo/Goddess
+    # adapter migration.
+    def collection_class_for_wings
+      return collection_class if collection_class < Hyrax::Resource
+
+      Hyrax::PcdmCollection
+    end
+
     attr_writer :admin_set_model
     ##
     # @return [#constantize] a string representation of the admin set
@@ -1081,6 +1120,21 @@ module Hyrax
     # @return [Class] the configured admin set model class
     def admin_set_class
       admin_set_model.constantize
+    end
+
+    ##
+    # @api private
+    #
+    # There are assumptions baked into {Wings} and tests regarding what the
+    # correct conceptual admin set will be.  This helps provide that connective
+    # tissue.
+    #
+    # It is definitely a hack to appease tests and the Double Combo/Goddess
+    # adapter migration.
+    def admin_set_class_for_wings
+      return admin_set_class if admin_set_class < Hyrax::Resource
+
+      Hyrax::AdministrativeSet
     end
 
     attr_writer :id_field
@@ -1605,6 +1659,24 @@ module Hyrax
     # @see Hyrax::VisibilityWriter
     def visibility_map
       @visibility_map ||= Hyrax::VisibilityMap.instance
+    end
+
+    attr_writer :simple_schema_loader_config_search_paths
+    # A configuration for modifying the SimpleSchemaLoader#config_search_paths
+    # which will allow gems to add their own metadata yaml files and easily keep
+    # them within the gem.
+    #
+    # @return [Array<Pathname>]
+    # @see Hyrax::SimpleSchemaLoader#config_search_paths
+    # @example
+    #   Hyrax.config do |config|
+    #     config.simple_schema_loader_config_search_paths.unshift(HykuKnapsack::Engine.root)
+    #   end
+    #
+    #   Hyrax.config.simple_schema_loader_config_search_paths
+    #   => [#<Pathname:/app/samvera>, #<Pathname:/app/samvera/hyrax-webapp>, #<Pathname:/app/samvera/hyrax-webapp/gems/hyrax>]
+    def simple_schema_loader_config_search_paths
+      @simple_schema_loader_config_search_paths ||= [Rails.root, Hyrax::Engine.root]
     end
 
     private

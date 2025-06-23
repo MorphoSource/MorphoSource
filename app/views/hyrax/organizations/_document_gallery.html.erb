@@ -1,7 +1,19 @@
-<%
-# Taken from https://github.com/projectblacklight/blacklight-gallery/tree/v0.12.0/app/views/catalog
+<% view_config = local_assigns[:view_config] || blacklight_config&.view_config(document_index_view_type) %>
+<div class="container">
+  <div id="documents" class="<%= (Array(view_config.classes || 'row-cols-2 row-cols-md-3') + ["row documents-#{view_config.key}"]).join(' ') %>">
+    <% document_presenters = Blacklight::VERSION > '8' ? documents.map { |doc| document_presenter(doc) } : documents %>
 
-# container for all documents in index view -%>
-<div id="documents" class="row gallery">
-  <%= render_gallery_collection documents %>
+    <% document_presenters.each do |document| %>
+      <% document_counter = @response&.start || 0 %>
+      <div class="document col-5 col-sm-4 col-md-3 media">
+      <div class="thumbnail text-center" style="padding-top:10px;">
+
+
+        <div class="caption text-center">
+          <%= render_document_partials document, blacklight_config.view_config(:gallery).partials, :document_counter => document_counter %>
+        </div>
+      </div>
+    </div>
+    <% end %>
+  </div>
 </div>

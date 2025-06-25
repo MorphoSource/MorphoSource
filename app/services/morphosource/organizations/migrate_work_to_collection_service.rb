@@ -15,18 +15,10 @@ module Morphosource
         @organization_team = organization_work.team
         @organization_team_id = organization_team&.id
 
-        if organization_team.present?
-          organization_team.reindex_extent = Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
-        end
-
         @organization_collection = OrganizationCollection.where(
           legacy_organization_work_id: organization_work_id
         )&.first
         @organization_collection_id = organization_collection&.id
-
-        if organization_collection.present?
-          organization_collection.reindex_extent = Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
-        end
 
         @all_media_ids = []
         @organization_metadata = get_organization_metadata

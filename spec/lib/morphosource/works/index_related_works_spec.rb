@@ -76,7 +76,7 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
       context 'organization id is updated' do
         it 'updates related media' do
           skip if !Hyrax.config.index_related_works
-          expect(cho).to receive(:index_related).with(a_collection_containing_exactly(*cho_media))
+          expect(cho).to receive(:index_related).with(a_collection_containing_exactly(media2a, media2b))
           cho.organization_id = [new_organization.id]
           cho.save
         end
@@ -84,7 +84,7 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
       context 'another attribute is updated' do
         it 'does not update related media' do
           skip if !Hyrax.config.index_related_works
-          expect(cho).not_to receive(:index_related).with(a_collection_containing_exactly(*cho_media))
+          expect(cho).not_to receive(:index_related).with(a_collection_containing_exactly(media2a, media2b))
           cho.title = ["new title"]
           cho.save
         end

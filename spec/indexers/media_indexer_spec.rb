@@ -119,7 +119,7 @@ RSpec.describe MediaIndexer do
 
     it 'indexes expected values' do
       expect(subject['accessControl_ssim']).to match_array([media.access_control.id])
-      expect(subject['actionable_workflow_roles_ssim']).to match_array(['admin_set/default-default-managing', 'admin_set/default-default-approving', 'admin_set/default-default-depositing'])
+      expect(subject['actionable_workflow_roles_ssim']).to match_array(['admin_set_default-default-managing', 'admin_set_default-default-approving', 'admin_set_default-default-depositing'])
       expect(subject['active_fund_code_title_ssim']).to match_array(["MorphoSource"])
       expect(subject['admin_set_ssim']).to match_array(media.admin_set.title)
       expect(subject['admin_set_tesim']).to match_array(media.admin_set.title)

@@ -197,9 +197,9 @@ RSpec.describe Organization do
   end
 
   describe 'record_original_team' do
-    let(:team1)         { Collection.create(title: ['team1'], collection_type_gid: team_collection_type.gid) }
-    let(:team2)         { Collection.create(title: ['team2'], collection_type_gid: team_collection_type.gid) }
-    let(:project)         { Collection.create(title: ['project'], collection_type_gid: project_collection_type.gid) }
+    let(:team1)         { Collection.create(title: ['team1'], collection_type_gid: team_collection_type.to_global_id) }
+    let(:team2)         { Collection.create(title: ['team2'], collection_type_gid: team_collection_type.to_global_id) }
+    let(:project)         { Collection.create(title: ['project'], collection_type_gid: project_collection_type.to_global_id) }
     let(:organization) { Organization.create(title: ['org'], team_id: [team1.id]) }
 
     before do
@@ -209,8 +209,12 @@ RSpec.describe Organization do
 
     context 'updating a team' do
       it 'records the original team' do
+        expect(organization).to receive(:record_original_team).and_wrap_original do |m, *args|
+          result = m.call(*args)
+          expect(result).to match_array([team1, project])
+          result
+        end
         organization.update(team_id: [team2.id])
-        expect(organization.instance_variable_get(:@old_collections)).to match_array([team1, project])
         expect(organization.team).to eq(team2)
       end
     end
@@ -239,7 +243,7 @@ RSpec.describe Organization do
       end
     end
     context 'organization has a team' do
-      let!(:team)         { FactoryBot.create(:collection, collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+      let!(:team)         { FactoryBot.create(:collection, collection_type_gid: team_collection_type.to_global_id, depositor: user.ms_id) }
       let!(:organization) { FactoryBot.create(:organization, depositor: user.ms_id, team_id: [team.id]) }
       before do
         team.create_collection_groups

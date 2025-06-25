@@ -29,7 +29,7 @@ RSpec.describe SubmissionsController, type: :controller do
   context 'user uploads a custom thumbnail' do
 
     before do
-      form_params[:custom_thumbnail] = uploaded_file
+      form_params[:media][:custom_thumbnail] = uploaded_file
     end
 
     # remove newly created derivative
@@ -57,7 +57,7 @@ RSpec.describe Hyrax::MediaController, type: :controller do
   let(:file_set)      { FileSet.new }
   let(:file_set_file) { File.open(file_path) }
 
-  let(:create_params)    { { id: media, custom_thumbnail: uploaded_file, media: { visibility: 'open'} } }
+  let(:create_params)    { { id: media, media: { custom_thumbnail: uploaded_file, visibility: 'open'} } }
 
   before do
     allow(subject).to receive(:curation_concern).and_return(media)

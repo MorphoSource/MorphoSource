@@ -6,7 +6,6 @@ class RemoveCollectionMembersJob < Hyrax::ApplicationJob
   def perform(collection_id, member_ids)
     return false unless c = Collection.find_by(id: collection_id)
 
-    c.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
     member_ids = Array(member_ids).select { |m_id| Media.exists?(m_id) }
     return false if !member_ids.present?
 

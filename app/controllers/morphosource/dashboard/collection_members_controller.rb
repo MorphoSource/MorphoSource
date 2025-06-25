@@ -18,7 +18,6 @@ module Morphosource
           return
         end
 
-        @collection.reindex_extent = Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
         AddCollectionMembersJob.perform_later(@collection.id, @batch_ids)
         after_update
       end

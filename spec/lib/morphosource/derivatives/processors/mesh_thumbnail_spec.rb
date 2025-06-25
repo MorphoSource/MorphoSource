@@ -4,8 +4,9 @@ describe Morphosource::Derivatives::Processors::MeshThumbnail do
   subject { described_class.new(file_name, directives) }
 
   let(:file_name) { 'file_name' }
-  let(:derivative_path) { '/tmp/thumbnail.png' }
-  let(:directives) { { label: :thumbnail, url: URI("file://#{derivative_path}").to_s } }
+  let(:file_set)  { FactoryBot.create(:file_set) }
+  let(:derivative_path) { Morphosource::DerivativePath.derivative_path_for_reference(file_set, 'thumbnail') }
+  let(:directives) { { label: :thumbnail, url: derivative_path } }
 
   describe "#process" do
     context "when a timeout is set" do

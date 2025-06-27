@@ -42,12 +42,12 @@ class ProxyDepositRequest < ActiveRecord::Base
   def self.remove_deleted_transfers(transfers)
     return transfers if transfers.empty?
 
-    transfer_ids = transfers.map(&:work_id)
-    existing_ids = Morphosource::SolrService.new.get_docs(nil, fq:["id:(#{transfer_ids.join(' OR ')})"], fl: ["id"]).map{|doc| doc["id"]}
-    missing_ids = transfer_ids - existing_ids
-    return transfers if missing_ids.empty?
+    media_ids = transfers.map(&:work_id)
+    existing_media_ids = fetch_existing_media_ids(media_ids, batch_size: 500)
+    missing_media_ids = media_ids - existing_media_ids
+    return transfers if missing_media_ids.empty?
 
-    missing_requests = ProxyDepositRequest.where(work_id: missing_ids)
+    missing_requests = ProxyDepositRequest.where(work_id: missing_media_ids)
     transfers - missing_requests
   end
 
@@ -272,6 +272,19 @@ class ProxyDepositRequest < ActiveRecord::Base
       Hyrax::Engine.routes.url_helpers.transfers_url(host: host_name)
     )
   end
+
+  def self.fetch_existing_media_ids(media_ids, batch_size: 500)
+    existing_ids = []
+
+    media_ids.each_slice(batch_size) do |batch|
+      fq = ["id:(#{batch.join(' OR ')})"]
+      docs = Morphosource::SolrService.new.get_docs(nil, fq: fq, fl: ["id"])
+      existing_ids.concat(docs.map { |doc| doc["id"] })
+    end
+
+    existing_ids
+  end
+
 
   public
 

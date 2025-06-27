@@ -50,7 +50,6 @@ document.addEventListener("DOMContentLoaded", () => {
     // Attach click listeners to document (event delegation)
     document.body.addEventListener("click", function (e) {
       const target = e.target;
-      console.log(target);
 
       if (target.matches(".maybe-later") || target.matches(".already-donated")) {
         e.preventDefault();
@@ -59,7 +58,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (target.closest("#sitewide-modal") && target.matches(".no-thanks")) {
-        console.log("No thanks clicked");
         e.preventDefault();
         closeModal(modal1);
         if (modal2) {
@@ -76,13 +74,11 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (target.matches("#sitewide-modal .not-now")) {
-        console.log("Not now clicked");
         e.preventDefault();
         closeModal(modal1);
       }
 
       if (target.matches("#sitewide-modal-2 .not-now")) {
-        console.log("Not now clicked");
         e.preventDefault();
         closeModal(modal2);
       }

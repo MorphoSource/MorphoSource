@@ -1,0 +1,4 @@
+<% if download_modal? %>
+  <% modal = Morphosource::Forms::Admin::Modals::DownloadModal.new %>
+  <%= render partial: 'application/modals/content', locals: { modal: modal } %>
+<% end %>

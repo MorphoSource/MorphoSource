@@ -21,9 +21,9 @@
     </div>
   </div>
   <% @form.modal_templates.each do |filename| %>
-    <div class= "<%= "modal-example card #{filename}" %>" style="display: none;">
+    <div class= "<%= "modal-example card configured-modal-example #{filename}" %>" style="display: none;">
       <div class="card-body">
-        <%= render partial: "application/modals/#{filename}", locals: { modal_title: @form.sitewide_modal_title, modal_body: @form.sitewide_modal_body } %>
+        <%= render partial: "application/modals/templates/#{filename}", locals: { modal: @form, modal_title: @form.modal_title, modal_body: modal_body(@form) } %>
       </div>
     </div>
   <% end %>
@@ -37,9 +37,9 @@
 <% end %>
 
 <% @form.modal_templates.each do |filename| %>
-    <div class= "<%= "guilt-trip-example card #{filename}2" %>" style="display: none;">
+    <div class= "<%= "guilt-trip-example card configured-modal-example #{filename}2" %>" style="display: none;">
       <div class="card-body">
-        <%= render partial: "application/modals/#{filename}", locals: { modal_title: @form.guilt_trip_title, modal_body: @form.guilt_trip_body } %>
+       <%= render partial: "application/modals/templates/#{filename}", locals: { modal: @form, modal_title: @form.guilt_trip_title, modal_body: guilt_trip_body(@form) } %>
       </div>
     </div>
 <% end %>

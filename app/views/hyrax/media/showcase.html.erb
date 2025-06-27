@@ -1,5 +1,5 @@
-<% content_for :body_css_classes do %>showcase showcase2<% end %> 
-<% content_for :content_css_classes do %>fixed-width<% end %> 
+<% content_for :body_css_classes do %>showcase showcase2<% end %>
+<% content_for :content_css_classes do %>fixed-width<% end %>
 
 <%= render @presenter.showcase_work_title_partial, presenter: @presenter %>
 
@@ -46,6 +46,8 @@
 <%= render @presenter.showcase_image_acquisition_details_partial, presenter: @presenter %>
 
 <%= render partial: '/morphosource/my/modals/page_modal' %>
+<%= render partial: 'application/modals/download/wrapper' %>
+
 <script>
   <%= render partial: '/morphosource/my/scripts/modal_scripts', formats: [:js] %>
 </script>

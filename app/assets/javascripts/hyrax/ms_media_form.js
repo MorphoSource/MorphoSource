@@ -263,7 +263,6 @@ $( document ).ready(function() {
       var relatedFormId = $(this).attr('id');
       console.log('submitting '+ relatedFormId );
       var postData = new FormData($(this)[0]);
-      var self = this;
       $.ajax({
         type: "POST",
         url: $(this).attr('action'),

@@ -271,7 +271,7 @@ $( document ).ready(function() {
         processData: false,
         contentType: false,
         dataType: "json",
-        success: function(data){
+        complete: function(data){
           console.log("submitted work ID: " + data.id );
           // Only after AJAX completes, update flags and call callback
           // Otherwise NS_BINDING_ABORTED error in Firefox as network request is canceled 
@@ -282,14 +282,6 @@ $( document ).ready(function() {
           }
           if (callback) callback();
         }
-      }).fail(function(data) {
-        console.log("getting a fail status ", data );
-        var msg = "There was an error submitting the form.  Please contact MorphoSource team if the problem persists. ";
-        if (typeof data.statusText !== "undefined" && data.statusText != "") {
-          msg += " Message: " +  data.statusText;
-        }
-        $.alert(msg);
-        enablePageAndSave(".btn-save-media");
       });
     }
   });

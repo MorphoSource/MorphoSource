@@ -97,6 +97,7 @@ div.collection-header {
 
     .dropdown-menu.show {
       transform: none !important;
+      width: fit-content;
       padding: 5px 0;
       margin: 2px 0 0;
       box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);

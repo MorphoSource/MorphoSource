@@ -1,6 +1,7 @@
 $(document).ready(function() {
 
     if ($('body[class*="organizations"]').length) { // check if the page is org show page
+
       var mediaTable = $('#datatable-media-list').DataTable({
         responsive: {
           details: {

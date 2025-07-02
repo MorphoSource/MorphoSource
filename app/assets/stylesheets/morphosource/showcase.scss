@@ -622,6 +622,11 @@ nav#masthead {
   }
 
   table.dataTable {
+    .media {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
     th[class^="sorting"]:before,
     th[class^="sorting"]:after {
       bottom: 0.6em;

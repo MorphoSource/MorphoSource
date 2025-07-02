@@ -56,7 +56,6 @@ module Morphosource
     def hidden_params_for_filters(prefix)
       hidden_params = {}
       params = request_params
-      byebug
       hidden_params.merge!({'view' => params['view']}) if view_param_valid?
       hidden_params.merge!({'rows' => params['rows']}) if rows_param_valid?('rows')
       hidden_params.merge!({'brows' => params['brows']}) if rows_param_valid?('brows')

@@ -1,4 +1,4 @@
-<% content_for :body_css_classes do %>showcase organizations<% end %>
+<% content_for :body_css_classes do %>showcase organizations organization-work<% end %>
 <% provide :page_title, construct_page_title(@presenter.title.first) %>
 <div class="hyc-container" itemscope itemtype="http://schema.org/CollectionPage">
   <div class="hyc-header">
@@ -15,8 +15,8 @@
               <%= @presenter.title.first %>
             </div>
             <div class="text-muted">
-              <%= pluralize(@media_member_count, ' Media') %> · 
-              <%= pluralize(@bso_member_count, ' Specimen') %> · 
+              <%= pluralize(@media_member_count, ' Media') %> ·
+              <%= pluralize(@bso_member_count, ' Specimen') %> ·
               <%= pluralize(@cho_member_count, ' Cultural Heritage Object') %>
             </div>
         </h1>
@@ -58,7 +58,7 @@
     <!-- Tab panes -->
     <div class="tab-content">
 
-      <div role="tabpanel" class="tab-pane active" id="media">
+      <div role="tabpanel" class="tab-pane active collection-page" id="media">
         <div class="form-tab-content">
           <% if @media_member_count > 0 %>
             <%= render 'hyrax/organizations/media_filters' %>
@@ -73,11 +73,11 @@
         </div>
       </div>
 
-      <div role="tabpanel" class="tab-pane" id="biological_specimens">
+      <div role="tabpanel" class="tab-pane collection-page" id="biological_specimens">
         <div class="form-tab-content">
           <% if @bso_member_count > 0 %>
             <%= render 'hyrax/organizations/bso_filters' %>
-            <div class="row">
+            <div class="row tab-wrapper">
               <!-- Search bar -->
               <div class="col-6">
                 <%= render 'hyrax/organizations/search_form', tab: "biological_specimens" %>
@@ -97,7 +97,7 @@
         </div>
       </div>
 
-      <div role="tabpanel" class="tab-pane" id="cultural_heritage_objects">
+      <div role="tabpanel" class="tab-pane collection-page" id="cultural_heritage_objects">
         <div class="form-tab-content">
           <% if @cho_member_count > 0 %>
             <%= render 'hyrax/organizations/cho_filters' %>

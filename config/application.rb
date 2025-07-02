@@ -2,8 +2,6 @@ require_relative 'boot'
 
 require 'rails/all'
 
-require 'dotenv/load' if defined?(Dotenv)
-
 # Require the gems listed in Gemfile, including any gems
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
@@ -26,12 +24,12 @@ module MorphosourceApplication
     end
 
     middleware.use(
-      ::ActionDispatch::Static,
+      ::ActionDispatch::Static, 
       File.join(
-        ENV.fetch("DERIVATIVES_PATH", Rails.root.join("tmp", "derivatives")),
+        ENV.fetch("DERIVATIVES_PATH", Rails.root.join("tmp", "derivatives")), 
         '..'
-      ),
-      index: 'index',
+      ), 
+      index: 'index', 
       headers: config.public_file_server.headers
     )
 

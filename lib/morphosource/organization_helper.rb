@@ -15,7 +15,7 @@ module Morphosource
       parsed_params = filter_params(filter_prefix, request_params)
       parsed_params.map do |k,v|
         link = link + '&' + ActionController::Base.helpers.sanitize(k) + '=' + ActionController::Base.helpers.sanitize(v)
-      end
+      end       
       link = link + "#" + tab if tab.present?
       link.html_safe
     end
@@ -85,7 +85,7 @@ module Morphosource
       request.params
     end
 
-    def path_info
+    def path_info 
       request.env['PATH_INFO']
     end
 
@@ -99,7 +99,7 @@ module Morphosource
 
     def get_media_extras(docs)
       docs.map do |doc|
-        this_media_extras = {
+        this_media_extras = { 
           'id' => doc.id
         }
         # get BSO and CHO title

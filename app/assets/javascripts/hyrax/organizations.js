@@ -54,7 +54,6 @@ $(document).ready(function() {
       });
 
       $(document).on('click', '#select-all-for-download', function (e) {
-        console.log('select all for download clicked');
         var checkedStatus = this.checked;
         $('.batch_add_selector').each(function() {
           $(this).prop('checked', checkedStatus);

@@ -15,7 +15,7 @@ module Morphosource
       parsed_params = filter_params(filter_prefix, request_params)
       parsed_params.map do |k,v|
         link = link + '&' + ActionController::Base.helpers.sanitize(k) + '=' + ActionController::Base.helpers.sanitize(v)
-      end       
+      end
       link = link + "#" + tab if tab.present?
       link.html_safe
     end
@@ -56,6 +56,7 @@ module Morphosource
     def hidden_params_for_filters(prefix)
       hidden_params = {}
       params = request_params
+      byebug
       hidden_params.merge!({'view' => params['view']}) if view_param_valid?
       hidden_params.merge!({'rows' => params['rows']}) if rows_param_valid?('rows')
       hidden_params.merge!({'brows' => params['brows']}) if rows_param_valid?('brows')
@@ -85,7 +86,7 @@ module Morphosource
       request.params
     end
 
-    def path_info 
+    def path_info
       request.env['PATH_INFO']
     end
 
@@ -99,7 +100,7 @@ module Morphosource
 
     def get_media_extras(docs)
       docs.map do |doc|
-        this_media_extras = { 
+        this_media_extras = {
           'id' => doc.id
         }
         # get BSO and CHO title

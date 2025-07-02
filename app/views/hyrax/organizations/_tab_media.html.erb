@@ -17,6 +17,7 @@
 <div class="hyc-blacklight hyc-bl-results">
   <%= form_tag(main_app.batch_add_to_cart_path, method: :post) do -%>
     <%= submit_tag("cart submit", class: 'hidden', id:'add-selected-to-cart-hidden') %>
+    <% byebug %>
     <%= render_document_index @paged_media_member_docs, work_type: 'media' %>
   <% end # / form_tag %>
 </div>

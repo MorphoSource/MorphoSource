@@ -66,7 +66,7 @@ module Morphosource
         if @collection.ordered_media.present?
           response = blacklight_config.repository.search(search_builder.with(params))
           document_list = blacklight_config.repository.search(search_builder.with(full_collection_params(params)))
-          sorted_document_list = sort_document_list(document_list)
+          sorted_document_list = sort_document_list(document_list.documents)
           # replace so ordered sort asc/desc ui toggle works correctly
           params["sort"] = @ordered_sort if @ordered_sort.present?
           [response, sorted_document_list]

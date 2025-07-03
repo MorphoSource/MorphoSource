@@ -48,11 +48,11 @@
           <div><h2>User Settings</h2></div>
             <%= form_for @user, url: hyrax.dashboard_profile_path(@user) do |f| %>
               <div class="row form-group no-horizontal-padding">
-                <%= f.label :communication_preference, class: "col-4 col-xs-4 control-label", style: "display: flex; align-items: center" do |l| %>
+                <%= f.label :communication_preference, class: "col-4 col-sm-4 control-label", style: "display: flex; align-items: center" do |l| %>
                   <%= t("morphosource.dashboard.profiles.communication_preference") %>
                   <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.dashboard.profiles.communication_preference_hint") %></p></i> 
                 <% end %>
-                <div class="col-8 col-xs-8">
+                <div class="col-8 col-sm-8">
                   <%= f.select :communication_preference, User.communication_preferences.keys.map { |k| [k.humanize, k] }, {}, class: "form-control" %>
                 </div>
               </div>

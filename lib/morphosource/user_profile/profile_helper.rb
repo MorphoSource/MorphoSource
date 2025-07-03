@@ -15,7 +15,7 @@ module Morphosource::UserProfile::ProfileHelper
   end
 
   def profile_type
-    @profile_type ||= user_params[:profile_type]
+    @profile_type ||= user_params[:profile_type] || @user&.profile_type
   end
 
   def profile_type_config

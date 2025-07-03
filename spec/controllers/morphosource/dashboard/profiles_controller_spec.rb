@@ -87,7 +87,7 @@ RSpec.describe Morphosource::Dashboard::ProfilesController, :type => :controller
         website: "new website",
         terms_read: true,
         sftp_share: 'testshare'
-        },
+      },
       id: user2.ms_id
     }
   }
@@ -164,6 +164,32 @@ RSpec.describe Morphosource::Dashboard::ProfilesController, :type => :controller
         expect(user.ms_id).to eq("msid678")
         expect(user.sftp_share).to eq("testshare")
         expect(user.profile_type).to eq('Artist')
+        expect(user.communication_preference).to eq("all_communications") # not set in params, default value
+        expect(user.all_communications?).to be(true)
+        expect(user.essential_communications_only?).to be(false)
+      end
+    end
+
+    context 'communication preference update' do
+      before do
+        user.profile_type = "Artist"
+        user.save!
+        sign_in user
+      end
+
+      let(:update_params_communication_preference) {
+        { 
+          user: { communication_preference: "essential_communications_only" },
+          id: user.ms_id
+        }
+      }
+
+      it 'successfully updates communication preference' do
+        patch :update, params: update_params_communication_preference
+        user.reload
+        expect(user.communication_preference).to eq("essential_communications_only")
+        expect(user.all_communications?).to be(false)
+        expect(user.essential_communications_only?).to be(true)
       end
     end
   end

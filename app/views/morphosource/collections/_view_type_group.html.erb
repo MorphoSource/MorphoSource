@@ -5,9 +5,9 @@
     <% if has_uv_preview? %>
       <%= link_to url_for(request.params.merge(preview: (@hide_viewer ? nil : false))), 
         title: "Show or hide media display", 
-        class: "#{@hide_viewer ? "" : "active"} btn btn-secondary" do
+        class: "#{@hide_viewer ? "" : "active"} btn btn-secondary pt-2" do
       %>
-        <span class="glyphicon glyphicon-picture"></span>
+        <span class="fas fa-image"></span>
         <span class="caption">Show or hide media display</span>
       <% end %>
     <% end %>

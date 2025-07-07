@@ -1,0 +1,94 @@
+<% content_for :body_css_classes do %><%= "showcase ms-collection teams media-list#{' edit' if @can_edit} " %><%= controller_name %><% end %>
+<div id="collection-id" style="display: none;"><%= @presenter.id %></div>
+
+<%
+provide :page_title, construct_page_title(@presenter.title)
+%>
+<%= render '/flash_msg' %>
+
+<div class="hyc-container collection-page" data-collection-id="<%= @presenter.id %>" itemscope itemtype="http://schema.org/CollectionPage">
+  <div class="hyc-header">
+    <% unless @presenter.banner_file.blank? %>
+        <header class="hyc-banner" style="background-image:url(<%= @presenter.banner_file %>)"></header>
+    <% else %>
+        <header class="hyc-generic"></header>
+    <% end %>
+  </div>
+
+  <div class="row collection-header">
+    <div class="col-12 col-md-9 title-wrapper">
+      <div class="col-sm-12 col-md-12 flex title-content">
+        <div class="team-logo">
+          <% unless @presenter.logo_record.blank? %>
+            <% lr = @presenter.logo_record.first %>
+            <% if lr[:linkurl].blank? %>
+                <img alt="<%= lr[:alttext] %>" src="<%= lr[:file_location] %>" border="0" />
+            <% else %>
+                <a href="<%= lr[:linkurl] %>">
+                  <img alt="<%= lr[:alttext] %>" src="<%= lr[:file_location] %>" border="0" />
+                </a>
+            <% end %>
+          <% end %>
+        </div>
+        <div class="team-title">
+           <h1>
+              <div id="showcase-title">
+                <% if @presenter.team? && @presenter.organization %>
+                  <div class="super-title"><%= @presenter.organization.institution_name&.first %></div>
+                  <%= @presenter.organization.title.first %>
+                  <%= @presenter.organization_badge %>
+                  <%= @presenter.team_managed_badge %>
+                <% elsif @presenter.collection_type_title == 'Organization' %>
+                  <div class="super-title"><%= @presenter.organization.institution_name&.first %></div>
+                  <%= @presenter.organization.title.first %>
+                  <%= @presenter.organization_badge %>
+                  <%= @presenter.id_badge %>
+                <% else %>
+                  <%= @presenter.title.first %>
+                  <%= @presenter.collection_type_badge %>
+                  <%= @presenter.id_badge %>
+                  <%= @presenter.permission_badge %>
+                <% end %>
+              </div>
+              <%= render 'collection_counts' %>
+          </h1>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-12 col-md-3 btn-wrapper">
+      <% if @can_deposit %>
+        <%= render 'collection_manage_buttons' %>
+      <% end %>
+    </div>
+  </div><!-- /row -->
+
+  <!-- Collection description -->
+  <% if @presenter.description.present? %>
+    <div class="row mb-1">
+      <p><%= @presenter.description&.first %></p>
+    </div>
+  <% end %>
+
+  <!-- Subcollections -->
+  <% if @presenter.collection_type_is_nestable? && @subcollection_count > 0 %>
+    <%= render 'subcollections' %>
+  <% end %>
+
+  <div class="card panel-default tabs" role="main">
+    <!-- Nav tabs -->
+    <%= render 'nav_tabs' %>
+    <!-- Tab panes -->
+    <!-- <div class="tab-content"> -->
+
+      <div class="collection card-body">
+        <%= render 'search_header' %>
+        <%= render 'shared/lists/devices_list/document_list' %>
+        <%= render 'shared/lists/results_pagination' %>
+      </div>
+
+
+    <!-- </div><!-- /tab-content -->
+
+  </div><!-- /card panel-default tabs -->
+</div><!-- div hyc-container -->

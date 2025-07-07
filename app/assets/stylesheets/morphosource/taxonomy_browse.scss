@@ -1,4 +1,11 @@
 #taxonomy-browse {
+
+  .h4 {
+    width: 100%;
+    text-align: center;
+    font-size: 18px;
+  }
+
 	.block {
     border: 1px solid #DDDDDD;
     border-radius: 5px;
@@ -28,6 +35,10 @@
   .smaller-text {
     font-size: smaller;
     color: gray;
+  }
+
+  #specimen-list .row {
+    flex-direction: column;
   }
 
   @media (min-width: 768px) {

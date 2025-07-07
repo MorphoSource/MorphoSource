@@ -327,9 +327,16 @@ Rails.application.routes.draw do
       # Redirect
       get 'media_lists/:id', to: redirect('/media-lists/%{id}')
       get 'media_lists/:id/about', to: redirect('/media-lists/%{id}/about')
-      get 'media_lists/:id/biological_specimens', to: redirect('media-lists/%{id}/biological-specimens')
-      get 'media_lists/:id/cultural_heritage_objects', to: redirect('media-lists/%{id}/cultural-heritage-objects')
-
+      # Redirect while keeping query string
+      get 'media_lists/:id/biological_specimens', to: redirect { |params, request|
+        query_string = request.query_string.present? ? "?#{request.query_string}" : ""
+        "/media-lists/#{params[:id]}/biological-specimens#{query_string}"
+      }
+      get 'media_lists/:id/cultural_heritage_objects', to: redirect { |params, request|
+        query_string = request.query_string.present? ? "?#{request.query_string}" : ""
+        "/media-lists/#{params[:id]}/cultural-heritage-objects#{query_string}"
+      }
+      
       ### SEQUENTIAL SECTION LISTS ###
 
       # Despite scope being media_lists, this is for sequential_section_lists (which inherit from media lists)

@@ -3,6 +3,8 @@ module Morphosource
     module Appearance
       class ModalsController < Morphosource::Admin::AppearanceController
 
+        helper Morphosource::AppearanceHelper
+
         before_action :require_admin, except: [:snooze_hour, :snooze_day, :snooze_week]
 
         def snooze_hour

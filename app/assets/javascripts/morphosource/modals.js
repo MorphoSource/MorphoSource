@@ -68,7 +68,7 @@ document.addEventListener("DOMContentLoaded", () => {
       if (target.matches("#download-modal .no-thanks")) {
         e.preventDefault();
         closeModal(downloadModal);
-        if (modal2) {
+        if (downloadModal2) {
           openModal(downloadModal2);
         }
       }
@@ -118,12 +118,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Click outside to close modal2 only
     if (modal2 || downloadModal2) {
-      modal2.addEventListener("click", (e) => {
-        if (e.target === modal2) {
-          closeModal(modal2);
-        } else if (e.target === downloadModal2) {
-          closeModal(downloadModal2);
-        }
+      var modal = (modal2 || downloadModal2);
+      modal.addEventListener("click", (e) => {
+        closeModal(modal);
       });
     }
 

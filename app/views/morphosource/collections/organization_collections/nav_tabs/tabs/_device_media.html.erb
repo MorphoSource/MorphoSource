@@ -1,5 +1,5 @@
 <li role="presentation" class="nav-item <%= active_tab?(:device_media) %>">
-  <a class="nav-link" href="<%= device_media_tab_url(@collection) %>" aria-controls="media" role="tab">
+  <a class="nav-link <%= active_tab?(:device_media) %>" href="<%= device_media_tab_url(@collection) %>" aria-controls="media" role="tab">
     <i class="fa fa-cube" aria-hidden="true"></i> <%= t("morphosource.collections.organization.tabs.device_media.label") %>
     <%= render_hint_tag(t("morphosource.collections.organization.tabs.device_media.hint")) %>
   </a>

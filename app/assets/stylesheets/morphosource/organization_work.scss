@@ -1,0 +1,19 @@
+// Styles for the organization work page
+// To be deleted when all organization works are migrated
+.organization-work {
+  .dataTables_wrapper {
+    width: 100%;
+  }
+
+  .tab-wrapper {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+  }
+
+  table {
+    width: 100% !important;
+  }
+
+}

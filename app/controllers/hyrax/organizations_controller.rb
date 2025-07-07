@@ -16,6 +16,8 @@ module Hyrax
 
     skip_load_and_authorize_resource only: :unlinked_organizations
 
+    before_action :set_default_view, only: [:show]
+
     def url_for(child)
       # this method is a temp fix for the error when loading edit org page:
       # arguments passed to url_for can't be handled. Please require routes or provide your own implementation
@@ -44,6 +46,13 @@ module Hyrax
     # this method is not called in that context.
     def render_bookmarks_control?
       false
+    end
+
+    private
+
+    def set_default_view
+      # Set the default view to 'list' if not specified in params
+      request_params[:view] ||= params[:view] ||= 'list'
     end
   end
 end

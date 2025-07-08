@@ -11,6 +11,12 @@ $(document).ready(function() {
 
   function openModal(modal) {
     if (modal) {
+      // Create overlay
+      const overlay = document.createElement("div");
+      overlay.classList.add("modal-overlay");
+      overlay.id = "modal-overlay";
+      document.body.appendChild(overlay);
+
       modal.style.display = "block";
       modal.setAttribute("aria-hidden", "false");
       modal.classList.add("in");
@@ -29,20 +35,25 @@ $(document).ready(function() {
       modal.setAttribute("aria-hidden", "true");
       modal.classList.remove("in");
       document.body.classList.remove("modal-open", "no-scroll");
+
+      // Remove overlay if it exists
+      const overlay = document.getElementById("modal-overlay");
+      if (overlay) overlay.remove();
+
       // Remove any leftover overlays
       document.querySelectorAll(".modal-backdrop, .overlay").forEach((el) => el.remove());
     }
   }
 
   // Populate the example modal with initial form values
-  var initialValue = $('#admin_modal_sitewide_modal_template').val();
+  var initialValue = $('[id*="_modal_template"]').val();
   $("." + initialValue).show();
   var clonedElement = $("." + initialValue).clone();
   outerHTML = clonedElement[0].outerHTML;
   $('#test-modal').empty().append(outerHTML);
 
   // Populate the example guilt trip modal with initial form values
-  var initialValue = $('#admin_modal_guilt_trip_template').val();
+  var initialValue = $('[id*="_guilt_trip_template"]').val();
   if (initialValue.length) {
     $("." + initialValue + "2").show();
     var clonedElement = $("." + initialValue).clone();
@@ -52,7 +63,7 @@ $(document).ready(function() {
   }
 
   // Display the selected modal template as the example
-  $('#admin_modal_sitewide_modal_template').change(function() {
+  $('[id*="_modal_template"]').change(function() {
     var selectedValue = $(this).val();
     $( ".modal-example" ).css( "display", "none" );
     $("." + selectedValue).show();
@@ -63,7 +74,7 @@ $(document).ready(function() {
   });
 
   // Display the selected guilt trip template as the example
-  $('#admin_modal_guilt_trip_template').change(function() {
+  $('[id*="_guilt_trip_template"]').change(function() {
     var selectedValue = $(this).val();
     $( ".guilt-trip-example" ).css( "display", "none" );
     $("." + selectedValue + "2").show();
@@ -79,13 +90,13 @@ $(document).ready(function() {
   });
 
   // Update the example modal title when it's changed in the form
-  $('#admin_modal_sitewide_modal_title').change(function() {
+  $('[id*="_modal_title"]').change(function() {
     var selectedValue = $(this).val();
     $( ".modal-example .modal-title" ).text(selectedValue);
   });
 
   // Update the example guilt trip modal title when it's changed in the form
-  $('#admin_modal_guilt_trip_title').change(function() {
+  $('[id*="_guilt_trip_title"]').change(function() {
     var selectedValue = $(this).val();
     $( ".guilt-trip-example .modal-title" ).text(selectedValue);
   });
@@ -97,11 +108,11 @@ $(document).ready(function() {
     const hiddenInput = document.getElementById(inputId);
     const value = hiddenInput.value;
 
-    if (editor.id === "admin_modal_sitewide_modal_body") {
+    if (editor.id.endsWith('_modal_body')) {
       document.querySelectorAll(".modal-example .modal-text").forEach(function(el) {
         el.innerHTML = value;
       });
-    } else if (editor.id === "admin_modal_guilt_trip_body") {
+    } else if (editor.id.endsWith('_guilt_trip_body')) {
       document.querySelectorAll(".guilt-trip-example .modal-text").forEach(function(el) {
         el.innerHTML = value;
       });
@@ -115,7 +126,7 @@ $(document).ready(function() {
       const target = e.target;
       if (target.matches(".no-thanks")) {
         closeModal(testModal);
-        if ($('#admin_modal_guilt_trip_template').val().length) {
+        if ($('[id*="_guilt_trip_template"]').val().length) {
           openModal(guiltTripModal);
         }
       } else if (target.closest("button, a")) {

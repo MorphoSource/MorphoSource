@@ -270,30 +270,18 @@ $( document ).ready(function() {
         processData: false,
         contentType: false,
         dataType: "json",
-        success: function(data){
+        complete: function(data){
           console.log("submitted work ID: " + data.id );
+          // Only after AJAX completes, update flags and call callback
+          // Otherwise NS_BINDING_ABORTED error in Firefox as network request is canceled 
+          if (relatedFormId.indexOf('imaging_event') > 0) {
+            IsImagingEventOK = true;
+          } else if (relatedFormId.indexOf('processing_event') > 0) {
+            IsProcessingEventOK = true;
+          }
+          if (callback) callback();
         }
-      }).fail(function(data) {
-        console.log("getting a fail status ", data );
-        var errors = data.responseJSON.errors;
-        var msg = "";
-        if (errors !== undefined) {
-          $.map(errors, function( errorsArray, field ) {
-            $.map(errorsArray, function( errorMsg ) {
-              msg += errorMsg + '\n';
-            });
-          });
-        }
-        if (msg) $.alert(msg);
       });
-      // Call the next function (to save PE form or media form) 
-      // NO need to wait for ajax post response
-      if (relatedFormId.indexOf('imaging_event') > 0) {
-        IsImagingEventOK = true;
-      } else if (relatedFormId.indexOf('processing_event') > 0) {
-        IsProcessingEventOK = true;
-      }
-      if (callback) callback();
     }
   });
 

@@ -1,0 +1,11 @@
+ <% if lookup_context.find_all("application/modals/templates/_#{ modal.modal_template }").any? %>
+  <div id="<%= modal.dash_case_name %>" class="configured-modal modal-backdrop d-block" style="display: none;">
+    <%= render partial: "application/modals/templates/#{modal.modal_template }", locals: { modal: modal, modal_title: modal.modal_title, modal_body: ms_modal_body(modal) } %>
+  </div>
+<% end %>
+
+<% if lookup_context.find_all("application/modals/templates/_#{ modal.guilt_trip_template }").any? %>
+  <div id="<%= modal.dash_case_name %>-2" class="configured-modal modal-backdrop d-block" style="display: none;">
+    <%= render partial: "application/modals/templates/#{modal.guilt_trip_template }", locals: { modal: modal, modal_title: modal.guilt_trip_title, modal_body: guilt_trip_body(modal) } %>
+  </div>
+<% end %>

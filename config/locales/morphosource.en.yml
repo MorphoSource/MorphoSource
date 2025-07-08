@@ -164,9 +164,14 @@ en:
           twitter_handle: "Twitter Handle"
           volume_file_type: "What File Type (If Any) Do You<br>Prefer To Use For 3D Volume Files?"
           website: "Website"
+        api_key_explanation: Your API key is below. This key can be used to authenticate API requests as yourself, granting access to your private media and other records, among other user-specific abilities and powers. Generally speaking, you should not share this key with other individuals or allow it to be publicly accessible, as this will allow other individuals to access MorphoSource and your data as if they were you. You should treat this key as sensitive information and guard it like a password. If your key somehow becomes a compromised, you can invalidate the current key and generate a new one.
+        communication_preference: Communication Preferences
+        communication_preference_hint: Whether you prefer to receive all communications from MorphoSource (news, surveys, etc.) or only essential communications such as site notifications.
+        generate_new_api_key: Generate a new user-specific API key. Your previous key will no longer be functional.
+        save_settings: Save Settings
         view_api_key: "Display your user-specific API key, used to authenticate API requests as yourself. WARNING: This is SENSITIVE information, guard it like a password!"
-        generate_new_api_key: "Generate a new user-specific API key. Your previous key will no longer be functional."
-        api_key_explanation: "Your API key is below. This key can be used to authenticate API requests as yourself, granting access to your private media and other records, among other user-specific abilities and powers. Generally speaking, you should not share this key with other individuals or allow it to be publicly accessible, as this will allow other individuals to access MorphoSource and your data as if they were you. You should treat this key as sensitive information and guard it like a password. If your key somehow becomes a compromised, you can invalidate the current key and generate a new one."
+        
+        
     table:
       action: Action
       agreed_to_terms: Agreed Terms

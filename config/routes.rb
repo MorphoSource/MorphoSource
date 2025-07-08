@@ -206,6 +206,15 @@ Rails.application.routes.draw do
         post 'modal/snooze_hour', action: :snooze_hour, controller: :modals, as: 'admin_modal_snooze_hour'
         post 'modal/snooze_day', action: :snooze_day, controller: :modals, as: 'admin_modal_snooze_day'
         post 'modal/snooze_week', action: :snooze_week, controller: :modals, as: 'admin_modal_snooze_week'
+
+        scope module: :modals do
+          # download modal configuration
+          get 'download_modal', action: :show, controller: :download_modals, as: 'admin_download_modal'
+          patch 'download_modal', action: :update, controller: :download_modals, as: 'admin_download_modal_update'
+          post 'download_modal/snooze_hour', action: :snooze_hour, controller: :download_modals, as: 'admin_download_modal_snooze_hour'
+          post 'download_modal/snooze_day', action: :snooze_day, controller: :download_modals, as: 'admin_download_modal_snooze_day'
+          post 'download_modal/snooze_week', action: :snooze_week, controller: :download_modals, as: 'admin_download_modal_snooze_week'
+        end
       end
     end
 

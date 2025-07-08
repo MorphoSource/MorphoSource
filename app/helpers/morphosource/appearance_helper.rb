@@ -32,7 +32,7 @@ module Morphosource
         lucky_day?(modal_form)
       end
 
-      def modal_body(modal)
+      def ms_modal_body(modal)
         modal.modal_body&.body&.to_html
       end
 

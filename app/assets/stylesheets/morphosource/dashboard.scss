@@ -2,6 +2,102 @@ body.dashboard {
   background-color: #fff;
   padding-top: 0;
 
+  .navbar-inverse {
+    background-color: #003880;
+  }
+  #masthead {
+    border: 0;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+    z-index: 1001;
+  }
+
+  .container-fluid {
+    flex-grow: 1;
+  }
+
+  @media (min-width: 768px) {
+    .navbar-toggle, .facets-toggle {
+      display: none;
+    }
+    .navbar-collapse.collapse, 
+    .collapse#facet-panel-collapse {
+      height: auto !important;
+      padding-bottom: 0;
+      overflow: visible !important;
+      display: flex !important;
+      justify-content: flex-end;
+    }
+    .navbar-collapse, #facet-panel-collapse {
+      width: auto;
+      border-top: 0;
+      box-shadow: none;
+    }
+    .navbar-header {
+        float: left;
+    }
+  }
+
+  .navbar .container, .navbar .container-fluid, .navbar .container-sm, .navbar .container-md, .navbar .container-lg, .navbar .container-xl {
+    display: block;
+    flex-wrap: unset;
+    align-items: unset;
+    justify-content: unset;
+  }
+  .navbar-inverse .navbar-nav > li > a,
+    .navbar-inverse .navbar-text, 
+    .navbar-inverse .navbar-brand {
+    color: #ffffff;
+  }
+
+// TODO: REMOVE BELOW LATER
+//
+//    @media (min-width: 768px) {
+//    .container > .navbar-header, 
+//    .container > .navbar-collapse, 
+//    .container > #facet-panel-collapse, 
+//    .container-fluid > .navbar-header, 
+//    .container-fluid > .navbar-collapse, 
+//    .container-fluid > #facet-panel-collapse   {
+//            margin-right: 0;
+//            margin-left: 0;
+//        }
+//    }
+//    .navbar:before, .navbar:after {
+//        display: table;
+//        content: " ";
+//    }
+//    .container-fluid:before, .container-fluid:after {
+//        display: table;
+//        content: " ";
+//    }
+//    .navbar-header:before, .navbar-header:after {
+//        display: table;
+//        content: " ";
+//    }
+//    .navbar-header:after {
+//        clear: both;
+//    }
+//
+//    .navbar-header:before, .navbar-header:after {
+//        display: table;
+//        content: " ";
+//    }
+//    @media (min-width: 768px) {
+//      .navbar > .container .navbar-brand, .navbar > .container-fluid .navbar-brand {
+//          margin-left: -15px;
+//      }
+//    }
+//    .navbar-brand {
+//        float: left;
+//        height: 50px;
+//        padding: 15px 15px;
+//        font-size: 18px;
+//        line-height: 20px;
+//    }
+
   &.ms-collection-edit .card#collection-edit-controls {
     margin-left: 0;
     margin-right: 0;

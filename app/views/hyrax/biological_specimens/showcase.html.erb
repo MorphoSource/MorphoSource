@@ -4,16 +4,23 @@
 <div class="object-showcase">
   <%= render @presenter.showcase_work_title_partial, presenter: @presenter %>
 
-  <!-- .media-order-# determines flexbox column order when screen width is less than 768px -->
-  <div class="row showcase2-row object-content-blocks-wrapper d-block">
+  <div class="row showcase2-row">
+    <div class="col-md-6 order-md-2">
+      <div class="content-block">
+        <%= render @presenter.showcase_media_items_partial, presenter: @presenter %>
+      </div>
+      <div class="content-block">
+        <%= render @presenter.showcase_collections_partial, presenter: @presenter %>
+      </div>
+    </div>
 
-    <div class="media-order-2 content-block-wrapper">
+    <div class="col-md-6 order-md-1">
       <div class="content-block">
         <%= render @presenter.showcase_general_details_partial, presenter: @presenter %>
       </div>
     </div>
 
-    <div class="media-order-3 content-block-wrapper" style="break-after:column;">
+    <div class="col-md-6 order-md-3">
       <div class="content-block">
         <%= render @presenter.showcase_taxonomy_partial, presenter: @presenter %>
       </div>
@@ -25,17 +32,7 @@
       </div>
     </div>
 
-    <!-- second column start -->
-    <div class="media-order-1 content-block-wrapper">
-      <div class="content-block">
-        <%= render @presenter.showcase_media_items_partial, presenter: @presenter %>
-      </div>
-      <div class="content-block">
-        <%= render @presenter.showcase_collections_partial, presenter: @presenter %>
-      </div>
-    </div>
-
-    <div class="media-order-4 content-block-wrapper">
+    <div class="col-md-6 order-md-4">
       <div class="content-block">
         <%= render @presenter.showcase_location_details_partial, presenter: @presenter %>
       </div>
@@ -43,5 +40,5 @@
         <%= render @presenter.showcase_provenance_partial, presenter: @presenter %>
       </div>
     </div>
-  </div> <!-- object-content-blocks-wrapper -->
+  </div>
 </div> <!--object-showcase -->

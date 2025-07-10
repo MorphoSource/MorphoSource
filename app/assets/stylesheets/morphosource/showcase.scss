@@ -675,6 +675,9 @@ nav#masthead {
     padding: 0;
     .alert {
       margin: 0 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
   }
 
@@ -1452,62 +1455,6 @@ nav#masthead {
   }
 }
 
-/* specimen, cho, device specific */
-.showcase {
-  .object-showcase, .device-showcase {
-
-    @media (min-width: 768px) {
-      .object-content-blocks-wrapper,
-      .device-content-blocks-wrapper {
-        column-count: 2;
-        column-width: 200px;
-      }
-
-      .content-block-wrapper {
-        width: 100%;
-        padding-left: 15px;
-        padding-right: 15px;
-        break-inside: avoid;
-      }
-
-      .media-order-1 {
-        overflow: auto;
-      }
-    }
-
-    @media (max-width: 767px) {
-      .object-content-blocks-wrapper,
-      .device-content-blocks-wrapper {
-        display: flex;
-        flex-direction: column;
-        max-width: 100%;
-
-        .content-block-wrapper {
-          padding: 0px;
-        }
-
-        .media-order-1 {
-          order: 1;
-        }
-        .media-order-2 {
-          order: 2;
-        }
-        .media-order-3 {
-          order: 3;
-        }
-        .media-order-4 {
-          order: 4;
-        }
-      }
-    }
-  }
-}
-
-@media (min-width: 768px) {
-  .showcase .device-showcase .media-order-1 {
-    overflow: hidden;
-  }
-}
 /* unauthorized/not found specific */
 .showcase .error {
   div.block {

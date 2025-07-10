@@ -5,6 +5,7 @@ body.dashboard {
   .navbar-inverse {
     background-color: #003880;
   }
+
   #masthead {
     border: 0;
     left: 0;
@@ -12,22 +13,29 @@ body.dashboard {
     right: 0;
     top: 0;
     z-index: 1001;
+    min-height: 55px;
   }
 
   .container-fluid {
     flex-grow: 1;
+    .navbar-brand {
+      margin-left: -15px;
+    }
   }
 
-  @media (min-width: 768px) {
+  @media (min-width: 768px) {    
+    .navbar-nav .dropdown-menu {
+      position: absolute;
+    }
     .navbar-toggle, .facets-toggle {
       display: none;
     }
     .navbar-collapse.collapse, 
     .collapse#facet-panel-collapse {
+      display: flex !important;
       height: auto !important;
       padding-bottom: 0;
       overflow: visible !important;
-      display: flex !important;
       justify-content: flex-end;
     }
     .navbar-collapse, #facet-panel-collapse {
@@ -36,7 +44,7 @@ body.dashboard {
       box-shadow: none;
     }
     .navbar-header {
-        float: left;
+      float: left;
     }
   }
 
@@ -65,26 +73,7 @@ body.dashboard {
 //            margin-left: 0;
 //        }
 //    }
-//    .navbar:before, .navbar:after {
-//        display: table;
-//        content: " ";
-//    }
-//    .container-fluid:before, .container-fluid:after {
-//        display: table;
-//        content: " ";
-//    }
-//    .navbar-header:before, .navbar-header:after {
-//        display: table;
-//        content: " ";
-//    }
-//    .navbar-header:after {
-//        clear: both;
-//    }
-//
-//    .navbar-header:before, .navbar-header:after {
-//        display: table;
-//        content: " ";
-//    }
+
 //    @media (min-width: 768px) {
 //      .navbar > .container .navbar-brand, .navbar > .container-fluid .navbar-brand {
 //          margin-left: -15px;

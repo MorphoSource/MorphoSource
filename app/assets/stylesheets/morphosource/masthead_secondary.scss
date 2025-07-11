@@ -58,6 +58,10 @@ div.controls .navbar-nav li ul.dropdown-menu a:focus  {
   background-color: #f5f5f5 !important;
 }
 
+.navbar-nav .dropdown-menu {
+  position: absolute;
+}
+
 @media (min-width: 768px) {
   div.controls .navbar .input-group {
     margin-bottom: 0;
@@ -67,5 +71,11 @@ div.controls .navbar-nav li ul.dropdown-menu a:focus  {
 @media (min-width: 768px) {
   div.dropdown.browse-links.nav-item .dropdown-toggle.nav-link {
     padding-left: 0;
+  }
+}
+
+@media (max-width: 767px) {
+  .showcase .secondary-nav * {
+    font-size: 12px;
   }
 }

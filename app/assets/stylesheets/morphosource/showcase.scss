@@ -1214,6 +1214,10 @@ nav#masthead {
     min-width: 82px;
     right: 0;
     left: unset;
+    @media screen and (max-width: 767px) {
+      left: 0;
+      right: unset;
+    }
     top: 80%;
     .btn:hover {
       color : $font-color;

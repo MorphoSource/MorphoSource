@@ -121,6 +121,13 @@ body.dashboard {
     color: #ffffff;
   }
 
+  @media screen and (max-width: 767px) {
+    .navbar-nav .dropdown-menu {
+      left: 0;
+      right: unset;
+    }
+  }
+
   @media (min-width: 768px) {    
     .navbar-nav .dropdown-menu {
       position: absolute;

@@ -17,6 +17,10 @@
 
 .site-footer a {
 	color: #fff;
+	text-decoration: none;
+	&:hover {
+		text-decoration: underline;
+	}
 }
 
 .site-footer i {

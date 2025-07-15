@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 require 'rails_helper'
 
-RSpec.describe Morphosource::AccessControls::Permission do
+RSpec.describe Hydra::AccessControls::Permission do
   let(:described_class) { Hydra::AccessControls::Permission }
   let(:args)            { { name: 'agent_name', type: 'group', access: '' } }
   subject               { described_class.new(args).build_access(args[:access] ) }

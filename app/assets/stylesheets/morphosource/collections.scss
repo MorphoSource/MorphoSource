@@ -74,8 +74,10 @@ div.collection-header {
       min-width: 320px !important;
       right: 0px !important;
       top: unset !important;
+      transform: none !important;
 
       .btn {
+        margin-left: 0;
         width: 100%;
         text-align: left;
         padding: 5px 5px 5px 10px;
@@ -93,24 +95,6 @@ div.collection-header {
       border-radius: 3px;
       font-size: 14px;
       margin-left: 3px;
-    }
-
-    .dropdown-menu.show {
-      transform: none !important;
-      width: fit-content;
-      padding: 5px 0;
-      margin: 2px 0 0;
-      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
-      .btn {
-        margin-left: 0;
-        border: none;
-        background-color: #ffffff;
-        color: #000;
-      }
-      :hover .btn {
-        background-color: $button-hover-color;
-        color: $button-hover-font-color;
-      }
     }
   }
 }

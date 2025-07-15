@@ -8,6 +8,7 @@ module Morphosource
       before_action :filter_docs_with_access_by_collection_type, only: [:update_members]
 
       def update_members
+        byebug
         @batch_ids = batch_ids
         if (err_msg = validate).present?
           after_update_error(err_msg)
@@ -17,8 +18,9 @@ module Morphosource
           after_update_error(err_msg)
           return
         end
-
+        byebug
         AddCollectionMembersJob.perform_later(@collection.id, @batch_ids)
+        byebug
         after_update
       end
 
@@ -62,7 +64,7 @@ module Morphosource
             sequential_section_list_path(@collection.id)
           else
             dashboard_collections_path
-          end          
+          end
         end
 
         def filter_docs_with_access_by_collection_type

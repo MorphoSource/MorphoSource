@@ -1,4 +1,6 @@
 require 'resque/failure/redis'
+require Rails.root.join('app/models/morphosource/access_controls/permission.rb')
+require Rails.root.join('app/models/morphosource/access_controls/permissions.rb')
 
 config_file = Rails.root.join('config', 'resque.yml')
 resque_config = YAML::load(ERB.new(IO.read(config_file)).result)

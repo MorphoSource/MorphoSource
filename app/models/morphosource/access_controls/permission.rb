@@ -12,6 +12,7 @@ module Morphosource
       end
 
       def build_access(access)
+        puts "!!!!!!!! Morphosource::AccessControls::Permission#build_access called with access: #{access}"
         raise "Can't build access #{inspect}" unless access
         self.mode = case access
                     when 'read'

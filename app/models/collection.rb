@@ -183,25 +183,35 @@ class Collection < ActiveFedora::Base
   # override the method from models/concerns/hyrax/collection_behavior.rb to apply collection permissions to works added to teams or projects
   def add_member_objects(new_members)
     members = Array(new_members)
+    puts "Adding members to collection #{id}: #{members.inspect}"
     if members.first.is_a? String
       members = members.map { |m| ActiveFedora::Base.find(m) }
     end
     members.collect do |member|
       message = Hyrax::MultipleMembershipChecker.new(item: member).check(collection_ids: id, include_current_members: true)
       object_id = member.physical_object_id&.first
+      puts "Adding member #{member.id} to collection #{id} (#{member.class}) with object_id: #{object_id}"
       if message
+        puts "!!!!!!! Membership validation failed for #{member.id}: #{message}"
         member.errors.add(:collections, message)
       else
         member.member_of_collections << self
+        puts "!!!!!!! Successfully added #{member.id} to collection #{id}"
         if media_inherit_permissions?
+          puts "Applying permissions template to member #{member.id} in collection #{id}"
           Hyrax::PermissionTemplateApplicator.apply(permission_template).to(model: member)
+          puts "Saving member #{member.id} in collection #{id} with permissions template"
           member.save!
+          puts "Enqueuing InheritPermissionsJob for member #{member.id} in collection #{id}"
           InheritPermissionsJob.perform_later(member.id)
         else
+          puts "!!!!!! saving #{member.id}"
           member.save!
         end
         UpdateWorkIndexJob.perform_later(object_id) if object_id.present?
       end
+      puts "!!!!!!! Updated member #{member.id} in collection #{id}"
+      puts "!!!!!! Member of collections: #{member.member_of_collections.map(&:id).join(', ')}"
       member
     end
   end

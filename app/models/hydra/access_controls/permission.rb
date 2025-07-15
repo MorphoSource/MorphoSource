@@ -94,6 +94,8 @@ module Hydra::AccessControls
                     [Mode.new(::ACL.Write)]
                   when 'discover'
                     [Mode.new(Hydra::ACL.Discover)]
+                  when 'download'
+                    [Mode.new(Morphosource::ACL.Download)]
                   else
                     raise ArgumentError, "Unknown access #{access.inspect}"
                   end

@@ -136,8 +136,6 @@ USER app
 WORKDIR $RAILS_ROOT
 
 ENV PATH="$RAILS_ROOT/bin:$PATH"
-ENV LD_LIBRARY_PATH="/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64:/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64/server:$LD_LIBRARY_PATH"
-ENV LD_PRELOAD=libjemalloc.so.2
 ENV RAILS_ROOT=$RAILS_ROOT
 ENV RAILS_SERVE_STATIC_FILES="1"
 
@@ -155,6 +153,9 @@ ENV RAILS_SERVE_STATIC_FILES="1"
 
 FROM morphosource-base as morphosource-dev
 
+ENV LD_LIBRARY_PATH="/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64:/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64/server:$LD_LIBRARY_PATH"
+ENV LD_PRELOAD=libjemalloc.so.2
+
 COPY --chown=1001:0 --from=morphosource-build-dev $RAILS_ROOT $RAILS_ROOT
 
 ENTRYPOINT ["hyrax-entrypoint.sh"]
@@ -166,6 +167,9 @@ CMD ["bundle", "exec", "puma", "-v", "-b", "tcp://0.0.0.0:3000"]
 # To decrease container size, this stage does not inherit from build stage but just copies files from it
 
 FROM morphosource-base as morphosource-prod
+
+ENV LD_LIBRARY_PATH="/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64:/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64/server:$LD_LIBRARY_PATH"
+ENV LD_PRELOAD=libjemalloc.so.2
 
 COPY --chown=1001:0 --from=morphosource-build-prod $RAILS_ROOT $RAILS_ROOT
 

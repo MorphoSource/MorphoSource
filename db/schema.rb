@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_05_05_175543) do
+ActiveRecord::Schema.define(version: 2025_06_16_205308) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -789,6 +789,7 @@ ActiveRecord::Schema.define(version: 2025_05_05_175543) do
     t.string "instructor"
     t.string "update_profile_token"
     t.datetime "update_profile_sent_at"
+    t.integer "communication_preference", default: 0, null: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["ms_id"], name: "index_users_on_ms_id"

@@ -3,11 +3,11 @@
     <div class="modal-body">
       <h5 class="modal-title mb-3"><%= modal_title %></h5>
       <div class="modal-text">
-        <%= guilt_trip_text&.html_safe %>
+        <%= modal_body&.html_safe %>
       </div>
+      <a href=<%= donate_link %> class="btn btn-primary mb-3">Donate Now</a>
       <div id="modal-donate-wrapper">
-        <button type="button" class="btn btn-secondary not-now">Not Now</button>
-        <a href=<%= donate_link %> class="btn btn-primary me-2">Donate Now</a>
+        <%= link_to "Not Now", modal.snooze_day_path, method: :post, remote: true, class: "btn btn-secondary not-now" %>
       </div>
     </div>
   </div>

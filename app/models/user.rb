@@ -2,6 +2,11 @@ class User < ApplicationRecord
   # used for creating ms_id
   require 'securerandom'
 
+  enum communication_preference: {
+    all_communications: 0,
+    essential_communications_only: 1
+  }
+
   has_many :cart_items, primary_key: :ms_id, foreign_key: :user_id
   has_many :owned_fund_codes, class_name: 'FundCode', foreign_key: :user_id
   has_many :fund_code_memberships

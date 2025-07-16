@@ -99,9 +99,9 @@ module BatchSubmissionTools
         end
 
         def media_file_path
-          if Dir.exists?(media_path) && initial_attrs[:media_file]&.first.present?
+          if Dir.exist?(media_path) && initial_attrs[:media_file]&.first.present?
             p = File.join(media_path, initial_attrs[:media_file]&.first) 
-            if File.exists?(p)
+            if File.exist?(p)
               return p
             else
               raise "File to be submitted at path #{p} not found"

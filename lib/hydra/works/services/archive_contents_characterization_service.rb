@@ -1,6 +1,3 @@
-require 'zip'
-require 'archive/tar/minitar'
-
 module Hydra::Works
   class ArchiveContentsCharacterizationService
     # @param [Hydra::PCDM::File] object which has properties to recieve characterization values.

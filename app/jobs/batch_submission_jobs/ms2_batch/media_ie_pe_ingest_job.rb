@@ -191,7 +191,6 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
     return unless media.present? && collection_ids.present?
     Array(collection_ids).each do |collection_id|
       c = Collection.find(collection_id)
-      c.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
       c.add_member_objects Array(media).map { |m| m.id }
     end
   end

@@ -1,16 +1,8 @@
-<% content_for :body_css_classes do %>showcase dl-request my-requests<% end %> 
+<% content_for :body_css_classes do %>showcase dl-request my-requests<% end %>
 <% provide :page_title, "My Requests" %>
 
-<nav class="breadcrumb" role="region" aria-label="Breadcrumb">
-  <ol>
-    <li><a href="/?locale=en">Home</a></li>
-    <li><a href="/dashboard?locale=en">Dashboard</a></li>
-    <li class="active">My Requests</li>
-  </ol>
-</nav>
-
 <div class="row no-horizontal-padding">
-  <div class="col-xs-12 main-header">
+  <div class="col-12 main-header">
     <h1>
       <span class="fa fa-tasks" aria-hidden="true"></span>
       My Requests ( <%= @item_count %> )
@@ -18,8 +10,8 @@
   </div>
 </div>
 
-<div class="panel">
-  <div class="panel-body">
+<div class="card">
+  <div class="card-body">
     <h2 class="sr-only">Works listing</h2>
     <%= render 'morphosource/my/requests/batch_actions' %>
     <%= render 'morphosource/my/requests/document_list' %>
@@ -33,5 +25,5 @@
 <script>
   <%= render partial: 'morphosource/my/scripts/scripts', formats: [:js] %>
   <%= render partial: 'morphosource/my/requests_scripts', formats: [:js] %>
-  <%= render partial: 'morphosource/my/scripts/modal_scripts' %>
+  <%= render partial: 'morphosource/my/scripts/modal_scripts', formats: [:js] %>
 </script>

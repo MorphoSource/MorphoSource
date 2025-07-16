@@ -53,14 +53,12 @@ module Morphosource
       # Media search facet for whether media is owned by organization, in transfer system, or out
       def create_transfer_facet
         return unless current_user&.can? :edit, @curation_concern
-
-        config = repository.blacklight_config
-        return if config.facet_fields["transfer"].present?
+        return if blacklight_config.facet_fields["transfer"].present?
 
         org_is_owner_clause = "owner_ssim:#{@curation_concern.id}"
         transfer_ready_clause = "organization_transfer_on_publish_bsi:true"
 
-        config.add_facet_field "transfer", label: "Transfer Status", query: {
+        blacklight_config.add_facet_field "transfer", label: "Transfer Status", query: {
           managed: {
             label: t("hyrax.organization.show.facets.transfer.managed"),
             fq: "#{org_is_owner_clause}"

@@ -1,12 +1,18 @@
 // Styles for top bar masthead content
 nav#masthead {
   min-height: 55px !important;
+  padding: 0;
+
+  // Bootstrap override
+  a:hover {
+    text-decoration: none;
+  }
 
   // Masthead for most pages
   .container {
-    width: unset;
     max-width: 1200px;
-
+    width: 100%;
+    
     // First masthead content group
     .navbar-header {
       padding-left: 0;
@@ -16,20 +22,31 @@ nav#masthead {
 
   // Styles for catalog page masthead
   .container-fluid {
-    width: unset;
     max-width: 1200px;
-
+    width: 100%;
+  
     .navbar-header {
       padding-left: 15px;
       padding-right: 15px;
     }
   }
+
+  .dropdown-toggle {
+    min-width: unset;
+  }
+
+  input#search-field-header {
+    font-size: 14px;
+    height: 34px;
+    line-height: 1.428571429;
+    padding: 0.375rem 0.75rem;
+  }
 }
 
 // On front page, tools pane below top bar
-nav.navbar .container {
-  width: unset;
+nav.navbar .container, nav.navbar .container-fluid {
   max-width: 1200px;
+  width: 100%;
 
   .controls .container-fluid {
     padding-left: 0;

@@ -5,22 +5,22 @@ $(document).ready(function() {
     setupTooltip();
     
     // switching icons and button labels for expand / collapse
-    $(".collapse-block").not(".glyphicon-only").on("hide.bs.collapse", function(){
+    $(".collapse-block").not(".fa-only").on("hide.bs.collapse", function(){
       var thisId = $(this).attr('id');
-      $("a."+thisId).html('<span class="glyphicon glyphicon-triangle-bottom"></span> Show more <span class="glyphicon glyphicon-triangle-bottom"></span>');
+      $("a."+thisId).html('<span class="fas fa-caret-down"></span> Show more <span class="fas fa-caret-down"></span>');
     });
-    $(".collapse-block").not(".glyphicon-only").on("show.bs.collapse", function(){
+    $(".collapse-block").not(".fa-only").on("show.bs.collapse", function(){
       var thisId = $(this).attr('id');
-      $("a."+thisId).html('<span class="glyphicon glyphicon-triangle-top"></span> Show less <span class="glyphicon glyphicon-triangle-top"></span>');
+      $("a."+thisId).html('<span class="fas fa-caret-up"></span> Show less <span class="fas fa-caret-up"></span>');
     });
 
     // switching icons and button label for simple expand / collapse
     $(".collapse-simple").on("hide.bs.collapse show.bs.collapse", function(event) { 
       let newHtml = '';
       if (event.type == "hide") {
-        newHtml = 'Show more <span class="glyphicon glyphicon-triangle-bottom"></span>';
+        newHtml = 'Show more <span class="fas fa-caret-down"></span>';
       } else if (event.type == "show") {
-        newHtml = 'Show less <span class="glyphicon glyphicon-triangle-top"></span>';
+        newHtml = 'Show less <span class="fas fa-caret-up"></span>';
       }
 
       if (newHtml) {
@@ -29,13 +29,13 @@ $(document).ready(function() {
     });
 
     // switching icons only for expand / collapse
-    $(".collapse-accordion, .glyphicon-only").on("hide.bs.collapse", function(){
+    $(".collapse-accordion, .fa-only").on("hide.bs.collapse", function(){
       var thisId = $(this).attr('id');
-      $("span."+thisId).removeClass("glyphicon-triangle-top").addClass("glyphicon-triangle-bottom")
+      $("span."+thisId).removeClass("fa-caret-up").addClass("fa-caret-down")
     });
-    $(".collapse-accordion, .glyphicon-only").on("show.bs.collapse", function(){
+    $(".collapse-accordion, .fa-only").on("show.bs.collapse", function(){
       var thisId = $(this).attr('id');
-      $("span."+thisId).removeClass("glyphicon-triangle-bottom").addClass("glyphicon-triangle-top")
+      $("span."+thisId).removeClass("fa-caret-down").addClass("fa-caret-up")
     });
 
     if ($('#back-to-top').length) {

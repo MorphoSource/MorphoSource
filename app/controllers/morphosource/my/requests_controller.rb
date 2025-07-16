@@ -4,12 +4,15 @@ module Morphosource
       include Morphosource::CartItems
       include Morphosource::CartItems::ListItems
       include Morphosource::CartItems::RequestMessages
+      include Morphosource::Breadcrumbs
       with_themed_layout 'morphosource_dashboard'
 
       before_action :get_items_by_id, except: [:index]
       before_action :get_intended_use, only: [:request_item, :request_again, :request_work]
       before_action :check_blank_items, only: [:request_item, :request_again]
       before_action :check_request_terms_agree, only: [:request_item, :request_work]
+
+      PAGE_TITLE = I18n.t("morphosource.dashboard.my.requests.page_title")
 
       def index
         get_items('my_requests')

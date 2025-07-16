@@ -10,7 +10,7 @@ FactoryBot.define do
 
     after(:build) do |media_list|
       media_list_collection_type = Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::MediaLists::SETTINGS)
-      media_list.collection_type_gid = media_list_collection_type.gid
+      media_list.collection_type_gid = media_list_collection_type.to_global_id
     end
   end
 end

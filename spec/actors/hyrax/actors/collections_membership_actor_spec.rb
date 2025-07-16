@@ -9,8 +9,8 @@ RSpec.describe Hyrax::Actors::CollectionsMembershipActor do
   let!(:contributor_group)    { Role.create(name: 'contributor') }
   let(:user)                  { User.create(email: 'user@email.com', password: 'password') }
   let(:ability)               { Ability.new(user) }
-  let(:teamA)                 { Collection.create(title: ['TeamA'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
-  let(:teamB)                 { Collection.create(title: ['TeamB'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+  let(:teamA)                 { Collection.create(title: ['TeamA'], collection_type_gid: team_collection_type.to_global_id, depositor: user.ms_id) }
+  let(:teamB)                 { Collection.create(title: ['TeamB'], collection_type_gid: team_collection_type.to_global_id, depositor: user.ms_id) }
   let(:env)                   { Hyrax::Actors::Environment.new(work, ability, attributes) }
 
   before do

@@ -1,5 +1,5 @@
-<li role="presentation" class=<%= active_tab?(:devices) %>>
-  <a href=<%= devices_tab_url(@collection) %> aria-controls="biological_specimens" role="tab">
+<li role="presentation" class="nav-item <%= active_tab?(:devices) %>">
+  <a class="nav-link" href="<%= devices_tab_url(@collection) %>" aria-controls="biological_specimens" role="tab">
     <i class="fas fa-camera" aria-hidden="true"></i> <%= t("morphosource.collections.organization.tabs.devices.label") %>
     <%= render_hint_tag(t("morphosource.collections.organization.tabs.devices.hint")) %>
   </a>

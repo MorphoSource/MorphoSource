@@ -9,7 +9,7 @@ en:
       raw: 'Raw'
       derived: 'Derived'
       raw_or_derived: 'Is your media raw or derived?'
-      raw_or_derived_suggestions: 'Based on your media type and modality...'
+      raw_or_derived_suggestions: 'Based on your media type and modality:'
       continue_with_selected_parent: 'Continue With Selected Parent(s)'
       parents_not_in_morphosource: 'Parent(s) Not In MorphoSource'
       new_specimen: New Specimen
@@ -39,17 +39,17 @@ en:
       organization_data_manager_submission: You are a manager for <b><span class="organization-name">Organization name</span></b> or you are uploading on their behalf, and the media you are uploading represents a physical object from that organization. By default, this media will be managed by <span class="organization-name">Organization name</span></b></a>. You can change this during the Media Details step of submission.
       header_text:
         initial_information: 'We need to collect some initial information about your media.'
-        parent_media: 'Got it. Since your media is derived, we need to ask about the parent media it derived from. If the parent is in MorphoSource, search for the parent''s media ID number. If not, indicate that. But if you have parent media available, please upload it first.'
-        object_type: 'Please select the type of object this media represents.'
-        bso_search: 'Thanks for that. Now we need to learn more about the physical object your media represents. If the object is already on MorphoSource or the iDigBio specimen aggregator, this will be easy - just search for your specimen and select it. Otherwise, create a new biological object record.'
-        cho_search: 'Thanks for that. Now we need to learn more about the physical object your media represents. If the object is already on MorphoSource, this will be easy - just search for your specimen and select it. Otherwise, create a new cultural heritage object record.'
-        po_organization: 'Is this physical object managed by a collection, department, lab, or other group? We call these organizations. If the object is managed by an organization, please search for the organization and select it.'
-        po_taxonomy: 'If this biological specimen has been associated with a taxonomy, you can indicate that here. Specimens can be linked to one or more taxonomies. First, search for the taxonomy of your specimen. If a GBIF taxonomy is available, select that. Otherwise, select or create a more specific MorphoSource taxonomy. If you select or create a MorphoSource taxonomy, consider also associating your specimen with a GBIF-available higher term (order, family, etc.) that applies. This will allow your specimen to be discoverable in our taxonomic browse tree.'
-        po_details: 'You''re almost done creating a physical object record. After providing this information, we will move on to media record creation. Please note the required and recommended fields.'
-        media_device: 'Done with physical object, and on to media! We will first ask you about the device used to image this media. Is this device managed by a department, facility, collection, or other organization? If so, search for that organization below. If the device is a personal scanner, personal camera, and/or is not managed by a department, facility, collection, or other organization, select No Organization. Then select from the device list.'
-        media_capture: 'Now we need to collect information about the initial parameters used to image these media. These fields will vary based on imaging modality.'
-        media_processing: 'Since your media has been derived from some other parent media, it is possible to provide details about what processing was used to create this media. You can enter these details here.'
-        media_details: 'This is the last step, you''re almost done. First, upload your media. Then provide us with some final details about the media. You can also control publication settings and access to the media here.'
+        parent_media: 'Since your media is derived, enter parent information. If the parent is in MorphoSource, search for the parent''s media ID. If not, indicate that. But if you have parent media available, please upload it first.'
+        object_type: 'Select the type of object this media represents.'
+        bso_search: 'If a record for the object is already on MorphoSource or the iDigBio aggregator, search and select the object. Otherwise, create a new biological object record.'
+        cho_search: 'If a record for the object is already on MorphoSource, search and select the object. Otherwise, create a new cultural heritage object record.'
+        po_organization: 'If the physical object is managed by a collection, department, or lab group organization, please search and select the organization.'
+        po_taxonomy: 'Specimens can be linked to one or more taxonomies. Search for your taxonomy. Select a GBIF taxonomy if available. Otherwise, select or create a MorphoSource taxonomy. If you select a MorphoSource taxonomy, consider associating your specimen with an applicable GBIF-available higher term (order, family, etc.), so the specimen is discoverable in our taxonomic browse tree.'
+        po_details: 'Enter final physical object details. Please note required and recommended fields.'
+        media_device: 'Enter details about the device that imaged your media. If the device is managed by a facility, department, or lab group organization, search and select that organization. If the device is a personal scanner or camera, or if it is not managed by an organization, select No Organization. Then select from the device list.'
+        media_imaging: 'Enter details about initial parameters used to image your media. Some fields are specific to imaging modality.'
+        media_processing: 'Enter details about how parent raw data was processed to produce your derived media.'
+        media_details: First, upload the media file. Then enter some final details about your media, including publication and access settings.
       body_text:
         device_no_organization: 'If your device is a personal scanner, camera, and/or is not managed by a department, facility, collection, or other organization, enter "No Organization" and select the first result.'
       sidebar:

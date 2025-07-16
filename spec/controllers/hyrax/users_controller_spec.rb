@@ -21,7 +21,7 @@ RSpec.describe Hyrax::UsersController, :type => :controller do
 
         expect(assigns[:users]).to include(user1)
         expect(assigns[:users]).not_to include(user2, current_user)
-        expect(response).to be_successful
+        expect(response).to have_http_status(:success)
       end
 
       context "by display name" do
@@ -30,7 +30,7 @@ RSpec.describe Hyrax::UsersController, :type => :controller do
 
           expect(assigns[:users]).to include(user1)
           expect(assigns[:users]).not_to include(user2, current_user)
-          expect(response).to be_successful
+          expect(response).to have_http_status(:success)
         end
       end
     end

@@ -1,9 +1,9 @@
-      <ul class="nav nav-tabs" id="myTab">
+<ul class="nav nav-tabs" id="myTab">
         <% if current_user.admin? %>
-          <li class="active"><a href="#administration"><i class="fa fa-users-cog"></i> <%= I18n.t('hyrax.user_profile.tab_administration') %></a></li>
+          <li class="nav-item active"><a href="#administration" class="nav-link active"><i class="fa fa-users-cog"></i> <%= I18n.t('hyrax.user_profile.tab_administration') %></a></li>
         <% end %>
-        <li <% unless current_user.admin? %>class="active"<% end %>><a href="#contributions"><i class="glyphicon glyphicon-star"></i> <%= I18n.t('hyrax.user_profile.tab_highlighted') %></a></li>
-        <li><a href="#activity_log"><i class="glyphicon glyphicon-calendar"></i> <%= I18n.t('hyrax.user_profile.tab_activity') %></a></li>
+        <li class="nav-item <% unless current_user.admin? %>active<% end %>"><a href="#contributions" class="nav-link <% unless current_user.admin? %>active<% end %>"><i class="glyphicon glyphicon-star"></i> <%= I18n.t('hyrax.user_profile.tab_highlighted') %></a></li>
+        <li class="nav-item"><a href="#activity_log" class="nav-link"><i class="glyphicon glyphicon-calendar"></i> <%= I18n.t('hyrax.user_profile.tab_activity') %></a></li>
       </ul>
 
       <div class="tab-content block-tab-content">

@@ -2,24 +2,24 @@
 <%# Override how the 'tabs' variable is set in this partial by using a helper method. %>
 <% tabs ||= ms_work_form_tabs(curation_concern) %>
 <div class="row">
-  <div class="col-xs-12 col-sm-8">
-    <div class="panel panel-default tabs" role="main">
+  <div class="col-12 col-sm-8">
+    <div class="card panel-default tabs" role="main">
       <!-- Nav tabs -->
       <ul class="nav nav-tabs" role="tablist">
         <% tabs.each_with_index do | tab, i | %>
           <% if i == 0 %>
-            <li role="presentation" class="active">
+            <li role="presentation" class="nav-item active">
           <% else %>
-            <li role="presentation">
+            <li role="presentation" class="nav-item">
           <% end %>
-          <a href="#<%= tab %>" aria-controls="<%= tab %>" role="tab" data-toggle="tab">
+          <a href="#<%= tab %>" aria-controls="<%= tab %>" role="tab" data-toggle="tab" class="nav-link <%= 'active' if i == 0 %>">
             <%= t("hyrax.works.form.tab.#{tab}") %>
           </a>
           </li>
         <% end %>
 
-        <li role="presentation" id="tab-share" class="hidden">
-          <a href="#share" aria-controls="share" role="tab" data-toggle="tab">
+        <li role="presentation" id="tab-share" class="nav-item hidden">
+          <a href="#share" aria-controls="share" role="tab" data-toggle="tab" class="nav-link">
             <%= t("hyrax.works.form.tab.share") %>
           </a>
         </li>
@@ -50,7 +50,7 @@
       </div>
     </div>
 
-    <div id="savewidget" class="col-xs-12 col-sm-4 fixedsticky" role="complementary">
+    <div id="savewidget" class="col-12 col-sm-4 fixedsticky" role="complementary">
       <%= render 'form_progress', f: f %>
     </div>
   </div>

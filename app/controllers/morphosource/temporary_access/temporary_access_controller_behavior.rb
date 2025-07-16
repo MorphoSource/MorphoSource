@@ -93,7 +93,7 @@ module Morphosource
         def load_and_authorize_with_token
           load_temporary_access_link
           authorize_temporary_access_link
-          load_curation_concern
+          load_concern_solr_doc
           authorize_curation_concern
           set_authorization_cookie
         end
@@ -108,7 +108,7 @@ module Morphosource
           raise CanCan::AccessDenied.new(nil, :show) unless (@temporary_access_link.present? && @temporary_access_link.active?)
         end
 
-        def load_curation_concern
+        def load_concern_solr_doc
           @concern_solr_doc = SolrDocument.find(params[:id])
         end
 

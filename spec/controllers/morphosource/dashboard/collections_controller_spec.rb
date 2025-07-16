@@ -59,14 +59,14 @@ RSpec.describe Morphosource::Dashboard::CollectionsController, type: :controller
     context 'The collection is a team' do
       it 'calls set_morphosource_permissions' do
         expect(subject).to receive(:set_morphosource_permissions)
-        post :create, params: collection_params.merge(collection_type_gid: team_collection_type.gid)
+        post :create, params: collection_params.merge(collection_type_gid: team_collection_type.to_global_id)
       end
     end
 
     context 'The collection is a project' do
       it 'calls set_morphosource_permissions' do
         expect(subject).to receive(:set_morphosource_permissions)
-        post :create, params: collection_params.merge(collection_type_gid: project_collection_type.gid)
+        post :create, params: collection_params.merge(collection_type_gid: project_collection_type.to_global_id)
       end
     end
   end
@@ -96,7 +96,7 @@ RSpec.describe Morphosource::Dashboard::CollectionsController, type: :controller
         it 'calls #set_default_permissions and #set_morphosource_permissions' do
           expect(subject).to receive(:set_default_permissions).and_call_original
           expect(subject).to receive(:set_morphosource_permissions)
-          post :create, params: collection_params.merge(collection_type_gid: team_collection_type.gid)
+          post :create, params: collection_params.merge(collection_type_gid: team_collection_type.to_global_id)
         end
       end
 
@@ -104,7 +104,7 @@ RSpec.describe Morphosource::Dashboard::CollectionsController, type: :controller
         it 'calls #set_default_permissions and #set_morphosource_permissions' do
           expect(subject).to receive(:set_default_permissions).and_call_original
           expect(subject).to receive(:set_morphosource_permissions)
-          post :create, params: collection_params.merge(collection_type_gid: project_collection_type.gid)
+          post :create, params: collection_params.merge(collection_type_gid: project_collection_type.to_global_id)
         end
       end
     end

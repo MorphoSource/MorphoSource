@@ -1,11 +1,11 @@
 <ul class="nav nav-tabs" role="tablist">
-  <li role="presentation" class=<%= active_tab?(:media) %> >
-    <a href=<%= media_tab_url(@collection) %> aria-controls="media" role="tab">
-    <i class="fa fa-cube" aria-hidden="true"></i> MEDIA
+  <li role="presentation" class="nav-item <%= active_tab?(:media) %>">
+    <a class="nav-link <%= active_tab?(:media) ? 'active' : '' %>" href="<%= media_tab_url(@collection) %>" aria-controls="media" role="tab">
+      <i class="fa fa-cube" aria-hidden="true"></i> MEDIA
     </a>
   </li>
-  <li role="presentation" class=<%= active_tab?(:about) %>>
-    <a href=<%= about_tab_url(@collection) %> aria-controls="biological_specimens" role="tab">
+  <li role="presentation" class="nav-item <%= active_tab?(:about) %>">
+    <a class="nav-link <%= active_tab?(:about) ? 'active' : '' %>" href="<%= about_tab_url(@collection) %>" aria-controls="biological_specimens" role="tab">
       <i class="fa fa-newspaper" aria-hidden="true"></i> ABOUT
     </a>
   </li>

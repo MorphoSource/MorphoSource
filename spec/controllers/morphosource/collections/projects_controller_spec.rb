@@ -7,7 +7,7 @@ RSpec.describe Morphosource::Collections::ProjectsController, type: :controller 
 
   let(:user)                    { User.create(email: 'user@email.com', password: 'password') }
   let(:depositor) { User.create(email: 'depositor@email.com', password: 'password') }
-  let(:project)                 { Collection.create(title: ['project'], collection_type_gid: project_collection_type.gid, depositor: depositor.ms_id) }
+  let(:project)                 { Collection.create(title: ['project'], collection_type_gid: project_collection_type.to_global_id, depositor: depositor.ms_id) }
 
   before do
     project.create_collection_groups

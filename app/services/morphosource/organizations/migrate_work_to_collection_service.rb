@@ -15,18 +15,10 @@ module Morphosource
         @organization_team = organization_work.team
         @organization_team_id = organization_team&.id
 
-        if organization_team.present?
-          organization_team.reindex_extent = Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
-        end
-
         @organization_collection = OrganizationCollection.where(
           legacy_organization_work_id: organization_work_id
         )&.first
         @organization_collection_id = organization_collection&.id
-
-        if organization_collection.present?
-          organization_collection.reindex_extent = Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
-        end
 
         @all_media_ids = []
         @organization_metadata = get_organization_metadata
@@ -98,7 +90,6 @@ module Morphosource
           ))
           organization_collection.create_collection_groups
           Morphosource::Collections::PermissionsCreateService.create_default(collection: organization_collection)
-          organization_collection.reindex_extent = Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
           @organization_collection_id = organization_collection.id
         end
 
@@ -133,11 +124,9 @@ module Morphosource
           if ( team_projects = Collection.where("member_of_collection_ids_ssim:#{organization_team.id}") ).present?
             team_projects.each do |project|
               raise "Unexpected team project record" if !project.is_a?(Collection)
-              project.reindex_extent = Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
               project.member_of_collections = [organization_collection]
               project.save!
             end
-            organization_team.reindex_extent = Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
             organization_team.save!
           end
         end
@@ -192,7 +181,6 @@ module Morphosource
         end
 
         # Save after steps 2-5
-        organization_collection.reindex_extent = Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
         organization_collection.save!
 
         ### STEP 6. If non-organization team media exist, move them to a custom project
@@ -216,15 +204,13 @@ module Morphosource
               title: ["Editable media not associated with #{organization_collection.title.first}"],
               visibility: 'restricted',
               description: ["This project was automatically created during an organization migration for the organization #{organization_collection.title.first}. It contains all media that were both previously present in the organization team and also not associated with the organization through a physical object. These media can be edited by organization members with appropriate membership roles, but they will appear in this project and not on the organization page."],
-              collection_type_gid: Hyrax::CollectionType.where({:title => 'Project'})&.first.gid,
+              collection_type_gid: Hyrax::CollectionType.where({:title => 'Project'})&.first.to_global_id,
               depositor: organization_collection.depositor
             )
             custom_project.create_collection_groups
             Morphosource::Collections::PermissionsCreateService.create_default(collection: custom_project)
 
             # Add custom project to org collection
-            custom_project.reindex_extent = Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
-            organization_collection.reindex_extent = Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
             custom_project.member_of_collections << organization_collection
 
             # Ensure custom project has same members as parent!
@@ -553,6 +539,8 @@ module Morphosource
         Rails.logger.info "---"
         Rails.logger.info "Validation successful!"
         Rails.logger.info "---"
+
+        return true
       end
 
       # Complete migration by deleting legacy org work and org team
@@ -562,7 +550,6 @@ module Morphosource
 
           begin
             if organization_team.present?
-              organization_team.reindex_extent = Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
               organization_team.destroy!
             end
 

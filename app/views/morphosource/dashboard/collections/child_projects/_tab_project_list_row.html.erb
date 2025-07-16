@@ -15,7 +15,7 @@
   <td><%= permission_badge_by_value(document["visibility_ssi"]) %></td>
   <td>
     <% if can? :edit, parent_id %>
-      <button type="button" class="btn btn-xs btn-danger remove-subcollection-button"
+      <button type="button" class="btn btn-sm btn-danger remove-subcollection-button"
       data-id="<%= id %>"
       data-parent-id="<%= parent_id %>"
       data-post-url="<%= hyrax.dashboard_remove_child_relationship_under_path(parent_id, id) %>"><%= t('hyrax.collections.show.buttons.remove_this_sub_collection') %></button>

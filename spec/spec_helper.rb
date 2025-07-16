@@ -4,11 +4,11 @@ require 'axe/rspec'
 require "rspec/json_expectations"
 
 #unless Selenium::WebDriver::Firefox::Binary.path.present?
-  if `sh -c 'command -v firefox'`.chomp.empty?
-    Selenium::WebDriver::Firefox::Binary.path = "/opt/firefox/firefox"
-  else
-    Selenium::WebDriver::Firefox::Binary.path = `sh -c 'command -v firefox'`.chomp
-  end
+if `sh -c 'command -v firefox'`.chomp.empty?
+  Selenium::WebDriver::Firefox.path = "/opt/firefox/firefox"
+else
+  Selenium::WebDriver::Firefox.path = `sh -c 'command -v firefox'`.chomp
+end
 #end
 
 Capybara.register_driver :firefox_headless do |app|

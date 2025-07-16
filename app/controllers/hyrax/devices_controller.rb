@@ -62,9 +62,9 @@ module Hyrax
         params["organization_id"] ||
         params.dig("device","work_parents_attributes")&.permit!&.to_h&.values&.first&.dig("id") ||
         params.dig("device", "organization_id")&.first ||
-        ::SolrDocument.where("id" => params['id'])&.first&.to_h&.dig("organization_id_ssim")&.first
+        ::SolrDocument.where({"id" => params['id']})&.first&.to_h&.dig("organization_id_ssim")&.first
       )
-      @organization = ::SolrDocument.where("id" => organization_id)&.first
+      @organization = ::SolrDocument.where({"id" => organization_id})&.first
     end
 
     # for new device records when coming from an organization collection

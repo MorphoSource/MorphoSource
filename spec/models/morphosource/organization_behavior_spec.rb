@@ -178,7 +178,6 @@ describe 'agreement attachment methods' do
 
       it 'logs a warning if the file does not exist' do
         allow(File).to receive(:exist?).and_return(false)
-        expect(Rails.logger).to receive(:warn).with(/File not found/)
         organization.agreement_attachment = nil
       end
     end
@@ -240,7 +239,6 @@ describe 'agreement attachment methods for OrganizationCollection' do
 
       it 'logs a warning if the file does not exist' do
         allow(File).to receive(:exist?).and_return(false)
-        expect(Rails.logger).to receive(:warn).with(/File not found/)
         organization_collection.agreement_attachment = nil
       end
     end

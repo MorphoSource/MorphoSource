@@ -6,9 +6,9 @@ RSpec.describe Morphosource::Collections::PermissionsCreateService do
   let(:another_collection_type) { Hyrax::CollectionType.create(title: 'Another', machine_id: 99) }
 
   let(:depositor) { FactoryBot.create(:contributor) }
-  let(:team_a)    { Collection.create(title: ['Team A'], collection_type_gid: team_collection_type.gid, depositor: depositor.ms_id) }
-  let(:project_a) { Collection.create(title: ['Project A'], collection_type_gid: project_collection_type.gid, depositor: depositor.ms_id) }
-  let(:another)   { Collection.create(title: ['Another'], collection_type_gid: another_collection_type.gid, depositor: depositor.ms_id) }
+  let(:team_a)    { Collection.create(title: ['Team A'], collection_type_gid: team_collection_type.to_global_id, depositor: depositor.ms_id) }
+  let(:project_a) { Collection.create(title: ['Project A'], collection_type_gid: project_collection_type.to_global_id, depositor: depositor.ms_id) }
+  let(:another)   { Collection.create(title: ['Another'], collection_type_gid: another_collection_type.to_global_id, depositor: depositor.ms_id) }
 
   let(:user) { User.create(email: 'email@email.com', password: 'password', ms_id: 'abc123') }
 
@@ -33,7 +33,7 @@ RSpec.describe Morphosource::Collections::PermissionsCreateService do
 
     before do
       collection_types.each do |type|
-        allow(Hyrax::CollectionType).to receive(:find_by_gid!).with(type.gid).and_return(type)
+        allow(Hyrax::CollectionType).to receive(:find_by_gid!).with(type.to_global_id.to_s).and_return(type)
       end
       collections.each do |collection|
         Collection::DEFAULT_GROUP_ROLES.each do |role|

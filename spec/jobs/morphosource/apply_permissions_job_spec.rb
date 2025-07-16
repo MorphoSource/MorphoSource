@@ -10,7 +10,7 @@ RSpec.describe Morphosource::ApplyPermissionsJob do
     ActiveJob::Base.queue_adapter = :test
   end
 
-  subject { described_class.perform_now(params) }
+  subject { described_class.perform_now(**params) }
 
   describe 'perform' do
 

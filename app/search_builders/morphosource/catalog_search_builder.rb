@@ -8,8 +8,9 @@ module Morphosource
   
       return unless facet.present?
       facet_config = blacklight_config.facet_fields[facet]
-      contains = blacklight_params[request_keys[:contains]]
+      contains = blacklight_params[blacklight_config.facet_paginator_class.request_keys[:contains]]
       contains_title = blacklight_params[:'facet.containsTitle']
+      
       if contains_title.present?
         # for certain facet keys (e.g. license, rights_statement, device), lookup an existing source (e.g. Yaml file) to find matching IDs
         add_facet_filter(facet_config, contains_title, solr_params)

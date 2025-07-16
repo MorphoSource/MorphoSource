@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Hyrax::CollectionIndexer do
 
-  let!(:team) { Collection.create(title: ['Team_B'], collection_type_gid: team_collection_type.gid) }
+  let!(:team) { Collection.create(title: ['Team_B'], collection_type_gid: team_collection_type.to_global_id) }
   let!(:organization)  { Organization.create(title: ['Organization Title'], team_id: [team.id]) }
 
   subject(:solr_document) { SolrDocument.find(team.id) }

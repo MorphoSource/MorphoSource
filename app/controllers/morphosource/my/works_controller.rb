@@ -4,6 +4,7 @@ module Morphosource
       include Morphosource::My::WorksControllerBehavior
       include Morphosource::Facets::Collections
       include Morphosource::My::WorksHelper
+      include Morphosource::Breadcrumbs::Works
 
       class_attribute :create_work_presenter_class, :filtered_facets
 

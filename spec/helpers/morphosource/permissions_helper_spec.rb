@@ -125,7 +125,7 @@ RSpec.describe Morphosource::PermissionsHelper, type: :helper do
         it 'is open' do
           helper.simple_form_for form, url: '' do |f|
             expect(helper.download_permission(f)).to eq('open')
-            expect(helper.badge_class(f)).to eq('label label-success')
+            expect(helper.badge_class(f)).to eq('badge badge-success')
             expect(helper.human_readable_publication_status(f)).to eq('Open Download')
           end
         end
@@ -139,7 +139,7 @@ RSpec.describe Morphosource::PermissionsHelper, type: :helper do
         it 'is restricted_download' do
           helper.simple_form_for form, url: '' do |f|
             expect(helper.download_permission(f)).to eq('restricted_download')
-            expect(helper.badge_class(f)).to eq('label label-info')
+            expect(helper.badge_class(f)).to eq('badge badge-info')
             expect(helper.human_readable_publication_status(f)).to eq('Restricted Download')
           end
         end
@@ -153,7 +153,7 @@ RSpec.describe Morphosource::PermissionsHelper, type: :helper do
         it 'is restricted' do
           helper.simple_form_for form, url: '' do |f|
             expect(helper.download_permission(f)).to eq('restricted')
-            expect(helper.badge_class(f)).to eq('label label-danger')
+            expect(helper.badge_class(f)).to eq('badge badge-danger')
             expect(helper.human_readable_publication_status(f)).to eq('Private')
           end
         end
@@ -170,7 +170,7 @@ RSpec.describe Morphosource::PermissionsHelper, type: :helper do
         it 'is open' do
           helper.simple_form_for form, url: '' do |f|
             expect(helper.download_permission(f)).to eq('open')
-            expect(helper.badge_class(f)).to eq('label label-success')
+            expect(helper.badge_class(f)).to eq('badge badge-success')
             expect(helper.human_readable_publication_status(f)).to eq('Open Download')
           end
         end
@@ -183,7 +183,7 @@ RSpec.describe Morphosource::PermissionsHelper, type: :helper do
         it 'is restricted_download' do
           helper.simple_form_for form, url: '' do |f|
             expect(helper.download_permission(f)).to eq('restricted_download')
-            expect(helper.badge_class(f)).to eq('label label-info')
+            expect(helper.badge_class(f)).to eq('badge badge-info')
             expect(helper.human_readable_publication_status(f)).to eq('Restricted Download')
           end
         end
@@ -196,7 +196,7 @@ RSpec.describe Morphosource::PermissionsHelper, type: :helper do
         it 'is restricted' do
           helper.simple_form_for form, url: '' do |f|
             expect(helper.download_permission(f)).to eq('restricted')
-            expect(helper.badge_class(f)).to eq('label label-danger')
+            expect(helper.badge_class(f)).to eq('badge badge-danger')
             expect(helper.human_readable_publication_status(f)).to eq('Private')
           end
         end

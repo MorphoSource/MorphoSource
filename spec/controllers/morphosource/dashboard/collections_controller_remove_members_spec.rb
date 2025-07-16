@@ -6,8 +6,8 @@ require 'hyrax/dashboard/collections_controller'
 RSpec.describe Morphosource::Dashboard::Collections::TeamsController, type: :controller do
 
   let(:user)                  { User.create(email: 'email@email.com', password: 'password') }
-  let(:team)                  { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
-  let(:team2)                 { Collection.create(title: ['Team2'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+  let(:team)                  { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.to_global_id, depositor: user.ms_id) }
+  let(:team2)                 { Collection.create(title: ['Team2'], collection_type_gid: team_collection_type.to_global_id, depositor: user.ms_id) }
 
   let(:work)                  { Media.create(title: ['Test Work'], depositor: user.ms_id) }
   let(:ability)               { Ability.new(user) }

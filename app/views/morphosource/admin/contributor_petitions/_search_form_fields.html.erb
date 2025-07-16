@@ -3,7 +3,7 @@
 <%= f.input :user_affiliation, label: "Organization", :input_html => {value: @user_affiliation }, required: false %>
 
 <div class="form-group string optional">
-  <label class="control-label string optional">Decision State</label>
+  <label class="col-form-label string optional">Decision State</label>
   <%= f.select :decision_state, options_for_select([['', ''], ['Approve', 'approve'], ['Return', 'return'], ['Deny', 'deny']], @decision_state), { label: "Decision", required: false }, { class: "form-control" } %>
 </div>
 

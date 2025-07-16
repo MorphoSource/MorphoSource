@@ -1,7 +1,7 @@
 <%= form_tag search_action_url(@collection_list_type), method: :get, class: "search-query-form form-horizontal search-form", role: "search" do %>
 
   <%= render_hash_as_hidden_fields(search_state.params_for_search.except(:q, :search_field, :qt, :page, :utf8)) %>
-  <div class="form-group col-sm-12 col-md-5">
+  <div class="form-group col-12 col-lg-8 col-xl-6">
     <div class="input-group">
       <%= text_field_tag :q, 
         current_search_parameters, 

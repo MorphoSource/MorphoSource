@@ -14,7 +14,7 @@ module Hyrax
             ERB::Util.h(value)
           else
             link = %(<a href=#{ERB::Util.h(value)} target="_blank">#{Hyrax.config.rights_statement_service_class.new.label(value)}</a>)
-            markup = "<span class='glyphicon glyphicon-new-window'></span>&nbsp;<span class='showcase-link'>#{link}</span>"
+            markup = "<i class='fas fa-external-link-alt'></i>&nbsp;<span class='showcase-link'>#{link}</span>"
             markup.html_safe
           end
         end

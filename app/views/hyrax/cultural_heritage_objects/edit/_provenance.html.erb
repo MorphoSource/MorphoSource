@@ -2,8 +2,8 @@
 <%= f.input :formation, label: 'Stratigraphic Formation' %>
 <%= f.input :provenance_name, label: 'Excavation Name' %>
 <div class="row">
-  <div class="col-xs-6 showcase-label">Excavation/Collection Date</div>
-  <div class="col-xs-6 showcase-value">
+  <div class="col-6 showcase-label">Excavation/Collection Date</div>
+  <div class="col-6 showcase-value">
   <%= f.date_field :provenance_date, wrapper: :inline, value: f.object.provenance_date, class: 'datepicker form-control' %>
     </div>
 </div>

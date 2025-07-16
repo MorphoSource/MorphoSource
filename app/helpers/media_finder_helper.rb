@@ -41,7 +41,7 @@ module MediaFinderHelper
   # @return [SolrDocument] Parent upstream work document
   #
   def work_with_member(member_id)
-    ::SolrDocument.where("member_ids_ssim" => member_id)&.first
+    ::SolrDocument.where({"member_ids_ssim" => member_id})&.first
   end
 
   #
@@ -63,9 +63,9 @@ module MediaFinderHelper
     processing_event_member_ids = processing_events.map { |pe| pe["member_ids_ssim"] }.flatten.uniq.compact
     return [] unless processing_event_member_ids.present?
 
-    ::SolrDocument.where(
+    ::SolrDocument.where({
       "has_model_ssim" => "Media",
       "id" => "(#{processing_event_member_ids.join(" OR ")})"
-    )
+    })
   end
 end

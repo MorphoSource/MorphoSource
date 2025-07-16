@@ -1,13 +1,11 @@
 <div class="row showcase2-row" id="showcase-title-wrapper">
-  <div class="col-xs-12 flash-wrapper">
+  <div class="col-12 flash-wrapper">
     <%= render "flash_msg" %>
   </div>
-  <h1>
-    <div class="col-xs-12 col-md-8 title-block">
-      <%= render partial: "hyrax/devices/work_title", locals: { presenter: presenter } %>
-    </div>
+  <h1 class="col-12 col-lg-8 title-block">
+    <%= render partial: "hyrax/devices/work_title", locals: { presenter: presenter } %>
   </h1>
-  <div class="col-xs-12 col-md-4 btn-wrapper">
-      <%= render @presenter.showcase_show_actions_partial, presenter: presenter %>
+  <div class="col-12 col-lg-4 btn-wrapper">
+    <%= render @presenter.showcase_show_actions_partial, presenter: presenter %>
   </div>
 </div>

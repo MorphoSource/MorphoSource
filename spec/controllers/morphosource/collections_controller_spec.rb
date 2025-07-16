@@ -7,7 +7,7 @@ RSpec.describe Morphosource::CollectionsController, type: :controller do
 
   let(:user)  { User.create(email: 'user@email.com', password: 'password') }
   let(:depositor) { User.create(email: 'depositor@email.com', password: 'password') }
-  let(:team)  { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid, depositor: depositor.ms_id) }
+  let(:team)  { Collection.create(title: ['team'], collection_type_gid: team_collection_type.to_global_id, depositor: depositor.ms_id) }
 
   describe "search_builder_class" do
     it { expect(subject.search_builder_class).to eq(Morphosource::Collections::MediaSearchBuilder) }
@@ -247,7 +247,7 @@ RSpec.describe Morphosource::CollectionsController, type: :controller do
     end
 
     context 'collection is a project' do
-      let(:project) { Collection.create(title: ['project'], collection_type_gid: project_collection_type.gid, depositor: depositor.ms_id) }
+      let(:project) { Collection.create(title: ['project'], collection_type_gid: project_collection_type.to_global_id, depositor: depositor.ms_id) }
       let(:params)  { { id: project.id,
                       q: 'term',
                       f: ActionController::Parameters.new( {"human_readable_media_type_ssim"=>["Image"]}),
@@ -259,7 +259,7 @@ RSpec.describe Morphosource::CollectionsController, type: :controller do
     end
 
     context 'collection is a media list' do
-      let(:media_list)  { MediaList.create(title: ['media list'], visibility: 'open', collection_type_gid: media_list_collection_type.gid, depositor: depositor.ms_id) }
+      let(:media_list)  { MediaList.create(title: ['media list'], visibility: 'open', collection_type_gid: media_list_collection_type.to_global_id, depositor: depositor.ms_id) }
       let(:params)      { { id: media_list.id,
                           q: 'term',
                           f: ActionController::Parameters.new( {"human_readable_media_type_ssim"=>["Image"]}),
@@ -271,7 +271,7 @@ RSpec.describe Morphosource::CollectionsController, type: :controller do
     end
 
     context 'collection is a sequential section list' do
-      let(:sequential_section_list) { SequentialSectionList.create(title: ['sequential section list'], visibility: 'open', collection_type_gid: sequential_section_list_collection_type.gid, depositor: depositor.ms_id) }
+      let(:sequential_section_list) { SequentialSectionList.create(title: ['sequential section list'], visibility: 'open', collection_type_gid: sequential_section_list_collection_type.to_global_id, depositor: depositor.ms_id) }
       let(:params)                  { { id: sequential_section_list.id,
                                       q: 'term',
                                       f: ActionController::Parameters.new( {"human_readable_media_type_ssim"=>["Image"]}),

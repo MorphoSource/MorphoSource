@@ -1,0 +1,14 @@
+<div class="document">
+  <div class="thumbnail text-center">
+    <div class="text-center d-inline-block justify-content-center">
+      <%= link_to_document document %>
+    </div>
+    <div class="caption text-center">
+      <dl class="document-metadata dl-horizontal dl-invert">
+        <dd class="text-truncate"><i><%= document["taxonomy_ssim"]&.first %></i></dd>
+        <dd>Total media: <%= total_viewable_media(document.id) %></dd>
+        <dd><%= render_source_of_record(document) %></dd>
+      </dl>
+    </div>
+  </div>
+</div>

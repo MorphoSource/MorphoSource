@@ -1,15 +1,15 @@
 <%# partial for attachments using CarrierWave %>
 <% current_value = curation_concern&.send(work_attribute) %>
 <div class="form-group row string optional attachment-container">
-  <div class="col-xs-6 showcase-label">
-    <label class="control-label string optional" for="attachment-container">
+  <div class="col-6 showcase-label">
+    <label class="col-form-label string optional" for="attachment-container">
       <%= label.present? ? label : 'Attachment File' %>
     </label>
     <i class="material-icons tooltip-icon" data-original-title="" title="">
       <p class="hint hide"><%= t("simple_form.hints.#{curation_concern&.model_name&.to_s&.underscore}.#{field}") %></p>
     </i>
   </div>
-  <div class="col-xs-6 showcase-value">
+  <div class="col-6 showcase-value">
     <div class='attachment'>
       <% if curation_concern.present? && current_value.present? %>
         <div class='attachment-link'>

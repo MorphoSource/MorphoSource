@@ -1,21 +1,21 @@
-<li class="h5"><%= t('hyrax.admin.sidebar.my_media_collections') %></li>
+<li class="h5 nav-item"><%= t('morphosource.dashboard.sidebar.my_media_collections.title') %></li>
 
-<%= menu.nav_link(Rails.application.routes.url_helpers.my_projects_path) do %>
-  <span class="fa fa-folder-open" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.projects') %></span>
+<%= menu.nav_link(Rails.application.routes.url_helpers.my_projects_path, class: "nav-link") do %>
+  <span class="fa fa-folder-open" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.dashboard.sidebar.my_media_collections.projects') %></span>
 <% end %>
 
-<%= menu.nav_link(Rails.application.routes.url_helpers.my_teams_path) do %>
-  <span class="fa fa-users" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.teams') %></span>
+<%= menu.nav_link(Rails.application.routes.url_helpers.my_teams_path, class: "nav-link") do %>
+  <span class="fa fa-users" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.dashboard.sidebar.my_media_collections.teams') %></span>
 <% end %>
 
-<%= menu.nav_link(Rails.application.routes.url_helpers.my_media_lists_path) do %>
-  <span class="fa fa-list" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.media_lists') %></span>
+<%= menu.nav_link(Rails.application.routes.url_helpers.my_media_lists_path, class: "nav-link") do %>
+  <span class="fa fa-list" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.dashboard.sidebar.my_media_collections.media_lists') %></span>
 <% end %>
 
-<%= menu.nav_link(Rails.application.routes.url_helpers.my_organizations_path) do %>
-  <span class="fa fa-landmark" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.organizations') %></span>
+<%= menu.nav_link(Rails.application.routes.url_helpers.my_organizations_path, class: "nav-link") do %>
+  <span class="fa fa-landmark" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.dashboard.sidebar.my_media_collections.organizations') %></span>
 <% end %>
 
-<%= menu.nav_link(Rails.application.routes.url_helpers.my_sequential_section_lists_path) do %>
-  <span class="fa fa-list" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.sequential_section_lists') %></span>
+<%= menu.nav_link(Rails.application.routes.url_helpers.my_sequential_section_lists_path, class: "nav-link") do %>
+  <span class="fa fa-list" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.dashboard.sidebar.my_media_collections.sequential_section_lists') %></span>
 <% end %>

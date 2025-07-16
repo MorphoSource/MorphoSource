@@ -4,11 +4,11 @@
     <%= p.input :creator, as: :multi_value %>
     <%# todo: render date_field in simple_form_bootstrap %>
     <div class="row">
-        <div class="col-xs-6 showcase-label">
+        <div class="col-6 showcase-label">
           <%= t("blacklight.search.fields.processing_event.show.date_created") %>
           <%= render_hint_tag(t("simple_form.hints.processing_event.date_created")) %>
         </div>
-        <div class="col-xs-6 showcase-value">
+        <div class="col-6 showcase-value">
         <%= p.date_field :date_created, wrapper: :inline, value: p.object.date_created, class: 'datepicker form-control' %>
         </div>
     </div>

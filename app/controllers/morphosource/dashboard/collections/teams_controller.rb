@@ -6,8 +6,6 @@ module Morphosource
         skip_load_and_authorize_resource only: [:edit, :update, :new, :projects, :organization, :members], instance_name: :collection
 
         before_action :redirect_to_collection_type, only: []
-        before_action :build_breadcrumbs, only: []
-        before_action :load_collection
 
         self.presenter_class = Morphosource::Collections::TeamPresenter
 
@@ -34,9 +32,10 @@ module Morphosource
 
         private
 
-          def default_collection_type
+          def collection_type
             Hyrax::CollectionType.find_by(title: "Team")
           end
+          alias :default_collection_type :collection_type
 
           def organization_presenter
             @organization ||= @collection.organization

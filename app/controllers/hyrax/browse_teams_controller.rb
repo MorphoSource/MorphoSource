@@ -3,9 +3,12 @@ module Hyrax
     include Morphosource::CollectionHelper
     include My::MyTeamsControllerBehavior
 
-    with_themed_layout 'morphosource_1_column'
+    with_themed_layout '1_column'
 
-    before_action :authenticate_user!, except: [:index]      
+    before_action :authenticate_user!, except: [:index]
+
+    # Blank out breadcrumbs from My::TeamsController
+    def build_breadcrumbs; end
 
     def index
       collection_type_list_presenter

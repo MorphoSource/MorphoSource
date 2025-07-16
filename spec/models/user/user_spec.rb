@@ -242,9 +242,9 @@ RSpec.describe User, type: :model do
   end
 
   describe '#collections_managed #collections_with_membership_role_ids' do
-    let(:team_a)                { Collection.create(title: ['Team_A'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
-    let(:team_b)                { Collection.create(title: ['Team_B'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
-    let(:team_c)                { Collection.create(title: ['Team_C'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+    let(:team_a)                { Collection.create(title: ['Team_A'], collection_type_gid: team_collection_type.to_global_id, depositor: user.ms_id) }
+    let(:team_b)                { Collection.create(title: ['Team_B'], collection_type_gid: team_collection_type.to_global_id, depositor: user.ms_id) }
+    let(:team_c)                { Collection.create(title: ['Team_C'], collection_type_gid: team_collection_type.to_global_id, depositor: user.ms_id) }
     let(:role1)                 { team_a.managers_group }
     let(:role2)                 { team_b.managers_group }
     let(:role3)                 { team_c.managers_group }

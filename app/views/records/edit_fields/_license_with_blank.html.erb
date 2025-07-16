@@ -1,14 +1,14 @@
 <% license_service = Hyrax.config.license_service_class.new %>
 <div class="form-group row multi_value optional organization_license value-blank-container">
-  <div class="col-xs-6 showcase-label">
-    <label class="control-label multi_value optional" for="organization_license">
+  <div class="col-6 showcase-label">
+    <label class="col-form-label multi_value optional" for="organization_license">
       License
     </label>
     <i class="material-icons tooltip-icon" data-original-title="" title="" style="margin-left: -1px;">
       <p class="hint hide"><%= t('simple_form.hints.defaults.license') %></p>
     </i>
   </div>
-  <div class="col-xs-6 showcase-value">
+  <div class="col-6 showcase-value">
     <%= f.input_field :license,
       collection: license_service.select_active_options,
       include_blank: local_assigns[:placeholder],

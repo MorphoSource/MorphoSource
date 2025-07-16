@@ -10,7 +10,7 @@ module Morphosource::Derivatives
     end
 
     def call
-      unless Dir.exists?(source_path)
+      unless Dir.exist?(source_path)
         raise Morphosource::Derivatives::DcmdjpegError.new("Source directory: #{source_path} does not exist.")
       end
 
@@ -35,7 +35,7 @@ module Morphosource::Derivatives
 
     # Check for produced derivative file, otherwise raise Dcmdjpeg response as error
     def post_process(raw_output)
-      if !File.exists?(file_out_path) || (File.size(file_out_path) == 0)
+      if !File.exist?(file_out_path) || (File.size(file_out_path) == 0)
         raise Morphosource::Derivatives::DcmdjpegError.new("File not successfully created by derivative tool.\nTool command: \"#{command}\"\nTool output:\n\"#{raw_output}\"")
       end
     end

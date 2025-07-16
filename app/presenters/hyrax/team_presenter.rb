@@ -68,7 +68,7 @@ module Hyrax
     end
 
     def id_badge
-      content_tag(:span, "ID: #{id}", class: "label label-info")
+      content_tag(:span, "ID: #{id}", class: "badge badge-info")
     end
 
     def organization

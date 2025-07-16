@@ -7,25 +7,25 @@ class SolrDocument
   include Hyrax::SolrDocumentBehavior
 
   # Adds MorphoSource behaviors to the SolrDocument
-  include Morphosource::SolrDocumentBehavior
+  include ::Morphosource::SolrDocumentBehavior
 
   # work type specific methods
-  include Morphosource::Solr::BiologicalSpecimen
-  include Morphosource::Solr::Collection
-  include Morphosource::Solr::CulturalHeritageObject
-  include Morphosource::Solr::Device
-  include Morphosource::Solr::FileSet
-  include Morphosource::Solr::ImagingEvent
-  include Morphosource::Solr::Location
-  include Morphosource::Solr::Media
-  include Morphosource::Solr::MediaList
-  include Morphosource::Solr::Organization
-  include Morphosource::Solr::OrganizationCollection
-  include Morphosource::Solr::Permissions
-  include Morphosource::Solr::PhysicalObject
-  include Morphosource::Solr::ProcessingEvent
-  include Morphosource::Solr::SequentialSectionList
-  include Morphosource::Solr::Taxonomy
+  include ::Morphosource::Solr::BiologicalSpecimen
+  include ::Morphosource::Solr::Collection
+  include ::Morphosource::Solr::CulturalHeritageObject
+  include ::Morphosource::Solr::Device
+  include ::Morphosource::Solr::FileSet
+  include ::Morphosource::Solr::ImagingEvent
+  include ::Morphosource::Solr::Location
+  include ::Morphosource::Solr::Media
+  include ::Morphosource::Solr::MediaList
+  include ::Morphosource::Solr::Organization
+  include ::Morphosource::Solr::OrganizationCollection
+  include ::Morphosource::Solr::Permissions
+  include ::Morphosource::Solr::PhysicalObject
+  include ::Morphosource::Solr::ProcessingEvent
+  include ::Morphosource::Solr::SequentialSectionList
+  include ::Morphosource::Solr::Taxonomy
 
   # Query SolrDocument instances with multiple query statements
   # Maximum number of instances/rows is 1000 by default

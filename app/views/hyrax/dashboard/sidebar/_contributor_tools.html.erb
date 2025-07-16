@@ -1,25 +1,25 @@
 <% if Flipflop.proxy_deposit? || current_user.fund_codes.present? %>
-  <li class="h5"><%= t('hyrax.admin.sidebar.contributor_tools') %></li>
+  <li class="h5 nav-item"><%= t('morphosource.dashboard.sidebar.contributor_tools.title') %></li>
 
   <% if current_user.batch_submission_contributor? %>
-    <%= menu.nav_link(Rails.application.routes.url_helpers.my_jobs_path) do %>
-      <span class="fa fa-robot" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.background_jobs') %></span>
+    <%= menu.nav_link(Rails.application.routes.url_helpers.my_jobs_path, class: "nav-link") do %>
+      <span class="fa fa-robot" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.dashboard.sidebar.contributor_tools.background_jobs') %></span>
     <% end %>
 
-    <%= menu.nav_link(main_app.batch_submissions_path) do %>
-      <span class="fa fa-upload" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.batch_submission') %></span>
+    <%= menu.nav_link(main_app.batch_submissions_path, class: "nav-link") do %>
+      <span class="fa fa-upload" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.dashboard.sidebar.contributor_tools.batch_submission') %></span>
     <% end %>
   <% end %>
 
   <% if current_user.fund_codes.present? %>
-    <%= menu.nav_link(main_app.my_fund_codes_path) do %>
-      <span class="fa fas fa-file-invoice" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.dashboard.fund_codes') %></span>
+    <%= menu.nav_link(main_app.my_fund_codes_path, class: "nav-link") do %>
+      <span class="fa fas fa-file-invoice" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.dashboard.sidebar.contributor_tools.fund_codes') %></span>
     <% end %>
   <% end %>
 
   <% if Flipflop.proxy_deposit? %>
-    <%= menu.nav_link(hyrax.depositors_path) do %>
-      <span class="fa fa-users" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.dashboard.manage_proxies') %></span>
+    <%= menu.nav_link(hyrax.depositors_path, class: "nav-link") do %>
+      <span class="fa fa-users" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.dashboard.sidebar.contributor_tools.manage_proxies') %></span>
     <% end %>
   <% end %>
 <% end %>

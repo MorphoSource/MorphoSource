@@ -60,7 +60,7 @@ RSpec.describe UpdateRelatedWorksIndexJob do
 
     describe 'reindex_collections' do
       let(:collection_type) { Hyrax::CollectionType.create(title: 'collection_type') }
-      let!(:collection)     { Collection.create(title: ['collection'], collection_type_gid: collection_type.gid) }
+      let!(:collection)     { Collection.create(title: ['collection'], collection_type_gid: collection_type.to_global_id) }
       let!(:old_solr)       { solr(collection) }
 
       it 'reindexes the collection' do

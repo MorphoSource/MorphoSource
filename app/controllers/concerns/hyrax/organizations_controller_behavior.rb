@@ -44,7 +44,7 @@ module Hyrax
     end
 
     def presenter
-      @presenter ||= self.presenter_class.new(curation_concern_from_search_results, current_ability, request)
+      @presenter ||= self.presenter_class.new(search_result_document(id: params[:id]), current_ability, request)
     end
 
     private

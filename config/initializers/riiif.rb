@@ -19,7 +19,7 @@ ActiveSupport::Reloader.to_prepare do
     end
   end
 
-  Riiif::Image.authorization_service = Morphosource::IIIFAuthorizationService
+  Riiif::Image.authorization_service = Morphosource::IiifAuthorizationService
 
   # monkey patch class to support auth via temp link credentials
   Riiif::ImagesController.class_eval do

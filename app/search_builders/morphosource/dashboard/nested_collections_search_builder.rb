@@ -9,13 +9,16 @@ module Morphosource
       def show_only_projects(solr_parameters)
         solr_parameters[:fq] ||= []
         solr_parameters[:fq] += [
-          ActiveFedora::SolrQueryBuilder.construct_query(Collection.collection_type_gid_document_field_name => Hyrax::CollectionType.where(title: "Project").first.gid)
+          Hyrax::SolrQueryBuilderService.construct_query(
+            Hyrax.config.collection_type_index_field => 
+              Hyrax::CollectionType.where(title: "Project").first.to_global_id.to_s
+          )
         ]
       end
 
       def show_only_parentless_collections(solr_parameters)
         solr_parameters[:fq] ||= []
-        solr_parameters[:fq] += ["-" + "nesting_collection__parent_ids_ssim:*"]
+        solr_parameters[:fq] += ["-" + "member_of_collection_ids_ssim:*"]
       end
     end
   end

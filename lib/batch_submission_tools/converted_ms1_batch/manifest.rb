@@ -48,7 +48,7 @@ module BatchSubmissionTools
       end
 
       def validate_media_path
-        Dir.exists?(media_path) ? true : raise("Media path directory (#{media_path}) not found")
+        Dir.exist?(media_path) ? true : raise("Media path directory (#{media_path}) not found")
       end
 
       def validate_manifest

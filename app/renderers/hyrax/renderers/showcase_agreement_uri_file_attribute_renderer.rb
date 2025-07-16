@@ -12,10 +12,10 @@ module Hyrax
 
         label_content = options[:label].present? ? options[:label] : label
         hint_content  = options[:show_hint] ? hint : ""
-        markup << %(<div class='col-xs-6 showcase-label'>#{label_content}#{hint_content}</div>)
+        markup << %(<div class='col-6 showcase-label'>#{label_content}#{hint_content}</div>)
 
         attributes = microdata_object_attributes(field).merge(class: "attribute attribute-#{field}")
-        markup << %(<div class='col-xs-6 showcase-value #{css_classes}'>)
+        markup << %(<div class='col-6 showcase-value #{css_classes}'>)
         if options[:attachment_file_url].present?
           if options[:link_label].present?
             link_label = options[:link_label]
@@ -49,7 +49,7 @@ module Hyrax
       def attribute_value_to_html(value, link_label)
         return '' if value.blank?
         link_label = value unless link_label.present?
-        markup = "<span class='glyphicon glyphicon-new-window'></span>&nbsp;<span class='showcase-link'>#{link_to(link_label, value, target: :_blank)}</span>"
+        markup = "<i class='fas fa-external-link-alt'></i>&nbsp;<span class='showcase-link'>#{link_to(link_label, value, target: :_blank)}</span>"
         markup.html_safe
       end
 

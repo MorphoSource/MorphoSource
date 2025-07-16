@@ -1,15 +1,15 @@
 <%# todo: this partial is for old attachments (using AttachmentService) 
   Remove this partial later if all attachments are migrated to use CarrierWave %>
 <div class="form-group row string optional attachment-container">
-  <div class="col-xs-6 showcase-label">
-    <label class="control-label string optional" for="attachment-container">
+  <div class="col-6 showcase-label">
+    <label class="col-form-label string optional" for="attachment-container">
       <%= label.present? ? label : 'Attachment File' %>
     </label>
     <i class="material-icons tooltip-icon" data-original-title="" title="">
       <p class="hint hide"><%= t("simple_form.hints.#{curation_concern&.model_name&.to_s&.underscore}.#{field}") %></p>
     </i>
   </div>
-  <div class="col-xs-6 showcase-value">
+  <div class="col-6 showcase-value">
     <div class='attachment'>
       <% if curation_concern.present? && curation_concern.attachment(field).present? %>
         <div class='attachment-link'>

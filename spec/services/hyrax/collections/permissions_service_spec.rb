@@ -6,7 +6,7 @@ RSpec.describe Hyrax::Collections::PermissionsService do
   let(:user)                 { User.create(email: 'user@example.com', password: 'password') }
 
   context 'collection specific methods' do
-    let(:collection)           { Collection.create(id: 'team', title: ['Team'], depositor: user.ms_id, collection_type_gid: team_collection_type.gid) }
+    let(:collection)           { Collection.create(id: 'team', title: ['Team'], depositor: user.ms_id, collection_type_gid: team_collection_type.to_global_id) }
     let(:admin_set) { AdminSet.create(id: 'adminset_1') }
     let(:col_permission_template) { collection.permission_template }
     let(:as_permission_template) { Hyrax::PermissionTemplate.create(source_id: admin_set.id) }
@@ -15,7 +15,7 @@ RSpec.describe Hyrax::Collections::PermissionsService do
       collection.create_collection_groups
       Morphosource::Collections::PermissionsCreateService.create_default(collection: collection)
 
-      collection.reset_access_controls!
+      collection.permission_template.reset_access_controls_for(collection: collection)
 
       allow(Hyrax::PermissionTemplate).to receive(:find_by!).with(source_id: collection.id).and_return(col_permission_template)
     end
@@ -244,17 +244,17 @@ RSpec.describe Hyrax::Collections::PermissionsService do
     let(:ability)     { Ability.new(user) }
     let(:user2)       { User.create(email: 'user2@email.com', password: 'password') }
 
-    let(:collection)  { Collection.create(id: 'col1', title: ['collection 1'], depositor: user2.ms_id, collection_type_gid: team_collection_type.gid) }
+    let(:collection)  { Collection.create(id: 'col1', title: ['collection 1'], depositor: user2.ms_id, collection_type_gid: team_collection_type.to_global_id) }
 
-    let(:collection2) { Collection.create(id: 'col2', title: ['collection 2'], depositor: user2.ms_id, collection_type_gid: team_collection_type.gid) }
-    let(:collection3) { Collection.create(id: 'col3', title: ['collection 3'], depositor: user2.ms_id, collection_type_gid: team_collection_type.gid) }
+    let(:collection2) { Collection.create(id: 'col2', title: ['collection 2'], depositor: user2.ms_id, collection_type_gid: team_collection_type.to_global_id) }
+    let(:collection3) { Collection.create(id: 'col3', title: ['collection 3'], depositor: user2.ms_id, collection_type_gid: team_collection_type.to_global_id) }
     let(:collections) { [collection, collection2, collection3] }
 
     before do
       collections.each do |collection|
         collection.create_collection_groups
         Morphosource::Collections::PermissionsCreateService.create_default(collection: collection)
-        collection.reset_access_controls!
+        collection.permission_template.reset_access_controls_for(collection: collection)
       end
     end
 
@@ -325,14 +325,14 @@ RSpec.describe Hyrax::Collections::PermissionsService do
       end
 
       describe 'all access levels' do
-        let(:collection4) { Collection.create(id: 'col4', title: ['collection 4'], depositor: user2.ms_id, collection_type_gid: team_collection_type.gid) }
-        let(:collection5) { Collection.create(id: 'col5', title: ['collection 5'], depositor: user2.ms_id, collection_type_gid: team_collection_type.gid) }
+        let(:collection4) { Collection.create(id: 'col4', title: ['collection 4'], depositor: user2.ms_id, collection_type_gid: team_collection_type.to_global_id) }
+        let(:collection5) { Collection.create(id: 'col5', title: ['collection 5'], depositor: user2.ms_id, collection_type_gid: team_collection_type.to_global_id) }
 
         before do
           [collection4, collection5].each do |c|
             c.create_collection_groups
             Morphosource::Collections::PermissionsCreateService.create_default(collection: c)
-            c.reset_access_controls!
+            c.permission_template.reset_access_controls_for(collection: collection)
           end
 
           collection.managers << user
@@ -367,8 +367,8 @@ RSpec.describe Hyrax::Collections::PermissionsService do
       end
 
       describe 'lists' do
-        let(:media_list)                              { MediaList.create(title: ['media_list'], depositor: user2.ms_id, collection_type_gid: media_list_collection_type.gid) }
-        let(:sequential_section_list)                 { SequentialSectionList.create(title: ['sequential_section_list'], depositor: user2.ms_id, collection_type_gid: sequential_section_list_collection_type.gid) }
+        let(:media_list)                              { MediaList.create(title: ['media_list'], depositor: user2.ms_id, collection_type_gid: media_list_collection_type.to_global_id) }
+        let(:sequential_section_list)                 { SequentialSectionList.create(title: ['sequential_section_list'], depositor: user2.ms_id, collection_type_gid: sequential_section_list_collection_type.to_global_id) }
 
         let(:collections) { [collection, media_list, sequential_section_list] }
 
@@ -474,13 +474,13 @@ RSpec.describe Hyrax::Collections::PermissionsService do
     end
 
     describe '.collection_ids_for_edit_works' do
-      let(:collection4) { Collection.create(id: 'col4', title: ['collection 4'], depositor: user2.ms_id, collection_type_gid: team_collection_type.gid) }
+      let(:collection4) { Collection.create(id: 'col4', title: ['collection 4'], depositor: user2.ms_id, collection_type_gid: team_collection_type.to_global_id) }
 
       context 'user has edit works access through group and individual access' do
         before do
           collection4.create_collection_groups
           Morphosource::Collections::PermissionsCreateService.create_default(collection: collection4)
-          collection4.reset_access_controls!
+          collection4.permission_template.reset_access_controls_for(collection: collection)
 
           collection.editors << user
           collection.editors_group.save
@@ -534,13 +534,13 @@ RSpec.describe Hyrax::Collections::PermissionsService do
     end
 
     describe '.collection_ids_for_download_works' do
-      let(:collection4) { Collection.create(id: 'col4', title: ['collection 4'], depositor: user2.ms_id, collection_type_gid: team_collection_type.gid) }
+      let(:collection4) { Collection.create(id: 'col4', title: ['collection 4'], depositor: user2.ms_id, collection_type_gid: team_collection_type.to_global_id) }
 
       context 'user has download works access through group and individual access' do
         before do
           collection4.create_collection_groups
           Morphosource::Collections::PermissionsCreateService.create_default(collection: collection4)
-          collection4.reset_access_controls!
+          collection4.permission_template.reset_access_controls_for(collection: collection)
 
           collection.downloaders << user
           collection.downloaders_group.save

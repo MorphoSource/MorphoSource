@@ -3,8 +3,6 @@ module Morphosource
     module Collections
       class OrganizationCollectionsController < Morphosource::My::CollectionsController
 
-        before_action :build_breadcrumbs, only: []
-
         # Define collection specific filter facets.
         def self.configure_facets
           configure_blacklight do |config|
@@ -42,7 +40,7 @@ module Morphosource
         private
 
           def add_collection_type_breadcrumb
-            add_breadcrumb t(:'hyrax.admin.sidebar.organizations'), main_app.my_organizations_path
+            add_breadcrumb t(:'morphosource.dashboard.sidebar.my_media_collections.organizations'), main_app.my_organizations_path, { "aria-current" => "page" }
           end
       end
     end

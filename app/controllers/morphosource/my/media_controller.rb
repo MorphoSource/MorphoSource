@@ -2,6 +2,8 @@ module Morphosource
   module My
     class MediaController < WorksController
 
+      PAGE_TITLE = I18n.t("morphosource.dashboard.my.media_objects.media.page_title")
+
       def self.configure_facets
         configure_blacklight do |config|
           config.http_method = :post

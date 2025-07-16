@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Morphosource::TaggedWorksSearchBuilder do
-  let(:scope)       { double('Scope', params: { tag: 'purple' }) }
+  let(:scope)       { double('Scope', blacklight_config: CatalogController.blacklight_config, params: { tag: 'purple' }) }
   let(:builder)     { described_class.new(scope) }
   let(:solr_params) { { fq: [] } }
 

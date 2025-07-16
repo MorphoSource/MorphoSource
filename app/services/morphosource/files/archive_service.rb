@@ -56,7 +56,7 @@ module Morphosource
       #
       def read_tar(&block)
         archive_type = :tar
-        Archive::Tar::Minitar.open(file) do |tar|
+        Minitar.open(file) do |tar|
           yield(tar, archive_type) if block_given?
         end
       end
@@ -167,7 +167,7 @@ module Morphosource
       #
       def zip_write_entry(zip, f_data, f_path)
         # Remove file if already exists
-        FileUtils.rm(f_path) if File.exists?(f_path)
+        FileUtils.rm(f_path) if File.exist?(f_path)
 
         # Create dir(s) if needed
         dir_path = File.dirname(f_path)
@@ -186,7 +186,7 @@ module Morphosource
       #
       def tar_write_entry(f_data, f_path)
         # Remove file if already exists
-        FileUtils.rm(f_path) if File.exists?(f_path)
+        FileUtils.rm(f_path) if File.exist?(f_path)
         
         # Create dir(s) if needed
         dir_path = File.dirname(f_path)

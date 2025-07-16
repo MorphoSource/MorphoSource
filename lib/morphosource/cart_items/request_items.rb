@@ -26,7 +26,7 @@ module Morphosource
       def make_request(items)
         items = Array(items)
         items.each do |item|
-          item.update_attributes(date_cleared: nil, date_requested: Time.now, use: @intended_use, download_request_terms_agreement: true)
+          item.update(date_cleared: nil, date_requested: Time.now, use: @intended_use, download_request_terms_agreement: true)
         end
       end
 

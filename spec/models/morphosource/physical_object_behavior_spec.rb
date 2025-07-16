@@ -121,8 +121,8 @@ RSpec.describe Morphosource::PhysicalObjectBehavior do
     end
 
     describe 'media collections' do
-      let(:team)                    { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid, visibility: 'open')}
-      let(:project)                 { Collection.create(title: ['Project'], collection_type_gid: project_collection_type.gid, visibility: 'restricted') }
+      let(:team)                    { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.to_global_id, visibility: 'open')}
+      let(:project)                 { Collection.create(title: ['Project'], collection_type_gid: project_collection_type.to_global_id, visibility: 'restricted') }
 
       before do
         public_media.member_of_collections << team

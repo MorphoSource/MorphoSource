@@ -1,7 +1,7 @@
 module Morphosource
   class TaggedMediaSearchService
     include Blacklight::Configurable
-    include Blacklight::SearchHelper
+    include Blacklight::SearchContext
 
     def self.call(scope:)
       new(scope).call
@@ -16,7 +16,7 @@ module Morphosource
     end
 
     def call
-      repository.search(query_builder.query)
+      blacklight_config.repository.search(query_builder.query)
     end
 
   end

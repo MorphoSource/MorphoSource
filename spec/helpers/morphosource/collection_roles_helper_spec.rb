@@ -39,9 +39,9 @@ RSpec.describe Morphosource::CollectionRolesHelper, type: :helper do
 
   describe '#collection_options' do
     let!(:user) { User.create(email: 'email@email.com', password: 'password') }
-    let!(:collection1) { Collection.create(title: ['Collection1'], collection_type_gid: project_collection_type.gid, depositor: user.ms_id) }
-    let!(:collection2) { Collection.create(title: ['Collection2'], collection_type_gid: project_collection_type.gid, depositor: user.ms_id) }
-    let!(:collection3) { Collection.create(title: ['Collection3'], collection_type_gid: project_collection_type.gid, depositor: user.ms_id) }
+    let!(:collection1) { Collection.create(title: ['Collection1'], collection_type_gid: project_collection_type.to_global_id, depositor: user.ms_id) }
+    let!(:collection2) { Collection.create(title: ['Collection2'], collection_type_gid: project_collection_type.to_global_id, depositor: user.ms_id) }
+    let!(:collection3) { Collection.create(title: ['Collection3'], collection_type_gid: project_collection_type.to_global_id, depositor: user.ms_id) }
     let(:collections) { [collection1, collection2, collection3] }
     before do
       collections.each { |c| c.create_collection_groups }

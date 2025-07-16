@@ -52,20 +52,20 @@ RSpec.describe Morphosource::OrganizationNormalizationJob do
       context 'the argments are valid' do
         let(:args)  { {media_id: media.id, organization_id: organization.id, remove_previous_reviewers: 'true', user_email: nil, update_publication_status: 'all'} }
         it 'returns true' do
-          expect(described_class.perform_now(args)).to be true
+          expect(described_class.perform_now(**args)).to be true
         end
       end
       context 'the arguments are invalid' do
         let(:args)  { {media_id: media.id, organization_id: organization.id, remove_previous_reviewers: nil, user_email: nil, update_publication_status: 'all'} }
         it 'returns false' do
-          expect(described_class.perform_now(args)).to be false
+          expect(described_class.perform_now(**args)).to be false
         end
       end
     end
   end
 
   context 'organization is a work' do
-    let(:team)                  { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+    let(:team)                  { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.to_global_id, depositor: user.ms_id) }
     let(:organization)          { Organization.create(title: ['Organization'],
                                                     team_id: [team.id],
                                                     download_reviewer: [manager.ms_id],

@@ -6,10 +6,13 @@ module Morphosource
       include Morphosource::CartItems::RequestManagerItems
       include Morphosource::CartItems::RequestItems
       include Morphosource::CartItems::RequestMessages
+      include Morphosource::Breadcrumbs
       with_themed_layout 'morphosource_dashboard'
 
       before_action :get_items_by_id, only: [:clear_request, :approve_download, :deny_download, :edit_expiration]
       before_action :get_expiration_date_for_approve, only: [:approve_download]
+
+      PAGE_TITLE = I18n.t("morphosource.dashboard.my.request_manager.page_title")
 
       def index
         get_items_for_tab
@@ -92,7 +95,6 @@ module Morphosource
           end
         end
       end
-
 
       private
 

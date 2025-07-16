@@ -1,6 +1,7 @@
 # This requires an environment variable SENTRY_DSN for token information
 Sentry.init do |config|
-  config.breadcrumbs_logger = [:active_support_logger, :http_logger]
+  # UPGRADE5: Removed active_support_logger, theoretically nice to have but breaks actor stack
+  config.breadcrumbs_logger = [:http_logger]
 
   # disable server logs
   config.logger = Logger.new(nil)

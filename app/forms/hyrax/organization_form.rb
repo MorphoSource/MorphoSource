@@ -15,7 +15,7 @@ module Hyrax
     self.terms -= [:title, :creator, :contributor, :description, :keyword,
       :license, :rights_statement, :publisher, :date_created, :subject,
       :language, :identifier, :based_near, :related_url, :source,
-      :abstract, :access_right, :alternative_title, :rights_notes
+      :abstract, :access_right, :alternative_title, :rights_notes, :bibliographic_citation
     ]
 
     # Customizing field terms

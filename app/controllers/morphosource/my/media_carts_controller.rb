@@ -4,9 +4,12 @@ module Morphosource
       helper CartItemHelper
       include Morphosource::CartItems
       include Morphosource::CartItems::ListItems
+      include Morphosource::Breadcrumbs
       with_themed_layout 'morphosource_dashboard'
       before_action :check_recaptcha, only: [:download]
-      
+
+      PAGE_TITLE = I18n.t("morphosource.dashboard.my.media_cart.page_title")
+
       def index
         get_items('cart')
         #get_restricted_items
@@ -23,7 +26,7 @@ module Morphosource
           key: access_control_ids_from_work_ids,
           token: current_user.token,
           download: SecureRandom.uuid,
-          usage: usage, 
+          usage: usage,
           usage_list: usage_list
         )
       end
@@ -56,7 +59,7 @@ module Morphosource
       # if a user selects items, get only those - otherwise get all downloadable items
       # an item is downloadable if it is in the cart and downloadable
       def get_downloadable_items
-        if is_requests_page? 
+        if is_requests_page?
           @items = id_params ? get_items_by_id(id_params) & downloadable_all_items : downloadable_all_items
         else
           @items = id_params ? get_items_by_id(id_params) & downloadable_items : downloadable_items

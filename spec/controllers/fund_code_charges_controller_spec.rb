@@ -43,7 +43,7 @@ RSpec.describe Morphosource::Admin::FundCodeChargesController, :type => :control
       context 'request is JSON format and user provides no API token' do
         it 'returns 401 unauthorized' do
           get :index, :format => :json
-          expect(response.content_type).to eq('application/json')
+          expect(response.content_type).to include('application/json')
           expect(response.code).to eq("401")
         end 
       end
@@ -52,7 +52,7 @@ RSpec.describe Morphosource::Admin::FundCodeChargesController, :type => :control
         it 'returns 404 not found' do
           controller.request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials('', "nonsense")
           get :index, :format => :json
-          expect(response.content_type).to eq('application/json')
+          expect(response.content_type).to include('application/json')
           expect(response.code).to eq("404")
         end 
       end
@@ -67,7 +67,7 @@ RSpec.describe Morphosource::Admin::FundCodeChargesController, :type => :control
         it 'returns fund code charge information successfully' do
           controller.request.env['HTTP_AUTHORIZATION'] = ActionController::HttpAuthentication::Basic.encode_credentials('', api_user.token)
           get :index, :format => :json
-          expect(response.content_type).to eq('application/json')
+          expect(response.content_type).to include('application/json')
           expect(response.code).to eq("200")
           expect(JSON.parse(response.body)).to be_an_instance_of(Array)
         end 

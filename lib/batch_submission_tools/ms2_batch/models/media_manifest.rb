@@ -127,7 +127,7 @@ module BatchSubmissionTools
         end
 
         def media_file_path
-          if Dir.exists?(media_path) && initial_attrs[:media_file]&.first.present?
+          if Dir.exist?(media_path) && initial_attrs[:media_file]&.first.present?
             # todo: use another way to check if this is for remote file
             if is_remote_backed?
               return initial_attrs[:media_file].first

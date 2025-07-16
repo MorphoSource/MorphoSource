@@ -3,7 +3,7 @@ module Hyrax
   class BrowseOrganizationsController < My::WorksController
     before_action :authenticate_user!, except: [:index]  
 
-    with_themed_layout 'morphosource_1_column'
+    with_themed_layout '1_column'
 
     def self.configure_facets
       configure_blacklight do |config|
@@ -18,7 +18,7 @@ module Hyrax
     configure_facets
 
     def index
-      (@response, @document_list) = query_solr
+      (@response, @document_list) = search_service.search_results
       @paginated_document_list = paginated_item_list
       get_organization_count_by_type
 

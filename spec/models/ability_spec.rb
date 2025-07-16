@@ -100,10 +100,10 @@ RSpec.describe Ability, type: :model do
       end
     end
     context 'collections' do
-      let(:team)                    { Collection.new(title: ['team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
-      let(:project)                 { Collection.new(title: ['project'], collection_type_gid: project_collection_type.gid, depositor: user.ms_id) }
-      let(:media_list)              { MediaList.new(title: ['media list'], visibility: 'open', collection_type_gid: media_list_collection_type.gid, depositor: user.ms_id) }
-      let(:sequential_section_list) { SequentialSectionList.new(title: ['sequential section list'], collection_type_gid: sequential_section_list_collection_type.gid, depositor: user.ms_id) }
+      let(:team)                    { Collection.new(title: ['team'], collection_type_gid: team_collection_type.to_global_id, depositor: user.ms_id) }
+      let(:project)                 { Collection.new(title: ['project'], collection_type_gid: project_collection_type.to_global_id, depositor: user.ms_id) }
+      let(:media_list)              { MediaList.new(title: ['media list'], visibility: 'open', collection_type_gid: media_list_collection_type.to_global_id, depositor: user.ms_id) }
+      let(:sequential_section_list) { SequentialSectionList.new(title: ['sequential section list'], collection_type_gid: sequential_section_list_collection_type.to_global_id, depositor: user.ms_id) }
 
       let(:collections) { [team, project, media_list, sequential_section_list] }
 

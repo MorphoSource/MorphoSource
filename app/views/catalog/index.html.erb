@@ -1,9 +1,24 @@
-<div class="row" style="margin-left: -15px; margin-right: -15px; padding: 0;">
-  <div id="content" class="col-md-9 col-md-push-3 col-sm-8 col-sm-push-4">
+<% content_for :body_css_classes do %>catalog-body<% end %>
+
+<% content_for(:container_header) do -%>
+  <%= render 'ms_catalog_search' %>
+  <%= render 'did_you_mean' %>
+  <%= render 'sort_and_per_page' %>
+<% end %>
+
+<div class="row" style="padding: 0; padding-top: 6px;">
+  <div id="sidebar" class="col-md-3 col-12">
+    <%= render 'facets' %>
+    <div class="d-none d-md-block">
+      <%= render 'search_export' %>
+    </div>
+  </div>
+
+  <div id="content" class="col-md-9 col-12">
       <%= render 'search_results' %>
   </div>
 
-  <div id="sidebar" class="col-md-3 col-md-pull-9 col-sm-4 col-sm-pull-8">
-    <%= render 'search_sidebar' %>
+  <div class="d-block d-md-none col-md-2 col-12">
+    <%= render 'search_export' %>
   </div>
 </div>

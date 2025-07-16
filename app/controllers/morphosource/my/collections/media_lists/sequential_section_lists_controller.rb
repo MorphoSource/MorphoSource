@@ -18,10 +18,6 @@ module Morphosource
             config.search_builder_class = Morphosource::My::Collections::MediaLists::SequentialSectionListsSearchBuilder
           end
 
-          def collections_type
-            "sequential_section_lists"
-          end
-
           def search_builder_class
             Morphosource::My::Collections::MediaLists::SequentialSectionListsSearchBuilder
           end
@@ -36,10 +32,6 @@ module Morphosource
 
 
           private
-
-            def add_collection_type_breadcrumb
-              add_breadcrumb t(:'hyrax.admin.sidebar.sequential_section_lists'), main_app.my_sequential_section_lists_path
-            end
 
             # The url of the "more" link for additional facet values
             def search_facet_path(args = {})

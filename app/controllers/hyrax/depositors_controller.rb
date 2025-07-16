@@ -1,16 +1,16 @@
 module Hyrax
   class DepositorsController < ApplicationController
     include DenyAccessOverrideBehavior
+    include Morphosource::Breadcrumbs
 
     before_action :authenticate_user!
     before_action :validate_users, only: :create
 
     layout :decide_layout
 
+    PAGE_TITLE = I18n.t("morphosource.dashboard.my.proxies.page_title")
+
     def index
-      add_breadcrumb t(:'hyrax.controls.home'), root_path
-      add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
-      add_breadcrumb t(:'hyrax.dashboard.manage_proxies'), hyrax.depositors_path
       @user = current_user
     end
 

@@ -6,10 +6,10 @@
 <%= presenter.attribute_to_html(:parent_media_count, render_as: :showcase_default, include_empty: true) %>
 
 <div class="row">
-	<div class="col-xs-6 showcase-label">
+	<div class="col-6 showcase-label">
 		<%= t("blacklight.search.fields.show.processing_event_count") %>
 	</div>
-	<div class="col-xs-6 showcase-value">
+	<div class="col-6 showcase-value">
 		<%= presenter.processing_event_count %>
 		<% if presenter.processing_activity_count.present?  %>
 			(<%= pluralize(presenter.processing_activity_count, 'step') %>)
@@ -19,10 +19,10 @@
 
 <% if presenter.parent_media_count.to_i > 0 %>
   <div class="row">
-  	<div class="col-xs-6 showcase-label">
+  	<div class="col-6 showcase-label">
 			<%= t("blacklight.search.fields.show.direct_parent") %>
 		</div>
-  	<div class="col-xs-6 showcase-value">
+  	<div class="col-6 showcase-value">
 			<%= link_to(presenter.link_name_long_from_object(presenter.direct_parent), main_app.media_showcase_path(presenter.direct_parent)) %>
   	</div>
   </div>

@@ -11,35 +11,33 @@
   </div>
   <div id="media-ownership-fields">
     <div class="row media_owner_wrapper">
-      <div class="col-xs-6 showcase-label"><%= t('simple_form.labels.submission.owner') %></div>
-      <div class="col-xs-6 showcase-value" name="batch_submission[media][owner]" id="batch_submission_media_owner"><%= current_user.display_name %></div>
+      <div class="col-6 showcase-label"><%= t('simple_form.labels.submission.owner') %></div>
+      <div class="col-6 showcase-value" name="batch_submission[media][owner]" id="batch_submission_media_owner"><%= current_user.display_name %></div>
     </div>
 
     <div class="row" id="media-depositor">
-      <div class="col-xs-6 showcase-label"><%= t('simple_form.labels.submission.depositor') %></div>
-      <div class="col-xs-6 showcase-value"><%= current_user.display_name %></div>
+      <div class="col-6 showcase-label"><%= t('simple_form.labels.submission.depositor') %></div>
+      <div class="col-6 showcase-value"><%= current_user.display_name %></div>
     </div>
 
     <div class="mb-2">
       <div class="row media_download_permission">
-        <div class="col-xs-6 showcase-label">
-          <label class="control-label select optional" for="media_download_permission">Download permission</label>
-          <i class="material-icons tooltip-icon" data-original-title="" title="" style='margin-left: -1px;'>
-            <p class="hint hide"><%= t('simple_form.hints.defaults.download_permission') %></p>
-          </i>
+        <div class="col-6 showcase-label">
+          <label class="col-form-label select optional" for="media_download_permission">Download permission</label>
+          <i class="material-icons tooltip-icon" data-toggle="tooltip" title="<%= t('simple_form.hints.defaults.download_permission') %>"></i>
         </div>
-        <div class="col-xs-6 showcase-value">
+        <div class="col-6 showcase-value">
           <div class="m-0 p-0 text-nowrap">
           <a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block-visibility" class="btn collapse-block-visibility pl-0">
           <% if f.object.embargo_release_date %>
-            <span class="label label-warning">Embargo</span>
+            <span class="badge badge-warning">Embargo</span>
           <% elsif f.object.lease_expiration_date %>
-            <span class="label label-warning">Lease</span>
+            <span class="badge badge-warning">Lease</span>
           <% else %>
             <span class="label" id="current_visibility_value"></span>
           <% end %>
             <span class="glyphicon glyphicon-triangle-bottom collapse-block-visibility"></span></a></div>
-          <div id="collapse-block-visibility" class="panel-collapse collapse-block glyphicon-only table collapse out m-0 p-0" aria-expanded="false">
+          <div id="collapse-block-visibility" class="panel-collapse collapse-block collapse-icon-only table collapse out m-0 p-0" aria-expanded="false">
             <%= render 'hyrax/base/ms_form_visibility_component', f: f %>
           </div>
         </div>
@@ -48,17 +46,13 @@
       <%= render_edit_field_partial('download_reviewer', f: f) %>
 
       <div id="media_transfer_management" class="form-group row select media_transfer_management hide">
-        <div class="col-xs-6 showcase-label">
-          <label class="control-label select optional" for="media_transfer_management">
+        <div class="col-6 showcase-label">
+          <label class="col-form-label select optional" for="media_transfer_management">
             Transfer management
           </label>
-          <i class="material-icons tooltip-icon" data-original-title="" title="">
-            <p class="hint hide">
-              When physical object organization has the option to transfer management of media from contributor to organization.
-            </p>
-          </i>
+          <i class="material-icons tooltip-icon" data-toggle="tooltip" title="When physical object organization has the option to transfer management of media from contributor to organization."></i>
         </div>
-        <div class="col-xs-6 showcase-value">
+        <div class="col-6 showcase-value">
           <select class="form-control select optional form-control" name="media[transfer_management]" id="media_transfer_management">
             <option value="publication">When Media Is Published</option>
             <option value="immediate">Immediately On Submission</option>
@@ -92,14 +86,12 @@
 
     <div>
       <div class="form-group row string optional media_agreement_uri attachment-container">
-        <div class="col-xs-6 showcase-label">
-          <label class="control-label string optional" for="media_agreement_uri">Additional usage agreement</label>
-          <i class="material-icons tooltip-icon" data-original-title="" title="" style='margin-left: -1px;'>
-            <p class="hint hide"><%= t('simple_form.hints.defaults.agreement_uri') %></p>
-          </i>
+        <div class="col-6 showcase-label">
+          <label class="col-form-label string optional" for="media_agreement_uri">Additional usage agreement</label>
+          <i class="material-icons tooltip-icon" data-toggle="tooltip" title="<%= t('simple_form.hints.defaults.agreement_uri') %>"></i>
         </div>
 
-        <div class="col-xs-6 showcase-value">
+        <div class="col-6 showcase-value">
           <span id='no-attachment' class='show'>None</span>
           <span id='organization-agreement-uri' class='hide'>URI missing</span>
           <a href='#' target=”_blank” id='organization-attachment-url' class='hide'>Agreement file</a>
@@ -109,7 +101,7 @@
       </div>
 
       <div class="form-group row">
-        <div class="col-xs-12 showcase-value">
+        <div class="col-12 showcase-value">
           <span id='no-agreement-help' class='show'><%= t("morphosource.media.new.agreement_initial").html_safe %></span>
           <span id='organization-agreement-help' class='hide'><%= t("morphosource.media.new.agreement_organization").html_safe %></span>
         </div>

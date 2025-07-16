@@ -1,18 +1,18 @@
-div.panel.itemtable {
+div.card.itemtable {
   min-width: 1200px;
 
   // Rules for optional description heading within body
-  .panel-body .panel-heading {
+  .card-body .card-header {
     background-color: #f5f5f5
   }
 }
 
-// Panel has controller name class, can override general behavior by controller
-div.panel.itemtable.requests {
+// card has controller name class, can override general behavior by controller
+div.card.itemtable.requests {
   min-width: 1600px;
 }
 
-div.panel.itemtable.background_jobs, div.panel.itemtable.pages {
+div.card.itemtable.background_jobs, div.card.itemtable.pages {
   min-width: 600px;
 }
 
@@ -23,11 +23,28 @@ table.itemtable {
     color: inherit;
     text-decoration: none;
 
-    span.glyphicon-sort {
+    span.fa-sort {
       opacity:  0.3;
     }
 
-    span.glyphicon-sort-by-attributes,span.glyphicon-sort-by-attributes-alt {
+    span.fa-sort:before,
+    span.fa-sort-by-attributes:before,
+    span.fa-sort-by-attributes-alt:before {
+      content: "↑";
+      opacity:  0.3;
+    }
+
+    span.fa-sort:after,
+    span.fa-sort-by-attributes:after,
+    span.fa-sort-by-attributes-alt:after {
+      content: "↓";
+      opacity:  0.3;
+    }
+
+    span.fa-sort-up.fa-sort-by-attributes:after, 
+    span.fa-sort-up.fa-sort-by-attributes-alt:after, 
+    span.fa-sort-down.fa-sort-by-attributes:before,
+    span.fa-sort-down.fa-sort-by-attributes-alt:before {
       opacity:  0.7;
     }
   }

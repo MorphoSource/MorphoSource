@@ -1,6 +1,7 @@
 module Morphosource
   module Collections
     class MediaSearchBuilder < Hyrax::CollectionMemberSearchBuilder
+      include Morphosource::SearchBuilderBehavior
       # override filter_collection_facet_for_access
       include Morphosource::Facets::CollectionsSearchBuilderBehavior
       # enable f.field facet format
@@ -9,6 +10,8 @@ module Morphosource
       self.default_processor_chain += [:return_selected_fields, :filter_collection_facet_for_access]
 
       def member_of_collection(solr_parameters)
+        return unless collection.present? 
+
         solr_parameters[:fq] ||= []
         # if collection is a team, get linked organization media
         if collection.team? && collection.organization.present?
@@ -29,11 +32,12 @@ module Morphosource
       end
 
       def collection_ids
+        return [] unless collection
         [collection.id] + subcollection_ids
       end
 
       def subcollection_ids
-        return [] unless collection.team?
+        return [] unless collection && collection.team?
 
         subcollections = Morphosource::Collections::CollectionMemberService.new(scope: scope, collection: collection, params: {}).available_member_subcollections
         subcollections.docs.map(&:id)
@@ -44,8 +48,8 @@ module Morphosource
     
         return unless facet.present?
         facet_config = blacklight_config.facet_fields[facet]
-        contains = blacklight_params[request_keys[:contains]]
-        if blacklight_params[request_keys[:contains]]
+        contains = blacklight_params[blacklight_config.facet_paginator_class.request_keys[:contains]]
+        if blacklight_params[blacklight_config.facet_paginator_class.request_keys[:contains]]
           solr_params[:"f.#{facet_config.field}.facet.contains"] = contains
           solr_params[:"f.#{facet_config.field}.facet.contains.ignoreCase"] = true
         end

@@ -11,7 +11,7 @@ class CatalogController < ApplicationController
   helper Morphosource::CatalogHelper
   helper Morphosource::FacetParamsHelper
 
-  layout "catalog"
+  with_themed_layout "morphosource_1_column"
 
   # This filter applies the hydra access controls
   before_action :enforce_show_permissions, only: :show
@@ -28,11 +28,11 @@ class CatalogController < ApplicationController
 
   configure_blacklight do |config|
     config.http_method = :post
+    config.track_search_session = false
 
-    config.view.gallery.partials = [:index_header, :index]
+    config.view.gallery(document_component: Blacklight::Gallery::DocumentComponent)
     #config.view.masonry.partials = [:index]
     #config.view.slideshow.partials = [:index]
-
 
     config.show.tile_source_field = :content_metadata_image_iiif_info_ssm
     config.show.partials.insert(1, :openseadragon)
@@ -41,7 +41,7 @@ class CatalogController < ApplicationController
     config.facet_paginator_class = Morphosource::Solr::FacetPaginator
 
     # Show gallery view
-    config.view.gallery.partials = [:index_header, :index]
+    # config.view.gallery.partials = [:index_header, :index]
     #config.view.slideshow.partials = [:index]
 
     ## Default parameters to send to solr for all search-like requests. See also SolrHelper#solr_search_params
@@ -55,6 +55,17 @@ class CatalogController < ApplicationController
     config.index.title_field = solr_name("title", :stored_searchable)
     config.index.display_type_field = solr_name("has_model", :symbol)
     config.index.thumbnail_field = 'thumbnail_path_ss'
+
+    #config.add_results_document_tool(:bookmark, partial: 'bookmark_control', if: :render_bookmarks_control?)
+    config.add_results_collection_tool(:sort_widget)
+    config.add_results_collection_tool(:per_page_widget)
+    config.add_results_collection_tool(:view_type_group)
+    #config.add_show_tools_partial(:bookmark, partial: 'bookmark_control', if: :render_bookmarks_control?)
+    config.add_show_tools_partial(:email, callback: :email_action, validator: :validate_email_params)
+    config.add_show_tools_partial(:sms, if: :render_sms_action?, callback: :sms_action, validator: :validate_sms_params)
+    config.add_show_tools_partial(:citation)
+    #config.add_nav_action(:bookmark, partial: 'blacklight/nav/bookmark', if: :render_bookmarks_control?)
+    config.add_nav_action(:search_history, partial: 'blacklight/nav/search_history')
 
     # turn on csv response
     config.index.respond_to.csv = true
@@ -294,7 +305,7 @@ class CatalogController < ApplicationController
     if request.format == "csv"
       blacklight_config.max_per_page = 1_000_000
     end
-    (@response, @document_list) = search_results(params)
+    (@response, @document_list) = search_service.search_results
     @document_type = document_type
     respond_to do |format|
       format.html { store_preferred_view }
@@ -330,7 +341,7 @@ class CatalogController < ApplicationController
   # get a single document from the index
   # to add responses for formats other than html or json see _Blacklight::Document::Export_
   def show
-    @response, @document = fetch params[:id]
+    @response, @document = search_service.fetch params[:id]
     respond_to do |format|
       format.html { setup_next_and_previous_documents }
       format.json { render json: { response: { @document.has_model.first.underscore => @document.to_semantic_values } } }

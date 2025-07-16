@@ -11,8 +11,8 @@
         <span class="loading-text">Loading...</span>
       </div>
       <div class="ev-browser row" aria-live="polite">
-        <%# col-xs-12 is bootstrap3, col-12 is bootstrap4 %>
-        <div class="col-xs-12 col-12 ev-files list">
+        <%# col-12 is bootstrap3, col-12 is bootstrap4 %>
+        <div class="col-12 col-12 ev-files list">
           <% if provider.present? %>
             <% if provider.authorized? %>
               <%= render :partial => 'files' %>
@@ -24,7 +24,7 @@
       </div>
     </div>
     <div class="modal-footer">
-      <span class="pull-left ev-status">0 files selected</span>
+      <span class="float-left ev-status">0 files selected</span>
       <%= form_tag '#', :class => "ev-submit-form form-horizontal", :data => { :resolver => browse_everything_engine.resolver_path } do %>
         <input type="hidden" name="context" value=""/>
         <button class="ev-cancel btn btn-danger"><%= t('browse_everything.modal_form.cancel')%></button>

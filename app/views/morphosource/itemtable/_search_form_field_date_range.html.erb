@@ -1,21 +1,21 @@
 <div>
-  <label class="control-label">
+  <label class="col-form-label">
     <%= t("morphosource.dashboard.my.heading.#{attr}") %>
   </label>
 </div>
 <div class="row">
-  <div class="col-xs-6 date-range-element">
+  <div class="col-6 date-range-element">
     <div class="form-group search_start_date">
-      <label class="control-label" for="search_start_date">
+      <label class="col-form-label" for="search_start_date">
         Start Date
       </label>
       <%= f.date_field "#{attr}_start", value: instance_variable_get("@#{attr}_start"), class: 'datepicker form-control' %>
     </div>
   </div>
 
-  <div class="col-xs-6 date-range-element">
+  <div class="col-6 date-range-element">
     <div class="form-group search_end_date">
-      <label class="control-label" for="search_end_date">
+      <label class="col-form-label" for="search_end_date">
         End Date
       </label>
       <%= f.date_field "#{attr}_end", value: instance_variable_get("@#{attr}_end"), class: 'datepicker form-control' %>

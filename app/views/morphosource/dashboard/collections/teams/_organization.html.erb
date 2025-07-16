@@ -1,5 +1,5 @@
 <% if @collection.organization %>
-  <div class="col-xs-9 no-horizontal-padding title team-title">
+  <div class="col-9 no-horizontal-padding title team-title">
     <div>
       <span class="fa fa-edit" aria-hidden="true"></span>
       <h1 style="margin-bottom:20px;"><%= @collection.title.first %>
@@ -13,13 +13,13 @@
     </div>
   </div>
   <br>
-  <div class="panel panel-default panel-borders tabs teams" id="collection-edit-controls">
+  <div class="card panel-default panel-borders tabs teams" id="collection-edit-controls">
     <%= render 'nav_tabs' %>
     <div class="tab-content">
       <form id="edit_collection">
         <div id="organization" class="tab-pane">
-          <div class="panel panel-default labels" id="collection_permissions" data-param-key="collection>">
-            <div class="panel-body">
+          <div class="card panel-default labels" id="collection_permissions" data-param-key="collection>">
+            <div class="card-body">
               <%# taken from _ms_linked_organization.html %>
               <!-- TODO: removing form tags below makes add group form hit the collections controller - needs more investigation -->
               <form></form>
@@ -72,7 +72,7 @@
     </div> <!-- end tab-content -->
   </div> <!-- end collection-controls -->
 <% else %>
-  <div class="col-xs-9 no-horizontal-padding title team-title">
+  <div class="col-9 no-horizontal-padding title team-title">
     <div>
       <span class="fa fa-edit" aria-hidden="true"></span>
       <h1 style="margin-bottom:20px;"><%= @collection.title.first %>
@@ -86,7 +86,7 @@
     </div>
   </div>
   <br>
-  <div class="panel panel-default panel-borders tabs teams" id="collection-edit-controls">
+  <div class="card panel-default panel-borders tabs teams" id="collection-edit-controls">
     <%= render 'nav_tabs' %>
     <div class="tab-content">
       <%= render 'morphosource/dashboard/collections/teams/organization/form' %>

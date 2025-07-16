@@ -4,7 +4,7 @@ require 'rails_helper'
 RSpec.describe Morphosource::Collections::MediaSearchBuilder do
   let(:user)          { User.create(email: 'registered@email.com', password: 'password') }
   let(:ability)       { ::Ability.new(user) }
-  let(:scope)         { double('scope', blacklight_config: CatalogController.blacklight_config, repository: MediaCatalogController.new.repository, current_ability: ability, params: {}) }
+  let(:scope)         { double('scope', blacklight_config: CatalogController.blacklight_config, current_ability: ability, params: {}) }
 
   subject { described_class.new(scope: scope, collection: collection) }
 

@@ -50,7 +50,6 @@ module Morphosource
           @hide_viewer = true
         end
 
-
         publication_settings_nag
         query_collection_counts
         query_collection_members
@@ -60,18 +59,20 @@ module Morphosource
         end
       end
 
+      # TODO5: Maybe this should be refactored to use Hyrax 5's member_works approach
       def query_solr
         # remove sort param if sorting by order - will break solr query
         @ordered_sort = params.delete("sort")if params["sort"]&.include? "order"
         if @collection.ordered_media.present?
-          response = search_results(params)[0]
-          document_list = search_results(full_collection_params(params))[1]
+          response = blacklight_config.repository.search(search_builder.with(params))
+          document_list = blacklight_config.repository.search(search_builder.with(full_collection_params(params)))
           sorted_document_list = sort_document_list(document_list)
           # replace so ordered sort asc/desc ui toggle works correctly
           params["sort"] = @ordered_sort if @ordered_sort.present?
           [response, sorted_document_list]
         else
-          (response, document_list) = search_results(params)
+          response = blacklight_config.repository.search(search_builder.with(params))
+          [response, response.documents]
         end
       end
 

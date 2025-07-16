@@ -1,5 +1,5 @@
 class DropTableMediaCart < ActiveRecord::Migration[5.1]
   def change
-    drop_table :media_carts
+    drop_table :media_carts, if_exists: true
   end
 end

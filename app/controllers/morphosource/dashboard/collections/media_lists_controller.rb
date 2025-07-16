@@ -5,8 +5,6 @@ module Morphosource
         skip_load_and_authorize_resource only: [:edit, :update, :new, :members, :create], instance_name: :media_list
 
         before_action :redirect_to_collection_type, only: []
-        before_action :build_breadcrumbs, only: []
-        before_action :load_collection
         skip_before_action :authorize_contributor
 
         self.presenter_class = Morphosource::Collections::MediaListPresenter
@@ -16,9 +14,10 @@ module Morphosource
         private
 
 
-          def default_collection_type
+          def collection_type
             Hyrax::CollectionType.find_by(title: "Media List")
           end
+          alias :default_collection_type :collection_type
 
           def collection_class
             MediaList

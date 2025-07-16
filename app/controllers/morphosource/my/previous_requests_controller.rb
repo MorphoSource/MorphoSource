@@ -37,22 +37,22 @@ module Morphosource
       # Itemtable Methods
 
       def get_items
-        @items = current_user ? 
+        @items = current_user ?
           CartItem
             .where(":id = ANY(reviewers)", id: current_user.ms_id).or(CartItem.where(action_by: current_user.ms_id))
             .where("date_approved IS NOT NULL OR date_cleared IS NOT NULL OR date_canceled IS NOT NULL OR date_denied IS NOT NULL OR date_expired < now()")
             .includes(:user)
             .joins("INNER JOIN users decision_users ON cart_items.action_by = decision_users.ms_id")
-            .order(sort_param) 
+            .order(sort_param)
           : []
       end
 
       def valid_sort_attributes
         [
-          'work_id', 
+          'work_id',
           'users.display_name',
           'decision_users.display_name',
-          'date_requested', 
+          'date_requested',
           'date_decided',
           'date_expired',
           'date_downloaded',
@@ -76,10 +76,10 @@ module Morphosource
 
       def valid_filter_attributes
         [
-          'work_id', 
+          'work_id',
           'user_id',
-          'date_requested_start', 
-          'date_requested_end', 
+          'date_requested_start',
+          'date_requested_end',
           'date_approved_start',
           'date_approved_end',
           'date_denied_start',
@@ -120,7 +120,7 @@ module Morphosource
 
       def prepare_items_for_csv
         excluded_fields = [
-          'id', 'created_at', 'updated_at', 'in_cart', 'download_hash', 'download_usage', 
+          'id', 'created_at', 'updated_at', 'in_cart', 'download_hash', 'download_usage',
           'download_usage_list', 'download_attempts', 'download_method'
         ]
         @items = @items.map do |item|
@@ -135,13 +135,13 @@ module Morphosource
               value = User.find_by_user_key(value)&.name_and_email
             elsif field == 'reviewers'
               field = 'current_reviewers'
-              value = (value || []).map { |user_key| User.find_by_user_key(user_key)&.name_and_email } 
+              value = (value || []).map { |user_key| User.find_by_user_key(user_key)&.name_and_email }
             end
-  
+
             if value.kind_of? Array
               value = value.join(';')
             end
-  
+
             [field, value]
           end.to_h.merge({ 'download_user_id' => item&.user_id })
         end

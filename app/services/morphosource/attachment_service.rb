@@ -41,7 +41,7 @@ module Morphosource
       extension = File.extname(file_name).delete('.')
       attachment_path = Morphosource::AttachmentPath.attachment_path_for_reference(id, field_name, extension)
 
-      FileUtils.rm attachment_path if File.exists?(attachment_path)
+      FileUtils.rm attachment_path if File.exist?(attachment_path)
       FileUtils.mkdir_p(File.dirname(attachment_path))
 
       begin 
@@ -55,7 +55,7 @@ module Morphosource
     def create_attachment_from_copy(source_object)
       source_id = source_object.is_a?(String) ? source_object : source_object.id
       source_attachment = Morphosource::AttachmentPath.attachments_for_reference(source_id).find { |p| p.include? field_name }
-      create_attachment(source_attachment) if source_attachment.present? && File.exists?(source_attachment)
+      create_attachment(source_attachment) if source_attachment.present? && File.exist?(source_attachment)
     end
 
     def delete_all_attachments

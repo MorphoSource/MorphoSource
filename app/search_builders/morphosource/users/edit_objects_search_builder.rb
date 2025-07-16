@@ -2,6 +2,7 @@
 module Morphosource
   module Users
     class EditObjectsSearchBuilder < Hyrax::WorksSearchBuilder
+      include Morphosource::SearchBuilderBehavior
       include Hyrax::My::SearchBuilderBehavior
       # enable f.field facet format
       include Morphosource::Facets::SearchBuilderFacetParamsBehavior

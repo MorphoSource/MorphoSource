@@ -1,0 +1,10 @@
+en:
+  morphosource:
+    dashboard:
+      admin:
+        data_curation:
+          page_title: Data Curation
+        fund_codes:
+          page_title: Fund Code Control Panel
+        import_slides:
+          page_title: Import Slides

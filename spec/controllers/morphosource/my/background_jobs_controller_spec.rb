@@ -55,7 +55,7 @@ RSpec.describe Morphosource::My::BackgroundJobsController, type: :controller do
 
       it 'for CSV format requests' do
         get :index, params: {format: 'csv'}
-        expect(response.content_type).to eq('text/csv')
+        expect(response.content_type).to include('text/csv')
         expect(response.body).to include job1.job_id
         expect(response.body).to include job2.job_id
         expect(response.body).not_to include job3.job_id

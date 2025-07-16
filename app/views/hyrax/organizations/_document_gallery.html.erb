@@ -1,7 +1,11 @@
-<%
-# Taken from https://github.com/projectblacklight/blacklight-gallery/tree/v0.12.0/app/views/catalog
-
-# container for all documents in index view -%>
-<div id="documents" class="row gallery">
-  <%= render_gallery_collection documents %>
+<div class="container mt-4">
+  <div id="documents" class="row-cols-1 row-cols-sm-3 row-cols-md-5 row gallery">
+    <% if work_type == 'biological_specimen' %>
+      <%= render partial: 'hyrax/organizations/biological_specimens/document_gallery_item', collection: @paged_bso_member_docs, as: :document %>
+    <% elsif work_type == 'cultural_heritage_object' %>
+      <%= render partial: 'hyrax/organizations/cultural_heritage_objects/document_gallery_item', collection: @paged_cho_member_docs, as: :document %>
+    <% else %>
+      <%= render partial: 'document_gallery_item', collection: @paged_media_member_docs, as: :document %>
+    <% end %>
+  </div>
 </div>

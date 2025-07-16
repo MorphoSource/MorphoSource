@@ -1,77 +1,76 @@
 <!-- This currently uses UI code borrowed from views/hyrax/base/organization_details  -->
 <!-- TODO: Should try and unify UI code between these? -->
-<div id="submission_organization_select_display" class="hide">
-<div class="col-sm-6 col-sm-offset-3 block showcase showcase-edit showcase-section form-group">
 
-  <div class="row showcase-section-header">
-    <span class="h2">SELECTED ORGANIZATION</span>
-    <i id="organization-select-close" class="fas fa-times clickable" style='float: right;'></i>
+<div id="submission_organization_select_display" class="hide mt-2">
+  <div class="block p-3">
+    <h2 class="d-flex justify-content-between align-items-center">
+      Selected Organization 
+      <i id="organization-select-close" class="float-right fa-lg fas fa-times clickable" style="margin-top: 2px;"></i>
+    </h2>
+
+    <div class="row">
+      <div class="col-6 showcase-label"><%= t('simple_form.labels.organization.organization_type') %></div>
+      <div class="col-6 showcase-value" id="organization_type"></div>
+    </div>
+
+    <div class="row">
+      <div class="col-6 showcase-label"><%= t('simple_form.labels.organization.institution_name') %></div>
+      <div class="col-6 showcase-value" id="institution_name"></div>
+    </div>
+
+    <div class="row">
+      <div class="col-6 showcase-label"><%= t('simple_form.labels.organization.title') %></div>
+      <div class="col-6 showcase-value" id="title"></div>
+    </div>
+
+    <div class="row">
+      <div class="col-6 showcase-label"><%= t('simple_form.labels.organization.institution_code') %></div>
+      <div class="col-6 showcase-value" id="institution_code"></div>
+    </div>
+
+    <div class="row">
+      <div class="col-6 showcase-label"><%= t('simple_form.labels.organization.collection_code') %></div>
+      <div class="col-6 showcase-value" id="collection_code"></div>
+    </div>
+
+    <div class="row">
+      <div class="col-6 showcase-label">Related URL</div>
+      <div class="col-6 showcase-value" id="related_url"></div>
+    </div>
+
+    <div class="row">
+      <div class="col-6 showcase-label"><%= t('simple_form.labels.organization.address') %></div>
+      <div class="col-6 showcase-value" id="address"></div>
+    </div>
+
+    <div class="row">
+      <div class="col-6 showcase-label"><%= t('simple_form.labels.organization.city') %></div>
+      <div class="col-6 showcase-value" id="city"></div>
+    </div>
+
+    <div class="row">
+      <div class="col-6 showcase-label"><%= t('simple_form.labels.organization.state_province') %></div>
+      <div class="col-6 showcase-value" id="state_province"></div>
+    </div>
+
+    <div class="row">
+      <div class="col-6 showcase-label"><%= t('simple_form.labels.organization.postal_code') %></div>
+      <div class="col-6 showcase-value" id="postal_code"></div>
+    </div>
+
+    <div class="row">
+      <div class="col-6 showcase-label"><%= t('simple_form.labels.organization.country') %></div>
+      <div class="col-6 showcase-value" id="country"></div>
+    </div>
+
+    <div class="row">
+      <div class="col-6 showcase-label"><%= t('simple_form.labels.organization.contact_person') %></div>
+      <div class="col-6 showcase-value" id="contact_person"></div>
+    </div>
+
+    <div class="row">
+      <div class="col-6 showcase-label"><%= t('simple_form.labels.organization.description') %></div>
+      <div class="col-6 showcase-value" id="description"></div>
+    </div>
   </div>
-
-  <div class="row text-left">
-    <div class="col-xs-6 showcase-label"><%= t('simple_form.labels.organization.organization_type') %></div>
-    <div class="col-xs-6 showcase-value" id="organization_type"></div>
-  </div>
-
-  <div class="row text-left">
-    <div class="col-xs-6 showcase-label"><%= t('simple_form.labels.organization.institution_name') %></div>
-    <div class="col-xs-6 showcase-value" id="institution_name"></div>
-  </div>
-
-  <div class="row text-left">
-    <div class="col-xs-6 showcase-label"><%= t('simple_form.labels.organization.title') %></div>
-    <div class="col-xs-6 showcase-value" id="title"></div>
-  </div>
-
-  <div class="row text-left">
-    <div class="col-xs-6 showcase-label"><%= t('simple_form.labels.organization.institution_code') %></div>
-    <div class="col-xs-6 showcase-value" id="institution_code"></div>
-  </div>
-
-  <div class="row text-left">
-    <div class="col-xs-6 showcase-label"><%= t('simple_form.labels.organization.collection_code') %></div>
-    <div class="col-xs-6 showcase-value" id="collection_code"></div>
-  </div>
-
-  <div class="row text-left">
-    <div class="col-xs-6 showcase-label">Related URL</div>
-    <div class="col-xs-6 showcase-value" id="related_url"></div>
-  </div>
-
-  <div class="row text-left">
-    <div class="col-xs-6 showcase-label"><%= t('simple_form.labels.organization.address') %></div>
-    <div class="col-xs-6 showcase-value" id="address"></div>
-  </div>
-
-  <div class="row text-left">
-    <div class="col-xs-6 showcase-label"><%= t('simple_form.labels.organization.city') %></div>
-    <div class="col-xs-6 showcase-value" id="city"></div>
-  </div>
-
-  <div class="row text-left">
-    <div class="col-xs-6 showcase-label"><%= t('simple_form.labels.organization.state_province') %></div>
-    <div class="col-xs-6 showcase-value" id="state_province"></div>
-  </div>
-
-  <div class="row text-left">
-    <div class="col-xs-6 showcase-label"><%= t('simple_form.labels.organization.postal_code') %></div>
-    <div class="col-xs-6 showcase-value" id="postal_code"></div>
-  </div>
-
-  <div class="row text-left">
-    <div class="col-xs-6 showcase-label"><%= t('simple_form.labels.organization.country') %></div>
-    <div class="col-xs-6 showcase-value" id="country"></div>
-  </div>
-
-  <div class="row text-left">
-    <div class="col-xs-6 showcase-label"><%= t('simple_form.labels.organization.contact_person') %></div>
-    <div class="col-xs-6 showcase-value" id="contact_person"></div>
-  </div>
-
-  <div class="row text-left">
-    <div class="col-xs-6 showcase-label"><%= t('simple_form.labels.organization.description') %></div>
-    <div class="col-xs-6 showcase-value" id="description"></div>
-  </div>
-
-</div>
 </div>

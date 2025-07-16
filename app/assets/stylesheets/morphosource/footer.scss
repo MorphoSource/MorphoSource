@@ -1,9 +1,8 @@
+@import 'variables';
 @import 'shared';
 
 .footer-section {
 	margin: 0px;
-	margin-left: -2px;
-	margin-right: -2px;
 }
 
 .site-footer {
@@ -32,8 +31,13 @@
 	margin-bottom: 5px;
 }
 
-.copyright, .footer-links, .support, .icons {
+.copyright, .support, .icons {
   text-align: center;
+  margin-bottom: 15px;
+}
+
+.footer-links {
+	text-align: left;
   margin-bottom: 15px;
 }
 
@@ -45,14 +49,14 @@
 	font-size: smaller;
 }
 
+.showcase footer .row {
+	padding: 4px 10px;
+}
+
 /* Small devices (tablets, 768px and up) [Bootstrap 3 breakpoint] */
 @media (min-width: 768px) {
 	.copyright {
 		text-align: left;
-	}
-
-	.footer-links {
-		text-align: right;
 	}
 
 	.support {
@@ -69,10 +73,6 @@
   .copyright {
     text-align: left;
     vertical-align: middle !important;
-  }
-
-  .footer-links {
-  	text-align: center;
   }
 
   .support {

@@ -45,7 +45,7 @@ RSpec.describe Hyrax::ProcessingEventsController do
         let(:media)                 { Media.create(title: ['media']) }
         let(:device)                { Device.create(title: ['device'], modality: ['Photogrammetry']) }
         let(:imaging_event)         { ImagingEvent.create(title: ['imaging event'], device_id: [device.id], physical_object_id: [old_specimen.id], ie_modality: device.modality) }
-        let(:old_team)              { Collection.create(title: ['Old Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+        let(:old_team)              { Collection.create(title: ['Old Team'], collection_type_gid: team_collection_type.to_global_id, depositor: user.ms_id) }
         let(:old_team_manager)      { User.create(email: 'oldmanager@test.com', password: 'password') }
         let(:old_team_depositor)    { User.create(email: 'olddepositor@test.com', password: 'password') }
         let(:old_team_viewer)       { User.create(email: 'oldviewer@test.com', password: 'password') }
@@ -124,7 +124,7 @@ RSpec.describe Hyrax::ProcessingEventsController do
           let(:new_organization)  { Organization.create(title: ['new org'], team_id: []) }
           let(:new_specimen)      { BiologicalSpecimen.create(title: ['new specimen'], vouchered: ["Yes"], organization_id: [new_organization.id]) }
           let(:new_imaging_event) { ImagingEvent.create(title: ['new imaging event'], device_id: [device.id], physical_object_id: [new_specimen.id], ie_modality: device.modality) }
-          let(:new_team)          { Collection.create(title: ['New Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+          let(:new_team)          { Collection.create(title: ['New Team'], collection_type_gid: team_collection_type.to_global_id, depositor: user.ms_id) }
 
           before do
             # this will be updated by the actor
@@ -154,7 +154,7 @@ RSpec.describe Hyrax::ProcessingEventsController do
             end
 
             context 'and the new organization does have a linked team' do
-              let(:new_team)           { Collection.create(title: ['New Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+              let(:new_team)           { Collection.create(title: ['New Team'], collection_type_gid: team_collection_type.to_global_id, depositor: user.ms_id) }
               let(:new_team_manager)   { User.create(email: 'newmanager@test.com', password: 'password') }
               let(:new_team_depositor) { User.create(email: 'newdepositor@test.com', password: 'password') }
               let(:new_team_viewer)    { User.create(email: 'newviewer@test.com', password: 'password') }
@@ -236,7 +236,7 @@ RSpec.describe Hyrax::ProcessingEventsController do
             end
           end
           context 'and the new organization does have a linked team' do
-            let(:new_team)           { Collection.create(title: ['New Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+            let(:new_team)           { Collection.create(title: ['New Team'], collection_type_gid: team_collection_type.to_global_id, depositor: user.ms_id) }
             let(:new_team_manager)   { User.create(email: 'newmanager@test.com', password: 'password') }
             let(:new_team_depositor) { User.create(email: 'newdepositor@test.com', password: 'password') }
             let(:new_team_viewer)    { User.create(email: 'newviewer@test.com', password: 'password') }

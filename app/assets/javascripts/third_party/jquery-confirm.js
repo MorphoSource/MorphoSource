@@ -437,19 +437,19 @@
                     break;
                 case 'l':
                 case 'large':
-                    p = 'col-md-8 col-md-offset-2';
+                    p = 'col-md-8 offset-md-2';
                     break;
                 case 'm':
                 case 'medium':
-                    p = 'col-md-6 col-md-offset-3';
+                    p = 'col-md-6 offset-md-3';
                     break;
                 case 's':
                 case 'small':
-                    p = 'col-md-4 col-md-offset-4';
+                    p = 'col-md-4 offset-md-4';
                     break;
                 case 'xs':
                 case 'xsmall':
-                    p = 'col-md-2 col-md-offset-5';
+                    p = 'col-md-2 offset-md-5';
                     break;
                 default:
                     p = colClass;
@@ -680,7 +680,7 @@
                 }
 
                 that.buttons[key].text = button.text || key;
-                that.buttons[key].btnClass = button.btnClass || 'btn-default';
+                that.buttons[key].btnClass = button.btnClass || 'btn-secondary';
                 that.buttons[key].action = button.action || function(){
                 };
                 that.buttons[key].keys = button.keys || [];
@@ -1312,7 +1312,7 @@
         closeIcon: null,
         closeIconClass: false,
         watchInterval: 100,
-        columnClass: 'col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3 col-xs-10 col-xs-offset-1',
+        columnClass: 'col-md-4 offset-md-4 col-sm-6 offset-sm-3 col-10 col-offset-1',
         boxWidth: '50%',
         scrollToPreviousElement: true,
         scrollToPreviousElementAnimate: true,

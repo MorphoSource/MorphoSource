@@ -81,4 +81,4 @@ en:
         provenance_details: Description or notes about the provenance history of the object.
         provenance_name: Name of the Excavation or collection event.
         state_province: State or Province
-        tgn: "Controlled vocabulary for the location of the object from the <a href='https://www.getty.edu/research/tools/vocabularies/tgn/'>Thesaurus of Geographic Names</a>."
+        tgn: "Controlled vocabulary for the location of the object from the Getty Thesaurus of Geographic Names."

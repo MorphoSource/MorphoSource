@@ -5,17 +5,18 @@ module Hyrax
     # Adds Hyrax behaviors to the controller
     include Morphosource::CurationConcernControllerBehavior
     include Hyrax::WorksControllerBehavior
-    include Hyrax::BreadcrumbsForWorks
     include Hyrax::ChildWorkRedirect
     include OrganizationsControllerBehavior
     include Morphosource::OrganizationHelper
-    helper_method :showpage_url, :hidden_params_for_filters, :publication_status_label, :media_type_label, 
+    helper_method :showpage_url, :hidden_params_for_filters, :publication_status_label, :media_type_label,
       :ms_organization_view_link_qs, :ms_organization_view_link, :hidden_params_for_pagination, :source_label
 
     self.curation_concern_type = ::Organization
     with_themed_layout 'morphosource_1_column'
 
     skip_load_and_authorize_resource only: :unlinked_organizations
+
+    before_action :set_default_view, only: [:show]
 
     def url_for(child)
       # this method is a temp fix for the error when loading edit org page:
@@ -45,6 +46,13 @@ module Hyrax
     # this method is not called in that context.
     def render_bookmarks_control?
       false
+    end
+
+    private
+
+    def set_default_view
+      # Set the default view to 'list' if not specified in params
+      request_params[:view] ||= params[:view] ||= 'list'
     end
   end
 end

@@ -7,7 +7,6 @@ module Hyrax
     include Morphosource::CurationConcernControllerBehavior
     include Hyrax::WorksControllerBehavior
     include Morphosource::WorksControllerBehavior
-    include Hyrax::BreadcrumbsForWorks
     include Hyrax::ChildWorkRedirect
     include Morphosource::LinkedTeams::LinkedTeamsManagement
     self.curation_concern_type = ::BiologicalSpecimen
@@ -38,14 +37,14 @@ module Hyrax
     end
 
     def showcase
-      @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
+      @presenter = show_presenter.new(search_result_document(id: params[:id]), current_ability, request)
       render 'showcase', presenter: @presenter
     end
 
     # overriding action methods from works_controller_behavior.rb
     def edit
       build_form
-      @presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
+      @presenter = show_presenter.new(search_result_document(id: params[:id]), current_ability, request)
       #@presenter.get_organization_data
       @countries_service = Morphosource::CountriesService.new
       @new_taxonomy_submit_submissions_url = '/submissions/new_taxonomy_submit'
@@ -57,7 +56,7 @@ module Hyrax
       curation_concern.depositor = current_user.user_key
       curation_concern.admin_set_id = admin_set_id_for_new
       build_form
-      #@presenter = show_presenter.new(curation_concern_from_search_results, current_ability, request)
+      #@presenter = show_presenter.new(search_result_document(id: params[:id]), current_ability, request)
       #@presenter.get_organization_data
       render '/hyrax/base/new' #, presenter: @presenter
     end
@@ -82,7 +81,7 @@ module Hyrax
     def check_idigbio_update
       @idigbio_record_found = false
       if params[:biological_specimen].present?
-        if (param_occ_id = params[:biological_specimen][:occurrence_id]).present? && 
+        if (param_occ_id = params[:biological_specimen][:occurrence_id]).present? &&
           (curation_concern.occurrence_id&.first != param_occ_id)
           occurrence_id_results = Morphosource::IDigBio.search({'occurrenceid' => param_occ_id})
           @idigbio_record_found = (occurrence_id_results[:status] == :success && occurrence_id_results[:data].length > 0)

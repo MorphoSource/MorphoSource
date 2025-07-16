@@ -3,12 +3,12 @@
              html: { multipart: true, class: 'form-horizontal' } do |f| %>
 
 <div class="row">
-  <div class="col-sm-12 col-md-6">
+  <div class="col-md-12 col-lg-6">
     <%= render partial: 'hyrax/dashboard/profiles/edit_email', locals: {f: f} %>
 
     <div class="form-group">
-      <%= f.label :avatar, t("morphosource.dashboard.profiles.edit_primary.change_picture").html_safe, class: "col-sm-4 control-label" %>
-      <div class="col-sm-8">
+      <%= f.label :avatar, t("morphosource.dashboard.profiles.edit_primary.change_picture").html_safe, class: "col-md-4 col-form-label" %>
+      <div class="col-md-8">
         <div>
           <%= f.file_field :avatar %>
           <%= f.hidden_field :avatar_cache %>
@@ -32,15 +32,15 @@
     <%= render partial: 'hyrax/dashboard/profiles/edit_sftp_share', locals: {f: f} %>
   </div>
 
-  <div class="col-sm-12 col-md-6">
+  <div class="col-md-12 col-lg-6">
     <%= render partial: 'hyrax/dashboard/profiles/edit_profile_type_section', locals: {f: f} %>
-    <%= render partial: 'hyrax/dashboard/profiles/edit_intent', locals: {f: f} %>  
+    <%= render partial: 'hyrax/dashboard/profiles/edit_intent', locals: {f: f} %>
   </div>
 
 </div>
 
 <div class="row">
-  <div class='col-xs-12 text-center'>
+  <div class='col-12 text-center'>
     <%= render 'trophy_edit', trophies: @trophies %>
     <p>
       <%= f.check_box :terms_read, {checked: false, required: true}, true %>

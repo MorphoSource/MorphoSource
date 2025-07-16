@@ -56,7 +56,7 @@ module Morphosource
           "response": {
             "media": {
               "id": media.id,
-              "download_url": URI.encode(download_url)
+              "download_url": URI::Parser.new.escape(download_url)
             }
           }
         }

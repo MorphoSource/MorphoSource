@@ -1,8 +1,10 @@
 <div id="submission_device" class="submission_section submission_flow submission-v2 hide">
-  <div class="container-fluid">
+  <div class="container">
 
-    <div class="row">
-      <h4><%= t('morphosource.submission.header_text.media_device') %></h4>
+    <div class="row justify-content-center text-center">
+      <div class="col-md-9">
+        <span class="h5"><%= t('morphosource.submission.header_text.media_device') %></span>
+      </div>
     </div>
 
     <div id="submission_select_device_section">
@@ -10,19 +12,23 @@
       <%= render(partial: 'submissions/media/device_select') %>
 
       <div id = "submission_device_select_display_container">
-        <div class="row">
-          <%= render(
-                partial: 'submissions/media/device_select_display',
-                locals: { device_attrs: {} }
-              )
-          %>
+        <div class="row justify-content-center">
+          <div class="col-md-9 col-lg-6 showcase showcase-section">
+            <%= render(
+                  partial: 'submissions/media/device_select_display',
+                  locals: { device_attrs: {} }
+                )
+            %>
+          </div>
         </div>
       </div>
     </div>
 
-    <div class="row mt-2">
-      <div class="col-xs-12 col-sm-6 col-sm-offset-3 block">
-         If you can't find the correct device record using the search tools above, contact the <a href="mailto:morphosource@duke.edu">MorphoSource administrators</a> to have a new device record created.
+    <div class="row justify-content-center text-left mt-2">
+      <div class="col-md-9 col-lg-6">
+        <div class="block p-3">
+          If you can't find the correct device record using the search tools above, contact the <a href="mailto:morphosource@duke.edu">MorphoSource administrators</a> to have a new device record created.
+        </div>
       </div>
     </div>
 

@@ -1,18 +1,21 @@
-<div id="submission_taxonomy_create" class="col-sm-8 col-sm-offset-2 block showcase-edit showcase-section form-group">
-	<div class="row showcase-section-header">
-    <span class="h2">CREATE NEW TAXONOMY</span>
-    <i id="taxonomy-create-close" class="fas fa-times clickable" style='float: right;'></i>
-  </div>
-  <%= simple_form_for @taxonomy_form, wrapper: :showcase_default do |f| %>
-    <% if Flipflop.proxy_deposit? && current_user.can_make_deposits_for.any? %>
-      <div class="hide">
-      <%= f.input :on_behalf_of, 
-        collection: current_user.can_make_deposits_for.map{ |u| [u.display_name, u.user_key] }, 
-        prompt: "Myself" %>
+<div id="submission_taxonomy_create" class="form-group">
+  <div class="block p-3">
+    <h2 class="d-flex justify-content-between align-items-center">
+      Create New Taxonomy
+      <i id="taxonomy-create-close" class="float-right fa-lg fas fa-times clickable" style='margin-top: 2px;'></i>
+    </h2>
+    
+    <%= simple_form_for @taxonomy_form, wrapper: :showcase_default do |f| %>
+      <% if Flipflop.proxy_deposit? && current_user.can_make_deposits_for.any? %>
+        <div class="hide">
+        <%= f.input :on_behalf_of, 
+          collection: current_user.can_make_deposits_for.map{ |u| [u.display_name, u.user_key] }, 
+          prompt: "Myself" %>
+        </div>
+      <% end %>
+      <div class="content-block">
+        <%= render partial: 'work_creation_metadata', locals: {f: f} %>
       </div>
     <% end %>
-    <div class="form-group content-block">
-      <%= render partial: 'work_creation_metadata', locals: {f: f} %>
-    </div>
-  <% end %>
+  </div>
 </div>

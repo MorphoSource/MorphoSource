@@ -26,7 +26,7 @@ RSpec.describe Hyrax::Forms::CollectionForm do
   describe 'all_files_with_access' do
     before do
       allow_any_instance_of(search_builder_class).to receive(:query).and_return({})
-      allow_any_instance_of(MediaCatalogController).to receive_message_chain(:repository, :search).and_return(response)
+      allow_any_instance_of(MediaCatalogController).to receive_message_chain(:blacklight_config, :repository, :search).and_return(response)
     end
     context 'collection is an organization collection' do
       let(:collection)            { FactoryBot.create(:organization_collection, depositor: depositor.ms_id) }

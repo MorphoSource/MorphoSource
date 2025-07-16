@@ -1,5 +1,9 @@
 require 'resque/failure/redis'
 
+config_file = Rails.root.join('config', 'resque.yml')
+resque_config = YAML::load(ERB.new(IO.read(config_file)).result)
+Resque.redis = resque_config[Rails.env]
+
 # Monkey patch to support ActiveJob enqueue hooks on requeue
 Resque::Failure::Redis.class_eval do
   def self.requeue(id, queue = nil)

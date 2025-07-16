@@ -10,7 +10,7 @@ FactoryBot.define do
 
     after(:build) do |project|
       project_collection_type = Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::Projects::SETTINGS)
-      project.collection_type_gid = project_collection_type.gid
+      project.collection_type_gid = project_collection_type.to_global_id
     end
   end
 end

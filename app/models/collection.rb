@@ -34,6 +34,13 @@ class Collection < ActiveFedora::Base
     collection_type.title
   end
 
+  # UPGRADE5 Note: This method is defunct in Hyrax 5, yet we need it on this model, so putting it back in
+  # But using new-style logic for getting collection type, which gets used elsewhere in 5
+  # Maybe consider alternative approaches in the future
+  def collection_type
+    @collection_type ||= Hyrax::CollectionType.for(collection: self)
+  end
+
   def type_assigns_groups?
     team? || project?
   end

@@ -3,15 +3,15 @@ module Morphosource
       include ActionView::Helpers::TagHelper
 
       PUBLICATION_LABEL_CLASS = {
-        open: "label-success",
-        restricted: "label-info",
-        restricted_download: "label-info",
-        preview: "label-info",
-        preview_only: "label-info",
-        hidden: "label-info",
-        private: "label-danger",
-        embargo: "label-warning",
-        lease: "label-warning"
+        open: "badge-success",
+        restricted: "badge-info",
+        restricted_download: "badge-info",
+        preview: "badge-info",
+        preview_only: "badge-info",
+        hidden: "badge-info",
+        private: "badge-danger",
+        embargo: "badge-warning",
+        lease: "badge-warning"
       }
 
       #PUBLICATION_LABEL_STYLE = {
@@ -41,8 +41,7 @@ module Morphosource
       end
 
       def render
-        #content_tag(:span, text, class: "label #{dom_label_class}", style: "#{dom_label_style}")
-        content_tag(:span, text, class: "label #{dom_label_class}")
+        content_tag(:span, text, class: "badge #{dom_label_class}")
       end
 
       private

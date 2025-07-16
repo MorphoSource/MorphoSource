@@ -1,5 +1,4 @@
 require 'rails_helper'
-require 'equivalent-xml'
 
 RSpec.describe Hyrax::Renderers::ShowcaseDateAttributeRenderer do
 

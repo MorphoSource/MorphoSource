@@ -12,7 +12,7 @@
     <div class="skip-to-content">
       <%= link_to "Skip to Content", "#skip-to-content" %>
     </div>
-    <%= render '/masthead' %>
+    <%= render '/masthead', placement_class: nil %>
     <%= content_for(:navbar) %>
     <%= content_for(:precontainer_content) %>
     <div id="content-wrapper" class="submission_flow" role="main">
@@ -24,7 +24,7 @@
         <%= render_breadcrumbs builder: Hyrax::BootstrapBreadcrumbsBuilder %>
         <% if content_for?(:page_header) %>
           <div class="row">
-            <div class="col-xs-12 main-header">
+            <div class="col-12 main-header">
               <%= yield(:page_header) %>
             </div>
           </div>
@@ -35,6 +35,6 @@
       </div>
 
     </div><!-- /#content-wrapper -->
-    <%= render 'shared/ajax_modal' %>
+    <%= render 'shared/modal' %>
   </body>
 </html>

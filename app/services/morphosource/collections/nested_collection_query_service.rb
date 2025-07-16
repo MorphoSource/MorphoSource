@@ -7,7 +7,7 @@ module Morphosource
       # (refer to config/initializers/morphosource/nested_collection_query_service.rb)
       # get results of only projects that can be added to a team
       def self.available_project_collections(parent:, scope:, limit_to_id: nil)
-        return [] unless parent.try(:nestable?)
+        return [] unless nestable?(collection: parent)
         return [] unless scope.can?(:edit, parent)
         return [] unless type_has_projects?(parent)
         # projects can't have child collections
@@ -16,18 +16,15 @@ module Morphosource
       end
 
       def self.query_solr(collection:, access:, scope:, limit_to_id:, nest_direction:)
-        nesting_attributes = Hyrax::Collections::NestedCollectionQueryService::NestingAttributes.new(id: collection.id, scope: scope)
         query_builder = Morphosource::Dashboard::NestedCollectionsSearchBuilder.new(
           access: access,
           collection: collection,
           scope: scope,
-          nesting_attributes: nesting_attributes,
           nest_direction: nest_direction
         )
 
         query_builder.where(id: limit_to_id) if limit_to_id
-        query = Hyrax::Collections::NestedCollectionQueryService.clean_lucene_error(builder: query_builder)
-        scope.repository.search(query)
+        scope.blacklight_config.repository.search(query_builder.query)
       end
       private_class_method :query_solr
 
@@ -35,6 +32,17 @@ module Morphosource
         parent.team? || parent.organization_collection?
       end
 
+      # @api private
+      #
+      # @param collection [Hyrax::PcdmCollection,::Collection]
+      # @return [Boolean] true if the collection is nestable; otherwise, false
+      def self.nestable?(collection:)
+        return false if collection.blank?
+        return collection.nestable? if collection.respond_to? :nestable?
+        collection_type = Hyrax::CollectionType.find_by_gid!(collection.collection_type_gid)
+        collection_type.nestable?
+      end
+      private_class_method :nestable?
     end
   end
 end

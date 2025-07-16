@@ -12,7 +12,7 @@ module Morphosource::Derivatives
     end
 
     def call
-      unless File.exists?(file)
+      unless File.exist?(file)
         raise Morphosource::Derivatives::Extract7ZipError.new("Source file: #{file} does not exist")
       end
 

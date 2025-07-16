@@ -13,7 +13,7 @@ module Morphosource::Derivatives
     end
 
     def call
-      unless File.exists?(source_path)
+      unless File.exist?(source_path)
         raise Morphosource::Derivatives::LightboxError.new("Source file: #{source_path} does not exist.")
       end
 
@@ -51,7 +51,7 @@ module Morphosource::Derivatives
 
     def post_process(raw_output)
       # Check for produced derivative file, otherwise raise Lightbox response as error
-      if !File.exists?(out_path) || (File.size(out_path) == 0)
+      if !File.exist?(out_path) || (File.size(out_path) == 0)
         raise Morphosource::Derivatives::LightboxError.new("File not successfully created by derivative tool.\nAPI response code: #{raw_output}")
       end
     end

@@ -2,6 +2,7 @@ module Morphosource
   module Admin
     class ContributorPetitionsController < Morphosource::ItemtableController
       include Morphosource::MessageHelper
+      include Morphosource::Breadcrumbs
 
       before_action :require_permissions
 
@@ -10,6 +11,8 @@ module Morphosource
       before_action :split_filter_user_keys, only: [:current_applications, :previous_applications]
       before_action :filter_items, only: [:current_applications, :previous_applications, :update_application_decision]
       before_action :paginate_items, only: [:current_applications, :previous_applications, :update_application_decision]
+
+      before_action :build_breadcrumbs, only: [:current_applications, :previous_applications]
 
       PAGE_TITLE = I18n.t("morphosource.admin.contributor_petitions.page_title")
       PAGE_DESCRIPTION = I18n.t("morphosource.admin.contributor_petitions.page_description")
@@ -21,7 +24,7 @@ module Morphosource
         @item_count = @items.count
         @search = true if search_form_present?
         respond_to do |format|
-          format.html do 
+          format.html do
             render('index')
           end
           format.csv  do
@@ -38,7 +41,7 @@ module Morphosource
         @item_count = @items.count
         @search = true if search_form_present?
         respond_to do |format|
-          format.html do 
+          format.html do
             render('index')
           end
           format.csv  do
@@ -58,7 +61,7 @@ module Morphosource
         @item_count = @items.count
         @search = true if search_form_present?
         respond_to do |format|
-          format.html do 
+          format.html do
             render('index')
           end
           format.csv  do
@@ -91,7 +94,7 @@ module Morphosource
         end
       end
 
-      private 
+      private
 
       def get_current_items
         @items = ContributorPetition.where(decision_required: true).includes(:user).order(sort_param)
@@ -111,7 +114,7 @@ module Morphosource
           'users.display_name',
           'user_affiliation',
           'user_department',
-          'date_returned', 
+          'date_returned',
           'date_approved',
           'date_denied',
           'decision_state',
@@ -138,8 +141,8 @@ module Morphosource
           'date_application_submitted_end',
           'user_id',
           'user_affiliation',
-          'date_returned_start', 
-          'date_returned_end', 
+          'date_returned_start',
+          'date_returned_end',
           'date_approved_start',
           'date_approved_end',
           'date_denied_start',
@@ -177,7 +180,7 @@ module Morphosource
             if value.kind_of? Array
               value = value.join(';')
             end
-  
+
             [field, value]
           end.to_h
         end

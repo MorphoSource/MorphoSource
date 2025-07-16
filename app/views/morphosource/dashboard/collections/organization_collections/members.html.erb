@@ -6,7 +6,7 @@
       <%= render 'hyrax/base/flash_msg' %>
       <% content_for :body_css_classes do %>showcase showcase-edit teams ms-collection-edit<% end %>
 
-      <div class="col-xs-9 no-horizontal-padding title team-title">
+      <div class="col-9 no-horizontal-padding title team-title">
         <div>
           <span class="fa fa-edit" aria-hidden="true"></span>
           <h1 style="margin-bottom:20px;"><%= @collection.title.first %>
@@ -20,7 +20,7 @@
         </div>
       </div>
       <br>
-      <div class="panel panel-default panel-borders tabs teams" id="collection-edit-controls">
+      <div class="card panel-default panel-borders tabs teams" id="collection-edit-controls">
         <%= render 'nav_tabs' %>
         <%= render 'morphosource/dashboard/collections/members/form' %>
       </div>

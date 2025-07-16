@@ -13,6 +13,9 @@ class MediaIndexer < Morphosource::WorkIndexer
 
   def generate_solr_document
     super.tap do |solr_doc|
+      @organizations = nil
+      @user_with_ownership = nil
+      
       solr_doc['is_remote_backed_bsi'] = object.is_remote_backed?
       solr_doc['file_set_ids_ssim'] = object.file_set_ids
       solr_doc['file_set_visibilities_ssim'] = object.file_set_visibilities
@@ -263,5 +266,4 @@ class MediaIndexer < Morphosource::WorkIndexer
     owner_id = object.user_with_ownership
     User.find_by_user_key(owner_id) || OrganizationCollection.find_by(id: owner_id)
   end
-
 end

@@ -143,7 +143,7 @@ module MorphosourceHelper
   def device_organization
     return unless organization_id = @presenter&.device&.to_h&.dig("device_organization_id_ssim")&.first
 
-    SolrDocument.where('id' =>  organization_id)&.first
+    SolrDocument.where({'id' =>  organization_id})&.first
   end
 
   def files_required?(work)
@@ -318,19 +318,15 @@ module MorphosourceHelper
     end
     content_tag :a, :data => {:toggle => "collapse", :parent => %(##{data_parent})}, :href => %(##{block}), :aria => {:label => "collapse/expand"} do
       content_tag :div, :class => "row" do
-        concat content_tag(:div, label, class: "col-xs-6 showcase-label")
-        concat content_tag(:div, value, class: "col-xs-5 showcase-value")
-        concat content_tag(:span, "", class: "col-xs-1 glyphicon #{icon} #{block}")
+        concat content_tag(:div, label, class: "col-6 showcase-label")
+        concat content_tag(:div, value, class: "col-5 showcase-value")
+        concat content_tag(:span, "", class: "col-1 glyphicon #{icon} #{block}")
       end
     end
   end
 
   def render_hint_tag(text)
-    content_tag :i, class: ["material-icons", "tooltip-icon"] do
-      content_tag :p, class: ["hint", "hide"] do
-        text
-      end
-    end
+    content_tag(:i, "", class: ["material-icons", "tooltip-icon"], title: text, data: { toggle: "tooltip" })
   end
 
   def render_publication_status_badge(document)
@@ -392,7 +388,7 @@ module MorphosourceHelper
 
   def organization_devices(id)
     # get device id, make, and model for all devices associated with organization id
-    SolrDocument.where('has_model_ssim' => 'Device', 'device_organization_id_ssim' => id).map do |d|
+    SolrDocument.where({'has_model_ssim' => 'Device', 'device_organization_id_ssim' => id}).map do |d|
       {
         'id': d.id,
         'title': d.title,

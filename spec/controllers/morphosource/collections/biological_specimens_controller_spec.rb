@@ -57,7 +57,7 @@ RSpec.describe Morphosource::Collections::BiologicalSpecimensController, type: :
   describe 'search_action_url, search_facet_path' do
     let(:facet_id)  { 'depositor_ssi' }
     context 'collection is a team' do
-      let!(:team) { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid) }
+      let!(:team) { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.to_global_id) }
       before do
         subject.instance_variable_set(:@collection, team)
       end
@@ -73,7 +73,7 @@ RSpec.describe Morphosource::Collections::BiologicalSpecimensController, type: :
       end
     end
     context 'collection is a project' do
-      let!(:project) { Collection.create(title: ['project'], collection_type_gid: project_collection_type.gid) }
+      let!(:project) { Collection.create(title: ['project'], collection_type_gid: project_collection_type.to_global_id) }
       before do
         subject.instance_variable_set(:@collection, project)
       end
@@ -89,7 +89,7 @@ RSpec.describe Morphosource::Collections::BiologicalSpecimensController, type: :
       end
     end
     context 'collection is a media list' do
-      let!(:media_list) { Collection.create(title: ['media_list'], collection_type_gid: media_list_collection_type.gid) }
+      let!(:media_list) { Collection.create(title: ['media_list'], collection_type_gid: media_list_collection_type.to_global_id) }
       before do
         subject.instance_variable_set(:@collection, media_list)
       end
@@ -105,7 +105,7 @@ RSpec.describe Morphosource::Collections::BiologicalSpecimensController, type: :
       end
     end
     context 'collection is a sequential section list' do
-      let!(:sequential_section_list) { Collection.create(title: ['sequential_section_list'], collection_type_gid: sequential_section_list_collection_type.gid) }
+      let!(:sequential_section_list) { Collection.create(title: ['sequential_section_list'], collection_type_gid: sequential_section_list_collection_type.to_global_id) }
       before do
         subject.instance_variable_set(:@collection, sequential_section_list)
       end

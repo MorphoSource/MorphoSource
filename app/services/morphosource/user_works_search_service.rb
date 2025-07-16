@@ -1,7 +1,6 @@
 module Morphosource
   class UserWorksSearchService
     include Blacklight::Configurable
-    include Blacklight::SearchHelper
 
     def self.call(work_type, access, scope)
       new(work_type, access, scope).call
@@ -29,7 +28,7 @@ module Morphosource
 
     def search_solr
       blacklight_config.http_method = :post
-      repository.search(query_builder.query)
+      blacklight_config.repository.search(query_builder.query)
     end
 
   end

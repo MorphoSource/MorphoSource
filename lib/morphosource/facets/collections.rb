@@ -21,7 +21,7 @@ module Morphosource
       # Run a filter on the returned facet values to only include the IDs that match the title
       def filter_facet(contains_title)
         blacklight_config.default_more_limit = 999999
-        @response = get_facet_field_response(@facet.key, params)
+        @response = search_service.facet_field_response(@facet.key, params.to_unsafe_h) # todo5 fix this
         title_search_response = fetch_ids_by_title(contains_title, @facet.key)
         matching_ids = title_search_response['response']['docs'].map { |doc| doc['id'] }
         set_display_facet_items(filtered_values: matching_ids)
@@ -71,7 +71,7 @@ module Morphosource
         params["az_facet.page"] = params.delete("facet.page")
         # set default_more_limit to retrieve all facet items instead of just the ones for one page
         blacklight_config.default_more_limit = 999999
-        @response = get_facet_field_response(@facet.key, params)
+        @response = search_service.facet_field_response(@facet.key, params.to_unsafe_h) # todo5 fix this
         # sort all the facet items by title
         facet_type == 'collection' ? sort_collections_by_title : sort_users_by_display_name
         # modify the display facet to include only the items for the current page

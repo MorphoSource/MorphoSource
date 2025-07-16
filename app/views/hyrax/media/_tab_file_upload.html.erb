@@ -3,18 +3,18 @@
   <!-- left column  -->
   <div class="col-sm-6">
     <div class="content-block">
-      <h2 class="required-flag">UPLOAD FILE<span class="label label-info"></span></h2>
+      <h2 class="required-flag">UPLOAD FILE<span class="badge badge-info"></span></h2>
       <% unless @presenter.representative_presenter.present? %>
 
         <ul class="nav nav-tabs sub-nav upload-file" role="tablist">
-          <li role="presentation" id="tab-local-file-section" class="active">
-            <a href="#local-file-section" aria-controls="local-file-section" role="tab" data-toggle="tab" aria-expanded="false">
+          <li role="presentation" id="tab-local-file-section" class="nav-item active">
+            <a href="#local-file-section" aria-controls="local-file-section" role="tab" data-toggle="tab" aria-expanded="false" class="nav-link active">
               Upload From Computer / Cloud
             </a>
           </li>
           <li role="presentation" id="tab-remote-file-section" 
-            class="<%= current_user.can_submit_remote_file?(nil, @presenter.media_organization_id&.first) ? "" : "hide" %>">
-            <a href="#remote-file-section" aria-controls="remote-file-section" role="tab" data-toggle="tab" aria-expanded="false">
+            class="nav-item <%= current_user.can_submit_remote_file?(nil, @presenter.media_organization_id&.first) ? "" : "hide" %>">
+            <a href="#remote-file-section" aria-controls="remote-file-section" role="tab" data-toggle="tab" aria-expanded="false" class="nav-link">
               Remote File Location
             </a>
           </li>

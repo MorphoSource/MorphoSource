@@ -79,7 +79,7 @@ RSpec.describe Hyrax::Actors::MediaActor do
           end
 
           context 'the organization has a linked team' do
-            let(:team)                  { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid, depositor: team_creator.ms_id) }
+            let(:team)                  { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.to_global_id, depositor: team_creator.ms_id) }
             let(:team_creator)          { User.create(email: 'creator@test.com', password: 'password') }
             let(:team_manager)          { User.create(email: 'manager@test.com', password: 'password') }
             let(:team_depositor)        { User.create(email: 'depositor@test.com', password: 'password') }
@@ -151,7 +151,7 @@ RSpec.describe Hyrax::Actors::MediaActor do
           end
 
           context 'the organization has a linked team' do
-            let(:team)                  { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid, depositor: team_creator.ms_id) }
+            let(:team)                  { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.to_global_id, depositor: team_creator.ms_id) }
             let(:team_creator)          { User.create(email: 'creator@test.com', password: 'password') }
             let(:team_manager)          { User.create(email: 'manager@test.com', password: 'password') }
             let(:team_depositor)        { User.create(email: 'depositor@test.com', password: 'password') }

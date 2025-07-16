@@ -13,10 +13,10 @@
 <% if job.present? %>
 	<table class="table">
 		<tr class="bg-light-gray">
-			<th class="col-xs-3"><%= job.running? ? "Current" : "Last" %> Job</th>
-			<th class="col-xs-1	">Status</th>
-			<th class="col-xs-3">Submitted</th>
-			<th class="col-xs-5">Error Message</th>
+			<th class="col-3"><%= job.running? ? "Current" : "Last" %> Job</th>
+			<th class="col-1	">Status</th>
+			<th class="col-3">Submitted</th>
+			<th class="col-5">Error Message</th>
 		</tr>
 		<tr>
 			<td><%= job.job_id %></td>

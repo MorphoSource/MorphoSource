@@ -3,11 +3,11 @@ require 'rails_helper'
 
 RSpec.describe Morphosource::CollectionsControllerBehavior, type: :controller do
   let(:team_depositor)       { User.create(email: 'teamdepositor@email.com', password: 'password') }
-  let(:team)                 { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid, depositor: team_depositor.ms_id, visibility: 'open') }
+  let(:team)                 { Collection.create(title: ['team'], collection_type_gid: team_collection_type.to_global_id, depositor: team_depositor.ms_id, visibility: 'open') }
   let(:user)                 { User.create(email: 'email@email.com', password: 'password') }
-  let(:project)                                 { Collection.create(title: ['project'], collection_type_gid: project_collection_type.gid, depositor: team_depositor.ms_id, visibility: 'open') }
-  let(:media_list)                              { MediaList.create(title: ['media list'], visibility: 'open', collection_type_gid: media_list_collection_type.gid, depositor: team_depositor.ms_id) }
-  let(:sequential_section_list)                 { SequentialSectionList.create(title: ['sequential section list'], visibility: 'open', collection_type_gid: sequential_section_list_collection_type.gid, depositor: team_depositor.ms_id) }
+  let(:project)                                 { Collection.create(title: ['project'], collection_type_gid: project_collection_type.to_global_id, depositor: team_depositor.ms_id, visibility: 'open') }
+  let(:media_list)                              { MediaList.create(title: ['media list'], visibility: 'open', collection_type_gid: media_list_collection_type.to_global_id, depositor: team_depositor.ms_id) }
+  let(:sequential_section_list)                 { SequentialSectionList.create(title: ['sequential section list'], visibility: 'open', collection_type_gid: sequential_section_list_collection_type.to_global_id, depositor: team_depositor.ms_id) }
 
   let(:controller)           { Morphosource::Collections::TeamsController }
   subject { controller.new }

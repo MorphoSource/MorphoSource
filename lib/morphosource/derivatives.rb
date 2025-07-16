@@ -8,8 +8,6 @@ module Morphosource
     autoload :CTImageSeriesDerivatives
     autoload :ImageSeriesCroppedImageDerivatives
     autoload :MeshDerivatives
-    autoload :MeshGltfDerivatives
-    autoload :MeshObjDerivatives
     autoload :MeshThumbnailDerivatives
     autoload :VideoDerivatives
 
@@ -30,6 +28,7 @@ module Morphosource
     autoload :Img2dcm
     autoload :Lightbox
     autoload :Obj2gltf
+    autoload :Pymeshlab
 
     def self.blender_path
       Hyrax.config.blender_path

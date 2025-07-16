@@ -1,5 +1,5 @@
           <div class="row">
-            <div class="col-sm-6">
+            <div class="col-md-6">
 
               <h2>ORGANIZATION</h2>
               <%= @presenter.attribute_to_html(:institution_name, label: 'Institution', render_as: :showcase_default, include_empty: false, html_dl: false) %>
@@ -21,27 +21,27 @@
 
             </div>
 
-            <div class="col-sm-6">
+            <div class="col-md-6">
               <h2>STATISTICS</h2>
               <div class="row">
-                <div class="col-xs-6 showcase-label">Number of media</div>
-                <div class="col-xs-6 showcase-value "><%= @media_member_count %></div>
+                <div class="col-sm-6 showcase-label">Number of media</div>
+                <div class="col-sm-6 showcase-value "><%= @media_member_count %></div>
               </div>
               <div class="row">
-                <div class="col-xs-6 showcase-label">Number of represented specimens</div>
-                <div class="col-xs-6 showcase-value tab-bso-count"></div>
+                <div class="col-sm-6 showcase-label">Number of represented specimens</div>
+                <div class="col-sm-6 showcase-value tab-bso-count"></div>
               </div>
               <div class="row">
-                <div class="col-xs-6 showcase-label">Number of represented cultural heritage objects</div>
-                <div class="col-xs-6 showcase-value "><%= @cho_member_count %></div>
+                <div class="col-sm-6 showcase-label">Number of represented cultural heritage objects</div>
+                <div class="col-sm-6 showcase-value "><%= @cho_member_count %></div>
               </div>
               <div class="row">
-                <div class="col-xs-6 showcase-label">Project views</div>
-                <div class="col-xs-6 showcase-value ">(Not yet implemented)</div>
+                <div class="col-sm-6 showcase-label">Project views</div>
+                <div class="col-sm-6 showcase-value ">(Not yet implemented)</div>
               </div>
               <div class="row">
-                <div class="col-xs-6 showcase-label">Number of media downloads</div>
-                <div class="col-xs-6 showcase-value ">(Not yet implemented)</div>
+                <div class="col-sm-6 showcase-label">Number of media downloads</div>
+                <div class="col-sm-6 showcase-value ">(Not yet implemented)</div>
               </div>
             </div>
           </div>

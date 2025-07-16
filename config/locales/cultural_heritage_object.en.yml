@@ -13,9 +13,9 @@ en:
     hints:
       cultural_heritage_object:
         address: Street address where the object was created.
-        aat_attributes: "Terms for object attributes from the <a href='https://www.getty.edu/research/tools/vocabularies/aat/'>Art and Architecture Thesaurus</a>. Use of this controlled vocabulary is preferred over custom terms."
-        aat_material: "Terms for the material(s) from which the object is made from the <a href='https://www.getty.edu/research/tools/vocabularies/aat/'>Art and Architecture Thesaurus</a>. Use of this controlled vocabulary is preferred over custom terms."
-        aat_type: "Terms for the type, genre, classification, or category of the object from the <a href='https://www.getty.edu/research/tools/vocabularies/aat/'>Art and Architecture Thesaurus</a>. Use of this controlled vocabulary is preferred over custom terms."
+        aat_attributes: "Terms for object attributes from the Getty Art and Architecture Thesaurus. Use of this controlled vocabulary is preferred over custom terms."
+        aat_material: "Terms for the material(s) from which the object is made from the Getty Art and Architecture Thesaurus. Use of this controlled vocabulary is preferred over custom terms."
+        aat_type: "Terms for the type, genre, classification, or category of the object from the Getty Art and Architecture Thesaurus. Use of this controlled vocabulary is preferred over custom terms."
         bibliographic_citation: Citation information for the object.
         catalog_number: Unique identifier for an object within a collection.
         city: City where the object was created.
@@ -40,7 +40,7 @@ en:
         material: The material of the object.
         numeric_time: Absolute or specific chronological age.
         original_location: Information about the original location of the object.
-        periodic_time: "Terms from the <a href='https://www.getty.edu/research/tools/vocabularies/aat/'>Art and Architecture Thesaurus</a> describing the Artistic, cultural, historical, archaeological, geological or cosmological era or period of the object."
+        periodic_time: "Terms from the Getty Art and Architecture Thesaurus describing the Artistic, cultural, historical, archaeological, geological or cosmological era or period of the object."
         provenance_date: Date the object was excavated, discovered, or acquired.
         provenance_details: Description or notes about the provenance history of the object.
         provenance_location: Location where the object was excavated, discovered, or acquired.
@@ -49,5 +49,5 @@ en:
         related_url: URL pointing to authoritative metadata about the object.
         short_title: Title or short description of the object. Will appear in the title in search results.
         state_province: State or Province
-        tgn: "Controlled vocabulary for the location of the object from the <a href='https://www.getty.edu/research/tools/vocabularies/tgn/'>Thesaurus of Geographic Names</a>."
+        tgn: "Controlled vocabulary for the location of the object from the Getty Thesaurus of Geographic Names."
         vouchered: An object that is vouchered still exists and can be located in a personal or organizational collection, or at a location.

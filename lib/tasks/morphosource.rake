@@ -89,9 +89,9 @@ namespace :morphosource do
     Rake::Task['morphosource:create_collection_types'].invoke
   end
 
-  # Runs rake task dev:cache to turn on caching only if it is off
+  # Runs rails command dev:cache to turn on caching only if it is off
   task dev_cache_on: :environment do
-    Rake::Task['dev:cache'].invoke if !Rails.root.join('tmp', 'caching-dev.txt').exist?
+    system('bundle exec rails dev:cache') if !Rails.root.join('tmp', 'caching-dev.txt').exist?
   end
 
   # Loosely adapted from https://github.com/curationexperts/nurax/blob/master/lib/tasks/nurax.rake
@@ -1099,25 +1099,25 @@ namespace :morphosource do
 
   desc "Set sitewide flash-based announcement message"
   task :set_announcement, [:msg] => :environment do |task, args|
-    if args[:msg].present? && Redis.current
-      Redis.current.set "morphosource:announcement", args[:msg]
+    if args[:msg].present? && Hyrax.config.redis_connection
+      Hyrax.config.redis_connection.set "morphosource:announcement", args[:msg]
     end
   end
 
   desc "Clear sitewide flash-based announcement message"
   task :clear_announcement => :environment do
-    Redis.current.del("morphosource:announcement") if Redis.current
+    Hyrax.config.redis_connection.del("morphosource:announcement") if Hyrax.config.redis_connection
   end
 
   desc "Set time until maintenance, which will be announced sitewide"
   task :set_time_until_maintenance_in_minutes, [:minutes] => :environment do |task, args|
-    return unless Redis.current
+    return unless Hyrax.config.redis_connection
     minutes = args[:minutes].present? ? args[:minutes].to_i : 10
     maintenance_time = Time.current + minutes.minutes
-    Redis.current.set "morphosource:maintenance_time", maintenance_time.utc.iso8601
+    Hyrax.config.redis_connection.set "morphosource:maintenance_time", maintenance_time.utc.iso8601
   end
 
   task :clear_time_until_maintenance_in_minutes => :environment do
-    Redis.current.del("morphosource:maintenance_time") if Redis.current
+    Hyrax.config.redis_connection.del("morphosource:maintenance_time") if Hyrax.config.redis_connection
   end
 end

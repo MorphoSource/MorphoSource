@@ -5,3 +5,16 @@ form.team_organization_permissions_edit {
     }
   }
 }
+
+.download-permission-dropdown {
+  li {
+    padding: 2px 16px;
+  }
+
+  li:hover {
+    background-color: #f5f5f5;
+    a {
+      text-decoration: none;
+    }
+  }
+}

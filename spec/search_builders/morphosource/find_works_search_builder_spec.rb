@@ -1,10 +1,9 @@
 require 'rails_helper'
 
 RSpec.describe Morphosource::FindWorksSearchBuilder do
+  let(:scope)       { double('Scope', blacklight_config: CatalogController.blacklight_config, params: params ) }
 
-  subject { described_class.new(context) }
-
-  let(:context) { double(params: params) }
+  subject { described_class.new(scope) }
 
   describe 'depositor filter' do
     it 'does not limit the search to works deposited by current user' do

@@ -204,7 +204,7 @@ module Morphosource::Derivatives::Processors
     end
 
     def write_files
-      output_file_service.call(output_file_path, directives)
+      output_file_service.call(File.open(output_file_path), directives)
     end
 
     def cleanup_tmp_files

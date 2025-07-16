@@ -1,16 +1,16 @@
       <div class="modal-header">
+        <h1>Download Usage</h1>
         <button type="button" class="close" data-dismiss="modal"><span id="close-modal" aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-        <h2>Download Usage</h2>
-        <p><%= t("morphosource.modal.request.subtitle").html_safe %></p>
       </div>
       <div class="modal-body">
+        <p><%= t("morphosource.modal.request.subtitle").html_safe %></p>
 
         <textarea id="custom-usage" rows="3" class="w-100"></textarea>
         <i id="char-alert">50 characters minimum: <span id="rchars">0</span></i>
 
         <p style="margin-top:20px"><label id="select-categories">Please select one or more categories that match your intended usage:</label></p>
         <div class="row">
-          <div class="col-xs-12">
+          <div class="col-12">
             <% if current_user.intent.present? %>
               <label class="switch">
                 <input id="get-profile-intent" type="checkbox" /> 
@@ -25,15 +25,15 @@
         <div class="checkbox-form-group row">
 
 
-              <div class="profile-checkbox-list">
+              <div class="profile-checkbox-list row">
                 <% intended_use = Morphosource::UserProfile::CheckboxValues::INTENT %>
                 <% intended_use.each do |use| %>
-                  <div class="col-xs-12 col-sm-6">
+                  <div class="col-12 col-sm-6">
                   <%= f.check_box 'intent', { multiple: true, checked: (current_user.intent.include? use) }, use, false %>
                   <%= f.label :intent, use, :class => 'cb' %>
                   </div>
                 <% end %>
-                <div class="col-xs-12 col-sm-6">
+                <div class="col-12 col-sm-6">
                   Other: <%= f.text_field 'intent', { multiple: true, value: current_user.other_intent } %>
                 </div>
               </div>
@@ -56,14 +56,14 @@
         </div>
       </div>
       <div class="modal-footer">
-        <div class="col-xs-12 col-md-1"></div>
-        <div class="col-xs-12 col-md-6 rc-wrapper text-center">
+        <div class="col-12 col-md-1"></div>
+        <div class="col-12 col-md-6 rc-wrapper text-center">
           <%= recaptcha_tags(
             callback: 'downloadRC2Callback', 
             expired_callback: 'downloadRC2ExpiredCallback') %>
         </div>
-        <div class="col-xs-12 col-md-3 dl-button-wrapper text-center">
+        <div class="col-12 col-md-3 dl-button-wrapper text-center">
           <input data-download-item-id="" type="submit" name="download" value="Download Media" class="btn btn-lg btn-info" id="modal-download" disabled="disabled" />
         </div>
-        <div class="col-xs-12 col-md-1"></div>
+        <div class="col-12 col-md-1"></div>
       </div>

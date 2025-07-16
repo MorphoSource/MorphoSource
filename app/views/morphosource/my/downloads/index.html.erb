@@ -1,24 +1,12 @@
-<% content_for :body_css_classes do %>showcase dl-request<% end %> 
+<% content_for :body_css_classes do %>showcase dl-request<% end %>
 <% if @cart %>
   <% provide :page_title, t("morphosource.admin.sidebar.media_cart") %>
 <% else %>
   <% provide :page_title, t("morphosource.admin.sidebar.downloads") %>
 <% end %>
 
-<nav class="breadcrumb" role="region" aria-label="Breadcrumb">
-  <ol>
-    <li><a href="/?locale=en">Home</a></li>
-    <li><a href="/dashboard?locale=en">Dashboard</a></li>
-    <% if @cart %>
-      <li class="active">Media Cart</li>
-    <% else %>
-      <li class="active">Downloads</li>
-    <% end %>
-  </ol>
-</nav>
-
 <div class="row no-horizontal-padding">
-  <div class="col-xs-12 main-header">
+  <div class="col-12 main-header">
     <h1>
       <% if @cart %>
         <span class="fa fa-shopping-cart" aria-hidden="true"></span>
@@ -32,8 +20,8 @@
   </div>
 </div>
 
-<div class="panel">
-  <div class="panel-body">
+<div class="card">
+  <div class="card-body">
     <h2 class="sr-only">Works listing</h2>
     <%= render 'batch_actions' %>
     <%= render 'morphosource/itemtable/document_list' %>

@@ -5,12 +5,12 @@ module Morphosource
 
       # @return [Integer] collection type ID for project 
       def project_collection_type_id
-        Hyrax::CollectionType.find_by(machine_id: 'project').gid.split('/').last.to_i
+        Hyrax::CollectionType.find_by(machine_id: 'project').to_global_id.to_s.split('/').last.to_i
       end
 
       # @return [Integer] collection type ID for team
       def team_collection_type_id
-        Hyrax::CollectionType.find_by(machine_id: 'team').gid.split('/').last.to_i
+        Hyrax::CollectionType.find_by(machine_id: 'team').to_global_id.to_s.split('/').last.to_i
       end
 
       # retrieve collection type id, given the collection type name
@@ -24,7 +24,7 @@ module Morphosource
       # @param [String] machine_name
       # @return [Integer] collection type ID 
       def collection_type_id_by_machine_name(machine_name)
-        Hyrax::CollectionType.find_by(machine_id: machine_name).gid.split('/').last.to_i
+        Hyrax::CollectionType.find_by(machine_id: machine_name).to_global_id.to_s.split('/').last.to_i
       end
 
     end

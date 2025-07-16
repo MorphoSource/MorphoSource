@@ -14,7 +14,7 @@ module Morphosource::Derivatives
     end
 
     def call
-      unless File.exists?(source_path)
+      unless File.exist?(source_path)
         raise Morphosource::Derivatives::BlenderError.new("Source file: #{source_path} does not exist.")
       end
 
@@ -41,7 +41,7 @@ module Morphosource::Derivatives
 
     # Check for produced derivative file, otherwise raise Blender response as error
     def post_process(raw_output)
-      if !File.exists?(out_path) || (File.size(out_path) == 0)
+      if !File.exist?(out_path) || (File.size(out_path) == 0)
         raise Morphosource::Derivatives::BlenderError.new("File not successfully created by derivative tool.\nTool command: \"#{command}\"\nTool output:\n\"#{raw_output}\"")
       end
     end

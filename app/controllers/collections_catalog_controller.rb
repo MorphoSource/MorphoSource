@@ -46,7 +46,7 @@ class CollectionsCatalogController < CatalogController
   # get a single document from the index
   # to add responses for formats other than html or json see _Blacklight::Document::Export_
   def show
-    @response, @document = fetch params[:id], { fq: 'has_model_ssim:Collection' }
+    @response, @document = search_service.fetch params[:id], { fq: 'has_model_ssim:Collection' }
 
     respond_to do |format|
       format.html { setup_next_and_previous_documents }

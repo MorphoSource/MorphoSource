@@ -5,10 +5,16 @@ module Morphosource
     include Morphosource::Ability::OrganizationMemberAbilities
 
     included do
-      include Hyrax::Ability
-
       attr_accessor :temporary_media_access_link
       attr_accessor :temporary_collection_access_link
+
+      # Ability logic methods are effectively checked in reverse order as logical OR
+      # Place these rules at start of logic array to allow pre-existing rules to be checked first
+      # For adding new rules, place computationally expensive ones first (performed last only if needed)
+      self.ability_logic.prepend *[
+        :temporary_link_abilities,
+        :organization_member_abilities
+      ]
     end
 
     def proxy_deposit_abilities
@@ -47,6 +53,8 @@ module Morphosource
       user_groups.include? 'remote_file_submitter'
     end
 
+    # Override Hyrax download methods to use download group and user roles
+
     # Grant all users with edit or download access permission to download
     def download_groups(id)
       doc = permissions_doc(id)
@@ -63,6 +71,14 @@ module Morphosource
       users = Array(doc["download_access_person_ssim"]) + Array(doc["edit_access_person_ssim"])
       Rails.logger.debug("[CANCAN] download_users: #{users.inspect}")
       users
+    end
+
+    # Returns true if can create at least one type of work and they can deposit
+    # into at least one AdminSet
+    def can_create_any_work?
+      Hyrax.config.curation_concerns.any? do |curation_concern_type|
+        can?(:create, curation_concern_type)
+      end && admin_set_with_deposit?
     end
 
     # Anyone can download works with 'open' publication status
@@ -114,39 +130,77 @@ module Morphosource
 
     private
 
-      def download_permissions
-        can :download, String do |id|
-          test_download(id)
-        end
-
-        can :download, ActiveFedora::Base do |obj|
-          test_download(obj.id)
-        end
-
-        can :download, SolrDocument do |obj|
-          cache.put(obj.id, obj)
-          test_download(obj.id)
-        end
+    def download_permissions
+      can :download, String do |id|
+        test_download(id)
       end
 
-      def test_download(id)
-        return false if !current_user.registered?
-        return true if open_download(id)
-
-        Rails.logger.debug("[CANCAN] Checking download permissions for user: #{current_user.user_key} with groups: #{user_groups.inspect}")
-        group_intersection = user_groups & download_groups(id)
-        !group_intersection.empty? || download_users(id).include?(current_user.user_key)
+      can :download, ActiveFedora::Base do |obj|
+        test_download(obj.id)
       end
 
-      # Returns true if the current user is the manager of the specified work
-      # @param document_id [String] the id of the document.
-      def user_is_data_manager?(document_id)
-        return false unless current_user
-
-        SolrDocument.find(document_id).user_with_ownership&.first == current_user.user_key
+      can :download, SolrDocument do |obj|
+        cache.put(obj.id, obj)
+        test_download(obj.id)
       end
+    end
 
+    def uploaded_file_abilities
+      return unless registered_user?
+      can :create, [Hyrax::UploadedFile, BatchUploadItem]
+      can :destroy, Hyrax::UploadedFile, user: current_user
+      can :find, Hyrax::UploadedFile, user: current_user
+      # BatchUploadItem permissions depend on the kind of objects being made by the batch,
+      # but it must be authorized directly in the controller, not here.
+      # Note: cannot call `authorized_models` without going recursive.
+    end
+
+    def user_abilities
+      can [
+        :edit,
+        :edit_profile_type,
+        :edit_password,
+        :generate_new_api_key,
+        :update,
+        :update_profile_type,
+        :update_password,
+        :toggle_trophy
+      ], ::User, id: current_user.id
+      can :show, ::User
+    end
+
+    # @return [Boolean] true if the user has at least one admin set they can deposit into.
+    def admin_set_with_deposit?
+      ids = PermissionTemplateAccess.for_user(ability: self,
+                                                access: ['deposit', 'manage'])
+                                      .joins(:permission_template)
+                                      .select(:source_id)
+                                      .distinct
+                                      .pluck(:source_id)
+      query = "_query_:\"{!raw f=has_model_ssim}AdminSet\" AND {!terms f=id}#{ids.join(',')}"
+      ActiveFedora::SolrService.post(query)['response']['numFound'].to_i.positive?
+    end
+
+    def curation_concerns_models
+      [::FileSet, ::Collection, ::MediaList, ::SequentialSectionList, ::OrganizationCollection] +
+      Hyrax.config.curation_concerns
+    end
+
+    def test_download(id)
+      return false if !current_user.registered?
+      return true if open_download(id)
+
+      Rails.logger.debug("[CANCAN] Checking download permissions for user: #{current_user.user_key} with groups: #{user_groups.inspect}")
+      group_intersection = user_groups & download_groups(id)
+      !group_intersection.empty? || download_users(id).include?(current_user.user_key)
+    end
+
+    # Returns true if the current user is the manager of the specified work
+    # @param document_id [String] the id of the document.
+    def user_is_data_manager?(document_id)
+      return false unless current_user
+
+      SolrDocument.find(document_id).user_with_ownership&.first == current_user.user_key
+    end
   end
 end
-
-Hyrax::Ability.prepend Morphosource::Ability

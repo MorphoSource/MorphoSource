@@ -63,46 +63,46 @@ module Morphosource::CartItemHelper
   end
 
   def edit_work_button
-    link_to "Edit", edit_polymorphic_path([main_app, media]), class: 'btn btn-default'
+    link_to "Edit", edit_polymorphic_path([main_app, media]), class: 'btn btn-secondary'
   end
 
   def download_button
     mediaId = media&.id || ''
-    link_to t('hyrax.file_sets.actions.download'), 'javascript:void(0)', class: 'btn btn-default btn-download-item', id: 'btn-download-item', data: { media_id: mediaId }
+    link_to t('hyrax.file_sets.actions.download'), 'javascript:void(0)', class: 'btn btn-secondary btn-download-item', id: 'btn-download-item', data: { media_id: mediaId }
   end
 
   def download_requested_button
-    link_to 'DL Request Sent', 'javascript:void(0)', class: 'btn btn-default', role: 'button', disabled: true
+    link_to 'DL Request Sent', 'javascript:void(0)', class: 'btn btn-secondary', role: 'button', disabled: true
   end
 
   def request_download_button
     mediaId = media&.id || ''
-    button_tag("Request Download", class: 'btn btn-default btn-request-download-item', id: 'btn-request-download-item', data: {toggle: 'modal', target: '#pageModal', work_id: mediaId, media_id: mediaId})
+    button_tag("Request Download", class: 'btn btn-secondary btn-request-download-item', id: 'btn-request-download-item', data: {toggle: 'modal', target: '#pageModal', work_id: mediaId, media_id: mediaId})
   end
 
   def disabled_request_download_button
-    link_to "Request Download", 'javascript:void(0)', class: 'btn btn-default', role: 'button', disabled: true
+    link_to "Request Download", 'javascript:void(0)', class: 'btn btn-secondary', role: 'button', disabled: true
   end
 
   def disabled_download_button
-    link_to "Download", 'javascript:void(0)', class: 'btn btn-default', role: 'button', style: 'flex-grow: 1;' ,disabled: true
+    link_to "Download", 'javascript:void(0)', class: 'btn btn-secondary', role: 'button', style: 'flex-grow: 1;' ,disabled: true
   end
 
   def in_cart_button
-    link_to "Item in Cart", main_app.my_cart_path, class: 'btn btn-default'
+    link_to "Item in Cart", main_app.my_cart_path, class: 'btn btn-secondary'
   end
 
   def add_to_cart_button
-    link_to "Add to Cart", main_app.add_to_cart_path(work_id: media.id), class: 'btn btn-default', method: :post
+    link_to "Add to Cart", main_app.add_to_cart_path(work_id: media.id), class: 'btn btn-secondary', method: :post
   end
 
   def disabled_cart_button
-    link_to "Add to Cart", 'javascript:void(0)', class: 'btn btn-default', role: 'button', style: 'flex-grow: 1;', disabled: true
+    link_to "Add to Cart", 'javascript:void(0)', class: 'btn btn-secondary', role: 'button', style: 'flex-grow: 1;', disabled: true
   end
 
   # No longer used
   def unavailable_for_download_button
-    link_to 'Download Unavailable','', class: 'btn btn-default', role: 'button', disabled: true
+    link_to 'Download Unavailable','', class: 'btn btn-secondary', role: 'button', disabled: true
   end
 
   # When user is not signed in, appears below disabled download/cart buttons
@@ -115,19 +115,19 @@ module Morphosource::CartItemHelper
   def item_status_label(item)
     case item.request_status
     when 'Canceled'
-      make_label("Canceled","label label-danger","background-color: gray;")
+      make_label("Canceled","badge badge-danger","background-color: gray;")
     when 'Denied'
-      make_label("Denied","label label-danger",'')
+      make_label("Denied","badge badge-danger",'')
     when 'Expired'
-      make_label("Expired","label label-warning","background-color: orange;")
+      make_label("Expired","badge badge-warning","background-color: orange;")
     when 'Approved'
-      make_label("Approved","label label-success",'')
+      make_label("Approved","badge badge-success",'')
     when 'Cleared'
-      make_label("Cleared","label label-info",'')
+      make_label("Cleared","badge badge-info",'')
     when 'Requested'
-      make_label("Requested","label label-primary",'')
+      make_label("Requested","badge badge-primary",'')
     else
-      make_label("Not Requested",'label label-info',"background-color: teal;")
+      make_label("Not Requested",'badge badge-info',"background-color: teal;")
     end
   end
 
@@ -204,7 +204,7 @@ module Morphosource::CartItemHelper
     media = Media.find(item.work_id)
     if media.present?
       if media.file_sets.present?
-        tags = ( button_tag("Download Item", class: "btn-download-item btn btn-info btn-xs", data: {item_id: item.id}) ) +
+        tags = ( button_tag("Download Item", class: "btn-download-item btn btn-info btn-sm", data: {item_id: item.id}) ) +
           ( link_to item.id, main_app.download_items_path(item_id: item.id), class: "hide", id: 'link-to-download-item-'+item.id.to_s, method: :get )
       end
     end

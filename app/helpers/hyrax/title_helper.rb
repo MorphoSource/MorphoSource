@@ -1,4 +1,4 @@
-# Originally from https://github.com/samvera/hyrax/blob/v2.9.0/app/helpers/hyrax/title_helper.rb
+# frozen_string_literal: true
 module Hyrax::TitleHelper
   def application_name
     Hyrax.config.site_title

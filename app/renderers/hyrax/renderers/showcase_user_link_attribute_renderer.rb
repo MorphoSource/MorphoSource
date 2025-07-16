@@ -23,7 +23,7 @@ module Hyrax
           markup = ''
           return markup if value.blank?
 
-          user = ::User.find_by_user_key(value) || ::SolrDocument.where("id" => value).first
+          user = ::User.find_by_user_key(value) || ::SolrDocument.where({"id" => value}).first
           if user.present?
             link = user_link(user)
           else

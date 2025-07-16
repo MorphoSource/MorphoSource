@@ -3,7 +3,7 @@ require 'rails_helper'
 RSpec.describe MorphosourceHelper, type: :helper do
   let(:user)            { User.create(email: 'user@email.com', password: 'password') }
   let(:collection_type) { Hyrax::CollectionType.create(title: ['collection']) }
-  let(:collection)      { Collection.create(title: ['collection'], collection_type_gid: collection_type.gid) }
+  let(:collection)      { Collection.create(title: ['collection'], collection_type_gid: collection_type.to_global_id) }
 
   let(:params) { ActionController::Parameters.new( {  } ) }
 

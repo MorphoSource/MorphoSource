@@ -23,13 +23,13 @@
 %>
 <% if @presenter.agreement_uri.present? || @presenter.attachment_url.present? %>
   <div class="form-group row">
-    <div class="col-xs-12 showcase-value">
+    <div class="col-12 showcase-value">
       <%= t("morphosource.media.edit.agreement_present").html_safe %>
     </div>
   </div>
 <% else %>
   <div class="form-group row">
-    <div class="col-xs-12 showcase-value">
+    <div class="col-12 showcase-value">
       <%= t("morphosource.media.edit.agreement_absent").html_safe %>
     </div>
   </div>

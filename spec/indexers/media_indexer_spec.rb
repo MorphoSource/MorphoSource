@@ -8,7 +8,7 @@ RSpec.describe MediaIndexer do
 
   context 'Solr Document Values' do
 
-    let(:admin_set_id)            { AdminSet.find_or_create_default_admin_set_id }
+    let(:admin_set_id)            { Hyrax::AdminSetCreateService.find_or_create_default_admin_set.id.to_s }
     let(:permission_template)     { Hyrax::PermissionTemplate.find_or_create_by!(source_id: admin_set_id) }
 
     let(:depositor)               { FactoryBot.create(:contributor) }
@@ -119,7 +119,7 @@ RSpec.describe MediaIndexer do
 
     it 'indexes expected values' do
       expect(subject['accessControl_ssim']).to match_array([media.access_control.id])
-      expect(subject['actionable_workflow_roles_ssim']).to match_array(['admin_set/default-default-managing', 'admin_set/default-default-approving', 'admin_set/default-default-depositing'])
+      expect(subject['actionable_workflow_roles_ssim']).to match_array(['admin_set_default-default-managing', 'admin_set_default-default-approving', 'admin_set_default-default-depositing'])
       expect(subject['active_fund_code_title_ssim']).to match_array(["MorphoSource"])
       expect(subject['admin_set_ssim']).to match_array(media.admin_set.title)
       expect(subject['admin_set_tesim']).to match_array(media.admin_set.title)
@@ -204,8 +204,6 @@ RSpec.describe MediaIndexer do
       expect(subject['member_of_sequential_section_list_ids_ssim']).to match_array([sequential_section_list.id])
       expect(subject['modality_ssim']).to match_array(imaging_event.ie_modality)
       expect(subject['morphosource_use_agreement_type_tesim']).to match_array(media.morphosource_use_agreement_type)
-      expect(subject['nesting_collection__deepest_nested_depth_isi']).to eq(2)
-      expect(subject['nesting_collection__pathnames_ssim']).to match_array(collections.map{|c| "#{c.id}/#{media.id}"})
       expect(subject['number_of_images_in_set_tesim']).to match_array(media.number_of_images_in_set)
       expect(subject['occurrence_id_ssim']).to match_array(specimen.occurrence_id)
       expect(subject['occurrence_id_tesim']).to match_array(specimen.occurrence_id)

@@ -106,7 +106,7 @@ module Hyrax
         # along side the FileSets on the show page
         def add(env, id)
           collection = Collection.find(id)
-          collection.reindex_extent = Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
+
           return unless can_deposit_to_collection?(env, collection)
 
           env.curation_concern.member_of_collections << collection
@@ -183,7 +183,7 @@ module Hyrax
 
           # Do not apply permissions to work if collection type is configured not to
           collection = ::Collection.find(collection_id)
-          return unless collection.share_applies_to_new_works?
+          return unless Hyrax::CollectionType.for(collection: collection).share_applies_to_new_works?
 
           # Save the collection id in env for use in apply_permission_template_actor
           env.attributes[:collection_id] = collection_id

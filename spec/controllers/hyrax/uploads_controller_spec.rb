@@ -4,7 +4,7 @@ RSpec.describe Hyrax::UploadsController do
   let(:user) { create(:user) }
 
   describe "#create" do
-    let(:file) { fixture_file_upload('/bunny/bunny.ply', 'application/ply') }
+    let(:file) { File.open(fixture_path + '/bunny/bunny.ply') }
 
     context "when signed in" do
       before do
@@ -18,7 +18,7 @@ RSpec.describe Hyrax::UploadsController do
             upload_hash: SecureRandom.uuid,
             format: 'json' 
           }
-          expect(response).to be_success
+          expect(response).to have_http_status(:success)
           expect(assigns(:upload)).to be_kind_of Hyrax::UploadedFile
           expect(assigns(:upload)).to be_persisted
           expect(assigns(:upload).user).to eq user
@@ -26,7 +26,6 @@ RSpec.describe Hyrax::UploadsController do
       end
 
       context "when sending file as multiple chunks" do
-        let(:file) { File.open(fixture_path + '/bunny/bunny.ply') }
         let(:file_chunk1) { Rack::Test::UploadedFile.new(StringIO.new(file.read(5000)), original_filename: 'bunny.ply') }
         let(:file_chunk2) { Rack::Test::UploadedFile.new(StringIO.new(file.read(5000)), original_filename: 'bunny.ply') }
         let(:file_chunk3) { Rack::Test::UploadedFile.new(StringIO.new(file.read), original_filename: 'bunny.ply') }
@@ -39,7 +38,7 @@ RSpec.describe Hyrax::UploadsController do
               upload_hash: upload_hash,
               format: 'json' 
             }
-          expect(response).to be_success
+          expect(response).to have_http_status(:success)
           expect(assigns(:upload)).to be_kind_of Hyrax::UploadedFile
           expect(assigns(:upload)).to be_persisted
           expect(assigns(:upload).user).to eq user

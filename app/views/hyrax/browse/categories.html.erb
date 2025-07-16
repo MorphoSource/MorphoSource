@@ -3,17 +3,17 @@
 <div class="browse">
 
   <% provide :page_header do %>
-    <div class="col-xs-12 title browse">
+    <div class="col-12 title browse">
       <h1 class="categories"><span class="fa fa-book-open" aria-hidden="true"></span> 
         <%= t("hyrax.browse.title.categories") %><br/>
       </h1>
     </div>
   <% end %>
-  <div class="col-xs-12 page-description">
+  <div class="col-12 page-description">
     <p><%= t("hyrax.browse.page_description.categories.header") %></p>
   </div>
 
-  <div class="col-xs-12 body-wrapper categories">
+  <div class="col-12 body-wrapper categories">
     <h2><span class="fa fa-cube" aria-hidden="true"></span> 
       <%= link_to t("hyrax.toolbar.browse.media_types_and_modalities"), main_app.browse_media_types_and_modalities_path %>
     </h2>

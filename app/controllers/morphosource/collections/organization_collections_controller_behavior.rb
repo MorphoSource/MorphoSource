@@ -24,7 +24,7 @@ module Morphosource
       # count of media imaged by organization devices and viewable by current user
       def device_media_count
         search_builder = Morphosource::Collections::OrganizationCollections::DeviceMediaSearchBuilder.new(scope: self, collection: @collection)
-        repository.search(search_builder.query).response["numFound"].to_i
+        blacklight_config.repository.search(search_builder.query).response["numFound"].to_i
       end
 
       def query_collection_counts

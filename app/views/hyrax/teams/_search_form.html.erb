@@ -1,9 +1,9 @@
 <%= form_for presenter, url: url, method: :get, class: "well form-search" do |f| %>
   <label class="sr-only"><%= t('hyrax.collections.search_form.label', title: presenter.to_s) %></label>
-  <div class="input-group col-xs-12">
+  <div class="input-group col-12">
     <%= text_field_tag :cq,
     	params[:cq], 
-    	class: "collection-query form-control col-xs-12", 
+    	class: "collection-query form-control col-12", 
     	placeholder: ( tab == 'media' ) ?
           t("morphosource.search.form.q.media.placeholder") :
           t("morphosource.search.form.q.object.placeholder"), 

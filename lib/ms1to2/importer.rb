@@ -35,7 +35,6 @@ module Ms1to2
     def add_works_to_collections(coll_ids)
       invert_collection_ids(coll_ids).each do |coll_id, work_ids|
         c = Collection.find(coll_id)
-        c.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
         c.add_member_objects work_ids
       end
     end
@@ -107,7 +106,7 @@ module Ms1to2
     def import_standard(m)
       opts = { :model => m.to_s }
       opts[:depositor] = @admin_user.user_key
-      return nil if !File.exists?(File.join(input_path, csvfile(m)))
+      return nil if !File.exist?(File.join(input_path, csvfile(m)))
       csv_importer = ::Importer::CSVImporter.new(
         File.join(input_path, csvfile(m)),
         '',
@@ -209,7 +208,7 @@ module Ms1to2
     end
 
     def get_table(m)
-      return {} if !File.exists?(File.join(input_path, csvfile(m)))
+      return {} if !File.exist?(File.join(input_path, csvfile(m)))
       {}.tap do |t|
         CSVParser.new(File.join(input_path, csvfile(m))).each do |attrs|
           t[attrs[:id].first] = attrs unless attrs[:id].nil?

@@ -17,19 +17,37 @@ RSpec.describe Morphosource::Collections::MediaListsController, type: :controlle
     context 'user is an admin' do
       let(:user) { FactoryBot.create(:admin) }
 
-      it 'allows access' do
+      it 'allows access to about' do
         get :about, params: params
         expect(response.status).to eq(200)
+      end
+
+      it 'allows access to facet' do
         get :facet, params: { collection_id: list.id, id: 'media_type' }
         expect(response.status).to eq(200)
+      end
+
+      it 'allows access to media_download_counts_with_intersections_facet' do
         get :media_download_counts_with_intersections_facet, params: params, format: :csv
         expect(response.status).to eq(200)
+      end
+
+      it 'allows access to media_downloads' do
         get :media_downloads, params: params, format: :csv
         expect(response.status).to eq(200)
+      end
+
+      it 'allows access to media_export_with_intersections_facet' do
         get :media_export_with_intersections_facet, params: params, format: :csv
         expect(response.status).to eq(200)
+      end
+
+      it 'allows access to media_requests' do
         get :media_requests, params: params, format: :csv
         expect(response.status).to eq(200)
+      end
+
+      it 'allows access to show' do
         get :show, params: params
         expect(response.status).to eq(200)
       end
@@ -38,23 +56,44 @@ RSpec.describe Morphosource::Collections::MediaListsController, type: :controlle
     context 'user is a list manager' do
       let(:user) { depositor }
 
-      it 'allows some actions and denies others' do
+      context 'allows some actions and denies others' do
         # allow
-        get :about, params: params
-        expect(response.status).to eq(200)
-        get :facet, params: { collection_id: list.id, id: 'media_type' }
-        expect(response.status).to eq(200)
-        get :media_download_counts_with_intersections_facet, params: params, format: :csv
-        expect(response.status).to eq(200)
-        get :media_export_with_intersections_facet, params: params, format: :csv
-        expect(response.status).to eq(200)
-        get :show, params: params
-        expect(response.status).to eq(200)
+        it 'allows access to about' do
+          get :about, params: params
+          expect(response.status).to eq(200)
+        end
+        
+
+        it 'allows access to facet' do
+          get :facet, params: { collection_id: list.id, id: 'media_type' }
+          expect(response.status).to eq(200)
+        end
+
+        it 'allows access to media_download_counts_with_intersections_facet' do
+          get :media_download_counts_with_intersections_facet, params: params, format: :csv
+          expect(response.status).to eq(200)
+        end
+
+        it 'allows access to media_export_with_intersections_facet' do
+          get :media_export_with_intersections_facet, params: params, format: :csv
+          expect(response.status).to eq(200)
+        end
+
+        it 'allows access to show' do
+          get :show, params: params
+          expect(response.status).to eq(200)
+        end 
+
         # deny
-        get :media_downloads, params: params, format: :csv
-        expect(response.status).to eq(403)
-        get :media_requests, params: params, format: :csv
-        expect(response.status).to eq(403)
+        it 'denies access to media_downloads' do
+          get :media_downloads, params: params, format: :csv
+          expect(response.status).to eq(403)
+        end
+
+        it 'denies access to media_requests' do
+          get :media_requests, params: params, format: :csv
+          expect(response.status).to eq(403)
+        end
       end
     end
 
@@ -65,17 +104,23 @@ RSpec.describe Morphosource::Collections::MediaListsController, type: :controlle
         # allow
         get :about, params: params
         expect(response.status).to eq(200)
+        controller.instance_variable_set(:@presenter, nil)
         get :facet, params: { collection_id: list.id, id: 'media_type' }
         expect(response.status).to eq(200)
+        controller.instance_variable_set(:@presenter, nil)
         get :show, params: params
         expect(response.status).to eq(200)
+        controller.instance_variable_set(:@presenter, nil)
         # deny
         get :media_download_counts_with_intersections_facet, params: params, format: :csv
         expect(response.status).to eq(403)
+        controller.instance_variable_set(:@presenter, nil)
         get :media_downloads, params: params, format: :csv
         expect(response.status).to eq(403)
+        controller.instance_variable_set(:@presenter, nil)
         get :media_export_with_intersections_facet, params: params, format: :csv
         expect(response.status).to eq(403)
+        controller.instance_variable_set(:@presenter, nil)
         get :media_requests, params: params, format: :csv
         expect(response.status).to eq(403)
       end

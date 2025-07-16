@@ -62,7 +62,6 @@ module Morphosource
       def transfer_collections
         collections.each do |collection|
           collection.depositor = @new_user.ms_id
-          collection.reindex_extent = Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
           collection.save!
         end
       end

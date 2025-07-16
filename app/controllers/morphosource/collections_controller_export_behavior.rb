@@ -54,7 +54,7 @@ module Morphosource
       return unless authorize_export
 
       if request.format == 'csv'
-        repository.blacklight_config.max_per_page = 9999999
+        blacklight_config.max_per_page = 9999999
       end
       (@response, @document_list) = query_solr_all_results
       @document_list.map! { |d| d.to_semantic_values }
@@ -67,7 +67,7 @@ module Morphosource
       return unless authorize_export
 
       @document_type = 'media_download'
-      repository.blacklight_config.max_per_page = 9999999
+      blacklight_config.max_per_page = 9999999
       (_, @media_document_list) = query_solr_all_results
       media_ids = @media_document_list.map{|d| d["id"]}.flatten.compact.uniq
       @document_list = downloads_report(media_ids)
@@ -79,7 +79,7 @@ module Morphosource
 
       @document_type = 'media_with_download_count'
       if request.format == 'csv'
-        repository.blacklight_config.max_per_page = 9999999
+        blacklight_config.max_per_page = 9999999
       end
       (@response, @media_document_list) = query_solr_all_results
       media_ids = @media_document_list.map{|d| d["id"]}.flatten.compact.uniq
@@ -108,7 +108,7 @@ module Morphosource
     def media_requests
       return unless authorize_export
       @document_type = 'media_request'
-      repository.blacklight_config.max_per_page = 9999999
+      blacklight_config.max_per_page = 9999999
       (_, @media_document_list) = query_solr_all_results
       media_ids = @media_document_list.map{|d| d["id"]}.flatten.compact.uniq
       @document_list = requests_report(media_ids)
@@ -175,22 +175,22 @@ module Morphosource
 
     def works_export_filename
       filename = t("morphosource.collections.#{collection_type&.machine_id}.exports.#{tab.to_s}.media_export.filename")
-      filename.include?('translation missing') ? "#{@document_type.titleize.pluralize} Query" : filename
+      filename.downcase.include?('translation missing') ? "#{@document_type.titleize.pluralize} Query" : filename
     end
 
     def media_download_counts_filename
       filename = t("morphosource.collections.#{collection_type&.machine_id}.exports.#{tab.to_s}.media_download_counts.filename")
-      filename.include?('translation missing') ? 'Media%20Download%20Counts' : filename
+      filename.downcase.include?('translation missing') ? 'Media%20Download%20Counts' : filename
     end
 
     def media_downloads_filename
       filename = t("morphosource.collections.#{collection_type&.machine_id}.exports.#{tab.to_s}.media_downloads.filename")
-      filename.include?('translation missing') ? 'Media%20Downloads' : filename
+      filename.downcase.include?('translation missing') ? 'Media%20Downloads' : filename
     end
 
     def media_requests_filename
       filename = t("morphosource.collections.#{collection_type&.machine_id}.exports.#{tab.to_s}.media_requests.filename")
-      filename.include?('translation missing') ? 'Media%20Requests' : filename
+      filename.downcase.include?('translation missing') ? 'Media%20Requests' : filename
     end
 
     def authorize_export

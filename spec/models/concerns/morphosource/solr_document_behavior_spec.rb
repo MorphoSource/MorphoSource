@@ -26,7 +26,7 @@ RSpec.describe 'Morphosource::SolrDocumentBehavior', type: :model do
   end
 
   describe 'collection_member_count' do
-    let!(:collection)         { Collection.create(title: ['collection'], collection_type_gid: team_collection_type.gid) }
+    let!(:collection)         { Collection.create(title: ['collection'], collection_type_gid: team_collection_type.to_global_id) }
     let(:attributes)          { {"id" => collection.id } }
 
     before do

@@ -1,7 +1,7 @@
 class Hyrax::BrowseController < ApplicationController
 	include Hyrax::Browse::BrowseHelper
 
-	with_themed_layout 'morphosource_1_column'      
+	with_themed_layout '1_column'      
 
 	def categories
 		render 'categories'

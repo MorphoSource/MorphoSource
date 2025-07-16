@@ -3,6 +3,10 @@ en:
     dashboard:
       collections:
         sequential_section_list:
+          index:
+            title: Sequential Section Lists
+          edit:
+            title: Details
           new:
             header: 'New Sequential Section List'
           action:
@@ -12,6 +16,7 @@ en:
             view: 'View List'
             collection_update_success: ' was successfully updated.'
           members:
+            title: Members
             roles:
               contributor: 'manager'
               non-contributor: 'viewer'

@@ -14,7 +14,7 @@ RSpec.describe Morphosource::FacetHelper, type: :helper do
     end
 
     context 'collection with id exists' do
-      let!(:project)                 { Collection.create(title: ['project'], collection_type_gid: project_collection_type.gid) }
+      let!(:project)                 { Collection.create(title: ['project'], collection_type_gid: project_collection_type.to_global_id) }
 
       it 'returns the collection title' do
         expect(collection_title_by_id(project.id)).to eq(project.title.first)
@@ -30,11 +30,11 @@ RSpec.describe Morphosource::FacetHelper, type: :helper do
 
   describe 'visibility_label' do
     context 'open' do
-      let(:team)  { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid, visibility: 'open') }
+      let(:team)  { Collection.create(title: ['team'], collection_type_gid: team_collection_type.to_global_id, visibility: 'open') }
       it { expect(helper.visibility_label(team.visibility)).to eq('Public') }
     end
     context 'restricted' do
-      let(:team)  { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid) }
+      let(:team)  { Collection.create(title: ['team'], collection_type_gid: team_collection_type.to_global_id) }
       it { expect(helper.visibility_label(team.visibility)).to eq('Private') }
     end
   end

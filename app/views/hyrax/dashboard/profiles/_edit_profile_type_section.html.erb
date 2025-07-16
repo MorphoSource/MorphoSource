@@ -1,15 +1,15 @@
 <div class="form-group row">
-  <%= f.label :profile_type, t("morphosource.dashboard.profiles.edit_primary.profile_type").html_safe, class: 'col-sm-4 control-label required' %>
-  <div class="col-sm-8">
-    <%= f.select_tag 'user[profile_type]', options_for_select(Morphosource::UserProfile::ProfileHelper::PROFILE_TYPES, @user.profile_type), class: "form-control", include_blank: true, required: true %>
+  <%= f.label :profile_type, t("morphosource.dashboard.profiles.edit_primary.profile_type").html_safe, class: 'col-md-4 col-form-label required' %>
+  <div class="col-md-8">
+    <%= f.select 'profile_type', options_for_select(Morphosource::UserProfile::ProfileHelper::PROFILE_TYPES, @user.profile_type), { include_blank: true }, { class: "form-control", required: true } %>
   </div>
 </div>
 
 <%= render partial: 'hyrax/dashboard/profiles/ms_profile_metadata', collection: @presenter.all_metadata_fields.keys, as: :member, :locals => { f: f } %>
 
-<div class="checkbox-form-group dg-group row">
-  <%= f.label :demographics, (t("morphosource.dashboard.profiles.edit_primary.demographics") + " (Choose One or More)").html_safe, class: 'col-sm-4 control-label required' %>
-  <div class="col-sm-8">
+<div class="checkbox-form-group form-group dg-group row">
+  <%= f.label :demographics, (t("morphosource.dashboard.profiles.edit_primary.demographics") + " (Choose One or More)").html_safe, class: 'col-md-4 col-form-label required' %>
+  <div class="col-md-8">
     <%= render partial: 'hyrax/dashboard/profiles/ms_profile_demographics', locals: {field: 'demographics', values: @presenter.all_demographics_values, f: f} %>
   </div>
 </div>

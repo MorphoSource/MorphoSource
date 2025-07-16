@@ -113,7 +113,7 @@ RSpec.describe Morphosource::My::MediaController, type: :controller do
       end
       
       it 'search_builder_class is EditSpecimensSearchBuilder' do
-        expect(controller.search_builder_class).to eq(Morphosource::Users::EditMediaSearchBuilder)
+        expect(controller.blacklight_config.search_builder_class).to eq(Morphosource::Users::EditMediaSearchBuilder)
       end
     end
 
@@ -124,7 +124,7 @@ RSpec.describe Morphosource::My::MediaController, type: :controller do
       end
 
       it 'search_builder_class is MySpecimensSearchBuilder' do
-        expect(controller.search_builder_class).to eq(Morphosource::Users::MyMediaSearchBuilder)
+        expect(controller.blacklight_config.search_builder_class).to eq(Morphosource::Users::MyMediaSearchBuilder)
       end
     end
   end

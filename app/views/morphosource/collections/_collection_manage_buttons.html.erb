@@ -7,7 +7,7 @@
       <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
         Export <span class="caret"></span>
       </button>
-      <ul class="dropdown-menu">
+      <ul class="dropdown-menu shadow">
         <li>
           <% if @tab == :specimens %>
             <% query_link_title = 'Specimen metadata with facets CSV' %>
@@ -21,7 +21,7 @@
           <% end %>
           <%= link_to query_link_title,
             query_link_url,
-            class: 'btn btn-primary'
+            class: 'btn btn-dropdown-item'
           %>
         </li>
 
@@ -29,7 +29,7 @@
           <li>
             <%= link_to 'Media metadata with download counts CSV',
               media_download_counts_csv_url(@collection),
-              class: 'btn btn-primary'
+              class: 'btn btn-dropdown-item'
             %>
           </li>
           <% # Unless current_user.admin? don't show user download information for media lists %>
@@ -37,14 +37,14 @@
             <li>
               <%= link_to 'Individual media downloads CSV',
                 media_downloads_csv_url(@collection),
-                class: 'btn btn-primary'
+                class: 'btn btn-dropdown-item'
               %>
             </li>
 
             <li>
               <%= link_to 'Individual media download requests CSV',
                 media_requests_csv_url(@collection),
-                class: 'btn btn-primary'
+                class: 'btn btn-dropdown-item'
               %>
             </li>
           <% end %>
@@ -53,7 +53,7 @@
             <li>
               <%= link_to 'Projects with media not managed by team CSV',
                 main_app.team_media_projects_path(id: @presenter.id, :format => :csv, :per_page => 1000000, 'f[intersections][]' => 'organization_not_team' ),
-                class: 'btn btn-primary'
+                class: 'btn btn-dropdown-item'
               %>
             </li>
 
@@ -61,7 +61,7 @@
               <li>
                 <%= link_to 'Organization transfer status per media CSV',
                   main_app.team_media_organization_transfer_status_path(request.parameters.merge(id: @presenter.id, :format => :csv, :per_page => 1000000)),
-                  class: 'btn btn-primary'
+                  class: 'btn btn-dropdown-item'
                 %>
               </li>
             <% end %>
@@ -74,10 +74,10 @@
     <div class="collection-manage-button-wrapper">
       <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Add <span class="caret"></span>
       </button>
-      <ul class="dropdown-menu">
-        <li> <%= link_to "Select existing media", Rails.application.routes.url_helpers.my_add_media_index_path(@presenter.id), class: 'btn btn-sm btn-primary' %> </li>
+      <ul class="dropdown-menu shadow">
+        <li> <%= link_to "Select existing media", Rails.application.routes.url_helpers.my_add_media_index_path(@presenter.id), class: 'btn btn-sm btn-dropdown-item' %> </li>
         <% if current_ability.can? :create, Media %>
-          <li> <%= link_to "Upload new media", main_app.new_submission_path(collection: @presenter.id), class: 'btn btn-sm btn-primary' %>
+          <li> <%= link_to "Upload new media", main_app.new_submission_path(collection: @presenter.id), class: 'btn btn-sm btn-dropdown-item' %>
           </li>
         <% end %>
       </ul>

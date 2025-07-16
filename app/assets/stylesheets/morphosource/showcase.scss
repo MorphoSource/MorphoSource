@@ -877,6 +877,12 @@ nav#masthead {
     }
   }
 
+  .btn-dropdown-item {
+    color: #000;
+    background-color: #fff;
+    border: none;
+  }
+
   .btn-danger {
     background-color: $button-danger-color;
     border-color: $button-danger-color;

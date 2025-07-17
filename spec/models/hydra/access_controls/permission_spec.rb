@@ -4,7 +4,7 @@ require 'rails_helper'
 RSpec.describe Hydra::AccessControls::Permission do
   let(:described_class) { Hydra::AccessControls::Permission }
   let(:args)            { { name: 'agent_name', type: 'group', access: '' } }
-  subject               { described_class.new(args).build_access(args[:access] ) }
+  subject               { described_class.new(args).send(:build_access, args[:access] ) }
 
   describe '#build_access' do
     context 'access is read' do

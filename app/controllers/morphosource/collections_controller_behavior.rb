@@ -23,7 +23,7 @@ module Morphosource
       # The search builder to find the collection
       self.single_item_search_builder_class = Hyrax::SingleCollectionSearchBuilder
       # The search builder to find the collections' members
-      self.membership_service_class = Morphosource::Collections::CollectionMemberService
+      self.membership_service_class = Morphosource::Collections::CollectionMemberSearchService
     end
 
     def presenter_class

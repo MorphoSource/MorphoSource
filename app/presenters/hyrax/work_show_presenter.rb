@@ -301,7 +301,7 @@ module Hyrax
 
       def member_of_authorized_parent_collections
         # member_of_collection_ids with current_ability access
-        @member_of ||= Hyrax::CollectionMemberService.run(solr_document, current_ability).map(&:id)
+        @member_of ||= Hyrax::CollectionMemberSearchService.run(solr_document, current_ability).map(&:id)
       end
 
       def members_include_viewable_image?

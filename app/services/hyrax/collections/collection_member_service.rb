@@ -14,12 +14,7 @@ module Hyrax
       def initialize(scope:, collection:, params:, user_params: nil, current_ability: nil, search_builder_class: Hyrax::CollectionMemberSearchBuilder) # rubocop:disable Metrics/ParameterLists
         Deprecation.warn("'##{__method__}' will be removed in Hyrax 4.0.  " \
                          "Instead, use the same method in 'Hyrax::Collections::CollectionMemberSearchService'.")
-        @member_search_service = Hyrax::Collections::CollectionMemberSearchService(scope: scope,
-                                                                                   collection: collection,
-                                                                                   params: params,
-                                                                                   user_params: user_params,
-                                                                                   current_ability: current_ability,
-                                                                                   search_builder_class: search_builder_class)
+        @member_search_service = Hyrax::Collections::CollectionMemberSearchService(scope: scope, collection: collection, params: params, user_params: user_params, current_ability: current_ability, search_builder_class: search_builder_class)
       end
 
       ##

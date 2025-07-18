@@ -5,12 +5,22 @@
 	margin: 0px;
 }
 
+.align-items-center * {
+	text-align: center;
+	margin-left: auto;
+	margin-right: auto;
+}
+
 .site-footer {
 	color: #fff;
 }
 
 .site-footer a {
 	color: #fff;
+	text-decoration: none;
+	&:hover {
+		text-decoration: underline;
+	}
 }
 
 .site-footer i {

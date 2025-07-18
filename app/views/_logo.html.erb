@@ -1,14 +1,14 @@
 <% is_core_site = Hyrax.config.site_title == Hyrax.config.default_site_title %>
-<div id="logo" class="navbar-brand" style="display: flex; align-items: center;">
-  <div style="margin-right: 5px">
+<div id="logo" class="navbar-brand">
+  <div style="display: inline-block">
     <a href="<%= hyrax.root_path %>" data-no-turbolink="true">
-      <span style="<%= !is_core_site ? 'top: -8px;' : '' %>">
+      <span class="glyphicon" style="<%= !is_core_site ? 'top: -8px;' : '' %>">
         <%= image_tag(Hyrax.config.logo_image, size: '40') %>
       </span>
     </a>
   </div>
-  <div class="<%= controller_name.downcase.include?("catalog") ? "" : "collapse navbar-collapse" %>">
-    <a href="<%= hyrax.root_path %>" data-no-turbolink="true" style="color: unset; text-decoration: none;">
+  <div style="display: inline-block; padding-top: 2px;">
+    <a href="<%= hyrax.root_path %>" data-no-turbolink="true" class="text-white text-decoration-none">
       <span class="organization_name" style="<%= !is_core_site ? 'display: block;' : '' %>">
         <%= application_name %>
       </span>

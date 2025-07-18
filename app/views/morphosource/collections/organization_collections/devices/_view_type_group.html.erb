@@ -1,0 +1,20 @@
+<% if show_sort_and_per_page? and has_alternative_views? -%>
+<div class="view-type">
+  <span class="sr-only"><%= t('blacklight.search.view_title') %></span>
+  <div class="view-type-group btn-group">
+    <% if has_uv_preview? %>
+      <%= link_to url_for(request.params.merge(preview: (@hide_viewer ? nil : false))), 
+        title: "Show or hide media display", 
+        class: "#{@hide_viewer ? "" : "active"} btn btn-secondary pt-2" do
+      %>
+        <span class="fas fa-image"></span>
+        <span class="caption">Show or hide media display</span>
+      <% end %>
+    <% end %>
+
+    <% if document_index_view_type == :list || document_index_view_type == :gallery %>
+      <%= render 'column_sort' %>
+    <% end %>
+  </div>
+</div>
+<% end -%>

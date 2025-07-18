@@ -454,6 +454,9 @@ nav#masthead {
       color: $font-color;
       border-color: transparent;
     }
+    .btn {
+      margin-left: 2px;
+    }
   }
 
   .choose-columns-media {
@@ -622,6 +625,11 @@ nav#masthead {
   }
 
   table.dataTable {
+    .media {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
     th[class^="sorting"]:before,
     th[class^="sorting"]:after {
       bottom: 0.6em;
@@ -867,6 +875,12 @@ nav#masthead {
       background-color: #fff !important;
       outline: none;
     }
+  }
+
+  .btn-dropdown-item {
+    color: #000;
+    background-color: #fff;
+    border: none;
   }
 
   .btn-danger {
@@ -1206,6 +1220,10 @@ nav#masthead {
     min-width: 82px;
     right: 0;
     left: unset;
+    @media screen and (max-width: 767px) {
+      left: 0;
+      right: unset;
+    }
     top: 80%;
     .btn:hover {
       color : $font-color;

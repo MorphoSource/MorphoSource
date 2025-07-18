@@ -5,7 +5,9 @@
   <div class="col-12 col-sm-12 col-md-12 col-lg-5 batch-action-buttons">
   <% if !morphosource_physical_objects_controller? && @document_list.count > 0 && params[:view] != "gallery" %>
     <div class="row">
-      <%= render 'batch_actions' %>
+      <% if document_index_view_type == :list %>
+        <%= render 'batch_actions' %>
+      <% end %>
     </div>
   <% end %>
   </div>

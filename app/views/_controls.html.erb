@@ -1,6 +1,6 @@
 <nav class="navbar navbar-inverse-dark secondary-nav navbar-expand-md no-vertical-padding" role="navigation">
   <div class="container-fluid">
-    <div class="nav-left">
+    <div class="nav-left mx-auto mx-sm-0">
       <div class="nav navbar-nav flex-row">
         <div class="dropdown nav-item">
           <%= link_to hyrax.root_path, class: 'dropdown-toggle nav-link', role: 'button', data: { toggle: 'dropdown' }, aria: { haspopup: true, expanded: false, controls: "about-links" } do %>
@@ -23,7 +23,7 @@
         <%= render partial: "control", locals: { links_yml: Hyrax.config.header_resources, label: "resources" } %>
       </div><!-- /.nav -->
     </div>
-    <div class="nav-right">
+    <div class="controls mx-auto mx-sm-0 nav-right">
       <li style="list-style-type: none;">
         <div class="donate-button-wrapper">
           <%= render 'donate_button' %>

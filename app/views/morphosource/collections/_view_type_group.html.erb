@@ -5,15 +5,24 @@
     <% if has_uv_preview? %>
       <%= link_to url_for(request.params.merge(preview: (@hide_viewer ? nil : false))), 
         title: "Show or hide media display", 
-        class: "#{@hide_viewer ? "" : "active"} btn btn-secondary" do
+        class: "#{@hide_viewer ? "" : "active"} btn btn-secondary pt-2" do
       %>
-        <span class="glyphicon glyphicon-picture"></span>
+        <span class="fas fa-image"></span>
         <span class="caption">Show or hide media display</span>
       <% end %>
     <% end %>
     <% document_index_view_controls.each do |view, config| %>
-    <% collection_type = @collection.collection_type.machine_id.pluralize %>
-      <%= link_to url_for(search_state.to_h.merge(view: view)).gsub("/collections/","/#{collection_type}/"), title: view_label(view), class: "btn btn-secondary view-type-#{ view.to_s.parameterize } #{"active" if document_index_view_type == view}" do %>
+      <% 
+      collection_type = @collection.collection_type.machine_id.pluralize.gsub('_', '-') 
+      # Replace underscores with dashes in view_link, from:
+      # /media-lists/<ID>/biological_specimens?<query string>
+      # to: 
+      # /media-lists/<ID>/biological-specimens?<query string>
+      view_link = url_for(search_state.to_h.merge(view: view)).gsub("/collections/","/#{collection_type}/").gsub(/(\/media-lists\/[^\/]+\/)(biological_specimens|cultural_heritage_objects)/) do
+        "#{$1}#{$2.tr('_', '-')}"
+      end
+      %>
+      <%= link_to view_link, title: view_label(view), class: "btn btn-secondary view-type-#{ view.to_s.parameterize } #{"active" if document_index_view_type == view}" do %>
         <%= render_view_type_group_icon view %>
         <span class="caption"><%= view_label(view) %></span>
       <% end %>

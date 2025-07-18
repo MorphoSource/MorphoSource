@@ -1,4 +1,10 @@
 /*
+
+TODO: Replace this outdated plugin later with another spinning wheel loader plugin.  The plugin is used in the following files:
+    app/assets/javascripts/morphosource/media_lists.js
+    app/assets/javascripts/hyrax/ms_media_form.js
+    app/assets/javascripts/hyrax/ms_upload.js
+
  * Jquery Loader插件 中文叫菊花插件
  * 使用例子:
  * $.loader.open(arg); 打开屏幕菊花
@@ -206,7 +212,7 @@
 
     // 指定范围显示
     $.fn.loader = function (arg) {
-        if (!$(this).size()) {
+        if (!$(this).length) {
             return;
         }
         if ($.type(arg) === "string") {
@@ -215,7 +221,7 @@
             }
         }
         var dom = $(this);
-        if (dom.size() > 1) {
+        if (dom.length > 1) {
             dom = dom.parent();
         }
         return $.loader_ext.init(dom, arg);

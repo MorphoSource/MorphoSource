@@ -54,14 +54,33 @@ nav.navbar .container, nav.navbar .container-fluid {
   }
 }
 
+// Dashboard masthead specific styles
+body.dashboard { 
+  nav#masthead {
+    // Hyrax has dashboard masthead as fixed, undo that
+    position: relative;
 
-body.dashboard nav#masthead {
-  // Hyrax has dashboard masthead as fixed, undo that
-  position: relative;
+    // Special exception for dashboard masthead, which has full page width
+    .container-fluid {
+      .navbar-brand {
+        margin-left: -15px;
+      }
+    }
+  }
 
-  // Special exception for dashboard masthead, which has full page width
-  .container-fluid {
-    max-width: unset;
+  .navbar-inverse {
+    background-color: #003880;
+  }
+
+  .navbar-toggle {
+    padding: 9px 10px;
+    margin: 8px 15px 8px 0;
+    border: 1px solid transparent;
+    .icon-bar {
+      width: 22px;
+      height: 2px;
+      margin-bottom: 4px;
+    }
   }
 }
 

@@ -6,7 +6,7 @@
 <div class="media-list-results">
   <div class="collection-table gallery">
     <div id="documents" class="row gallery">
-      <%= render_gallery_collection documents %>
+      <%= render partial: 'document_gallery_item', collection: @document_list, as: :document %>
     </div>
   </div>
 

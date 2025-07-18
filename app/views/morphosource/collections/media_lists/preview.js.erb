@@ -5,5 +5,12 @@ $('.name-container').html(
   "<%= j (render partial: 'preview_name') %>"
 )
 
-const mediaList = document.querySelector("div.media-list-results")?.mediaList;
-mediaList?.toggleViewerDisabledWrap();
+/*
+Need to check if mediaList has been defined to avoid the error: Failed to execute 'appendChild' on 'Node': Identifier 'mediaList' has already been declared (the error occurs when selecting a media list from the Media List page and then clicking on the preview button)
+*/
+if (typeof mediaList === 'undefined') {
+  const mediaList = document.querySelector("div.media-list-results")?.mediaList;
+  mediaList?.toggleViewerDisabledWrap();
+} else {
+  mediaList?.toggleViewerDisabledWrap();
+}

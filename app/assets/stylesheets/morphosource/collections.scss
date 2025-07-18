@@ -5,10 +5,6 @@
   margin-bottom: 0;
 }
 
-.ms-collection .collection-manage-buttons .dropdown-menu.show {
-  transform: none !important;
-}
-
 div.collection-header {
   display: flex;
   width: 100%;
@@ -68,7 +64,7 @@ div.collection-header {
 
   .collection-manage-buttons {
     display: flex;
-    width: 234px;
+    width: 240px;
     flex-grow: 0;
     justify-content: end;
     margin: 0;
@@ -78,8 +74,10 @@ div.collection-header {
       min-width: 320px !important;
       right: 0px !important;
       top: unset !important;
+      transform: none !important;
 
       .btn {
+        margin-left: 0;
         width: 100%;
         text-align: left;
         padding: 5px 5px 5px 10px;
@@ -93,10 +91,10 @@ div.collection-header {
     }
 
     .btn {
-      width: 75px;
+      width: 77px;
       border-radius: 3px;
-      margin-left: 3px;
       font-size: 14px;
+      margin-left: 3px;
     }
   }
 }
@@ -139,7 +137,6 @@ div.collection-page {
         min-height: 200px;
 
         dl {
-          width: 190px;
           margin-bottom: 0;
 
           dd.text-truncate {

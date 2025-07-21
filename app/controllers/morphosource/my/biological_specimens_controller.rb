@@ -45,6 +45,9 @@ module Morphosource
           @tab_title = 'Specimens // MorphoSource'
         end
 
+        def add_breadcrumbs
+          # no need to add breadcrumbs as they have been added already
+        end
     end
   end
 end

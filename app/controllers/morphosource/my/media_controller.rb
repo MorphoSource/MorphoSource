@@ -55,6 +55,10 @@ module Morphosource
           @tab = :media
           @tab_title = 'Media // MorphoSource'
         end
+
+        def add_breadcrumbs
+          # no need to add breadcrumbs as they have been added already
+        end
     end
   end
 end

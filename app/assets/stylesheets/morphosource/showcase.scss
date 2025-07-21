@@ -673,12 +673,6 @@ nav#masthead {
 
   .flash-wrapper {
     padding: 0;
-    .alert {
-      margin: 0 12px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
   }
 
   .modal-content {
@@ -1255,7 +1249,11 @@ nav#masthead {
 
   .media-block {
     .thumbnail {
-      display:inline-block;
+      display: flex;
+      align-items: center;
+      flex-direction: column;
+      row-gap: 10px;
+
       border: none;
       margin-bottom: 4px;
       img {

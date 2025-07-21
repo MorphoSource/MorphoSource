@@ -9,17 +9,17 @@
 <%= f.input :creator, label: 'Object Collector/Creator', as: :multi_value %>
 <%= f.input :contributor, label: 'Object Contributor', as: :multi_value %>
 <%= f.input :publisher %>
-<%= f.label 'Object Type', style: "width: 100%; display: flex; padding-left: 8px;" %>
+<%= f.label 'Object Type', class: "mt-3", style: "width: 100%; display: flex;" %>
 <div style='margin-bottom:10px;'>
   <%= render "records/edit_fields/aat_type", f: f, key: 'aat_type' %>
   <%= f.input :cho_type, label: 'Custom Type', as: :multi_value, label_wrapper_html: { class: 'indent' } %>
 </div>
-<%= f.label 'Object Material', style: "width: 100%; display: flex; padding-left: 8px;" %>
+<%= f.label 'Object Material', class: "mt-3", style: "width: 100%; display: flex;" %>
 <div style='margin-bottom:10px;'>
   <%= render "records/edit_fields/aat_material", f: f, key: 'aat_material' %>
   <%= f.input :material, label: 'Custom Material', as: :multi_value, label_wrapper_html: { class: 'indent' } %>
 </div>
-<%= f.label 'Object Attributes', style: "width: 100%; display: flex; padding-left: 8px;" %>
+<%= f.label 'Object Attributes', class: "mt-3", style: "width: 100%; display: flex;" %>
 <div style='margin-bottom:10px;'>
   <%= render "records/edit_fields/aat_attribute", f: f, key: 'aat_attribute' %>
   <%= f.input :cho_attribute, label: 'Custom Attributes', as: :multi_value, label_wrapper_html: { class: 'indent' } %>

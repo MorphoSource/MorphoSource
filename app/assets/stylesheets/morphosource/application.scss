@@ -1,5 +1,14 @@
 // Application-wide overrides, restore styles changed in Bootstrap 4 to our desired defaults
 
+a {
+  text-decoration: none;
+}
+
+a:hover, a:focus {
+  color: #23527c;
+  text-decoration: underline;
+}
+
 body {
   font-size: 14px;
   line-height: 1.428571429;
@@ -10,9 +19,21 @@ h1, .h1, h2, .modal-title, .h2, h3, .h3 {
   margin-bottom: 10px;
 }
 
+.alert {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row-reverse;
+}
+
 .btn {
   font-size: 14px;
   line-height: 1.428571429;
+}
+
+// Hyrax 5 change makes remove buttons on select2 invisible, this reverses that
+.controlled_vocabulary .listing li .remove {
+  display: initial;
 }
 
 .dropdown-menu {

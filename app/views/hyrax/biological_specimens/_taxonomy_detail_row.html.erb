@@ -1,9 +1,9 @@
 <div class="panel-group taxonomy-accordion-group" data-taxonomy-id="<%= t.id %>" data-gbif-key="<%= t.gbif_key&.first %>">
   <input name="biological_specimen[taxonomy_id][]" id="taxonomy_id" type="hidden" value="<%= t.id %>" />
   <div class="card m-0">
-    <div class="row">
+    <div class="row align-items-center">
       <div class="col-5 showcase-label taxonomy-label"><%= label %></div>
-      <div class="col-5 showcase-value taxonomy-title"><i><%= t.title&.first %></i></div>
+      <div class="col-5 showcase-value taxonomy-title pt-0"><i><%= t.title&.first %></i></div>
       <div class="col-1 pl-0 text-right"><i data-toggle="collapse" data-parent=".taxonomy-accordion-group" data-target="#collapse-taxonomy-<%= t.id %>" class="col-1 fas collapse-taxonomy-<%= t.id %> fa-chevron-down collapsed" aria-expanded="false"></i></div>
       <div class="col-1 p-0 text-center"><i class="fas fa-times-circle" aria-hidden="true" id="remove-taxonomy"></i></div>
     </div>

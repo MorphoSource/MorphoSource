@@ -4,7 +4,7 @@
 <%= render @presenter.showcase_work_title_partial, presenter: @presenter %>
 
 <div class="row showcase2-row">
-  <div class="col-sm-6 col-sm-push-6">
+  <div class="col-md-6 order-md-2">
     <div class="content-block">
       <%= render @presenter.showcase_media_items_partial, presenter: @presenter %>
     </div>
@@ -14,7 +14,7 @@
     </div>
   </div>
 
-  <div class="col-sm-6 col-sm-pull-6">
+  <div class="col-md-6 order-md-1">
     <div class="content-block">
       <%= render 'showcase_general_details', presenter: @presenter %>
     </div>

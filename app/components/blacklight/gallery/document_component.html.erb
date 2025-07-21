@@ -1,0 +1,27 @@
+<%
+# https://raw.githubusercontent.com/projectblacklight/blacklight-gallery/refs/tags/v4.7.0/app/components/blacklight/gallery/document_component.html.erb 
+component = Blacklight::VERSION > '8' ?
+  Blacklight::DocumentComponent.new(classes: 'col', component: :div, document: @presenter, counter: @counter) :
+  Blacklight::DocumentComponent.new(classes: 'col', component: :div, document: @document, presenter: @presenter, counter: @counter)
+%> 
+<%= render(component) do |component| %>
+  <% component.with_body do %>
+    <div class="thumbnail-container search-result-wrapper p-3">
+      <div class="thumbnail-header w-50 mb-2 mx-auto">
+        <%= thumbnail %>
+      </div>
+      <div class="caption-area">
+        <div class="caption container text-center">
+          <div>
+            <%= link_to [@main_app, @document] do %>
+              <%= @document.id %>
+            <% end %>
+          </div>
+          <div><%= @document.title.first %></div>
+          <div><%= @document['physical_object_title_tesim']&.first %></div>
+          <div><%= @document['taxonomy_tesim']&.first %></div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+<% end %>

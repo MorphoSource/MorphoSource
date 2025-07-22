@@ -10,11 +10,12 @@ module Morphosource
       # @param scope [#blacklight_config] Typically a controller object which responds to :blacklight_config
       # @param [Collection]
       # @param [ActionController::Parameters] query params
-      def initialize(scope:, collection:, params:)
-        @scope = scope
-        @collection = collection
-        @params = params
-      end
+      # def initialize(scope:, collection:, params:)
+      #   @scope = scope
+      #   @collection = collection
+      #   @params = params
+      #   @member_search_service = Morphosource::Collections::CollectionMemberService(scope: scope,collection: collection, params: params)
+      # end
 
       # @api public
       #
@@ -45,35 +46,27 @@ module Morphosource
       # @return [Blacklight::Solr::Response]
       def available_member_works_filter_query(fq_params: [], object_model: nil)
         query_solr_with_fq(
-          query_builder: works_search_builder, 
-          query_params: params[:cq], 
+          query_builder: works_search_builder,
+          query_params: params[:cq],
           fq_params: fq_params,
-          rows: (rows = rows_param(object_model)), 
+          rows: (rows = rows_param(object_model)),
           start: start_param(rows)
         )
       end
 
       def available_media_works_filter_query(fq_params: [], core_fq: [], object_model: nil)
         query_solr_for_media_with_fq(
-          query_builder: works_search_builder, 
-          query_params: params[:cq], 
-          fq_params: fq_params, 
-          core_fq: core_fq, 
-          rows: (rows = rows_param(object_model)), 
+          query_builder: works_search_builder,
+          query_params: params[:cq],
+          fq_params: fq_params,
+          core_fq: core_fq,
+          rows: (rows = rows_param(object_model)),
           start: start_param(rows)
         )
       end
 
       def works_search_builder
         @works_search_builder ||= Morphosource::CollectionMemberSearchBuilder.new(scope: scope, collection_id: collection.id, search_includes_models: :works)
-      end
-
-      # @api public
-      #
-      # Collections which are members of the current collection
-      # @return [Blacklight::Solr::Response] {up to 50 solr documents}
-      def available_member_subcollections
-        query_solr(query_builder: subcollections_search_builder(collection.id), query_params: params_for_subcollections)
       end
 
       private

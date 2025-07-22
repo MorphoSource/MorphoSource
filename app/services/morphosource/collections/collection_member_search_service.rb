@@ -5,31 +5,6 @@ module Morphosource
 
       private
 
-
-
-      # @api private
-      #
-      def query_solr_with_fq(query_builder:, query_params:, fq_params:, rows: 10, start: 0)
-        initial_q = query_builder[:q]
-        initial_fq = query_builder[:fq]
-        initial_rows = query_builder.rows
-        initial_start = query_builder.start
-        begin
-          query_builder.merge(q: query_params)
-          query_builder.merge(fq: fq_params)
-          query_builder.merge('facet.limit' => -1)
-          query_builder.rows = rows
-          query_builder.start = start
-          blacklight_config.repository.search(query_builder.query)
-        ensure
-          query_builder.merge(q: initial_q)
-          query_builder.merge(fq: initial_fq)
-          query_builder.merge('facet.limit' => -1)
-          query_builder.rows = initial_rows
-          query_builder.start = initial_start
-        end
-      end
-
       def query_solr_for_media_with_fq(query_builder:, query_params:, fq_params:, core_fq:, rows: 10, start: 0)
         initial_q = query_builder[:q]
         initial_fq = query_builder[:fq]

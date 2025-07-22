@@ -3,10 +3,6 @@ module Morphosource
   module Collections
     class CollectionMemberSearchService < Hyrax::Collections::CollectionMemberSearchService
 
-      def works_search_builder
-        @works_search_builder ||= Morphosource::CollectionMemberSearchBuilder.new(scope: scope, collection_id: collection.id, search_includes_models: :works)
-      end
-
       private
 
       # @api private

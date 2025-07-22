@@ -43,7 +43,7 @@ module Morphosource
       end
 
       def subcollections
-        Morphosource::Collections::CollectionMemberService.new(scope: scope, collection: collection, params: {}).available_member_subcollections
+        Hyrax::Collections::CollectionMemberSearchService.new(scope: scope, collection: collection, params: {}).available_member_subcollections
       end
 
       def add_facet_paging_to_solr(solr_params)

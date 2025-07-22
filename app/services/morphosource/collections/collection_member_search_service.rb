@@ -7,12 +7,6 @@ module Morphosource
 
       # @api private
       #
-      def assemble_organization_media_query(organization_object_ids)
-        " OR (#{ActiveFedora.index_field_mapper.solr_name('physical_object_id', :stored_searchable)}:(#{organization_object_ids.join(' OR ')}))"
-      end
-
-      # @api private
-      #
       def query_solr(query_builder:, query_params:)
         blacklight_config.repository.search(query_builder.with(query_params).query)
       end

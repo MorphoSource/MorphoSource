@@ -5,15 +5,6 @@ module Morphosource
 
       # @api public
       #
-      def all_member_media_objects(object_ids = [], object_model = nil, fq_params = [])
-        core_fq = "(id:(#{object_ids.join(' OR ')}))"
-        core_fq += " AND (#{ActiveFedora.index_field_mapper.solr_name('has_model', :symbol)}:#{object_model})" if object_model.present?
-        fq_params << core_fq
-        available_member_works_filter_query(fq_params: fq_params, object_model: object_model)
-      end
-
-      # @api public
-      #
       # Works which are members of the given collection
       # @return [Blacklight::Solr::Response]
       def available_member_works_filter_query(fq_params: [], object_model: nil)

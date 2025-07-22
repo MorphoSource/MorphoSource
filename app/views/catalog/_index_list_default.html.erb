@@ -9,12 +9,12 @@
       <% if collection_result %>
         <% collection_presenter = Morphosource::CollectionPresenter.new(document, current_ability) %>
         <div class="row">
-          <dt class="col-3 text-left">Number of Media:</dt>
+          <dt class="col-3 text-right">Number of Media:</dt>
           <dd class="col-9"><%= collection_presenter.total_viewable_media %></dd>
         </div>
         <% if document["human_readable_type_tesim"]&.first == "Team" %>
           <div class="row">
-            <dt class="col-3 text-left">Number of Projects:</dt>
+            <dt class="col-3 text-right">Number of Projects:</dt>
             <dd class="col-9"><%= collection_presenter.total_viewable_collections %></dd>
           </div>
         <% end %>
@@ -26,12 +26,12 @@
           <div class="row">
             <% if document["has_model_ssim"]&.first == "Collection" %>
               <% if field_name == "date_uploaded_dtsi" %>
-                <dt class="col-3 text-left">Date Created</dt>
+                <dt class="col-3 text-right">Date Created</dt>
               <% else %>
-                <dt class="col-3 text-left"><%= render_index_field_label document, field: field_name %></dt>
+                <dt class="col-3 text-right"><%= render_index_field_label document, field: field_name %></dt>
               <% end %>
             <% else %>
-              <dt class="col-3 text-left"><%= render_index_field_label document, field: field_name %></dt>
+              <dt class="col-3 text-right"><%= render_index_field_label document, field: field_name %></dt>
             <% end %>          
 
             <dd class="col-9"><%= doc_presenter.field_value field %></dd>
@@ -48,7 +48,7 @@
       <% if object_presenter.present? %>
         <% media_count = object_presenter.total_viewable_media %>
         <div class="row">
-          <dt class="col-3 text-left">Number of Media:</dt>
+          <dt class="col-3 text-right">Number of Media:</dt>
           <dd class="col-9"><%= media_count %></dd>
         </div>
       <% end %>
@@ -58,7 +58,7 @@
         <% linked_team = org_presenter.linked_team %>
         <% if linked_team.present? %>
           <div class="row">
-            <dt class="col-3 text-left">Team:</dt>
+            <dt class="col-3 text-right">Team:</dt>
             <dd class="col-9"><%= linked_team %></dd>
           </div>
         <% end %>

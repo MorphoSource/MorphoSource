@@ -3,9 +3,9 @@ module Morphosource
   module Collections
     # Responsible for retrieving collection members
     # TODO: The Hyrax equivalent of this class is deprecated in 3.6.0, might want to update
-    class CollectionMemberService < Hyrax::Collections::CollectionMemberService
-      attr_reader :scope, :params, :collection
-      delegate :blacklight_config, to: :scope
+    class CollectionMemberService < Hyrax::Collections::CollectionMemberSearchService
+      # attr_reader :scope, :params, :collection
+      # delegate :blacklight_config, to: :scope
 
       # @param scope [#blacklight_config] Typically a controller object which responds to :blacklight_config
       # @param [Collection]

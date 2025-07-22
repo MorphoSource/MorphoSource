@@ -7,12 +7,6 @@ module Morphosource
 
       # @api private
       #
-      def query_solr(query_builder:, query_params:)
-        blacklight_config.repository.search(query_builder.with(query_params).query)
-      end
-
-      # @api private
-      #
       def query_solr_with_field_selection(query_builder:, fl:)
         blacklight_config.repository.search(query_builder.merge(fl: fl).query)
       end

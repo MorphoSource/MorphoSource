@@ -7,18 +7,6 @@ module Morphosource
 
       # @api private
       #
-      # Blacklight pagination still needs to be overridden and set up for the subcollections.
-      # @return <Hash> the additional inputs required for the subcollection member search builder
-      def params_for_subcollections
-        # To differentiate current page for works vs subcollections, we have to use a sub_collection_page
-        # param. Map this to the page param before querying for subcollections, if it's present
-        params2 = params.deep_dup
-        params2[:page] = params2.delete(:sub_collection_page)
-        params2
-      end
-
-      # @api private
-      #
       def assemble_organization_media_query(organization_object_ids)
         " OR (#{ActiveFedora.index_field_mapper.solr_name('physical_object_id', :stored_searchable)}:(#{organization_object_ids.join(' OR ')}))"
       end

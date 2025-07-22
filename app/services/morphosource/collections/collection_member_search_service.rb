@@ -7,27 +7,6 @@ module Morphosource
 
       # @api private
       #
-      def rows_param(object_model = nil)
-        case object_model.to_s
-          when "BiologicalSpecimen"
-            rows = params[:brows]
-          when "CulturalHeritageObject"
-            rows = params[:crows]
-          else
-            rows = params[:rows]
-          end
-        rows.presence || Hyrax.config.teams_show_work_item_rows
-      end
-
-      # @api private
-      #
-      def start_param(rows = 10)
-        page = params[:page].presence || 1
-        ((page.to_i - 1) * rows.to_i).to_s
-      end
-
-      # @api private
-      #
       def assemble_multiple_collection_query
         subcollection_ids = available_member_subcollections.documents.map { |s| s['id'] }
         if subcollection_ids.present?

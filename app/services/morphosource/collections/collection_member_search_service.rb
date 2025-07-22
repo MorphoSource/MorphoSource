@@ -7,17 +7,6 @@ module Morphosource
 
       # @api private
       #
-      def assemble_multiple_collection_query
-        subcollection_ids = available_member_subcollections.documents.map { |s| s['id'] }
-        if subcollection_ids.present?
-          " OR (#{ActiveFedora.index_field_mapper.solr_name('member_of_collection_ids', :symbol)}:(#{subcollection_ids.join(' OR ')}))"
-        else
-          ""
-        end
-      end
-
-      # @api private
-      #
       # set up a member search builder for collections only
       # @return [CollectionMemberSearchBuilder] new or existing
       def subcollections_search_builder(collection_id)

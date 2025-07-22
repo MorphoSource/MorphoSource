@@ -3,17 +3,6 @@ module Morphosource
   module Collections
     class CollectionMemberSearchService < Hyrax::Collections::CollectionMemberSearchService
 
-      def available_media_works_filter_query(fq_params: [], core_fq: [], object_model: nil)
-        query_solr_for_media_with_fq(
-          query_builder: works_search_builder,
-          query_params: params[:cq],
-          fq_params: fq_params,
-          core_fq: core_fq,
-          rows: (rows = rows_param(object_model)),
-          start: start_param(rows)
-        )
-      end
-
       def works_search_builder
         @works_search_builder ||= Morphosource::CollectionMemberSearchBuilder.new(scope: scope, collection_id: collection.id, search_includes_models: :works)
       end

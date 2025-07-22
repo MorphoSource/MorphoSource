@@ -13,6 +13,7 @@
 
 .site-footer {
 	color: #fff;
+	height: unset;
 }
 
 .site-footer a {
@@ -43,12 +44,10 @@
 
 .copyright, .support, .icons {
   text-align: center;
-  margin-bottom: 15px;
 }
 
 .footer-links {
 	text-align: left;
-  margin-bottom: 15px;
 }
 
 .footer-label {

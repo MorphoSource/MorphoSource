@@ -1,35 +1,7 @@
 # frozen_string_literal: true
 module Morphosource
   module Collections
-    # Responsible for retrieving collection members
-    # TODO: The Hyrax equivalent of this class is deprecated in 3.6.0, might want to update
-    class CollectionMemberService < Hyrax::Collections::CollectionMemberSearchService
-      # attr_reader :scope, :params, :collection
-      # delegate :blacklight_config, to: :scope
-
-      # @param scope [#blacklight_config] Typically a controller object which responds to :blacklight_config
-      # @param [Collection]
-      # @param [ActionController::Parameters] query params
-      # def initialize(scope:, collection:, params:)
-      #   @scope = scope
-      #   @collection = collection
-      #   @params = params
-      #   @member_search_service = Morphosource::Collections::CollectionMemberService(scope: scope,collection: collection, params: params)
-      # end
-
-      # @api public
-      #
-      # Media works which are
-      # 1) direct members of given collection,
-      # 2) members of subcollections of given collection (if collection is nestable), and
-      # 3) media representing physical objects from collection-linked media
-      def all_member_media(organization_object_ids = [], fq_params = [])
-        core_fq = "(#{ActiveFedora.index_field_mapper.solr_name('member_of_collection_ids', :symbol)}:#{collection.id})"
-        core_fq += assemble_multiple_collection_query if collection.respond_to?(:collection_type) && collection.collection_type.nestable?
-        core_fq += assemble_organization_media_query(organization_object_ids) if organization_object_ids.present?
-        fq_params << "#{ActiveFedora.index_field_mapper.solr_name('has_model', :symbol)}:#{Media}"
-        available_media_works_filter_query(fq_params: fq_params, core_fq: core_fq)
-      end
+    class CollectionMemberSearchService < Hyrax::Collections::CollectionMemberSearchService
 
       # @api public
       #

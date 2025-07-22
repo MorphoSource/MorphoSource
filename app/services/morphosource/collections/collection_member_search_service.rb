@@ -7,14 +7,6 @@ module Morphosource
 
       # @api private
       #
-      # set up a member search builder for collections only
-      # @return [CollectionMemberSearchBuilder] new or existing
-      def subcollections_search_builder(collection_id)
-        @subcollections_search_builder ||= Morphosource::CollectionMemberSearchBuilder.new(scope: scope, collection_id: collection_id, search_includes_models: :collections)
-      end
-
-      # @api private
-      #
       # Blacklight pagination still needs to be overridden and set up for the subcollections.
       # @return <Hash> the additional inputs required for the subcollection member search builder
       def params_for_subcollections

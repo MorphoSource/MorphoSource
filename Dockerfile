@@ -4,7 +4,8 @@ ARG RUBY_VERSION=3.3.6
 FROM ruby:$RUBY_VERSION-bookworm as morphosource-build
 
 ARG RAILS_ROOT=/app/samvera/hyrax-webapp
-ENV BUNDLE_APP_CONFIG="$RAILS_ROOT/.bundle"
+ENV BUNDLE_APP_CONFIG="$RAILS_ROOT/.bundle" \
+    BUNDLE_PATH="$RAILS_ROOT/vendor/bundle"
 
 RUN apt update && \
   apt install -y --no-install-recommends \
@@ -40,14 +41,6 @@ ENV LD_LIBRARY_PATH="/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64:/usr/lib/jvm/ja
 ENV RAILS_ROOT=$RAILS_ROOT
 ENV RAILS_SERVE_STATIC_FILES="1"
 
-# RUN gem update bundler
-# Trying to remove in experimental ruby 3.3.6 update
-# ENV BUNDLE_GEMFILE="./Gemfile"
-# ENV BUNDLER_VERSION='2.0.2'
-# ENV HOME=$RAILS_ROOT
-# RUN gem install bundler -v 2.0.2
-
-
 
 ### MORPHOSOURCE-BUILD-DEV STAGE ####
 
@@ -59,9 +52,7 @@ USER app
 
 COPY --chown=1001:0 $APP_PATH/Gemfile $RAILS_ROOT/Gemfile
 COPY --chown=1001:0 $APP_PATH/Gemfile.lock $RAILS_ROOT/Gemfile.lock
-ENV BUNDLE_PATH=/app/samvera/hyrax-webapp/vendor/bundle
-RUN bundle config --global && \
-  bundle install --jobs "$(nproc)"
+RUN bundle install --jobs "$(nproc)"
 
 COPY --chown=1001:0 $APP_PATH/package.json $RAILS_ROOT/package.json
 COPY --chown=1001:0 $APP_PATH/yarn.lock $RAILS_ROOT/yarn.lock
@@ -85,9 +76,7 @@ USER app
 
 COPY --chown=1001:0 $APP_PATH/Gemfile $RAILS_ROOT/Gemfile
 COPY --chown=1001:0 $APP_PATH/Gemfile.lock $RAILS_ROOT/Gemfile.lock
-ENV BUNDLE_PATH=/app/samvera/hyrax-webapp/vendor/bundle
-RUN bundle config --global && \
-  bundle install --jobs "$(nproc)" --without development
+RUN bundle install --jobs "$(nproc)" --without development
 
 COPY --chown=1001:0 $APP_PATH/package.json $RAILS_ROOT/package.json
 COPY --chown=1001:0 $APP_PATH/yarn.lock $RAILS_ROOT/yarn.lock
@@ -108,7 +97,8 @@ ARG RUBY_VERSION=3.3.6
 FROM ruby:$RUBY_VERSION-bookworm as morphosource-base
 
 ARG RAILS_ROOT=/app/samvera/hyrax-webapp
-ENV BUNDLE_APP_CONFIG="$RAILS_ROOT/.bundle"
+ENV BUNDLE_APP_CONFIG="$RAILS_ROOT/.bundle" \
+    BUNDLE_PATH="$RAILS_ROOT/vendor/bundle"
 
 RUN apt update && \
   apt install -y --no-install-recommends \
@@ -138,14 +128,6 @@ WORKDIR $RAILS_ROOT
 ENV PATH="$RAILS_ROOT/bin:$PATH"
 ENV RAILS_ROOT=$RAILS_ROOT
 ENV RAILS_SERVE_STATIC_FILES="1"
-
-# RUN gem update bundler
-# Trying to remove in experimental ruby 3.3.6 update
-# ENV BUNDLE_GEMFILE="./Gemfile"
-# ENV BUNDLER_VERSION='2.0.2'
-# ENV HOME=$RAILS_ROOT
-# RUN gem install bundler -v 2.0.2
-
 
 
 ### MORPHOSOURCE-DEV STAGE

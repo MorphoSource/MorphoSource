@@ -25,7 +25,7 @@ en:
           sftp_share: "SFTP Share"
           facebook_handle: "Facebook Handle"
           help_change_picture_type: "JPG, GIF, or PNG (less than 2MB)"
-          intent: "Intended Use For MorphoSource"
+          intent: "Intended Use"
           mesh_file_type: "What File Type (If Any) Do You<br>Prefer To Use For 3D Mesh Files?"
           printer_file: "If You Are Involved In 3D Printing,<br>What File Type Does Your Printer<br>Or Its Software Require?<br>(You May Choose More Than One)"
           printer_model: "If You Are Involved In 3D Printing,<br>What Make and Model Of<br>3D Printer Do You Use?<br>(You May Choose More Than One)"

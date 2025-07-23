@@ -7,8 +7,8 @@
 
 <%= render partial: 'hyrax/dashboard/profiles/ms_profile_metadata', collection: @presenter.all_metadata_fields.keys, as: :member, :locals => { f: f } %>
 
-<div class="checkbox-form-group form-group dg-group row">
-  <%= f.label :demographics, (t("morphosource.dashboard.profiles.edit_primary.demographics") + " (Choose One or More)").html_safe, class: 'col-md-4 col-form-label required' %>
+<div class="checkbox-form-group form-group dg-group row align-items-start">
+  <%= f.label :demographics, (t("morphosource.dashboard.profiles.edit_primary.demographics") + " (Choose One or More)").html_safe, class: 'col-md-4 col-form-label pt-0 required' %>
   <div class="col-md-8">
     <%= render partial: 'hyrax/dashboard/profiles/ms_profile_demographics', locals: {field: 'demographics', values: @presenter.all_demographics_values, f: f} %>
   </div>

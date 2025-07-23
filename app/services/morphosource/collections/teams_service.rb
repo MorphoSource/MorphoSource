@@ -1,0 +1,74 @@
+module Morphosource
+  module Collections
+    class TeamsService 
+      include SolrHelper
+      attr_reader :scope, :params
+      delegate :blacklight_config, to: :scope
+      
+      def initialize(scope:, user:, params:)
+        @scope = scope
+        @user = user
+        @params = params
+      end
+
+      def all_collections_by_type(collection_type_id, fq_params = [])
+        #fq_params << "#{ActiveFedora.index_field_mapper.solr_name('has_model', :symbol)}:#{Collection}"
+        fq_params << "(#{ActiveFedora.index_field_mapper.solr_name('collection_type_gid', :symbol)}:\"gid://#{GlobalID.app}/Hyrax::CollectionType/#{collection_type_id}\")"
+        response = available_collections_filter_query(fq_params: fq_params)
+        return response
+      end
+
+      def collection_docs_by_type_and_ids(collection_type_id, fq_params = [], collection_ids)
+        return [] unless collection_ids.present?
+        fq_params << "(#{ActiveFedora.index_field_mapper.solr_name('collection_type_gid', :symbol)}:\"gid://#{GlobalID.app}/Hyrax::CollectionType/#{collection_type_id}\")"
+        fq_params << assemble_or_query('id', collection_ids)
+        response = available_collections_filter_query(fq_params: fq_params)
+        return response.documents
+      end
+
+      # @return [Blacklight::Solr::Response]
+      def available_collections_filter_query(fq_params: [])
+        query_solr_with_fq(query_builder: ms_collections_search_builder, query_params: params[:q], fq_params: fq_params)
+      end
+
+      private
+
+      # @api private
+      #
+      def query_solr_with_fq(query_builder:, query_params:, fq_params:)
+        initial_q = query_builder[:q]
+        initial_fq = query_builder[:fq]
+        initial_rows = query_builder[:rows]
+        begin
+          query_builder.merge(q: query_params)
+          query_builder.merge(fq: fq_params)
+          query_builder.merge('facet.limit' => -1)
+          query_builder.merge(rows: 99999)
+          blacklight_config.repository.search(query_builder.query)
+        ensure
+          query_builder.merge(q: initial_q)
+          query_builder.merge(fq: initial_fq)
+          query_builder.merge('facet.limit' => -1)
+          query_builder.merge(rows: initial_rows)
+        end
+      end
+
+      def ms_collections_search_builder
+        @ms_collections_search_builder ||= Morphosource::My::MsCollectionsSearchBuilder.new(scope: scope)
+      end
+
+      # @api private
+      #
+      def query_solr(query_builder:, query_params:)
+        blacklight_config.repository.search(query_builder.with(query_params).query)
+      end
+
+      # @api private
+      #
+      def query_solr_with_field_selection(query_builder:, fl:)
+        blacklight_config.repository.search(query_builder.merge(fl: fl).query)
+      end
+
+    end
+  end
+end

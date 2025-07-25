@@ -6,6 +6,8 @@ en:
       featured_collections: 'Featured Collections'
       donate_button_text: 'Donate'
     admin:
+      sidebar:
+        media_cart: Media Cart
       pages:
         page_title: 'All Simple Pages'
       background_jobs:
@@ -147,6 +149,9 @@ en:
         generate_new_api_key: Generate a new user-specific API key. Your previous key will no longer be functional.
         save_settings: Save Settings
         view_api_key: "Display your user-specific API key, used to authenticate API requests as yourself. WARNING: This is SENSITIVE information, guard it like a password!"
+    dashboard:
+      profiles:
+        save_settings: Save Settings
     table:
       action: Action
       agreed_to_terms: Agreed Terms

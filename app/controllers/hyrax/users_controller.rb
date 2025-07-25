@@ -61,8 +61,8 @@ module Hyrax
         end
 
         search_only_active_users = only_active || (
-          current_user&.admin? && 
-          params[:only_active].present? && 
+          current_user&.admin? &&
+          params[:only_active].present? &&
           params[:only_active] == 'true'
         )
 
@@ -91,7 +91,7 @@ module Hyrax
       end
 
       def sort_value
-        sort = params[:sort].blank? ? "name" : params[:sort]
+        sort = params[:sort].blank? ? default_sort : params[:sort]
         case sort
         when 'name'
           'display_name'
@@ -104,6 +104,12 @@ module Hyrax
         else
           sort
         end
+      end
+
+      # If no query term is provided, default to sorting by created_at desc
+      # otherwise, sort by display_name
+      def default_sort
+        params[:uq].blank? ? "created_at desc" : "display_name"
       end
 
       # only admins may use this (otherwise json route too open)

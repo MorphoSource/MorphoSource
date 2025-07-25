@@ -3,8 +3,6 @@
         <%= image_tag(user.avatar.url(:thumb), width: 30) if user.avatar.file %>
       <% end %>
   </td>
-   <td><%= link_to (user.first_name || ''), hyrax.user_path(user) %></td>
-   <td><%= link_to (user.last_name || ''), hyrax.user_path(user) %></td>
    <td><%= link_to (user.display_name || ''), hyrax.user_path(user) %></td>
    <td><%= user.id %></td>
    <td><%= user.user_key %></td>

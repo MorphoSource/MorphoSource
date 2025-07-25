@@ -14,8 +14,8 @@
 - label: hyrax.controls.links.community.discussions
   url: https://github.com/MorphoSource/Community/discussions/categories/general
   header: true
-  footer: true
+  footer: false
 - label: hyrax.controls.links.community.questions_and_answers
   url: https://github.com/MorphoSource/Community/discussions/categories/q-a
   header: true
-  footer: true
+  footer: false

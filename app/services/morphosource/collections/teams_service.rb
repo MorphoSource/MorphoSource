@@ -1,10 +1,11 @@
+# Used by browse/teams, browse/projects
 module Morphosource
   module Collections
-    class TeamsService 
+    class TeamsService
       include SolrHelper
       attr_reader :scope, :params
       delegate :blacklight_config, to: :scope
-      
+
       def initialize(scope:, user:, params:)
         @scope = scope
         @user = user

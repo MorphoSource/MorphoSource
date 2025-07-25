@@ -1,3 +1,5 @@
+# Applies to organization works only
+# Remove when all organization works are migrated to organization collections
 module Morphosource
   module Organizations
     class OrganizationInformationService

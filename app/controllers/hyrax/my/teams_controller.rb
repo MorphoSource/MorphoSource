@@ -1,3 +1,4 @@
+# Used by dashboard/my/teams, dashboard/my/projects
 module Hyrax
   module My
     class TeamsController < MyController

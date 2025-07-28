@@ -79,6 +79,11 @@ h1, .h1, h2, .modal-title, .h2, h3, .h3 {
   padding-bottom: 0 !important;
 }
 
+div.navbar-toggler {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
 header + .container {
   padding-top: 20px !important; // todo5 also questionable
 }

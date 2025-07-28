@@ -1,5 +1,5 @@
 <% doc_presenter = index_presenter(document) %>
-<% collection_models = [ "Collection", "MediaList", "SequentialSectionList" ] %>
+<% collection_models = [ "Collection", "MediaList", "SequentialSectionList", "OrganizationCollection" ] %>
 <% collection_result = collection_models.include?(document["has_model_ssim"]&.first) %>
 
 <div class="col-md-10">

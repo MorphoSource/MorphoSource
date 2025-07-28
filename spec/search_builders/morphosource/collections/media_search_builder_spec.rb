@@ -54,7 +54,7 @@ RSpec.describe Morphosource::Collections::MediaSearchBuilder do
     end
 
     context 'collection is a project' do
-      let(:collection)    { double('collection', id: 'collection_id', team?: false, organization: nil) }
+      let(:collection)    { double('collection', id: 'collection_id', team?: false, organization: nil, organization_collection?: false) }
 
       it 'searches for project media only' do
         expect(subject.member_of_collection({})).to eq(["(member_of_collection_ids_ssim:(collection_id))"])
@@ -63,7 +63,7 @@ RSpec.describe Morphosource::Collections::MediaSearchBuilder do
 
     context 'collection is a child project of a linked team' do
       # collection.organization returns parent team's organization
-      let(:collection)    { double('collection', id: 'collection_id', team?: false, organization: organization) }
+      let(:collection)    { double('collection', id: 'collection_id', team?: false, organization_collection?: false, organization: organization) }
 
       it 'searches for project media only' do
         expect(subject.member_of_collection({})).to eq(["(member_of_collection_ids_ssim:(collection_id))"])

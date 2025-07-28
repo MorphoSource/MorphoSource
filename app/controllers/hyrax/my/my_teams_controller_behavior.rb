@@ -1,4 +1,5 @@
 # Cloned from CollectionsControllerBehavior to set TeamPresenter
+# Used by dashboard/my/teams, dashboard/my/projects
 module Hyrax
   module My
     module MyTeamsControllerBehavior
@@ -50,7 +51,7 @@ module Hyrax
         def params_for_query
           #params.merge(q: params[:cq])
 
-          # setting higher collection limit for paginating the array       
+          # setting higher collection limit for paginating the array
           params.merge(q: params[:q]).merge({ 'rows' => '999999', 'page' => '1' })
         end
     end

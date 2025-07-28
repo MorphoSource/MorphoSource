@@ -3,11 +3,10 @@
         <%= image_tag(user.avatar.url(:thumb), width: 30) if user.avatar.file %>
       <% end %>
   </td>
-   <td><%= link_to (user.first_name || ''), hyrax.user_path(user) %></td>
-   <td><%= link_to (user.last_name || ''), hyrax.user_path(user) %></td>
+   <td><%= link_to (user.display_name || ''), hyrax.user_path(user) %></td>
    <td><%= user.id %></td>
    <td><%= user.user_key %></td>
-   <td><%= link_to user.email, "mailto:#{user.email}" if user.email.present? %></td>
+   <td><%= link_to user.email, hyrax.user_path(user) if user.email.present? %></td>
    <td><%= user.academic_institution_or_school %></td>
    <td><%= user.department %></td>
    <td><%= user.created_at.to_date %></td>

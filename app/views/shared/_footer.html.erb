@@ -1,38 +1,37 @@
-<footer class="navbar navbar-dark bg-dark site-footer no-horizontal-padding navbar-expand-md align-items-start" style="border: none">
-  <div class="container-fluid">
-    <div class="row align-items-center no-horizontal-padding w-100" style="margin-left: 0; margin-right: 0;">
-      <div class="col-lg-2 col-md-6 col-12 col-align col-align--top footer-section copyright">
-        <div style="display: flex; flex-direction: column; align-items: center;">
-          <div style="margin-bottom: 20px; display: flex;"><%= render 'donate_button' %></div>
-          <%= link_to t('hyrax.footer.copyright_html', current_year: Time.now.year), 'https://www.morphosource.org' %>
+<footer class="navbar navbar-dark bg-dark site-footer no-horizontal-padding navbar-expand-md align-items-stretch p-lg-4" style="border: none">
+  <div id="footer-primary-row" class="row w-100" style="margin-left: 0; margin-right: 0;">
+    <div class="col-lg-2 col-md-6 col-12 footer-section copyright">
+      <div class="d-flex flex-column">
+        <div style="margin-bottom: 20px; display: flex;"><%= render 'donate_button' %></div>
+        <%= link_to t('hyrax.footer.copyright_html', current_year: Time.now.year), 'https://www.morphosource.org' %>
+      </div>
+    </div>
+    <div class="col-lg-6 col-md-6 col-12 align-items-center footer-section footer-links">
+        <div class="row text-center">
+          <%= render partial: "footer_section", locals: { links_yml: Hyrax.config.footer_community, label: "community" } %>
+          <%= render partial: "footer_section", locals: { links_yml: Hyrax.config.footer_docs, label: "docs" } %>
+          <%= render partial: "footer_section", locals: { links_yml: Hyrax.config.footer_resources, label: "resources" } %>
+          <div class="col-3">
+            <div class="row no-gutters justify-content-center" style="padding-top: 0;"><span class="footer-label"><%= t(:'hyrax.controls.terms_of_use') %></span>
+            </div>
+            <div class="row no-gutters justify-content-center footer-sublink"><%= link_to t("morphosource.docs.terms.label"), Rails.application.routes.url_helpers.terms_path %></div>
+            <div class="row no-gutters justify-content-center footer-sublink"><%= link_to t("morphosource.docs.contributor_terms.label"), Rails.application.routes.url_helpers.contributor_terms_path %></div>
+          </div>
         </div>
-      </div>
-      <div class="col-lg-6 col-md-6 col-12 col-align col-align--center footer-section footer-links">
-          <div class="row">
-            <%= render partial: "footer_section", locals: { links_yml: Hyrax.config.footer_community, label: "community" } %>
-            <%= render partial: "footer_section", locals: { links_yml: Hyrax.config.footer_docs, label: "docs" } %>
-            <%= render partial: "footer_section", locals: { links_yml: Hyrax.config.footer_resources, label: "resources" } %>
-            <div class="col-3 no-horizontal-padding">
-              <div class="row" style="padding-top: 0;"><span class="footer-label"><%= t(:'hyrax.controls.terms_of_use') %></span>
-              </div>
-              <div class="row footer-sublink"><%= link_to t("morphosource.docs.terms.label"), Rails.application.routes.url_helpers.terms_path %></div>
-              <div class="row footer-sublink"><%= link_to t("morphosource.docs.contributor_terms.label"), Rails.application.routes.url_helpers.contributor_terms_path %></div>
-            </div>
+    </div>
+    <div class="col-lg-3 col-md-6 col-12 footer-section support">
+      <div class="row no-gutters">
+          <div class="pr-0 d-flex flex-nowrap align-items-center">
+            <span class="mr-3 text-nowrap">Support From: </span>
+            <span id="duke-logo" class="ml-auto mr-2"><a href="//www.duke.edu/" target="_blank"><%= image_tag('duke_logo.png') %></a></span>
+            <span id="nsf-logo" class="ml-0"><a href="//www.nsf.gov/" target="_blank"><%= image_tag('nsf_logo.png') %></a></span>
           </div>
-      </div>
-      <div class="col-lg-3 col-md-6 col-12 col-align col-align--center footer-section support">
-        <div class="row align-items-center">
-            <div class="pr-0 d-flex flex-nowrap align-items-center">
-              <span class="mr-3 text-nowrap">Support From: </span>
-              <span id="duke-logo" class="ml-auto mr-2"><a href="//www.duke.edu/" target="_blank"><%= image_tag('duke_logo.png') %></a></span>
-              <span id="nsf-logo" class="ml-0"><a href="//www.nsf.gov/" target="_blank"><%= image_tag('nsf_logo.png') %></a></span>
-            </div>
-          </div>
-      </div>
-      <div class="col-lg-1 col-md-6 col-12 pl-0 d-xl-flex flex-xl-nowrap col-align col-align--center footer-section icons">
-        <a href="//github.com/MorphoSource" target="_blank"><i class="fab fa-github fa-lg"></i></a>
-        <a href="//twitter.com/MorphoSource" target="_blank"><i class="fab fa-twitter fa-lg"></i></a>
-        <a href="mailto:morphosource@duke.edu"><i class="fas fa-envelope fa-lg"></i></a>
+        </div>
+    </div>
+    <div class="col-lg-1 col-md-6 col-12 pl-0 d-xl-flex flex-xl-nowrap footer-section icons">
+      <div class="row no-gutters h-100 align-items-center">
+          <a href="//github.com/MorphoSource" target="_blank"><i class="fab fa-github fa-lg"></i></a>
+          <a href="mailto:morphosource@duke.edu"><i class="fas fa-envelope fa-lg"></i></a>
       </div>
     </div>
   </div>

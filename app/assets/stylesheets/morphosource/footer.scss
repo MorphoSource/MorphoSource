@@ -1,14 +1,13 @@
 @import 'variables';
 @import 'shared';
 
-.footer-section {
-	margin: 0px;
+.copyright > .d-flex {
+	align-items: center;
+	text-align: center;
 }
 
-.align-items-center * {
-	text-align: center;
-	margin-left: auto;
-	margin-right: auto;
+.footer-section {
+	margin: 0px;
 }
 
 .site-footer {
@@ -29,8 +28,8 @@
 }
 
 .site-footer img {
-	max-height: 60px;
 	max-width: 60px;
+	max-height: 60px;
 }
 
 .site-footer .container-fluid {
@@ -41,14 +40,12 @@
 	margin-bottom: 5px;
 }
 
-.copyright, .support, .icons {
-  text-align: center;
-  margin-bottom: 15px;
-}
+.support > .row {
+    justify-content: center;
+  }
 
-.footer-links {
-	text-align: left;
-  margin-bottom: 15px;
+.icons > .row {
+	justify-content: center;
 }
 
 .footer-label {
@@ -63,33 +60,38 @@
 	padding: 4px 10px;
 }
 
-/* Small devices (tablets, 768px and up) [Bootstrap 3 breakpoint] */
+/* Medium devices (tablets, 768px and up) [Bootstrap 4 breakpoint] */
 @media (min-width: 768px) {
-	.copyright {
-		text-align: left;
+	.copyright > .d-flex {
+		align-items: start;
 	}
 
-	.support {
-		text-align: left;
-	}
+	.support > .row {
+    justify-content: start;
+  }
 
-	.icons {
-		text-align: right;
+	.icons > .row {
+		justify-content: end;
 	}
 }
 
-/* Medium devices (desktops, 992px and up) [Bootstrap 3 breakpoint] */
+/* Large devices (desktops, 992px and up) [Bootstrap 4 breakpoint] */
 @media (min-width: 992px) {
-  .copyright {
-    text-align: left;
-    vertical-align: middle !important;
+	.copyright > .d-flex {
+		align-items: center;
+		text-align: center;
+	}
+
+	#footer-primary-row {
+		align-items: center;
+		justify-content: center;
+	}
+
+  .support > .row {
+    justify-content: center;
   }
 
-  .support {
-    text-align: right;
-  }
-
-  .icons {
-    text-align: right;
-  }
+	.icons > .row {
+		justify-content: center;
+	}
 }

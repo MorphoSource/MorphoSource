@@ -40,6 +40,10 @@ module Morphosource
           @tab = :chos
           @tab_title = 'Cultural Heritage Objects // MorphoSource'
         end
+
+        def add_breadcrumbs
+          # no need to add breadcrumbs as they have been added already
+        end
     end
   end
 end

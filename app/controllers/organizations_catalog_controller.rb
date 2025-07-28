@@ -22,6 +22,7 @@ class OrganizationsCatalogController < CatalogController
     config.add_index_field solr_name("institution_code", :stored_searchable), label: "Institution Code"
     config.add_index_field solr_name("collection_code", :stored_searchable), label: "Collection Code"
     config.add_index_field solr_name("country", :stored_searchable), label: "Country"
+    config.add_index_field solr_name("description", :stored_searchable), label: "Description", helper_method: :line_clamp
     # linked team displayed from _index_list_default
     # method linked_team in Hyrax::OrganizationPresenter
 

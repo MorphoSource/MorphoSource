@@ -1,7 +1,7 @@
 body.catalog-body {
   div#documents.documents-gallery {
-    padding-top: 0; 
-    
+    padding-top: 0;
+
     div.thumbnail-container {
       border: 1px solid #ddd;
       margin-bottom: 20px;
@@ -25,32 +25,25 @@ body.catalog-body {
         margin-bottom: 10px;
       }
 
-      a {
-        text-decoration: none;
-        &:hover {
-          text-decoration: underline;
-        }
-      }
-      
       h3 {
         text-align: center;
       }
     }
   }
-  
+
   div#facets {
-    padding-bottom: 20px; 
+    padding-bottom: 20px;
 
     div#facet-panel-collapse.collapse:not(.show) {
       display: none !important; // Fix Hyrax 5.0.1 showing collapsed facets
-    } 
+    }
 
     div.facet-limit-active .card-header .btn {
       color: #FFF;
     }
 
     div.facets-header{
-      padding-top: 0; 
+      padding-top: 0;
 
       .facets-heading {
         margin-top: 8px;
@@ -76,30 +69,35 @@ body.catalog-body {
   div.card.facet-limit {
     margin-bottom: 5px;
   }
-    
+
   div.constraints-container {
     margin: 0.625rem 0 !important;
   }
 
   div.search-result-wrapper.row {
+    margin-bottom: 4px; // combine with 16px default blacklight padding to add 20px of space
+
     div.collection-counts-wrapper {
       div.collection-counts-item {
         font-size: 14px;
       }
     }
 
+    div.list-thumbnail {
+      padding-bottom: 0;
+    }
+
     div.metadata {
-      margin-left: -20px; 
+      margin-left: 0;
 
       dd {
-        margin-bottom: 0;
+        margin-bottom: 5px;
       }
     }
 
     div.search-results-title-row {
       padding-bottom: 15px !important;
-      padding-left: 5px;
-      
+
       h3.search-result-title {
         display: inline-block;
         margin: 0;
@@ -107,8 +105,8 @@ body.catalog-body {
       }
     }
   }
-  
-  
+
+
   div.sort-pagination {
     padding-top: 14px;
   }
@@ -120,14 +118,14 @@ body.catalog-body {
   h3.card-header {
     margin-top: 0;
   }
-  
+
   ul.list-unstyled.catalog {
     margin: 0 !important;
     padding: 0;
 
     > li.document {
       border-bottom: 1px dashed #ccc;
-      margin-bottom: 30px;
+      margin-bottom: 20px;
     }
 
     div.search-result-wrapper.row:first-of-type {

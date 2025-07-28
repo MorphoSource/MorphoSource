@@ -79,8 +79,8 @@ label.required::after {
 .jconfirm.jconfirm-white .jconfirm-box .jconfirm-buttons button.btn-default:hover,
 .jconfirm.jconfirm-light .jconfirm-box .jconfirm-buttons button.btn-default,
 .jconfirm.jconfirm-light .jconfirm-box .jconfirm-buttons button.btn-default:hover,
-.jconfirm.jconfirm-white .jconfirm-box .jconfirm-buttons button.btn-secondary, 
-.jconfirm.jconfirm-white .jconfirm-box .jconfirm-buttons button.btn-secondary:hover, 
+.jconfirm.jconfirm-white .jconfirm-box .jconfirm-buttons button.btn-secondary,
+.jconfirm.jconfirm-white .jconfirm-box .jconfirm-buttons button.btn-secondary:hover,
 .jconfirm.jconfirm-light .jconfirm-box .jconfirm-buttons button.btn-secondary,
 .jconfirm.jconfirm-light .jconfirm-box .jconfirm-buttons button.btn-secondary:hover {
   background-color: $button-color !important;
@@ -306,11 +306,13 @@ ul.align-li {
   line-height: 2rem;
   max-height: 4rem; /* number of lines x line height */
   -webkit-line-clamp: 2;
+  line-clamp: 2;
 }
 .text-truncate-lines.three-lines {
   line-height: 2rem;
   max-height: 6rem;
   -webkit-line-clamp: 3;
+  line-clamp: 3;
 }
 .no-result {
   text-align: center;

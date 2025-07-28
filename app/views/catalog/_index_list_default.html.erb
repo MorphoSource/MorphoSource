@@ -4,38 +4,37 @@
 
 <div class="col-md-10">
   <div class="metadata">
-    <dl>
-
-      <% if collection_result %>
-        <% collection_presenter = Morphosource::CollectionPresenter.new(document, current_ability) %>
-        <div class="row">
-          <dt class="col-3 text-right">Number of Media:</dt>
-          <dd class="col-9"><%= collection_presenter.total_viewable_media %></dd>
-        </div>
-        <% if document["human_readable_type_tesim"]&.first == "Team" %>
-          <div class="row">
-            <dt class="col-3 text-right">Number of Projects:</dt>
-            <dd class="col-9"><%= collection_presenter.total_viewable_collections %></dd>
-          </div>
-        <% end %>
-      <% end %>
-    
+    <dl class="mb-0">
       <% index_fields(document).each do |field_name, field| -%>
 
         <% if should_render_index_field? document, field %>
           <div class="row">
             <% if document["has_model_ssim"]&.first == "Collection" %>
               <% if field_name == "date_uploaded_dtsi" %>
-                <dt class="col-3 text-right">Date Created</dt>
+                <dt class="col-3 text-left">Date Created</dt>
               <% else %>
-                <dt class="col-3 text-right"><%= render_index_field_label document, field: field_name %></dt>
+                <dt class="col-3 text-left"><%= render_index_field_label document, field: field_name %></dt>
               <% end %>
             <% else %>
-              <dt class="col-3 text-right"><%= render_index_field_label document, field: field_name %></dt>
-            <% end %>          
+              <dt class="col-3 text-left"><%= render_index_field_label document, field: field_name %></dt>
+            <% end %>
 
             <dd class="col-9"><%= doc_presenter.field_value field %></dd>
-          </div> 
+          </div>
+        <% end %>
+      <% end %>
+
+      <% if collection_result %>
+        <% collection_presenter = Morphosource::CollectionPresenter.new(document, current_ability) %>
+        <div class="row">
+          <dt class="col-3 text-left">Media:</dt>
+          <dd class="col-9"><%= collection_presenter.total_viewable_media %></dd>
+        </div>
+        <% if document["human_readable_type_tesim"]&.first == "Team" %>
+          <div class="row">
+            <dt class="col-3 text-left">Projects:</dt>
+            <dd class="col-9"><%= collection_presenter.total_viewable_collections %></dd>
+          </div>
         <% end %>
       <% end %>
 
@@ -48,7 +47,7 @@
       <% if object_presenter.present? %>
         <% media_count = object_presenter.total_viewable_media %>
         <div class="row">
-          <dt class="col-3 text-right">Number of Media:</dt>
+          <dt class="col-3 text-left">Media:</dt>
           <dd class="col-9"><%= media_count %></dd>
         </div>
       <% end %>
@@ -58,8 +57,25 @@
         <% linked_team = org_presenter.linked_team %>
         <% if linked_team.present? %>
           <div class="row">
-            <dt class="col-3 text-right">Team:</dt>
+            <dt class="col-3 text-left">Team:</dt>
             <dd class="col-9"><%= linked_team %></dd>
+          </div>
+        <% end %>
+      <% end %>
+
+      <% if document["has_model_ssim"]&.first == "OrganizationCollection" %>
+        <% collection_presenter = Morphosource::Collections::OrganizationPresenter.new(document, current_ability) %>
+        <% organization_type = collection_presenter.organization_type&.first %>
+        <% if organization_type == "Museum, Department, or Lab Collection" || organization_type == "Collection and Scanning Facility" %>
+          <div class="row">
+            <dt class="col-3 text-left">Object Media:</dt>
+            <dd class="col-9"><%= collection_presenter.object_media_count %></dd>
+          </div>
+        <% end %>
+        <% if organization_type == "Scanning Facility" || organization_type == "Collection and Scanning Facility" %>
+          <div class="row">
+            <dt class="col-3 text-left">Device Media:</dt>
+            <dd class="col-9"><%= collection_presenter.device_media_count %></dd>
           </div>
         <% end %>
       <% end %>

@@ -634,7 +634,7 @@ nav#masthead {
     th[class^="sorting"]:after {
       bottom: 0.6em;
     }
-    th.no-sort:before, 
+    th.no-sort:before,
     th.no-sort:after {
       opacity: 0;
     }
@@ -1201,7 +1201,7 @@ nav#masthead {
       font-weight: 400;
       line-height: 1.428571429;
       color: #333333;
-      white-space: nowrap;      
+      white-space: nowrap;
     }
     a.itemicon:hover,
     a.itemicon:focus {
@@ -1215,12 +1215,6 @@ nav#masthead {
     /* styles for the dropdown menu under navbar only */
     background-color: #fff;
     min-width: 82px;
-    right: 0;
-    left: unset;
-    @media screen and (max-width: 767px) {
-      left: 0;
-      right: unset;
-    }
     top: 80%;
     .btn:hover {
       color : $font-color;
@@ -1461,8 +1455,8 @@ nav#masthead {
       opacity:  0.3;
     }
 
-    span.fa-sort-up.fa-sort-by-attributes:after, 
-    span.fa-sort-up.fa-sort-by-attributes-alt:after, 
+    span.fa-sort-up.fa-sort-by-attributes:after,
+    span.fa-sort-up.fa-sort-by-attributes-alt:after,
     span.fa-sort-down.fa-sort-by-attributes:before,
     span.fa-sort-down.fa-sort-by-attributes-alt:before {
       opacity:  0.7;
@@ -1493,7 +1487,7 @@ nav#masthead {
   }
   .form-group {
     min-height: 26px;
-  }  
+  }
   .form-horizontal .col-form-label {
     padding-top: 0;
     text-align: left;
@@ -1505,7 +1499,7 @@ nav#masthead {
     margin-top: 15px;
     padding: 6px 6px 0 6px;
     max-height: 350px;
-  } 
+  }
   .thumbnail {
     padding: 12px 9px;
     margin-bottom: 20px;

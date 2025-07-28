@@ -3,17 +3,11 @@
 
 <header>
   <nav id="masthead" class="navbar navbar-dark bg-dark navbar-expand-md" role="navigation">
-    <div class="container pb-2 pb-md-0" style="color: white;">
+    <div class="container" style="color: white;">
       <!-- Brand and toggle get grouped for better mobile display -->
-      <div class="col-12 col-md-3 px-3 p-md-0 text-center text-lg-left logo">
+      <div class="col-8 col-md-3 px-3 p-md-0 logo">
         <%= render '/logo' %>
       </div>
-
-      <% if !controller_name.downcase.include? "catalog" %>
-        <div class="col-10 col-md-6">
-          <%= content_for?(:search_form) ? yield(:search_form) : render('/catalog/search_form') %>
-        </div>
-      <% end %>
 
       <div class="col-2 col-md-3 text-right ml-auto navbar-toggler" style="border: none;">
         <!-- mobile hamburger menu -->
@@ -23,8 +17,17 @@
         </button>
       </div>
 
-      <div class="col-12 col-md-3 ml-auto no-horizontal-padding collapse navbar-collapse" id="top-navbar-collapse">
-          <%= content_for?(:user_util_links) ? yield(:user_util_links) : render('/user_util_links') %>
+      <div class="col-12 col-md-9 ml-auto no-horizontal-padding collapse navbar-collapse justify-content-end px-xl-0" id="top-navbar-collapse">
+        <div class="row px-3 px-md-0 mx-0 w-100">
+          <% if !controller_name.downcase.include? "catalog" %>
+            <div class="col-12 col-sm-8 px-0">
+              <%= content_for?(:search_form) ? yield(:search_form) : render('/catalog/search_form') %>
+            </div>
+          <% end %>
+          <div class="col-12 col-sm-4 px-0 ml-auto">
+            <%= content_for?(:user_util_links) ? yield(:user_util_links) : render('/user_util_links') %>
+          </div>
+        </div>
       </div>
     </div>
   </nav>

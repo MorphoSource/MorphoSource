@@ -334,31 +334,6 @@ ul.align-li {
   z-index: 999999;
 }
 
-/* modal styles */
-.modal-content {
-  h2 {
-    font-size:22px;
-  }
-  .agreement-content {
-    font-size: 14px;
-    li {
-      font-size: 12px;
-      margin-left: -20px;
-    }
-    .agreement-items-wrapper {
-      font-size: 12px;
-    }
-  }
-  .rc-wrapper { /* reCAPTCHA wrapper */
-    margin-bottom: 4px;
-    .g-recaptcha {
-      width: fit-content;
-      margin: auto;
-    }
-  }
-
-}
-
 .form-group.hidden .material-icons.tooltip-icon {
   display: none;
 }

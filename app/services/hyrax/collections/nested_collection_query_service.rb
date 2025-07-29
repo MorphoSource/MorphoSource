@@ -16,10 +16,10 @@ module Hyrax
         # projects can't have child collections
         parent_collection_type = Hyrax::CollectionType.find_by_gid!(parent.collection_type_gid)
         return [] if (parent_collection_type.machine_id == "project")
-        
+
         results = query_solr(collection: parent, access: :read, scope: scope, limit_to_id: limit_to_id, nest_direction: :as_child).documents
         # if parent is a team, return only projects without parents
-        results.select!{ |r| r["nesting_collection__parent_ids_ssim"].nil? } if (parent_collection_type.machine_id == "team")
+        results.select!{ |r| r["nesting_collection__parent_ids_ssim"].nil? } if valid_parent_collection_type?(parent_collection_type)
         results
       end
 
@@ -34,14 +34,14 @@ module Hyrax
       def self.available_parent_collections(child:, scope:, limit_to_id: nil)
         return [] unless nestable?(collection: child)
         return [] unless scope.can?(:edit, child)
-        
+        byebug
         # teams can't have parent collections
         child_collection_type = Hyrax::CollectionType.find_by_gid!(child.collection_type_gid)
-        return [] if (child_collection_type.machine_id == "team")
-
+        return [] unless valid_child_collection_type?(child_collection_type)
         # projects can have only one parent
-        return [] if (child_collection_type.machine_id == "project") && child.member_of_collection_ids.present?
-
+        byebug
+        return [] if valid_child_collection_type?(child_collection_type) && child.member_of_collection_ids.present?
+        byebug
         query_solr(collection: child, access: :deposit, scope: scope, limit_to_id: limit_to_id, nest_direction: :as_parent).documents
       end
       # @api public
@@ -67,13 +67,13 @@ module Hyrax
       # @param limit_to_id [nil, String] Limit the query to just check if the given id is in the response. Useful for validation.
       # @param nest_direction [Symbol] :as_child or :as_parent
       def self.query_solr(collection:, access:, scope:, limit_to_id:, nest_direction:)
-        query_builder = Hyrax::Dashboard::NestedCollectionsSearchBuilder.new(
+        query_builder = Morphosource::Dashboard::NestedCollectionsSearchBuilder.new(
           access: access,
           collection: collection,
           scope: scope,
           nest_direction: nest_direction
         )
-
+        byebug
         query_builder.where(id: limit_to_id.to_s) if limit_to_id
         scope.blacklight_config.repository.search(query_builder.query)
       end
@@ -95,18 +95,20 @@ module Hyrax
         parent_collection_type = Hyrax::CollectionType.find_by_gid!(parent.collection_type_gid)
         child_collection_type = Hyrax::CollectionType.find_by_gid!(child.collection_type_gid)
         if parent.collection_type_gid != child.collection_type_gid
-          # Teams are able to have child projects
-          return false unless (parent_collection_type.machine_id == "team") && (child_collection_type.machine_id == "project")
+          # Teams and organizations are able to have child projects
+          return false unless valid_parent_collection_type?(parent_collection_type) && valid_child_collection_type?(child_collection_type)
           # Projects can have only one parent
           return false if child.member_of_collection_ids.present?
         else
-          return false if (parent_collection_type.machine_id == "team") || (parent_collection_type.machine_id == "project")
+          return false
         end
         return false if available_parent_collections(child: child, scope: scope, limit_to_id: parent.id).none?
+        byebug
         return false if available_child_collections(parent: parent, scope: scope, limit_to_id: child.id).none?
+        byebug
         true
       end
-      
+
       # @api private
       #
       # @param collection [Hyrax::PcdmCollection,::Collection]
@@ -118,6 +120,14 @@ module Hyrax
         collection_type.nestable?
       end
       private_class_method :nestable?
+
+      def self.valid_parent_collection_type?(parent_collection_type)
+        ["team", "organization"].include?(parent_collection_type.machine_id)
+      end
+
+      def self.valid_child_collection_type?(child_collection_type)
+        ["project"].include?(child_collection_type.machine_id)
+      end
     end
   end
 end

@@ -6,6 +6,7 @@ module Morphosource
       # taken from the method create_collection_under
       # create and link a NEW Project under this collection (a team or organization), with this collection as parent
       def create_collection_under
+        byebug
         authorize! :edit, form_params[:parent_id]
 
         if form.validate_add
@@ -18,18 +19,21 @@ module Morphosource
       # WARNING: Method currently unused, but could be used in future (TODO?)
       # link this collection as parent by adding existing collection as subcollection under this one
       def create_relationship_under
+        byebug
         # user must be able to edit both parent and child
         authorize! :edit, form_params[:parent_id]
         authorize! :edit, form_params[:child_id]
 
         # nest the child in the parent
         # if Hyrax::Collections::NestedCollectionPersistenceService.persist_nested_collection_for(parent: @parent, child: @child)
+        byebug
         if form.save
           # copy parent membership to child
           @child.copy_parent_membership(@parent.id)
           # construct notice
           notice = I18n.t('create_under', scope: 'hyrax.dashboard.nest_collections_form', child_title: form.child.title.first, parent_title: form.parent.title.first)
           # redirect to projects tab
+          byebug
           respond_to do |format|
             format.js {render :js => "location.reload()"}
             format.html do
@@ -37,6 +41,7 @@ module Morphosource
             end
           end
         else
+          byebug
           alert = "There was an error. #{@child.title.first} was not added to #{@parent.title.first}"
           respond_to do |format|
             format.js {render :js => "location.reload();alert('There was an error removing collection.')"}

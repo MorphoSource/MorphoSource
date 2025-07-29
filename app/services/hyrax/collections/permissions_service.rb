@@ -26,7 +26,7 @@ module Hyrax
                 when 'admin_set'
                   "_query_:\"{!raw f=has_model_ssim}AdminSet\""
                 when 'collection'
-                  "_query_:\"{!terms f=has_model_ssim}Collection,MediaList,SequentialSectionList\""
+                  "_query_:\"{!terms f=has_model_ssim}Collection,MediaList,SequentialSectionList,OrganizationCollection\""
                 end
         query += " AND #{id_clause}"
         ActiveFedora::SolrService.query(query, fl: 'id', rows: ids.count, method: :post).map { |hit| hit['id'] }

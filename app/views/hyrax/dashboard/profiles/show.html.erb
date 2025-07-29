@@ -53,19 +53,21 @@
               <div class="row form-group no-horizontal-padding">
                 <%= f.label :communication_preference, class: "col-4 col-sm-4 control-label", style: "display: flex; align-items: center" do |l| %>
                   <%= t("morphosource.dashboard.profiles.communication_preference") %>
-                  <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.dashboard.profiles.communication_preference_hint") %></p></i> 
+                  <i class="material-icons md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.dashboard.profiles.communication_preference_hint") %>"></i>
                 <% end %>
                 <div class="col-8 col-sm-8">
                   <%= f.select :communication_preference, User.communication_preferences.keys.map { |k| [k.humanize, k] }, {}, class: "form-control" %>
                 </div>
               </div>
-              <%= f.submit t("morphosource.dashboard.profiles.save_settings"), class: "btn btn-primary pull-right" %>
+              <div class="d-flex justify-content-end">
+                <%= f.submit t("morphosource.dashboard.profiles.save_settings"), class: "btn btn-primary" %>
+              </div>
             <% end %>
         </div>
       </div>
     </div>
   </div>
-  
+
   <div class="landing card panel-default">
     <div class="card-body">
       <div class="list-group">

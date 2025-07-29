@@ -20,9 +20,6 @@
   color: #ccc !important;
 }
 
-.badge-pill {
-  padding: 10px !important;
-}
 
 #content-wrapper.container {
   width: unset;
@@ -59,19 +56,6 @@
 
 label.required::after {
   content: " *";
-}
-
-.badge, .badge-info, .badge-success, .badge-danger, td.status span {
-  display: inline;
-  padding: .2em .6em .3em;
-  font-weight: 700;
-  font-size: 10px;
-  line-height: 1;
-  color: #fff;
-  text-align: center;
-  white-space: nowrap;
-  vertical-align: middle;
-  border-radius: 0;
 }
 
 /* override jquery-confirm styles */

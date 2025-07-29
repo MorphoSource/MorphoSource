@@ -1,33 +1,33 @@
 <div class="list-group-item">
-  <span class="glyphicon glyphicon-time" aria-hidden="true"></span> Joined on <%= user.created_at.to_date.strftime("%b %d, %Y") %>
+  <span class="far fa-clock" aria-hidden="true"></span> Joined on <%= user.created_at.to_date.strftime("%b %d, %Y") %>
 </div>
 
-<div class="list-group-item d-flex justify-content-between">
-  <span>
-    <i class="fas fa-folder-open" aria-hidden="true"></i>
+<div class="list-group-item d-flex" style="gap: 5px;">
+  <span class="mr-auto">
+    <i class="far fa-folder-open" aria-hidden="true"></i>
     <%= link_to('Teams and Projects Managed', main_app.managed_collections_search_path(user.ms_id)) %>
   </span>
-  <span class="badge badge-pill badge-secondary" style="border-radius: 20px;"><%= @presenter.managed_collection_count %></span>
+  <span class="badge badge-pill badge-secondary"><%= @presenter.managed_collection_count %></span>
 </div>
 
-<div class="list-group-item d-flex justify-content-between">
-  <span>
+<div class="list-group-item d-flex" style="gap: 5px;">
+  <span class="mr-auto">
     <i class="far fa-arrow-alt-circle-up" aria-hidden="true"></i>
     <%= link_to('Media Deposited', main_app.media_search_path({"f"=>{"depositor_ssim"=>["#{user.ms_id}"]}})) %>
   </span>
-  <span class="badge badge-pill badge-secondary" style="border-radius: 20px;"><%= @presenter.deposited_media_count %></span>
   <% if @presenter.deposited_media_filesize.present? %>
-    <span class="badge"><%= @presenter.deposited_media_filesize %> </span>
+    <span class="badge badge-pill badge-secondary"><%= @presenter.deposited_media_filesize %> </span>
   <% end %>
+  <span class="badge badge-pill badge-secondary"><%= @presenter.deposited_media_count %></span>
 </div>
 
-<div class="list-group-item d-flex justify-content-between">
-  <span>
+<div class="list-group-item d-flex" style="gap: 5px;">
+  <span class="mr-auto">
     <i class="far fa-check-square" aria-hidden="true"></i>
     <%= link_to('Media Managed', main_app.media_search_path({"f"=>{"user_with_ownership_ssi"=>["#{user.ms_id}"]}})) %>
   </span>
-  <span class="badge badge-pill badge-secondary" style="border-radius: 20px;"><%= @presenter.managed_media_count %></span>
   <% if @presenter.managed_media_filesize.present? %>
-    <span class="badge"><%= @presenter.managed_media_filesize %> </span>
+    <span class="badge badge-pill badge-secondary"><%= @presenter.managed_media_filesize %> </span>
   <% end %>
+  <span class="badge badge-pill badge-secondary"><%= @presenter.managed_media_count %></span>
 </div>

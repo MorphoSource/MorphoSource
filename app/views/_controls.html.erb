@@ -7,16 +7,16 @@
             <span><%= t("hyrax.controls.about")%></span>
           <% end %>
           <div id="about-links" class="dropdown-menu dropdown-menu-left" role="menu">
-            <%= link_to t("docs.about.title"), 
+            <%= link_to t("docs.about.title"),
               Rails.application.routes.url_helpers.about_path, class: 'dropdown-item',
-              aria: current_page?(Rails.application.routes.url_helpers.about_path) ? {current: 'page'} : nil 
+              aria: current_page?(Rails.application.routes.url_helpers.about_path) ? {current: 'page'} : nil
             %>
             <div class="dropdown-divider"></div>
-            <%= link_to t("docs.mission.title"), 
+            <%= link_to t("docs.mission.title"),
               Rails.application.routes.url_helpers.mission_path, class: 'dropdown-item',
-              aria: current_page?(Rails.application.routes.url_helpers.mission_path) ? {current: 'page'} : nil 
+              aria: current_page?(Rails.application.routes.url_helpers.mission_path) ? {current: 'page'} : nil
             %>
-          </div> 
+          </div>
         </div>
         <%= render partial: "control", locals: { links_yml: Hyrax.config.header_community, label: "community" } %>
         <%= render partial: "control", locals: { links_yml: Hyrax.config.header_docs, label: "docs" } %>

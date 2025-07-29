@@ -92,7 +92,7 @@ input[type=checkbox].disabled {
   .showcase-value {
     padding-top: 8px; /* vertically align with the field label */
   }
-  
+
   .form-group.value-blank-check {
     margin-top: 10px; /* add some space between the field and the checkbox */
   }
@@ -100,7 +100,7 @@ input[type=checkbox].disabled {
   div.checkbox label > span {
     font-weight: normal; /* do not set fonts to bold for checkbox labels */
   }
-  
+
   h2 {
     text-transform: uppercase;
     font-size: 15px;
@@ -148,10 +148,6 @@ input[type=checkbox].disabled {
 
   .main-content .btn .fa-columns {
     color: $button-color;
-  }
-
-  .sidebar .fa {
-    color: #ffffff;
   }
 
   .field-controls .add,
@@ -618,7 +614,7 @@ input[type=checkbox].disabled {
 
   .select2-drop {
     margin-top: -4px;
-  }  
+  }
 
   .material-icons.tooltip-icon {
     font-size: 14px;
@@ -746,14 +742,14 @@ input[type=checkbox].disabled {
     position: relative;
     left: 15px;
   }
-  
-  button.branding-logo-remove, 
-  button.branding-logo-remove:hover, 
-  button.branding-banner-remove, 
+
+  button.branding-logo-remove,
+  button.branding-logo-remove:hover,
+  button.branding-banner-remove,
   button.branding-banner-remove:hover {
     color: $button-color;
   }
-  
+
   .form-add-organization-wrapper {
     > div {
       text-align: center;

@@ -78,4 +78,9 @@ div.controls .navbar-nav li ul.dropdown-menu a:focus  {
   .showcase .secondary-nav * {
     font-size: 12px;
   }
+
+  .navbar.secondary-nav .nav-left .nav.navbar-nav .dropdown-toggle.nav-link {
+    &:not(:first-child) { padding-left: 4px; }
+    &:not(:last-child) { padding-right: 4px; }
+  }
 }

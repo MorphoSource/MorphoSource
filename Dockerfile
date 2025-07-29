@@ -19,7 +19,7 @@ RUN apt update && \
   zip \
   $DATABASE_APK_PACKAGE \
   $EXTRA_APK_PACKAGES && \
-  rm -rf /var/lib/apt/lists/* 
+  rm -rf /var/lib/apt/lists/*
 
 # Update node/npm
 RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
@@ -205,6 +205,7 @@ RUN npm install --global only-allow
 RUN npm install --global gltf-pipeline --legacy-peer-deps
 
 # Install GLTF Transform 3D mesh derivative tool, used for simplifying GLTF derivatives and creating Draco GLBs
+RUN npm install --os=linux --cpu=x64 sharp
 RUN npm install --global @gltf-transform/cli
 
 # Install gltf-inspect 3D mesh derivative tool, used for characterizing info from GLB/GLTF files

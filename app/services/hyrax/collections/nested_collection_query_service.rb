@@ -34,14 +34,11 @@ module Hyrax
       def self.available_parent_collections(child:, scope:, limit_to_id: nil)
         return [] unless nestable?(collection: child)
         return [] unless scope.can?(:edit, child)
-        byebug
         # teams can't have parent collections
         child_collection_type = Hyrax::CollectionType.find_by_gid!(child.collection_type_gid)
         return [] unless valid_child_collection_type?(child_collection_type)
         # projects can have only one parent
-        byebug
         return [] if valid_child_collection_type?(child_collection_type) && child.member_of_collection_ids.present?
-        byebug
         query_solr(collection: child, access: :deposit, scope: scope, limit_to_id: limit_to_id, nest_direction: :as_parent).documents
       end
       # @api public
@@ -73,7 +70,6 @@ module Hyrax
           scope: scope,
           nest_direction: nest_direction
         )
-        byebug
         query_builder.where(id: limit_to_id.to_s) if limit_to_id
         scope.blacklight_config.repository.search(query_builder.query)
       end
@@ -103,9 +99,7 @@ module Hyrax
           return false
         end
         return false if available_parent_collections(child: child, scope: scope, limit_to_id: parent.id).none?
-        byebug
         return false if available_child_collections(parent: parent, scope: scope, limit_to_id: child.id).none?
-        byebug
         true
       end
 

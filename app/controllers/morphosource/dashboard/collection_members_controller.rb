@@ -17,7 +17,6 @@ module Morphosource
           after_update_error(err_msg)
           return
         end
-        byebug
         AddCollectionMembersJob.perform_later(@collection.id, @batch_ids)
         after_update
       end

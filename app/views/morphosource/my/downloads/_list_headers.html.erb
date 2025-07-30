@@ -1,4 +1,7 @@
-<th class="check-all" style="text-align: left;"><label for="check_all" class="sr-only"><%= t("hyrax.dashboard.my.sr.check_all_label") %></label><%= render_check_all %></th>
-<th style="text-align: left;"><%= t("hyrax.dashboard.my.heading.title") %></th>
-<th>Publication Status</th>
-<th style="width: 15%;"><%= sortable_itemtable_header(t("morphosource.dashboard.my.heading.date_downloaded"), 'date_downloaded', 'desc') %></th>
+<th class="check-all border-0" style="text-align: left;">
+  <label for="check_all" class="sr-only"><%= t("hyrax.dashboard.my.sr.check_all_label") %></label>
+  <%= render_check_all %>
+</th>
+<th class="border-0" style="text-align: left;"><%= t("hyrax.dashboard.my.heading.title") %></th>
+<th class="border-0">Publication Status</th>
+<th class="border-0" style="width: 15%;"><%= sortable_itemtable_header(t("morphosource.dashboard.my.heading.date_downloaded"), 'date_downloaded', 'desc') %></th>

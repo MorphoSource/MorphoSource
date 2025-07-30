@@ -23,7 +23,7 @@ body.dashboard {
 
   .card.panel-default:not(.panel-borders) {
     border: none; /* remove border for dashboard new page (e.g. new Project) */
-  } 
+  }
 
   &.profile .card-body {
     padding: 0;
@@ -62,6 +62,10 @@ body.dashboard {
 
   .sidebar.maximized .nav-pills > li a {
     padding: 12px 10px 12px 24px;
+  }
+
+  .sidebar:not(.maximized) .nav li a {
+    justify-content: center;
   }
 
   .card.contributor_petitions {

@@ -866,6 +866,12 @@ nav#masthead {
     white-space: nowrap;
   }
 
+  .btn-primary:hover, .btn-secondary:hover, .btn-sm:hover, .btn-sm:hover, .btn-big:hover {
+    background-color: $button-hover-color;
+    color: $button-hover-font-color;
+    border-color: $button-hover-border-color;
+  }
+
   [class*="choose-columns"] {
     button, button:hover, button * {
       color: $button-color;

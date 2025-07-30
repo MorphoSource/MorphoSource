@@ -205,7 +205,7 @@ RUN npm install --global only-allow
 RUN npm install --global gltf-pipeline --legacy-peer-deps
 
 # Install GLTF Transform 3D mesh derivative tool, used for simplifying GLTF derivatives and creating Draco GLBs
-# RUN npm install --os=linux --cpu=x64 sharp
+RUN npm install --cpu=x64 --os=linux --libc=glibc sharp
 RUN npm install --global @gltf-transform/cli@4.2.0
 
 # Install gltf-inspect 3D mesh derivative tool, used for characterizing info from GLB/GLTF files
@@ -273,6 +273,7 @@ CMD ["bundle", "exec", "resque-pool"]
 FROM morphosource-worker-base as morphosource-worker-prod
 
 COPY --chown=1001:0 --from=morphosource-build-prod $RAILS_ROOT $RAILS_ROOT
+RUN gltf-transform metalrough '/app/samvera/hyrax-webapp/spec/fixtures/bunny/bunny.glb' output.glb
 
 ENTRYPOINT ["hyrax-entrypoint.sh"]
 CMD ["bundle", "exec", "resque-pool"]

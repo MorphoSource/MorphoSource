@@ -247,9 +247,10 @@ div.modal#apiKeyModal {
   }
 
   .modal-title {
+    border-bottom: none;
     font-size: 22px;
-    padding: 0;
     margin: 0;
+    padding: 0;
   }
 
   .modal-footer {

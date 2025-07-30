@@ -19,7 +19,7 @@ module Morphosource
     # returns the total file size (of files and derivatives) of media deposited by @user viewable by @current_user
     def deposited_media_filesize
       size_bytes = deposited_media_query_response["docs"].map { |doc| doc["all_files_file_size_lts"] }.compact.sum
-      size_bytes == 0 ? "" : number_to_human_size(size_bytes)
+      number_to_human_size(size_bytes)
     end
 
     # returns the number of media managed by @user viewable by @current_user
@@ -30,7 +30,7 @@ module Morphosource
     # returns the total file size (of files and derivatives) of media managed by @user viewable by @current_user
     def managed_media_filesize
       size_bytes = managed_media_query_response["docs"].map { |doc| doc["all_files_file_size_lts"] }.compact.sum
-      size_bytes == 0 ? "" : number_to_human_size(size_bytes)
+      number_to_human_size(size_bytes)
     end
 
     def user

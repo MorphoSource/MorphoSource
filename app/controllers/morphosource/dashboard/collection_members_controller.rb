@@ -17,6 +17,7 @@ module Morphosource
           after_update_error(err_msg)
           return
         end
+
         AddCollectionMembersJob.perform_later(@collection.id, @batch_ids)
         after_update
       end
@@ -61,7 +62,7 @@ module Morphosource
             sequential_section_list_path(@collection.id)
           else
             dashboard_collections_path
-          end
+          end          
         end
 
         def filter_docs_with_access_by_collection_type

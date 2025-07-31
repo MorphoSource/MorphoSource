@@ -1,7 +1,9 @@
 module Morphosource
   module Dashboard
     class NestCollectionsController < Hyrax::Dashboard::NestCollectionsController
+      before_action :redirect_to_collection_type, only: []
       before_action :get_parent_and_child, only: [:create_relationship_under, :remove_relationship_under]
+
 
       # taken from the method create_collection_under
       # create and link a NEW Project under this collection (a team or organization), with this collection as parent
@@ -33,7 +35,8 @@ module Morphosource
           respond_to do |format|
             format.js {render :js => "location.reload()"}
             format.html do
-              redirect_to(main_app.team_projects_path(form.parent), notice: notice)
+              byebug
+              redirect_to(main_app.send("#{@parent.collection_type.machine_id}_projects_path", @parent), notice: notice)
             end
           end
         else
@@ -41,7 +44,7 @@ module Morphosource
           respond_to do |format|
             format.js {render :js => "location.reload();alert('There was an error removing collection.')"}
             format.html do
-              redirect_to(main_app.team_projects_path(form.parent), alert: alert)
+              redirect_to(main_app.send("#{@parent.collection_type.machine_id}_projects_path", @parent), alert: alert)
             end
           end
         end
@@ -50,17 +53,18 @@ module Morphosource
       # WARNING: Method currently unused, but could be used in future (TODO?)
       # remove a subcollection relationship from this collection
       def remove_relationship_under
+        byebug
         # user must be able to edit both parent and child
         authorize! :edit, form_params[:parent_id]
         authorize! :edit, form_params[:child_id]
-
+        byebug
         if form.remove
           @child.remove_parent_membership(@parent, current_user)
           notice = I18n.t('removed_relationship', scope: 'hyrax.dashboard.nest_collections_form', child_title: form.child.title.first, parent_title: form.parent.title.first)
           respond_to do |format|
             format.js {render :js => "location.reload()"}
             format.html do
-              redirect_to(main_app.team_projects_path(form.parent), notice: notice)
+              redirect_to(main_app.send("#{@parent.collection_type.machine_id}_projects_path", @parent), notice: notice)
             end
           end
         else
@@ -76,6 +80,7 @@ module Morphosource
       private
 
       def get_parent_and_child
+        byebug
         @child = Collection.find(params["child_id"])
         @parent = Collection.find(params["parent_id"])
       end

@@ -1,6 +1,10 @@
 module Hyrax
   module Collections
     module NestedCollectionQueryService
+
+      VALID_CHILD_COLLECTION_TYPES = ["project"].freeze
+      VALID_PARENT_COLLECTION_TYPES = ["team", "organization"].freeze
+
       # @api public
       #
       # What possible collections can be nested within the given parent collection?
@@ -14,8 +18,8 @@ module Hyrax
         return [] unless scope.can?(:edit, parent)
 
         # projects can't have child collections
-        parent_collection_type = Hyrax::CollectionType.find_by_gid!(parent.collection_type_gid)
-        return [] if (parent_collection_type.machine_id == "project")
+        parent_collection_type = collection_type(parent)
+        return [] if invalid_parent_collection_type?(parent_collection_type)
 
         results = query_solr(collection: parent, access: :read, scope: scope, limit_to_id: limit_to_id, nest_direction: :as_child).documents
         # if parent is a team, return only projects without parents
@@ -34,11 +38,13 @@ module Hyrax
       def self.available_parent_collections(child:, scope:, limit_to_id: nil)
         return [] unless nestable?(collection: child)
         return [] unless scope.can?(:edit, child)
+
         # teams can't have parent collections
-        child_collection_type = Hyrax::CollectionType.find_by_gid!(child.collection_type_gid)
+        child_collection_type = collection_type(child)
         return [] unless valid_child_collection_type?(child_collection_type)
+
         # projects can have only one parent
-        return [] if valid_child_collection_type?(child_collection_type) && child.member_of_collection_ids.present?
+        return [] if child.member_of_collection_ids.present?
         query_solr(collection: child, access: :deposit, scope: scope, limit_to_id: limit_to_id, nest_direction: :as_parent).documents
       end
       # @api public
@@ -52,6 +58,7 @@ module Hyrax
       # @return [Blacklight::Solr::Response]
       def self.parent_collections(child:, scope:, page: 1)
         return [] unless nestable?(collection: child)
+
         query_builder = Hyrax::NestedCollectionsParentSearchBuilder.new(scope: scope, child: child, page: page)
         scope.blacklight_config.repository.search(query_builder.query)
       end
@@ -88,17 +95,20 @@ module Hyrax
       # @todo Consider expanding from same collection type to a lookup table that says "This collection type can have within it, these collection types"
       def self.parent_and_child_can_nest?(parent:, child:, scope:)
         return false if parent == child # Short-circuit
-        parent_collection_type = Hyrax::CollectionType.find_by_gid!(parent.collection_type_gid)
-        child_collection_type = Hyrax::CollectionType.find_by_gid!(child.collection_type_gid)
+
+        parent_collection_type = collection_type(parent)
+        child_collection_type = collection_type(child)
         if parent.collection_type_gid != child.collection_type_gid
           # Teams and organizations are able to have child projects
           return false unless valid_parent_collection_type?(parent_collection_type) && valid_child_collection_type?(child_collection_type)
+
           # Projects can have only one parent
           return false if child.member_of_collection_ids.present?
         else
           return false
         end
         return false if available_parent_collections(child: child, scope: scope, limit_to_id: parent.id).none?
+
         return false if available_child_collections(parent: parent, scope: scope, limit_to_id: child.id).none?
         true
       end
@@ -110,18 +120,32 @@ module Hyrax
       def self.nestable?(collection:)
         return false if collection.blank?
         return collection.nestable? if collection.respond_to? :nestable?
+
         collection_type = Hyrax::CollectionType.find_by_gid!(collection.collection_type_gid)
         collection_type.nestable?
       end
       private_class_method :nestable?
 
-      def self.valid_parent_collection_type?(parent_collection_type)
-        ["team", "organization"].include?(parent_collection_type.machine_id)
+      def self.valid_parent_collection_type?(collection_type)
+        VALID_PARENT_COLLECTION_TYPES.include?(collection_type.machine_id)
       end
 
-      def self.valid_child_collection_type?(child_collection_type)
-        ["project"].include?(child_collection_type.machine_id)
+      def self.valid_child_collection_type?(collection_type)
+        VALID_CHILD_COLLECTION_TYPES.include?(collection_type.machine_id)
       end
+
+      def self.invalid_parent_collection_type?(collection_type)
+        !valid_parent_collection_type?(collection_type)
+      end
+
+      def self.invalid_child_collection_type?(collection_type)
+        !valid_child_collection_type?(collection_type)
+      end
+
+      def self.collection_type(collection)
+        Hyrax::CollectionType.find_by_gid!(collection.collection_type_gid)
+      end
+
     end
   end
 end

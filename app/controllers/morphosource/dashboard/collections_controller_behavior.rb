@@ -22,7 +22,6 @@ module Morphosource
       private
 
         def redirect_to_collection_type
-          byebug
           return unless @_request.fullpath.include? '/collections/'
 
           @flashes = flash.instance_variable_get(:@flashes)

@@ -35,7 +35,6 @@ module Morphosource
           respond_to do |format|
             format.js {render :js => "location.reload()"}
             format.html do
-              byebug
               redirect_to(main_app.send("#{@parent.collection_type.machine_id}_projects_path", @parent), notice: notice)
             end
           end
@@ -53,16 +52,15 @@ module Morphosource
       # WARNING: Method currently unused, but could be used in future (TODO?)
       # remove a subcollection relationship from this collection
       def remove_relationship_under
-        byebug
         # user must be able to edit both parent and child
         authorize! :edit, form_params[:parent_id]
         authorize! :edit, form_params[:child_id]
-        byebug
+        path = main_app.send("#{@parent.collection_type.machine_id}_projects_path", @parent)
         if form.remove
           @child.remove_parent_membership(@parent, current_user)
           notice = I18n.t('removed_relationship', scope: 'hyrax.dashboard.nest_collections_form', child_title: form.child.title.first, parent_title: form.parent.title.first)
           respond_to do |format|
-            format.js {render :js => "location.reload()"}
+            format.js { render js: "window.location = '#{path}&notice=#{CGI.escape(notice)}'" }
             format.html do
               redirect_to(main_app.send("#{@parent.collection_type.machine_id}_projects_path", @parent), notice: notice)
             end
@@ -80,7 +78,6 @@ module Morphosource
       private
 
       def get_parent_and_child
-        byebug
         @child = Collection.find(params["child_id"])
         @parent = Collection.find(params["parent_id"])
       end

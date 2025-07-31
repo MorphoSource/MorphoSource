@@ -60,9 +60,14 @@ table.itemtable {
   }
 }
 
-table.works-list .media-body {
-  width: auto;
-  margin-left: 8px;
+table.works-list {
+  /* Remove border from work list table header */
+  thead th { border-top: none }
+  /* Make sure data table border fits content */
+  .media-body {
+    width: auto;
+    margin-left: 8px;
+  }
 }
 
 div.date-range-element {

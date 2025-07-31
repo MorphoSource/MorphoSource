@@ -206,7 +206,7 @@ RUN npm install --global gltf-pipeline --legacy-peer-deps
 
 # Install GLTF Transform 3D mesh derivative tool, used for simplifying GLTF derivatives and creating Draco GLBs
 # RUN npm install --cpu=x64 --os=linux --libc=glibc sharp
-RUN npm install --global @gltf-transform/cli@4.1.4
+RUN npm install --global @gltf-transform/core@4.2.0 @gltf-transform/extensions@4.2.0 @gltf-transform/functions@4.2.0 @gltf-transform/cli@4.2.0
 
 # Install gltf-inspect 3D mesh derivative tool, used for characterizing info from GLB/GLTF files
 RUN npm install --global @morphosource/gltf-inspect@0.2.0

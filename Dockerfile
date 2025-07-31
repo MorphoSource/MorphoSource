@@ -200,6 +200,9 @@ RUN apt update && \
 #       apt install -y qtbase5-dev; \
 #     fi
 
+# First, install sharp from source
+RUN npm install --global --build-from-source sharp
+
 # Install GLTF Pipeline 3D mesh derivative tool, used for creating Draco GLBs
 RUN npm install --global only-allow
 RUN npm install --global gltf-pipeline --legacy-peer-deps

@@ -3,18 +3,17 @@ require 'rails_helper'
 RSpec.describe Morphosource::FacetHelper, type: :helper do
 
   describe 'collection_title_by_id' do
-    let(:repository)  { Blacklight::Solr::Repository.new(bl_config) }
-    let(:bl_config)   { MediaCatalogController.blacklight_config }
+    let(:bl_config)   { CatalogController.blacklight_config }
 
     before do
-      def controller.repository
+      def controller
         nil
       end
-      allow(controller).to receive(:repository).and_return(repository)
+      allow(controller).to receive(:blacklight_config).and_return(bl_config)
     end
 
     context 'collection with id exists' do
-      let!(:project)                 { Collection.create(title: ['project'], collection_type_gid: project_collection_type.to_global_id) }
+      let!(:project) { Collection.create(title: ['project'], collection_type_gid: project_collection_type.to_global_id) }
 
       it 'returns the collection title' do
         expect(collection_title_by_id(project.id)).to eq(project.title.first)

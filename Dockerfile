@@ -201,7 +201,7 @@ RUN apt update && \
 #     fi
 
 # First, install sharp
-RUN npm install --global --include=optional sharp@0.33.5
+# RUN npm install --global --include=optional sharp@0.33.5
 
 # Install GLTF Pipeline 3D mesh derivative tool, used for creating Draco GLBs
 RUN npm install --global only-allow

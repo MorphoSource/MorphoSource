@@ -74,17 +74,17 @@ ARG SECRET_KEY_BASE
 
 USER app
 
-# COPY --chown=1001:0 $APP_PATH/Gemfile $RAILS_ROOT/Gemfile
-# COPY --chown=1001:0 $APP_PATH/Gemfile.lock $RAILS_ROOT/Gemfile.lock
-# RUN bundle install --jobs "$(nproc)" --without development
+COPY --chown=1001:0 $APP_PATH/Gemfile $RAILS_ROOT/Gemfile
+COPY --chown=1001:0 $APP_PATH/Gemfile.lock $RAILS_ROOT/Gemfile.lock
+RUN bundle install --jobs "$(nproc)" --without development
 
-# COPY --chown=1001:0 $APP_PATH/package.json $RAILS_ROOT/package.json
-# COPY --chown=1001:0 $APP_PATH/yarn.lock $RAILS_ROOT/yarn.lock
-# RUN yarn install
+COPY --chown=1001:0 $APP_PATH/package.json $RAILS_ROOT/package.json
+COPY --chown=1001:0 $APP_PATH/yarn.lock $RAILS_ROOT/yarn.lock
+RUN yarn install
 
 COPY --chown=1001:0 $APP_PATH $RAILS_ROOT
 
-# RUN NODE_OPTIONS=--openssl-legacy-provider RAILS_ENV=development bundle exec rails assets:precompile
+RUN NODE_OPTIONS=--openssl-legacy-provider RAILS_ENV=development bundle exec rails assets:precompile
 
 # Set directories as executable for writeability
 RUN chmod -R g+rwX $RAILS_ROOT
@@ -187,18 +187,18 @@ RUN apt update && \
   7zip
 
 # Install Python packages
-# RUN pip3 install --break-system-packages --no-cache-dir --upgrade pip && \
-#   pip3 install --break-system-packages --no-cache-dir numpy Pillow pydicom
+RUN pip3 install --break-system-packages --no-cache-dir --upgrade pip && \
+  pip3 install --break-system-packages --no-cache-dir numpy Pillow pydicom
 
 # Install Python package pymeshlab, which has an annoying quirk for M1 platforms
-# ARG TARGETPLATFORM
-# RUN if [ "$TARGETPLATFORM" != "linux/arm64" ]; then \
-#       pip3 install --break-system-packages --no-cache-dir pymeshlab; \
-#     else \
-#       wget https://github.com/cnr-isti-vclab/PyMeshLab/releases/download/v2023.12.post2/pymeshlab-2023.12.post2-cp311-cp311-manylinux_2_35_aarch64.whl && \
-#       pip3 install --break-system-packages --no-cache-dir pymeshlab-2023.12.post2-cp311-cp311-manylinux_2_35_aarch64.whl && \
-#       apt install -y qtbase5-dev; \
-#     fi
+ARG TARGETPLATFORM
+RUN if [ "$TARGETPLATFORM" != "linux/arm64" ]; then \
+      pip3 install --break-system-packages --no-cache-dir pymeshlab; \
+    else \
+      wget https://github.com/cnr-isti-vclab/PyMeshLab/releases/download/v2023.12.post2/pymeshlab-2023.12.post2-cp311-cp311-manylinux_2_35_aarch64.whl && \
+      pip3 install --break-system-packages --no-cache-dir pymeshlab-2023.12.post2-cp311-cp311-manylinux_2_35_aarch64.whl && \
+      apt install -y qtbase5-dev; \
+    fi
 
 # First, install sharp
 # RUN npm install --global --include=optional sharp@0.33.5
@@ -221,40 +221,40 @@ RUN npm install --global @morphosource/gltf-scale@0.0.1
 RUN npm install --global obj2gltf
 
 # Create symlink to Firefox (for automated tests)
-# RUN mkdir -p /opt/firefox && \
-#     ln -s /usr/bin/firefox /opt/firefox/firefox
+RUN mkdir -p /opt/firefox && \
+    ln -s /usr/bin/firefox /opt/firefox/firefox
 
 # Install rclone
-# RUN mkdir -p /app/rclone && \
-#   cd /app/rclone && \
-#   curl -O https://downloads.rclone.org/rclone-current-linux-amd64.zip && \
-#   unzip rclone-current-linux-amd64.zip && \
-#   rm rclone-current-linux-amd64.zip
+RUN mkdir -p /app/rclone && \
+  cd /app/rclone && \
+  curl -O https://downloads.rclone.org/rclone-current-linux-amd64.zip && \
+  unzip rclone-current-linux-amd64.zip && \
+  rm rclone-current-linux-amd64.zip
 
 USER app
 
 ENV FITS_VERSION='1.5.5'
 
 # Install FITS characterization tool
-# RUN mkdir -p /app/fits && \
-#   cd /app/fits && \
-#   wget https://github.com/harvard-lts/fits/releases/download/$FITS_VERSION/fits-$FITS_VERSION.zip -O fits.zip && \
-#   unzip fits.zip && \
-#   rm fits.zip && \
-#   chmod a+x /app/fits/fits.sh
-# COPY --chown=1001:0 ./vendor/fits_config/fits.xml /app/fits/xml
-# COPY --chown=1001:0 ./vendor/fits_config/exiftool/exiftool_dicom_to_fits.xslt /app/fits/xml/exiftool
-# COPY --chown=1001:0 ./vendor/fits_config/exiftool/exiftool_xslt_map.xml /app/fits/xml/exiftool
-# ENV PATH="${PATH}:/app/fits"
+RUN mkdir -p /app/fits && \
+  cd /app/fits && \
+  wget https://github.com/harvard-lts/fits/releases/download/$FITS_VERSION/fits-$FITS_VERSION.zip -O fits.zip && \
+  unzip fits.zip && \
+  rm fits.zip && \
+  chmod a+x /app/fits/fits.sh
+COPY --chown=1001:0 ./vendor/fits_config/fits.xml /app/fits/xml
+COPY --chown=1001:0 ./vendor/fits_config/exiftool/exiftool_dicom_to_fits.xslt /app/fits/xml/exiftool
+COPY --chown=1001:0 ./vendor/fits_config/exiftool/exiftool_xslt_map.xml /app/fits/xml/exiftool
+ENV PATH="${PATH}:/app/fits"
 
 # Install Fiji 3D CT stack derivative tool
-# RUN mkdir -p /app/fiji && \
-#   cd /app/fiji && \
-#   wget https://downloads.imagej.net/fiji/releases/2.11.0/fiji-2.11.0-nojre.zip -O fiji.zip && \
-#   unzip fiji.zip && \
-#   rm fiji.zip && \
-#   wget https://raw.githubusercontent.com/MorphoSource/fiji-app-pinned/main/ImageJ.sh -O ./Fiji.app/ImageJ.sh && \
-#   chmod +x ./Fiji.app/ImageJ.sh
+RUN mkdir -p /app/fiji && \
+  cd /app/fiji && \
+  wget https://downloads.imagej.net/fiji/releases/2.11.0/fiji-2.11.0-nojre.zip -O fiji.zip && \
+  unzip fiji.zip && \
+  rm fiji.zip && \
+  wget https://raw.githubusercontent.com/MorphoSource/fiji-app-pinned/main/ImageJ.sh -O ./Fiji.app/ImageJ.sh && \
+  chmod +x ./Fiji.app/ImageJ.sh
 
 
 

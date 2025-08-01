@@ -103,6 +103,10 @@ body.catalog-body {
         margin: 0;
         font-size: 18px;
       }
+
+      span.badge {
+        margin-bottom: 0; // Overwrite default Hyrax margin
+      }
     }
   }
 

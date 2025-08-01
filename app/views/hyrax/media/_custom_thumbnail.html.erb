@@ -9,7 +9,7 @@
     <br /><i id="custom_thumbnail_hint" class="hint-sm">(Max file size 500KB)</i>
   </label>
 
-  <%= f.input :custom_thumbnail, as: :file %>
+  <%= f.input :custom_thumbnail, as: :file, label: false %>
 </div>
 
 <% if has_custom_thumbnail?(@presenter) %>

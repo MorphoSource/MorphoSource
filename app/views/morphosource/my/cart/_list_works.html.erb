@@ -26,10 +26,10 @@
             </span>
             <%= document.title_or_label %>
             <% if item.approved? == true %>
-              <span class="label" style="background: teal;">Download Approved</span>
+              <span class="badge" style="background: teal;">Download Approved</span>
             <% end %>
             <% if item.user_is_reviewer_or_has_ownership? %>
-              <span class="label" style="background: blue;">Your Media</span>
+              <span class="badge" style="background: blue;">Your Media</span>
             <% end %>
           <% end %>
           <br />

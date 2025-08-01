@@ -58,3 +58,46 @@
   z-index: 2000;
   /* other modal styles */
 }
+
+.modal-header h2 .close {
+  padding: 12px 14px;
+  #close-modal {
+    font-size: 21px;
+  }
+} 
+
+.modal-content {
+  b { /* override Hyrax bolder style */
+    font-weight: bold;
+  }
+  h2 {
+    font-size:22px;
+  }
+  /* Download modal specific styles */
+  .agreement-content {
+    font-size: 14px;
+    li {
+      font-size: 12px;
+      margin-left: -20px;
+    }
+    .agreement-items-wrapper {
+      font-size: 12px;
+    }
+    .checkbox {
+      label {
+        padding-left: 20px;
+      }
+      input[type="checkbox"] {
+        margin: 4px 0 0 -20px;
+        position: absolute;
+      }
+    }
+  }
+  .rc-wrapper { /* reCAPTCHA wrapper */
+    margin-bottom: 4px;
+    .g-recaptcha {
+      width: fit-content;
+      margin: auto;
+    }
+  }
+}

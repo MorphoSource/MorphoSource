@@ -4,7 +4,7 @@
 <%= simple_form_for @form, url: collection_form_url(@form), wrapper: :showcase_default, html: { class: 'editor', multipart: true } do |f| %>
   <div style="margin-top:30px;">
     <div>
-      <%= render 'hyrax/base/flash_msg' %>
+      <%= render '/flash_msg' %>
       <% content_for :body_css_classes do %>showcase showcase-edit teams ms-collection-edit<% end %>
 
       <div class="col-9 no-horizontal-padding title team-title">
@@ -24,7 +24,7 @@
 
       <div class="card panel-default panel-borders tabs teams" id="collection-edit-controls">
         <%= render 'nav_tabs' %>
-        
+
         <%# Instead of card-body div, use container-fluid to support row with cols %>
         <div class="container-fluid mb-1">
           <div class="row no-horizontal-padding">
@@ -54,7 +54,7 @@
             </div><!-- /right column -->
           </div>
         </div>
-      </div>    
+      </div>
     </div>
   </div>
 </div>

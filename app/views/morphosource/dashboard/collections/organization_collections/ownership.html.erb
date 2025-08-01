@@ -1,16 +1,16 @@
-<% provide :page_title, 
+<% provide :page_title,
   construct_page_title(
-    t('hyrax.dashboard.collections.edit.header', 
-    type_title: @collection.collection_type.title, 
+    t('hyrax.dashboard.collections.edit.header',
+    type_title: @collection.collection_type.title,
     title: @collection.title.first)
-  ) 
+  )
 %>
 
 <!-- create simple_form here to include update button above nav tabs -->
 <%= simple_form_for @form, url: collection_form_url(@form), wrapper: :showcase_default, html: { class: 'editor' } do |f| %>
   <div style="margin-top:30px;">
     <div>
-      <%= render 'hyrax/base/flash_msg' %>
+      <%= render '/flash_msg' %>
       <% content_for :body_css_classes do %>showcase showcase-edit teams ms-collection-edit<% end %>
 
       <div class="col-9 no-horizontal-padding title team-title">
@@ -46,19 +46,19 @@
 
             <% if @collection.is_object_organization? %>
               <%= Hyrax::Renderers::ShowcaseLinkAttributeRenderer.new(
-                :object_media_count, 
-                @media_count, 
+                :object_media_count,
+                @media_count,
                 render_options.merge(link: main_app.organization_path(@collection.id))
               ).render %>
               <div class="row mb-1 csv-export-link"><div class="col-8">
                 <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.media_object"), media_export_csv_url(@collection) %>
               </div></div>
-            
+
             <% end %>
             <% if @collection.is_device_organization? %>
               <%= Hyrax::Renderers::ShowcaseLinkAttributeRenderer.new(
-                :device_media_count, 
-                @device_media_count, 
+                :device_media_count,
+                @device_media_count,
                 render_options.merge(link: main_app.organization_device_media_path(@collection.id))
               ).render %>
               <div class="row mb-1 csv-export-link"><div class="col-8">
@@ -67,25 +67,25 @@
             <% end %>
 
             <%= Hyrax::Renderers::ShowcaseLinkAttributeRenderer.new(
-              :managed_media_count, 
-              @managed_media_count, 
+              :managed_media_count,
+              @managed_media_count,
               render_options.merge(link: main_app.organization_path(@collection.id, "f.transfer" => :managed))
             ).render %>
             <div class="row mb-1 csv-export-link"><div class="col-8">
-              <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.media_managed"), 
+              <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.media_managed"),
               main_app.organization_media_export_path(@collection, :format => :csv, :per_page => 1000000, "f.transfer" => :managed)
             %>
             </div></div>
 
             <% if @collection&.media_ownership_transfer %>
               <%= Hyrax::Renderers::ShowcaseLinkAttributeRenderer.new(
-                :transfer_ready_media, 
-                @unmanaged_media_transferable_count, 
+                :transfer_ready_media,
+                @unmanaged_media_transferable_count,
                 render_options.merge(link: main_app.organization_path(@collection.id, "f.transfer" => :ready))
               ).render %>
               <%= Hyrax::Renderers::ShowcaseLinkAttributeRenderer.new(
-                :transfer_unready_media, 
-                @unmanaged_media_untransferable_count, 
+                :transfer_unready_media,
+                @unmanaged_media_untransferable_count,
                 render_options.merge(link: main_app.organization_path(@collection.id, "f.transfer" => :unready))
               ).render %>
               <div class="row mb-1 csv-export-link"><div class="col-8">
@@ -97,7 +97,7 @@
             <% if @specimen_count > 0 || show_both_object_counts %>
               <%= Hyrax::Renderers::ShowcaseLinkAttributeRenderer.new(
                 :org_specimen_count,
-                @specimen_count, 
+                @specimen_count,
                 render_options.merge(link: main_app.organization_specimens_path(@collection.id))
               ).render %>
               <div class="row mb-1 csv-export-link"><div class="col-8">
@@ -106,8 +106,8 @@
             <% end %>
             <% if @cho_count > 0 || show_both_object_counts %>
               <%= Hyrax::Renderers::ShowcaseLinkAttributeRenderer.new(
-                :org_cho_count, 
-                @cho_count, 
+                :org_cho_count,
+                @cho_count,
                 render_options.merge(link: main_app.organization_chos_path(@collection.id))
               ).render %>
               <div class="row mb-1 csv-export-link"><div class="col-8">
@@ -117,8 +117,8 @@
 
             <% if @collection.is_device_organization? %>
               <%= Hyrax::Renderers::ShowcaseLinkAttributeRenderer.new(
-                :org_device_count, 
-                @device_count, 
+                :org_device_count,
+                @device_count,
                 render_options.merge(link: main_app.organization_devices_path(@collection.id))
               ).render %>
               <div class="row mb-1 csv-export-link"><div class="col-8">

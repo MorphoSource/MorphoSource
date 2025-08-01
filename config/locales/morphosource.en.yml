@@ -6,6 +6,9 @@ en:
       featured_collections: 'Featured Collections'
       donate_button_text: 'Donate'
     admin:
+      sidebar:
+        downloads: Downloads
+        media_cart: Media Cart
       pages:
         page_title: 'All Simple Pages'
       background_jobs:
@@ -100,14 +103,6 @@ en:
           date_expired: 'Date Expired'
           date_requested: 'Date Requested'
           publication_status: 'Publication Status'
-        previous_requests:
-          table:
-            date_decided: Decided
-            download_reviewer: Decider
-            requesting_user: Requester
-            status: Status
-          page_title: "Previous Requests"
-          page_description: "This page lists requests to download your media that have already been decided. You can edit expiration dates for approved or expired requests."
         works:
           submission_button: 'New Submission'
       profiles:
@@ -147,6 +142,20 @@ en:
         generate_new_api_key: Generate a new user-specific API key. Your previous key will no longer be functional.
         save_settings: Save Settings
         view_api_key: "Display your user-specific API key, used to authenticate API requests as yourself. WARNING: This is SENSITIVE information, guard it like a password!"
+    dashboard:
+      my:
+        heading:
+          date_downloaded: 'Date Downloaded'
+        previous_requests:
+          table:
+            date_decided: Decided
+            download_reviewer: Decider
+            requesting_user: Requester
+            status: Status
+          page_title: "Previous Requests"
+          page_description: "This page lists requests to download your media that have already been decided. You can edit expiration dates for approved or expired requests."
+      profiles:
+        save_settings: Save Settings
     table:
       action: Action
       agreed_to_terms: Agreed Terms

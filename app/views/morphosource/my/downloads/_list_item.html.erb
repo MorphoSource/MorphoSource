@@ -31,13 +31,7 @@
         </div>
       </div>
     </td>
-    <td>
-      <% if document.fileset_accessibility&.first == "restricted_download" %>
-        <span class="badge badge-danger">Restricted</span>
-      <% elsif document.fileset_accessibility&.first == "open" %>
-        <span class="badge badge-success">Open</span>
-      <% end %>
-    </td>
+    <td><%= publication_badge(document.fileset_accessibility&.first) %></td>
     <td class="date"><%= date(item,'downloaded') %></td>
   </tr>
 <% end %>

@@ -14,7 +14,7 @@
 
 <% if has_custom_thumbnail?(@presenter) %>
   <div>
-    <%= f.input :delete_thumbnail, as: :boolean, label_html: { style: 'font-weight:bold;' }, label: 'Use System-Generated Thumbnail' %>
+    <%= f.input :delete_thumbnail, as: :boolean, label_html: { class: 'font-weight-bold' }, label: 'Use System-Generated Thumbnail', input_html: {class: 'mr-1'} %>
     <div class="thumbnail" style="width:150px;">
       <%= generated_thumbnail(@presenter) %>
     </div>

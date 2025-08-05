@@ -11,9 +11,6 @@ en:
         media_cart: Media Cart
       pages:
         page_title: 'All Simple Pages'
-      background_jobs:
-        page_title: All Background Jobs
-        page_description: This is a new page listing all tracked background jobs corresponding to Resque jobs. For now, only batch submissions are tracked with this system. You can optionally choose to include Resque data, adding new information and features to this page, but this will slow page loads when many Resque jobs are present or when many rows are viewed per page. You may want to search for your desired subset of background jobs prior to including Resque data.
       contributor_petitions:
         page_title: 'Contributor Applications'
         page_description: ''
@@ -144,6 +141,9 @@ en:
         view_api_key: "Display your user-specific API key, used to authenticate API requests as yourself. WARNING: This is SENSITIVE information, guard it like a password!"
     dashboard:
       my:
+        background_jobs:
+          page_title: All Background Jobs
+          page_description: This is a new page listing all tracked background jobs corresponding to Resque jobs. For now, only batch submissions are tracked with this system. You can optionally choose to include Resque data, adding new information and features to this page, but this will slow page loads when many Resque jobs are present or when many rows are viewed per page. You may want to search for your desired subset of background jobs prior to including Resque data.
         heading:
           date_downloaded: 'Date Downloaded'
         previous_requests:

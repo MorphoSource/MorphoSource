@@ -100,8 +100,6 @@ en:
           date_expired: 'Date Expired'
           date_requested: 'Date Requested'
           publication_status: 'Publication Status'
-        works:
-          submission_button: 'New Submission'
       profiles:
         login_form_instructions: 'MorphoSource is improving user profiles! This will allow users to better identify themselves and their reasons for using or downloading data. It will also improve the ability of data contributors to demonstrate impact and reuse of data uploaded to MorphoSource. Before continuing, please select a user profile type that best describes you, and fill out any new required user information.'
         register_form_instructions: 'To use MorphoSource, you must create a user account profile. This user profile helps identify you and your reasons for using or downloading data. The information you include may be provided to data contributors when you download data so that those contributors can demonstrate impact and reuse of data they contribute to MorphoSource. Select the type of user profile that best describes you, as you may be required to provide different user information based on the profile type.'
@@ -154,6 +152,8 @@ en:
             status: Status
           page_title: "Previous Requests"
           page_description: "This page lists requests to download your media that have already been decided. You can edit expiration dates for approved or expired requests."
+        works:
+          submission_button: 'New Submission'
       profiles:
         save_settings: Save Settings
     table:

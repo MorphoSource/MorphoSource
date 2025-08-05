@@ -11,6 +11,9 @@ en:
         media_cart: Media Cart
       pages:
         page_title: 'All Simple Pages'
+      background_jobs:
+        page_title: All Background Jobs
+        page_description: This is a new page listing all tracked background jobs corresponding to Resque jobs. For now, only batch submissions are tracked with this system. You can optionally choose to include Resque data, adding new information and features to this page, but this will slow page loads when many Resque jobs are present or when many rows are viewed per page. You may want to search for your desired subset of background jobs prior to including Resque data.
       contributor_petitions:
         page_title: 'Contributor Applications'
         page_description: ''
@@ -76,9 +79,6 @@ en:
           title: Remove from %{collection_type}
           confirm: Removing this work will not remove it from MorphoSource, only from this %{collection_type}. Are you sure you want to remove this work from the %{collection_type}?
       my:
-        background_jobs:
-          page_title: Background Jobs
-          page_description: MorphoSource processes many records using background jobs. As a contributor, knowing the status of background jobs associated with your media can help you diagnose minor issues relating to media creation. This is a new feature, and for now the only background job tracked here is batch media submission. There are many others types of background jobs that our system uses, and we will add new types for you to track here soon.
         contributor_petitions:
           header: 'Become A Contributor'
           reason: 'Describe the nature and purpose of the data you intend to contribute, or your reason for applying for project member and/or data manager status'
@@ -142,8 +142,8 @@ en:
     dashboard:
       my:
         background_jobs:
-          page_title: All Background Jobs
-          page_description: This is a new page listing all tracked background jobs corresponding to Resque jobs. For now, only batch submissions are tracked with this system. You can optionally choose to include Resque data, adding new information and features to this page, but this will slow page loads when many Resque jobs are present or when many rows are viewed per page. You may want to search for your desired subset of background jobs prior to including Resque data.
+          page_title: Background Jobs
+          page_description: MorphoSource processes many records using background jobs. As a contributor, knowing the status of background jobs associated with your media can help you diagnose minor issues relating to media creation. This is a new feature, and for now the only background job tracked here is batch media submission. There are many others types of background jobs that our system uses, and we will add new types for you to track here soon.      
         heading:
           date_downloaded: 'Date Downloaded'
         previous_requests:

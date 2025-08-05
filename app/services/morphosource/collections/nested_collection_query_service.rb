@@ -9,10 +9,10 @@ module Morphosource
       def self.available_project_collections(parent:, scope:, limit_to_id: nil)
         return [] unless nestable?(collection: parent)
         return [] unless scope.can?(:edit, parent)
-        return [] unless type_has_projects?(parent)
         # projects can't have child collections
-        results = query_solr(collection: parent, access: :edit, scope: scope, limit_to_id: limit_to_id, nest_direction: :as_child).documents
-        results
+        return [] unless type_has_projects?(parent)
+
+        query_solr(collection: parent, access: :edit, scope: scope, limit_to_id: limit_to_id, nest_direction: :as_child).documents
       end
 
       def self.query_solr(collection:, access:, scope:, limit_to_id:, nest_direction:)
@@ -24,6 +24,8 @@ module Morphosource
         )
 
         query_builder.where(id: limit_to_id) if limit_to_id
+        # Only projects can be subcollections of teams or organizations
+        query_builder.where("human_readable_type_tesim":"Project") if nest_direction == :as_child
         scope.blacklight_config.repository.search(query_builder.query)
       end
       private_class_method :query_solr

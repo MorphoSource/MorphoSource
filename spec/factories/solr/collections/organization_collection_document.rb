@@ -1,6 +1,5 @@
 # Factory for OrganizationCollection SolrDocument instances
 ORGANIZATION_DOC_ATTRIBUTES = {
-  has_model_ssim: "OrganizationCollection",
   visibility_ssi: Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC,
   collection_type_gid_ssim: [Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::Organizations::SETTINGS).to_global_id.uri],
   title_tesim: ["Organization Title"],

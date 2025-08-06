@@ -1,6 +1,6 @@
 # Factory for Team SolrDocument instances
 TEAM_DOC_ATTRIBUTES = {
-  has_model_ssim: "Collection",
+  has_model_ssim: ["Collection"],
   visibility_ssi: Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC,
   collection_type_gid_ssim: [Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::Teams::SETTINGS).to_global_id.uri],
   human_readable_type_tesim: ["Team"],

@@ -5,8 +5,6 @@ module Hyrax
       VALID_CHILD_COLLECTION_TYPES = ["project"].freeze
       VALID_PARENT_COLLECTION_TYPES = ["team", "organization"].freeze
 
-      #test
-
       # @api public
       #
       # What possible collections can be nested within the given parent collection?

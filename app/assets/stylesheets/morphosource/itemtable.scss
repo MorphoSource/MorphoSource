@@ -96,21 +96,3 @@ div.paginate-wrapper.itemtable {
     }
   }
 }
-
-/* dropdown menu styles */
-.dropdown-menu {
-  li {
-    a {
-      color: $font-color;
-      font-weight: normal;
-      font-size: 11px;
-      display: block;
-      width: 100%;
-      padding: 3px 20px;
-    }
-    a:hover {
-      text-decoration: none;
-      background-color: #f5f5f5;
-    }
-  }
-}

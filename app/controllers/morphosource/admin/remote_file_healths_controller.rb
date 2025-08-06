@@ -9,6 +9,9 @@ module Morphosource
       PAGE_TITLE = I18n.t("morphosource.admin.remote_file_health.page_title")
       PAGE_DESCRIPTION = I18n.t("morphosource.admin.remote_file_health.page_description")
 
+      # Blank out breadcrumbs from My::TeamsController
+      def build_breadcrumbs; end
+      
       def index
         if RemoteFileHealth.count > 0
           @last_checked =  RemoteFileHealth.last.created_at.strftime("%A, %B %d, %Y at %I:%M %p")

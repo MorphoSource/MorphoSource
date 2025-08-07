@@ -75,12 +75,12 @@ module Resque
         return unless context
         @default_namespace = context.namespace if context.namespace
 
-        Kubeclient::Client.new(context.endpoint + scope, context.version, context.options)
+        Kubeclient::Client.new(context.endpoint + scope, context.version, **context.options)
       end
 
       def finished_jobs
         resque_jobs = jobs_client.get_jobs(
-          label_selector: "resque-kubernetes=job", 
+          label_selector: "resque-kubernetes=job",
           namespace: @default_namespace
         )
         resque_jobs.select { |job| job.spec.completions == job.status.succeeded }

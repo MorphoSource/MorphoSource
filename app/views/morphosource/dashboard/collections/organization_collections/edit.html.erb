@@ -7,7 +7,7 @@
       <%= render '/flash_msg' %>
       <% content_for :body_css_classes do %>showcase showcase-edit teams ms-collection-edit<% end %>
 
-      <div class="col-9 no-horizontal-padding title team-title">
+      <div class="col-12 no-horizontal-padding title team-title">
         <div>
           <span class="fa fa-edit" aria-hidden="true"></span>
           <h1 style="margin-bottom:20px;"><%= @collection.title.first %>
@@ -16,7 +16,7 @@
             <%= @presenter.permission_badge %>
           </h1>
         </div>
-        <div>
+        <div class="d-flex" style="gap: 5px;">
           <%= f.submit t(:'hyrax.collection.select_form.update'), class: 'btn btn-primary', onclick: "confirmation_needed = false;", id: "update_submit", name: "update_collection" %>
           <%= link_to "Public View", collection_media_path(@collection), class: 'btn btn-primary' %>
         </div>
@@ -25,9 +25,11 @@
   </div>
 
   <div>
-    <div class="card panel-default panel-borders tabs teams" id="collection-edit-controls">
+    <div class="card tabs teams" id="collection-edit-controls">
       <%= render 'nav_tabs' %>
-      <%= render 'morphosource/dashboard/collections/organization_collections/details/form', f:f %>
+      <div class="tab-content tab-borders p-2">
+        <%= render 'morphosource/dashboard/collections/organization_collections/details/form', f:f %>
+      </div>
     </div>
   </div>
 <% end %> <!-- simple_form_for -->

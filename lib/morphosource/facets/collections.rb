@@ -3,18 +3,32 @@ module Morphosource
     module Collections
 
       # displays values and pagination links for a single facet field
-      # overrides Blacklight 6.23.0 app/controllers/concerns/blacklight/catalog
+      # overrides Blacklight 7.40.0 app/controllers/concerns/blacklight/catalog
       # if paging on collections id facet (ex: 'member_of_team_ids') and sorting alphabetically, use the alphabetized_collections_facet method instead
       def facet
         @facet = blacklight_config.facet_fields[params[:id]]
+        raise ActionController::RoutingError, 'Not Found' unless @facet
         if @facet&.helper_method == :collection_title_by_id && params["facet.sort"] == "index"
           alphabetized_facet(facet_type: 'collection')
         elsif @facet&.helper_method == :user_name_by_id && params["facet.sort"] == "index"
           alphabetized_facet(facet_type: 'user')
-        elsif @facet&.helper_method == :collection_title_by_id 
+        elsif @facet&.helper_method == :collection_title_by_id && params["facet.containsTitle"].present?
           filter_facet(params["facet.containsTitle"])
         else
-          super
+          @response = search_service.facet_field_response(@facet.key)
+          @display_facet = @response.aggregations[@facet.field]
+
+          @presenter = (@facet.presenter || Blacklight::FacetFieldPresenter).new(@facet, @display_facet, view_context)
+          @pagination = @presenter.paginator
+
+          respond_to do |format|
+            format.html do
+              # Draw the partial for the "more" facet modal window:
+              return render layout: false if request.xhr?
+              # Otherwise draw the facet selector for users who have javascript disabled.
+            end
+            format.json
+          end
         end
       end
 

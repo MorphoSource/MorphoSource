@@ -11,12 +11,12 @@
         <% if @collection.organization %>
           <%= render 'morphosource/dashboard/collections/teams/organization/ms_form_organization', c: c %>
         <% else %>
-          <div class="alert alert-warning" role="alert">
+          <div class="alert alert-warning" role="alert" style="flex-direction: row;">
             <%= t('morphosource.dashboard.collections.organization.info').html_safe %>
           </div>
           <% if current_user.admin? %>
             <%= render 'morphosource/dashboard/collections/teams/organization/link_organization' %>
-          <% end %>    
+          <% end %>
         <% end %>
       </div>
     </div>

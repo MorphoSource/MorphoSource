@@ -1,4 +1,4 @@
-  <div class="col-12 tab-action-buttons" style="padding-right: 20px; padding-top: 10px;">
+  <div class="col-12 tab-action-buttons pt-0 d-flex flex-row-reverse" style="gap: 5px;">
       <%= f.submit t(:'hyrax.collection.select_form.update'), class: 'btn btn-primary', onclick: "confirmation_needed = false;", id: "update_submit", name: "update_collection" %>
 
       <%= link_to t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.label'),

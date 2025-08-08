@@ -1,4 +1,4 @@
-<ul class="nav nav-tabs" role="tablist">
+<ul class="nav nav-tabs pt-0" role="tablist">
   <li role="presentation" class="nav-item <%= active_tab?(:details) %>">
     <a class="nav-link <%= active_tab?(:details) == 'active' ? 'active' : '' %>" href="<%= details_tab_url(@collection) %>" aria-controls="details" role="tab">
       <i class="fas fa-newspaper"></i> <%= t("hyrax.organization.dashboard.nav_tabs.details").upcase %>

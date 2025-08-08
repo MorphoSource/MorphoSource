@@ -28,16 +28,18 @@
         </div>
         <div class="col-6 showcase-value">
           <div class="m-0 p-0 text-nowrap">
-          <a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block-visibility" class="btn collapse-block-visibility pl-0">
-          <% if f.object.embargo_release_date %>
-            <span class="badge badge-warning">Embargo</span>
-          <% elsif f.object.lease_expiration_date %>
-            <span class="badge badge-warning">Lease</span>
-          <% else %>
-            <span class="badge" id="current_visibility_value"></span>
-          <% end %>
-            <span class="glyphicon glyphicon-triangle-bottom collapse-block-visibility"></span></a></div>
-          <div id="collapse-block-visibility" class="panel-collapse collapse-block collapse-icon-only table collapse out m-0 p-0" aria-expanded="false">
+            <a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block-visibility" class="btn collapse-block-visibility pl-0">
+            <% if f.object.embargo_release_date %>
+              <span class="badge badge-warning">Embargo</span>
+            <% elsif f.object.lease_expiration_date %>
+              <span class="badge badge-warning">Lease</span>
+            <% else %>
+              <span class="badge" id="current_visibility_value"></span>
+            <% end %>
+            <i class="fas fa-caret-down"></i>
+            </a>
+          </div>
+          <div id="collapse-block-visibility" class="panel-collapse collapse-block custom-collapse-label collapse-icon-only table collapse out m-0 p-0" aria-expanded="false">
             <%= render 'hyrax/base/ms_form_visibility_component', f: f %>
           </div>
         </div>

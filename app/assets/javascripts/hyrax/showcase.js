@@ -4,12 +4,12 @@ $(document).ready(function() {
 
     setupTooltip();
     
-    // switching icons and button labels for expand / collapse
-    $(".collapse-block").not(".fa-only").on("hide.bs.collapse", function(){
+    // switching icons and button labels for expand / collapse, unless it is using custom collapse or expand labels
+    $(".collapse-block").not(".fa-only").not(".custom-collapse-label").on("hide.bs.collapse", function(){
       var thisId = $(this).attr('id');
       $("a."+thisId).html('<span class="fas fa-caret-down"></span> Show more <span class="fas fa-caret-down"></span>');
     });
-    $(".collapse-block").not(".fa-only").on("show.bs.collapse", function(){
+    $(".collapse-block").not(".fa-only").not(".custom-collapse-label").on("show.bs.collapse", function(){
       var thisId = $(this).attr('id');
       $("a."+thisId).html('<span class="fas fa-caret-up"></span> Show less <span class="fas fa-caret-up"></span>');
     });

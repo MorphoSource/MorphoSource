@@ -13,7 +13,7 @@
       <%= render '/flash_msg' %>
       <% content_for :body_css_classes do %>showcase showcase-edit teams ms-collection-edit<% end %>
 
-      <div class="col-9 no-horizontal-padding title team-title">
+      <div class="col-12 no-horizontal-padding title team-title">
         <div>
           <span class="fa fa-edit" aria-hidden="true"></span>
           <h1 style="margin-bottom:20px;"><%= @collection.title.first %>
@@ -22,132 +22,135 @@
             <%= @presenter.permission_badge %>
           </h1>
         </div>
-        <div>
+        <div class="d-flex" style="gap: 5px;">
           <%= f.submit t(:'hyrax.collection.select_form.update'), class: 'btn btn-primary', onclick: "confirmation_needed = false;", id: "update_submit", name: "update_collection" %>
           <%= link_to "Public View", collection_media_path(@collection), class: 'btn btn-primary' %>
         </div>
       </div>
 
-      <div class="card panel-default panel-borders tabs teams" id="collection-edit-controls">
+      <div class="card tabs teams" id="collection-edit-controls">
         <%= render 'nav_tabs' %>
-        <div class="row tab-action-buttons">
-          <div class="float-right"></div>
-        </div>
 
-        <div class="card-body no-horizontal-padding">
-          <div class="col-12 mb-2">
-            <%= t("hyrax.organization.dashboard.ownership.introduction", org_name: @collection.title.first)%>
+        <div class="tab-content tab-borders p-2 pt-0">
+          <div class="row tab-action-buttons">
+            <div class="float-right"></div>
           </div>
 
-          <div class="col-md-6 organization-collection-ownership-stats">
-            <h2 style="margin-top: 0;"><%= t("hyrax.organization.dashboard.ownership.stats.title").upcase %></h2>
+          <div class="row no-horizontal-padding mx-0 py-3">
+            <div class="col-12 mb-4">
+              <%= t("hyrax.organization.dashboard.ownership.introduction", org_name: @collection.title.first)%>
+            </div>
 
-            <% render_options = { include_empty: true, work_type: "organization", label_width: 9, value_width: 3, show_hint: true } %>
+            <div class="col-md-6 organization-collection-ownership-stats">
+              <h2 style="margin-top: 0;"><%= t("hyrax.organization.dashboard.ownership.stats.title").upcase %></h2>
 
-            <% if @collection.is_object_organization? %>
-              <%= Hyrax::Renderers::ShowcaseLinkAttributeRenderer.new(
-                :object_media_count,
-                @media_count,
-                render_options.merge(link: main_app.organization_path(@collection.id))
-              ).render %>
-              <div class="row mb-1 csv-export-link"><div class="col-8">
-                <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.media_object"), media_export_csv_url(@collection) %>
-              </div></div>
+              <% render_options = { include_empty: true, work_type: "organization", label_width: 9, value_width: 3, show_hint: true } %>
 
-            <% end %>
-            <% if @collection.is_device_organization? %>
-              <%= Hyrax::Renderers::ShowcaseLinkAttributeRenderer.new(
-                :device_media_count,
-                @device_media_count,
-                render_options.merge(link: main_app.organization_device_media_path(@collection.id))
-              ).render %>
-              <div class="row mb-1 csv-export-link"><div class="col-8">
-                <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.media_device"), device_media_export_csv_url(@collection) %>
-              </div></div>
-            <% end %>
-
-            <%= Hyrax::Renderers::ShowcaseLinkAttributeRenderer.new(
-              :managed_media_count,
-              @managed_media_count,
-              render_options.merge(link: main_app.organization_path(@collection.id, "f.transfer" => :managed))
-            ).render %>
-            <div class="row mb-1 csv-export-link"><div class="col-8">
-              <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.media_managed"),
-              main_app.organization_media_export_path(@collection, :format => :csv, :per_page => 1000000, "f.transfer" => :managed)
-            %>
-            </div></div>
-
-            <% if @collection&.media_ownership_transfer %>
-              <%= Hyrax::Renderers::ShowcaseLinkAttributeRenderer.new(
-                :transfer_ready_media,
-                @unmanaged_media_transferable_count,
-                render_options.merge(link: main_app.organization_path(@collection.id, "f.transfer" => :ready))
-              ).render %>
-              <%= Hyrax::Renderers::ShowcaseLinkAttributeRenderer.new(
-                :transfer_unready_media,
-                @unmanaged_media_untransferable_count,
-                render_options.merge(link: main_app.organization_path(@collection.id, "f.transfer" => :unready))
-              ).render %>
-              <div class="row mb-1 csv-export-link"><div class="col-8">
-                <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.media_transfer_status"), main_app.team_media_organization_transfer_status_path(request.parameters.merge(id: @collection.id, :format => :csv, :per_page => 1000000)) %>
-              </div></div>
-            <% end %>
-
-            <% show_both_object_counts = ( @specimen_count == 0 && @cho_count == 0 ) %>
-            <% if @specimen_count > 0 || show_both_object_counts %>
-              <%= Hyrax::Renderers::ShowcaseLinkAttributeRenderer.new(
-                :org_specimen_count,
-                @specimen_count,
-                render_options.merge(link: main_app.organization_specimens_path(@collection.id))
-              ).render %>
-              <div class="row mb-1 csv-export-link"><div class="col-8">
-                <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.objects_bso"), specimens_export_csv_url(@collection) %>
-              </div></div>
-            <% end %>
-            <% if @cho_count > 0 || show_both_object_counts %>
-              <%= Hyrax::Renderers::ShowcaseLinkAttributeRenderer.new(
-                :org_cho_count,
-                @cho_count,
-                render_options.merge(link: main_app.organization_chos_path(@collection.id))
-              ).render %>
-              <div class="row mb-1 csv-export-link"><div class="col-8">
-                <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.objects_cho"), chos_export_csv_url(@collection) %>
-              </div></div>
-            <% end %>
-
-            <% if @collection.is_device_organization? %>
-              <%= Hyrax::Renderers::ShowcaseLinkAttributeRenderer.new(
-                :org_device_count,
-                @device_count,
-                render_options.merge(link: main_app.organization_devices_path(@collection.id))
-              ).render %>
-              <div class="row mb-1 csv-export-link"><div class="col-8">
-                <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.devices"), devices_export_csv_url(@collection) %>
-              </div></div>
-            <% end %>
-          </div>
-
-          <div class="col-md-6 organization-collection-ownership-reminders">
-            <h2 style="margin-top: 0;"><%= t("hyrax.organization.dashboard.ownership.reminders.title").upcase %></h2>
-
-            <ul>
               <% if @collection.is_object_organization? %>
-                <li class="mb-1"><%= t("hyrax.organization.dashboard.ownership.reminders.r1") %></li>
+                <%= Hyrax::Renderers::ShowcaseLinkAttributeRenderer.new(
+                  :object_media_count,
+                  @media_count,
+                  render_options.merge(link: main_app.organization_path(@collection.id))
+                ).render %>
+                <div class="row mb-1 csv-export-link"><div class="col-8">
+                  <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.media_object"), media_export_csv_url(@collection) %>
+                </div></div>
+
+              <% end %>
+              <% if @collection.is_device_organization? %>
+                <%= Hyrax::Renderers::ShowcaseLinkAttributeRenderer.new(
+                  :device_media_count,
+                  @device_media_count,
+                  render_options.merge(link: main_app.organization_device_media_path(@collection.id))
+                ).render %>
+                <div class="row mb-1 csv-export-link"><div class="col-8">
+                  <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.media_device"), device_media_export_csv_url(@collection) %>
+                </div></div>
+              <% end %>
+
+              <%= Hyrax::Renderers::ShowcaseLinkAttributeRenderer.new(
+                :managed_media_count,
+                @managed_media_count,
+                render_options.merge(link: main_app.organization_path(@collection.id, "f.transfer" => :managed))
+              ).render %>
+              <div class="row mb-1 csv-export-link"><div class="col-8">
+                <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.media_managed"),
+                main_app.organization_media_export_path(@collection, :format => :csv, :per_page => 1000000, "f.transfer" => :managed)
+              %>
+              </div></div>
+
+              <% if @collection&.media_ownership_transfer %>
+                <%= Hyrax::Renderers::ShowcaseLinkAttributeRenderer.new(
+                  :transfer_ready_media,
+                  @unmanaged_media_transferable_count,
+                  render_options.merge(link: main_app.organization_path(@collection.id, "f.transfer" => :ready))
+                ).render %>
+                <%= Hyrax::Renderers::ShowcaseLinkAttributeRenderer.new(
+                  :transfer_unready_media,
+                  @unmanaged_media_untransferable_count,
+                  render_options.merge(link: main_app.organization_path(@collection.id, "f.transfer" => :unready))
+                ).render %>
+                <div class="row mb-1 csv-export-link"><div class="col-8">
+                  <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.media_transfer_status"), main_app.team_media_organization_transfer_status_path(request.parameters.merge(id: @collection.id, :format => :csv, :per_page => 1000000)) %>
+                </div></div>
+              <% end %>
+
+              <% show_both_object_counts = ( @specimen_count == 0 && @cho_count == 0 ) %>
+              <% if @specimen_count > 0 || show_both_object_counts %>
+                <%= Hyrax::Renderers::ShowcaseLinkAttributeRenderer.new(
+                  :org_specimen_count,
+                  @specimen_count,
+                  render_options.merge(link: main_app.organization_specimens_path(@collection.id))
+                ).render %>
+                <div class="row mb-1 csv-export-link"><div class="col-8">
+                  <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.objects_bso"), specimens_export_csv_url(@collection) %>
+                </div></div>
+              <% end %>
+              <% if @cho_count > 0 || show_both_object_counts %>
+                <%= Hyrax::Renderers::ShowcaseLinkAttributeRenderer.new(
+                  :org_cho_count,
+                  @cho_count,
+                  render_options.merge(link: main_app.organization_chos_path(@collection.id))
+                ).render %>
+                <div class="row mb-1 csv-export-link"><div class="col-8">
+                  <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.objects_cho"), chos_export_csv_url(@collection) %>
+                </div></div>
               <% end %>
 
               <% if @collection.is_device_organization? %>
-                <li class="mb-1"><%= t("hyrax.organization.dashboard.ownership.reminders.r2") %></li>
+                <%= Hyrax::Renderers::ShowcaseLinkAttributeRenderer.new(
+                  :org_device_count,
+                  @device_count,
+                  render_options.merge(link: main_app.organization_devices_path(@collection.id))
+                ).render %>
+                <div class="row mb-1 csv-export-link"><div class="col-8">
+                  <%= link_to t("hyrax.organization.dashboard.ownership.stats.export.devices"), devices_export_csv_url(@collection) %>
+                </div></div>
               <% end %>
+            </div>
 
-              <li class="mb-1"><%= t("hyrax.organization.dashboard.ownership.reminders.r3") %></li>
+            <div class="col-md-6 organization-collection-ownership-reminders">
+              <h2 style="margin-top: 0;"><%= t("hyrax.organization.dashboard.ownership.reminders.title").upcase %></h2>
 
-              <% if @collection.is_object_organization? %>
-                <li class="mb-1"><%= t("hyrax.organization.dashboard.ownership.reminders.r4") %></li>
-                <li class="mb-1"><%= t("hyrax.organization.dashboard.ownership.reminders.r5").html_safe %></li>
-              <% elsif @collection.is_device_organization? %>
-                <li class="mb-1"><%= t("hyrax.organization.dashboard.ownership.reminders.r6").html_safe %></li>
-              <% end %>
-            </ul>
+              <ul>
+                <% if @collection.is_object_organization? %>
+                  <li class="mb-3"><%= t("hyrax.organization.dashboard.ownership.reminders.r1") %></li>
+                <% end %>
+
+                <% if @collection.is_device_organization? %>
+                  <li class="mb-3"><%= t("hyrax.organization.dashboard.ownership.reminders.r2") %></li>
+                <% end %>
+
+                <li class="mb-3"><%= t("hyrax.organization.dashboard.ownership.reminders.r3") %></li>
+
+                <% if @collection.is_object_organization? %>
+                  <li class="mb-3"><%= t("hyrax.organization.dashboard.ownership.reminders.r4") %></li>
+                  <li class="mb-3"><%= t("hyrax.organization.dashboard.ownership.reminders.r5").html_safe %></li>
+                <% elsif @collection.is_device_organization? %>
+                  <li class="mb-3"><%= t("hyrax.organization.dashboard.ownership.reminders.r6").html_safe %></li>
+                <% end %>
+              </ul>
+            </div>
           </div>
         </div>
       </div>

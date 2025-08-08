@@ -21,12 +21,12 @@
         </div>
       </div>
     </div>
-    <div class="text-center mt-1">
-    <% if @form.can_submit_remote_files == "Yes" %>
-      <%= k.submit 'Update Remote File Submission Settings', class: 'btn btn-sm btn-save-remote-file-settings' %>
-    <% else %>
-      <%= k.submit 'Update Remote File Submission Settings', class: 'btn btn-sm btn-save-remote-file-settings', disabled: !current_user.admin? %>
-    <% end %>
+    <div class="text-center mt-2">
+      <% if @form.can_submit_remote_files == "Yes" %>
+        <%= k.submit 'Update Remote Settings', class: 'btn btn-sm btn-save-remote-file-settings' %>
+      <% else %>
+        <%= k.submit 'Update Remote Settings', class: 'btn btn-sm btn-save-remote-file-settings', disabled: !current_user.admin? %>
+      <% end %>
     </div>
     <%= hidden_field_tag :update_remote_file_submission_settings, true %>
 

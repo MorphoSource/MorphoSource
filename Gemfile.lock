@@ -8,8 +8,8 @@ GIT
 
 GIT
   remote: https://github.com/MorphoSource/resque-kubernetes.git
-  revision: ac91998da82c825a93a7ba1171e92bb260bee049
-  ref: ac91998da82c825a93a7ba1171e92bb260bee049
+  revision: f499a0408c02917b2d95a242156b633951dd8c92
+  ref: f499a0408c02917b2d95a242156b633951dd8c92
   specs:
     resque-kubernetes (3.0.0)
       kubeclient (>= 4.9.3, < 5.0)

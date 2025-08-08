@@ -1,3 +1,5 @@
+@import 'variables';
+
 body.dashboard {
   background-color: #fff;
   padding-top: 0;
@@ -78,6 +80,47 @@ body.dashboard {
 
   .field-controls .add, .field-controls .remove {
     width: 3em;
+  }
+
+  /* Override Hyrax dropdown menu styles */
+  .dropdown-menu {
+    li {
+      a {
+        color: $link-font-color;
+        font-size: 12px;
+        font-weight: normal;
+        display: block;
+        white-space: nowrap;
+        width: 100%;
+        padding: 3px 20px;
+      }
+      a:hover {
+        text-decoration: none;
+        background-color: transparent;
+      }
+    }
+    li:hover {
+      background-color: #f5f5f5;
+      cursor: pointer;
+    }
+  }
+  /* Facets dropdown menu styles */
+  .ms-facets .dropdown-menu,
+  .all-works .dropdown-menu {
+    li {
+      padding: 4px 8px;
+      a, .facet-count { padding: 0px 3px }
+    }
+  }
+  /* All Works page specific styles */
+  .all-works {
+    .list-filters {
+      flex-wrap: wrap;
+      .dropdown-menu {
+        li { padding: 4px 8px }
+        a, .facet-count { padding: 0px 3px }
+      }
+    }
   }
 }
 

@@ -35,7 +35,7 @@ gem 'hyrax', '5.0.5'
 gem 'hydra-role-management', '~> 1.1.0'
 
 gem 'resque'
-gem 'resque-kubernetes', github: 'MorphoSource/resque-kubernetes', ref: 'f499a0408c02917b2d95a242156b633951dd8c92'
+gem 'resque-kubernetes', github: 'MorphoSource/resque-kubernetes', ref: 'c5955b46678b164b4df75929d7f1e48d007cc150'
 gem 'resque-pool'
 gem 'resque-web', require: 'resque_web', github: 'MorphoSource/resque-web'
 

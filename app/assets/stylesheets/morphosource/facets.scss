@@ -1,7 +1,5 @@
-.showcase {
-
+.showcase, .dashboard {
   .list-filters {
-
     display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
@@ -42,7 +40,7 @@
         font-size: 12px;
       }
       li:hover {
-        background-color: #fff;
+        background-color: #f5f5f5;
       }
     } 
   }

@@ -27,6 +27,8 @@
   .container {
     padding-bottom: 20px;
     padding-top: 20px;
+    padding-left: 30px;
+    padding-right: 30px;
   }
 
   .submission-select2-container .select2-container,
@@ -39,20 +41,20 @@
   .ui-loading {
     background: image-url('loading.gif') center center no-repeat;
     background-size: 30px;
-    min-height: 90px; 
+    min-height: 90px;
   }
 
   #fileupload {
     p {
       padding: 0 10px;
-      box-sizing: content-box !important;      
+      box-sizing: content-box !important;
     }
     .table {
       margin-bottom: 0;
     }
     .fileupload-buttonbar {
       padding: 0;
-      box-sizing: content-box !important;      
+      box-sizing: content-box !important;
       .fileinput-button {
         margin-left: auto;
         margin-right: auto;
@@ -60,11 +62,11 @@
       .fileupload-progress {
         margin-top: 0;
         div {
-          box-sizing: content-box !important;      
+          box-sizing: content-box !important;
         }
       }
       .progress {
-        box-sizing: content-box !important;      
+        box-sizing: content-box !important;
         height: auto;
         margin-bottom: 0;
       }
@@ -239,7 +241,7 @@
       .nav-tabs {
         background-color: unset;
       }
-    
+
       .row {
         padding-left: 0 !important;
         padding-right: 0 !important;
@@ -306,7 +308,7 @@
           cursor: default;
           padding-left: 24px !important;
         }
-    
+
         &.sidebar-clickable {
           margin-bottom: 5px;
           margin-right: 0;
@@ -316,7 +318,7 @@
         .fa {
           margin-right: 12px;
         }
-    
+
         .fa-check {
           visibility: hidden;
         }
@@ -357,9 +359,9 @@
     label{
       width: 90%;
       font-weight: normal;
-      display: inline-block; 
+      display: inline-block;
       vertical-align: top;
-    }    
+    }
   }
 }
 

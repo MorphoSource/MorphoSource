@@ -1,6 +1,5 @@
 # frozen_string_literal: true
 module Morphosource
-  ##
   # Searches for all collections that are parents of a given collection.
   class NestedCollectionsParentSearchBuilder < Hyrax::NestedCollectionsParentSearchBuilder
 

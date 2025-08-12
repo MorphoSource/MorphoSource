@@ -152,7 +152,7 @@ class BatchSubmissionsController < ApplicationController
 
   def start_ingest_job
     background_job = BackgroundJob.create!({
-      manifest: @request_manifest_object
+      manifest: @request_manifest_object,
       user_id: current_user.user_key,
       created_objects: {}
     })

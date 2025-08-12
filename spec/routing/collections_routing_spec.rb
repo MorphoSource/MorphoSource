@@ -62,6 +62,7 @@ end
 
 RSpec.describe 'collections dashboard routes', type: :routing do
   let(:id)  { '123' }
+  let(:id2) { '456' }
 
   describe 'collections' do
     it 'has an update route' do
@@ -77,6 +78,14 @@ RSpec.describe 'collections dashboard routes', type: :routing do
     it 'has a create subcollection route' do
       route = { controller: 'morphosource/dashboard/nest_collections', action: 'create_collection_under', parent_id: id }
       expect(:get => "/collections/#{id}/under").to route_to(route)
+    end
+    it 'has an add subcollection route' do
+      route = { controller: 'morphosource/dashboard/nest_collections', action: 'create_relationship_under', parent_id: id }
+      expect(:post => "/collections/#{id}/under").to route_to(route)
+    end
+    it 'has a remove subcollection route' do
+      route = { controller: 'morphosource/dashboard/nest_collections', action: 'remove_relationship_under', parent_id: id, child_id: id2 }
+      expect(:post => "/collections/#{id}/remove_child/#{id2}").to route_to(route)
     end
   end
 

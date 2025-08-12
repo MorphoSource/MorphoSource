@@ -15,7 +15,7 @@ module Hyrax
       end
 
       def self.query_solr(collection:, access:, scope:, limit_to_id:, nest_direction:)
-        Morphosource::Collections::NestedCollectionQueryService.query_solr(
+        Morphosource::Collections::NestedCollectionQueryService.send(:query_solr,
           collection: collection,
           access: access,
           scope: scope,

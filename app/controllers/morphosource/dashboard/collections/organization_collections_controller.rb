@@ -62,6 +62,7 @@ module Morphosource
         def projects
           @tab = :projects
           @projects = member_subcollections
+          flash[:notice] ||= params.delete("notice")
           presenter
         end
 

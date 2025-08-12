@@ -1,7 +1,7 @@
 require 'roo'
 
 class BatchSubmissionsController < ApplicationController
-  include BatchSubmissionTools::Ms2Batch::BatchSubmissionHelper
+  include BatchSubmissionTools::Ms2Batch::BatchSubmission
   include Hyrax::WorksControllerBehavior
   include SubmissionsControllerBehavior
 
@@ -151,8 +151,18 @@ class BatchSubmissionsController < ApplicationController
   end
 
   def start_ingest_job
-    job = ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_later(@request_manifest_object, current_user)
-    main_job = BackgroundJob.create({ job_id: job.job_id, job_class: job.class.to_s, status: job.status.status.to_s, user_id: current_user.user_key, created_objects: {} })
+    background_job = BackgroundJob.create!({
+      manifest: @request_manifest_object
+      user_id: current_user.user_key,
+      created_objects: {}
+    })
+    job = ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_later(background_job.id, current_user)
+    background_job.update!({
+      job_id: job.job_id,
+      job_class: job.class.to_s,
+      status: job.status.status.to_s,
+    })
+
     # rename the manifest tmp file with job id for locating easier
     if (manifest_tmp_file = @request_manifest_object["summary"]["manifest_tmp_file"]).present?
       if File.exist?(manifest_tmp_file)
@@ -944,7 +954,16 @@ class BatchSubmissionsController < ApplicationController
     end
 
     def check_dup_job
-      if (dup_job_id = dup_job_found("BatchSubmissionJobs::Ms2Batch::ControlJob", @request_manifest_object)).present?
+      request_summary = @request_manifest_object["summary"].except("manifest_tmp_file")
+      matching_background_job = BackgroundJob.where(
+        "(data->'summary') - 'manifest_tmp_file' = ?::jsonb",
+        request_summary.to_json
+      ).first
+
+      if (
+        matching_background_job.present? &&
+        (dup_job_id = dup_job_found("BatchSubmissionJobs::Ms2Batch::ControlJob", matching_background_job.id)).present?
+      )
         Rails.logger.debug "iN BatchSubmissionsController: Not starting ControlJob because duplicate job found: #{dup_job_id}"
         flash[:error] = "Batch submission job did not start because a duplicate job has been found: #{dup_job_id}  Please contact MorphoSource team if needed."
         return redirect_to main_app.new_batch_submission_path

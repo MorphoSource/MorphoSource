@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_06_16_205308) do
+ActiveRecord::Schema.define(version: 2025_08_11_213715) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -55,6 +55,7 @@ ActiveRecord::Schema.define(version: 2025_06_16_205308) do
     t.json "created_objects", default: {}
     t.text "exceptions"
     t.string "job_class"
+    t.jsonb "data", default: {}
     t.index ["user_id"], name: "index_background_jobs_on_user_id"
   end
 

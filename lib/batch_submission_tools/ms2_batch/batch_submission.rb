@@ -1,21 +1,35 @@
 module BatchSubmissionTools
   module Ms2Batch
-    module BatchSubmissionHelper
-
+    module BatchSubmission
       include Morphosource::MessageHelper
       include Morphosource::ResqueJobsHelper
 
-      def dup_job_found(job_class, manifest_object, ignore_job_id = nil)
+      # methods relating to BackgroundJob centralized data tracking
+
+      def background_job
+        @background_job ||= BackgroundJob.find(@background_job_id)
+      end
+
+      def background_job_manifest
+        @background_job_manifest ||= background_job.data
+      end
+
+      def update_background_job_manifest(path_arr, value)
+        @background_job_manifest = background_job.update_data_at_path(Array(path_arr), value)
+      end
+
+      # util methods
+
+      def dup_job_found(job_class, background_job_id, ignore_job_id = nil)
         active_jobs(job_class).each do |j|
-          unless ignore_job_id.present? && j["job_id"] == ignore_job_id
-            if j["arguments"][0]["summary"].except("_aj_symbol_keys") == manifest_object["summary"]
-              return j["job_id"]
-            end
-          end
+          # Skip the job if its ID is the one we're supposed to ignore.
+          next if ignore_job_id.present? && j["job_id"] == ignore_job_id
+
+          return j["job_id"] if j["arguments"][0] == background_job_id
         end
         return nil
       end
- 
+
       def pad(id)
         return id unless id.present?
         if id.length < 9
@@ -43,7 +57,7 @@ module BatchSubmissionTools
           if empty_row?(row)
             skipped_row_count += 1
           else
-            input_data << split_sections(row) 
+            input_data << split_sections(row)
           end
         end
         return input_data, skipped_row_count
@@ -57,7 +71,7 @@ module BatchSubmissionTools
           model = field_terms_ary.first.to_sym
           field = field_terms_ary.last.to_sym
           row_data[model] = {} if !row_data.key?(model)
-          row_data[model][field] = val.map(&:to_s) 
+          row_data[model][field] = val.map(&:to_s)
           # Note: Values will be converted (e.g. from float) to strings, to avoid Invalid datatype error in ActiveFedora::Indexing::InvalidIndexDescriptor
         end
         return row_data

@@ -448,7 +448,6 @@ module BatchSubmissionTools
       def to_h
         {
           summary: summary,
-
           biological_specimen_ingests: biological_specimen_ingests.map(&:to_h),
           rows_to_bso: rows_to_bso.transform_keys(&:to_s),
           taxonomy_ingests: taxonomy_ingests.map(&:to_h),

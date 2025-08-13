@@ -1,12 +1,12 @@
 <div id="submission_taxonomy" class="submission_section submission_flow submission-v2 hide">
   <div class="container">
 
-    <div class="row justify-content-center text-center">
+    <div class="row justify-content-center text-center mb-5">
       <div class="col-md-9">
         <span class="h5"><%= t('morphosource.submission.header_text.po_taxonomy') %></span>
       </div>
     </div>
-  
+
     <div id="submission_select_taxonomy_section">
       <%= simple_form_for @submission, html: { id: :taxonomy_search_form } do |f| %>
         <div class="row justify-content-center mt-2">
@@ -15,7 +15,7 @@
           </div>
         </div>
 
-        <div id="taxonomies" class="row justify-content-center">
+        <div id="taxonomies" class="row justify-content-center mt-3">
           <div class="col-md-9 col-lg-6">
             <input class="taxonomy_title" type="hidden" name="taxonomy_title" value="" />
             <input class="taxonomy_id" type="hidden" name="taxonomy_id" value="" />
@@ -27,12 +27,12 @@
       <% end %>
     </div>
 
-    <div class="row justify-content-center mt-1">
+    <div class="row justify-content-center mt-3">
       <b><%= t('morphosource.submission.and_or') %></b>
     </div>
 
     <div id="submission_create_taxonomy_form_section" class="hide">
-      <div class="row justify-content-center mt-1">
+      <div class="row justify-content-center mt-3">
         <div class="col-md-9 col-lg-6 showcase showcase-edit showcase-section">
           <%= render(partial: 'submissions/physical_object/taxonomy_create') %>
         </div>
@@ -40,9 +40,9 @@
     </div>
 
     <div id="submission_create_taxonomy_button_section">
-      
 
-      <div class="row justify-content-center form-group mt-1">
+
+      <div class="row justify-content-center form-group mt-3">
         <div id="submission_show_create_taxonomy" class="col-md-9 col-lg-6 clickable">
           <div class="block p-3">
             <span>
@@ -55,11 +55,11 @@
     </div>
 
     <div id="submission_taxonomy_continue_section">
-      <div class="row justify-content-center mt-3">
+      <div class="row justify-content-center mt-5">
         <a href="#" id="submission_select_taxonomy_submit" class="btn btn-primary btn-continue" disabled>
           <%= t('morphosource.submission.continue') %>
         </a>
-      </div>  
+      </div>
     </div>
 
   </div>

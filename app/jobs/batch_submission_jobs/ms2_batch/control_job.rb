@@ -9,7 +9,7 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
     @background_job_id = background_job_id
     @control_job_id = status.job_id
 
-    if (dup_job_id = dup_job_found("BatchSubmissionJobs::Ms2Batch::ControlJob", background_job_id)).present?
+    if (dup_job_id = dup_job_found("BatchSubmissionJobs::Ms2Batch::ControlJob", background_job_id, control_job_id)).present?
       Rails.logger.debug "iN ControlJob #{control_job_id}: Not starting ControlJob because duplicate job found: #{dup_job_id}"
       error_msg = "Batch submission job did not start because a duplicate job has been found: #{dup_job_id}"
       status.update(status: :failed, exception: error_msg)

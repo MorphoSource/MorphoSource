@@ -126,23 +126,9 @@
             </div>
           <% end %>
         </div>
-      </div>
-      <% if !current_user.contributor? && !current_user.admin? %>
-        <div class="col-12 col-lg-6 action-section">
-          <div>
-            <h2 style="font-size: large;">Become A Contributor</h2>
-          </div>
 
-          <div>
-            <p>
-              <%= t("morphosource.dashboard.landing_page.full_text.become_a_contributor").html_safe %>
-            </p>
-          </div>
-        </div>
-      <% end %>
-      <% if current_user.admin? %>
-        <div class="col-12 col-lg-6 action-section">
-          <div>
+        <% if current_user.admin? %>
+          <div style="margin-top: 60px;">
             <h2 style="font-size: large;">Administrator Actions</h2>
           </div>
 
@@ -162,6 +148,19 @@
               <%= link_to "Background job dashboard", "/queues", target: '_blank' %>
               <i class="fas fa-external-link-alt" style="margin-left: 5px;"></i>
             </div>
+          </div>
+        <% end %>
+      </div>
+      <% if !current_user.contributor? && !current_user.admin? %>
+        <div class="col-12 col-lg-6 action-section">
+          <div>
+            <h2 style="font-size: large;">Become A Contributor</h2>
+          </div>
+
+          <div>
+            <p>
+              <%= t("morphosource.dashboard.landing_page.full_text.become_a_contributor").html_safe %>
+            </p>
           </div>
         </div>
       <% end %>

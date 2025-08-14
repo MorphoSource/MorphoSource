@@ -1,17 +1,17 @@
 <div id="submission_processing_event" class="submission_flow submission_section submission-v2 hide">
-  <%= simple_form_for @processing_event_form, 
+  <%= simple_form_for @processing_event_form,
     wrapper: :showcase_default,
-    html: { class: 'stop-disable' } do |f| 
+    html: { class: 'stop-disable' } do |f|
   %>
     <% if Flipflop.proxy_deposit? && current_user.can_make_deposits_for.any? %>
       <div class="hide">
-      <%= f.input :on_behalf_of, 
-        collection: current_user.can_make_deposits_for.map{ |u| [u.display_name, u.user_key] }, 
+      <%= f.input :on_behalf_of,
+        collection: current_user.can_make_deposits_for.map{ |u| [u.display_name, u.user_key] },
         prompt: "Myself" %>
       </div>
     <% end %>
     <div class="container">
-      <div class="row justify-content-center text-center">
+      <div class="row justify-content-center text-center mb-5">
         <div class="col-md-9">
           <span class="h5"><%= t('morphosource.submission.header_text.media_processing') %></span>
         </div>
@@ -33,10 +33,10 @@
               <%= f.input :software, as: :multi_value %>
               <%= render_edit_field_partial('description', f: f) %>
               <%= render_edit_field_partial(
-                'attachment_for_description', 
-                f: f, 
-                field: 'pe_description', 
-                work_attribute: 'description_attachment_url', 
+                'attachment_for_description',
+                f: f,
+                field: 'pe_description',
+                work_attribute: 'description_attachment_url',
                 label: 'Description attachment file',
                 curation_concern: nil
               ) %>
@@ -55,10 +55,10 @@
         </div>
       </div>
 
-      <div class="row justify-content-center mt-3">
-        <%= f.submit t('morphosource.submission.continue'), 
-          class: "btn btn-primary btn-continue", 
-          id: 'submission_create_processing_event_submit' 
+      <div class="row justify-content-center mt-5">
+        <%= f.submit t('morphosource.submission.continue'),
+          class: "btn btn-primary btn-continue",
+          id: 'submission_create_processing_event_submit'
         %>
       </div>
     </div>

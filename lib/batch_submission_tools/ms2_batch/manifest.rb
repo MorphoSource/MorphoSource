@@ -1,7 +1,7 @@
 module BatchSubmissionTools
   module Ms2Batch
     class Manifest
-      include BatchSubmissionTools::Ms2Batch::BatchSubmissionHelper
+      include BatchSubmissionTools::Ms2Batch::BatchSubmission
       attr_accessor :input_path, :media_path, :admin_user, :depositor, :owner, :on_behalf_of,
         :organization_id, :organization_transfer_immediately, :device_id, :device_modality,
         :collection_ids, :fund_code_id,
@@ -448,7 +448,6 @@ module BatchSubmissionTools
       def to_h
         {
           summary: summary,
-
           biological_specimen_ingests: biological_specimen_ingests.map(&:to_h),
           rows_to_bso: rows_to_bso.transform_keys(&:to_s),
           taxonomy_ingests: taxonomy_ingests.map(&:to_h),

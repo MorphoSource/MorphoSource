@@ -474,7 +474,7 @@ module MorphosourceHelper
     if current_user.admin?
       Morphosource::SolrService.new.get_docs('human_readable_type_sim:Project NOT member_of_collection_ids_ssim:*')
     else
-      Morphosource::Collections::NestedCollectionQueryService.available_project_collections(parent: @collection, scope: controller)
+      Hyrax::Collections::NestedCollectionQueryService.available_project_collections(parent: @collection, scope: controller)
     end
   end
 

@@ -332,7 +332,7 @@ RSpec.describe MorphosourceHelper, type: :helper do
         allow(user).to receive(:admin?).and_return(false)
       end
       it 'calls Morphosource::Collections::NestedCollectionQueryService' do
-        expect(Morphosource::Collections::NestedCollectionQueryService).to receive(:available_project_collections).with(parent: team, scope: controller)
+        expect(Hyrax::Collections::NestedCollectionQueryService).to receive(:available_project_collections).with(parent: team, scope: controller)
         helper.eligible_child_projects
       end
     end

@@ -9,6 +9,7 @@ $(document).ready(function() {
             type: ''
           }
         },
+        autoWidth: false,
         //order: [[ 2, "asc" ]],  // if sorting is needed, we might need to sort the same way in gallery view
         columnDefs: [
           { responsivePriority: 1, targets: 0 },

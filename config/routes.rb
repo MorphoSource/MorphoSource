@@ -408,7 +408,7 @@ Rails.application.routes.draw do
       post 'dashboard/collections/:id/remove/:member_id', to: 'collections#remove_member', as: 'collection_remove_member'
       post 'dashboard/collections/:id/batch_remove', to: 'collections#batch_remove_members_ajax', as: 'collection_batch_remove_member'
 
-      # Create project within team
+      # Create or add project as team/organization subcollection
       get 'collections/:parent_id/under', controller: 'nest_collections', action: 'create_collection_under', as: 'create_subcollection_under'
       post 'collections/:parent_id/under', controller: 'nest_collections', action: 'create_relationship_under', as: 'create_nest_collection_under'
       post 'collections/:parent_id/remove_child/:child_id', controller: 'nest_collections', action: 'remove_relationship_under', as: 'remove_child_relationship_under'

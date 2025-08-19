@@ -4,8 +4,8 @@
   <h1><%= t("hyrax.dashboard.transfer_of_ownership") %></h1>
 <% end %>
 
-<div class="col-md-12 ownership-transfer">
-  <div class="card panel-default panel-borders tabs" role="main">
+<div class="ownership-transfer">
+  <div class="card tabs" role="main">
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
       <li role="presentation" id="tab-received" class="nav-item active">
@@ -21,10 +21,10 @@
     </ul>
 
     <!-- Tab panes -->
-    <div class="tab-content">
+    <div class="tab-content tab-borders">
 
-      <div role="tabpanel" class="tab-pane active" id="received">
-        <div class="form-tab-content" style="margin: 15px;">
+      <div role="tabpanel" class="tab-pane active pt-0" id="received">
+        <div class="form-tab-content">
           <div class="row">
             <div class="col-12">
               <div class="card panel-default">
@@ -66,7 +66,7 @@
         </div>
       </div>
 
-      <div role="tabpanel" class="tab-pane" id="sent">
+      <div role="tabpanel" class="tab-pane pt-0" id="sent">
         <div class="form-tab-content">
           <div class="row">
             <div class="col-12">
@@ -78,7 +78,7 @@
                     <% end %>
                   </div>
                 </div>
-                <div class="card-body">
+                <div class="mt-1">
                   <%= @presenter.render_sent_transfers %>
                 </div>
               </div>

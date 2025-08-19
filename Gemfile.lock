@@ -18,7 +18,8 @@ GIT
 
 GIT
   remote: https://github.com/MorphoSource/resque-web.git
-  revision: 1f44b2a621112429aa6bce2a9e820d24bd1a3317
+  revision: 00a6238ab5cf541511c4424507933fa7cf34d07c
+  tag: ms-0.0.13
   specs:
     resque-web (0.0.12)
       coffee-rails

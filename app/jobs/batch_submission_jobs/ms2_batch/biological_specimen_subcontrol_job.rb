@@ -69,15 +69,15 @@ class BatchSubmissionJobs::Ms2Batch::BiologicalSpecimenSubcontrolJob < Morphosou
       if job_status[:status] == :queued || job_status[:status] == :working
         jobs_complete = false
       elsif job_status[:status] == :failed
-        i['job_exception'] = "Job #{job.class} failed. Exception: #{job_status[:exception].to_s}"
+        i['job_exception'] = "Job BatchObjectImportJob with ID #{job_id} failed. Exception: #{job_status[:exception].to_s}"
       elsif job_status[:status] == :completed
         if job_status[:id].present?
           i['id'] = job_status[:id]
         else
-          i['job_exception'] = "Job #{job.class} completed successfully, but produced no work ID."
+          i['job_exception'] = "Job BatchObjectImportJob with ID #{job_id} completed successfully, but produced no work ID."
         end
       else
-        i['job_exception'] = "Job #{job.class} produced unexpected status: #{job_status[:status].to_s}"
+        i['job_exception'] = "Job BatchObjectImportJob with ID #{job_id} produced unexpected status: #{job_status[:status].to_s}"
       end
     end
 

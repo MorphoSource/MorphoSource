@@ -122,11 +122,11 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
       if job_status[:status] == :queued || job_status[:status] == :working
         jobs_complete = false
       elsif job_status[:status] == :failed
-        i['job_exception'] = "Job #{job.class} failed. Exception: #{job_status[:exception].to_s}"
+        i['job_exception'] = "Job MediaIePeIngestJob with ID #{job_id} failed. Exception: #{job_status[:exception].to_s}"
       elsif job_status[:status] == :completed
         next
       else
-        i['job_exception'] = "Job #{job.class} produced unexpected status: #{job_status[:status].to_s}"
+        i['job_exception'] = "Job MediaIePeIngestJob with ID #{job_id} produced unexpected status: #{job_status[:status].to_s}"
       end
     end
 

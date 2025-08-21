@@ -86,7 +86,7 @@ module BatchSubmissionTools
               # look for the parent row index
               rows.each_with_index do |r , idx|
                 if (r[:media][:media_file]&.first == row[:media][:parent_file].first)
-                  if r[:media][:raw_or_derived]&.first == "Derived"
+                  if r[:media][:raw_or_derived]&.first.downcase == "derived"
                     derived_parent_index = idx
                   else
                     parent_index = idx
@@ -336,7 +336,7 @@ module BatchSubmissionTools
             parent_row_index = mg[:parents].first
             media_attrs = rows[parent_row_index][:media]
 
-            if parent_row_index == sheet_index.first && media_attrs[:raw_or_derived].first == "Raw"
+            if parent_row_index == sheet_index.first && media_attrs[:raw_or_derived].first.downcase == "raw"
 
               ie_row_index = parent_row_index
 

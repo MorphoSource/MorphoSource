@@ -402,7 +402,7 @@ class BatchSubmissionsController < ApplicationController
       if val.present?
         if cell_value(current_row, field_column("media.parent_ms_id")).present?
           error_msg = "A value can be present in media.parent_file or media.parent_ms_id, but not in both."
-        elsif cell_value(current_row, field_column("media.raw_or_derived")).upcase == "RAW"
+        elsif cell_value(current_row, field_column("media.raw_or_derived")).downcase == "raw"
           error_msg = "A value cannot be present in media.parent_file if media.raw_or_derived value is set to 'Raw'."
         else
           # look for the val in the media_file column
@@ -450,7 +450,7 @@ class BatchSubmissionsController < ApplicationController
         #error_msg = "A value can be present in media.parent_file or media.parent_ms_id, but not in both."
       else
         if val.present?
-          if cell_value(current_row, field_column("media.raw_or_derived")).upcase == "RAW"
+          if cell_value(current_row, field_column("media.raw_or_derived")).downcase == "raw"
             error_msg = "A value cannot be present in media.parent_ms_id if media.raw_or_derived value is set to 'Raw'."
           else
             ms_parent_media = Media.where(id:pad(val.to_s))&.first

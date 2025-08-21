@@ -59,7 +59,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
           parent_media = Media.find(pad(parent['media']['id']))
           next
         end
-        if parent['media']['initial_attrs']['raw_or_derived']&.first == "Raw"
+        if parent['media']['initial_attrs']['raw_or_derived']&.first.upcase == "RAW"
           is_raw = true
         else
           is_raw = false

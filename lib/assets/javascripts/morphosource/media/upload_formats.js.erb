@@ -6,7 +6,7 @@ function fileNames(files) {
   }
   return fileList;
 }
- 
+
 // Returns an array of file names from the file upload form.
 function newFiles(){
   return fileNames($('#fileupload > table > tbody > tr > td > p > span'));
@@ -22,15 +22,6 @@ function regularExpressionize(list) {
 }
 
 const mediaFormatLabels = {
-  /* for some reason: intermittantly the translation text are not loaded, returning missing translation error
-      for now the values are hardcoded
-  'Image': "<%= Morphosource::MEDIA_FORMATS['Image'][:label] %>",
-  'Video': "<%= Morphosource::MEDIA_FORMATS['Video'][:label] %>",
-  'CTImageSeries': "<%= Morphosource::MEDIA_FORMATS['CTImageSeries'][:label] %>",
-  'PhotogrammetryImageSeries': "<%= Morphosource::MEDIA_FORMATS['PhotogrammetryImageSeries'][:label] %>",
-  'Mesh': "<%= Morphosource::MEDIA_FORMATS['Mesh'][:label] %>",
-  'Other': "<%= Morphosource::MEDIA_FORMATS['Other'][:label] %>"
-  */
   'Image': 'Image',
   'Video': 'Video',
   'CTImageSeries': 'Volumetric Image Series',

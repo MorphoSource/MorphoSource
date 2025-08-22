@@ -7,6 +7,7 @@ var createCulturalHeritageObjectTable = function(selector) {
         type: ''
       }
     },
+    autoWidth: false,
     //order: [[ 1, "asc" ]],
     columnDefs: [
       { responsivePriority: 1, targets: 0 },

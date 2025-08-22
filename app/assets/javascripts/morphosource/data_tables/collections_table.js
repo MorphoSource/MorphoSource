@@ -6,6 +6,7 @@ var createCollectionsTable = function(selector) {
       type: ''
     }
   },
+  autoWidth: false,
   columnDefs: [
     { orderable: false, targets: 0 },
     { orderable: false, responsivePriority: 1, targets: 1 },

@@ -9,6 +9,7 @@ var createMediaTableWithPreview = function(selector) {
         type: 'inline'
       }
     },
+    autoWidth: false,
     columnDefs: [
       { orderable: false, targets: 0 }, // disable sorting
       { orderable: false, targets: -1 },

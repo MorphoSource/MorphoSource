@@ -62,7 +62,7 @@ module Morphosource
             label: :thumbnail,
             url: derivative_url('thumbnail')
           } ]
-        )  
+        )
       end
 
       def create_archive_derivatives(filename)
@@ -83,12 +83,7 @@ module Morphosource
             parent_work&.z_spacing&.first
           )
         elsif parent_work&.media_type&.first == 'Mesh'
-          # Need to know archive representative file mime type to choose derivatives pipeline
-          case file_set.contents_mime_type&.first
-          when *file_set.class.gltf_mesh_mime_types       then create_gltf_mesh_derivatives(filename)
-          when *file_set.class.obj_mesh_mime_types        then create_obj_mesh_derivatives(filename)
-          when *file_set.class.misc_mesh_mime_types       then create_misc_mesh_derivatives(filename)
-          end
+          create_mesh_derivatives(filename)
         end
 
         # Handle errors
@@ -122,7 +117,7 @@ module Morphosource
           # Create 3D derivative asset
           Morphosource::Derivatives::CTImageSeriesDerivatives.create(
             filename,
-            outputs: [ { 
+            outputs: [ {
               label: :dcm,
               format: 'dcm',
               slice_thickness: slice_thickness,

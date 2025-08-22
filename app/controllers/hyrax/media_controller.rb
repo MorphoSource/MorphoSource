@@ -395,7 +395,7 @@ module Hyrax
         end
 
         if invalid_files.length != 0
-          curation_concern.errors.add(:base, "Invalid files: #{invalid_files.uniq.join(', ')} for Media Type: #{Morphosource::MEDIA_FORMATS[media_type][:label]}.")
+          curation_concern.errors.add(:base, "Invalid files: #{invalid_files.uniq.join(', ')} for Media Type: #{I18n.t(Morphosource::MEDIA_FORMATS[media_type][:label_key])}.")
         end
       end
 

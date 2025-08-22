@@ -22,10 +22,15 @@ gem 'devise'
 gem 'devise-guests', '~> 0.6'
 gem 'bootstrap', '~> 4.0'
 
-gem 'riiif', '~> 2.2'
+# Hyrax dependencies
+
+# temporarily forking browse-everything until https://github.com/samvera/browse-everything/pull/442 is approved
+gem 'browse-everything', github: 'MorphoSource/browse-everything', ref: '58736846380b689b658b4cad007bfff6aa3c4c37'
 
 # pull iiif_manifest fork that can handle 3D manifests
 gem 'iiif_manifest', github: 'MorphoSource/iiif_manifest', tag: 'v1.3.1'
+
+gem 'riiif', '~> 2.2'
 
 # used for XML validation in Crossref DOI deposit
 gem 'nokogiri'

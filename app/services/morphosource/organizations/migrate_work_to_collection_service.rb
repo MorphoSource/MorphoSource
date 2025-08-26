@@ -140,9 +140,14 @@ module Morphosource
             organization_team.reindex_extent = Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
             organization_team.save!
           end
+
+          # special case: re-save data managed to org coll in some cases
+          organization_collection.reload
+          if organization_collection.managers.present? && organization_work.date_managed.present? && organization_collection.date_managed != organization_work.date_managed
+            organization_collection.date_managed = organization_work.date_managed
+            organization_collection.save!
+          end
         end
-
-
 
         ### STEP 4. All media associated with the org and owned by the data manager should be owned by the organization directly ###
         # Note: Because we have to check org association, this has to be done before moving records to associate with new org
@@ -433,14 +438,23 @@ module Morphosource
         end
 
         ### STEP 3. Have all team sub-projects been removed from the organization team? ###
-        Rails.logger.info "STEP 3. Have all media, objects, and sub-projects been removed from the organization team?"
+        Rails.logger.info "STEP 3. Have all non-org team media, objects, and sub-projects been removed from the organization team?"
 
         if organization_team.present?
           if Collection.where("member_of_collection_ids_ssim:#{organization_team.id}").present?
             raise "STEP 3 FAILED. Organization team still retains child projects."
           end
 
-          if organization_team.media_docs.present?
+          legacy_organization_team_media_docs = ActiveFedora::SolrService.query(
+            "member_of_collection_ids_ssim:#{organization_team.id} AND media_organization_id_ssim:#{organization_work.id}",
+            rows: 999999
+          )
+          non_organization_team_media_docs = ActiveFedora::SolrService.query(
+            "member_of_collection_ids_ssim:#{organization_team.id} AND -media_organization_id_ssim:#{organization_collection.id}",
+            rows: 999999
+          )
+
+          if legacy_organization_team_media_docs.present? || non_organization_team_media_docs.present?
             raise "STEP 3 FAILED. Organization team still retains media."
           end
         end

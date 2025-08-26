@@ -12,7 +12,6 @@ module Morphosource
             config.facet_fields = {}
             # membership facet added in before_action :create_membership_facet
             config.add_facet_field "institution", field: "institution_name_ssim", label: "Institution", limit: 10
-            config.add_facet_field "organization", field: "title_ssi", label: "Organization", limit: 10
             config.add_facet_field "organization_type", field: "organization_type_ssim", label: "Organization Type", limit: 10
             config.add_facet_field "country", field: "country_ssim", label: "Country", limit: 10
             config.add_facet_field "state", field: "state_province_ssim", label: "State or Province", limit: 10
@@ -27,6 +26,12 @@ module Morphosource
 
         def search_builder_class
           Morphosource::My::Collections::OrganizationsSearchBuilder
+        end
+
+        # The url of the "more" link for additional facet values
+        def search_facet_path(args = {})
+          # byebug
+          main_app.my_organizations_facet_path(args[:id])
         end
 
         def search_action_url(*args)

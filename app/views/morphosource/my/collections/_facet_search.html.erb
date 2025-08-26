@@ -1,0 +1,17 @@
+<%= form_tag url_for, method: :get, class: "form-horizontal search-form ms-catalog-search mb-1", data: { blacklight_modal: "trigger" } do %>
+  <%= render_hash_as_hidden_fields(search_state.params_for_search.except(:q, :search_field, :qt, :page, :utf8, :"facet.page", :"facet.contains")) %>
+  <%= hidden_field_tag :search_field, 'all_fields' %>
+
+    <div class="input-group">
+      <%= text_field_tag :"facet.contains", params["facet.contains"] , class: "q form-control", placeholder: t("morphosource.search.form.facet.placeholder") %>
+
+      <div class="input-group-btn">
+        <% if params["facet.contains"] %>
+          <%= link_to "Clear", url_for(:"facet.sort" => params["facet.sort"]), class: "btn btn-danger", data: { ajax_modal: "preserve" } %>
+        <% end %>
+        <button type="submit" class="btn btn-primary">
+          <%= t('hyrax.search.button.html') %>
+        </button>
+      </div><!-- /.input-group-btn -->
+    </div><!-- /.input-group -->
+  <% end %>

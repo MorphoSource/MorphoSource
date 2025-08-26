@@ -18,7 +18,7 @@ RUN apt update && \
   zip \
   $DATABASE_APK_PACKAGE \
   $EXTRA_APK_PACKAGES && \
-  rm -rf /var/lib/apt/lists/* 
+  rm -rf /var/lib/apt/lists/*
 
 # Update node/npm
 RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
@@ -188,7 +188,7 @@ RUN echo "deb https://packages.adoptium.net/artifactory/deb \
   | tee /etc/apt/sources.list.d/adoptium.list
 
 # Add bullseye-backports to get 7zip package
-RUN echo "deb http://deb.debian.org/debian bullseye-backports main" \
+RUN echo "deb https://archive.debian.org/debian bullseye-backports main" \
   > /etc/apt/sources.list.d/backports.list
 
 # Install additional system packages related to tools
@@ -215,7 +215,7 @@ RUN pip3 install --no-cache-dir --upgrade pip && \
 ARG TARGETPLATFORM
 RUN if [ "$TARGETPLATFORM" != "linux/arm64" ]; then \
 pip3 install --no-cache-dir pymeshlab; \
-fi 
+fi
 
 # Install GLTF Pipeline 3D mesh derivative tool, used for creating Draco GLBs
 RUN npm install --global only-allow

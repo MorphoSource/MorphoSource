@@ -170,7 +170,7 @@ module Morphosource
 
           # banner and logo image
           CollectionBrandingInfo.where(collection_id: organization_team.id).each do |info|
-            old_file_path = info.local_path
+            old_file_path = info.local_path.sub("/opt/morphosource/root/", "/app/samvera/hyrax-webapp/")
             info.collection_id = organization_collection.id
             info.local_path = info.find_local_filename(info.collection_id, info.role, File.basename(old_file_path))
             info.save(old_file_path) # will delete old version of file

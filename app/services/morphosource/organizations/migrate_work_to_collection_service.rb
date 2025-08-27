@@ -515,9 +515,14 @@ module Morphosource
         ### STEP 7. Do any organization transfers exist naming data manager as the receiving user? ###
         Rails.logger.info "STEP 7. Do any organization transfers exist naming data manager as the receiving user?"
 
+        org_media_ids = ActiveFedora::SolrService.query(
+          "has_model_ssim:Media && media_organization_id_ssim:#{organization_collection.id}", rows: 999999, fl: ["id"]
+        ).map { |doc| doc['id'] }
+
         if (
           org_data_manager.present? &&
-          ProxyDepositRequest.where(receiving_user_id: org_data_manager.id, organization_transfer: true).count > 0
+          org_media_ids.present? &&
+          ProxyDepositRequest.where(work_id: org_media_ids, receiving_user_id: org_data_manager.id, organization_transfer: true).count > 0
         )
           raise "STEP 7 FAILED. Data manager user is still named on organization transfer requests."
         end

@@ -214,6 +214,21 @@ module Morphosource
             "member_of_collection_ids_ssim:#{organization_team.id} AND -media_organization_id_ssim:#{organization_work.id}",
             rows: 999999
           )
+          non_organization_team_media_ids = non_organization_team_media_docs.map { |d| d["id"] }
+
+          # all organization media owned by the team should be removed from the team
+          # doing this here instead of at team deletion so we can check that the media are removed before completing migration
+          # Use ModifyCollectionMembershipJob instead of RemoveCollectionMembersJob to bypass reapply_org_team_access method
+          organization_team_media_ids = all_media_ids - non_organization_team_media_ids
+          organization_team_media_ids.each do |organization_team_media_id|
+            ModifyCollectionMembershipJob.set(
+              queue: Hyrax.config.update_slow_queue_name
+            ).perform_later(
+              media_id: organization_team_media_id,
+              add_to_collection_ids: [],
+              remove_from_collection_ids: [organization_team.id]
+            )
+          end
 
           if non_organization_team_media_docs.present?
             # create the custom project
@@ -246,7 +261,6 @@ module Morphosource
             organization_collection.save!
 
             # associate media with this project and not with the team
-            non_organization_team_media_ids = non_organization_team_media_docs.map { |d| d["id"] }
             non_organization_team_media_ids.each do |non_organization_team_media_id|
               ModifyCollectionMembershipJob.set(
                 queue: Hyrax.config.update_slow_queue_name
@@ -257,22 +271,6 @@ module Morphosource
               )
             end
 
-            # all organization media owned by the team should be removed from the team
-            # doing this here instead of at team deletion so we can check that the media are removed before completing migration
-            # Use ModifyCollectionMembershipJob instead of RemoveCollectionMembersJob to bypass reapply_org_team_access method
-            organization_team_media_ids = all_media_ids - non_organization_team_media_ids
-
-            organization_team_media_ids.each do |organization_team_media_id|
-              ModifyCollectionMembershipJob.set(
-                queue: Hyrax.config.update_slow_queue_name
-              ).perform_later(
-                media_id: organization_team_media_id,
-                add_to_collection_ids: [],
-                remove_from_collection_ids: [organization_team.id]
-              )
-            end
-
-
             # all media with team access grants need to have those grants removed
             team_access_media_ids = SolrDocument.where("has_model_ssim:Media AND
                                                         read_access_group_ssim:#{organization_team.id}_* OR
@@ -282,7 +280,7 @@ module Morphosource
             team_access_media_ids -= all_media_ids # team member media should have their access grants removed above by the ModifyCollectionMembershipJob
 
             team_access_media_ids.each do |team_access_media_id|
-              RemoveCollectionAccessGrantsJob.perform_later(collection_id: organization_team.id, work_id: team_access_media_id)
+              Morphosource::RemoveCollectionAccessGrantsJob.perform_later(collection_id: organization_team.id, work_id: team_access_media_id)
             end
           end
         end

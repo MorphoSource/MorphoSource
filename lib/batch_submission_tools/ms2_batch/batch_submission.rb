@@ -7,7 +7,8 @@ module BatchSubmissionTools
       # methods relating to BackgroundJob centralized data tracking
 
       def background_job
-        @background_job ||= BackgroundJob.find(@background_job_id)
+        # Reload to make sure background_job.created_objects gets refreshed during submission process
+        BackgroundJob.find(@background_job_id).reload
       end
 
       def background_job_manifest

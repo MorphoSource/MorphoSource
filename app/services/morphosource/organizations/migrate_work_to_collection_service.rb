@@ -110,6 +110,7 @@ module Morphosource
           org_data_manager = User.find_by_user_key(organization_work&.data_manager&.first)
           organization_collection.managers << org_data_manager unless organization_collection.managers.include?(org_data_manager)
           organization_collection.media_ownership_transfer = true
+          organization_collection.save
         end
 
         ### STEP 3. Copy members and move projects from teams ###
@@ -177,7 +178,7 @@ module Morphosource
           CollectionBrandingInfo.where(collection_id: organization_team.id).each do |info|
             old_file_path = info.local_path.sub("/opt/morphosource/root/", "/app/samvera/hyrax-webapp/")
             info.collection_id = organization_collection.id
-            info.local_path = info.find_local_filename(info.collection_id, info.role, File.basename(old_file_path))
+            # info.local_path = info.find_local_filename(info.collection_id, info.role, File.basename(old_file_path))
             info.save(old_file_path) # will delete old version of file
           end
 

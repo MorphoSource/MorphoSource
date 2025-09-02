@@ -34,13 +34,6 @@
             <%= render 'morphosource/dashboard/collections/members/form' %>
           <% end %>
         </div> <!-- end tab-content -->
-
       </div> <!-- end collection-controls -->
-
-      <%# only render add project modal if collection is a team %>
-      <% if @presenter.collection_type.title == "Team" %>
-        <%= render 'hyrax/my/collections/modal_add_project', id: @presenter.id, source: 'show' %>
-      <% end %>
-
     </div>
   </div>

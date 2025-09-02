@@ -17,7 +17,6 @@ module Morphosource
         end
       end
 
-      # WARNING: Method currently unused, but could be used in future (TODO?)
       # link this collection as parent by adding existing collection as subcollection under this one
       def create_relationship_under
         # user must be able to edit both parent and child

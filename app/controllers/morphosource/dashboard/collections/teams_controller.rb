@@ -15,9 +15,7 @@ module Morphosource
         end
 
         def projects
-          @tab = :projects
-          @projects = member_subcollections
-          presenter
+          super
           render 'edit'
         end
 

@@ -15,3 +15,6 @@
     <%= render 'morphosource/dashboard/collections/child_projects/tab_project_list', id: @presenter.id, collection: @projects %>
   </div>
 </div>
+
+<%= render 'morphosource/my/collections/modal_add_project', id: @presenter.id, source: 'show' %>
+<%= render 'morphosource/my/collections/modal_remove_project' %>

@@ -28,11 +28,6 @@ module Morphosource
         Morphosource::My::CollectionsSearchBuilder
       end
 
-      def facet
-        # byebug
-        super
-      end
-
       def index
         @collections_type = collections_type
         collection_type_list_presenter

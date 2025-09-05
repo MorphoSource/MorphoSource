@@ -1,0 +1,23 @@
+<%# Blacklight 7.24.0 %>
+<%# Override app/views/catalog/facet.html.erb %>
+
+<%= render Blacklight::System::ModalComponent.new do |component| %>
+  <%# Removed component prefix that duplicates the facet pagination view %>
+
+  <% component.title { facet_field_label(@facet.key) } %>
+
+  <%= render partial: 'facet_index_navigation' if @facet.index_range && @display_facet.index? %>
+
+  <%= render partial: 'facet_search', locals: { facet: @facet } %>
+
+  <div class="facet-extended-list">
+    <%= render_facet_limit(@display_facet, layout: false, partial: 'catalog/facet_limit') %>
+  </div>
+
+  <%# Removed component footer and placed the facet pagination partial within a `container` div %>
+  <div class="container" style="padding-left: 0;">
+    <div class="facet-pagination bottom row justify-content-between">
+      <%= render :partial=>'facet_pagination' %>
+    </div>
+  </div>
+<% end %>

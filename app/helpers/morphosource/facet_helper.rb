@@ -37,5 +37,14 @@ module Morphosource
         "Private"
       end
     end
+
+    # returns the type of records being faceted
+    def record_type
+      return "Works" unless @response
+
+      doc = @response&.docs&.first
+      doc.present? ? doc["has_model_ssim"]&.first&.pluralize&.titleize : "Works"
+    end
+
   end
 end

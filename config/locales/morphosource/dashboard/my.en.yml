@@ -21,6 +21,7 @@ en:
             page_title: Teams
         downloads:
           page_title: Downloads
+        facet_label: "Filter %{record_type}"
         media_cart:
           page_title: Media Cart
           pate_description:

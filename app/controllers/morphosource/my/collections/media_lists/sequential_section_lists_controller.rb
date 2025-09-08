@@ -8,7 +8,7 @@ module Morphosource
           def self.configure_facets
             super.tap do |config|
               config.add_facet_field "physical_object_id_ssi", label: "Object", limit: 10, helper_method: :title_by_id
-              config.add_facet_field "taxonomy_ssim", label: "Taxonomy", limit: 1
+              config.add_facet_field "taxonomy_ssim", label: "Taxonomy", limit: 10
               config.add_facet_field "organization_id_ssim", label: "Object Organization", limit: 10, helper_method: :title_by_id
             end
           end

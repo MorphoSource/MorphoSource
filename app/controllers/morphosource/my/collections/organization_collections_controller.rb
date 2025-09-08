@@ -30,7 +30,6 @@ module Morphosource
 
         # The url of the "more" link for additional facet values
         def search_facet_path(args = {})
-          # byebug
           main_app.my_organizations_facet_path(args[:id])
         end
 

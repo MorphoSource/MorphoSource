@@ -1,12 +1,2 @@
-# KEEEEEP
-<% # main container for facets/limits menu -%>
-<% facets = capture do %>
-  <%= render Blacklight::FacetComponent.with_collection(blacklight_config.facet_fields_in_group(nil), response: @response, component: Hyrax::DropdownFacetFieldComponent)%>
-<% end %>
+<%= render 'shared/facets/facets' %>
 
-<% if facets.present? %>
-  <div class="list-filters" role="group">
-    <div class="list-filters-label"><%= t("morphosource.dashboard.my.facet_label", record_type: record_type) %></div>
-    <div><%= facets %></div>
-  </div>
-<% end %>

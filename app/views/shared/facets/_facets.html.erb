@@ -5,9 +5,7 @@
 
 <% if facets.present? %>
   <div class="list-filters" role="group">
-    <span class="list-filters-label"><%= t("hyrax.dashboard.my.facet_label.works") %></span>
-    <div class='ms-facets'>
-      <%= facets %>
-    </div>
+    <div class="list-filters-label"><%= t("morphosource.dashboard.my.facet_label", record_type: record_type) %></div>
+    <div><%= facets %></div>
   </div>
 <% end %>

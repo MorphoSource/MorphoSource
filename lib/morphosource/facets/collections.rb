@@ -6,7 +6,6 @@ module Morphosource
       # overrides Blacklight 7.40.0 app/controllers/concerns/blacklight/catalog
       # if paging on collections id facet (ex: 'member_of_team_ids') and sorting alphabetically, use the alphabetized_collections_facet method instead
       def facet
-        byebug
         @facet = blacklight_config.facet_fields[params[:id]]
         raise ActionController::RoutingError, 'Not Found' unless @facet
         if ([:title_by_id, :collection_title_by_id].include? @facet&.helper_method) && params["facet.sort"] == "index"

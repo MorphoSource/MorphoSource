@@ -16,7 +16,7 @@ end
 
       <div class="input-group-btn">
         <% if params[containsField] %>
-          <%= link_to "Clear", url_for(:"facet.sort" => params["facet.sort"]), class: "btn btn-danger", data: { ajax_modal: "preserve" } %>
+          <%= link_to "Clear", url_for(:"facet.sort" => params["facet.sort"]), class: "btn btn-danger", data: { blacklight_modal: "trigger" } %>
         <% end %>
         <button type="submit" class="btn btn-primary">
           <%= t('hyrax.search.button.html') %>

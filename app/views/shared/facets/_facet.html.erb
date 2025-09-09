@@ -8,7 +8,7 @@
 
   <%= render partial: 'facet_index_navigation' if @facet.index_range && @display_facet.index? %>
 
-  <%= render partial: 'facet_search', locals: { facet: @facet } %>
+  <%= render partial: 'shared/facets/facet_search', locals: { facet: @facet } %>
 
   <div class="facet-extended-list">
     <%= render_facet_limit(@display_facet, layout: false, partial: 'catalog/facet_limit') %>

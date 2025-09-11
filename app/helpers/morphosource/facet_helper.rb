@@ -3,7 +3,7 @@ module Morphosource
 
     # Override https://github.com/samvera/hyrax/blob/7588d785f71522e23ad73daf908151aea1d53165/app/helpers/hyrax/hyrax_helper_behavior.rb#L262
     # Handles 404 error
-    def collection_title_by_id(id)
+    def title_by_id(id)
       solr_docs = controller.blacklight_config.repository.find(id).docs
       return nil if solr_docs.empty?
 
@@ -12,8 +12,9 @@ module Morphosource
 
       solr_field.first
     rescue
-      "Collection #{id} Not Found"
+      "Record #{id} Not Found"
     end
+    alias collection_title_by_id title_by_id
 
     def device_title_by_id(id)
       doc = SolrDocument.find(id)
@@ -36,5 +37,14 @@ module Morphosource
         "Private"
       end
     end
+
+    # returns the type of records being faceted
+    def record_type
+      return "Works" unless @response
+
+      doc = @response&.docs&.first
+      doc.present? ? doc["has_model_ssim"]&.first&.pluralize&.titleize : "Works"
+    end
+
   end
 end

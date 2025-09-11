@@ -3,18 +3,31 @@ module Morphosource
     module Collections
 
       # displays values and pagination links for a single facet field
-      # overrides Blacklight 6.23.0 app/controllers/concerns/blacklight/catalog
+      # overrides Blacklight 7.40.0 app/controllers/concerns/blacklight/catalog
       # if paging on collections id facet (ex: 'member_of_team_ids') and sorting alphabetically, use the alphabetized_collections_facet method instead
       def facet
         @facet = blacklight_config.facet_fields[params[:id]]
-        if @facet&.helper_method == :collection_title_by_id && params["facet.sort"] == "index"
-          alphabetized_facet(facet_type: 'collection')
+        raise ActionController::RoutingError, 'Not Found' unless @facet
+        if ([:title_by_id, :collection_title_by_id].include? @facet&.helper_method) && params["facet.sort"] == "index"
+          alphabetized_facet
         elsif @facet&.helper_method == :user_name_by_id && params["facet.sort"] == "index"
           alphabetized_facet(facet_type: 'user')
-        elsif @facet&.helper_method == :collection_title_by_id 
+        elsif @facet&.helper_method == :collection_title_by_id && params["facet.containsTitle"].present?
           filter_facet(params["facet.containsTitle"])
         else
-          super
+          @response = search_service.facet_field_response(@facet.key)
+          @display_facet = @response.aggregations[@facet.field]
+          @presenter = (@facet.presenter || Blacklight::FacetFieldPresenter).new(@facet, @display_facet, view_context)
+          @pagination = @presenter.paginator
+
+          respond_to do |format|
+            format.html do
+              # Draw the partial for the "more" facet modal window:
+              return render layout: false if request.xhr?
+              # Otherwise draw the facet selector for users who have javascript disabled.
+            end
+            format.json
+          end
         end
       end
 
@@ -73,7 +86,7 @@ module Morphosource
         blacklight_config.default_more_limit = 999999
         @response = search_service.facet_field_response(@facet.key, params.to_unsafe_h) # todo5 fix this
         # sort all the facet items by title
-        facet_type == 'collection' ? sort_collections_by_title : sort_users_by_display_name
+        facet_type == 'user' ? sort_users_by_display_name : sort_records_by_title
         # modify the display facet to include only the items for the current page
         set_display_facet_items
         # pass the modified display_facet to the facet_paginator
@@ -88,8 +101,8 @@ module Morphosource
         end
       end
 
-      def sort_collections_by_title
-        @response.aggregations[@facet.field].items.sort_by! { |i| filtered_collection_title_by_id(i.value).downcase }
+      def sort_records_by_title
+        @response.aggregations[@facet.field].items.sort_by! { |i| filtered_record_title_by_id(i.value).downcase }
       end
 
       def sort_users_by_display_name
@@ -119,9 +132,9 @@ module Morphosource
         params["facet.page"] = params.delete("az_facet.page")
       end
 
-      def filtered_collection_title_by_id(id)
-        @collection_titles ||= collection_titles
-        @collection_titles[id] || "Collection #{id} Not Found"
+      def filtered_record_title_by_id(id)
+        @record_titles ||= record_titles
+        @record_titles[id] || "Collection #{id} Not Found"
       end
 
       def filtered_display_name_by_id(id)
@@ -129,10 +142,11 @@ module Morphosource
         @display_names[id] || "User #{id} Not Found"
       end
 
-      # returns a hash of collection ids and titles:
+      # returns a hash of record ids and titles:
       # ex: {"000202905"=>"Collection Title 1", "000200071"=>"Collection Title 2"}
-      def collection_titles
-        Morphosource::SolrService.new.get_docs('has_model_ssim:Collection', fl: 'id,title_tesim').map {|h| [h["id"], h["title_tesim"].first]}.to_h
+      def record_titles
+        record_ids = @response.aggregations[@facet.field].items.map { |i| i.value }
+        Morphosource::SolrService.new.get_docs(nil, fl: 'id,title_tesim', fq: ["id:(#{record_ids.join(' OR ')})"]).map {|h| [h["id"], h["title_tesim"].first]}.to_h
       end
 
       # returns a hash of user ids and display names:

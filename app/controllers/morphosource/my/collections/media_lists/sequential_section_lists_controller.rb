@@ -3,6 +3,7 @@ module Morphosource
     module Collections
       module MediaLists
         class SequentialSectionListsController < Morphosource::My::Collections::MediaListsController
+          include Morphosource::Facets::Collections
 
           def self.configure_facets
             super.tap do |config|

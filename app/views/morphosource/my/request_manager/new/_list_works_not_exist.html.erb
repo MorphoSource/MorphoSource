@@ -1,0 +1,14 @@
+
+<tr id="document_no_media">
+  <td>
+    <label for="batch_document_no_media %>" class="sr-only"><%= t("hyrax.dashboard.my.sr.batch_checkbox") %></label>
+    <%= render 'morphosource/batch_select/add_button', item: item %>&nbsp;
+  </td>
+  <td>
+    (media not found or no longer exists)
+  </td>
+  <td colspan="4"></td>
+  <td>
+    <%= link_to "Clear", main_app.clear_request_path(:item_id => item.id), class: 'btn btn-info', :method => :put %>
+  </td>
+</tr>

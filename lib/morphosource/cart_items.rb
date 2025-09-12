@@ -156,7 +156,7 @@ module Morphosource
       items = Array(items)
       value = attribute_value(value)
       attribute = get_attribute(action)
-      @skipped_items ||= []
+      @skipped_items = []
       items.each do |item|
         # if media no longer exists, user can only clear the request. Other actions are skipped
         if !Media.exists?(item.work_id) && action != 'cleared'

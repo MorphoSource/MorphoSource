@@ -5,7 +5,7 @@
         <div class="modal-body">
           <!-- Any alert messaging mounts to this element -->
           <div class="modal-ajax-alert"></div>
-          <p><%= t('hyrax.dashboard.collections.form_relationships.modals.remove_this_project_description') %></p>
+          <p><%= t('hyrax.dashboard.collections.form_relationships.modals.remove_this_project_description', type_title: @presenter.collection_type_title.downcase) %></p>
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal"><%= t('helpers.action.cancel') %></button>

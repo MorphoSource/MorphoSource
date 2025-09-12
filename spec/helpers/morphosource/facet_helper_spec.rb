@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Morphosource::FacetHelper, type: :helper do
 
-  describe 'collection_title_by_id' do
+  describe 'record_title_by_id' do
     let(:bl_config)   { CatalogController.blacklight_config }
 
     before do
@@ -12,17 +12,17 @@ RSpec.describe Morphosource::FacetHelper, type: :helper do
       allow(controller).to receive(:blacklight_config).and_return(bl_config)
     end
 
-    context 'collection with id exists' do
+    context 'record with id exists' do
       let!(:project) { Collection.create(title: ['project'], collection_type_gid: project_collection_type.to_global_id) }
 
-      it 'returns the collection title' do
+      it 'returns the record title' do
         expect(collection_title_by_id(project.id)).to eq(project.title.first)
       end
     end
-    context 'collection with id does not exist' do
+    context 'record with id does not exist' do
       let(:id)  { 'X' }
-      it 'returns collection id not found' do
-        expect(collection_title_by_id(id)).to eq("Collection #{id} Not Found")
+      it 'returns record id not found' do
+        expect(collection_title_by_id(id)).to eq("Record #{id} Not Found")
       end
     end
   end

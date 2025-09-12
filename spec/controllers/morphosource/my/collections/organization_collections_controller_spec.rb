@@ -18,15 +18,6 @@ RSpec.describe Morphosource::My::Collections::OrganizationCollectionsController,
       end
     end
 
-    describe 'organization' do
-      subject { facet_fields["organization"]}
-      it 'has an organization facet' do
-        expect(subject.field).to eq("title_ssi")
-        expect(subject.label).to eq("Organization")
-        expect(subject.limit).to eq(10)
-      end
-    end
-
     describe 'organization_type' do
       subject { facet_fields["organization_type"]}
       it 'has an organization_type facet' do

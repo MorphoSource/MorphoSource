@@ -8,18 +8,24 @@ module Morphosource
       def facet
         @facet = blacklight_config.facet_fields[params[:id]]
         raise ActionController::RoutingError, 'Not Found' unless @facet
+        byebug
         if ([:title_by_id, :collection_title_by_id].include? @facet&.helper_method) && params["facet.sort"] == "index"
           alphabetized_facet
         elsif @facet&.helper_method == :user_name_by_id && params["facet.sort"] == "index"
           alphabetized_facet(facet_type: 'user')
         elsif ([:title_by_id, :collection_title_by_id].include? @facet&.helper_method) && params["facet.containsTitle"].present?
+          byebug
           filter_facet(params["facet.containsTitle"])
         else
+          byebug
           @response = search_service.facet_field_response(@facet.key)
+          byebug
           @display_facet = @response.aggregations[@facet.field]
+          byebug
           @presenter = (@facet.presenter || Blacklight::FacetFieldPresenter).new(@facet, @display_facet, view_context)
+          byebug
           @pagination = @presenter.paginator
-
+          byebug
           respond_to do |format|
             format.html do
               # Draw the partial for the "more" facet modal window:
@@ -68,6 +74,8 @@ module Morphosource
         when 'organization_id'
           organization_classes = ['OrganizationCollection', 'Organization']
           query = "has_model_ssim:(#{organization_classes.join(' OR ')})"
+        when 'device'
+          query = 'has_model_ssim:Device'
         else
           query = 'has_model_ssim:unknown'
           Rails.logger.warn("Unknown model for facet key: #{facet_config.key}")

@@ -33,9 +33,22 @@ nav#masthead .btn-secondary {
   max-width: unset;
 }
 
-div.nav-item > a.nav-link {
-  color: #fff !important;
+#user_utility_links > div.nav-item > a.nav-link {
+  color: #fff;
   max-width: unset;
+}
+
+.secondary-nav .navbar-nav {
+  div.nav-item:hover {
+    background-color: #003880;
+  }
+  div.nav-item > a.nav-link {
+    color: #fff;
+  }
+  div.nav-item.show > a.nav-link:focus {
+    color: #000;
+    background-color: #e7e7e7;
+  }
 }
 
 div#user_utility_links {

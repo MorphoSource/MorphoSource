@@ -12,7 +12,7 @@ module Morphosource
           alphabetized_facet
         elsif @facet&.helper_method == :user_name_by_id && params["facet.sort"] == "index"
           alphabetized_facet(facet_type: 'user')
-        elsif @facet&.helper_method == :collection_title_by_id && params["facet.containsTitle"].present?
+        elsif ([:title_by_id, :collection_title_by_id].include? @facet&.helper_method) && params["facet.containsTitle"].present?
           filter_facet(params["facet.containsTitle"])
         else
           @response = search_service.facet_field_response(@facet.key)
@@ -62,6 +62,12 @@ module Morphosource
           query = 'has_model_ssim:MediaList'
         when 'seq_section_list'
           query = 'has_model_ssim:SequentialSectionList'
+        when 'object_id'
+          object_classes = ['BiologicalSpecimen', 'CulturalHeritageObject']
+          query = "has_model_ssim:(#{object_classes.join(' OR ')})"
+        when 'organization_id'
+          organization_classes = ['OrganizationCollection', 'Organization']
+          query = "has_model_ssim:(#{organization_classes.join(' OR ')})"
         else
           query = 'has_model_ssim:unknown'
           Rails.logger.warn("Unknown model for facet key: #{facet_config.key}")

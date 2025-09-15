@@ -1,5 +1,5 @@
-<%
-if ["device", "team", "project", "media_list", "seq_section_list", "rights_statement", "license"].include? params[:id]
+
+if ["device", "team", "project", "media_list", "seq_section_list", "rights_statement", "license", "object_id", "organization_id"].include? params[:id]
   # For certain facets, use a different param containsTitle to lookup the value
   containsField = "facet.containsTitle"
 else

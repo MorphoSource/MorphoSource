@@ -4,7 +4,7 @@ module Morphosource
 
     # Used for Item counts at top of page and for flash messages
     def item_count_text
-      count_text(@items.count - @skipped_items.uniq.count)
+      count_text(@items.count - (@skipped_items&.uniq&.count || 0))
     end
 
     def count_text(count)

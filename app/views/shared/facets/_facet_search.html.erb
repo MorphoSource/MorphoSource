@@ -1,6 +1,7 @@
 <%
-if ["device", "team", "project", "media_list", "seq_section_list", "rights_statement", "license"].include? params[:id]
+if @facet.helper_method.to_s.include? "title_by_id"
   # For certain facets, use a different param containsTitle to lookup the value
+  # :collection_title_by_id, :title_by_id, :device_title_by_id, etc.
   containsField = "facet.containsTitle"
 else
   containsField = "facet.contains"

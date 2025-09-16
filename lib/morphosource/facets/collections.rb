@@ -8,11 +8,11 @@ module Morphosource
       def facet
         @facet = blacklight_config.facet_fields[params[:id]]
         raise ActionController::RoutingError, 'Not Found' unless @facet
-        if ([:title_by_id, :collection_title_by_id].include? @facet&.helper_method) && params["facet.sort"] == "index"
+        if (@facet&.helper_method&.to_s&.include? "title_by_id") && params["facet.sort"] == "index"
           alphabetized_facet
         elsif @facet&.helper_method == :user_name_by_id && params["facet.sort"] == "index"
           alphabetized_facet(facet_type: 'user')
-        elsif @facet&.helper_method == :collection_title_by_id && params["facet.containsTitle"].present?
+        elsif (@facet&.helper_method&.to_s&.include? "title_by_id") && params["facet.containsTitle"].present?
           filter_facet(params["facet.containsTitle"])
         else
           @response = search_service.facet_field_response(@facet.key)
@@ -62,6 +62,14 @@ module Morphosource
           query = 'has_model_ssim:MediaList'
         when 'seq_section_list'
           query = 'has_model_ssim:SequentialSectionList'
+        when 'object'
+          object_classes = ['BiologicalSpecimen', 'CulturalHeritageObject']
+          query = "has_model_ssim:(#{object_classes.join(' OR ')})"
+        when 'organization'
+          organization_classes = ['Organization', 'OrganizationCollection']
+          query = "has_model_ssim:(#{organization_classes.join(' OR ')})"
+        when 'device'
+          query = 'has_model_ssim:Device'
         else
           query = 'has_model_ssim:unknown'
           Rails.logger.warn("Unknown model for facet key: #{facet_config.key}")

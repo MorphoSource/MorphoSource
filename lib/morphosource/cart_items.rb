@@ -4,13 +4,13 @@ module Morphosource
 
     # Used for Item counts at top of page and for flash messages
     def item_count_text
-      count_text(@items.count)
+      count_text(@items.count - (@skipped_items&.uniq&.count || 0))
     end
 
     def count_text(count)
       count.to_s.concat(count == 1 ? " Item" : " Items")
     end
-
+    
     # gets id(s) for either single button or batch
     def id_params
       params[:item_id] || params[:batch_document_ids] || params[:batch_download_ids]
@@ -156,7 +156,13 @@ module Morphosource
       items = Array(items)
       value = attribute_value(value)
       attribute = get_attribute(action)
-       items.each do |item|
+      @skipped_items = []
+      items.each do |item|
+        # if media no longer exists, user can only clear the request. Other actions are skipped
+        if !Media.exists?(item.work_id) && action != 'cleared'
+          @skipped_items << item.id
+          next
+        end
         item.date_cleared = nil
         item.send(attribute, value)
         item.action_by = current_user.ms_id if manager_action

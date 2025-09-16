@@ -4,7 +4,7 @@
     <%= link_to hyrax.root_path, class: 'dropdown-toggle nav-link', role: 'button', data: { toggle: 'dropdown' }, aria: { haspopup: true, expanded: false, controls: 'browse-links' } do %>
       <span>Browse</span>
     <% end %>
-    <div id="browse-links" class="dropdown-menu dropdown-menu-right" style="margin-left: 10px; margin-right: 10px">
+    <div id="browse-links" class="dropdown-menu dropdown-menu-sm-end" style="margin-left: 10px; margin-right: 10px">
       <%= link_to t("hyrax.toolbar.browse.media_types_and_modalities"), main_app.browse_media_types_and_modalities_path, class: 'dropdown-item' %>
       <div class="dropdown-divider"></div>
       <%= link_to t("hyrax.toolbar.browse.physical_object_types"), main_app.browse_physical_object_types_path, class: 'dropdown-item' %>

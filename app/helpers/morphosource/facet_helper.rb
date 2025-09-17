@@ -48,7 +48,7 @@ module Morphosource
       doc.present? ? doc["has_model_ssim"]&.first&.pluralize&.titleize : "Works"
     end
 
-    def id_helper_method?()
+    def id_helper_method?
       Morphosource::Facets::Collections::ID_HELPER_METHODS.include? @facet&.helper_method
     end
 

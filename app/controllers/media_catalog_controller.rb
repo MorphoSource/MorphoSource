@@ -135,7 +135,7 @@ class MediaCatalogController < CatalogController
     _, @fileset_documents = search_service.fetch ( @document["file_set_ids_ssim"] || [] ), { fq: "has_model_ssim:FileSet" }
     @fileset_document = @fileset_documents&.first
 
-    response = @fileset_document.present? ?
+    response = @fileset_document.present? ? 
       { @fileset_document.has_model.first.underscore => @fileset_document.to_semantic_values } : {}
 
     respond_to do |format|

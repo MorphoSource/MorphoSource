@@ -2,33 +2,45 @@ module Morphosource
   module Facets
     module Collections
 
+    ID_HELPER_METHODS = [
+      :collection_title_by_id,
+      :device_title_by_id,
+      :title_by_id
+    ].freeze
+
       # displays values and pagination links for a single facet field
       # overrides Blacklight 7.40.0 app/controllers/concerns/blacklight/catalog
-      # if paging on collections id facet (ex: 'member_of_team_ids') and sorting alphabetically, use the alphabetized_collections_facet method instead
       def facet
         @facet = blacklight_config.facet_fields[params[:id]]
         raise ActionController::RoutingError, 'Not Found' unless @facet
-        if ([:title_by_id, :collection_title_by_id].include? @facet&.helper_method) && params["facet.sort"] == "index"
-          alphabetized_facet
-        elsif @facet&.helper_method == :user_name_by_id && params["facet.sort"] == "index"
-          alphabetized_facet(facet_type: 'user')
-        elsif @facet&.helper_method == :collection_title_by_id && params["facet.containsTitle"].present?
-          filter_facet(params["facet.containsTitle"])
-        else
-          @response = search_service.facet_field_response(@facet.key)
-          @display_facet = @response.aggregations[@facet.field]
-          @presenter = (@facet.presenter || Blacklight::FacetFieldPresenter).new(@facet, @display_facet, view_context)
-          @pagination = @presenter.paginator
+        # if the facet has an id helper method we need to handle sorting and searching differently
+        if id_helper_method?
+          if params["facet.containsTitle"].present?
+            # if searching by title, proceed to filter_facet
+            filter_facet(params["facet.containsTitle"])
+          elsif params["facet.sort"] == "index"
+            # if sorting alphabetically, proceed to alphabetized_facet
+            alphabetized_facet
+          else
+            @response = search_service.facet_field_response(@facet.key)
+            @display_facet = @response.aggregations[@facet.field]
+            @presenter = (@facet.presenter || Blacklight::FacetFieldPresenter).new(@facet, @display_facet, view_context)
+            @pagination = @presenter.paginator
 
-          respond_to do |format|
-            format.html do
-              # Draw the partial for the "more" facet modal window:
-              return render layout: false if request.xhr?
-              # Otherwise draw the facet selector for users who have javascript disabled.
+            respond_to do |format|
+              format.html do
+                # Draw the partial for the "more" facet modal window:
+                return render layout: false if request.xhr?
+                # Otherwise draw the facet selector for users who have javascript disabled.
+              end
+              format.json
             end
-            format.json
           end
         end
+      end
+
+      def id_helper_method?
+        Morphosource::Facets::Collections::ID_HELPER_METHODS.include? @facet&.helper_method
       end
 
       # Run a filter on the returned facet values to only include the IDs that match the title
@@ -62,6 +74,14 @@ module Morphosource
           query = 'has_model_ssim:MediaList'
         when 'seq_section_list'
           query = 'has_model_ssim:SequentialSectionList'
+        when 'object'
+          object_classes = ['BiologicalSpecimen', 'CulturalHeritageObject']
+          query = "has_model_ssim:(#{object_classes.join(' OR ')})"
+        when 'organization'
+          organization_classes = ['Organization', 'OrganizationCollection']
+          query = "has_model_ssim:(#{organization_classes.join(' OR ')})"
+        when 'device'
+          query = 'has_model_ssim:Device'
         else
           query = 'has_model_ssim:unknown'
           Rails.logger.warn("Unknown model for facet key: #{facet_config.key}")
@@ -86,7 +106,7 @@ module Morphosource
         blacklight_config.default_more_limit = 999999
         @response = search_service.facet_field_response(@facet.key, params.to_unsafe_h) # todo5 fix this
         # sort all the facet items by title
-        facet_type == 'user' ? sort_users_by_display_name : sort_records_by_title
+        sort_records_by_title
         # modify the display facet to include only the items for the current page
         set_display_facet_items
         # pass the modified display_facet to the facet_paginator
@@ -103,10 +123,6 @@ module Morphosource
 
       def sort_records_by_title
         @response.aggregations[@facet.field].items.sort_by! { |i| filtered_record_title_by_id(i.value).downcase }
-      end
-
-      def sort_users_by_display_name
-        @response.aggregations[@facet.field].items.sort_by! { |i| filtered_display_name_by_id(i.value).downcase }
       end
 
       def set_display_facet_items(filtered_values: nil)
@@ -137,26 +153,12 @@ module Morphosource
         @record_titles[id] || "Collection #{id} Not Found"
       end
 
-      def filtered_display_name_by_id(id)
-        @display_names ||= display_names
-        @display_names[id] || "User #{id} Not Found"
-      end
-
       # returns a hash of record ids and titles:
       # ex: {"000202905"=>"Collection Title 1", "000200071"=>"Collection Title 2"}
       def record_titles
         record_ids = @response.aggregations[@facet.field].items.map { |i| i.value }
         Morphosource::SolrService.new.get_docs(nil, fl: 'id,title_tesim', fq: ["id:(#{record_ids.join(' OR ')})"]).map {|h| [h["id"], h["title_tesim"].first]}.to_h
       end
-
-      # returns a hash of user ids and display names:
-      # ex:
-      def display_names
-        User.all.each_with_object({}) do |u, names|
-          names[u.ms_id] = u.name_or_email
-        end
-      end
-
     end
   end
 end

@@ -1,5 +1,5 @@
 <%
-if @facet.helper_method.to_s.include? "title_by_id"
+if id_helper_method?
   # For certain facets, use a different param containsTitle to lookup the value
   # :collection_title_by_id, :title_by_id, :device_title_by_id, etc.
   containsField = "facet.containsTitle"

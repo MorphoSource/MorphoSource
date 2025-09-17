@@ -120,3 +120,61 @@ div.navbar-toggler {
 header + .container {
   padding-top: 20px !important; // todo5 also questionable
 }
+
+/* Bootstrap 5 style dropdown menu alignment helpers
+  (can be removed after updating to Bootstrap 5) */
+
+  .dropdown-menu-start {
+  left: 0 !important;
+  right: auto !important;
+}
+
+.dropdown-menu-end {
+  right: 0 !important;
+  left: auto !important;
+}
+
+@media (min-width: 576px) {
+  .dropdown-menu-sm-start {
+    left: 0 !important;
+    right: auto !important;
+  }
+  .dropdown-menu-sm-end {
+    right: 0 !important;
+    left: auto !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .dropdown-menu-md-start {
+    left: 0 !important;
+    right: auto !important;
+  }
+  .dropdown-menu-md-end {
+    right: 0 !important;
+    left: auto !important;
+  }
+}
+
+@media (min-width: 992px) {
+  .dropdown-menu-lg-start {
+    left: 0 !important;
+    right: auto !important;
+  }
+  .dropdown-menu-lg-end {
+    right: 0 !important;
+    left: auto !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  .dropdown-menu-xl-start {
+    left: 0 !important;
+    right: auto !important;
+  }
+  .dropdown-menu-xl-end {
+    right: 0 !important;
+    left: auto !important;
+  }
+}
+/* end Bootstrap 5 style dropdown menu alignment helpers */

@@ -14,27 +14,25 @@ module Morphosource
         @facet = blacklight_config.facet_fields[params[:id]]
         raise ActionController::RoutingError, 'Not Found' unless @facet
         # if the facet has an id helper method we need to handle sorting and searching differently
-        if id_helper_method?
-          if params["facet.containsTitle"].present?
-            # if searching by title, proceed to filter_facet
-            filter_facet(params["facet.containsTitle"])
-          elsif params["facet.sort"] == "index"
-            # if sorting alphabetically, proceed to alphabetized_facet
-            alphabetized_facet
-          else
-            @response = search_service.facet_field_response(@facet.key)
-            @display_facet = @response.aggregations[@facet.field]
-            @presenter = (@facet.presenter || Blacklight::FacetFieldPresenter).new(@facet, @display_facet, view_context)
-            @pagination = @presenter.paginator
+        if id_helper_method? && params["facet.containsTitle"].present?
+          # if searching by title, proceed to filter_facet
+          filter_facet(params["facet.containsTitle"])
+        elsif id_helper_method? &&params["facet.sort"] == "index"
+          # if sorting alphabetically, proceed to alphabetized_facet
+          alphabetized_facet
+        else
+          @response = search_service.facet_field_response(@facet.key)
+          @display_facet = @response.aggregations[@facet.field]
+          @presenter = (@facet.presenter || Blacklight::FacetFieldPresenter).new(@facet, @display_facet, view_context)
+          @pagination = @presenter.paginator
 
-            respond_to do |format|
-              format.html do
-                # Draw the partial for the "more" facet modal window:
-                return render layout: false if request.xhr?
-                # Otherwise draw the facet selector for users who have javascript disabled.
-              end
-              format.json
+          respond_to do |format|
+            format.html do
+              # Draw the partial for the "more" facet modal window:
+              return render layout: false if request.xhr?
+              # Otherwise draw the facet selector for users who have javascript disabled.
             end
+            format.json
           end
         end
       end
@@ -150,14 +148,18 @@ module Morphosource
 
       def filtered_record_title_by_id(id)
         @record_titles ||= record_titles
-        @record_titles[id] || "Collection #{id} Not Found"
+        @record_titles[id] || "Record #{id} Not Found"
       end
 
       # returns a hash of record ids and titles:
       # ex: {"000202905"=>"Collection Title 1", "000200071"=>"Collection Title 2"}
       def record_titles
         record_ids = @response.aggregations[@facet.field].items.map { |i| i.value }
-        Morphosource::SolrService.new.get_docs(nil, fl: 'id,title_tesim', fq: ["id:(#{record_ids.join(' OR ')})"]).map {|h| [h["id"], h["title_tesim"].first]}.to_h
+        if @facet.key == 'device'
+          Morphosource::SolrService.new.get_docs(nil, fl: 'id,title_tesim,creator_tesim', fq: ["id:(#{record_ids.join(' OR ')})"]).map {|h| [h["id"], "#{ h['creator_tesim']&.first || "" } #{ h['title_tesim']&.first }"] }.to_h
+        else
+          Morphosource::SolrService.new.get_docs(nil, fl: 'id,title_tesim', fq: ["id:(#{record_ids.join(' OR ')})"]).map {|h| [h["id"], h["title_tesim"].first]}.to_h
+        end
       end
     end
   end

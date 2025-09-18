@@ -25,7 +25,7 @@ gem 'bootstrap', '~> 4.0'
 # Hyrax dependencies
 
 # temporarily forking browse-everything until https://github.com/samvera/browse-everything/pull/442 is approved
-gem 'browse-everything', github: 'MorphoSource/browse-everything', ref: '58736846380b689b658b4cad007bfff6aa3c4c37'
+gem 'browse-everything', github: 'MorphoSource/browse-everything', ref: '676505bfed8a5a59e039e359296c53ce65bd4097'
 
 # pull iiif_manifest fork that can handle 3D manifests
 gem 'iiif_manifest', github: 'MorphoSource/iiif_manifest', tag: 'v1.3.1'

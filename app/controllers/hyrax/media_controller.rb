@@ -83,6 +83,11 @@ module Hyrax
 
     # overriding action methods from works_controller_behavior.rb
     def edit
+      if Hyrax.config.enable_browse_everything && Hyrax.config.enable_browse_everything_google_drive
+        # Header needed for Browse Everything to work with Google Drive
+        response.headers['Cross-Origin-Opener-Policy'] = 'same-origin-allow-popups'
+      end
+
       build_form
       @presenter = show_presenter.new(search_result_document(id: params[:id]), current_ability, request)
       @member_of_collections_json = member_of_collections_json(@presenter.member_of_collection_presenters)

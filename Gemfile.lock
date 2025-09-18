@@ -1,7 +1,7 @@
 GIT
   remote: https://github.com/MorphoSource/browse-everything.git
-  revision: 58736846380b689b658b4cad007bfff6aa3c4c37
-  ref: 58736846380b689b658b4cad007bfff6aa3c4c37
+  revision: 676505bfed8a5a59e039e359296c53ce65bd4097
+  ref: 676505bfed8a5a59e039e359296c53ce65bd4097
   specs:
     browse-everything (1.5.0)
       addressable (~> 2.5)

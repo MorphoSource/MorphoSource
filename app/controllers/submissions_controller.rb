@@ -36,6 +36,11 @@ class SubmissionsController < ApplicationController
   end
 
   def new
+    if Hyrax.config.enable_browse_everything && Hyrax.config.enable_browse_everything_google_drive
+      # Header needed for Browse Everything to work with Google Drive
+      response.headers['Cross-Origin-Opener-Policy'] = 'same-origin-allow-popups'
+    end
+
     if params[:restart]
       clear_session_submission_settings
     end

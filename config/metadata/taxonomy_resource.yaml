@@ -1,0 +1,236 @@
+# Simple yaml config-driven schema which is used to define model attributes,
+# index key names, and form properties.
+#
+# Attributes must have a type but all other configuration options are optional.
+# Please note: If using Valkyrie's Fedora Metadata Adapter, predicates for attributes
+# must be placed here.
+#
+# attributes:
+#   attribute_name:
+#     type: string
+#     multiple: false
+#     index_keys:
+#       - "attribute_name_sim"
+#     form:
+#       required: true
+#       primary: true
+#       multiple: false
+#
+# @see config/metadata/basic_metadata.yaml for an example configuration
+#
+# Generated via
+#  `rails generate hyrax:work_resource TaxonomyResource`
+
+---
+attributes:
+  taxonomy_domain:
+    type: string
+    # predicate: https://www.morphosource.org/terms/domain
+    multiple: true
+    index_keys:
+     - "taxonomy_domain_tesim"
+     - "taxonomy_domain_sim"
+    form:
+      required: false
+      primary: true
+      multiple: true
+  taxonomy_kingdom:
+    type: string
+    # predicate: ::RDF::Vocab::DWC.kingdom
+    multiple: true
+    index_keys:
+     - "taxonomy_kingdom_tesim"
+     - "taxonomy_kingdom_sim"
+    form:
+      required: false
+      primary: true
+      multiple: true
+  taxonomy_phylum:
+    type: string
+    # predicate: ::RDF::Vocab::DWC.phylum
+    multiple: true
+    index_keys:
+     - "taxonomy_phylum_tesim"
+     - "taxonomy_phylum_sim"
+    form:
+      required: false
+      primary: true
+      multiple: true
+  taxonomy_superclass:
+    type: string
+    # predicate: https://www.morphosource.org/terms/superclass
+    multiple: true
+    index_keys:
+     - "taxonomy_superclass_tesim"
+     - "taxonomy_superclass_sim"
+    form:
+      required: false
+      primary: true
+      multiple: true
+  taxonomy_class:
+    type: string
+    # predicate: ::RDF::Vocab::DWC.class
+    multiple: true
+    index_keys:
+     - "taxonomy_class_tesim"
+     - "taxonomy_class_sim"
+    form:
+      required: false
+      primary: true
+      multiple: true
+  taxonomy_subclass:
+    type: string
+    # predicate: https://www.morphosource.org/terms/subclass
+    multiple: true
+    index_keys:
+     - "taxonomy_subclass_tesim"
+     - "taxonomy_subclass_sim"
+    form:
+      required: false
+      primary: true
+      multiple: true
+  taxonomy_superorder:
+    type: string
+    # predicate: https://www.morphosource.org/terms/superorder
+    multiple: true
+    index_keys:
+     - "taxonomy_superorder_tesim"
+     - "taxonomy_superorder_sim"
+    form:
+      required: false
+      primary: true
+      multiple: true
+  taxonomy_order:
+    type: string
+    # predicate: ::RDF::Vocab::DWC.order
+    multiple: true
+    index_keys:
+     - "taxonomy_order_tesim"
+     - "taxonomy_order_sim"
+    form:
+      required: false
+      primary: true
+      multiple: true
+  taxonomy_suborder:
+    type: string
+    # predicate: https://www.morphosource.org/terms/suborder
+    multiple: true
+    index_keys:
+     - "taxonomy_suborder_tesim"
+     - "taxonomy_suborder_sim"
+    form:
+      required: false
+      primary: true
+      multiple: true
+  taxonomy_superfamily:
+    type: string
+    # predicate: https://www.morphosource.org/terms/superfamily
+    multiple: true
+    index_keys:
+     - "taxonomy_superfamily_tesim"
+     - "taxonomy_superfamily_sim"
+    form:
+      required: false
+      primary: true
+      multiple: true
+  taxonomy_family:
+    type: string
+    # predicate: ::RDF::Vocab::DWC.family
+    multiple: true
+    index_keys:
+     - "taxonomy_family_tesim"
+     - "taxonomy_family_sim"
+    form:
+      required: false
+      primary: true
+      multiple: true
+  taxonomy_subfamily:
+    type: string
+    # predicate: https://www.morphosource.org/terms/subfamily
+    multiple: true
+    index_keys:
+     - "taxonomy_subfamily_tesim"
+     - "taxonomy_subfamily_sim"
+    form:
+      required: false
+      primary: true
+      multiple: true
+  taxonomy_tribe:
+    type: string
+    # predicate: https://www.morphosource.org/terms/tribe
+    multiple: true
+    index_keys:
+     - "taxonomy_tribe_tesim"
+     - "taxonomy_tribe_sim"
+    form:
+      required: false
+      primary: true
+      multiple: true
+  taxonomy_genus:
+    type: string
+    # predicate: ::RDF::Vocab::DWC.genus
+    multiple: true
+    index_keys:
+     - "taxonomy_genus_tesim"
+     - "taxonomy_genus_sim"
+    form:
+      required: false
+      primary: true
+      multiple: true
+  taxonomy_subgenus:
+    type: string
+    # predicate: ::RDF::Vocab::DWC.subgenus
+    multiple: true
+    index_keys:
+     - "taxonomy_subgenus_tesim"
+     - "taxonomy_subgenus_sim"
+    form:
+      required: false
+      primary: true
+      multiple: true
+  taxonomy_species:
+    type: string
+    # predicate: https://www.morphosource.org/terms/species
+    multiple: true
+    index_keys:
+     - "taxonomy_species_tesim"
+     - "taxonomy_species_sim"
+    form:
+      required: false
+      primary: true
+      multiple: true
+  taxonomy_subspecies:
+    type: string
+    # predicate: https://www.morphosource.org/terms/subspecies
+    multiple: true
+    index_keys:
+     - "taxonomy_subspecies_tesim"
+     - "taxonomy_subspecies_sim"
+    form:
+      required: false
+      primary: true
+      multiple: true
+  trusted:
+    type: string
+    # predicate: ::RDF::Vocab::DWC.taxonomicStatus
+    multiple: true
+    index_keys:
+     - "trusted_tesim"
+     - "trusted_sim"
+    form:
+      required: false
+      primary: false
+      multiple: true
+  gbif_key:
+    type: string
+    # predicate: https://www.morphosource.org/terms/gbifKey
+    multiple: true
+    index_keys:
+     - "gbif_key_tesim"
+     - "gbif_key_ssim"
+    form:
+      required: false
+      primary: false
+      multiple: true
+
+

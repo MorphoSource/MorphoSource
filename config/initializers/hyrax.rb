@@ -1,3 +1,5 @@
+require 'wings' # fix issue with Hyrax::ValkyrieLazyMigration invoking Wings
+
 Hyrax.config do |config|
   # Injected via `rails g hyrax:work Media`
   config.register_curation_concern :media
@@ -15,6 +17,8 @@ Hyrax.config do |config|
   config.register_curation_concern :imaging_event
   # Injected via `rails g hyrax:work Taxonomy`
   config.register_curation_concern :taxonomy
+  # Injected via `rails g hyrax:work_resource TaxonomyResource`
+  config.register_curation_concern :taxonomy_resource
 
   # Register roles that are expected by your implementation.
   # @see Hyrax::RoleRegistry for additional details.
@@ -266,6 +270,19 @@ Hyrax.config do |config|
   ]
 
   ### General configuration ###
+
+  # Allow use of legacy AF models
+  # If using Frayja/Frigg then use the resource they provide
+  if Hyrax.config.valkyrie_transition?
+    config.collection_model = 'CollectionResource'
+    config.admin_set_model = 'AdminSetResource'
+    config.file_set_model = 'Hyrax::FileSet'
+  else
+    # allow legacy AF models
+    config.collection_model = '::Collection'
+    config.admin_set_model = 'AdminSet'
+    config.file_set_model = '::FileSet'
+  end
 
   # Options to control the file uploader
   config.uploader = {

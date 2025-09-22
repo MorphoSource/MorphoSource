@@ -1,31 +1,34 @@
 <% content_for :body_css_classes do %>showcase profile<% end %>
 
 <% provide :page_header do %>
-  <div class="col-xs-6 no-horizontal-padding">
-    <h1><span class="fa fa-id-card" aria-hidden="true"></span> <%= t("hyrax.admin.sidebar.profile") %></h1>
+  <div class="col-12 no-horizontal-padding">
+    <h1>
+      <span class="fa fa-id-card" aria-hidden="true"></span>
+      <%= t("hyrax.admin.sidebar.profile") %>
+      <% if can? :edit, @user %>
+        <div class="float-right">
+          <% if @user == current_user || current_user.admin? %>
+            <%= link_to hyrax.edit_dashboard_profile_path(@user), class: "btn btn-primary" do %>
+              <%= t("hyrax.edit_profile") %>
+            <% end %>
+          <% end %>
+          <% if @user == current_user %>
+            <%= link_to main_app.profile_edit_password_path(@user), class: "btn btn-primary" do %>
+              <%= t("hyrax.update_password") %>
+            <% end %>
+          <% end %>
+        </div>
+      <% end %>
+    </h1>
   </div>
-  <% if can? :edit, @user %>
-    <div class="pull-right">
-      <% if @user == current_user || current_user.admin? %>
-        <%= link_to hyrax.edit_dashboard_profile_path(@user), class: "btn btn-primary" do %>
-          <%= t("hyrax.edit_profile") %>
-        <% end %>
-      <% end %>
-      <% if @user == current_user %>
-        <%= link_to main_app.profile_edit_password_path(@user), class: "btn btn-primary" do %>
-          <%= t("hyrax.update_password") %>
-        <% end %>
-      <% end %>
-    </div>
-  <% end %>
 <% end %>
 
-<div class="col-xs-12 flash-wrapper">
+<div class="col-12 flash-wrapper">
   <%= render "/flash_msg" %>
 </div>
 
-<div class="panel panel-default">
-  <div class="panel-body">
+<div class="card panel-default">
+  <div class="card-body">
     <div class="list-group">
       <div class="list-group-item">
         <%= render partial: 'hyrax/users/user_info', locals: { user: @user, field_list: @presenter.display_fields } %>
@@ -41,8 +44,8 @@
 </div>
 
 <% if can? :edit, @user %>
-  <div class="landing panel panel-default">
-    <div class="panel-body">
+  <div class="landing card panel-default">
+    <div class="card-body">
       <div class="list-group">
         <div class="list-group-item">
           <div><h2>User Settings</h2></div>
@@ -50,36 +53,38 @@
               <div class="row form-group no-horizontal-padding">
                 <%= f.label :communication_preference, class: "col-4 col-sm-4 control-label", style: "display: flex; align-items: center" do |l| %>
                   <%= t("morphosource.dashboard.profiles.communication_preference") %>
-                  <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.dashboard.profiles.communication_preference_hint") %></p></i> 
+                  <i class="material-icons md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.dashboard.profiles.communication_preference_hint") %>"></i>
                 <% end %>
                 <div class="col-8 col-sm-8">
                   <%= f.select :communication_preference, User.communication_preferences.keys.map { |k| [k.humanize, k] }, {}, class: "form-control" %>
                 </div>
               </div>
-              <%= f.submit t("morphosource.dashboard.profiles.save_settings"), class: "btn btn-primary pull-right" %>
+              <div class="d-flex justify-content-end">
+                <%= f.submit t("morphosource.dashboard.profiles.save_settings"), class: "btn btn-primary" %>
+              </div>
             <% end %>
         </div>
       </div>
     </div>
   </div>
-  
-  <div class="landing panel panel-default">
-    <div class="panel-body">
+
+  <div class="landing card panel-default">
+    <div class="card-body">
       <div class="list-group">
         <div class="list-group-item">
           <div><h2>Advanced User Functions</h2></div>
           <div class="action-section">
             <div class="list-item">
               <%= link_to 'View API Key', main_app.profile_show_path, id: "view-api-key" %>
-              <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.dashboard.profiles.view_api_key") %></p></i> 
+              <i class="material-icons md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.dashboard.profiles.view_api_key") %>"></i>
             </div>
             <div class="list-item">
               <%= link_to 'Generate New API Key', main_app.profile_generate_new_api_key_path %>
-              <i class="material-icons md-18 tooltip-icon"><p class="hint hide"><%= t("morphosource.dashboard.profiles.generate_new_api_key") %></p></i> 
+              <i class="material-icons md-18 tooltip-icon" data-toggle="tooltip" data-placement="top" title="<%= t("morphosource.dashboard.profiles.generate_new_api_key")%>"></i>
             </div>
             <div class="list-item">
               <%= link_to 'API Documentation', 'https://morphosource.stoplight.io/docs/morphosource-api', target: :_blank %>
-              <i class="fas fa-external-link-alt fa-sm" style="margin-left: 5px;"></i> 
+              <i class="fas fa-external-link-alt fa-sm" style="margin-left: 5px;"></i>
             </div>
           </div>
         </div>

@@ -1,16 +1,16 @@
 <ul class="nav nav-tabs" role="tablist">
-  <li role="presentation" class=<%= active_tab?(:media) %> >
-    <a href="/dashboard/my/media" aria-controls="media" role="tab">
-    <i class="fa fa-cube" aria-hidden="true"></i> MEDIA
+  <li role="presentation" class="nav-item <%= active_tab?(:media) %>">
+    <a class="nav-link <%= active_tab?(:media) %>" href="/dashboard/my/media" aria-controls="media" role="tab">
+      <i class="fa fa-cube" aria-hidden="true"></i> MEDIA
     </a>
   </li>
-  <li role="presentation" class=<%= active_tab?(:specimens) %>>
-    <a href="/dashboard/my/specimens" aria-controls="biological_specimens" role="tab">
+  <li role="presentation" class="nav-item <%= active_tab?(:specimens) %>">
+    <a class="nav-link <%= active_tab?(:specimens) %>" href="/dashboard/my/specimens" aria-controls="biological_specimens" role="tab">
       <i class="fas fa-frog" aria-hidden="true"></i> SPECIMENS
     </a>
   </li>
-  <li role="presentation" class=<%= active_tab?(:chos) %>>
-    <a href="/dashboard/my/cultural_heritage_objects" aria-controls="biological_specimens" role="tab">
+  <li role="presentation" class="nav-item <%= active_tab?(:chos) %>">
+    <a class="nav-link <%= active_tab?(:chos) %>" href="/dashboard/my/cultural_heritage_objects" aria-controls="biological_specimens" role="tab">
       <i class="ms2-icon-bowl icon-bowl" aria-hidden="true"></i> CULTURAL HERITAGE OBJECTS
     </a>
   </li>

@@ -47,4 +47,13 @@ RSpec.describe 'dashboard my pages routing', type: :routing do
     route = { controller: 'morphosource/my/cultural_heritage_objects', action: 'facet', id: 'foobar' }
     expect(:get => '/dashboard/my/cultural_heritage_objects/facet/foobar').to route_to(route)
   end
+
+  it 'has my organizations routes' do
+    # index
+    route = { controller: 'morphosource/my/collections/organization_collections', action: 'index' }
+    expect(:get => '/dashboard/my/organizations').to route_to(route)
+    # facet
+    route = { controller: 'morphosource/my/collections/organization_collections', action: 'facet', id: 'foobar' }
+    expect(:get => '/dashboard/my/organizations/facet/foobar').to route_to(route)
+  end
 end

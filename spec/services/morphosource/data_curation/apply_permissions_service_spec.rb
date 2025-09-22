@@ -7,7 +7,7 @@ RSpec.describe Morphosource::DataCuration::ApplyPermissionsService do
   let(:media)   { FactoryBot.create(:media) }
   let(:params)  { { media_id: media.id } }
 
-  subject { described_class.call(params) }
+  subject { described_class.call(**params) }
 
   describe '.call' do
     it 'instantiates the service and calls it' do

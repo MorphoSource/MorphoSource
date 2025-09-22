@@ -4,13 +4,13 @@ module Morphosource
 
     # Used for Item counts at top of page and for flash messages
     def item_count_text
-      count_text(@items.count)
+      count_text(@items.count - (@skipped_items&.uniq&.count || 0))
     end
 
     def count_text(count)
       count.to_s.concat(count == 1 ? " Item" : " Items")
     end
-
+    
     # gets id(s) for either single button or batch
     def id_params
       params[:item_id] || params[:batch_document_ids] || params[:batch_download_ids]
@@ -87,7 +87,7 @@ module Morphosource
 
     # Add a first download event with download hash to a CartItem
     def add_first_download(item, download_hash)
-      item.update_attributes(
+      item.update(
         date_downloaded: Time.now,
         download_attempts: 1,
         download_hash: download_hash,
@@ -99,7 +99,7 @@ module Morphosource
 
     # Add download link generation event with download hash to a CartItem
     def add_link_generation(item, download_hash)
-      item.update_attributes(
+      item.update(
         download_attempts: 0,
         download_hash: download_hash,
         download_method: "API"
@@ -108,7 +108,7 @@ module Morphosource
 
     # Add a subsequent download event to a CartItem
     def add_subsequent_download(item, download_method = nil)
-      item.update_attributes(
+      item.update(
         date_downloaded: Time.now,
         download_attempts: (item.download_attempts || 0) + 1,
         download_usage: usage,
@@ -120,7 +120,7 @@ module Morphosource
     # Create a downloaded CartItem for work
     def create_downloaded_item(work_id, download_hash)
       item = create_cart_item(work_id)
-      item.update_attributes(
+      item.update(
         in_cart: false,
         date_downloaded: Time.now,
         download_attempts: 1,
@@ -146,7 +146,7 @@ module Morphosource
 
     # Add first or subsequent download event after download from API
     def update_cart_item_after_download_from_api(item)
-      item.update_attributes(
+      item.update(
         date_downloaded: Time.now,
         download_attempts: (item.download_attempts || 0) + 1,
       ) if item.present?
@@ -156,7 +156,13 @@ module Morphosource
       items = Array(items)
       value = attribute_value(value)
       attribute = get_attribute(action)
-       items.each do |item|
+      @skipped_items = []
+      items.each do |item|
+        # if media no longer exists, user can only clear the request. Other actions are skipped
+        if !Media.exists?(item.work_id) && action != 'cleared'
+          @skipped_items << item.id
+          next
+        end
         item.date_cleared = nil
         item.send(attribute, value)
         item.action_by = current_user.ms_id if manager_action

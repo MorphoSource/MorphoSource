@@ -19,7 +19,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
 
     context 'the item is canceled' do
       let(:label_content) do
-        %(<span class=\"label label-danger\" style=\"background-color: gray;\">Canceled</span>)
+        %(<span class=\"badge badge-danger\" style=\"background-color: gray;\">Canceled</span>)
       end
       let(:button_content) do
         %(<button name=\"button\" type=\"submit\" id=\"request-button\" class=\"btn btn-info btn-request-download-item\" data-toggle=\"modal\" data-target=\"#pageModal\" data-item-id=\"0\">Request Download</button>)
@@ -41,7 +41,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
 
     context 'the request is denied' do
       let(:label_content) do
-        %(<span class=\"label label-danger\" style=\"\">Denied</span>)
+        %(<span class=\"badge badge-danger\" style=\"\">Denied</span>)
       end
       let(:button_content) do
         %(<a class=\"btn btn-danger\" style=\"\" rel=\"nofollow\" data-method=\"delete\" href=\"/remove_from_cart?item_id=#{item.id}\">Remove from Cart</a>)
@@ -79,7 +79,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
 
     context 'the request approval is expired' do
       let(:label_content) do
-        %(<span class=\"label label-warning\" style=\"background-color: orange;\">Expired</span>)
+        %(<span class=\"badge badge-warning\" style=\"background-color: orange;\">Expired</span>)
       end
       let(:button_content) do
         %(<a class=\"btn btn-primary\" style=\"\" data-method=\"get\" href=\"/request_again?item_id=#{item.id}\">Request Again</a>)
@@ -100,7 +100,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
 
     context 'the request is approved' do
       let(:label_content) do
-        %(<span class=\"label label-success\" style=\"\">Approved</span>)
+        %(<span class=\"badge badge-success\" style=\"\">Approved</span>)
       end
       before do
         item.date_requested = Date.yesterday
@@ -115,7 +115,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
 
     context 'the item status is requested' do
       let(:label_content) do
-        %(<span class=\"label label-primary\" style=\"\">Requested</span>)
+        %(<span class=\"badge badge-primary\" style=\"\">Requested</span>)
       end
       let(:button_content) do
         %(<a class=\"btn btn-danger\" style=\"background-color: gray;\" rel=\"nofollow\" data-method=\"put\" href=\"/cancel_request?item_id=#{item.id}\">Cancel</a>)
@@ -134,7 +134,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
 
     context 'the item is not requested' do
       let(:label_content) do
-        %(<span class=\"label label-info\" style=\"background-color: teal;\">Not Requested</span>)
+        %(<span class=\"badge badge-info\" style=\"background-color: teal;\">Not Requested</span>)
       end
       let(:button_content) do
         %(<button name=\"button\" type=\"submit\" id=\"request-button\" class=\"btn btn-info btn-request-download-item\" data-toggle=\"modal\" data-target=\"#pageModal\" data-item-id=\"0\" data-media-id=\"#{work.id}\">Request Download</button>)
@@ -166,7 +166,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
           assign(:curation_concern, open_media)
         end
         it 'displays the disabled download button' do
-          expect(helper.choose_download_button).to eq("<a class=\"btn btn-default\" role=\"button\" style=\"flex-grow: 1;\" disabled=\"disabled\" href=\"javascript:void(0)\">Download</a>")
+          expect(helper.choose_download_button).to eq("<a class=\"btn btn-secondary\" role=\"button\" style=\"flex-grow: 1;\" disabled=\"disabled\" href=\"javascript:void(0)\">Download</a>")
         end
       end
 
@@ -176,7 +176,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
             assign(:curation_concern, restricted_media)
           end
           it 'displays the disabled request download button' do
-            expect(helper.choose_download_button).to eq("<a class=\"btn btn-default\" role=\"button\" style=\"flex-grow: 1;\" disabled=\"disabled\" href=\"\">Download</a>")
+            expect(helper.choose_download_button).to eq("<a class=\"btn btn-secondary\" role=\"button\" style=\"flex-grow: 1;\" disabled=\"disabled\" href=\"\">Download</a>")
           end
         end
       end
@@ -191,7 +191,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
         end
 
         it 'displays the download button' do
-          expect(helper.choose_download_button).to eq("<a class=\"btn btn-default btn-download-item\" id=\"btn-download-item\" data-media-id=\"000200000\" href=\"javascript:void(0)\">Download</a>")
+          expect(helper.choose_download_button).to eq("<a class=\"btn btn-secondary btn-download-item\" id=\"btn-download-item\" data-media-id=\"000200000\" href=\"javascript:void(0)\">Download</a>")
         end
       end
 
@@ -201,7 +201,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
         end
 
         it 'displays the request download button' do
-          expect(helper.choose_download_button).to eq("<button name=\"button\" type=\"submit\" class=\"btn btn-default btn-request-download-item\" id=\"btn-request-download-item\" data-toggle=\"modal\" data-target=\"#pageModal\" data-work-id=\"#{restricted_media.id}\" data-media-id=\"#{restricted_media.id}\">Request Download</button>")
+          expect(helper.choose_download_button).to eq("<button name=\"button\" type=\"submit\" class=\"btn btn-secondary btn-request-download-item\" id=\"btn-request-download-item\" data-toggle=\"modal\" data-target=\"#pageModal\" data-work-id=\"#{restricted_media.id}\" data-media-id=\"#{restricted_media.id}\">Request Download</button>")
         end
 
         context 'user has an approved cart item' do
@@ -209,7 +209,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
             allow(current_user).to receive(:my_approved_requests_work_ids).and_return([restricted_media.id])
           end
           it 'returns the download button' do
-            expect(helper.choose_download_button).to eq("<a class=\"btn btn-default btn-download-item\" id=\"btn-download-item\" data-media-id=\"000200000\" href=\"javascript:void(0)\">Download</a>")
+            expect(helper.choose_download_button).to eq("<a class=\"btn btn-secondary btn-download-item\" id=\"btn-download-item\" data-media-id=\"000200000\" href=\"javascript:void(0)\">Download</a>")
           end
         end
 
@@ -219,7 +219,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
           end
 
           it 'returns the download requested button' do
-            expect(helper.choose_download_button).to eq("<a class=\"btn btn-default\" role=\"button\" disabled=\"disabled\" href=\"javascript:void(0)\">DL Request Sent</a>")
+            expect(helper.choose_download_button).to eq("<a class=\"btn btn-secondary\" role=\"button\" disabled=\"disabled\" href=\"javascript:void(0)\">DL Request Sent</a>")
           end
         end
 
@@ -233,7 +233,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
           end
 
           it 'returns the download button' do
-            expect(helper.choose_download_button).to eq("<a class=\"btn btn-default btn-download-item\" id=\"btn-download-item\" data-media-id=\"000200000\" href=\"javascript:void(0)\">Download</a>")
+            expect(helper.choose_download_button).to eq("<a class=\"btn btn-secondary btn-download-item\" id=\"btn-download-item\" data-media-id=\"000200000\" href=\"javascript:void(0)\">Download</a>")
           end
         end
       end
@@ -252,7 +252,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
       let(:current_user)  { nil }
 
       it 'returns the disabled add to cart button' do
-        expect(helper.choose_cart_button).to eq("<a class=\"btn btn-default\" role=\"button\" style=\"flex-grow: 1;\" disabled=\"disabled\" href=\"javascript:void(0)\">Add to Cart</a>")
+        expect(helper.choose_cart_button).to eq("<a class=\"btn btn-secondary\" role=\"button\" style=\"flex-grow: 1;\" disabled=\"disabled\" href=\"javascript:void(0)\">Add to Cart</a>")
       end
     end
 
@@ -287,7 +287,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
             end
 
             it 'returns the add to cart button' do
-              expect(helper.choose_cart_button).to eq("<a class=\"btn btn-default\" rel=\"nofollow\" data-method=\"post\" href=\"/add_to_cart?work_id=#{private_media.id}\">Add to Cart</a>")
+              expect(helper.choose_cart_button).to eq("<a class=\"btn btn-secondary\" rel=\"nofollow\" data-method=\"post\" href=\"/add_to_cart?work_id=#{private_media.id}\">Add to Cart</a>")
             end
           end
 
@@ -297,7 +297,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
             end
 
             it 'returns the in cart button' do
-              expect(helper.choose_cart_button).to eq("<a class=\"btn btn-default\" href=\"/dashboard/my/cart\">Item in Cart</a>")
+              expect(helper.choose_cart_button).to eq("<a class=\"btn btn-secondary\" href=\"/dashboard/my/cart\">Item in Cart</a>")
             end
           end
         end
@@ -315,7 +315,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
             end
 
             it 'returns the add to cart button' do
-              expect(helper.choose_cart_button).to eq("<a class=\"btn btn-default\" rel=\"nofollow\" data-method=\"post\" href=\"/add_to_cart?work_id=#{private_media.id}\">Add to Cart</a>")
+              expect(helper.choose_cart_button).to eq("<a class=\"btn btn-secondary\" rel=\"nofollow\" data-method=\"post\" href=\"/add_to_cart?work_id=#{private_media.id}\">Add to Cart</a>")
             end
           end
 
@@ -325,7 +325,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
             end
 
             it 'returns the in cart button' do
-              expect(helper.choose_cart_button).to eq("<a class=\"btn btn-default\" href=\"/dashboard/my/cart\">Item in Cart</a>")
+              expect(helper.choose_cart_button).to eq("<a class=\"btn btn-secondary\" href=\"/dashboard/my/cart\">Item in Cart</a>")
             end
           end
         end
@@ -342,7 +342,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
           end
 
           it 'returns the add to cart button' do
-            expect(helper.choose_cart_button).to eq("<a class=\"btn btn-default\" rel=\"nofollow\" data-method=\"post\" href=\"/add_to_cart?work_id=#{restricted_media.id}\">Add to Cart</a>")
+            expect(helper.choose_cart_button).to eq("<a class=\"btn btn-secondary\" rel=\"nofollow\" data-method=\"post\" href=\"/add_to_cart?work_id=#{restricted_media.id}\">Add to Cart</a>")
           end
         end
 
@@ -352,7 +352,7 @@ RSpec.describe Morphosource::CartItemHelper, type: :helper do
           end
 
           it 'returns the in cart button' do
-            expect(helper.choose_cart_button).to eq("<a class=\"btn btn-default\" href=\"/dashboard/my/cart\">Item in Cart</a>")
+            expect(helper.choose_cart_button).to eq("<a class=\"btn btn-secondary\" href=\"/dashboard/my/cart\">Item in Cart</a>")
           end
         end
       end

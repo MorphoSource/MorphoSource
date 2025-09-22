@@ -1,5 +1,5 @@
-<div class="panel panel-default panel-user">
-  <div class="panel-heading">
+<div class="card panel-default panel-user">
+  <div class="card-header">
     <% if user.avatar.present? %>
       <%= image_tag user.avatar.url(:thumb), width: 120, class: "float-left block-padding" %>
       <h1><%= user.name %></h1>
@@ -11,7 +11,7 @@
     <div class="clearfix"></div>
   </div>
 
-  <div class="list-group">
+  <div class="list-group list-group-flush">
     <%= render "hyrax/users/vitals", user: user %>
 
     <div class="list-group-item">

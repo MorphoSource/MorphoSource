@@ -1,0 +1,139 @@
+body.catalog-body {
+  div#documents.documents-gallery {
+    padding-top: 0;
+
+    div.thumbnail-container {
+      border: 1px solid #ddd;
+      margin-bottom: 20px;
+      padding: 10px;
+
+      div.caption.container {
+        margin-top: 0 !important;
+      }
+
+      .document-thumbnail {
+        text-align: center;
+      }
+
+      img.img-thumbnail {
+        border: none;
+        width: 60%;
+        margin: 20px auto 0;
+      }
+
+      .documentHeader {
+        margin-bottom: 10px;
+      }
+
+      h3 {
+        text-align: center;
+      }
+    }
+  }
+
+  div#facets {
+    padding-bottom: 20px;
+
+    div#facet-panel-collapse.collapse:not(.show) {
+      display: none !important; // Fix Hyrax 5.0.1 showing collapsed facets
+    }
+
+    div.facet-limit-active .card-header .btn {
+      color: #FFF;
+    }
+
+    div.facets-header{
+      padding-top: 0;
+
+      .facets-heading {
+        margin-top: 8px;
+      }
+
+      .navbar-toggler-icon {
+        background-image: unset;
+        height: unset;
+      }
+    }
+
+    @media (min-width: 768px) {
+      div#facet-panel-collapse.collapse:not(.show) {
+        display: inline-block !important; // Fix Hyrax 5.0.1 showing collapsed facets
+      }
+
+      div.facets-header {
+        display: none;
+      }
+    }
+  }
+
+  div.card.facet-limit {
+    margin-bottom: 5px;
+  }
+
+  div.constraints-container {
+    margin: 0.625rem 0 !important;
+  }
+
+  div.search-result-wrapper.row {
+    margin-bottom: 4px; // combine with 16px default blacklight padding to add 20px of space
+
+    div.collection-counts-wrapper {
+      div.collection-counts-item {
+        font-size: 14px;
+      }
+    }
+
+    div.list-thumbnail {
+      padding-bottom: 0;
+    }
+
+    div.metadata {
+      margin-left: 0;
+
+      dd {
+        margin-bottom: 5px;
+      }
+    }
+
+    div.search-results-title-row {
+      padding-bottom: 15px !important;
+
+      h3.search-result-title {
+        display: inline-block;
+        margin: 0;
+        font-size: 18px;
+      }
+
+      span.badge {
+        margin-bottom: 0; // Overwrite default Hyrax margin
+      }
+    }
+  }
+
+
+  div.sort-pagination {
+    padding-top: 14px;
+  }
+
+  h2.facets-heading {
+    font-size: 18px;
+  }
+
+  h3.card-header {
+    margin-top: 0;
+  }
+
+  ul.list-unstyled.catalog {
+    margin: 0 !important;
+    padding: 0;
+
+    > li.document {
+      border-bottom: 1px dashed #ccc;
+      margin-bottom: 20px;
+    }
+
+    div.search-result-wrapper.row:first-of-type {
+      padding-top: 0;
+    }
+  }
+}

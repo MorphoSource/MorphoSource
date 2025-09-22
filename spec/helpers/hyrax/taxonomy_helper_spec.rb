@@ -1,5 +1,4 @@
 require 'rails_helper'
-require 'equivalent-xml'
 
 RSpec.describe Hyrax::TaxonomyHelper, type: :helper do
 
@@ -18,7 +17,7 @@ RSpec.describe Hyrax::TaxonomyHelper, type: :helper do
       end
 
       it 'links the display name to the user profile page' do
-        expect(contributing_user_link(taxonomy)).to be_equivalent_to(content)
+        expect(contributing_user_link(taxonomy)).to eq(content)
       end
     end
 
@@ -29,12 +28,9 @@ RSpec.describe Hyrax::TaxonomyHelper, type: :helper do
       end
 
       it 'links the user email to the user profile page' do
-        expect(contributing_user_link(taxonomy)).to be_equivalent_to(content)
+        expect(contributing_user_link(taxonomy)).to eq(content)
       end
     end
-
-
-
   end
 
 end

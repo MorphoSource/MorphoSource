@@ -1,4 +1,4 @@
-//= require handlebars-v4.0.5
+//= require handlebars
 
 import { FieldManager } from 'hydra-editor/field_manager'
 import Handlebars from 'handlebars'
@@ -20,7 +20,7 @@ export default class GettyControlledVocabulary extends FieldManager {
         listClass:         '.listing',
         inputTypeClass:    '.controlled_vocabulary',
 
-        addHtml:           '<button type=\"button\" class=\"btn btn-link getty add\" style=\"visibility: hidden;\"><i class="fa fa-plus-circle" aria-hidden="true" style="position: relative; bottom: 6px;"></i></i></button>',
+        addHtml:           '<button type=\"button\" class=\"btn btn-link getty add\" style=\"visibility: hidden; display: none;\"><i class="fa fa-plus-circle" aria-hidden="true" style="position: relative; bottom: 6px;"></i></i></button>',
         addText:           'Add another',
 
         removeHtml:        '<button type=\"button\" class=\"btn btn-link remove\" style=\"visibility: hidden;\"><i class=\"fa fa-times-circle\"></i><span class=\"sr-only\"> previous <span class="controls-field-name-text">field</span></span></button>',

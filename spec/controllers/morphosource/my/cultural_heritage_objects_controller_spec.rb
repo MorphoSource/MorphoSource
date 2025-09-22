@@ -70,7 +70,7 @@ RSpec.describe Morphosource::My::CulturalHeritageObjectsController, type: :contr
       end
       
       it 'search_builder_class is EditSpecimensSearchBuilder' do
-        expect(controller.search_builder_class).to eq(Morphosource::Users::EditChosSearchBuilder)
+        expect(controller.blacklight_config.search_builder_class).to eq(Morphosource::Users::EditChosSearchBuilder)
       end
     end
 
@@ -81,7 +81,7 @@ RSpec.describe Morphosource::My::CulturalHeritageObjectsController, type: :contr
       end
 
       it 'search_builder_class is MySpecimensSearchBuilder' do
-        expect(controller.search_builder_class).to eq(Morphosource::Users::MyChosSearchBuilder)
+        expect(controller.blacklight_config.search_builder_class).to eq(Morphosource::Users::MyChosSearchBuilder)
       end
     end
   end

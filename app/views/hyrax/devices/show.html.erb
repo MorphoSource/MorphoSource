@@ -4,20 +4,17 @@
 <div class="device-showcase">
   <%= render @presenter.showcase_work_title_partial, presenter: @presenter %>
 
-  <div class="row showcase2-row device-content-blocks-wrapper">
-
-    <div class="media-order-2 content-block-wrapper">
-      <div class="content-block">
-        <%= render @presenter.showcase_general_details_partial, presenter: @presenter %>
-      </div>
-    </div>
-
-    <!-- second column start -->
-    <div class="media-order-1 content-block-wrapper">
+  <div class="row showcase2-row">
+    <div class="col-md-6 order-md-2">
       <div class="content-block">
         <%= render @presenter.showcase_media_items_partial, presenter: @presenter %>
       </div>
     </div>
 
-  </div> <!-- device-content-blocks-wrapper -->
+    <div class="col-md-6 order-md-1">
+      <div class="content-block">
+        <%= render @presenter.showcase_general_details_partial, presenter: @presenter %>
+      </div>
+    </div>
+  </div>
 </div> <!--device-showcase -->

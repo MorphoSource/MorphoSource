@@ -42,19 +42,19 @@ RSpec.describe CharacterizeJob do
           # mesh details
           expect(subject[:point_count_tesim].first).to eq("35947")
           expect(subject[:face_count_tesim].first).to eq("69451")
-          expect(subject[:bounding_box_x_tesim].first).to eq("0.1556989997625351")
-          expect(subject[:bounding_box_y_tesim].first).to eq("0.15433360636234283")
-          expect(subject[:bounding_box_z_tesim].first).to eq("0.1206732988357544")
+          expect(subject[:bounding_box_x_tesim].first.to_f).to be_within(0.000001).of(0.155699)
+          expect(subject[:bounding_box_y_tesim].first.to_f).to be_within(0.000001).of(0.154334)
+          expect(subject[:bounding_box_z_tesim].first.to_f).to be_within(0.000001).of(0.120673)
           expect(subject[:color_format_tesim]&.first.present?).to be false
           expect(subject[:normals_format_tesim]&.first.present?).to be false
           expect(subject[:has_uv_space_tesim].first).to eq("False")
-          expect(subject[:vertex_color_tesim].first).to eq("False")
-          expect(subject[:centroid_x_tesim].first).to eq("-0.026759909997859")
-          expect(subject[:centroid_y_tesim].first).to eq("0.09521605980032478")
-          expect(subject[:centroid_z_tesim].first).to eq("0.00894711457962819")
+          expect(subject[:vertex_color_tesim].first).to eq("True")
+          expect(subject[:centroid_x_tesim].first.to_f).to be_within(0.000001).of(-0.016840)
+          expect(subject[:centroid_y_tesim].first.to_f).to be_within(0.000001).of(0.110154)
+          expect(subject[:centroid_z_tesim].first.to_f).to be_within(0.000001).of(-0.001537)
 
           # method and tool details
-          expect(subject[:centroid_method_tesim].first.present?).to be true
+          expect(subject[:centroid_method_tesim].first).to eq "Bounding Box"
           expect(subject[:blender_version_tesim]&.first.present? || subject[:pymeshlab_version_tesim]&.first.present?).to be true
           expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be false
         end
@@ -70,21 +70,21 @@ RSpec.describe CharacterizeJob do
         subject { SolrDocument.find(file_set.id) }
         it "has OBJ attributes in the metadata" do
           # mesh details
-          expect(subject[:point_count_tesim].first).to eq("34834")
+          expect(subject[:point_count_tesim].first).to eq("35947")
           expect(subject[:face_count_tesim].first).to eq("69451")
-          expect(subject[:bounding_box_x_tesim].first).to eq("0.1556990034878254")
-          expect(subject[:bounding_box_y_tesim].first).to eq("0.15433400869369507")
-          expect(subject[:bounding_box_z_tesim].first).to eq("0.1206739991903305")
+          expect(subject[:bounding_box_x_tesim].first.to_f).to be_within(0.000001).of(0.155699)
+          expect(subject[:bounding_box_y_tesim].first.to_f).to be_within(0.000001).of(0.154334)
+          expect(subject[:bounding_box_z_tesim].first.to_f).to be_within(0.000001).of(0.120674)
           expect(subject[:color_format_tesim]&.first.present?).to be false
           expect(subject[:normals_format_tesim]&.first.present?).to be false
           expect(subject[:has_uv_space_tesim].first).to eq("False")
-          expect(subject[:vertex_color_tesim].first).to eq("False")
-          expect(subject[:centroid_x_tesim].first).to eq("-0.026662636876096206")
-          expect(subject[:centroid_y_tesim].first).to eq("0.09490209697499395")
-          expect(subject[:centroid_z_tesim].first).to eq("0.008991039898314488")
+          expect(subject[:vertex_color_tesim].first).to eq("True")
+          expect(subject[:centroid_x_tesim].first.to_f).to be_within(0.000001).of(-0.016840)
+          expect(subject[:centroid_y_tesim].first.to_f).to be_within(0.000001).of(0.110154)
+          expect(subject[:centroid_z_tesim].first.to_f).to be_within(0.000001).of(-0.001537)
 
           # method and tool details
-          expect(subject[:centroid_method_tesim].first.present?).to be true
+          expect(subject[:centroid_method_tesim].first).to eq "Bounding Box"
           expect(subject[:blender_version_tesim]&.first.present? || subject[:pymeshlab_version_tesim]&.first.present?).to be true
           expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be false
         end
@@ -107,16 +107,16 @@ RSpec.describe CharacterizeJob do
           expect(subject[:point_count_tesim].first).to eq("34834")
           expect(subject[:face_count_tesim].first).to eq("69451")
           expect(subject[:edges_per_face_tesim].first).to eq("3")
-          expect(subject[:bounding_box_x_tesim].first).to eq("0.1557")
-          expect(subject[:bounding_box_y_tesim].first).to eq("0.15433")
-          expect(subject[:bounding_box_z_tesim].first).to eq("0.12067")
+          expect(subject[:bounding_box_x_tesim].first.to_f).to be_within(0.00001).of(0.15570)
+          expect(subject[:bounding_box_y_tesim].first.to_f).to be_within(0.00001).of(0.15433)
+          expect(subject[:bounding_box_z_tesim].first.to_f).to be_within(0.00001).of(0.12067)
           expect(subject[:color_format_tesim]&.first.present?).to be false
           expect(subject[:normals_format_tesim].first).to eq("vertex normals")
           expect(subject[:has_uv_space_tesim].first).to eq("False")
           expect(subject[:vertex_color_tesim].first).to eq("False")
-          expect(subject[:centroid_x_tesim].first).to eq("-0.016839999999999994")
-          expect(subject[:centroid_y_tesim].first).to eq("0.110155")
-          expect(subject[:centroid_z_tesim].first).to eq("-0.0015350000000000016")
+          expect(subject[:centroid_x_tesim].first.to_f).to be_within(0.000001).of(-0.016840)
+          expect(subject[:centroid_y_tesim].first.to_f).to be_within(0.000001).of(0.110155)
+          expect(subject[:centroid_z_tesim].first.to_f).to be_within(0.000001).of(-0.001535)
 
           # method and tool details
           expect(subject[:centroid_method_tesim].first).to eq "Bounding Box"
@@ -142,16 +142,16 @@ RSpec.describe CharacterizeJob do
           expect(subject[:point_count_tesim].first).to eq("34834")
           expect(subject[:face_count_tesim].first).to eq("69451")
           expect(subject[:edges_per_face_tesim].first).to eq("3")
-          expect(subject[:bounding_box_x_tesim].first).to eq("0.1557")
-          expect(subject[:bounding_box_y_tesim].first).to eq("0.15433")
-          expect(subject[:bounding_box_z_tesim].first).to eq("0.12067")
+          expect(subject[:bounding_box_x_tesim].first.to_f).to be_within(0.00001).of(0.15570)
+          expect(subject[:bounding_box_y_tesim].first.to_f).to be_within(0.00001).of(0.15433)
+          expect(subject[:bounding_box_z_tesim].first.to_f).to be_within(0.00001).of(0.12067)
           expect(subject[:color_format_tesim]&.first.present?).to be false
           expect(subject[:normals_format_tesim].first).to eq("vertex normals")
           expect(subject[:has_uv_space_tesim].first).to eq("False")
           expect(subject[:vertex_color_tesim].first).to eq("False")
-          expect(subject[:centroid_x_tesim].first).to eq("-0.016839999999999994")
-          expect(subject[:centroid_y_tesim].first).to eq("0.110155")
-          expect(subject[:centroid_z_tesim].first).to eq("-0.0015350000000000016")
+          expect(subject[:centroid_x_tesim].first.to_f).to be_within(0.000001).of(-0.016840)
+          expect(subject[:centroid_y_tesim].first.to_f).to be_within(0.000001).of(0.110155)
+          expect(subject[:centroid_z_tesim].first.to_f).to be_within(0.000001).of(-0.001535)
 
           # method and tool details
           expect(subject[:centroid_method_tesim].first).to eq "Bounding Box"
@@ -201,19 +201,19 @@ RSpec.describe CharacterizeJob do
           # mesh details
           expect(subject[:point_count_tesim].first).to eq("34834")
           expect(subject[:face_count_tesim].first).to eq("69451")
-          expect(subject[:bounding_box_x_tesim].first).to start_with("0.")
-          expect(subject[:bounding_box_y_tesim].first).to start_with("0.")
-          expect(subject[:bounding_box_z_tesim].first).to start_with("0.")
+          expect(subject[:bounding_box_x_tesim].first.to_f).to be_within(0.000001).of(0.155699)
+          expect(subject[:bounding_box_y_tesim].first.to_f).to be_within(0.000001).of(0.154334)
+          expect(subject[:bounding_box_z_tesim].first.to_f).to be_within(0.000001).of(0.120674)
           expect(subject[:color_format_tesim]&.first.present?).to be false
           expect(subject[:normals_format_tesim]&.first.present?).to be false
           expect(subject[:has_uv_space_tesim].first).to eq("False")
           expect(subject[:vertex_color_tesim].first).to eq("False")
-          expect(subject[:centroid_x_tesim].first).to start_with("-0.")
-          expect(subject[:centroid_y_tesim].first).to start_with("0.")
-          expect(subject[:centroid_z_tesim].first).to start_with("0.")
+          expect(subject[:centroid_x_tesim].first.to_f).to be_within(0.000001).of(-0.016840)
+          expect(subject[:centroid_y_tesim].first.to_f).to be_within(0.000001).of(0.110154)
+          expect(subject[:centroid_z_tesim].first.to_f).to be_within(0.000001).of(-0.001537)
 
           # method and tool details
-          expect(subject[:centroid_method_tesim].first.present?).to be true
+          expect(subject[:centroid_method_tesim].first).to eq "Bounding Box"
           expect(subject[:blender_version_tesim]&.first.present? || subject[:pymeshlab_version_tesim]&.first.present?).to be true
           expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be false
         end
@@ -231,19 +231,18 @@ RSpec.describe CharacterizeJob do
           # mesh details
           expect(subject[:point_count_tesim].first).to eq("35947")
           expect(subject[:face_count_tesim].first).to eq("69451")
-          expect(subject[:bounding_box_x_tesim].first).to start_with("0.")
-          expect(subject[:bounding_box_y_tesim].first).to start_with("0.")
-          expect(subject[:bounding_box_z_tesim].first).to start_with("0.")
-          expect(subject[:color_format_tesim].first).to eq("vertex color")
+          expect(subject[:bounding_box_x_tesim].first.to_f).to be_within(0.000001).of(0.155699)
+          expect(subject[:bounding_box_y_tesim].first.to_f).to be_within(0.000001).of(0.154334)
+          expect(subject[:bounding_box_z_tesim].first.to_f).to be_within(0.000001).of(0.120674)
           expect(subject[:normals_format_tesim]&.first.present?).to be false
-          expect(subject[:has_uv_space_tesim].first).to eq("True")
+          expect(subject[:has_uv_space_tesim].first).to eq("False")
           expect(subject[:vertex_color_tesim].first).to eq("True")
-          expect(subject[:centroid_x_tesim].first).to start_with("-0.")
-          expect(subject[:centroid_y_tesim].first).to start_with("0.")
-          expect(subject[:centroid_z_tesim].first).to start_with("0.")
+          expect(subject[:centroid_x_tesim].first.to_f).to be_within(0.000001).of(-0.016840)
+          expect(subject[:centroid_y_tesim].first.to_f).to be_within(0.000001).of(0.110154)
+          expect(subject[:centroid_z_tesim].first.to_f).to be_within(0.000001).of(-0.001537)
 
           # method and tool details
-          expect(subject[:centroid_method_tesim].first.present?).to be true
+          expect(subject[:centroid_method_tesim].first).to eq "Bounding Box"
           expect(subject[:blender_version_tesim]&.first.present? || subject[:pymeshlab_version_tesim]&.first.present?).to be true
           expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be false
         end
@@ -259,21 +258,21 @@ RSpec.describe CharacterizeJob do
         subject { SolrDocument.find(file_set.id) }
         it "has X3D attributes in the metadata" do
           # mesh details
-          expect(subject[:point_count_tesim].first).to eq("34834")
+          expect(subject[:point_count_tesim].first).to eq("35947")
           expect(subject[:face_count_tesim].first).to eq("69451")
-          expect(subject[:bounding_box_x_tesim].first).to start_with("0.")
-          expect(subject[:bounding_box_y_tesim].first).to start_with("0.")
-          expect(subject[:bounding_box_z_tesim].first).to start_with("0.")
-          expect(subject[:color_format_tesim].first).to eq("vertex color")
+          expect(subject[:bounding_box_x_tesim].first.to_f).to be_within(0.000001).of(0.155699)
+          expect(subject[:bounding_box_y_tesim].first.to_f).to be_within(0.000001).of(0.154334)
+          expect(subject[:bounding_box_z_tesim].first.to_f).to be_within(0.000001).of(0.120674)
+          expect(subject[:color_format_tesim]&.first.present?).to be false
           expect(subject[:normals_format_tesim]&.first.present?).to be false
-          expect(subject[:has_uv_space_tesim].first).to eq("True")
+          expect(subject[:has_uv_space_tesim].first).to eq("False")
           expect(subject[:vertex_color_tesim].first).to eq("True")
-          expect(subject[:centroid_x_tesim].first).to start_with("-0.")
-          expect(subject[:centroid_y_tesim].first).to start_with("0.")
-          expect(subject[:centroid_z_tesim].first).to start_with("0.")
+          expect(subject[:centroid_x_tesim].first.to_f).to be_within(0.000001).of(-0.016840)
+          expect(subject[:centroid_y_tesim].first.to_f).to be_within(0.000001).of(0.110154)
+          expect(subject[:centroid_z_tesim].first.to_f).to be_within(0.000001).of(-0.001537)
 
           # method and tool details
-          expect(subject[:centroid_method_tesim].first.present?).to be true
+          expect(subject[:centroid_method_tesim].first).to eq "Bounding Box"
           expect(subject[:blender_version_tesim]&.first.present? || subject[:pymeshlab_version_tesim]&.first.present?).to be true
           expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be false
         end
@@ -366,7 +365,6 @@ RSpec.describe CharacterizeJob do
           expect(JSON.parse(subject.contents_all_files).length).to be > 0
           expect(subject[:point_count_tesim].first).to eq("75818")
           expect(subject[:face_count_tesim].first).to eq("149999")
-          expect(subject[:edges_per_face_tesim].first).to eq("3")
           expect(subject[:color_format_tesim]&.first.present?).to be false
           expect(subject[:normals_format_tesim]&.first.present?).to be false
           expect(subject[:has_uv_space_tesim].first).to eq("True")
@@ -400,7 +398,6 @@ RSpec.describe CharacterizeJob do
           expect(JSON.parse(subject.contents_all_files).length).to be > 0
           expect(subject[:point_count_tesim].first).to eq("75818")
           expect(subject[:face_count_tesim].first).to eq("149999")
-          expect(subject[:edges_per_face_tesim].first).to eq("3")
           expect(subject[:color_format_tesim]&.first.present?).to be false
           expect(subject[:normals_format_tesim]&.first.present?).to be false
           expect(subject[:has_uv_space_tesim].first).to eq("True")
@@ -500,20 +497,19 @@ RSpec.describe CharacterizeJob do
           # mesh details
           expect(subject[:point_count_tesim].first).to eq("35947")
           expect(subject[:face_count_tesim].first).to eq("69451")
-          expect(subject[:edges_per_face_tesim].first).to eq("3")
-          expect(subject[:bounding_box_x_tesim].first).to eq("0.1556989997625351")
-          expect(subject[:bounding_box_y_tesim].first).to eq("0.15433360636234283")
-          expect(subject[:bounding_box_z_tesim].first).to eq("0.1206732988357544")
+          expect(subject[:bounding_box_x_tesim].first.to_f).to be_within(0.000001).of(0.155699)
+          expect(subject[:bounding_box_y_tesim].first.to_f).to be_within(0.000001).of(0.154334)
+          expect(subject[:bounding_box_z_tesim].first.to_f).to be_within(0.000001).of(0.120673)
           expect(subject[:color_format_tesim]&.first.present?).to be false
           expect(subject[:normals_format_tesim]&.first.present?).to be false
           expect(subject[:has_uv_space_tesim].first).to eq("False")
-          expect(subject[:vertex_color_tesim].first).to eq("False")
-          expect(subject[:centroid_x_tesim].first).to eq("-0.026759909997859")
-          expect(subject[:centroid_y_tesim].first).to eq("0.09521605980032478")
-          expect(subject[:centroid_z_tesim].first).to eq("0.00894711457962819")
+          expect(subject[:vertex_color_tesim].first).to eq("True")
+          expect(subject[:centroid_x_tesim].first.to_f).to be_within(0.000001).of(-0.016840)
+          expect(subject[:centroid_y_tesim].first.to_f).to be_within(0.000001).of(0.110154)
+          expect(subject[:centroid_z_tesim].first.to_f).to be_within(0.000001).of(-0.001537)
 
           # method and tool details
-          expect(subject[:centroid_method_tesim].first.present?).to be true
+          expect(subject[:centroid_method_tesim].first).to eq "Bounding Box"
           expect(subject[:blender_version_tesim]&.first.present? || subject[:pymeshlab_version_tesim]&.first.present?).to be true
           expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be false
         end

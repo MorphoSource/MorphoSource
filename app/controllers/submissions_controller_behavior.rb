@@ -8,7 +8,7 @@ module SubmissionsControllerBehavior
   end
 
   def get_device_organizations_and_devices
-    @device_organizations = repository.search(device_organizations_search_builder.query)["response"]["docs"]
+    @device_organizations = blacklight_config.repository.search(device_organizations_search_builder.query)["response"]["docs"]
     @device_organizations_hash = @device_organizations.map do |o|
       [
         o['id'],
@@ -101,7 +101,7 @@ module SubmissionsControllerBehavior
   end
 
   def get_object_organizations
-    @object_organizations = repository.search(object_organizations_search_builder.query)["response"]["docs"]
+    @object_organizations = blacklight_config.repository.search(object_organizations_search_builder.query)["response"]["docs"]
     @object_organizations_select2 = @object_organizations.map do |o|
       {
         id: o['id'],

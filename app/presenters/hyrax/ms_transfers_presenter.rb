@@ -10,7 +10,7 @@ module Hyrax
       if outgoing_proxy_deposits.present?
         render 'hyrax/transfers/sent', outgoing_proxy_deposits: paginated_outgoing_proxy_deposits
       else
-        "No records"
+        "<div class='p-2'>No records</div>".html_safe
       end
     end
 
@@ -18,7 +18,7 @@ module Hyrax
       if incoming_proxy_deposits.present?
         render 'hyrax/transfers/received', incoming_proxy_deposits: paginated_incoming_proxy_deposits
       else
-        "No records"
+        "<div class='p-2'>No records</div>".html_safe
       end
     end
 

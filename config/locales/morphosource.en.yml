@@ -6,6 +6,9 @@ en:
       featured_collections: 'Featured Collections'
       donate_button_text: 'Donate'
     admin:
+      sidebar:
+        downloads: Downloads
+        media_cart: Media Cart
       pages:
         page_title: 'All Simple Pages'
       background_jobs:
@@ -36,15 +39,6 @@ en:
       import:
         slides:
           job_submitted: Slides import job has been submitted for background processing. Please check back later.
-      sidebar:
-        contributor_petitions: 'Contrib. Applications'
-        downloads: 'Downloads'
-        fund_codes: 'Fund Codes'
-        fund_code_charges: 'Fund Code Charges'
-        media_cart: 'Media Cart'
-        previous_downloads: 'Previous Downloads'
-        requests: 'My Requests'
-        manage_requests: 'Manage Requests'
       fund_codes:
         header: 'Fund Code Control Panel'
       fund_code_charges:
@@ -84,33 +78,7 @@ en:
         remove_member:
           title: Remove from %{collection_type}
           confirm: Removing this work will not remove it from MorphoSource, only from this %{collection_type}. Are you sure you want to remove this work from the %{collection_type}?
-    dashboard:
-      landing_page:
-        title: 'MorphoSource Dashboard'
-        full_text:
-          become_a_contributor: In order to upload media, participate in projects and teams, or act as data manager for media that are shared with or transferred to you, you must first request contributor status. Visit <a href="/contribute">Become A Contributor</a> and supply a few details about the media you intend to contribute to MorphoSource or your reason for applying to be a project member or data manager. An administrator will check your application, and you will either be approved or hear back with additional questions or instructions presently. Thank you!
-        hints:
-          new_media: You can add media to an existing project or team during the Media Details step of submission. Alternately, go to the project or team page and submit your media from there.
-          my_projects: All projects you created or are a member of are listed here.
-          my_teams: All teams you created or are a member of are listed here.
-          my_sequential_section_lists: All sequential section lists you created or are a member of are listed here.
-          my_media_and_objects: You can see all the media you have view, download, or edit access to here. You can also see all physical objects associated with those media.
-          my_media_cart: If you have previously added media to your cart, they are listed here. You can download some or all of those media together at once. You can also start a download request for one or more restricted media you have previously added to your media cart.
-          my_pending_requests: If you have previously requested to download restricted media, you can view the status of those requests here.
-          requests_manager: If you have published media with restricted download and other users have requested access, those requests are here. You can approve, deny, or clear requests.
       my:
-        background_jobs:
-          page_title: Background Jobs
-          page_description: MorphoSource processes many records using background jobs. As a contributor, knowing the status of background jobs associated with your media can help you diagnose minor issues relating to media creation. This is a new feature, and for now the only background job tracked here is batch media submission. There are many others types of background jobs that our system uses, and we will add new types for you to track here soon.
-        contributor_petitions:
-          header: 'Become A Contributor'
-          reason: 'Describe the nature and purpose of the data you intend to contribute, or your reason for applying for project member and/or data manager status'
-          user_affiliation: 'Organization (Institution, museum, university, etc.)'
-          user_department: 'Department'
-          user_advisor: 'If you are a graduate student, provide the name, email, and professional affiliation of your advisor (Required only for graduate students)'
-          contribution_amount: 'Approximate size of the total data amount you intend to contribute in gigabytes or other appropriate units'
-          terms_agree: 'Contributor terms and conditions'
-          terms_agree_description: 'I agree to the MorphoSource <a href="/contributor_terms" target="_blank">Contributor Terms of Use</a>. I understand these are distinct from the general MorphoSource <a href="/terms" target="_blank">Terms of Use</a>, and I agree to comply with both sets of terms.'
         fund_codes:
           header: 'Fund Codes'
         heading:
@@ -123,16 +91,6 @@ en:
           date_expired: 'Date Expired'
           date_requested: 'Date Requested'
           publication_status: 'Publication Status'
-        previous_requests:
-          table:
-            date_decided: Decided
-            download_reviewer: Decider
-            requesting_user: Requester
-            status: Status
-          page_title: "Previous Requests"
-          page_description: "This page lists requests to download your media that have already been decided. You can edit expiration dates for approved or expired requests."
-        works:
-          submission_button: 'New Submission'
       profiles:
         login_form_instructions: 'MorphoSource is improving user profiles! This will allow users to better identify themselves and their reasons for using or downloading data. It will also improve the ability of data contributors to demonstrate impact and reuse of data uploaded to MorphoSource. Before continuing, please select a user profile type that best describes you, and fill out any new required user information.'
         register_form_instructions: 'To use MorphoSource, you must create a user account profile. This user profile helps identify you and your reasons for using or downloading data. The information you include may be provided to data contributors when you download data so that those contributors can demonstrate impact and reuse of data they contribute to MorphoSource. Select the type of user profile that best describes you, as you may be required to provide different user information based on the profile type.'
@@ -152,7 +110,7 @@ en:
           sftp_share: "SFTP Share"
           facebook_handle: "Facebook Handle"
           help_change_picture_type: "JPG, GIF, or PNG (less than 2MB)"
-          intent: "Intended Use For MorphoSource"
+          intent: "Intended Use"
           mesh_file_type: "What File Type (If Any) Do You<br>Prefer To Use For 3D Mesh Files?"
           printer_file: "If You Are Involved In 3D Printing,<br>What File Type Does Your Printer<br>Or Its Software Require?<br>(You May Choose More Than One)"
           printer_model: "If You Are Involved In 3D Printing,<br>What Make and Model Of<br>3D Printer Do You Use?<br>(You May Choose More Than One)"
@@ -170,8 +128,34 @@ en:
         generate_new_api_key: Generate a new user-specific API key. Your previous key will no longer be functional.
         save_settings: Save Settings
         view_api_key: "Display your user-specific API key, used to authenticate API requests as yourself. WARNING: This is SENSITIVE information, guard it like a password!"
-        
-        
+    dashboard:
+      my:
+        background_jobs:
+          page_title: Background Jobs
+          page_description: MorphoSource processes many records using background jobs. As a contributor, knowing the status of background jobs associated with your media can help you diagnose minor issues relating to media creation. This is a new feature, and for now the only background job tracked here is batch media submission. There are many others types of background jobs that our system uses, and we will add new types for you to track here soon.      
+        contributor_petitions:
+          header: 'Become A Contributor'
+          reason: 'Describe the nature and purpose of the data you intend to contribute, or your reason for applying for project member and/or data manager status'
+          user_affiliation: 'Organization (Institution, museum, university, etc.)'
+          user_department: 'Department'
+          user_advisor: 'If you are a graduate student, provide the name, email, and professional affiliation of your advisor (Required only for graduate students)'
+          contribution_amount: 'Approximate size of the total data amount you intend to contribute in gigabytes or other appropriate units'
+          terms_agree: 'Contributor terms and conditions'
+          terms_agree_description: 'I agree to the MorphoSource <a href="/contributor_terms" target="_blank">Contributor Terms of Use</a>. I understand these are distinct from the general MorphoSource <a href="/terms" target="_blank">Terms of Use</a>, and I agree to comply with both sets of terms.'
+        heading:
+          date_downloaded: 'Date Downloaded'
+        previous_requests:
+          table:
+            date_decided: Decided
+            download_reviewer: Decider
+            requesting_user: Requester
+            status: Status
+          page_title: "Previous Requests"
+          page_description: "This page lists requests to download your media that have already been decided. You can edit expiration dates for approved or expired requests."
+        works:
+          submission_button: 'New Submission'
+      profiles:
+        save_settings: Save Settings
     table:
       action: Action
       agreed_to_terms: Agreed Terms

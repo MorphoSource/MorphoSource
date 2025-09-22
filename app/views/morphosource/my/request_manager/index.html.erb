@@ -1,19 +1,11 @@
 <% content_for :body_css_classes do %>dl-request<% end %>
 <% provide :page_title, "New Requests For My Media" %>
 
-<nav class="breadcrumb" role="region" aria-label="Breadcrumb">
-  <ol>
-    <li><a href="/?locale=en">Home</a></li>
-    <li><a href="/dashboard?locale=en">Dashboard</a></li>
-    <li class="active">New Requests For My Media</li>
-  </ol>
-</nav>
-
-<div class="panel panel-default">
-  <div class="panel-heading">
+<div class="card panel-default">
+  <div class="card-header">
     <h2 class="panel-title h2">New Requests For My Media (<%= @item_count %>)</h2>
   </div>
-  <div class="panel-body">
+  <div class="card-body">
     <h2 class="sr-only">Works listing</h2>
     <%= render 'morphosource/my/request_manager/batch_actions' %>
     <% if @item_count.to_i > 0 %>

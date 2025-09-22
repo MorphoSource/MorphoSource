@@ -1,0 +1,16 @@
+<div class="document">
+  <div class="thumbnail text-center">
+    <div class="text-center d-inline-block justify-content-center">
+      <%= link_to_document document %>
+    </div>
+    <div class="caption text-center">
+      <dl class="document-metadata dl-horizontal dl-invert">
+        <dl class="document-metadata dl-horizontal dl-invert">
+          <dd class="text-truncate"><%= document["material_tesim"]&.first %></dd>
+          <dd>Total media: <%= total_viewable_media(document.id) %></dd>
+          <dd class="text-truncate"><%= document["cho_type_tesim"]&.first %></dd>
+        </dl>
+      </dl>
+    </div>
+  </div>
+</div>

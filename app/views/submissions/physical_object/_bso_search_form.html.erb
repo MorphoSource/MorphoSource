@@ -1,68 +1,75 @@
 <!-- Bootstrap container-fluid class div is in parent view partial -->
 <div id="submission_bso_search_form" class="new_media">
-  <div class="row">
-    <h4><%= t('morphosource.submission.header_text.bso_search') %></h4>
+  <div class="row justify-content-center text-center mb-5">
+    <div class="col-md-9">
+      <span class="h5"><%= t('morphosource.submission.header_text.bso_search') %></span>
+    </div>
   </div>
-  <%= simple_form_for @submission, 
+  <%= simple_form_for @submission,
     url: {controller: 'submissions', action: 'search_po_ajax'},
     html: { id: :bso_search_ajax_form },
     method: :post,
     remote: true do |f| %>
-      <div class="form-group">
-        <div class="row">
-          <div class="col-sm-6 col-sm-offset-3">
+      <div class="form-group mt-2">
+        <div class="row justify-content-center">
+          <div class="col-md-9 col-lg-6">
             <%= f.input :biospec_search_occurrence_id, input_html: { class: 'form-control-sm' } %>
           </div>
         </div>
-        <div class="row">
-          <div class="col-sm-2 col-sm-offset-3">
+        <div class="row justify-content-center">
+          <div class="col-md-3 col-lg-2">
             <%= f.input :biospec_search_institution_code, input_html: {class: 'form-control-sm'} %>
           </div>
-          <div class="col-sm-2">
+          <div class="col-md-3 col-lg-2">
             <%= f.input :biospec_search_collection_code, input_html: { class: 'form-control-sm' } %>
           </div>
-          <div class="col-sm-2">
+          <div class="col-md-3 col-lg-2">
             <%= f.input :biospec_search_catalog_number, input_html: {class: 'form-control-sm'} %>
           </div>
         </div>
-        <div class="row">
-          <div class="col-sm-3 col-sm-offset-3">
-            <%= f.input :biospec_search_taxonomy_genus, input_html: {class: 'form-control-sm'} %>
-          </div>
-          <div class="col-sm-3">
-            <%= f.input :biospec_search_taxonomy_species, input_html: {class: 'form-control-sm'} %>
+        <div class="row justify-content-center">
+          <div class="col-md-9 col-lg-6">
+            <div class="row">
+
+              <div class="col-md-6">
+                <%= f.input :biospec_search_taxonomy_genus, input_html: {class: 'form-control-sm'} %>
+              </div>
+              <div class="col-md-6">
+                <%= f.input :biospec_search_taxonomy_species, input_html: {class: 'form-control-sm'} %>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="row hide">
-          <%= f.input :biological_specimen_or_cultural_heritage_object, 
-            :as => :hidden, 
-            :input_html => { :value => "bso" } 
-          %> 
+        <div class="row justify-content-center hide">
+          <%= f.input :biological_specimen_or_cultural_heritage_object,
+            :as => :hidden,
+            :input_html => { :value => "bso" }
+          %>
         </div>
       </div>
-      <div class="row">
+      <div class="row justify-content-center mt-5">
         <%= f.submit 'Search', name: 'bso_search', class: 'btn btn-primary btn-continue' %>
       </div>
   <% end %>
 
   <div id="bso_search_non_search_options">
-    <div class="row">
+    <div class="row justify-content-center mt-3">
       <b><%= t('morphosource.submission.or') %></b>
     </div>
 
-    <div class="row">
+    <div class="row justify-content-center mt-3">
       <a href="#" id="submission_will_create_bso" class="btn btn-primary btn-continue">
-        <%= t('morphosource.submission.new_specimen') %>  
+        <%= t('morphosource.submission.new_specimen') %>
       </a>
     </div>
 
-    <div class="row">
+    <div class="row justify-content-center mt-3">
       <b><%= t('morphosource.submission.or') %></b>
     </div>
 
-    <div class="row">
+    <div class="row justify-content-center mt-3">
       <a href="#" class="btn btn-primary btn-continue submission_back_to_po_type">
-        <%= t('morphosource.submission.go_back') %>  
+        <%= t('morphosource.submission.go_back') %>
       </a>
     </div>
   </div>

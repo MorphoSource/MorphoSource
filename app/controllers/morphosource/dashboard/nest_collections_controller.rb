@@ -1,7 +1,9 @@
 module Morphosource
   module Dashboard
     class NestCollectionsController < Hyrax::Dashboard::NestCollectionsController
+      before_action :redirect_to_collection_type, only: []
       before_action :get_parent_and_child, only: [:create_relationship_under, :remove_relationship_under]
+
 
       # taken from the method create_collection_under
       # create and link a NEW Project under this collection (a team or organization), with this collection as parent
@@ -15,7 +17,6 @@ module Morphosource
         end
       end
 
-      # WARNING: Method currently unused, but could be used in future (TODO?)
       # link this collection as parent by adding existing collection as subcollection under this one
       def create_relationship_under
         # user must be able to edit both parent and child
@@ -33,7 +34,7 @@ module Morphosource
           respond_to do |format|
             format.js {render :js => "location.reload()"}
             format.html do
-              redirect_to(main_app.team_projects_path(form.parent), notice: notice)
+              redirect_to(main_app.send("#{@parent.collection_type.machine_id}_projects_path", @parent), notice: notice)
             end
           end
         else
@@ -41,7 +42,7 @@ module Morphosource
           respond_to do |format|
             format.js {render :js => "location.reload();alert('There was an error removing collection.')"}
             format.html do
-              redirect_to(main_app.team_projects_path(form.parent), alert: alert)
+              redirect_to(main_app.send("#{@parent.collection_type.machine_id}_projects_path", @parent), alert: alert)
             end
           end
         end
@@ -53,14 +54,14 @@ module Morphosource
         # user must be able to edit both parent and child
         authorize! :edit, form_params[:parent_id]
         authorize! :edit, form_params[:child_id]
-
+        path = main_app.send("#{@parent.collection_type.machine_id}_projects_path", @parent)
         if form.remove
           @child.remove_parent_membership(@parent, current_user)
           notice = I18n.t('removed_relationship', scope: 'hyrax.dashboard.nest_collections_form', child_title: form.child.title.first, parent_title: form.parent.title.first)
           respond_to do |format|
-            format.js {render :js => "location.reload()"}
+            format.js { render js: "window.location = '#{path}&notice=#{CGI.escape(notice)}'" }
             format.html do
-              redirect_to(main_app.team_projects_path(form.parent), notice: notice)
+              redirect_to(main_app.send("#{@parent.collection_type.machine_id}_projects_path", @parent), notice: notice)
             end
           end
         else

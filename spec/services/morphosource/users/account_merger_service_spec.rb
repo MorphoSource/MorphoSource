@@ -114,8 +114,8 @@ RSpec.describe Morphosource::Users::AccountMergerService do
   end
 
   describe 'transfer_collections' do
-    let!(:deposited_team)           { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid, depositor: old_user.ms_id) }
-    let!(:deposited_project)        { Collection.create(title: ['Project'], collection_type_gid: project_collection_type.gid, depositor: old_user.ms_id) }
+    let!(:deposited_team)           { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.to_global_id, depositor: old_user.ms_id) }
+    let!(:deposited_project)        { Collection.create(title: ['Project'], collection_type_gid: project_collection_type.to_global_id, depositor: old_user.ms_id) }
 
     let(:collections)               { [deposited_team, deposited_project] }
 
@@ -233,9 +233,9 @@ RSpec.describe Morphosource::Users::AccountMergerService do
   end
 
   describe 'collections' do
-    let!(:deposited_team)           { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid, depositor: old_user.ms_id) }
-    let!(:deposited_project)        { Collection.create(title: ['Project'], collection_type_gid: project_collection_type.gid, depositor: old_user.ms_id) }
-    let!(:another_project)          { Collection.create(title: ['Another Project'], collection_type_gid: project_collection_type.gid) }
+    let!(:deposited_team)           { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.to_global_id, depositor: old_user.ms_id) }
+    let!(:deposited_project)        { Collection.create(title: ['Project'], collection_type_gid: project_collection_type.to_global_id, depositor: old_user.ms_id) }
+    let!(:another_project)          { Collection.create(title: ['Another Project'], collection_type_gid: project_collection_type.to_global_id) }
 
     subject { described_class.new(old_user.email, new_user.email) }
 

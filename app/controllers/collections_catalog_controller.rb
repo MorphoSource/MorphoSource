@@ -11,8 +11,8 @@ class CollectionsCatalogController < CatalogController
 
     # search result metadata
     config.add_index_field solr_name("title", :stored_searchable), label: "Title", itemprop: 'name', if: false
+    config.add_index_field solr_name("description", :stored_searchable), label: "Description", helper_method: :line_clamp
     config.add_index_field solr_name("depositor", :stored_searchable), label: "Creator", helper_method: :link_to_profile
-    config.add_index_field 'collection_member_count', accessor: 'collection_member_count', label: "Number of Members"
     # for some reason the label is not getting rendered correctly in the catalog. For now, overriding in _index_list_default
     config.add_index_field solr_name("date_uploaded", :stored_sortable, type: :date), label: "Date Created", helper_method: :human_readable_date
 
@@ -46,7 +46,7 @@ class CollectionsCatalogController < CatalogController
   # get a single document from the index
   # to add responses for formats other than html or json see _Blacklight::Document::Export_
   def show
-    @response, @document = fetch params[:id], { fq: 'has_model_ssim:Collection' }
+    @response, @document = search_service.fetch params[:id], { fq: 'has_model_ssim:Collection' }
 
     respond_to do |format|
       format.html { setup_next_and_previous_documents }

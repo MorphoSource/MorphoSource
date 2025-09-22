@@ -49,16 +49,19 @@ Rails.application.configure do
   # pull the host from env variable later (see http://samvera.github.io/email_notifications.html)
   config.action_mailer.default_url_options = { host: ENV["HOST_NAME"] }
 
-  # Print deprecation notices to the Rails logger.
-  config.active_support.deprecation = :log
-
   # Raise an error on page load if there are pending migrations.
   config.active_record.migration_error = :page_load
+
+  # Use Active Storage in local mode (not actively being used currently)
+  config.active_storage.service = :local
+
+  # Print deprecation notices to the Rails logger.
+  config.active_support.deprecation = :log
 
   # Debug mode disables concatenation and preprocessing of assets.
   # This option may cause significant delays in view rendering with a large
   # number of complex assets.
-  config.assets.debug = true
+  config.assets.debug = false
 
   # Suppress logger output for asset requests.
   config.assets.quiet = true

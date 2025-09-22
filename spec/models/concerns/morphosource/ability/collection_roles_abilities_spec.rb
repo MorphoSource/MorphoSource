@@ -120,7 +120,7 @@ RSpec.describe 'Hyrax::Ability::CollectionAbility' do
       ability = Ability.new(manager.reload)
       expect(ability.can? :manage, collection).to be(false)
       expect(ability.can? :edit, collection).to be(true)
-      # byebug
+
       expect(ability.can? :edit_works, collection).to be(true)
       expect(ability.can? :deposit, collection).to be(true)
       expect(ability.can? :download_works, collection).to be(true)

@@ -63,6 +63,7 @@ services:
     build:
       context: .
       target: morphosource-worker-dev
+    command: tail -f /dev/null # do nothing but wait for rspec commands
     container_name: app_test
     user: "101292838:0"
     env_file:
@@ -153,7 +154,7 @@ services:
       - morphosource
 
   postgres:
-    image: postgres:latest
+    image: postgres:16.9
     container_name: postgres
     env_file:
       - ./vendor/docker/credentials.env

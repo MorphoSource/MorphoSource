@@ -2,8 +2,8 @@ require 'rails_helper'
 
 RSpec.describe Morphosource::Works::IndexRelatedWorks do
 
-  let(:team)                    { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid) }
-  let(:new_team)                { Collection.create(title: ['new team'], collection_type_gid: team_collection_type.gid) }
+  let(:team)                    { Collection.create(title: ['team'], collection_type_gid: team_collection_type.to_global_id) }
+  let(:new_team)                { Collection.create(title: ['new team'], collection_type_gid: team_collection_type.to_global_id) }
 
   let(:organization)            { Organization.create(title: ['organization'], team_id: [team.id]) }
   let(:new_organization)        { Organization.create(title: ['new organization'])}
@@ -76,7 +76,7 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
       context 'organization id is updated' do
         it 'updates related media' do
           skip if !Hyrax.config.index_related_works
-          expect(cho).to receive(:index_related).with(contain_exactly(media2a, media2b))
+          expect(cho).to receive(:index_related).with(a_collection_containing_exactly(media2a, media2b))
           cho.organization_id = [new_organization.id]
           cho.save
         end
@@ -84,7 +84,7 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
       context 'another attribute is updated' do
         it 'does not update related media' do
           skip if !Hyrax.config.index_related_works
-          expect(cho).not_to receive(:index_related).with(contain_exactly(media2a, media2b))
+          expect(cho).not_to receive(:index_related).with(a_collection_containing_exactly(media2a, media2b))
           cho.title = ["new title"]
           cho.save
         end
@@ -113,7 +113,7 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
         end
         it 'updates the related specimen when keyword is changed' do
           skip if !Hyrax.config.index_related_works
-          expect(specimen_media).to receive(:index_related).with([specimen])
+          expect(specimen_media).to receive(:index_related).with(a_collection_containing_exactly(specimen))
           specimen_media.title = ['new title']
           specimen_media.keyword = ['new tag']
           specimen_media.save
@@ -126,7 +126,7 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
         end
         it 'updates the related cho' do
           skip if !Hyrax.config.index_related_works
-          expect(cho_media).to receive(:index_related).with([cho])
+          expect(cho_media).to receive(:index_related).with(a_collection_containing_exactly(cho))
           cho_media.title = ['new title']
           cho_media.keyword = ['new tag']
           cho_media.save
@@ -134,9 +134,11 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
       end
     end
     context 'work is an organization' do
-      let(:projectA)  { Collection.create(title: ['project A'], collection_type_gid: project_collection_type.gid) }
-      let(:projectB)  { Collection.create(title: ['project B'], collection_type_gid: project_collection_type.gid) }
-
+      let(:media)                   { [media1a, media1b, media2a, media2b] }
+      let(:objects)                 { [specimen, cho] }
+      let(:projectA)                { Collection.create(title: ['project A'], collection_type_gid: project_collection_type.to_global_id) }
+      let(:projectB)                { Collection.create(title: ['project B'], collection_type_gid: project_collection_type.to_global_id) }
+      let(:team_projects)           { [projectA, projectB] }
       before do
         [projectA, projectB].each do |p|
           p.member_of_collections << team
@@ -148,10 +150,10 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
       context 'title is updated' do
         it 'updates related media, objects, linked team, and team child projects' do
           skip if !Hyrax.config.index_related_works
-          expect(organization).to receive(:index_related).ordered.with(contain_exactly(media1a, media1b, media2a, media2b)).and_call_original
-          expect(organization).to receive(:index_related).ordered.with(contain_exactly(specimen, cho)).and_call_original
-          expect(organization).to receive(:index_related_collections).ordered.with([team]).and_call_original
-          expect(organization).to receive(:index_related_collections).ordered.with(contain_exactly(projectA, projectB))
+          expect(organization).to receive(:index_related).with(a_collection_containing_exactly(*media)).and_call_original
+          expect(organization).to receive(:index_related).with(a_collection_containing_exactly(*objects)).and_call_original
+          expect(organization).to receive(:index_related_collections).with(a_collection_containing_exactly(team)).and_call_original
+          expect(organization).to receive(:index_related_collections).with(a_collection_containing_exactly(*team_projects))
 
           organization.title = ['new title']
           organization.save
@@ -159,8 +161,8 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
       end
 
       context 'team_id is updated' do
-        let(:projectC)          { Collection.create(title: ['project C'], collection_type_gid: project_collection_type.gid) }
-        let(:projectD)          { Collection.create(title: ['project D'], collection_type_gid: project_collection_type.gid) }
+        let(:projectC)          { Collection.create(title: ['project C'], collection_type_gid: project_collection_type.to_global_id) }
+        let(:projectD)          { Collection.create(title: ['project D'], collection_type_gid: project_collection_type.to_global_id) }
         let(:new_team_projects) { [projectC, projectD] }
 
         before do
@@ -172,10 +174,10 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
 
         it 'updates its new team, old team, old and new child projects, but not media and objects' do
           skip if !Hyrax.config.index_related_works
-          expect(organization).not_to receive(:index_related).with(contain_exactly(media1a, media1b, media2a, media2b)).and_call_original
-          expect(organization).not_to receive(:index_related).with(contain_exactly(specimen, cho)).and_call_original
+          expect(organization).not_to receive(:index_related).with(a_collection_containing_exactly(*media)).and_call_original
+          expect(organization).not_to receive(:index_related).with(a_collection_containing_exactly(*objects)).and_call_original
           expect(organization).to receive(:index_related_collections).with(a_collection_containing_exactly(team, projectA, projectB)).and_call_original
-          expect(organization).to receive(:index_related_collections).with([new_team]).and_call_original
+          expect(organization).to receive(:index_related_collections).with(a_collection_containing_exactly(new_team)).and_call_original
           expect(organization).to receive(:index_related_collections).with(a_collection_containing_exactly(projectC, projectD))
           organization.team_id = [new_team.id]
           organization.save
@@ -190,9 +192,9 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
 
         it 'updates related media, objects, and linked team' do
           skip if !Hyrax.config.index_related_works
-          expect(organization).not_to receive(:index_related).with(contain_exactly(media1a, media1b, media2a, media2b)).and_call_original
-          expect(organization).not_to receive(:index_related).with(contain_exactly(specimen, cho)).and_call_original
-          expect(organization).not_to receive(:index_related).ordered.with(team)
+          expect(organization).not_to receive(:index_related)
+          expect(organization).not_to receive(:index_related)
+          expect(organization).not_to receive(:index_related_collections)
 
           organization.city = ['Fargo']
           organization.save
@@ -250,8 +252,8 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
       context 'title is updated' do
         it 'updates related media and objects' do
           skip if !Hyrax.config.index_related_works
-          expect(taxonomy).to receive(:index_related).with([specimen]).and_call_original
-          expect(taxonomy).to receive(:index_related).with(taxonomy_media)
+          expect(taxonomy).to receive(:index_related).with(a_collection_containing_exactly(specimen)).and_call_original
+          expect(taxonomy).to receive(:index_related).with(a_collection_containing_exactly(*taxonomy_media))
           taxonomy.title = ['New Title']
           taxonomy.save
         end

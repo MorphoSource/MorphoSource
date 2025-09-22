@@ -25,9 +25,9 @@ RSpec.describe Morphosource::BrowseService do
   }
 
   let!(:user) { User.create(display_name: 'John Doe', email: 'johndoe@email.com', password: 'password', ms_id: 'abc123') }
-  let!(:team1) { Collection.create(title: ['Team_B'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id, visibility: public) }
+  let!(:team1) { Collection.create(title: ['Team_B'], collection_type_gid: team_collection_type.to_global_id, depositor: user.ms_id, visibility: public) }
 
-  let(:project1) { Collection.create(title: ['Project_B'], collection_type_gid: project_collection_type.gid, depositor: user.ms_id, visibility: public) }
+  let(:project1) { Collection.create(title: ['Project_B'], collection_type_gid: project_collection_type.to_global_id, depositor: user.ms_id, visibility: public) }
   let!(:media1) {
     Media.create( title: ["Test Media Work"],
                   media_type: ["xyz"]

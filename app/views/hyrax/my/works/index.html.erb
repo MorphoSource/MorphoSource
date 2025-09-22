@@ -10,16 +10,16 @@
 
 <% provide :page_header do %>
   <h1><span class="fa fa-file" aria-hidden="true"></span> <%= t("hyrax.admin.sidebar.works") %></h1>
-  <div class="pull-right">
+  <div class="float-right">
     <%= render 'create_works_buttons' %>
   </div>
 <% end %>
 
-<div class="row">
+<div class="row all-works">
   <div class="col-md-12">
-    <div class="panel panel-default <%= 'tabs' if current_page?(hyrax.dashboard_works_path(locale: nil)) || @managed_works_count > 0 %>">
+    <div class="card panel-default <%= 'tabs' if current_page?(hyrax.dashboard_works_path(locale: nil)) || @managed_works_count > 0 %>">
       <%= render 'tabs' if current_page?(hyrax.dashboard_works_path(locale: nil)) || @managed_works_count > 0 %>
-      <div class="panel-heading">
+      <div class="card-header">
         <% if current_page?(hyrax.my_works_path(locale: nil)) %>
           <span class="count-display"><%= I18n.t('hyrax.my.count.works.you_own', total_count: @response.total_count).html_safe %></span>
         <% elsif current_page?(hyrax.dashboard_works_path(locale: nil)) && !current_ability.admin? %>
@@ -28,7 +28,7 @@
           <span class="count-display"><%= I18n.t('hyrax.my.count.works.in_repo', total_count: @response.total_count).html_safe %></span>
         <% end %>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <%= render 'search_header' %>
         <h2 class="sr-only">Works listing</h2>
         <%= render 'document_list' %>

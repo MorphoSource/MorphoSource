@@ -1,15 +1,15 @@
 <%= render "hyrax/physical_objects/edit_work_title", presenter: @presenter, f: f %>
 
-    <div class="panel panel-default tabs" role="main">
+    <div class="tabs" role="main">
       <!-- Nav tabs -->
       <ul class="nav nav-tabs" role="tablist">
-        <li role="presentation" id="tab-physical-object-details" class="active">
-          <a href="#physical-object-details" aria-controls="physical-object-details" role="tab" data-toggle="tab" aria-expanded="false">
+        <li role="presentation" id="tab-physical-object-details" class="nav-item active">
+          <a href="#physical-object-details" aria-controls="physical-object-details" role="tab" data-toggle="tab" aria-expanded="false" class="nav-link active">
             <i class="ms2-icon-bowl icon-bowl"></i> Object Details
           </a>
         </li>
-        <li role="presentation" class="">
-          <a href="#organization" aria-controls="organization" role="tab" data-toggle="tab" aria-expanded="true">
+        <li role="presentation" class="nav-item">
+          <a href="#organization" aria-controls="organization" role="tab" data-toggle="tab" aria-expanded="true" class="nav-link">
           <i class="fa fa-university"></i> Organization
           </a>
         </li>
@@ -34,4 +34,4 @@
         </div>
       </div>
 
-    </div><!-- /panel panel-default tabs -->
+    </div><!-- /card panel-default tabs -->

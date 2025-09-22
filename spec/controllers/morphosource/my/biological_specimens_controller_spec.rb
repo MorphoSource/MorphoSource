@@ -104,7 +104,7 @@ RSpec.describe Morphosource::My::BiologicalSpecimensController, type: :controlle
       end
       
       it 'search_builder_class is EditSpecimensSearchBuilder' do
-        expect(controller.search_builder_class).to eq(Morphosource::Users::EditSpecimensSearchBuilder)
+        expect(controller.blacklight_config.search_builder_class).to eq(Morphosource::Users::EditSpecimensSearchBuilder)
       end
     end
 
@@ -115,7 +115,7 @@ RSpec.describe Morphosource::My::BiologicalSpecimensController, type: :controlle
       end
 
       it 'search_builder_class is MySpecimensSearchBuilder' do
-        expect(controller.search_builder_class).to eq(Morphosource::Users::MySpecimensSearchBuilder)
+        expect(controller.blacklight_config.search_builder_class).to eq(Morphosource::Users::MySpecimensSearchBuilder)
       end
     end
   end

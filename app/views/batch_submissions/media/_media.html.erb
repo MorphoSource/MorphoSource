@@ -5,14 +5,14 @@
 <div class="media-permissions submission_flow">
   <h2>OWNERSHIP AND PERMISSIONS</h2>
 
-  <label class="optional-flag"><span class="label"></span> These ownership and permissions settings will be applied to all media in the batch submission.</label>
+  <label class="optional-flag">These ownership and permissions settings will be applied to all media in the batch submission<span class="badge badge-info"></span> :</label>
 
   <%= render 'submission_media_ownership', f: f %>
 
 
-  <div class="row mt-2 select-projects">
+  <div class="mt-2 select-projects">
     <h2>Projects</h2>
-    <label class="optional-flag"><span class="label"></span> Select one or more projects which the media in the batch submission should be associated with.</label>
+    <label class="optional-flag">Select one or more projects which the media in the batch submission should be associated with<span class="badge badge-info"></span> :</label>
     <%= render 'batch_submissions/media/form_member_of_collections', :f => f %>
   </div>
 </div>

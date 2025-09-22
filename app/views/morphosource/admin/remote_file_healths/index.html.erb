@@ -10,14 +10,16 @@
 
 <%= render 'search_container' %>
 
-<div class="panel panel-default itemtable <%= controller.controller_name %>">
+<div class="card panel-default itemtable <%= controller.controller_name %>">
   <%= render 'heading' %>
-  <div class="panel-body showcase">
+  <div class="card-body showcase">
     <% if page_description && !@search %>
-      <div class="panel panel-heading">
+      <div class="card card-header">
         <%= page_description %>
         <p>Last system-wide verification completed: <%= @last_checked %></p>
-        <%= link_to 'Start system-wide verification', main_app.remote_file_health_verify_all_path, class: 'btn btn-sm', data: { confirm: "This will clear the existing issue report and start another verification.  Click OK to continue, or Cancel to return to the page." }, disabled: @disable_verify_button %>
+        <div class="w-auto">
+          <%= link_to 'Start system-wide verification', main_app.remote_file_health_verify_all_path, class: 'btn btn-sm', data: { confirm: "This will clear the existing issue report and start another verification.  Click OK to continue, or Cancel to return to the page." }, disabled: @disable_verify_button %>
+        </div>
       </div>
     <% end %>
     <%= render 'document_list' %>

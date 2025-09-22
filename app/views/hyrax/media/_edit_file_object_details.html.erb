@@ -3,7 +3,7 @@
 Please enter information for editable fields. Uneditable fields will be parsed automatically on submission.
 </p>
 <p class="media_type_block CTImageSeries">
-Please enter information for editable fields. If uploading a DICOM image stack, fields with the <i class="fa fa-search"></i> icon will be parsed automatically on submission and do not need to be entered. Uneditable fields will be parsed automatically on submission.
+Please enter information for editable fields. If uploading a DICOM image stack, some fields may be parsed automatically on submission. Uneditable fields will be parsed automatically on submission.
 </p>
 <p class="media_type_block PhotogrammetryImageSeries">
 Please enter information for editable fields. Uneditable fields will be parsed automatically on submission.
@@ -58,8 +58,8 @@ Please enter information for editable fields. Uneditable fields will be parsed a
 <div class="media_type_block PhotogrammetryImageSeries">
   <%= f.input :scale_bar, as: :multi_value %>
   <div class="row" id="media_scale_bar_wrapper">
-    <div class="col-xs-6 showcase-label">Scale Bar (Target type, Distance, Units)</div>
-    <div class="col-xs-6 showcase-value form-group multi_value optional managed wrapper_for_3">
+    <div class="col-6 showcase-label">Scale Bar (Target type, Distance, Units)</div>
+    <div class="col-6 showcase-value form-group multi_value optional managed wrapper_for_3">
       <ul class="listing" aria-live="polite">
         <li class="field-wrapper input-group input-append">
           <input class="string multi_value optional form-control media_scale_bar_target_type form-control multi-text-field" name="media[scale_bar_target_type][]" value="" id="media_scale_bar_target_type" type="text">

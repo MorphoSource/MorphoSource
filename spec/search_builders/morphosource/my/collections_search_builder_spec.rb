@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Morphosource::My::CollectionsSearchBuilder do
-  let(:scope)       { double('Scope') }
-  let(:builder)     { described_class.new(scope: scope) }
+  let(:scope)       { double('Scope', blacklight_config: CatalogController.blacklight_config) }
+  let(:builder)     { described_class.new(scope) }
 
   describe 'models' do
     it { expect(builder.models).to match_array([::Collection, OrganizationCollection, MediaList, SequentialSectionList]) }

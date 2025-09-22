@@ -1,10 +1,11 @@
+# Used by browse/teams, browse/projects
 module Morphosource
   module Collections
-    class TeamsService 
+    class TeamsService
       include SolrHelper
       attr_reader :scope, :params
-      delegate :repository, to: :scope
-      
+      delegate :blacklight_config, to: :scope
+
       def initialize(scope:, user:, params:)
         @scope = scope
         @user = user
@@ -44,7 +45,7 @@ module Morphosource
           query_builder.merge(fq: fq_params)
           query_builder.merge('facet.limit' => -1)
           query_builder.merge(rows: 99999)
-          repository.search(query_builder.query)
+          blacklight_config.repository.search(query_builder.query)
         ensure
           query_builder.merge(q: initial_q)
           query_builder.merge(fq: initial_fq)
@@ -60,13 +61,13 @@ module Morphosource
       # @api private
       #
       def query_solr(query_builder:, query_params:)
-        repository.search(query_builder.with(query_params).query)
+        blacklight_config.repository.search(query_builder.with(query_params).query)
       end
 
       # @api private
       #
       def query_solr_with_field_selection(query_builder:, fl:)
-        repository.search(query_builder.merge(fl: fl).query)
+        blacklight_config.repository.search(query_builder.merge(fl: fl).query)
       end
 
     end

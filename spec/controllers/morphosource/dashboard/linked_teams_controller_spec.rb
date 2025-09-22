@@ -7,7 +7,7 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
   let(:org1)                  { Organization.create(title: ['new organization'], institution_code: ['ABC']) }
   let!(:org2)                 { Organization.create(title: ['old organization'], institution_code: ['DEF'], team_id: [team.id]) }
   let(:admin)                 { User.create(email: 'email@email.com', password: 'password') }
-  let(:team)                  { Collection.create(title: ['Team_A'], collection_type_gid: team_collection_type.gid, depositor: admin.ms_id) }
+  let(:team)                  { Collection.create(title: ['Team_A'], collection_type_gid: team_collection_type.to_global_id, depositor: admin.ms_id) }
   let(:params)                { { id: team.id, collection: { organization_id: org1.id } } }
 
   before do
@@ -141,7 +141,7 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
           end
         end
         context 'the team was converted from a project' do
-          let(:project)                   { Collection.create(title: ['Project_A'], collection_type_gid: project_collection_type.gid, depositor: admin.ms_id) }
+          let(:project)                   { Collection.create(title: ['Project_A'], collection_type_gid: project_collection_type.to_global_id, depositor: admin.ms_id) }
           let(:params)                    { { id: project.id, collection: { organization_id: org1.id } } }
           let(:project_manager)           { User.create(email: 'manager@test.com', password: 'password') }
           let(:project_depositor)         { User.create(email: 'depositor@test.com', password: 'password') }
@@ -152,7 +152,7 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
             project.depositors << team_depositor
             project.viewers << team_viewer
             project.user_groups.each(&:save)
-            project.collection_type_gid = team_collection_type.gid
+            project.collection_type_gid = team_collection_type.to_global_id
             project.save!
             post :link_organization, params: params
           end

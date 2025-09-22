@@ -14,9 +14,9 @@ module Hyrax
           link = options[:link]
         end
         markup << %(<div class='row'>)
-        markup << %(<div class='col-xs-6 showcase-label'>#{label}</div>)
+        markup << %(<div class='col-6 showcase-label'>#{label}</div>)
         attributes = microdata_object_attributes(field).merge(class: "attribute attribute-#{field}")
-        markup << %(<div class='col-xs-6 showcase-value #{css_classes}'>)
+        markup << %(<div class='col-6 showcase-value #{css_classes}'>)
         if values.blank?
           if options[:text_if_empty].present?
             markup << options[:text_if_empty]
@@ -57,7 +57,7 @@ module Hyrax
           return markup if value.blank? 
           # if url, show idigbio link
           if link.present? && link =~ URI.regexp(['http', 'https'])
-            markup << "<span class='glyphicon glyphicon-new-window'></span>&nbsp;<span class='showcase-link'>#{link_to(value, link, target: :_blank)}</span>"
+            markup << "<i class='fas fa-external-link-alt'></i>&nbsp;<span class='showcase-link'>#{link_to(value, link, target: :_blank)}</span>"
           else
             markup << "<span>#{value}</span>"
           end

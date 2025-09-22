@@ -36,6 +36,11 @@ class SubmissionsController < ApplicationController
   end
 
   def new
+    if Hyrax.config.enable_browse_everything && Hyrax.config.enable_browse_everything_google_drive
+      # Header needed for Browse Everything to work with Google Drive
+      response.headers['Cross-Origin-Opener-Policy'] = 'same-origin-allow-popups'
+    end
+
     if params[:restart]
       clear_session_submission_settings
     end
@@ -314,7 +319,7 @@ class SubmissionsController < ApplicationController
       new_work_id, new_work = prepare_and_create_work(work, params)
       @submission.public_send(to_id(work) + '=', new_work_id)
       create_attachment_if_needed(work, new_work_id, new_work) if ['imaging_event', 'processing_event', 'media'].include?(work)
-      # Morphosource::CustomThumbnails
+      # Morphosource::CustomThumbnails #todo5 verify custom thumbnails work from submissions controller
       if work == 'media'
         create_thumbnail
         set_new_fund_code if @submission.fund_code.present?

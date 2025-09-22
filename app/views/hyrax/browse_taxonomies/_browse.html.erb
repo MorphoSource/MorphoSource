@@ -1,18 +1,18 @@
 <div id="taxonomy-browse">
   <% genus_term = '' %>
   <div class="row">
-    <div id='taxonomy-select' class="col-xs-12 col-sm-6">
+    <div id='taxonomy-select' class="col-sm-12 col-md-6">
       <div id="tree" class="block">
         <div class="row list-item" style='text-align: center;'>
           <span class="h4">Taxonomic Names</span>
         </div>
         <div id="root-link">
           <div class="row list-item">
-            <div class="col-xs-7">
+            <div class="col-sm-7">
               <div><%= link_to 'Root', main_app.browse_taxonomies_path, :remote => true %></div>
               <div class='smaller-text'>Return to root or top taxonomy</div>
             </div>
-            <div class="col-xs-5 smaller-text">
+            <div class="col-sm-5 smaller-text">
               <div><%= pluralize(@root_taxonomy_number, 'taxonomic name') %></div>
               <div><%= pluralize(@root_specimen_number, 'specimen') %></div>
             </div>
@@ -26,14 +26,14 @@
             <% genus_term = name if rank == 'genus' %>
             <% previous_params.merge!({ rank => name }) %>
               <div class="row list-item">
-                <div class="col-xs-7">
+                <div class="col-sm-7">
                   <% if name == higher_names.last[:name] %>
                     <div><b>
                       <% if rank == 'species' && !genus_term.blank? %>
                         <span style='font-style: italic;'><%= "#{genus_term} #{name}" %></span>
                       <% else %>
                         <%= name %>
-                      <% end %> 
+                      <% end %>
                     </b></div>
                   <% else %>
                     <div><%= link_to name, main_app.browse_taxonomies_path(previous_params), :remote => true %></div>
@@ -42,7 +42,7 @@
                     <%= rank.titleize %>
                   </div>
                 </div>
-                <div class="col-xs-5 smaller-text">
+                <div class="col-sm-5 smaller-text">
                   <div><%= pluralize(higher_name[:count], 'taxonomic name') %></div>
                   <% if higher_name[:specimen_count].present? %>
                     <div><%= pluralize(higher_name[:specimen_count], 'specimen') %></div>
@@ -56,10 +56,10 @@
         <% if names.present? %>
           <% if higher_names.present? %>
             <div class='row list-item'>
-              <div class='col-xs-7' style='padding-top: 10px;'>
+              <div class='col-sm-7' style='padding-top: 10px;'>
                 <b class='smaller-text'>Immediate Children</b>
               </div>
-              <div class='col-xs-5 smaller-text' style='padding-top: 13px;'>
+              <div class='col-sm-5 smaller-text' style='padding-top: 13px;'>
                 <a href='#specimen-list' id='jump-to-specimens'><b>Jump to specimens</b></a>
               </div>
             </div>
@@ -69,7 +69,7 @@
               <% rank_names.each do |name, counts| %>
                 <% genus_term = name if rank == 'genus' %>
                 <div class="row list-item child-item">
-                  <div class="col-xs-7 child-item-title">
+                  <div class="col-sm-7 child-item-title">
                     <% if rank == 'species' && !genus_term.blank? %>
                       <div style='font-style: italic;'><%= link_to "#{genus_term} #{name}", main_app.browse_taxonomies_path(previous_params.merge({ rank => name })), :remote => true %></div>
                     <% else %>
@@ -79,8 +79,8 @@
                       <%= rank.titleize %>
                     </div>
                   </div>
-                  <div class="col-xs-5 smaller-text">
-                    <div><%= pluralize(counts[:count], 'taxonomic name') %></div> 
+                  <div class="col-sm-5 smaller-text">
+                    <div><%= pluralize(counts[:count], 'taxonomic name') %></div>
                     <% if counts[:specimen_count].present? %>
                       <div><%= pluralize(counts[:specimen_count], 'specimen') %></div>
                     <% end %>
@@ -92,7 +92,7 @@
         <% end %>
       </div>
     </div>
-    <div id='specimen-list' class="col-xs-12 col-sm-6">
+    <div id='specimen-list' class="col-sm-12 col-md-6">
       <div id="objects" class="block">
         <% if specimens['numFound'] > 0 %>
           <div>

@@ -1,44 +1,50 @@
+@import 'variables';
+
 body.dashboard {
   background-color: #fff;
   padding-top: 0;
 
-  &.ms-collection-edit .panel#collection-edit-controls {
+  &.ms-collection-edit .card#collection-edit-controls {
     margin-left: 0;
     margin-right: 0;
 
-    .panel {
+    .card {
       margin-left: 0;
       margin-right: 0;
 
-      &.panel-default {
+      &.panel-default:not(.panel-borders) {
         border: none;
       }
 
-      .panel-body {
+      .card-body {
         padding-top: 0;
         padding-left: 5px;
       }
-    }  
+    }
   }
 
-  &.profile .panel-body {
+  .card.panel-default:not(.panel-borders) {
+    border: none; /* remove border for dashboard new page (e.g. new Project) */
+  }
+
+  &.profile .card-body {
     padding: 0;
   }
 
   .collections-wrapper {
-    padding-top: 10px; 
+    padding-top: 10px;
 
-    .collections-panel-wrapper.panel {
+    .collections-panel-wrapper.card {
       width: unset;
     }
   }
-  
+
   .main-content {
     background-color: #fff;
   }
 
   .ownership-transfer {
-    .panel {
+    .card {
       float: unset;
       width: unset;
     }
@@ -47,22 +53,74 @@ body.dashboard {
   .sidebar {
     // Sidebar should adjust for 55px masthead height
     min-height: calc(100vh - 55px);
+
+    a {
+      display: flex;
+      align-items: center;
+      padding-left: 10px;
+    }
+
   }
 
-  .panel.contributor_petitions {
+  .sidebar.maximized .nav-pills > li a {
+    padding: 12px 10px 12px 24px;
+  }
+
+  .sidebar:not(.maximized) .nav li a {
+    justify-content: center;
+  }
+
+  .card.contributor_petitions {
     width: fit-content;
   }
 
-  .panel#collection-edit-controls {
-    padding:20px;
-  }
-
-  .panel-footer {
+  .card-footer {
     background-color: transparent;
   }
 
   .field-controls .add, .field-controls .remove {
     width: 3em;
+  }
+
+  /* Override Hyrax dropdown menu styles */
+  .dropdown-menu {
+    li {
+      a {
+        color: $link-font-color;
+        font-size: 12px;
+        font-weight: normal;
+        display: block;
+        white-space: nowrap;
+        width: 100%;
+        padding: 3px 20px;
+      }
+      a:hover {
+        text-decoration: none;
+        background-color: transparent;
+      }
+    }
+    li:hover {
+      background-color: #f5f5f5;
+      cursor: pointer;
+    }
+  }
+  /* Facets dropdown menu styles */
+  .ms-facets .dropdown-menu,
+  .all-works .dropdown-menu {
+    li {
+      padding: 4px 8px;
+      a, .facet-count { padding: 0px 3px }
+    }
+  }
+  /* All Works page specific styles */
+  .all-works {
+    .list-filters {
+      flex-wrap: wrap;
+      .dropdown-menu {
+        li { padding: 4px 8px }
+        a, .facet-count { padding: 0px 3px }
+      }
+    }
   }
 }
 
@@ -71,6 +129,9 @@ body.dashboard {
   align-items: center;
   justify-content: center;
   margin-bottom: 20px;
+  flex-wrap: nowrap;
+  max-width: 90%;
+  margin-left: 15px;
 
   img {
     margin-right: 20px;
@@ -94,6 +155,7 @@ body.dashboard {
 
   .action-section {
     margin-bottom: 30px;
+    max-width: 100%;
   }
 
   .list-category {
@@ -210,11 +272,14 @@ body.dashboard {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
+  select {
+    margin-left: 4px;
+    margin-right: 4px;
+  }
 }
 
 .collection-description {
-  padding: 10px 0 15px 0;
-  max-width: 85%;
+  padding: 10px 15px 15px;
 }
 
 // Have to re-introduce some default hyrax modal styling for dashboard, because .showcase removes it
@@ -225,9 +290,10 @@ div.modal#apiKeyModal {
   }
 
   .modal-title {
+    border-bottom: none;
     font-size: 22px;
-    padding: 0;
     margin: 0;
+    padding: 0;
   }
 
   .modal-footer {

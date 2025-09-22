@@ -126,11 +126,11 @@ module Hyrax
     end
 
     def id_badge
-      content_tag(:span, "ID: #{id}", class: "label label-info")
+      content_tag(:span, "ID: #{id}", class: "badge badge-info")
     end
 
     def work_type_badge
-      content_tag(:span, model.model_name.to_s.titleize, class: "label label-info")
+      content_tag(:span, model.model_name.to_s.titleize, class: "badge badge-info")
     end
 
     def export_as_nt

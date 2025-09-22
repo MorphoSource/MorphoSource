@@ -132,6 +132,15 @@ RSpec.describe OrganizationsCatalogController, :type => :controller do
           expect(subject.field).to eq('country_tesim')
         end
       end
+
+      describe 'description' do
+        subject { index_fields['description_tesim'] }
+
+        it 'has the correct attributes' do
+          expect(subject.label).to eq('Description')
+          expect(subject.field).to eq('description_tesim')
+        end
+      end
     end
 
     describe 'show fields' do

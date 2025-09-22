@@ -21,6 +21,10 @@ module Morphosource
       def media_inherit_permissions?
         team? || project?
       end
+
+      def machine_id
+        self["machine_id_ssi"]
+      end
     end
   end
 end

@@ -1,8 +1,9 @@
-.collection.panel-body {
+body.media_lists .collection, body.sequential_section_lists .collection {
   .batch-action-buttons {
     .text {
       display: inline-block;
       text-align: center;
+      padding-top: 5px;
     }
   }
 
@@ -283,9 +284,7 @@
       margin-top: 22px;
 
       .document .view-label {
-        position: absolute;
         bottom: 5px;
-        width: 90%;
 
         .currently-viewing {
           font-weight: bold;

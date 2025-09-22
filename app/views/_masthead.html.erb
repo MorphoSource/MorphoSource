@@ -2,22 +2,23 @@
 <%= render partial: 'sitewide_banner' %>
 
 <header aria-label="header">
-  <nav id="masthead" class="navbar navbar-inverse navbar-static-top" role="navigation" aria-label="masthead">
+  <nav id="masthead" class="navbar navbar-dark bg-dark navbar-expand-md" role="navigation" aria-label="masthead">
     <h1 class="sr-only"><%= application_name %></h1>
-    <div class="container-fluid">
-      <!-- Brand and toggle get grouped for better mobile display -->
-      <div class="navbar-header">
-        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#top-navbar-collapse" aria-expanded="false">
-          <span class="sr-only">Toggle navigation</span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-          <span class="icon-bar"></span>
-        </button>
+    <div class="container-fluid flex-grow-1">
+      <div class="col-6 px-3 p-md-0 logo">
         <%= render '/logo' %>
       </div>
 
-      <div class="collapse navbar-collapse" id="top-navbar-collapse">
-        <%= render '/user_util_links' %>
+      <div class="col-2 col-md-3 text-right ml-auto navbar-toggler" style="border: none;">
+        <!-- mobile hamburger menu -->
+        <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#top-navbar-collapse" aria-expanded="false" style="color: white;">
+          <span class="sr-only">Toggle navigation</span>
+          <i class="fas fa-bars"></i>
+        </button>
+      </div>
+
+      <div class="col-12 col-md-3 ml-auto px-3 px-md-0 collapse navbar-collapse" id="top-navbar-collapse">
+          <%= content_for?(:user_util_links) ? yield(:user_util_links) : render('/user_util_links') %>
       </div>
     </div>
   </nav>

@@ -1,13 +1,12 @@
-<% content_for :body_css_classes do %>showcase organizations<% end %>
+<% content_for :body_css_classes do %>showcase organizations organization-work<% end %>
 <% provide :page_title, construct_page_title(@presenter.title.first) %>
 <div class="hyc-container" itemscope itemtype="http://schema.org/CollectionPage">
   <div class="hyc-header">
     <header class="hyc-generic"></header>
   </div>
-
   <div class="row collection-header">
 
-    <div class="col-xs-9 flex">
+    <div class="col-9 flex">
       <div class="team-title">
          <h1>
             <div id="showcase-title">
@@ -15,14 +14,14 @@
               <%= @presenter.title.first %>
             </div>
             <div class="text-muted">
-              <%= pluralize(@media_member_count, ' Media') %> · 
-              <%= pluralize(@bso_member_count, ' Specimen') %> · 
+              <%= pluralize(@media_member_count, ' Media') %> ·
+              <%= pluralize(@bso_member_count, ' Specimen') %> ·
               <%= pluralize(@cho_member_count, ' Cultural Heritage Object') %>
             </div>
         </h1>
       </div>
     </div>
-    <div class="col-xs-3 show-actions text-right">
+    <div class="col-3 show-actions text-right">
       <% if current_user&.admin? %>
         <%= link_to 'Edit', main_app.edit_hyrax_organization_path(@presenter.id), class: 'btn w-50 btn-primary' %>
       <% end %>
@@ -30,26 +29,26 @@
 
   </div><!-- /row -->
 
-  <div class="panel panel-default tabs" role="main">
+  <div class="card panel-default tabs" role="main">
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" role="tablist">
-      <li role="presentation" class="active">
-        <a href="#media" aria-controls="media" role="tab" data-toggle="tab" aria-expanded="false">
+      <li role="presentation" class="nav-item active">
+        <a href="#media" aria-controls="media" role="tab" data-toggle="tab" aria-expanded="false" class="nav-link active">
         <i class="fa fa-cube" aria-hidden="true"></i> MEDIA
         </a>
       </li>
-      <li role="presentation">
-        <a href="#biological_specimens" aria-controls="biological_specimens" role="tab" data-toggle="tab" aria-expanded="true">
+      <li role="presentation" class="nav-item">
+        <a href="#biological_specimens" aria-controls="biological_specimens" role="tab" data-toggle="tab" aria-expanded="true" class="nav-link">
           <i class="fas fa-frog" aria-hidden="true"></i> SPECIMENS
         </a>
       </li>
-      <li role="presentation">
-        <a href="#cultural_heritage_objects" aria-controls="cultural_heritage_objects" role="tab" data-toggle="tab" aria-expanded="true">
+      <li role="presentation" class="nav-item">
+        <a href="#cultural_heritage_objects" aria-controls="cultural_heritage_objects" role="tab" data-toggle="tab" aria-expanded="true" class="nav-link">
           <i class="ms2-icon-bowl icon-bowl" aria-hidden="true"></i> CULTURAL HERITAGE OBJECTS
         </a>
       </li>
-      <li role="presentation">
-        <a href="#about" aria-controls="about" role="tab" data-toggle="tab" aria-expanded="true">
+      <li role="presentation" class="nav-item">
+        <a href="#about" aria-controls="about" role="tab" data-toggle="tab" aria-expanded="true" class="nav-link">
           <i class="fa fa-newspaper" aria-hidden="true"></i> ABOUT
         </a>
       </li>
@@ -58,7 +57,7 @@
     <!-- Tab panes -->
     <div class="tab-content">
 
-      <div role="tabpanel" class="tab-pane active" id="media">
+      <div role="tabpanel" class="tab-pane active collection-page" id="media">
         <div class="form-tab-content">
           <% if @media_member_count > 0 %>
             <%= render 'hyrax/organizations/media_filters' %>
@@ -73,16 +72,16 @@
         </div>
       </div>
 
-      <div role="tabpanel" class="tab-pane" id="biological_specimens">
+      <div role="tabpanel" class="tab-pane collection-page" id="biological_specimens">
         <div class="form-tab-content">
           <% if @bso_member_count > 0 %>
             <%= render 'hyrax/organizations/bso_filters' %>
-            <div class="row">
+            <div class="row tab-wrapper">
               <!-- Search bar -->
-              <div class="col-xs-6">
+              <div class="col-6">
                 <%= render 'hyrax/organizations/search_form', tab: "biological_specimens" %>
               </div>
-              <div class="col-xs-6">
+              <div class="col-6">
                 <%= render 'hyrax/organizations/sort_and_per_page_bso' %>
               </div>
             </div>
@@ -97,16 +96,16 @@
         </div>
       </div>
 
-      <div role="tabpanel" class="tab-pane" id="cultural_heritage_objects">
+      <div role="tabpanel" class="tab-pane collection-page" id="cultural_heritage_objects">
         <div class="form-tab-content">
           <% if @cho_member_count > 0 %>
             <%= render 'hyrax/organizations/cho_filters' %>
             <div class="row">
               <!-- Search bar -->
-              <div class="col-xs-6">
+              <div class="col-6">
                 <%= render 'hyrax/organizations/search_form', tab: "cultural_heritage_objects" %>
               </div>
-              <div class="col-xs-6">
+              <div class="col-6">
                 <%= render 'hyrax/organizations/sort_and_per_page_cho' %>
               </div>
             </div>
@@ -129,6 +128,6 @@
 
     </div><!-- /tab-content -->
 
-  </div><!-- /panel panel-default tabs -->
+  </div><!-- /card panel-default tabs -->
 
 </div><!-- div hyc-container -->

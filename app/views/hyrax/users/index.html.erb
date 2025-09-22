@@ -6,8 +6,7 @@
     <thead>
         <tr>
             <th>Avatar</th>
-            <th class="sorts"><i id="first_name" class="<%= params[:sort].blank? ? 'caret up' : params[:sort] == "first_name desc" ? 'caret' : params[:sort] == "first_name" ? 'caret up' : '' %>"></i>First Name</th>
-            <th class="sorts"><i id="last_name" class="<%= params[:sort].blank? ? 'caret up' : params[:sort] == "last_name desc" ? 'caret' : params[:sort] == "last_name" ? 'caret up' : '' %>"></i>Last Name</th>
+            <th class="sorts" style="min-width: 250px;"><i id="display_name" class="<%= params[:sort].blank? ? 'caret up' : params[:sort] == "display_name desc" ? 'caret' : params[:sort] == "display_name" ? 'caret up' : '' %>"></i>Name</th>
             <th class="sorts"><i id="id" class="<%= params[:sort] == "id desc" ? 'caret' : params[:sort] == "id" ? 'caret up' : '' %>"></i>ID</th>
             <th class="sorts"><i id="login" class="<%= params[:sort] == "login desc" ? 'caret' : params[:sort] == "login" ? 'caret up' : '' %>"></i>MS_ID</th>
             <th class="sorts"><i id="email" class="<%= params[:sort].blank? ? 'caret up' : params[:sort] == "email desc" ? 'caret' : params[:sort] == "email" ? 'caret up' : '' %>"></i>Email</th>
@@ -26,6 +25,6 @@
     <% end %>
     </tbody>
 </table>
-<div class="pager">
+<div class="pagination justify-content-center">
   <%= paginate @users, theme: 'blacklight', route_set: hyrax %>
 </div>

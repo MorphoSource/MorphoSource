@@ -2,31 +2,33 @@
 <%= render partial: 'sitewide_banner' %>
 
 <header>
-  <nav id="masthead" class="navbar test-class navbar-inverse navbar-static-top" role="navigation">
-    <div class="container" style="color:white">
+  <nav id="masthead" class="navbar navbar-dark bg-dark navbar-expand-md" role="navigation">
+    <div class="container" style="color: white;">
       <!-- Brand and toggle get grouped for better mobile display -->
-      <div class="navbar-header col-xs-12 col-sm-9">
-        <div class="col-xs-12 col-sm-5 logo">
-          <%= render '/logo' %>
-        </div>
-        <div class="col-xs-10 col-sm-7">
-          <%= content_for?(:search_form) ? yield(:search_form) : render('/catalog/search_form') %>
-        </div>
-        <div class="col-xs-2 pull-right">
-          <!-- mobile hamburger menu -->
-          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#top-navbar-collapse" aria-expanded="false">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </button>
-        </div>
+      <div class="col-8 col-md-3 px-3 p-md-0 logo">
+        <%= render '/logo' %>
       </div>
 
-      <div class="collapse navbar-collapse col-xs-12 col-sm-3 navbar-right" id="top-navbar-collapse">
-        <%= content_for?(:user_util_links) ? yield(:user_util_links) : render('/user_util_links') %>
+      <div class="col-2 col-md-3 text-right ml-auto navbar-toggler" style="border: none;">
+        <!-- mobile hamburger menu -->
+        <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#top-navbar-collapse" aria-expanded="false" style="color: white;">
+          <span class="sr-only">Toggle navigation</span>
+          <i class="fas fa-bars"></i>
+        </button>
       </div>
 
+      <div class="col-12 col-md-9 ml-auto no-horizontal-padding collapse navbar-collapse justify-content-end px-xl-0" id="top-navbar-collapse">
+        <div class="row px-3 px-md-0 mx-0 w-100">
+          <% if !controller_name.downcase.include? "catalog" %>
+            <div class="col-12 col-sm-8 px-0">
+              <%= content_for?(:search_form) ? yield(:search_form) : render('/catalog/search_form') %>
+            </div>
+          <% end %>
+          <div class="col-12 col-sm-4 px-0 ml-auto">
+            <%= content_for?(:user_util_links) ? yield(:user_util_links) : render('/user_util_links') %>
+          </div>
+        </div>
+      </div>
     </div>
   </nav>
 </header>

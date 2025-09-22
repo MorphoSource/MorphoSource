@@ -1,7 +1,7 @@
 <div class="form-group" data-behavior="collection-relationships" data-param-key="<%= f.object.model_name.param_key %>" data-members="<%= f.object.member_of_collections_json %>">
 
   <div class="form-inline">
-    <div class="col-xs-12 pl-0">
+    <div class="col-12 pl-0">
       <%= f.input_field :member_of_collection_ids,
                   prompt: :translate,
                   data: {
@@ -21,8 +21,8 @@
 <tr>
     <td>
         <div class="row">
-            <div class="col-xs-10 showcase-value collection-title" data-id="{%= o.id %}">{%= o.title %}</div>
-            <div class="col-xs-2"><i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-relationship"></i></div>
+            <div class="col-10 showcase-value collection-title" data-id="{%= o.id %}">{%= o.title %}</div>
+            <div class="col-2"><i class="fa fa-times-circle" aria-hidden="true" data-behavior="remove-relationship"></i></div>
         </div>
     </td>
 </tr>

@@ -1,7 +1,7 @@
 module BatchSubmissionTools
   module Ms2Batch
     class Manifest
-      include BatchSubmissionTools::Ms2Batch::BatchSubmissionHelper
+      include BatchSubmissionTools::Ms2Batch::BatchSubmission
       attr_accessor :input_path, :media_path, :admin_user, :depositor, :owner, :on_behalf_of,
         :organization_id, :organization_transfer_immediately, :device_id, :device_modality,
         :collection_ids, :fund_code_id,
@@ -55,7 +55,7 @@ module BatchSubmissionTools
       end
 
       def validate_media_path
-        Dir.exists?(media_path) ? true : raise("Media path directory (#{media_path}) not found")
+        Dir.exist?(media_path) ? true : raise("Media path directory (#{media_path}) not found")
       end
 
       def parse_manifest
@@ -86,7 +86,7 @@ module BatchSubmissionTools
               # look for the parent row index
               rows.each_with_index do |r , idx|
                 if (r[:media][:media_file]&.first == row[:media][:parent_file].first)
-                  if r[:media][:raw_or_derived]&.first == "Derived"
+                  if r[:media][:raw_or_derived]&.first.downcase == "derived"
                     derived_parent_index = idx
                   else
                     parent_index = idx
@@ -336,7 +336,7 @@ module BatchSubmissionTools
             parent_row_index = mg[:parents].first
             media_attrs = rows[parent_row_index][:media]
 
-            if parent_row_index == sheet_index.first && media_attrs[:raw_or_derived].first == "Raw"
+            if parent_row_index == sheet_index.first && media_attrs[:raw_or_derived].first.downcase == "raw"
 
               ie_row_index = parent_row_index
 
@@ -448,7 +448,6 @@ module BatchSubmissionTools
       def to_h
         {
           summary: summary,
-
           biological_specimen_ingests: biological_specimen_ingests.map(&:to_h),
           rows_to_bso: rows_to_bso.transform_keys(&:to_s),
           taxonomy_ingests: taxonomy_ingests.map(&:to_h),

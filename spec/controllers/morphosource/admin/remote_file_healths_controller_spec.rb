@@ -63,7 +63,7 @@ RSpec.describe Morphosource::Admin::RemoteFileHealthsController, type: :controll
 
       it 'for CSV format requests' do
         get :index, params: {format: 'csv'}
-        expect(response.content_type).to eq('text/csv')
+        expect(response.content_type).to include('text/csv')
         expect(response.body).not_to include data1.media
         expect(response.body).to include data2.media
       end

@@ -91,5 +91,7 @@ en:
             header: New Team
           edit:
             header: Edit Team
+          projects:
+            header: Projects
 
 

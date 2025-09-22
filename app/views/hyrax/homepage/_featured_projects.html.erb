@@ -1,16 +1,16 @@
-<div class="col-xs-12 col-sm-6 projects">
+<div class="col-12 col-md-6 projects">
   <h2><%= t('morphosource.homepage.featured_collections') %></h2>
     <table class="table table-striped collection-highlights">
       <tbody>
         <%# featured project ids set in config/environments. If no ids added, returns 6 collections the user can access at random. %>
-        <% featured_projects.each do |collection| %>
+        <% @featured_projects.each do |collection| %>
           <tr>
             <td>
               <div class="media">
                 <div class="media-body">
                   <div class="media-heading" style="display:flex; flex-direction:row; align-items:center;">
-                    <%= link_to [main_app, collection] do %>
-                      <%= render_thumbnail_tag(collection, { class: 'hidden-xs file_listing_thumbnail' }, { suppress_link: true }) %>
+                    <%= link_to [hyrax, collection] do %>
+                      <%= render_thumbnail_tag(collection, { class: 'd-none d-sm-block file_listing_thumbnail' }, { suppress_link: true }) %>
                     <% end %>
                     <%= link_to [main_app, collection] do %>
                       <%= collection.title_or_label %>

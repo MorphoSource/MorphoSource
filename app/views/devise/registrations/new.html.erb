@@ -1,58 +1,67 @@
 <% content_for :body_css_classes do %>showcase profile<% end %>
-<%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-<h1 class="mt-2"><i class="fa fa-edit"></i> Sign up</h1>
-<div class="row">
-  <%= render "devise/shared/error_messages", resource: resource %>
-</div>
+<div class="row justify-content-center">
+  <div class="col-12 col-lg-10">
+    <div class="card my-5">
+      <div class="card-body p-4">
+        <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+          <h2 class="card-title text-center mb-4" style="font-size: 1.25rem;">Sign up</h2>
 
-<div class="panel panel-default">
-  <div class="row">
-    <div class="col-sm-12">
-      <div class="block-padding mb-1">
-        <%= t("morphosource.dashboard.profiles.register_form_instructions").html_safe %>
-      </div>
-    </div>
-    <div class="col-sm-12 col-md-6 profile">
+          <%= render "devise/shared/error_messages", resource: resource %>
 
-      <%= render partial: 'hyrax/dashboard/profiles/edit_email', locals: {f: f} %>
+          <div class="row">
+            <div class="col-12">
+              <div class="mb-3">
+                <%= t("morphosource.dashboard.profiles.register_form_instructions").html_safe %>
+              </div>
+            </div>
+            <div class="col-md-6 profile">
 
-      <div class="form-group">
-        <%= f.label :password, class: 'col-sm-4 control-label required' %>
-        <div class="col-sm-8">
-          <%= f.password_field :password, autocomplete: "new-password", class: "form-control w-100", minlength: @minimum_password_length.to_s %>
+              <%= render partial: 'hyrax/dashboard/profiles/edit_email', locals: {f: f} %>
+
+              <div class="form-group row">
+                <%= f.label :password, class: 'col-sm-4 col-form-label required' %>
+                <div class="col-sm-8">
+                  <%= f.password_field :password, autocomplete: "new-password", class: "form-control", minlength: @minimum_password_length.to_s, required: true %>
+                </div>
+              </div>
+
+              <div class="form-group row">
+                <%= f.label :password_confirmation, "Confirm password", class: 'col-sm-4 col-form-label required' %>
+                <div class="col-sm-8">
+                  <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control", minlength: @minimum_password_length.to_s, required: true %>
+                </div>
+              </div>
+
+              <%= render partial: 'hyrax/dashboard/profiles/edit_profile_name_section', locals: {f: f} %>
+              <%= render partial: 'hyrax/dashboard/profiles/ms_profile', locals: {f: f} %>
+
+            </div>
+
+            <div class="col-md-6">
+              <%= render partial: 'hyrax/dashboard/profiles/edit_profile_type_section', locals: {f: f} %>
+              <%= render partial: 'hyrax/dashboard/profiles/edit_intent', locals: {f: f} %>
+            </div>
+          </div>
+
+          <div class="row mt-4">
+            <div class='col-12 text-center'>
+              <div class="form-group form-check">
+                <%= f.check_box :terms_read, { class: 'form-check-input', required: true }, 'true', 'false' %>
+                <%= f.label :terms_read, t("devise.passwords.edit.terms").html_safe, class: 'form-check-label' %>
+              </div>
+              <div class="actions mt-3">
+                <%= f.submit "Sign up", class: 'btn btn-primary btn-lg btn-block' %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+        <div class="text-center mt-3">
+          <%= render "devise/shared/links" %>
         </div>
       </div>
-
-      <div class="form-group">
-        <%= f.label :password_confirm, class: 'col-sm-4 control-label required' %>
-        <div class="col-sm-8">
-          <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control", minlength: @minimum_password_length.to_s %>
-        </div>
-      </div>
-
-      <%= render partial: 'hyrax/dashboard/profiles/edit_profile_name_section', locals: {f: f} %>
-      <%= render partial: 'hyrax/dashboard/profiles/ms_profile', locals: {f: f} %>
-
-    </div>
-
-    <div class="col-sm-12 col-md-6">
-      <%= render partial: 'hyrax/dashboard/profiles/edit_profile_type_section', locals: {f: f} %>
-      <%= render partial: 'hyrax/dashboard/profiles/edit_intent', locals: {f: f} %>  
     </div>
   </div>
-
-  <div class="row">
-    <div class='col-sm-12 text-center'>
-      <p>
-        <%= f.check_box :terms_read, {checked: false, required: true}, true %>
-        <%= t("devise.passwords.edit.terms").html_safe %>       
-      </p>
-      <p><%= f.submit "Sign up", class: 'btn btn-primary btn-lg' %></p>
-    </div>
-  </div>
-
 </div>
-<% end %>
 
 <script>
 <%= render partial: 'hyrax/dashboard/profiles/ms_profile_scripts', formats: [:js] %>

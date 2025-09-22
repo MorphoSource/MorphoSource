@@ -3,21 +3,21 @@
 <div class="browse">
 
 	<% provide :page_header do %>
-    <div class="col-xs-9 title browse">
-      <h1><span class="fas fa-seedling" aria-hidden="true"></span> 
+    <div class="col-sm-9 title browse">
+      <h1><span class="fas fa-seedling" aria-hidden="true"></span>
         <%= t("hyrax.browse.title.taxonomies") %><br/>
       </h1>
     </div>
   <% end %>
-  <div class="col-xs-12 page-description">
+  <div class="col-sm-12 page-description">
     <p>Biological specimens can be associated with taxonomic names, which include both binomial species names and higher-order classifications like family or phylum. Taxonomic names in MorphoSource are either imported from the <a href='https://www.gbif.org/dataset/d7dddbf4-2cf0-4f39-9b2a-bb099caae36c'>GBIF Backbone Taxonomy</a> aggregator or supplied by users. Here you can browse specimens with published media that are associated with GBIF-linked taxonomies.</p>
   </div>
-  <div class="col-xs-12 body-wrapper" style='margin-left: 0; margin-right: 0; margin-bottom: 40px;'>
+  <div class="col-sm-12 body-wrapper" style='margin-left: 0; margin-right: 0; margin-bottom: 40px;'>
     <div id="browse_taxonomy_container">
       <%= render(
         partial: 'hyrax/browse_taxonomies/browse',
         locals: { higher_names: @higher_names, names: @names, specimens: @specimens, specimen_taxonomy_terms: @specimen_taxonomy_terms }
-        ) 
+        )
       %>
     </div>
   </div>

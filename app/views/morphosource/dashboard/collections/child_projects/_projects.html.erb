@@ -1,6 +1,6 @@
 <div id="team_projects" role="tabpanel" class="tab-pane active">
   <div class="form-tab-content">
-    <div class="row tab-action-buttons sub-collections-wrapper">
+    <div class="tab-action-buttons sub-collections-wrapper d-flex flex-row-reverse" style="gap: 5px;">
       <%= button_tag t("hyrax.dashboard.collections.actions.add_project_to_#{@collection.collection_type.machine_id}.label"),type: 'button',
                class: 'btn btn-primary add-subcollection',
                title: t("hyrax.dashboard.collections.actions.add_project_to_#{@collection.collection_type.machine_id}.label"),
@@ -15,3 +15,6 @@
     <%= render 'morphosource/dashboard/collections/child_projects/tab_project_list', id: @presenter.id, collection: @projects %>
   </div>
 </div>
+
+<%= render 'morphosource/my/collections/modal_add_project', id: @presenter.id, source: 'show' %>
+<%= render 'morphosource/my/collections/modal_remove_project' %>

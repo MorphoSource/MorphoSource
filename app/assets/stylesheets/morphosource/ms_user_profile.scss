@@ -6,7 +6,22 @@
 }
 
 .dashboard.showcase.profile {
+  .landing .list-item a {
+    font-size: 14px;
+  }
+
   .showcase-label, .showcase-value  {
     font-size: 14px;
+  }
+}
+
+// Styles for non-dashboard user profile show
+body.profile.profile-show {
+  .row {
+    padding:4px 10px;
+  }
+
+  .tab-content .activity-display {
+    position: relative;
   }
 }

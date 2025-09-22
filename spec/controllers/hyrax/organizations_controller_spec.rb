@@ -12,7 +12,7 @@ RSpec.describe Hyrax::OrganizationsController, type: :controller do
   end
 
   describe '#unlinked_organizations' do
-    let(:team)                  { Collection.create(title: ['team'], collection_type_gid: team_collection_type.gid) }
+    let(:team)                  { Collection.create(title: ['team'], collection_type_gid: team_collection_type.to_global_id) }
     let(:user)                  { User.create(email: 'user@email.com', password: 'password') }
     let(:org1)                  { Organization.create(title: ['green yellow']) }
     let(:org4)                  { Organization.create(title: ['red yellow'], team_id: ['456']) }

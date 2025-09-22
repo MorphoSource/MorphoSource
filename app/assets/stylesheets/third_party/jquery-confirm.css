@@ -514,7 +514,7 @@ body[class*=jconfirm-no-scroll-] {
     color: #FFF;
 }
 
-.jconfirm .jconfirm-box .jconfirm-buttons button.btn-default {
+.jconfirm .jconfirm-box .jconfirm-buttons button.btn-secondary {
     background-color: #ecf0f1;
     color: #000;
     text-shadow: none;
@@ -522,7 +522,7 @@ body[class*=jconfirm-no-scroll-] {
     transition: background .2s;
 }
 
-.jconfirm .jconfirm-box .jconfirm-buttons button.btn-default:hover {
+.jconfirm .jconfirm-box .jconfirm-buttons button.btn-secondary:hover {
     background-color: #bdc3c7;
     color: #000;
 }
@@ -622,15 +622,15 @@ body[class*=jconfirm-no-scroll-] {
     text-shadow: none;
 }
 
-.jconfirm.jconfirm-white .jconfirm-box .jconfirm-buttons button.btn-default,
-.jconfirm.jconfirm-light .jconfirm-box .jconfirm-buttons button.btn-default {
+.jconfirm.jconfirm-white .jconfirm-box .jconfirm-buttons button.btn-secondary,
+.jconfirm.jconfirm-light .jconfirm-box .jconfirm-buttons button.btn-secondary {
     -webkit-box-shadow: none;
     box-shadow: none;
     color: #333;
 }
 
-.jconfirm.jconfirm-white .jconfirm-box .jconfirm-buttons button.btn-default:hover,
-.jconfirm.jconfirm-light .jconfirm-box .jconfirm-buttons button.btn-default:hover {
+.jconfirm.jconfirm-white .jconfirm-box .jconfirm-buttons button.btn-secondary:hover,
+.jconfirm.jconfirm-light .jconfirm-box .jconfirm-buttons button.btn-secondary:hover {
     background: #ddd;
 }
 
@@ -679,16 +679,16 @@ body[class*=jconfirm-no-scroll-] {
     color: white;
 }
 
-.jconfirm.jconfirm-black .jconfirm-box .jconfirm-buttons button.btn-default,
-.jconfirm.jconfirm-dark .jconfirm-box .jconfirm-buttons button.btn-default {
+.jconfirm.jconfirm-black .jconfirm-box .jconfirm-buttons button.btn-secondary,
+.jconfirm.jconfirm-dark .jconfirm-box .jconfirm-buttons button.btn-secondary {
     -webkit-box-shadow: none;
     box-shadow: none;
     color: #fff;
     background: none;
 }
 
-.jconfirm.jconfirm-black .jconfirm-box .jconfirm-buttons button.btn-default:hover,
-.jconfirm.jconfirm-dark .jconfirm-box .jconfirm-buttons button.btn-default:hover {
+.jconfirm.jconfirm-black .jconfirm-box .jconfirm-buttons button.btn-secondary:hover,
+.jconfirm.jconfirm-dark .jconfirm-box .jconfirm-buttons button.btn-secondary:hover {
     background: #666;
 }
 

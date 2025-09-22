@@ -28,13 +28,13 @@ module Morphosource::Derivatives
     def opts_by_command
       {
         optimize: { max_texture_size: 1024, simplify: false, simplify_error: 0.0001 },
-        center: {}, # could support pivot point center/below/above, but for now support only center
+        center: { pivot: 'below' },
         metalrough: {}
       }
     end
 
     def call
-      unless File.exists?(source_path)
+      unless File.exist?(source_path)
         raise Morphosource::Derivatives::GltfTransformError.new("Source file: #{source_path} does not exist.")
       end
 
@@ -52,7 +52,8 @@ module Morphosource::Derivatives
           --simplify-error #{opts[:simplify_error]} \\
           --texture-size #{opts[:max_texture_size]}"
       when :center
-        "gltf-transform center '#{source_path}' '#{out_path}'"
+        "gltf-transform center '#{source_path}' '#{out_path}' \\
+          --pivot #{opts[:pivot]}"
       when :metalrough
         "gltf-transform metalrough '#{source_path}' '#{out_path}'"
       end
@@ -60,7 +61,7 @@ module Morphosource::Derivatives
 
     # Check for produced derivative file, otherwise raise gltf-transform response as error
     def post_process(raw_output)
-      if !File.exists?(out_path) || (File.size(out_path) == 0)
+      if !File.exist?(out_path) || (File.size(out_path) == 0)
         raise Morphosource::Derivatives::GltfTransformError.new("File not successfully created by derivative tool.\nTool command: \"#{command}\"\nTool output:\n\"#{raw_output}\"")
       end
     end

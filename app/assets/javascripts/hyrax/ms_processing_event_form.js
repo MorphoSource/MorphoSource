@@ -65,7 +65,7 @@ $( document ).ready(function() {
       description = (description) ? description[1] : '';
       // Assemble new triple fields
       var li = document.createElement('li');
-      li.className =  'field-wrapper input-group input-append processing_activity_items';
+      li.className =  'field-wrapper input-group input-append processing_activity_items d-block';
       li.setAttribute('data-step', step);
 
       appendProcessingActivityStepSelect(li);
@@ -84,10 +84,10 @@ $( document ).ready(function() {
       var row = document.createElement('div');
       row.className = "row";
       var label = document.createElement('div');
-      label.className = "col-xs-6 showcase-label";
+      label.className = "col-6 showcase-label";
       label.innerHTML = "Activity software";
       var value = document.createElement('div');
-      value.className = "col-xs-6 showcase-value";
+      value.className = "col-6 showcase-value";
       value.appendChild(softwareInput);
       row.appendChild(label);
       row.appendChild(value);
@@ -101,10 +101,10 @@ $( document ).ready(function() {
       var row = document.createElement('div');
       row.className = "row";
       var label = document.createElement('div');
-      label.className = "col-xs-6 showcase-label";
+      label.className = "col-6 showcase-label";
       label.innerHTML = "Activity description and parameter settings";
       var value = document.createElement('div');
-      value.className = "col-xs-6 showcase-value";
+      value.className = "col-6 showcase-value";
       value.appendChild(descriptionInput);
       row.appendChild(label);
       row.appendChild(value);

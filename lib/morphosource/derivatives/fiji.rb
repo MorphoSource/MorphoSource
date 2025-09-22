@@ -17,7 +17,7 @@ module Morphosource::Derivatives
     end
 
     def call
-      unless Dir.exists?(input_path)
+      unless Dir.exist?(input_path)
         raise Morphosource::Derivatives::FijiError.new("Input directory: #{input_path} does not exist.")
       end
 

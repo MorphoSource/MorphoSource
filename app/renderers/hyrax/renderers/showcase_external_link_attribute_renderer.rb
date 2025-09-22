@@ -7,7 +7,7 @@ module Hyrax
           markup = ''
           return markup if value.blank?
           link = link_to(value, format_url(value), target: :blank)
-          markup = "<span class='glyphicon glyphicon-new-window'></span>&nbsp;<span class='showcase-link'>#{link}</span>"
+          markup = "<i class='fas fa-external-link-alt'></i>&nbsp;<span class='showcase-link'>#{link}</span>"
           markup.html_safe
         end
 

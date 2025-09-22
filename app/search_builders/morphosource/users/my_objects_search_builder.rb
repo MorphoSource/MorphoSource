@@ -2,6 +2,7 @@
 module Morphosource
   module Users
     class MyObjectsSearchBuilder < Hyrax::WorksSearchBuilder
+      include Morphosource::SearchBuilderBehavior
       # override filter_collection_facet_for_access
       include Morphosource::Facets::CollectionsSearchBuilderBehavior
       # enable f.field facet format
@@ -34,6 +35,18 @@ module Morphosource
 
         def models
           [BiologicalSpecimen, CulturalHeritageObject]
+        end
+
+        def add_facet_paging_to_solr(solr_params)
+        super
+
+        return unless facet.present?
+          facet_config = blacklight_config.facet_fields[facet]
+          contains = blacklight_params[blacklight_config.facet_paginator_class.request_keys[:contains]]
+          if blacklight_params[blacklight_config.facet_paginator_class.request_keys[:contains]]
+            solr_params[:"f.#{facet_config.field}.facet.contains"] = contains
+            solr_params[:"f.#{facet_config.field}.facet.contains.ignoreCase"] = true
+          end
         end
 
     end

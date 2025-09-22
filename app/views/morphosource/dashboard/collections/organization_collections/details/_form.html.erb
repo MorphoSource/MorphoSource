@@ -1,9 +1,9 @@
-<div id="details" class="tab-pane active">
-  <div class="panel panel-default labels">
-    <%# Instead of panel-body div, use container-fluid to support row with cols %>
+<div id="details" class="tab-pane active mb-3">
+  <div class="card panel-default labels">
+    <%# Instead of card-body div, use container-fluid to support row with cols %>
     <div class="container-fluid mb-1">
       <div class="row no-horizontal-padding">
-        <div class="col-sm-6">
+        <div class="col-md-6">
           <div class="content-block">
             <h2>GENERAL DETAILS</h2>
             <% if @current_user.admin? %>
@@ -15,58 +15,58 @@
               <%= render_edit_field_partial('recordset_id', f: f) %>
             <% else %>
               <div class="row">
-                <div class="col-xs-6 showcase-label">
+                <div class="col-6 showcase-label">
                   <%= t('simple_form.labels.organization_collection.title') %>
                   <i class="material-icons tooltip-icon" data-original-title="" title="">
                     <p class="hint hide"><%= t('simple_form.hints.organization_collection.title') %> </p>
                   </i>
                 </div>
-                <div class="col-xs-6 showcase-value "><%= @presenter.title&.first %></div>
+                <div class="col-6 showcase-value "><%= @presenter.title&.first %></div>
               </div>
               <div class="row">
-                <div class="col-xs-6 showcase-label">
+                <div class="col-6 showcase-label">
                   <%= t('simple_form.labels.organization_collection.organization_type') %>
                   <i class="material-icons tooltip-icon" data-original-title="" title="">
                     <p class="hint hide"><%= t('simple_form.hints.organization_collection.organization_type') %> </p>
                   </i>
                 </div>
-                <div class="col-xs-6 showcase-value "><%= @presenter.organization_type&.first %></div>
+                <div class="col-6 showcase-value "><%= @presenter.organization_type&.first %></div>
               </div>
               <div class="row">
-                <div class="col-xs-6 showcase-label">
+                <div class="col-6 showcase-label">
                   <%= t('simple_form.labels.organization_collection.institution_name') %>
                   <i class="material-icons tooltip-icon" data-original-title="" title="">
                     <p class="hint hide"><%= t('simple_form.hints.organization_collection.institution_name') %> </p>
                   </i>
                 </div>
-                <div class="col-xs-6 showcase-value "><%= @presenter.institution_name&.first %></div>
+                <div class="col-6 showcase-value "><%= @presenter.institution_name&.first %></div>
               </div>
               <div class="row">
-                <div class="col-xs-6 showcase-label">
+                <div class="col-6 showcase-label">
                   <%= t('simple_form.labels.organization_collection.institution_code') %>
                   <i class="material-icons tooltip-icon" data-original-title="" title="">
                     <p class="hint hide"><%= t('simple_form.hints.organization_collection.institution_code') %> </p>
                   </i>
                 </div>
-                <div class="col-xs-6 showcase-value "><%= @presenter.institution_code&.join('; ') %></div>
+                <div class="col-6 showcase-value "><%= @presenter.institution_code&.join('; ') %></div>
               </div>
               <div class="row">
-                <div class="col-xs-6 showcase-label">
+                <div class="col-6 showcase-label">
                   <%= t('simple_form.labels.organization_collection.collection_code') %>
                   <i class="material-icons tooltip-icon" data-original-title="" title="">
                     <p class="hint hide"><%= t('simple_form.hints.organization_collection.collection_code') %> </p>
                   </i>
                 </div>
-                <div class="col-xs-6 showcase-value "><%= @presenter.collection_code&.join('; ') %></div>
+                <div class="col-6 showcase-value "><%= @presenter.collection_code&.join('; ') %></div>
               </div>
               <div class="row">
-                <div class="col-xs-6 showcase-label">
+                <div class="col-6 showcase-label">
                   <%= t('simple_form.labels.organization_collection.recordset_id') %>
                   <i class="material-icons tooltip-icon" data-original-title="" title="">
                     <p class="hint hide"><%= t('simple_form.hints.organization_collection.recordset_id') %> </p>
                   </i>
                 </div>
-                <div class="col-xs-6 showcase-value "><%= @presenter.recordset_id&.join('; ') %></div>
+                <div class="col-6 showcase-value "><%= @presenter.recordset_id&.join('; ') %></div>
               </div>
             <% end %>
             <%= render_edit_field_partial('identifier', f: f) %>
@@ -81,7 +81,7 @@
           </div>
         </div>
 
-        <div class="col-sm-6">
+        <div class="col-md-6">
           <div class="content-block">
             <h2>THUMBNAIL</h2>
             <p>Select a media managed by this team to serve as the project thumbnail in lists and search results.</p>
@@ -92,7 +92,7 @@
           </div>
           <div class="content-block">
             <% if @form.persisted? %>
-              <% if @collection.brandable? %>
+              <% if collection_brandable?(collection: @collection) %>
                 <%= render 'morphosource/dashboard/collections/details/branding', f: f %>
               <% end %>
             <% end %>
@@ -100,7 +100,6 @@
 
           <% if current_user.admin? %>
             <div class="content-block">
-              <div class="form-group row admin-preview-mode-container">
                 <h2>Admin Settings</h2>
                 <%= link_to t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.label'),
                 hyrax.dashboard_collection_path(@presenter),
@@ -109,7 +108,6 @@
                 class: 'btn btn-danger btn-delete-collection',
                 data: { confirm: t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.confirmation'),
                         method: :delete } %>
-              </div>
             </div>
           <% end %>
         </div>

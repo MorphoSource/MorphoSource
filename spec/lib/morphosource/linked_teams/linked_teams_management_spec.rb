@@ -4,8 +4,8 @@ RSpec.describe Morphosource::LinkedTeams::LinkedTeamsManagement do
   describe '#new_processing_event_media_updates' do
     let(:subject)               { SubmissionsController.new() }
     let(:user)                  { User.create(email: 'email@email.com', password: 'password') }
-    let(:team)                  { Collection.create(title: ['New Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
-    let(:old_team)              { Collection.create(title: ['Old Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+    let(:team)                  { Collection.create(title: ['New Team'], collection_type_gid: team_collection_type.to_global_id, depositor: user.ms_id) }
+    let(:old_team)              { Collection.create(title: ['Old Team'], collection_type_gid: team_collection_type.to_global_id, depositor: user.ms_id) }
     let(:organization)          { Organization.create(title: ['new organization']) }
     let(:old_organization)      { Organization.create(title: ['old organization'], team_id: [old_team.id]) }
     let(:specimen)              { BiologicalSpecimen.create(title: ['new specimen'], vouchered: ["Yes"], organization_id: [organization.id]) }

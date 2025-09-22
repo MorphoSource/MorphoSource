@@ -3,21 +3,21 @@
 <%= render 'shared/citations' %>
 
 <div class="row work-type">
-  <div class="col-xs-12">
+  <div class="col-12">
     <%= render 'work_type', presenter: @presenter %>
-    <div class="pull-right">
+    <div class="float-right">
       <% if @presenter.model_name.name == "Media" %>
         <%= render 'hyrax/base/media_cart_actions', presenter: @presenter %>
       <% end %>
     </div>
   </div>
-  <div class="col-xs-12">&nbsp;</div>
-  <div itemscope itemtype="http://schema.org/CreativeWork" class="col-xs-12">
-    <div class="panel panel-default">
-      <div class="panel-heading">
+  <div class="col-12">&nbsp;</div>
+  <div itemscope itemtype="http://schema.org/CreativeWork" class="col-12">
+    <div class="card panel-default">
+      <div class="card-header">
         <%= render 'work_title', presenter: @presenter %>
       </div>
-      <div class="panel-body">
+      <div class="card-body">
         <div class="row">
           <%= render 'workflow_actions_widget', presenter: @presenter %>
           <% if @presenter.universal_viewer? %>

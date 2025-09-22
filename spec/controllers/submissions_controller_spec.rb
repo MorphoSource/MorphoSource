@@ -17,7 +17,7 @@ RSpec.describe SubmissionsController, type: :controller do
 
     it 'should return js' do
       post :search_po_ajax, params: form_params, xhr: true
-      expect(response.content_type).to eq('text/javascript')
+      expect(response.content_type).to include('text/javascript')
       expect(response).to have_http_status(:success)
     end
   end
@@ -45,7 +45,7 @@ RSpec.describe SubmissionsController, type: :controller do
     context 'check org-linked team remote file permissions' do
       let(:depositor)          { FactoryBot.build(:contributor) }
       let(:team)                    { Collection.create(title: ['Team'],
-                                      collection_type_gid: team_collection_type.gid,
+                                      collection_type_gid: team_collection_type.to_global_id,
                                       depositor: user.ms_id, can_submit_remote_files: "Yes",
                                       allowed_remote_source: "www.morphosource.org") }
       let(:org)                 { Organization.create(title: ['org'], institution_code: ['DEF'], team_id: [team.id]) }

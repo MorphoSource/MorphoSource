@@ -1,45 +1,49 @@
-<div id="submission_parents_in_ms" class="submission_section submission-v2 derived_media hide">  
-  
-  <div class="container-fluid">
-    <div class="row">
-      <h4><%= t('morphosource.submission.header_text.parent_media') %></h4>
+<div id="submission_parents_in_ms" class="submission_section submission-v2 derived_media hide">
+
+  <div class="container">
+    <div class="row justify-content-center text-center mb-5">
+      <div class="col-md-9">
+        <span class="h5"><%= t('morphosource.submission.header_text.parent_media') %></span>
+      </div>
     </div>
 
     <%= simple_form_for @submission, html: { id: :parent_search_form } do |f| %>
-      <div class="row">
-        <div class="col-sm-6 col-sm-offset-3 no-padding submission-select2-container">
+      <div class="row justify-content-center mt-2">
+        <div class="col-md-9 col-lg-6 submission-select2-container">
           <%= f.input_field :parent_media_search %>
         </div>
       </div>
 
-      <div id="parents" class="row form-group" style="padding-top: 0; padding-bottom: 0;">
-        <input class="parent_title" type="hidden" name="parent_title" value="" />
-        <input class="parent_id" type="hidden" name="parent_id" value="" />
-        <div class="parent_row"></div>
+      <div id="parents" class="row form-group justify-content-center mt-2">
+        <div class="col-md-9 col-lg-6">
+          <input class="parent_title" type="hidden" name="parent_title" value="" />
+          <input class="parent_id" type="hidden" name="parent_id" value="" />
+          <div class="parent_row"></div>
+        </div>
       </div>
-      <% 
+      <%
       # the value: '' below will clear the parent list every time the form is loaded.
       # Remove this option if the value needs to be retained later (e.g. reloading the page)
       %>
-      <%= f.input :parent_media_list, 
+      <%= f.input :parent_media_list,
         wrapper_html: { class: 'hide' },
         input_html: { style: 'width:300px', value: '' }
       %>
 
-      <div class="row">
-        <%= f.submit t('morphosource.submission.continue'), 
-          class: "btn btn-primary btn-continue", 
-          disabled: 'disabled', 
-          id: 'submission_parent_media_submit' 
+      <div class="row justify-content-center mt-5">
+        <%= f.submit t('morphosource.submission.continue'),
+          class: "btn btn-primary btn-continue",
+          disabled: 'disabled',
+          id: 'submission_parent_media_submit'
         %>
       </div>
     <% end %>
-    
-    <div class="row">
+
+    <div class="row justify-content-center mt-3">
       <b><%= t('morphosource.submission.or') %></b>
     </div>
 
-    <div class="row">
+    <div class="row justify-content-center mt-3">
       <a id="btn_parents_not_in_morphosource" class="btn btn-primary btn-continue">
         <%= t('morphosource.submission.parent_not_available') %>
       </a>
@@ -73,5 +77,5 @@ $(function(){
   //     return results;
   //   }
   // });
-});    
+});
 </script>

@@ -1,7 +1,7 @@
 <%= form_tag url_for(action: :index), method: :get, class: "form-horizontal search-form", id: "search-form-header", role: "search" do %>
   <%= render_hash_as_hidden_fields(search_state.params_for_search.except(:q, :search_field, :qt, :page, :utf8)) %>
   <%= hidden_field_tag :search_field, 'all_fields' %>
-  <div class="form-group" style='margin-top:20px;'>
+  <div class="form-group">
 
     <div class="input-group">
       <%= text_field_tag :q, current_search_parameters , class: "q form-control", id: "search-field-header", placeholder: t("morphosource.search.form.catalog.refine.placeholder") %>

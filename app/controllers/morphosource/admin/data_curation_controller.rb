@@ -1,11 +1,11 @@
 module Morphosource
   module Admin
     class DataCurationController < ApplicationController
+      include Morphosource::Breadcrumbs
       before_action :require_permissions
       with_themed_layout 'morphosource_dashboard'
 
-      def index
-      end
+      PAGE_TITLE = I18n.t("morphosource.dashboard.admin.data_curation.page_title")
 
       def apply_permission_template
         begin
@@ -23,6 +23,12 @@ module Morphosource
         flash[:notice] = 'Organization Normalization job has been submitted for background processing. Please check back later.'
         path = team.team? ? team_path(team) : organization_collection_path(team)
         redirect_to path
+      end
+
+      def add_breadcrumbs
+        add_breadcrumb t(:'hyrax.controls.home'), root_path
+        add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
+        add_breadcrumb t(:'morphosource.dashboard.sidebar.admin_tools.management.data_curation'), main_app.admin_data_curation_path
       end
 
       private

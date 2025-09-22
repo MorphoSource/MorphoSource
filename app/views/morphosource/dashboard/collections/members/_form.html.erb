@@ -1,16 +1,16 @@
 <%= simple_form_for @form, url: main_app.team_members_path(@collection), wrapper: :showcase_default, html: { class: 'editor' } do |f| %>
 
 <div id="members" class="tab-pane">
-  <div class="panel panel-default labels" id="collection_permissions" data-param-key="<%= f.object.model_name.param_key %>">
-    <div class="panel-body">
+  <div class="card panel-default labels" id="collection_permissions" data-param-key="<%= f.object.model_name.param_key %>">
+    <div class="card-body">
       <%# taken from form_share.html.erb %>
       <div class="row">
         <div class="col-sm-12">
           <div class="content-block">
 
-            <div id="participants" class="tab-pane">
-              <div class="edit-sharing-tab">
-                <section class="section-add-sharing">
+            <div id="participants" class="mt-0">
+              <div class="edit-sharing-tab mt-0">
+                <section class="section-add-sharing pb-0">
                   <!-- TODO: removing form tags below makes add group form hit the collections controller - needs more investigation -->
                   <div>
                     <form></form>
@@ -20,14 +20,15 @@
 
                       <div class="row form-inline sharing-row-form add-users">
                         <div class="col-sm-6 col-md-3 col-lg-3">
-                          <label><%= t('.add_individual_user') %>:</label>
+                          <label class="justify-content-start"><%= t('.add_individual_user') %>:</label>
                         </div>
                         <div class="col-sm-6 col-md-3 col-lg-3">
-                          <%= f.hidden_field_tag('collection_roles[agent_type]', 'user') %>
+                          <%# hidden_field does not set the value correctly, use hidden_field_tag instead %>
+                          <%= hidden_field_tag 'collection_roles[agent_type]', 'user' %>
                           <%= f.text_field 'collection_roles[agent_id]', placeholder: "Search for a user..." %>
                         </div>
-                        <div class="col-sm-6 col-md-3 col-lg-3 text-nowrap">
-                          <label>as</label>
+                        <div class="col-sm-6 col-md-3 col-lg-3 flex text-nowrap">
+                          <label class="mr-1">as</label>
                           <% if @collection.list? %>
                             <%= f.select 'collection_roles[access]', list_access_options, { prompt: t('.select_a_role') }, class: 'form-control' %>
                           <% else %>
@@ -46,14 +47,14 @@
                       <%= form_with(method: :post, url: main_app.update_collection_groups_path(@collection), html: { id: 'group-participants-form'}) do |f| %>
                         <div class="row form-inline sharing-row-form add-groups">
                           <div class="col-sm-6 col-md-3 col-lg-3">
-                            <label><%= t('.add_users_from_project_or_team') %>:</label>
+                            <label class="justify-content-start"><%= t('.add_users_from_project_or_team') %>:</label>
                           </div>
                           <div class="col-sm-6 col-md-3 col-lg-3">
-                            <%= f.hidden_field_tag('collection_roles[agent_type]', 'group') %>
+                            <%= hidden_field_tag 'collection_roles[agent_type]', 'group' %>
                             <%= f.select 'collection_roles[team_collection_id]', collection_options, { prompt: "Select a group..." }, class: 'form-control' %>
                           </div>
-                          <div class="col-sm-6 col-md-3 col-lg-3 text-nowrap">
-                            <label>as</label>
+                          <div class="col-sm-6 col-md-3 col-lg-3 flex text-nowrap">
+                            <label class="mr-1">as</label>
                             <% if @collection.list? %>
                               <%= f.select 'collection_roles[access]', list_access_options, { prompt: t('.select_a_role') }, class: 'form-control' %>
                             <% else %>

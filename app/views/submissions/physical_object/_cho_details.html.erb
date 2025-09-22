@@ -9,68 +9,51 @@
     <% end %>
     <div class="row">
       <!-- left column  -->
-      <div class="col-xs-12 col-md-6">
-
-        <div class="block showcase-edit showcase-section">
-          <div class="row showcase-section-header">
-            <span class="h2">IDENTIFIERS AND EXTERNAL LINKS</span>
-          </div>
+      <div class="col-lg-6">
+        <div class="showcase showcase-edit showcase-section mt-2">
+          <h2>IDENTIFIERS AND EXTERNAL LINKS</h2>
           <div class="content-block">
             <%= render 'hyrax/cultural_heritage_objects/edit/identifiers', f: f %>
           </div>
         </div>
 
-        <div class="block showcase-edit showcase-section">
-          <div class="row showcase-section-header">
-            <span class="h2">OBJECT DETAILS</span>
-          </div>
-
+        <div class="showcase showcase-edit showcase-section mt-2">
+          <h2>OBJECT DETAILS</h2>
           <div class="content-block">
             <%= render 'hyrax/cultural_heritage_objects/edit/object_details', f: f %>
           </div>
         </div>
-
       </div>
       <!-- /left column  -->
 
       <!-- right column  -->
-      <div class="col-xs-12 col-md-6">
-
-        <div class="block showcase-edit showcase-section">
-          <div class="row showcase-section-header">
-            <span class="h2">OBJECT DATING</span>
-          </div>
+      <div class="col-lg-6">
+        <div class="showcase showcase-edit showcase-section mt-2">
+          <h2>OBJECT DATING</h2>
 
           <div class="content-block">
             <%= render 'hyrax/cultural_heritage_objects/edit/object_dating', f: f %>
           </div>
         </div>
 
-        <div class="block showcase-edit showcase-section">
-          <div class="row showcase-section-header">
-            <span class="h2">OBJECT ORIGINAL LOCATION</span>
-          </div>
-
+        <div class="showcase showcase-edit showcase-section mt-2">
+          <h2>OBJECT ORIGINAL LOCATION</h2>
           <div class="content-block">
             <%= render 'hyrax/cultural_heritage_objects/edit/original_location', f: f %>
           </div>
         </div>
 
-        <div class="block showcase-edit showcase-section">
-          <div class="row showcase-section-header">
-            <span class="h2">PROVENANCE</span>
-          </div>
-
+        <div class="showcase showcase-edit showcase-section mt-2">
+          <h2>PROVENANCE</h2>
           <div class="content-block">
             <%= render 'hyrax/cultural_heritage_objects/edit/provenance', f: f %>
           </div>
         </div>
-
       </div>
       <!-- / right column -->
     </div>
 
-    <div class="row">
+    <div class="row justify-content-center mt-5">
       <%= f.submit t('morphosource.submission.continue'),
         class: "btn btn-primary btn-continue",
         id: 'submission_create_cho_continue'

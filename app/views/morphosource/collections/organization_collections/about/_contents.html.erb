@@ -2,55 +2,55 @@
   <h2><%= t('morphosource.collections.view.about.contents.header.title').upcase %><span><%= render_hint_tag(t("morphosource.collections.view.about.contents.header.hint")) %></span></h2>
   <div class="row view-stat">
     <% if @collection.manages_objects_and_devices? %>
-      <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.contents.total_media') %></div>
+      <div class="col-6 showcase-label"><%= t('morphosource.collections.view.about.contents.total_media') %></div>
     <% else %>
-      <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.contents.media') %></div>
+      <div class="col-6 showcase-label"><%= t('morphosource.collections.view.about.contents.media') %></div>
     <% end %>
-    <div class="col-xs-6 showcase-value "><%= @stats.media_count %></div>
+    <div class="col-6 showcase-value "><%= @stats.media_count %></div>
   </div>
   <% if @collection.manages_objects_and_devices? %>
     <div class="row view-stat">
-      <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.contents.object_media') %></div>
-      <div class="col-xs-6 showcase-value "><%= @stats.object_media_count %></div>
+      <div class="col-6 showcase-label"><%= t('morphosource.collections.view.about.contents.object_media') %></div>
+      <div class="col-6 showcase-value "><%= @stats.object_media_count %></div>
     </div>
     <div class="row view-stat">
-      <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.contents.device_media') %></div>
-      <div class="col-xs-6 showcase-value tab-bso-count"><%= @stats.device_media_count %></div>
+      <div class="col-6 showcase-label"><%= t('morphosource.collections.view.about.contents.device_media') %></div>
+      <div class="col-6 showcase-value tab-bso-count"><%= @stats.device_media_count %></div>
     </div>
   <% end %>
   <% if @specimen_count > 0 && @cho_count > 0 %>
     <div class="row view-stat">
-      <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.contents.total_objects') %></div>
-      <div class="col-xs-6 showcase-value "><%= @stats.object_count %></div>
+      <div class="col-6 showcase-label"><%= t('morphosource.collections.view.about.contents.total_objects') %></div>
+      <div class="col-6 showcase-value "><%= @stats.object_count %></div>
     </div>
     <div class="row view-stat">
-      <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.contents.specimens') %></div>
-      <div class="col-xs-6 showcase-value tab-bso-count"><%= @stats.specimen_count %></div>
+      <div class="col-6 showcase-label"><%= t('morphosource.collections.view.about.contents.specimens') %></div>
+      <div class="col-6 showcase-value tab-bso-count"><%= @stats.specimen_count %></div>
     </div>
     <div class="row view-stat">
-      <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.contents.chos') %></div>
-      <div class="col-xs-6 showcase-value tab-cho-count "><%= @stats.cho_count %></div>
+      <div class="col-6 showcase-label"><%= t('morphosource.collections.view.about.contents.chos') %></div>
+      <div class="col-6 showcase-value tab-cho-count "><%= @stats.cho_count %></div>
     </div>
   <% else %>
     <div class="row view-stat">
       <% if @specimen_count > 0 %>
-        <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.contents.specimens') %></div>
+        <div class="col-6 showcase-label"><%= t('morphosource.collections.view.about.contents.specimens') %></div>
       <% elsif @cho_count > 0 %>
-        <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.contents.chos') %></div>
+        <div class="col-6 showcase-label"><%= t('morphosource.collections.view.about.contents.chos') %></div>
       <% else %>
-        <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.contents.objects') %></div>
+        <div class="col-6 showcase-label"><%= t('morphosource.collections.view.about.contents.objects') %></div>
       <% end %>
-      <div class="col-xs-6 showcase-value "><%= @stats.object_count %></div>
+      <div class="col-6 showcase-value "><%= @stats.object_count %></div>
     </div>
   <% end %>
   <% if @collection.manages_devices? %>
     <div class="row view-stat">
-      <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.contents.devices') %></div>
-      <div class="col-xs-6 showcase-value tab-cho-count "><%= @stats.device_count %></div>
+      <div class="col-6 showcase-label"><%= t('morphosource.collections.view.about.contents.devices') %></div>
+      <div class="col-6 showcase-value tab-cho-count "><%= @stats.device_count %></div>
     </div>
   <% end %>
   <div class="row view-stat">
-    <div class="col-xs-6 showcase-label"><%= t('morphosource.collections.view.about.contents.projects') %></div>
-    <div class="col-xs-6 showcase-value "><%= @stats.project_count %></div>
+    <div class="col-6 showcase-label"><%= t('morphosource.collections.view.about.contents.projects') %></div>
+    <div class="col-6 showcase-value "><%= @stats.project_count %></div>
   </div>
 </div>

@@ -21,10 +21,10 @@ module Morphosource
       @temp_file_path = Rails.root.join(temp_dir, temp_file_name)
 
       # If file already exists from previous run, return it now
-      return temp_file_path if File.exists?(temp_file_path)
+      return temp_file_path if File.exist?(temp_file_path)
 
       create_non_deflate_64_temp_file
-      if File.exists?(temp_file_path)
+      if File.exist?(temp_file_path)
         return temp_file_path
       else
         raise "Error occurred finding or creating temp file from DEFLATE64 ZIP file"

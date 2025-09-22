@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe ::SolrDocument, type: :model do
-  let!(:team)                 { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.gid) }
+  let!(:team)                 { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.to_global_id) }
   let(:organization)          { Organization.create(title: ['Organization Title']) }
 
   describe 'team' do
@@ -37,7 +37,7 @@ RSpec.describe ::SolrDocument, type: :model do
         end
 
         context 'an organization is linked to another team' do
-          let!(:another_team) { Collection.create(title: ['Another Team'], collection_type_gid: team_collection_type.gid)}
+          let!(:another_team) { Collection.create(title: ['Another Team'], collection_type_gid: team_collection_type.to_global_id)}
           let(:another_doc)   { SolrDocument.find(another_team.id) }
           before do
             organization.team_id = [another_team.id]
@@ -59,7 +59,7 @@ RSpec.describe ::SolrDocument, type: :model do
   end
 
   describe 'project' do
-    let!(:project)                 { Collection.create(title: ['Project'], collection_type_gid: project_collection_type.gid) }
+    let!(:project)                 { Collection.create(title: ['Project'], collection_type_gid: project_collection_type.to_global_id) }
 
     before do
       project.member_of_collections << team
@@ -111,7 +111,7 @@ RSpec.describe ::SolrDocument, type: :model do
         end
 
         context 'an organization is linked to another team' do
-          let!(:another_team) { Collection.create(title: ['Another Team'], collection_type_gid: team_collection_type.gid)}
+          let!(:another_team) { Collection.create(title: ['Another Team'], collection_type_gid: team_collection_type.to_global_id)}
           before do
             organization.team_id = [another_team.id]
             organization.save

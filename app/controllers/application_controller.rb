@@ -1,5 +1,22 @@
+module CanCanSkipperFixInheritance
+  def self.included(klass)
+    klass.extend(ClassMethods)
+  end
+
+  module ClassMethods
+    def inherited(klass)
+      super
+      klass._cancan_skipper = cancan_skipper.deep_dup
+    end
+  end
+end
+
 class ApplicationController < ActionController::Base
   helper Openseadragon::OpenseadragonHelper
+
+  # Fixes a bug in CanCanCan, see https://github.com/CanCanCommunity/cancancan/issues/500
+  include CanCanSkipperFixInheritance
+  
   # Adds a few additional behaviors into the application controller
   include Blacklight::Controller
   include Hydra::Controller::ControllerBehavior
@@ -12,9 +29,6 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
 
   before_action :set_sitewide_announcement
-
-  # Blacklight discarding flash messages - see https://github.com/samvera/hyrax/issues/1596
-  skip_after_action :discard_flash_if_xhr
 
   rescue_from CanCan::AccessDenied, ActiveFedora::ObjectNotFoundError, Ldp::Gone do |exception|
     respond_to do |format|
@@ -30,17 +44,17 @@ class ApplicationController < ActionController::Base
   protected
 
   def set_sitewide_announcement
-    return unless Redis.current
+    return unless Hyrax.config.redis_connection
 
-    if (msg = Redis.current.get("morphosource:announcement"))
+    if (msg = Hyrax.config.redis_connection.get("morphosource:announcement"))
       flash[:alert] = msg.to_s
-    elsif (mt = Redis.current.get("morphosource:maintenance_time"))
+    elsif (mt = Hyrax.config.redis_connection.get("morphosource:maintenance_time"))
       maint_time = Time.iso8601(mt)
       mins_until = ( ( maint_time - Time.current )/1.minutes ).to_i
       if mins_until >= 0
         flash[:alert] = t("morphosource.base.maintenance_message", minutes: mins_until, time: maint_time)
       else
-        Redis.current.del("morphosource:maintenance_time")
+        Hyrax.config.redis_connection.del("morphosource:maintenance_time")
       end
     end
   end

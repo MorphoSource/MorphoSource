@@ -21,7 +21,6 @@ class UpdateRelatedWorksIndexJob < Hyrax::ApplicationJob
     collection_ids.each do |c_id|
       if Collection.exists?(c_id)
         c = Collection.find(c_id)
-        c.reindex_extent = ::Hyrax::Adapters::NestingIndexAdapter::LIMITED_REINDEX
         c.update_index
       end
     end

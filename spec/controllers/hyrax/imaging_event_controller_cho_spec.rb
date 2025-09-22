@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Hyrax::ImagingEventsController do
-  let(:old_team)              { Collection.create(title: ['Old Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+  let(:old_team)              { Collection.create(title: ['Old Team'], collection_type_gid: team_collection_type.to_global_id, depositor: user.ms_id) }
   let(:old_organization)      { Organization.create(title: ['old org'], team_id: [old_team.id]) }
   let(:old_cho)               { CulturalHeritageObject.create(title: ['private cho 1'], visibility: 'restricted', vouchered: ['Yes'], organization_id: [old_organization.id]) }
   let(:device)                { Device.create(title: ['device'], modality: ['Photogrammetry'])}
@@ -77,7 +77,7 @@ RSpec.describe Hyrax::ImagingEventsController do
       context 'and the parents are changed' do
         let(:new_organization) { Organization.create(title: ['new org'], team_id: []) }
         let(:new_cho)     { CulturalHeritageObject.create(title: ['private cho 2'], visibility: 'restricted', vouchered: ['Yes'], organization_id: [new_organization.id]) }
-        let(:new_team)         { Collection.create(title: ['New Team'], collection_type_gid: team_collection_type.gid, depositor: user.ms_id) }
+        let(:new_team)         { Collection.create(title: ['New Team'], collection_type_gid: team_collection_type.to_global_id, depositor: user.ms_id) }
 
         let(:object_id) { new_cho.id }
 

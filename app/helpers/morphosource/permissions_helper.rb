@@ -66,11 +66,11 @@ module Morphosource
     def badge_class(f)
       case download_permission(f)
       when 'open'
-        'label label-success'
+        'badge badge-success'
       when 'restricted_download'
-        'label label-info'
+        'badge badge-info'
       when 'restricted'
-        'label label-danger'
+        'badge badge-danger'
       end
     end
 

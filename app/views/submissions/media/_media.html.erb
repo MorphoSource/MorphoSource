@@ -2,9 +2,11 @@
   <div class="hide">
     <span id="organization-alert-message"></span>
   </div>
-  <div class="container-fluid wider">
-    <div class="row">
-      <h4><%= t('morphosource.submission.header_text.media_details') %></h4>
+  <div class="container">
+    <div class="row justify-content-center text-center mb-5">
+      <div class="col-md-9">
+        <span class="h5"><%= t('morphosource.submission.header_text.media_details') %></span>
+      </div>
     </div>
 
     <%= simple_form_for media_form,
@@ -23,24 +25,20 @@
       <% end %>
       <%= f.hidden_field :accepted_formats, :value => "" %>
       <div class="row">
-
-        <div class="col-xs-12">
-          <div class="block showcase-edit showcase-section">
-
-            <div class="row showcase-section-header">
-              <span class="h2 required-flag">UPLOAD FILE <span class="label label-info"></span></span>
-            </div>
-
-            <div class="content-block mt-2">
+        <!-- file upload column -->
+        <div class="col-lg-6 order-lg-2">
+          <div class="showcase showcase-edit showcase-section mt-2">
+            <h2 class="required-flag">Upload File <span class="badge badge-info"></span></h2>
+            <div class="content-block">
               <ul class="nav nav-tabs pt-0" role="tablist">
-                <li role="presentation" id="tab-local-file-section" class="active">
-                  <a href="#local-file-section" aria-controls="local-file-section" role="tab" data-toggle="tab" aria-expanded="false">
-                    Upload From Computer / Cloud
+                <li role="presentation" id="tab-local-file-section" class="nav-item active">
+                  <a href="#local-file-section" aria-controls="local-file-section" role="tab" data-toggle="tab" aria-expanded="false" class="nav-link active">
+                  Upload From Computer / Cloud
                   </a>
                 </li>
-                <li role="presentation" id="tab-remote-file-section" class="hide">
-                  <a href="#remote-file-section" aria-controls="remote-file-section" role="tab" data-toggle="tab" aria-expanded="false">
-                    Remote File Location
+                <li role="presentation" id="tab-remote-file-section" class="nav-item hide">
+                  <a href="#remote-file-section" aria-controls="remote-file-section" role="tab" data-toggle="tab" aria-expanded="false" class="nav-link">
+                  Remote File Location
                   </a>
                 </li>
               </ul>
@@ -59,19 +57,17 @@
                 </div>
               </div>
             </div>
+          </div>
 
+          <div class="showcase showcase-edit showcase-section mt-2">
             <%= render 'submissions/media/custom_thumbnail', f: f %>
-
           </div>
         </div>
 
-        <!-- left column -->
-        <div class="col-xs-12 col-md-6">
-          <div class="block showcase-edit showcase-section">
-            <div class="row showcase-section-header">
-              <span class="h2">GENERAL DETAILS</span>
-            </div>
-
+        <!-- general details column -->
+        <div class="col-lg-6 order-lg-1">
+          <div class="showcase showcase-edit showcase-section mt-2">
+            <h2>General Details</h2>
             <div class="content-block">
               <%= render_edit_field_partial('media_type', f: f) %>
               <%= f.input :part, label: 'Element or part of the object', as: :multi_value %>
@@ -83,52 +79,37 @@
               <%= render_edit_field_partial('description', f: f) %>
               <%= f.input :creator, as: :multi_value %>
               <div class="row">
-                <div class="col-xs-6 showcase-label">Date created</div>
-                <div class="col-xs-6 showcase-value">
+                <div class="col-6 showcase-label">Date created</div>
+                <div class="col-6 showcase-value">
                 <%= f.date_field :date_created, wrapper: :inline, value: f.object.date_created || Date.today, class: 'datepicker form-control' %>
                   </div>
               </div>
             </div>
           </div>
+        </div>
 
-          <div class="block showcase-edit showcase-section">
-            <div class="row showcase-section-header">
-              <span class="h2">OWNERSHIP AND PERMISSIONS</span>
-            </div>
-
+        <!-- ownership and permissions column -->
+        <div class="col-lg-6 order-lg-3">
+          <div class="showcase showcase-edit showcase-section mt-2">
+            <h2>Ownership And Permissions</h2>
             <%= render 'submission_media_ownership', f: f %>
           </div>
 
-          <div class="block showcase-edit showcase-section">
-            <div class="row showcase-section-header">
-              <span class="h2">IDENTIFIERS AND EXTERNAL LINKS</span>
-            </div>
-
-            <div class="content-block">
-              <%= f.input :identifier, label: 'External identifier' %>
-              <%= f.input :related_url, label: 'External media URL' %>
-            </div>
-          </div>
 
         </div>
 
-        <!-- right column -->
-        <div class="col-xs-12 col-md-6">
-
-          <div id="file-object-details" class="block showcase-edit showcase-section">
-            <div class="row showcase-section-header">
-              <span class="h2">FILE OBJECT DETAILS</span>
-            </div>
+        <!-- collections, tags, and external identifiers column -->
+        <div class="col-lg-6 order-lg-4">
+          <div id="file-object-details" class="showcase showcase-edit showcase-section mt-2">
+            <h2>File Object Details</h2>
 
             <div class="content-block">
               <%= render 'submissions/media/edit_file_object_details', f: f %>
             </div>
           </div>
 
-          <div class="block showcase-edit showcase-section">
-            <div class="row showcase-section-header">
-              <span class="h2">PROJECTS AND TEAMS</span>
-            </div>
+          <div class="showcase showcase-edit showcase-section mt-2">
+            <h2>Projects and Teams</h2>
 
             <% if @submission.collection_id %>
               <div class="row">
@@ -145,17 +126,24 @@
             </div>
           </div>
 
-          <div class="block showcase-edit showcase-section">
-            <div class="row showcase-section-header">
-              <span class="h2">MEDIA TAGS</span>
+          <div class="showcase showcase-edit showcase-section mt-2">
+            <h2>Media Tags</h2>
+            <div class="content-block">
+              <%= render 'submissions/media/tags', f: f %>
             </div>
-            <%= render 'submissions/media/tags', f: f %>
           </div>
 
+          <div class="showcase showcase-edit showcase-section mt-2">
+            <h2>Identifiers And External Links</h2>
+            <div class="content-block">
+              <%= f.input :identifier, label: 'External identifier' %>
+              <%= f.input :related_url, label: 'External media URL' %>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="row mt-1">
+      <div class="row justify-content-center mt-5">
         <%= f.submit 'Submit Media', class: "btn btn-primary btn-continue btn-save-media", id: :media_submit %>
       </div>
 

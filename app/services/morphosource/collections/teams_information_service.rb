@@ -1,9 +1,10 @@
+# Used by browse/teams, browse/projects
 module Morphosource
   module Collections
-    class TeamsInformationService  
+    class TeamsInformationService
       include SolrHelper
 
-      attr_reader :solr, :collection_list_type_id, :collection_ids, :info, :facet_results, :organizations, 
+      attr_reader :solr, :collection_list_type_id, :collection_ids, :info, :facet_results, :organizations,
         :collection_count_for_manager, :collection_count_for_editor, :collection_count_for_depositor,
         :collection_count_for_viewer, :collection_count_for_downloader, :ids_by_membership
 
@@ -42,18 +43,18 @@ module Morphosource
         info['collection_groups'] = { 'organization' => {} }.merge(facet_collection_groups)
         organization_groups
 
-        info     
+        info
       end
 
       # for browse pages
       def collection_information_for_browse
-        @info = { 
+        @info = {
           'counts_for_team_type' => {}
         }
         total_organizations = total_organization_teams(@collection_ids)
         info['counts_for_team_type']['org_teams'] = total_organizations
         info['counts_for_team_type']['user_teams'] = @collection_ids.length - total_organizations
-        info     
+        info
       end
 
       def solrize_filter_params(params = {})
@@ -73,20 +74,20 @@ module Morphosource
         ### Solr collection queries ###
 
         def all_collection_ids
-          params = { 
+          params = {
             fl: ['id'],
             fq: [
               "#{solrize('has_model', :symbol)}:Collection",
               "(#{solrize('collection_type_gid', :symbol)}:\"gid://#{GlobalID.app}/Hyrax::CollectionType/#{@collection_list_type_id}\")"
             ]
           }
-          solr.get(nil, params)        
-          if solr.docs.present? 
+          solr.get(nil, params)
+          if solr.docs.present?
             coll_ids = solr.docs.map{|x| x['id']}
           else
             coll_ids = []
           end
-          coll_ids          
+          coll_ids
         end
 
         def facet_query_for_collections
@@ -94,12 +95,12 @@ module Morphosource
           facet_fields = [
             solrize('visibility', :stored_sortable)
           ]
-          params = { 
+          params = {
             #rows: 0,
             fl: ['id'],
             fq: [
               "#{solrize('has_model', :symbol)}:Collection",
-              "(#{solrize('collection_type_gid', :symbol)}:\"gid://morpho-source-sf/hyrax-collectiontype/#{@collection_list_type_id}\")",
+              "(#{solrize('collection_type_gid', :symbol)}:\"gid://morphosource/Hyrax::CollectionType/#{@collection_list_type_id}\")",
               assemble_or_query('id', collection_ids)
             ],
             "facet.limit": -1
@@ -108,22 +109,18 @@ module Morphosource
           return solr.facet_fields(facet_fields)
         end
 
-        #def is_project?(collection_type)
-        #  collection_type.split('/').last == '2'
-        #end
-
         def is_project?
-          @collection_list_type_id == 2
+          @collection_list_type_id == Morphosource::CollectionTypesService.project_collection_type_id
         end
 
         def is_team?
-          @collection_list_type_id == 1
+          @collection_list_type_id == Morphosource::CollectionTypesService.team_collection_type_id
         end
 
         def organization_docs(organization_title = '')
           return [] unless collection_ids.present?
 
-          params = { 
+          params = {
             fl: ['id', solrize('title', :stored_searchable), solrize('team_id', :stored_searchable)].join(','),
             fq: [
               solrize('has_model', :symbol) + ':Organization',
@@ -138,7 +135,7 @@ module Morphosource
         def organization_title_count(organization_title)
           return 0 unless collection_ids.present?
 
-          params = { 
+          params = {
             rows: 0,
             fq: [
               solrize('has_model', :symbol) + ':Organization',
@@ -152,7 +149,7 @@ module Morphosource
 
         def total_organization_teams(ids)
           return 0 unless ids.present?
-          params = { 
+          params = {
             rows: 0,
             fq: [
               solrize('has_model', :symbol) + ':Organization',

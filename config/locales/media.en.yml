@@ -166,6 +166,7 @@ en:
         scale_bar: Details of scale bar accompanying a photogrammetry image series
         series_type: Broad type or kind of volumetric image series, distiguishing between initial projections and other derived series forms
         short_description: Brief single sentence description of Media
+        short_title: Custom title for Media, if provided
         description: Full detailed description of Media and context
         side: Side of larger object on which is located the represented component part, if Media represents a component part of a larger whole object
         slice_thickness: The thickness of each image slice comprising the 3D stack

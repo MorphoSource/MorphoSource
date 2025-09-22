@@ -11,7 +11,7 @@ module Hyrax
         return markup if values.blank? && !options[:include_empty]
         Array(values).each do |value|
           block = create_block
-          markup << "<div class='panel'>"
+          markup << "<div>"
           markup << taxonomy_title(block, options[:data_parent], options[:label], value, options[:is_collapsed])
           markup << collapse_accordion_panel(block, options[:is_collapsed])
           markup << taxonomy_ranks(value)
@@ -29,21 +29,21 @@ module Hyrax
           value = get_rank_value(taxonomy, attribute)
           if [:taxonomy_genus, :taxonomy_subgenus, :taxonomy_species, :taxonomy_subspecies].include?(attribute)
             markup << "<div class='row taxonomy-rank'>
-                        <div class='col-xs-6 showcase-label'>#{label}</div>
-                        <div class='col-xs-6 showcase-value'><i>#{value}</i></div>
+                        <div class='col-6 showcase-label'>#{label}</div>
+                        <div class='col-6 showcase-value'><i>#{value}</i></div>
                       </div>"
           else
             markup << "<div class='row taxonomy-rank'>
-                        <div class='col-xs-6 showcase-label'>#{label}</div>
-                        <div class='col-xs-6 showcase-value'>#{value}</div>
+                        <div class='col-6 showcase-label'>#{label}</div>
+                        <div class='col-6 showcase-value'>#{value}</div>
                       </div>"
           end
         end
         user = contributing_user_link(taxonomy, false)
         if user.present?
           markup << "<div class='row taxonomy-rank'>
-                      <div class='col-xs-6 showcase-label'>Contributing User</div>
-                      <div class='col-xs-6 showcase-value'>#{user}</div>
+                      <div class='col-6 showcase-label'>Contributing User</div>
+                      <div class='col-6 showcase-value'>#{user}</div>
                     </div>"        
         end
         markup
@@ -67,11 +67,11 @@ module Hyrax
       def taxonomy_title(block, data_parent, label, value, is_collapsed)
         taxonomy = select_taxonomy(value)
         title = construct_title(taxonomy)
-        icon = is_collapsed ? "bottom" : "top"
-        content_tag :div, :class => "row" do
-          concat content_tag(:div, label, class: "col-xs-6 showcase-label taxonomy-label")
-          concat content_tag(:div, title, class: "col-xs-5 showcase-value taxonomy-title")
-          concat content_tag(:span, "", :data => {:toggle => "collapse", :parent => %(##{data_parent})}, :href => %(##{block}), class: "col-xs-1 glyphicon glyphicon-triangle-#{icon} #{block}")
+        icon = is_collapsed ? "down" : "up"
+        content_tag :div, :class => "row align-items-center" do
+          concat content_tag(:div, label, class: "col-6 showcase-label taxonomy-label")
+          concat content_tag(:div, title, class: "col-5 showcase-value taxonomy-title")
+          concat content_tag(:i, "", :data => {:toggle => "collapse", :parent => %(##{data_parent})}, :href => %(##{block}), class: "col-1 fas fa-chevron-#{icon} #{block}")
         end
       end
 

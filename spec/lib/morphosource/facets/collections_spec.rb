@@ -1,11 +1,11 @@
 require 'rails_helper'
 RSpec.describe Morphosource::Facets::Collections do
   let(:admin)                   { User.create(email: 'admin@email.com', password: 'password')}
-  let(:private_team)            { Collection.create(title: ['private team'], collection_type_gid: team_collection_type.gid, visibility: 'restricted', depositor: admin.ms_id) }
-  let(:open_team)               { Collection.create(title: ['open team'], collection_type_gid: team_collection_type.gid, visibility: 'open', depositor: admin.ms_id) }
+  let(:private_team)            { Collection.create(title: ['private team'], collection_type_gid: team_collection_type.to_global_id, visibility: 'restricted', depositor: admin.ms_id) }
+  let(:open_team)               { Collection.create(title: ['open team'], collection_type_gid: team_collection_type.to_global_id, visibility: 'open', depositor: admin.ms_id) }
 
-  let(:private_project)         { Collection.create(title: ['private project'], collection_type_gid: project_collection_type.gid, visibility: 'restricted', depositor: admin.ms_id) }
-  let(:open_project)            { Collection.create(title: ['open project'], collection_type_gid: project_collection_type.gid, visibility: 'open', depositor: admin.ms_id) }
+  let(:private_project)         { Collection.create(title: ['private project'], collection_type_gid: project_collection_type.to_global_id, visibility: 'restricted', depositor: admin.ms_id) }
+  let(:open_project)            { Collection.create(title: ['open project'], collection_type_gid: project_collection_type.to_global_id, visibility: 'open', depositor: admin.ms_id) }
 
   let(:open_media)              { Media.create(title: ['open media'], visibility: 'open')}
   let(:open_media2)             { Media.create(title: ['open media2'], visibility: 'open')}

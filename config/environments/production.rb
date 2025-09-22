@@ -80,6 +80,9 @@ Rails.application.configure do
   # the I18n.default_locale when a translation cannot be found).
   config.i18n.fallbacks = [I18n.default_locale]
 
+  # Use Active Storage in local mode (not actively being used currently)
+  config.active_storage.service = :local
+
   # Send deprecation notices to registered listeners.
   config.active_support.deprecation = :notify
 

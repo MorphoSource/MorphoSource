@@ -1,14 +1,19 @@
 
 <% provide :page_title, construct_page_title( t('hyrax.dashboard.collections.new.header', type_title: @collection.collection_type.title) ) %>
 <% provide :page_header do %>
-  <h1><span class="fa fa-edit" aria-hidden="true"></span> <%= t('hyrax.dashboard.collections.new.header', type_title: @collection.collection_type.title) %> </h1>
-  <div class="collection-description">
-  <%= t("morphosource.glossary.#{@collection.collection_type.machine_id.pluralize}") %>
+  <div class="col-12">
+    <h1><span class="fa fa-edit" aria-hidden="true"></span> <%= t('hyrax.dashboard.collections.new.header', type_title: @collection.collection_type.title) %> </h1>
+    <div class="collection-description px-0">
+    <%= t("morphosource.glossary.#{@collection.collection_type.machine_id.pluralize}") %>
+  </div>
 </div>
 <% end %>
+<% content_for :body_css_classes do %>showcase showcase-edit teams ms-collection-edit<% end %>
 
-<div class="row">
-  <div class="col-md-12">
-    <%= render 'morphosource/dashboard/collections/form' %>
+<div class="text-padding">
+  <div class="row">
+    <div class="col-md-12">
+      <%= render 'morphosource/dashboard/collections/form' %>
+    </div>
   </div>
 </div>

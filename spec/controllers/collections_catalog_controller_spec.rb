@@ -57,6 +57,15 @@ RSpec.describe CollectionsCatalogController, :type => :controller do
         end
       end
 
+      describe 'description' do
+        subject { index_fields['description_tesim'] }
+
+        it 'has the correct attributes' do
+          expect(subject.label).to eq('Description')
+          expect(subject.field).to eq('description_tesim')
+        end
+      end
+
       describe 'depositor' do
         subject { index_fields['depositor_tesim'] }
 
@@ -67,16 +76,7 @@ RSpec.describe CollectionsCatalogController, :type => :controller do
         end
 
       end
-      describe 'collection_member_count' do
-        subject { index_fields['collection_member_count'] }
 
-        it 'has the correct attributes' do
-          expect(subject.accessor).to eq('collection_member_count')
-          expect(subject.label).to eq('Number of Members')
-          expect(subject.field).to eq('collection_member_count')
-        end
-      end
-      
       describe 'date_uploaded' do
         subject { index_fields['date_uploaded_dtsi'] }
 

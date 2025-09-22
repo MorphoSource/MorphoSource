@@ -30,7 +30,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
         context 'reference via media id' do
           it 'sends requested file content' do
             get :show, params: { id: public_media.id, file: 'thumbnail' }
-            expect(response).to be_success
+            expect(response).to have_http_status(:success)
             expect(response.body).to eq content
             expect(response.headers['Content-Length']).to eq "25806"
             expect(response.headers['Accept-Ranges']).to eq "bytes"
@@ -46,7 +46,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
         context 'reference via file_set id' do
           it 'sends requested file content' do
             get :show, params: { id: public_file_set.id, file: 'thumbnail' }
-            expect(response).to be_success
+            expect(response).to have_http_status(:success)
             expect(response.body).to eq content
             expect(response.headers['Content-Length']).to eq "25806"
             expect(response.headers['Accept-Ranges']).to eq "bytes"
@@ -87,7 +87,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
 
         it 'sends requested file content' do
           get :show, params: { id: public_file_set.access_control_id, file: 'glb' }
-          expect(response).to be_success
+          expect(response).to have_http_status(:success)
           expect(response.content_type).to eq 'model/gltf+json'
           expect(response.headers['Content-Length']).to eq "1254180"
           expect(response.headers['Accept-Ranges']).to eq "bytes"
@@ -147,7 +147,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
               it 'sends requested file content from media id' do
                 controller.request.env['HTTP_AUTHORIZATION'] = user.token
                 get :show, params: { id: private_media.id, file: 'thumbnail' }
-                expect(response).to be_success
+                expect(response).to have_http_status(:success)
                 expect(response.body).to eq content
                 expect(response.headers['Content-Length']).to eq "25806"
                 expect(response.headers['Accept-Ranges']).to eq "bytes"
@@ -158,7 +158,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
               it 'sends requested file content from file_set id' do
                 controller.request.env['HTTP_AUTHORIZATION'] = user.token
                 get :show, params: { id: private_file_set.id, file: 'thumbnail' }
-                expect(response).to be_success
+                expect(response).to have_http_status(:success)
                 expect(response.body).to eq content
                 expect(response.headers['Content-Length']).to eq "25806"
                 expect(response.headers['Accept-Ranges']).to eq "bytes"
@@ -180,7 +180,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
 
           it 'sends requested file content from media id' do
             get :show, params: { id: private_media.id, file: 'thumbnail' }
-            expect(response).to be_success
+            expect(response).to have_http_status(:success)
             expect(response.body).to eq content
             expect(response.headers['Content-Length']).to eq "25806"
             expect(response.headers['Accept-Ranges']).to eq "bytes"
@@ -190,7 +190,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
 
           it 'sends requested file content from file_set id' do
             get :show, params: { id: private_file_set.id, file: 'thumbnail' }
-            expect(response).to be_success
+            expect(response).to have_http_status(:success)
             expect(response.body).to eq content
             expect(response.headers['Content-Length']).to eq "25806"
             expect(response.headers['Accept-Ranges']).to eq "bytes"
@@ -238,7 +238,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
             context 'reference via media id' do
               it 'sends requested file content' do
                 get :show, params: { id: private_media.id, file: 'thumbnail' }
-                expect(response).to be_success
+                expect(response).to have_http_status(:success)
                 expect(response.body).to eq content
                 expect(response.headers['Content-Length']).to eq "25806"
                 expect(response.headers['Accept-Ranges']).to eq "bytes"
@@ -254,7 +254,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
             context 'reference via file_set id' do
               it 'sends requested file content' do
                 get :show, params: { id: private_file_set.id, file: 'thumbnail' }
-                expect(response).to be_success
+                expect(response).to have_http_status(:success)
                 expect(response.body).to eq content
                 expect(response.headers['Content-Length']).to eq "25806"
                 expect(response.headers['Accept-Ranges']).to eq "bytes"
@@ -300,7 +300,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
             context 'reference via media id' do
               it 'sends requested file content' do
                 get :show, params: { id: private_media.id, file: 'thumbnail' }
-                expect(response).to be_success
+                expect(response).to have_http_status(:success)
                 expect(response.body).to eq content
                 expect(response.headers['Content-Length']).to eq "25806"
                 expect(response.headers['Accept-Ranges']).to eq "bytes"
@@ -316,7 +316,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
             context 'reference via file_set id' do
               it 'sends requested file content' do
                 get :show, params: { id: private_file_set.id, file: 'thumbnail' }
-                expect(response).to be_success
+                expect(response).to have_http_status(:success)
                 expect(response.body).to eq content
                 expect(response.headers['Content-Length']).to eq "25806"
                 expect(response.headers['Accept-Ranges']).to eq "bytes"
@@ -358,7 +358,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
             context 'reference via media id' do
               it 'sends requested file content' do
                 get :show, params: { id: private_media.id, file: 'thumbnail' }
-                expect(response).to be_success
+                expect(response).to have_http_status(:success)
                 expect(response.body).to eq content
                 expect(response.headers['Content-Length']).to eq "25806"
                 expect(response.headers['Accept-Ranges']).to eq "bytes"
@@ -374,7 +374,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
             context 'reference via file_set id' do
               it 'sends requested file content' do
                 get :show, params: { id: private_file_set.id, file: 'thumbnail' }
-                expect(response).to be_success
+                expect(response).to have_http_status(:success)
                 expect(response.body).to eq content
                 expect(response.headers['Content-Length']).to eq "25806"
                 expect(response.headers['Accept-Ranges']).to eq "bytes"
@@ -435,7 +435,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
 
           it 'sends requested file content' do
             get :show, params: { id: private_file_set.access_control_id, file: 'glb' }
-            expect(response).to be_success
+            expect(response).to have_http_status(:success)
             expect(response.content_type).to eq 'model/gltf+json'
             expect(response.headers['Content-Length']).to eq "1254180"
             expect(response.headers['Accept-Ranges']).to eq "bytes"
@@ -466,7 +466,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
           context 'user is not logged in' do
             it 'sends requested file content' do
               get :show, params: { id: private_file_set.access_control_id, file: 'glb' }
-              expect(response).to be_success
+              expect(response).to have_http_status(:success)
               expect(response.content_type).to eq 'model/gltf+json'
               expect(response.headers['Content-Length']).to eq "1254180"
               expect(response.headers['Accept-Ranges']).to eq "bytes"
@@ -484,7 +484,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
 
             it 'sends requested file content' do
               get :show, params: { id: private_file_set.access_control_id, file: 'glb' }
-              expect(response).to be_success
+              expect(response).to have_http_status(:success)
               expect(response.content_type).to eq 'model/gltf+json'
               expect(response.headers['Content-Length']).to eq "1254180"
               expect(response.headers['Accept-Ranges']).to eq "bytes"
@@ -498,7 +498,7 @@ RSpec.describe Morphosource::DerivativeDownloadsController do
 
               it 'sends requested file content' do
                 get :show, params: { id: private_file_set.access_control_id, file: 'glb' }
-                expect(response).to be_success
+                expect(response).to have_http_status(:success)
                 expect(response.content_type).to eq 'model/gltf+json'
                 expect(response.headers['Content-Length']).to eq "1254180"
                 expect(response.headers['Accept-Ranges']).to eq "bytes"

@@ -17,7 +17,7 @@ RSpec.describe Morphosource::AttachmentsController do
   
         it 'sends requested file content' do
           get :show, params: { id: public_media.id, field: 'attachment' }
-          expect(response).to be_success
+          expect(response).to have_http_status(:success)
           expect(response.body).to eq content
           expect(response.headers['Content-Length']).to eq "25806"
           expect(response.headers['Accept-Ranges']).to eq "bytes"
@@ -58,7 +58,7 @@ RSpec.describe Morphosource::AttachmentsController do
 
           it 'sends requested file content' do
             get :show, params: { id: private_media.id, field: 'attachment' }
-            expect(response).to be_success
+            expect(response).to have_http_status(:success)
             expect(response.body).to eq content
             expect(response.headers['Content-Length']).to eq "25806"
             expect(response.headers['Accept-Ranges']).to eq "bytes"

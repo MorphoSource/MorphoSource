@@ -1,6 +1,9 @@
 module Morphosource
   module My
     class BiologicalSpecimensController < WorksController
+
+      PAGE_TITLE = I18n.t("morphosource.dashboard.my.media_objects.biological_specimens.page_title")
+
       def self.configure_facets
         configure_blacklight do |config|
           config.http_method = :post
@@ -42,6 +45,9 @@ module Morphosource
           @tab_title = 'Specimens // MorphoSource'
         end
 
+        def add_breadcrumbs
+          # no need to add breadcrumbs as they have been added already
+        end
     end
   end
 end

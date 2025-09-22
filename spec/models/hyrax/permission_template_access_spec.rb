@@ -5,13 +5,12 @@ require 'rails_helper'
 RSpec.describe Hyrax::PermissionTemplateAccess do
   let(:depositor)            { User.create(email: 'depositor@email.com', password: 'password') }
   let(:downloader)           { User.create(email: 'downloader@email.com', password: 'password') }
-  let(:collection)           { Collection.create(id: 'team', title: ['Team'], depositor: depositor.ms_id, collection_type_gid: team_collection_type.gid) }
+  let(:collection)           { Collection.create(id: 'team', title: ['Team'], depositor: depositor.ms_id, collection_type_gid: team_collection_type.to_global_id) }
 
   before do
     collection.create_collection_groups
     Morphosource::Collections::PermissionsCreateService.create_default(collection: collection)
-
-    collection.reset_access_controls!
+    collection.permission_template.reset_access_controls_for(collection: collection)
   end
 
   describe 'default team/project template grants #label, #admin_group, #destroy' do

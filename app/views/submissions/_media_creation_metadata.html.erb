@@ -7,7 +7,7 @@
   <% extended_terms_id = "extended-#{f.object.class.name.underscore.split('/').last}-terms" %>
   <%= link_to t('hyrax.works.form.additional_fields'),
               "##{extended_terms_id}",
-              class: 'btn btn-default additional-fields',
+              class: 'btn btn-secondary additional-fields',
               data: {toggle: 'collapse'},
               role: "button",
               'aria-expanded' => "false",

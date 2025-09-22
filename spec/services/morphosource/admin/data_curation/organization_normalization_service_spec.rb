@@ -39,7 +39,7 @@ RSpec.describe Morphosource::DataCuration::OrganizationNormalizationService do
 
   let(:media)                   { project_media + old_data_manager_media + project_and_old_data_manager_media }
 
-  subject { described_class.call(params) }
+  subject { described_class.call(**params) }
 
   describe '.call' do
     let!(:organization) { FactoryBot.create(:organization, team_id: [team.id], data_manager: [org_data_manager.ms_id]) }
@@ -99,7 +99,7 @@ RSpec.describe Morphosource::DataCuration::OrganizationNormalizationService do
     end
 
     describe 'get_media_ids' do
-      subject { described_class.new(params) }
+      subject { described_class.new(**params) }
 
       context 'only the old manager is filled out' do
         let(:params)  { { team_id: team.id, project_id: nil, old_manager_email: manager.email, email: user.email, update_publication_status: 'all' } }
@@ -267,7 +267,7 @@ RSpec.describe Morphosource::DataCuration::OrganizationNormalizationService do
     end
 
     describe 'get_media_ids' do
-      subject { described_class.new(params) }
+      subject { described_class.new(**params) }
 
       context 'only the old manager is filled out' do
         let(:params)  { { team_id: organization.id, project_id: nil, old_manager_email: manager.email, email: user.email, update_publication_status: 'all' } }

@@ -1,9 +1,9 @@
-<div id="parent-relationships-taxonomies" data-new-work-created="">
+<div id="parent-relationships-taxonomies" data-new-work-created="" class="mt-0">
   <h2>TAXONOMY</h2>
 
-  <div class="mb-1">If this biological specimen has been associated with a taxonomy, you can indicate that here. Specimens can be linked to one or more taxonomies. First, search for the taxonomy of your specimen. If a GBIF taxonomy is available, select that. Otherwise, select or create a more specific MorphoSource taxonomy. If you select or create a MorphoSource taxonomy, consider also associating your specimen with a GBIF-available higher term (order, family, etc.) that applies. This will allow your specimen to be discoverable in our taxonomic browse tree.</div>
+  <div>If this biological specimen has been associated with a taxonomy, you can indicate that here. Specimens can be linked to one or more taxonomies. First, search for the taxonomy of your specimen. If a GBIF taxonomy is available, select that. Otherwise, select or create a more specific MorphoSource taxonomy. If you select or create a MorphoSource taxonomy, consider also associating your specimen with a GBIF-available higher term (order, family, etc.) that applies. This will allow your specimen to be discoverable in our taxonomic browse tree.</div>
 
-  <div class="form-inline">
+  <div class="form-inline mt-4">
 
     <%= f.input :select_taxonomy_id, 
                 placeholder: "Enter taxonomy keywords (species, genus, higher terms)",
@@ -11,7 +11,7 @@
     %>
   </div>
 
-  <div class="text-center button-wrapper mt-1">
+  <div class="text-center button-wrapper mt-3">
     <a class="btn btn-md btn-primary" id="btn_new_taxonomy">Create custom taxonomy</a>
   </div>
 

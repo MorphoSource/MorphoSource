@@ -1,11 +1,14 @@
 module Hyrax
   class TransfersController < ApplicationController
+    include Morphosource::Breadcrumbs
+
     before_action :authenticate_user!
     before_action :load_proxy_deposit_request, only: :create
     load_and_authorize_resource :proxy_deposit_request, parent: false, except: [:index, :batch_decide_transfers]
     before_action :authorize_depositor_by_id, only: [:new, :create]
     before_action :validate_decision_params, :validate_decision_type, :load_and_authorize_batch_transfers, only: [:batch_decide_transfers]
     with_themed_layout :decide_layout
+    before_action :build_breadcrumbs, only: [:index]
 
     # Catch permission errors
     # TODO: Isn't this already handled?
@@ -18,10 +21,9 @@ module Hyrax
       end
     end
 
+    PAGE_TITLE = I18n.t("hyrax.admin.sidebar.transfers")
+
     def new
-      #add_breadcrumb t(:'hyrax.controls.home'), root_path
-      #add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
-      #add_breadcrumb t(:'hyrax.transfers.new.header'), hyrax.new_work_transfer_path
       @work = Hyrax::WorkRelation.new.find(params[:id])
     end
 
@@ -38,9 +40,6 @@ module Hyrax
     end
 
     def index
-      add_breadcrumb t(:'hyrax.controls.home'), root_path
-      add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
-      add_breadcrumb t(:'hyrax.admin.sidebar.transfers'), hyrax.transfers_path
       @presenter = MsTransfersPresenter.new(current_user, view_context, request)
     end
 
@@ -50,8 +49,8 @@ module Hyrax
       @proxy_deposit_request.transfer!(params[:reset])
       # todo: might need to file a bug on this.  no need to add proxy user if the user is already in the proxy user list
       if params[:sticky]
-        unless current_user.can_receive_deposits_from.include? @proxy_deposit_request.sending_user 
-          current_user.can_receive_deposits_from << @proxy_deposit_request.sending_user 
+        unless current_user.can_receive_deposits_from.include? @proxy_deposit_request.sending_user
+          current_user.can_receive_deposits_from << @proxy_deposit_request.sending_user
         end
       end
       redirect_to hyrax.transfers_path, notice: "Transfer has been accepted."
@@ -78,8 +77,8 @@ module Hyrax
           proxy_deposit_request.transfer!(params[:reset])
           # todo: might need to file a bug on this.  no need to add proxy user if the user is already in the proxy user list
           if params[:sticky]
-            unless current_user.can_receive_deposits_from.include? proxy_deposit_request.sending_user 
-              current_user.can_receive_deposits_from << proxy_deposit_request.sending_user 
+            unless current_user.can_receive_deposits_from.include? proxy_deposit_request.sending_user
+              current_user.can_receive_deposits_from << proxy_deposit_request.sending_user
             end
           end
         end
@@ -87,7 +86,7 @@ module Hyrax
       elsif params[:decision] == 'reject'
         @proxy_deposit_requests.each do |proxy_deposit_request|
           proxy_deposit_request.reject!
-        end  
+        end
         notice = "One or more transfers have been rejected. If this action included a large number of transfers, they may take a few moments to process."
       end
 
@@ -142,7 +141,7 @@ module Hyrax
       end
 
       def load_batch_transfers
-        @proxy_deposit_requests = 
+        @proxy_deposit_requests =
           params[:batch_transfers]
           .map { |id| ProxyDepositRequest.find(id) }
       end

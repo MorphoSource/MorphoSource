@@ -7,6 +7,7 @@ var createMediaTable = function(selector) {
         type: 'inline'
       }
     },
+    autoWidth: false,
     //order: [[ 2, "asc" ]],  // if sorting is needed, we might need to sort the same way in gallery view
     columnDefs: [
       { orderable: false, targets: 0 }, // disable sorting

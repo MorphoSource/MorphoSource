@@ -1,10 +1,12 @@
+# Applies to organization works only
+# Remove when all organization works are migrated to organization collections
 module Morphosource
   module Organizations
     class OrganizationMemberService
       include Blacklight::AccessControls::Catalog
       include Blacklight::Base
       include SolrHelper
-    
+
       attr_reader :solr
 
       copy_blacklight_config_from(::CatalogController)
@@ -50,18 +52,18 @@ module Morphosource
           "(organization_id_ssim:#{@organization.id})"
         end
       end
-  
+
       private
 
         def available_member_works_filter_query(fq_params: [], object_model: nil)
           query_solr_with_fq(
-            query_builder: works_search_builder, 
-            query_params: @params[:cq], 
+            query_builder: works_search_builder,
+            query_params: @params[:cq],
             fq_params: fq_params,
-            rows: (rows = rows_param(object_model)), 
+            rows: (rows = rows_param(object_model)),
             start: start_param(rows)
           )
-        end  
+        end
 
         def query_solr_with_fq(query_builder:, query_params:, fq_params:, rows: 10, start: 0)
           initial_q = query_builder[:q]
@@ -74,7 +76,7 @@ module Morphosource
             query_builder.merge('facet.limit' => -1)
             query_builder.rows = rows
             query_builder.start = start
-            repository.search(query_builder.query)
+            blacklight_config.repository.search(query_builder.query)
           ensure
             query_builder.merge(q: initial_q)
             query_builder.merge(fq: initial_fq)

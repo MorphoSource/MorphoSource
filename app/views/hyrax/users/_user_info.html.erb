@@ -1,24 +1,24 @@
-<%# this partial is shared by dashboard profile (admin and user) and public profile page 
+<%# this partial is shared by dashboard profile (admin and user) and public profile page
 check the field can be displayed (if user is current user, admin, or if field is public/private) %>
 <div class="row">
-  <div class="col-md-12">
+  <div class="col-lg-12">
 
-    <%= render partial: 'display_field', 
+    <%= render partial: 'display_field',
       collection: field_list,
       as: :field_name, :locals => { user: user } %>
 
     <% if current_user&.admin? || (user == current_user) %>
       <% if ( user.batch_submission_contributor? || user.globus_file_submitter? ) && user.sftp_share.present? %>
       <div class="row">
-        <div class="col-xs-3 showcase-label">SFTP Share</div>
-        <div class="col-xs-9 showcase-value break-all"><%= user.sftp_share %> <%= sftp_share_status user.sftp_share %></div>
+        <div class="col-3 showcase-label">SFTP Share</div>
+        <div class="col-9 showcase-value break-all"><%= user.sftp_share %> <%= sftp_share_status user.sftp_share %></div>
       </div>
       <% end %>
 
       <% if user.remote_file_submitter? && user.allowed_domains.present? %>
       <div class="row">
-        <div class="col-xs-3 showcase-label">Allowed Remote File Domains</div>
-        <div class="col-xs-9 showcase-value break-all block">
+        <div class="col-3 showcase-label">Allowed Remote File Domains</div>
+        <div class="col-9 showcase-value break-all block">
           <%= render partial: 'user_allowed_domains', collection: user.allowed_domains, as: :item %>
         </div>
       </div>

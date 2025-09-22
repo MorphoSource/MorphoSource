@@ -12,7 +12,7 @@ module Morphosource::Derivatives
     end
 
     def call
-      unless File.exists?(dir_path)
+      unless File.exist?(dir_path)
         raise Morphosource::Derivatives::CompressZipError.new("Source directory: #{dir_path} does not exist")
       end
 
@@ -26,7 +26,7 @@ module Morphosource::Derivatives
     end
 
     def post_process(raw_output)
-      if !File.exists?(file) || (File.size(file) == 0)
+      if !File.exist?(file) || (File.size(file) == 0)
         raise Morphosource::Derivatives::CompressZipError.new("ZIP file not successfully created.\nTool command: \"#{command}\"\nTool output:\n\"#{raw_output}\"")
       end
     end

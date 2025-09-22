@@ -13,7 +13,7 @@
         <li class="radio">
           <label>
             <%= f.radio_button :visibility, Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC, data: { 'target': '#collapsePublic', 'toggle':'collapse' } %>
-            <span class="label label-success">Publish with Open Download</span>
+            <span class="badge badge-success">Publish with Open Download</span>
             <br />
             <%= t('morphosource.visibility.open.note_html', type: f.object.human_readable_type) %>
           </label>
@@ -21,7 +21,7 @@
         <li class="radio">
           <label>
             <%= f.radio_button :visibility, "restricted_download", data: { 'target': '#collapseRestricted', 'toggle':'collapse' } %>
-            <span class="label label-info">Publish with Restricted Download</span>
+            <span class="badge badge-info">Publish with Restricted Download</span>
             <br />
             <%= t('morphosource.visibility.restricted.note_html', type: f.object.human_readable_type) %>
           </label>

@@ -9,8 +9,6 @@ module Morphosource
         ], instance_name: :organization_collection
 
         before_action :redirect_to_collection_type, only: []
-        before_action :build_breadcrumbs, only: []
-        before_action :load_collection
 
         self.presenter_class = Morphosource::Collections::OrganizationPresenter
 
@@ -61,17 +59,13 @@ module Morphosource
           form
         end
 
-        def projects
-          @tab = :projects
-          @projects = member_subcollections
-          presenter
-        end
-
         private
 
-          def default_collection_type
+          def collection_type
             Hyrax::CollectionType.find_by(title: "Organization")
           end
+          alias :default_collection_type :collection_type
+
 
           def collection_class
             OrganizationCollection

@@ -1,3 +1,4 @@
+@import 'variables';
 @import 'shared';
 
 /*    .hide {display: block !important} */
@@ -88,6 +89,18 @@ input[type=checkbox].disabled {
     font-size: 14px;
   }
 
+  .showcase-value {
+    padding-top: 8px; /* vertically align with the field label */
+  }
+
+  .form-group.value-blank-check {
+    margin-top: 10px; /* add some space between the field and the checkbox */
+  }
+
+  div.checkbox label > span {
+    font-weight: normal; /* do not set fonts to bold for checkbox labels */
+  }
+
   h2 {
     text-transform: uppercase;
     font-size: 15px;
@@ -111,6 +124,7 @@ input[type=checkbox].disabled {
   }
 
   .form-group {
+    align-items: flex-start; /* vertically align fields to the top */
     margin-bottom: 0;
   }
 
@@ -124,12 +138,16 @@ input[type=checkbox].disabled {
     display: none;
   }
 
-  .main-content .fa {
+  .main-content .fa, .main-content .input-group-btn.field-controls .btn .fa {
     color: $button-color;
   }
 
-  .sidebar .fa {
+  .main-content .btn .fa {
     color: #ffffff;
+  }
+
+  .main-content .btn .fa-columns {
+    color: $button-color;
   }
 
   .field-controls .add,
@@ -162,10 +180,10 @@ input[type=checkbox].disabled {
   }
 
   .required-flag, .recommended-flag, .optional-flag {
-    .label:empty {
+    .badge:empty {
       display:inline-block !important;
     }
-    .label {
+    .badge {
       background-color: #528253;
       font-size: 60%;
       font-weight: normal;
@@ -175,22 +193,22 @@ input[type=checkbox].disabled {
     }
   }
   .required-flag {
-    .label {
+    .badge {
       background-color: #528253;
     }
-    .label:before {
+    .badge:before {
       content: 'Required';
     }
   }
 
   .recommended-flag {
-    .label:before {
+    .badge:before {
       content: 'Recommended';
     }
   }
 
   .optional-flag {
-    .label:before {
+    .badge:before {
       content: 'Optional';
     }
   }
@@ -211,10 +229,6 @@ input[type=checkbox].disabled {
 
   .multi_value .btn.remove, .controlled_vocabulary .btn.remove, .multi_value .remove.facets-toggle, .controlled_vocabulary .remove.facets-toggle, .multi_value td.toggle input.remove[type=submit], td.toggle .multi_value input.remove[type=submit], .controlled_vocabulary td.toggle input.remove[type=submit], td.toggle .controlled_vocabulary input.remove[type=submit] {
       color: #286090;
-  }
-
-  .processing_event_processing_activity_step {
-    width: 95%;
   }
 
   .showcase-label, .showcase-value {
@@ -249,11 +263,13 @@ input[type=checkbox].disabled {
   // styling for media tags
   // hide label for keyword input
   .single-input .showcase-label {
-    display: none;
+    display: none !important;
   }
 
   .single-input .showcase-value {
     width: 100%;
+    max-width: 100%;
+    flex: unset;
   }
 
   // remove extra border around tags select
@@ -287,23 +303,20 @@ input[type=checkbox].disabled {
     min-width: 80px;
   }
 
-  .panel {
+  .card:not(.panel-borders) {
     border: none;
-    margin-left: -15px;
-    margin-right: -15px;
   }
 
-  // Hyrax .dashboard .panel has borders, showcase-edit overwrites this, this allows to put back in
+  // Hyrax .dashboard .card has borders, showcase-edit overwrites this, this allows to put back in
   .panel-borders {
     border: 1px solid #dedede;
   }
 
   .panel-borders.tabs {
     margin-top: 0 !important;
-    padding-top: 44px !important;
   }
 
-  .panel-full-width .panel {
+  .panel-full-width .card {
     border: none;
     margin-left: 0;
     margin-right: 0;
@@ -315,7 +328,6 @@ input[type=checkbox].disabled {
   }
 
   .nav-tabs {
-    background-color: #efefef;
     padding-top: 20px;
     .active {
       .fa, .fas, [class^="ms2-icon-"] {
@@ -331,13 +343,9 @@ input[type=checkbox].disabled {
   }
 
   .processing_activity_items {
-    .field-controls {
-      vertical-align: top;
-      padding-top: 10px;
-    }
     .row:not(:first-child) {
       .showcase-label {
-        padding-left:30px;
+        padding-left: 20px;
       }
     }
   }
@@ -390,20 +398,20 @@ input[type=checkbox].disabled {
     }
   }
   .tab-content.tab-borders {
-    div:first-child, .tab-pane {
+    > div:first-child, .tab-pane {
       margin-top: 0 !important;
       padding-top: 10px;
     }
-    border-left:   1px solid #efefef;
-    border-right:  1px solid #efefef;
-    border-bottom: 1px solid #efefef;
+    border-left:   1px solid #d4d4d4;
+    border-right:  1px solid #d4d4d4;
+    border-bottom: 1px solid #d4d4d4;
   }
 
   /* object detail tab specific styles */
   .tab-content > #physical-object-details {
 
     .form-group {
-      .help-block {
+      .form-text text-muted {
         display:none;
       }
       .form-control {
@@ -466,6 +474,10 @@ input[type=checkbox].disabled {
         font-size: 11px;
       }
     }
+  }
+
+  .btn.collapse-block-visibility:focus {
+    box-shadow: unset;
   }
 
   .banner-image img {
@@ -534,7 +546,6 @@ input[type=checkbox].disabled {
       padding-right: 0;
       text-align: left;
       width: auto;
-      font-size: 13px;
     }
 
     .select2-container, select {
@@ -595,6 +606,11 @@ input[type=checkbox].disabled {
 
 /* styles for dashboard collection edit page */
 .dashboard.ms-collection-edit {
+
+  .select2-drop {
+    margin-top: -4px;
+  }
+
   .material-icons.tooltip-icon {
     font-size: 14px;
   }
@@ -670,10 +686,6 @@ input[type=checkbox].disabled {
     }
   }
 
-  .btn-xs {
-    font-size: 9px;
-  }
-
   .tab-note {
     font-size: 12px;
   }
@@ -713,13 +725,20 @@ input[type=checkbox].disabled {
   }
 
   #delete-organization {
-    margin-left: 10px;
+    margin-left: 8px;
   }
 
   // uploaded logos and banners
   div.branding-logo-row, div.branding-banner-row {
     position: relative;
     left: 15px;
+  }
+
+  button.branding-logo-remove,
+  button.branding-logo-remove:hover,
+  button.branding-banner-remove,
+  button.branding-banner-remove:hover {
+    color: $button-color;
   }
 
   .form-add-organization-wrapper {

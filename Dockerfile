@@ -1,16 +1,17 @@
 ### MORPHOSOURCE-BUILD STAGE (BUILDS APP FILES FOR LATER COPYING) ###
 
-ARG RUBY_VERSION=2.7.4
-FROM ruby:$RUBY_VERSION-bullseye as morphosource-build
+ARG RUBY_VERSION=3.3.6
+FROM ruby:$RUBY_VERSION-bookworm as morphosource-build
 
 ARG RAILS_ROOT=/app/samvera/hyrax-webapp
-ENV BUNDLE_APP_CONFIG="$RAILS_ROOT/.bundle"
+ENV BUNDLE_APP_CONFIG="$RAILS_ROOT/.bundle" \
+    BUNDLE_PATH="$RAILS_ROOT/vendor/bundle"
 
 RUN apt update && \
   apt install -y --no-install-recommends \
   libcurl4 \
   imagemagick \
-  netcat \
+  netcat-traditional \
   nodejs \
   npm \
   perl \
@@ -40,13 +41,6 @@ ENV LD_LIBRARY_PATH="/usr/lib/jvm/java-1.8-openjdk/jre/lib/amd64:/usr/lib/jvm/ja
 ENV RAILS_ROOT=$RAILS_ROOT
 ENV RAILS_SERVE_STATIC_FILES="1"
 
-# RUN gem update bundler
-ENV BUNDLE_GEMFILE="./Gemfile"
-ENV BUNDLER_VERSION='2.0.2'
-ENV HOME=$RAILS_ROOT
-RUN gem install bundler -v 2.0.2
-
-
 
 ### MORPHOSOURCE-BUILD-DEV STAGE ####
 
@@ -58,8 +52,7 @@ USER app
 
 COPY --chown=1001:0 $APP_PATH/Gemfile $RAILS_ROOT/Gemfile
 COPY --chown=1001:0 $APP_PATH/Gemfile.lock $RAILS_ROOT/Gemfile.lock
-RUN bundle config --global && \
-  bundle install --jobs "$(nproc)" --path=vendor/bundle
+RUN bundle install --jobs "$(nproc)"
 
 COPY --chown=1001:0 $APP_PATH/package.json $RAILS_ROOT/package.json
 COPY --chown=1001:0 $APP_PATH/yarn.lock $RAILS_ROOT/yarn.lock
@@ -83,8 +76,7 @@ USER app
 
 COPY --chown=1001:0 $APP_PATH/Gemfile $RAILS_ROOT/Gemfile
 COPY --chown=1001:0 $APP_PATH/Gemfile.lock $RAILS_ROOT/Gemfile.lock
-RUN bundle config --global && \
-  bundle install --jobs "$(nproc)" --path=vendor/bundle --without development
+RUN bundle install --jobs "$(nproc)" --without development
 
 COPY --chown=1001:0 $APP_PATH/package.json $RAILS_ROOT/package.json
 COPY --chown=1001:0 $APP_PATH/yarn.lock $RAILS_ROOT/yarn.lock
@@ -101,18 +93,19 @@ RUN chmod -R g+rwX $RAILS_ROOT
 
 ### MORPHOSOURCE-BASE STAGE ###
 
-ARG RUBY_VERSION=2.7.4
-FROM ruby:$RUBY_VERSION-bullseye as morphosource-base
+ARG RUBY_VERSION=3.3.6
+FROM ruby:$RUBY_VERSION-bookworm as morphosource-base
 
 ARG RAILS_ROOT=/app/samvera/hyrax-webapp
-ENV BUNDLE_APP_CONFIG="$RAILS_ROOT/.bundle"
+ENV BUNDLE_APP_CONFIG="$RAILS_ROOT/.bundle" \
+    BUNDLE_PATH="$RAILS_ROOT/vendor/bundle"
 
 RUN apt update && \
   apt install -y --no-install-recommends \
   libjemalloc2 \
   libcurl4 \
   imagemagick \
-  netcat \
+  netcat-traditional \
   nodejs \
   npm \
   perl \
@@ -135,13 +128,6 @@ WORKDIR $RAILS_ROOT
 ENV PATH="$RAILS_ROOT/bin:$PATH"
 ENV RAILS_ROOT=$RAILS_ROOT
 ENV RAILS_SERVE_STATIC_FILES="1"
-
-# RUN gem update bundler
-ENV BUNDLE_GEMFILE="./Gemfile"
-ENV BUNDLER_VERSION='2.0.2'
-ENV HOME=$RAILS_ROOT
-RUN gem install bundler -v 2.0.2
-
 
 
 ### MORPHOSOURCE-DEV STAGE
@@ -187,10 +173,6 @@ RUN echo "deb https://packages.adoptium.net/artifactory/deb \
   $(awk -F= '/^VERSION_CODENAME/{print$2}' /etc/os-release) main" \
   | tee /etc/apt/sources.list.d/adoptium.list
 
-# Add bullseye-backports to get 7zip package
-RUN echo "deb https://archive.debian.org/debian bullseye-backports main" \
-  > /etc/apt/sources.list.d/backports.list
-
 # Install additional system packages related to tools
 RUN apt update && \
   apt install -y \
@@ -205,24 +187,26 @@ RUN apt update && \
   7zip
 
 # Install Python packages
-RUN pip3 install --no-cache-dir --upgrade pip && \
-  pip3 install --no-cache-dir numpy Pillow pydicom
+RUN pip3 install --break-system-packages --no-cache-dir --upgrade pip && \
+  pip3 install --break-system-packages --no-cache-dir numpy Pillow pydicom
 
 # Install Python package pymeshlab, which has an annoying quirk for M1 platforms
-# RUN wget https://github.com/alemuntoni/PyMeshLab/releases/download/v2024.3/pymeshlab-2024.3-cp311-cp311-macosx_11_0_arm64.whl -O pymeshlab.whl && \
-#   pip3 install pymeshlab.whl;
-
 ARG TARGETPLATFORM
 RUN if [ "$TARGETPLATFORM" != "linux/arm64" ]; then \
-pip3 install --no-cache-dir pymeshlab; \
-fi
+      pip3 install --break-system-packages --no-cache-dir pymeshlab; \
+    else \
+      wget https://github.com/cnr-isti-vclab/PyMeshLab/releases/download/v2023.12.post2/pymeshlab-2023.12.post2-cp311-cp311-manylinux_2_35_aarch64.whl && \
+      pip3 install --break-system-packages --no-cache-dir pymeshlab-2023.12.post2-cp311-cp311-manylinux_2_35_aarch64.whl && \
+      apt install -y qtbase5-dev; \
+    fi
+
 
 # Install GLTF Pipeline 3D mesh derivative tool, used for creating Draco GLBs
 RUN npm install --global only-allow
 RUN npm install --global gltf-pipeline --legacy-peer-deps
 
 # Install GLTF Transform 3D mesh derivative tool, used for simplifying GLTF derivatives and creating Draco GLBs
-RUN npm install --global @gltf-transform/cli
+RUN npm install --global @gltf-transform/core@4.2.0 @gltf-transform/extensions@4.2.0 @gltf-transform/functions@4.2.0 @gltf-transform/cli@4.2.0
 
 # Install gltf-inspect 3D mesh derivative tool, used for characterizing info from GLB/GLTF files
 RUN npm install --global @morphosource/gltf-inspect@0.2.0

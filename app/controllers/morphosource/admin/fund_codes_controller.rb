@@ -1,14 +1,14 @@
 module Morphosource
   module Admin
     class FundCodesController < ApplicationController
+      include Morphosource::Breadcrumbs
+
       before_action :require_permissions
       with_themed_layout 'morphosource_dashboard'
 
-      def index
-        add_breadcrumb t(:'hyrax.controls.home'), root_path
-        add_breadcrumb t(:'hyrax.dashboard.breadcrumbs.admin'), hyrax.dashboard_path
-        add_breadcrumb t(:'morphosource.admin.fund_codes.header'), main_app.admin_fund_codes_path
+      PAGE_TITLE = I18n.t("morphosource.dashboard.admin.fund_codes.page_title")
 
+      def index
         @fund_codes = FundCode.all
         if params[:id].present? && FundCode.exists?(params[:id])
           @current_fund_code = FundCode.find(params[:id])
@@ -37,7 +37,7 @@ module Morphosource
       def update
         if FundCode.exists?(params[:id])
           fc = FundCode.find(params[:id])
-          
+
           form_managers = params_managers
           form_standard_members = params_standard_members
 
@@ -57,7 +57,7 @@ module Morphosource
           else
             final_params = params_attributes
           end
-          
+
           fc.update(final_params)
           fc.save!
         end
@@ -94,7 +94,7 @@ module Morphosource
         if index == 0 && @fund_code.attachments.size == 1
           @fund_code.remove_attachments!
         else
-          deleted_attachment = remain_attachments.delete_at(index) 
+          deleted_attachment = remain_attachments.delete_at(index)
           deleted_attachment.try(:remove!)
           @fund_code.attachments = remain_attachments
         end
@@ -110,17 +110,17 @@ module Morphosource
 
       def fund_code_params
         @fund_code_params ||= params.fetch(:fund_code, {}).permit(
-          :title, 
-          :description, 
+          :title,
+          :description,
           :identifier,
-          :invoice_number, 
-          :managers, 
-          :standard_members, 
-          :expires_at, 
+          :invoice_number,
+          :managers,
+          :standard_members,
+          :expires_at,
           :storage_total_gb,
           :total,
-          :external_user, 
-          :external_user_additional_rate_percent, 
+          :external_user,
+          :external_user_additional_rate_percent,
           :chargeable,
           :can_add_media,
           { attachments: [] }

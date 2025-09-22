@@ -28,7 +28,7 @@
       <td>
         <% if req.pending? %>
         <div class="row">
-          <div class="col-xs-12">
+          <div class="col-12">
             <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 100%; max-width: 100%">
               Accept <span class="caret"></span>
             </button>
@@ -45,7 +45,7 @@
             </ul>
           </div>
 
-          <div class="col-xs-12">
+          <div class="col-12">
             <%= link_to "Reject", hyrax.reject_transfer_path(req), method: :put, class: 'btn btn-sm btn-danger', data: {confirm: "Are you sure you want to reject this request?"}, style: "width: 100%" %>
           </div>
         </div>

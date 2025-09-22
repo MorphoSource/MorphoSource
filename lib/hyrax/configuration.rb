@@ -1,5 +1,4 @@
 require 'hyrax/role_registry'
-require 'samvera/nesting_indexer'
 
 module Hyrax
   ##
@@ -64,11 +63,23 @@ module Hyrax
       @registered_concerns = []
       @role_registry = Hyrax::RoleRegistry.new
       @default_active_workflow_name = DEFAULT_ACTIVE_WORKFLOW_NAME
-      @nested_relationship_reindexer = default_nested_relationship_reindexer
     end
 
     DEFAULT_ACTIVE_WORKFLOW_NAME = 'default'.freeze
     private_constant :DEFAULT_ACTIVE_WORKFLOW_NAME
+
+    # Set the default logger for Hyrax.
+    attr_writer :logger
+
+    ##
+    # @return [Logger]
+    def logger
+      @logger ||= if defined?(Rails)
+                    Rails.logger
+                  else
+                    Valkyrie.logger
+                  end
+    end
 
     # @api public
     # When an admin set is created, we need to activate a workflow.
@@ -395,6 +406,22 @@ module Hyrax
     end
     attr_writer :disable_wings
 
+    ##
+    # @return [Boolean]
+    def disable_freyja
+      return @disable_freyja unless @disable_freyja.nil?
+      ActiveModel::Type::Boolean.new.cast(ENV.fetch('HYRAX_SKIP_FREYJA', false))
+    end
+    attr_writer :disable_freyja
+
+    ##
+    # @return [Boolean]
+    def disable_frigg
+      return @disable_frigg unless @disable_frigg.nil?
+      ActiveModel::Type::Boolean.new.cast(ENV.fetch('HYRAX_SKIP_FRIGG', false))
+    end
+    attr_writer :disable_frigg
+
     attr_writer :display_media_download_link
     def display_media_download_link?
       return @display_media_download_link unless @display_media_download_link.nil?
@@ -473,9 +500,90 @@ module Hyrax
       @microdata_default_type ||= 'http://schema.org/CreativeWork'
     end
 
+    attr_writer :derivative_services
+    # The registered candidate derivative services.  In the array, the first `valid?` candidate will
+    # handle the derivative generation.
+    #
+    # @return [Array] of objects that conform to Hyrax::DerivativeService interface.
+    # @see Hyrax::DerivativeService
+    def derivative_services
+      @derivative_services ||= [Morphosource::MsFileSetDerivativesService]
+    end
+
+    attr_writer :file_set_model
+    ##
+    # @return [#constantize] a string representation of the admin set
+    #   model
+    def file_set_model
+      @file_set_model ||= 'Hyrax::FileSet'
+    end
+
+    ##
+    # @return [Class] the configured admin set model class
+    def file_set_class
+      file_set_model.constantize
+    end
+
+    ##
+    # @!attribute [rw] file_set_file_service
+    #   @return [Class] implementer of {Hyrax::FileSetFileService}
+    attr_writer :file_set_file_service
+    def file_set_file_service
+      @file_set_file_service ||= Hyrax::FileSetFileService
+    end
+
+    # This value determines whether to use load the Freyja adapter in dassie
+    attr_writer :valkyrie_transition
+    attr_reader :valkyrie_transition
+    def valkyrie_transition?
+      @valkyrie_transition ||=
+        ActiveModel::Type::Boolean.new.cast(ENV.fetch('VALKYRIE_TRANSITION', false))
+    end
+
     attr_writer :max_days_between_fixity_checks
     def max_days_between_fixity_checks
       @max_days_between_fixity_checks ||= 7
+    end
+
+    # @!group Groups
+
+    ##
+    # @!attribute [w] admin_user_group_name
+    #   @return [String]
+    # @!attribute [w] public_user_group_name
+    #   @return [String]
+    # @!attribute [w] registered_user_group_name
+    #   @return [String]
+    attr_writer :admin_user_group_name
+    attr_writer :public_user_group_name
+    attr_writer :registered_user_group_name
+
+    ##
+    # @api public
+    # @return [String]
+    def admin_user_group_name
+      @admin_user_group_name ||= 'admin'
+    end
+
+    ##
+    # @api public
+    # @return [String]
+    def public_user_group_name
+      @public_user_group_name ||= 'public'
+    end
+
+    ##
+    # @api public
+    # @return [String]
+    def registered_user_group_name
+      @registered_user_group_name ||= 'registered'
+    end
+
+    # @!endgroup
+
+    attr_writer :breadcrumb_builder
+    def breadcrumb_builder
+      @breadcrumb_builder ||= Hyrax::BootstrapBreadcrumbsBuilder
     end
 
     attr_writer :enable_noids
@@ -831,9 +939,10 @@ module Hyrax
       @persistent_hostpath ||= "http://localhost/files/"
     end
 
+    attr_accessor :redis_connection
     attr_writer :redis_namespace
     def redis_namespace
-      @redis_namespace ||= "hyrax"
+      @redis_namespace ||= ENV.fetch("HYRAX_REDIS_NAMESPACE", "hyrax")
     end
 
     attr_writer :libreoffice_path
@@ -984,6 +1093,21 @@ module Hyrax
       collection_model.safe_constantize
     end
 
+    ##
+    # @api private
+    #
+    # There are assumptions baked into {Wings} and tests regarding what the
+    # correct conceptual collection will be.  This helps provide that connective
+    # tissue.
+    #
+    # It is definitely a hack to appease tests and the Double Combo/Goddess
+    # adapter migration.
+    def collection_class_for_wings
+      return collection_class if collection_class < Hyrax::Resource
+
+      Hyrax::PcdmCollection
+    end
+
     attr_writer :admin_set_model
     ##
     # @return [#constantize] a string representation of the admin set
@@ -996,6 +1120,21 @@ module Hyrax
     # @return [Class] the configured admin set model class
     def admin_set_class
       admin_set_model.constantize
+    end
+
+    ##
+    # @api private
+    #
+    # There are assumptions baked into {Wings} and tests regarding what the
+    # correct conceptual admin set will be.  This helps provide that connective
+    # tissue.
+    #
+    # It is definitely a hack to appease tests and the Double Combo/Goddess
+    # adapter migration.
+    def admin_set_class_for_wings
+      return admin_set_class if admin_set_class < Hyrax::Resource
+
+      Hyrax::AdministrativeSet
     end
 
     attr_writer :id_field
@@ -1487,26 +1626,14 @@ module Hyrax
       @donation_url ||= nil
     end
 
-    def use_solr_graph_for_collection_nesting
-      ActiveModel::Type::Boolean.new.cast(ENV.fetch('HYRAX_USE_SOLR_GRAPH_NESTING', false))
-    end
-
-    attr_accessor :nested_relationship_reindexer
-    def default_nested_relationship_reindexer
-      ->(id:, extent:) { rescued_nested_relationship_reindexer(id: id, extent: extent) }
-    end
-
     attr_writer :solr_select_path
     def solr_select_path
       @solr_select_path ||= ActiveFedora.solr_config.fetch(:select_path, 'select')
     end
 
-    def rescued_nested_relationship_reindexer(id:, extent:)
-      begin
-        Samvera::NestingIndexer.reindex_relationships(id: id, extent: extent)
-      rescue Ldp::Gone => e
-        Rails.logger.error "Samvera::NestingIndexer.reindex_relationships experienced Ldp::Gone error with work #{id}"
-      end
+    attr_writer :solr_default_method
+    def solr_default_method
+      @solr_default_method ||= :post
     end
 
     # A configuration point for changing the available range for
@@ -1521,6 +1648,35 @@ module Hyrax
     # @return [Array<Integer>]
     def range_for_number_of_results_to_display_per_page
       @range_for_number_of_results_to_display_per_page ||= [10, 20, 50, 100]
+    end
+
+    attr_writer :visibility_map
+    # A mapping from visibility string values to permissions; the default and
+    # reference implementation is provided by {Hyrax::VisibilityMap}.
+    #
+    # @return [Hyrax::VisibilityMap]
+    # @see Hyrax::VisibilityReader
+    # @see Hyrax::VisibilityWriter
+    def visibility_map
+      @visibility_map ||= Hyrax::VisibilityMap.instance
+    end
+
+    attr_writer :simple_schema_loader_config_search_paths
+    # A configuration for modifying the SimpleSchemaLoader#config_search_paths
+    # which will allow gems to add their own metadata yaml files and easily keep
+    # them within the gem.
+    #
+    # @return [Array<Pathname>]
+    # @see Hyrax::SimpleSchemaLoader#config_search_paths
+    # @example
+    #   Hyrax.config do |config|
+    #     config.simple_schema_loader_config_search_paths.unshift(HykuKnapsack::Engine.root)
+    #   end
+    #
+    #   Hyrax.config.simple_schema_loader_config_search_paths
+    #   => [#<Pathname:/app/samvera>, #<Pathname:/app/samvera/hyrax-webapp>, #<Pathname:/app/samvera/hyrax-webapp/gems/hyrax>]
+    def simple_schema_loader_config_search_paths
+      @simple_schema_loader_config_search_paths ||= [Rails.root, Hyrax::Engine.root]
     end
 
     private

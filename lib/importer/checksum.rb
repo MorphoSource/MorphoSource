@@ -6,7 +6,7 @@ module Importer
       File.open(checksum_filepath, 'r') do |file|
         file.each_line do |line|
           checksum, path = line.chomp.split(' ',2)
-          find_or_initialize_by(path: path).update_attributes!(value: checksum)
+          find_or_initialize_by(path: path).update!(value: checksum)
         end
       end
     end

@@ -408,7 +408,7 @@ Rails.application.routes.draw do
       post 'dashboard/collections/:id/remove/:member_id', to: 'collections#remove_member', as: 'collection_remove_member'
       post 'dashboard/collections/:id/batch_remove', to: 'collections#batch_remove_members_ajax', as: 'collection_batch_remove_member'
 
-      # Create project within team
+      # Create or add project as team/organization subcollection
       get 'collections/:parent_id/under', controller: 'nest_collections', action: 'create_collection_under', as: 'create_subcollection_under'
       post 'collections/:parent_id/under', controller: 'nest_collections', action: 'create_relationship_under', as: 'create_nest_collection_under'
       post 'collections/:parent_id/remove_child/:child_id', controller: 'nest_collections', action: 'remove_relationship_under', as: 'remove_child_relationship_under'
@@ -559,6 +559,7 @@ Rails.application.routes.draw do
       get '/specimens/facet/:id', to: 'biological_specimens#facet', as: 'dashboard_specimens_facet'
       get '/cultural_heritage_objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'dashboard_chos_facet'
       get '/sequential-section-lists/facet/:id', to: 'collections/media_lists/sequential_section_lists#facet', as: 'dashboard_sequential_section_lists_facet'
+      get '/organizations/facet/:id', to: 'collections/organization_collections#facet', as: 'organizations_facet'
     end
 
     ### LEGACY MS1 URLS THAT REDIRECT TO CONCERN AND COLLECTION SHOW PAGES ###

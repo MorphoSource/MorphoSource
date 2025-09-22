@@ -16,7 +16,7 @@ provide :page_title, construct_page_title(@presenter.title)
   </div>
 
   <div class="row collection-header">
-    <div class="col-xs-12 col-sm-8 col-md-8 title-wrapper">
+    <div class="col-12 col-sm-8 col-md-8 title-wrapper">
       <div class="col-sm-12 col-md-12 flex">
         <div class="team-logo">
           <% unless @presenter.logo_record.blank? %>
@@ -55,7 +55,7 @@ provide :page_title, construct_page_title(@presenter.title)
       </div>
     </div>
 
-    <div class="col-xs-12 col-sm-4 col-md-4 btn-wrapper">
+    <div class="col-12 col-sm-4 col-md-4 btn-wrapper">
       <% if @collection.organization_collection? %>
         <% if @can_edit || ( current_user.present? && @collection.editors&.include?(current_user) ) %>
           <%= render 'morphosource/collections/organization_collections/about/collection_manage_buttons' %>
@@ -80,13 +80,13 @@ provide :page_title, construct_page_title(@presenter.title)
   <% end %>
 
 
-  <div class="panel panel-default tabs" role="main">
+  <div class="card panel-default tabs" role="main">
     <!-- Nav tabs -->
     <%= render 'nav_tabs' %>
     <!-- Tab panes -->
     <!-- <div class="tab-content"> -->
 
-      <div class="panel-body">
+      <div class="card-body">
         <% if @presenter.organization_collection? %>
           <%= render 'morphosource/collections/organization_collections/about/tab_about' %>
         <% else %>
@@ -98,6 +98,6 @@ provide :page_title, construct_page_title(@presenter.title)
 
     <!-- </div><!-- /tab-content -->
 
-  </div><!-- /panel panel-default tabs -->
+  </div><!-- /card panel-default tabs -->
 
 </div><!-- div hyc-container -->

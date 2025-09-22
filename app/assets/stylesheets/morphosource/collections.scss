@@ -1,4 +1,9 @@
+@import 'variables';
 @import 'shared';
+
+.ms-collection .collection-page .hyc-header {
+  margin-bottom: 0;
+}
 
 div.collection-header {
   display: flex;
@@ -6,9 +11,10 @@ div.collection-header {
   justify-content: space-between;
   margin-right: 0;
   margin-left: 0;
+  margin-bottom: 8px;
   padding: 4px 0 !important;
 
-  .btn-wrapper.col-xs-12 {
+  .btn-wrapper.col-12 {
     padding: 16px 0;
   }
 
@@ -49,7 +55,6 @@ div.collection-header {
   }
 
   .title-wrapper {
-    min-width: 67%;
     flex-grow: 1;
   }
 
@@ -59,7 +64,7 @@ div.collection-header {
 
   .collection-manage-buttons {
     display: flex;
-    width: 234px;
+    width: 240px;
     flex-grow: 0;
     justify-content: end;
     margin: 0;
@@ -69,8 +74,10 @@ div.collection-header {
       min-width: 320px !important;
       right: 0px !important;
       top: unset !important;
+      transform: none !important;
 
       .btn {
+        margin-left: 0;
         width: 100%;
         text-align: left;
         padding: 5px 5px 5px 10px;
@@ -84,10 +91,10 @@ div.collection-header {
     }
 
     .btn {
-      width: 75px;
+      width: 77px;
       border-radius: 3px;
-      margin-left: 3px;
       font-size: 14px;
+      margin-left: 3px;
     }
   }
 }
@@ -118,7 +125,7 @@ div.collection-page {
     }
   }
 
-  .collection.panel-body {
+  .collection.card-body {
     div#documents.gallery {
       margin-left: -6px;
       margin-right: -6px;
@@ -127,9 +134,9 @@ div.collection-page {
         margin-top: 15px;
         padding: 6px 6px 0 6px;
         max-height: 350px;
+        min-height: 200px;
 
         dl {
-          width: 190px;
           margin-bottom: 0;
 
           dd.text-truncate {
@@ -235,4 +242,17 @@ div.collection-page {
       padding-right: 8px;
     }
   }
+}
+
+.ms-collections-list {
+
+  .per-page-container, .showing-container {
+    
+    font-size: 11px;
+    
+    form select {
+      margin-left: 4px;
+      margin-right: 4px;
+    }
+  }   
 }

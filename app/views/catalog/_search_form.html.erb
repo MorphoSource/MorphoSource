@@ -6,41 +6,31 @@
   <div class="form-group">
     <div class="input-group">
       <%= text_field_tag :q, current_search_parameters , class: "q form-control", id: "search-field-header", placeholder: t("hyrax.search.form.q.placeholder") %>
-      <div class="input-group-btn">
-
+      <div class="input-group-append">
         <button type="submit" class="btn btn-primary" id="search-submit-header">
           <%= t('hyrax.search.button.html') %>
         </button>
 
-        <button class="btn btn-default dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
-          <span class="sr-only" data-search-element="label" style='display:contents;'><%= t("morphosource.search.form.option.media.label", application_name: application_name) %></span>
-          <span id='selected-search-label' aria-hidden="true" style='display:none;' ><%= t("morphosource.search.form.option.media.label") %></span>
-          <span class="caret"></span>
-        </button>
+        <div class="dropdown">
+          <button class="btn btn-secondary dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+            <span class="sr-only" data-search-element="label" style='display:contents;'><%= t("morphosource.search.form.option.media.label", application_name: application_name) %></span>
+            <span id='selected-search-label' aria-hidden="true" style='display:none;' ><%= t("morphosource.search.form.option.media.label") %></span>
+          </button>
 
-        <ul class="dropdown-menu pull-right">
-          <li>
-            <%= link_to t("morphosource.search.form.option.media.label", application_name: application_name), "#",
-                data: { "search-option" => main_app.media_search_path, "search-label" => t("morphosource.search.form.option.media.label") } %>
-          </li>
-          <li>
-            <%= link_to t("morphosource.search.form.option.physical_objects.label_long"), "#",
+          <div class="dropdown-menu float-right">
+            <%= link_to t("morphosource.search.form.option.media.label", application_name: application_name), "#", class: 'dropdown-item', 
+                  data: { "search-option" => main_app.media_search_path, "search-label" => t("morphosource.search.form.option.media.label") } %>
+            <%= link_to t("morphosource.search.form.option.physical_objects.label_long"), "#", class: 'dropdown-item', 
                 data: { "search-option" => main_app.object_search_path, "search-label" => t("morphosource.search.form.option.physical_objects.label_short") } %>
-          </li>
-          <li>
-            <%= link_to t("morphosource.search.form.option.organizations.label_long"), "#",
+            <%= link_to t("morphosource.search.form.option.organizations.label_long"), "#", class: 'dropdown-item', 
                 data: { "search-option" => main_app.organization_search_path, "search-label" => t("morphosource.search.form.option.organizations.label_short") } %>
-          </li>
-          <li>
-            <%= link_to t("morphosource.search.form.option.collections.label_long"), "#",
+            <%= link_to t("morphosource.search.form.option.collections.label_long"), "#", class: 'dropdown-item', 
                 data: { "search-option" => main_app.collection_search_path, "search-label" => t("morphosource.search.form.option.collections.label_short") } %>
-          </li>
-          <li>
-            <%= link_to t("morphosource.search.form.option.media_lists.label_long"), "#",
+            <%= link_to t("morphosource.search.form.option.media_lists.label_long"), "#", class: 'dropdown-item', 
                 data: { "search-option" => main_app.media_list_search_path, "search-label" => t("morphosource.search.form.option.media_lists.label_short") } %>
-          </li>
-        </ul>
-      </div><!-- /.input-group-btn -->
+          </div>
+        </div>
+      </div><!-- /.input-group-append -->
     </div><!-- /.input-group -->
   </div><!-- /.form-group -->
 <% end %>

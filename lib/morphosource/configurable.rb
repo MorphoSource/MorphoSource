@@ -74,13 +74,13 @@ module Morphosource
       end
 
       MEDIA_FORMATS = {
-        'Image' => {extensions: image_formats, label: I18n.t('morphosource.media.format_labels.image')},
-        'Video' => {extensions: video_formats, label: I18n.t('morphosource.media.format_labels.video')},
-        'CTImageSeries' => {extensions: ct_formats, label: I18n.t('morphosource.media.format_labels.ct_mri')},
-        'PhotogrammetryImageSeries' => {extensions: photogrammetry_formats, label: I18n.t('morphosource.media.format_labels.photogrammetry')},
-        'Mesh' => {extensions: mesh_formats, label: I18n.t('morphosource.media.format_labels.mesh')},
-        'Other' => {extensions: other_formats, label: I18n.t('morphosource.media.format_labels.other')},
-        'SequentialSectionImageSeries' => {extensions: sequential_section_formats, label: I18n.t('morphosource.media.format_labels.sequential_section')}
+        'Image' => {extensions: image_formats, label_key: 'morphosource.media.format_labels.image'},
+        'Video' => {extensions: video_formats, label_key: 'morphosource.media.format_labels.video'},
+        'CTImageSeries' => {extensions: ct_formats, label_key: 'morphosource.media.format_labels.ct_mri'},
+        'PhotogrammetryImageSeries' => {extensions: photogrammetry_formats, label_key: 'morphosource.media.format_labels.photogrammetry'},
+        'Mesh' => {extensions: mesh_formats, label_key: 'morphosource.media.format_labels.mesh'},
+        'Other' => {extensions: other_formats, label_key: 'morphosource.media.format_labels.other'},
+        'SequentialSectionImageSeries' => {extensions: sequential_section_formats, label_key: 'morphosource.media.format_labels.sequential_section'}
       }
 
     end

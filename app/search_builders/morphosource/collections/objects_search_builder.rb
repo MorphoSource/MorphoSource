@@ -1,6 +1,7 @@
 module Morphosource
   module Collections
     class ObjectsSearchBuilder < Hyrax::WorksSearchBuilder
+      include Morphosource::SearchBuilderBehavior
       # override filter_collection_facet_for_access
       include Morphosource::Facets::CollectionsSearchBuilderBehavior
       # enable f.field facet format

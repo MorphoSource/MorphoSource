@@ -1,13 +1,15 @@
+# Applies to organization works only
+# Remove when all organization works are migrated to organization collections
 module Morphosource
   module Organizations
     class OrganizationInformationService
       include SolrHelper
-      
+
       # Returns derived information about collection (counts, media/category, etc.) with fast solr searches
-    
-      attr_reader :scope, :solr, :facet_results, :media_count, :physical_object_ids, 
+
+      attr_reader :scope, :solr, :facet_results, :media_count, :physical_object_ids,
         :bso_ids, :cho_ids, :n_idigbio, :info
-      delegate :repository, to: :scope
+      delegate :blacklight_config, to: :scope
 
       SORTABLE_TITLE_FIELD = ActiveFedora.index_field_mapper.solr_name('title', :stored_sortable)
 
@@ -28,7 +30,7 @@ module Morphosource
       end
 
       def organization_information
-        @info = { 
+        @info = {
           'counts' => {
             'media' => media_count,
             'po' => physical_object_ids.length
@@ -39,7 +41,7 @@ module Morphosource
         info['media_groups'] =  { 'organization' => {} }.merge(facet_media_groups) if media_count.present?
         info['bso_groups'] = { 'organization' => {} }.merge(bso_source_groups) if @bso_ids.present?
         info['cho_groups'] = { 'organization' => {} } if @cho_ids.present?
-        info     
+        info
       end
 
       def solrize_filter_params(params = {})
@@ -69,7 +71,7 @@ module Morphosource
           }
           solr.get_docs(nil, params).map(&:values).flatten
         end
-        
+
         def po_core_fq
           if physical_object_ids.present? && @organization.organization_type&.first == "Scanning Facility"
             "(#{assemble_or_query('id', physical_object_ids)})"
@@ -91,7 +93,7 @@ module Morphosource
             solrize('media_type', :stored_searchable),
             solrize('fileset_accessibility', :stored_searchable)
           ]
-          params = { 
+          params = {
             rows: 0,
             fq: [
               media_core_fq,
@@ -109,12 +111,12 @@ module Morphosource
             solrize('fileset_accessibility', :stored_searchable),
             solrize('physical_object_id', :stored_searchable),
           ]
-          
+
           fq = [
             media_core_fq,
             "#{solrize('has_model', :symbol)}:Media",
           ]
-          
+
           result = query_solr_with_fq(query_builder: works_search_builder, fq_params: fq, facet_fields: facet_fields)
           return facet_field_hash(result, facet_fields), result['response']['numFound'].to_i
         end
@@ -139,7 +141,7 @@ module Morphosource
             query_builder.merge('facet.limit' => -1)
             query_builder.merge(rows: 99999)
             #repository.search(query_builder.with(query_params).query)
-            repository.search(query_builder.query)
+            blacklight_config.repository.search(query_builder.query)
           ensure
             query_builder.merge(fq: initial_fq)
             query_builder.merge('facet.field' => initial_facet_fields)
@@ -172,7 +174,7 @@ module Morphosource
             fq: [
               assemble_or_query('id', @bso_ids.map { |id| prepare_value(id) } ),
               "#{solrize('idigbio_uuid', :stored_searchable)}:*"
-            ] 
+            ]
           }
           solr.get(nil, params)
           solr.count
@@ -214,11 +216,11 @@ module Morphosource
 
         def bso_source_groups
           if n_idigbio.present?
-            { 'source' => { 
-              'idigbio' => n_idigbio, 
+            { 'source' => {
+              'idigbio' => n_idigbio,
               'user' => bso_ids.length - n_idigbio
             } }
-          else 
+          else
             {}
           end
         end
@@ -231,7 +233,7 @@ module Morphosource
             "#{solrize('fileset_accessibility', :stored_searchable)}:#{value}"
           when 'm_organization'
             assemble_or_query(
-              solrize('physical_object_id', :stored_searchable), 
+              solrize('physical_object_id', :stored_searchable),
               po_ids_by_collection_organization(value)
             )
           when 'b_source'

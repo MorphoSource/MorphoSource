@@ -1,27 +1,26 @@
-<ul class="nav nav-tabs" role="tablist">
-  <li role="presentation" class=<%= active_tab?(:details) %>>
-    <a href= <%= details_tab_url(@collection) %> aria-controls="details" role="tab">
+<ul class="nav nav-tabs pt-0" role="tablist">
+  <li role="presentation" class="nav-item <%= active_tab?(:details) %>">
+    <a class="nav-link <%= active_tab?(:details) %>" href="<%= details_tab_url(@collection) %>" aria-controls="details" role="tab">
       <i class="fas fa-newspaper"></i> DETAILS
     </a>
   </li>
 
   <% if @collection.team? %>
-    <li role="presentation" class=<%= active_tab?(:projects) %>>
-      <a href=<%= projects_tab_url(@collection) %> aria-controls="team_projects" role="tab">
+    <li role="presentation" class="nav-item <%= active_tab?(:projects) %>">
+      <a class="nav-link <%= active_tab?(:projects) %>" href="<%= projects_tab_url(@collection) %>" aria-controls="team_projects" role="tab">
         <i class="fas fa-folder-open"></i> TEAM PROJECTS
       </a>
     </li>
-    <li role="presentation" class=<%= active_tab?(:organization) %>>
-      <a href=<%= organization_tab_url(@collection) %> aria-controls="organization" role="tab">
+    <li role="presentation" class="nav-item <%= active_tab?(:organization) %>">
+      <a class="nav-link <%= active_tab?(:organization) %>" href="<%= organization_tab_url(@collection) %>" aria-controls="organization" role="tab">
         <i class="fas fa-university"></i> ORGANIZATION
       </a>
     </li>
   <% end %>
 
-  <li role="presentation" class=<%= active_tab?(:members) %>>
-    <a href= <%= members_tab_url(@collection) %> aria-controls="members" role="tab">
+  <li role="presentation" class="nav-item <%= active_tab?(:members) %>">
+    <a class="nav-link <%= active_tab?(:members) %>" href="<%= members_tab_url(@collection) %>" aria-controls="members" role="tab">
       <i class="fas fa-users-cog"></i> MEMBERS
     </a>
   </li>
-
 </ul>

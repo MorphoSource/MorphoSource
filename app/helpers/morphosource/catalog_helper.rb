@@ -6,6 +6,12 @@ module Morphosource::CatalogHelper
     end.join.html_safe
   end
 
+  def line_clamp(args)
+    args[:value].map do |value|
+      tag.div(sanitize(value), class: "text-truncate-lines two-lines", style: "max-width: unset; line-height: initial;" )
+    end.join.html_safe
+  end
+
   # media index metadata displays title linked to physical object
   def link_to_object(args)
     return nil unless args[:document]["physical_object_id_tesim"].present?

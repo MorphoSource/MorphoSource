@@ -7,7 +7,7 @@
 
   <td>
     <%= link_to [main_app, document], class: 'media-left', 'aria-hidden' => true do %>
-      <%= render_thumbnail_tag document, { class: 'hidden-xs file_listing_thumbnail' }, { suppress_link: true } %>
+      <%= render_thumbnail_tag document, { class: 'd-none d-sm-block file_listing_thumbnail' }, { suppress_link: true } %>
     <% end %>
   </td>
   <td>
@@ -26,10 +26,10 @@
             </span>
             <%= document.title_or_label %>
             <% if item.approved? == true %>
-              <span class="label" style="background: teal;">Download Approved</span>
+              <span class="badge" style="background: teal;">Download Approved</span>
             <% end %>
             <% if item.user_is_reviewer_or_has_ownership? %>
-              <span class="label" style="background: blue;">Your Media</span>
+              <span class="badge" style="background: blue;">Your Media</span>
             <% end %>
           <% end %>
           <br />
@@ -49,7 +49,7 @@
   <td><%= date(item,'expired') %></td>
   <td>
     <% if document["file_set_ids_ssim"].present? %>
-      <a class="btn-download-item btn btn-info btn-xs" data-media-id="<%= document.id %>" data-item-id="<%= item.id %>" href="javascript:void(0)">Download Item</a>
+      <a class="btn-download-item btn btn-info btn-sm" data-media-id="<%= document.id %>" data-item-id="<%= item.id %>" href="javascript:void(0)">Download Item</a>
     <% end %>
   </td>
   <%= render 'morphosource/my/cart/download_agreements_container', presenter: presenter, item_id: item.id %>

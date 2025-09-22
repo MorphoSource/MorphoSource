@@ -1,5 +1,4 @@
 require 'rails_helper'
-require 'equivalent-xml'
 
 RSpec.describe Hyrax::Renderers::ShowcaseDefaultAttributeRenderer do
 
@@ -8,8 +7,8 @@ RSpec.describe Hyrax::Renderers::ShowcaseDefaultAttributeRenderer do
 
     context 'Display decimal with significant digits' do
       let(:value)                      { '0.123456789' }
-      let(:rendered_default)              {  "<div class='row'><div class='col-xs-6 showcase-label'>My field</div><div class='col-xs-6 showcase-value '>0.123456789</div></div>" }
-      let(:rendered_signif)              {  "<div class='row'><div class='col-xs-6 showcase-label'>My field</div><div class='col-xs-6 showcase-value '>0.123457</div></div>" }
+      let(:rendered_default)              {  "<div class='row'><div class='col-6 showcase-label'>My field</div><div class='col-6 showcase-value '>0.123456789</div></div>" }
+      let(:rendered_signif)              {  "<div class='row'><div class='col-6 showcase-label'>My field</div><div class='col-6 showcase-value '>0.123457</div></div>" }
       let(:field)                      { :my_field }
       let(:renderer)                   { described_class.new(field, value) }
       let(:renderer_with_signif_digits)                   { described_class.new(field, value, number_with_precision: 6) }

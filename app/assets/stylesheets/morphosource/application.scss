@@ -1,0 +1,180 @@
+// Application-wide overrides, restore styles changed in Bootstrap 4 to our desired defaults
+
+a {
+  text-decoration: none;
+}
+
+a:hover, a:focus {
+  color: #23527c;
+  text-decoration: underline;
+}
+
+a.btn:hover, a.btn:focus {
+  text-decoration: none;
+}
+
+body {
+  font-size: 14px;
+  line-height: 1.428571429;
+}
+
+h1, .h1, h2, .modal-title, .h2, h3, .h3 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+
+.alert {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-direction: row-reverse;
+  margin-left: 0;
+  margin-right: 0;
+}
+
+// applies showcase2 "morphosource" style small square badges sitewide
+.badge {
+  display: inline;
+  padding: .2em .6em .3em;
+  font-weight: 700;
+  font-size: 10px;
+  line-height: 1;
+  color: #fff;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  border-radius: 0;
+}
+
+// for bootstrap default-ish badges with larger font and rounded edges
+.badge-bootstrap-default {
+  font-size: 12px;
+  line-height: 14px;
+}
+
+.badge-bootstrap-default.badge-pill {
+  padding-right: 0.6em;
+  padding-left: 0.6em;
+  border-radius: 10rem;
+}
+
+.btn {
+  font-size: 14px;
+  line-height: 1.428571429;
+}
+
+// Hyrax 5 change makes remove buttons on select2 invisible, this reverses that
+.controlled_vocabulary .listing li .remove {
+  display: initial;
+}
+
+.dropdown-menu {
+  font-size: 14px;
+}
+
+.dropzone {
+  height: 50px;
+  line-height: 50px;
+}
+
+.form-control {
+  font-size: 14px;
+  height: 34px;
+  line-height: 1.428571429;
+}
+
+.input-group.input-append.field-wrapper {
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+// Hyrax has a strange left margin on multi-value field controls, fixing it
+.multi_value .field-controls, .controlled_vocabulary .field-controls {
+  margin-left: 2px;
+}
+
+.multi_value .listing, .controlled_vocabulary .listing {
+  max-width: unset;
+}
+
+// Hyrax has a strange width restriction on multi-value fields of 83.333%, makes field look constricted
+.multi_value .listing li:first-of-type, .controlled_vocabulary .listing li:first-of-type {
+  width: unset;
+}
+
+.multi_value .listing li:not(:first-of-type), .controlled_vocabulary .listing li:not(:first-of-type) {
+  margin-top: 5px;
+}
+
+.navbar + .container {
+  padding-top: 20px !important; // todo5 this is questionable, may not work on non-homepage pages
+  padding-bottom: 0 !important;
+}
+
+div.navbar-toggler {
+  min-width: 74px;
+  padding-left: 15px;
+  padding-right: 15px;
+}
+
+header + .container {
+  padding-top: 20px !important; // todo5 also questionable
+}
+
+/* Bootstrap 5 style dropdown menu alignment helpers
+  (can be removed after updating to Bootstrap 5) */
+
+  .dropdown-menu-start {
+  left: 0 !important;
+  right: auto !important;
+}
+
+.dropdown-menu-end {
+  right: 0 !important;
+  left: auto !important;
+}
+
+@media (min-width: 576px) {
+  .dropdown-menu-sm-start {
+    left: 0 !important;
+    right: auto !important;
+  }
+  .dropdown-menu-sm-end {
+    right: 0 !important;
+    left: auto !important;
+  }
+}
+
+@media (min-width: 768px) {
+  .dropdown-menu-md-start {
+    left: 0 !important;
+    right: auto !important;
+  }
+  .dropdown-menu-md-end {
+    right: 0 !important;
+    left: auto !important;
+  }
+}
+
+@media (min-width: 992px) {
+  .dropdown-menu-lg-start {
+    left: 0 !important;
+    right: auto !important;
+  }
+  .dropdown-menu-lg-end {
+    right: 0 !important;
+    left: auto !important;
+  }
+}
+
+@media (min-width: 1200px) {
+  .dropdown-menu-xl-start {
+    left: 0 !important;
+    right: auto !important;
+  }
+  .dropdown-menu-xl-end {
+    right: 0 !important;
+    left: auto !important;
+  }
+}
+/* end Bootstrap 5 style dropdown menu alignment helpers */

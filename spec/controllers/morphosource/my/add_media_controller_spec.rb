@@ -4,7 +4,7 @@ include Warden::Test::Helpers
 
 RSpec.describe Morphosource::My::AddMediaController, type: :controller do
   let(:user)                    { User.create(email: 'user@email.com', password: 'password') }
-  let(:project)                 { Collection.create(title: ['Project'], collection_type_gid: project_collection_type.gid, depositor: user.ms_id) }
+  let(:project)                 { Collection.create(title: ['Project'], collection_type_gid: project_collection_type.to_global_id, depositor: user.ms_id) }
 
   describe '#index' do
     context 'user is not signed in' do

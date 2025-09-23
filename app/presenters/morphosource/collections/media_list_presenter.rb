@@ -2,7 +2,7 @@ module Morphosource
   module Collections
     class MediaListPresenter < Morphosource::CollectionPresenter
 
-      delegate :list_type, to: :solr_document
+      delegate :list_type, :doi, to: :solr_document
  
       def edit_path
         Rails.application.routes.url_helpers.media_list_edit_path(id, locale: I18n.locale)

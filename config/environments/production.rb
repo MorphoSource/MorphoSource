@@ -121,8 +121,8 @@ Rails.application.configure do
   # https://www.morphosource.org/projects/000358382?locale=en
   # Primate Phenotypes (media list) ### temporarily remove
   # https://www.morphosource.org/media-lists/000656244?locale=en
-  # ETH Zurich Library
+  # ETH Zurich Library ### temporarily remove
   # https://www.morphosource.org/organizations/000710240?locale=en
-  config.featured_project_ids = ['000394988','000368762','000392215','000474834','000358382','000710240']
+  config.featured_project_ids = ['000394988','000368762','000392215','000474834','000358382']
 
 end

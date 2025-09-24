@@ -83,8 +83,4 @@ Rails.application.configure do
   config.reload_classes_only_on_change = true
 
   config.session_store :active_record_store, :key => '_morpho_source_sf_session'
-
-  # these collections appear in the featured projects section on the homepage. If this is empty, the homepage shows 6 random collections that the user has access to view.
-  config.featured_project_ids = []
-
 end

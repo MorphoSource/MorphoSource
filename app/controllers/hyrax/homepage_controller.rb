@@ -11,7 +11,7 @@ class Hyrax::HomepageController < ApplicationController
 
   def index
     @presenter = presenter_class.new(current_ability, collections)
-    get_featured_projects
+    get_featured_collections
   end
 
   private
@@ -25,17 +25,21 @@ class Hyrax::HomepageController < ApplicationController
     []
   end
 
-  def get_featured_projects
-    @featured_projects ||= begin
-      project_ids = Rails.application.config.featured_project_ids
-      if project_ids.blank?
+  def get_featured_collections
+    @featured_collections ||= begin
+      collection_ids = Morphosource::Forms::Admin::Homepage.new.featured_collections
+      if collection_ids.blank?
         collections(rows: 6)
       else
-        project_ids.each_with_object([]) do |id, projects|
-          projects << ::SolrDocument.find(id)
+        collection_ids.each_with_object([]) do |id, projects|
+          begin
+            projects << ::SolrDocument.find(id)
+          rescue
+            next
+          end
         end
       end
-      rescue Blacklight::Exceptions::RecordNotFound
+    rescue Blacklight::Exceptions::RecordNotFound
       collections(rows: 6)
     end
   end

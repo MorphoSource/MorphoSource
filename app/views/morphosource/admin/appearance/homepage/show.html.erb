@@ -1,0 +1,26 @@
+<% provide :page_header do %>
+  <h1><span class="fa fa-home" aria-hidden="true"></span> Homepage </h1>
+<% end %>
+<% provide :page_title, "Homepage" %>
+
+<% content_for :body_css_classes do %>banner-config<% end %>
+
+<%= simple_form_for @form, html: { id: "banner-form" }, url: admin_homepage_path do |f| %>
+  <div class="form-group" style="display: flex; flex-direction: row-reverse;">
+    <%= f.submit class: 'btn btn-primary', style: "margin-left:10px;"%>
+  </div>
+  <h2>Configure Featured Collections</h2>
+  <p>Enter up to 10 collection IDs (ex: 000123456) to feature on the homepage. These will be displayed in the order below.</p>
+  <p>Removing a collection ID will shift the following collections up on save.</p>
+  <div class="card">
+    <div class="card-body">
+      <% @form.class::SORTED_COLLECTIONS.each do |collection| %>
+        <%= f.input collection,
+            label: collection.titleize,
+            hint: current_featured_collection_title(@form.send(collection)),
+            include_blank: false,
+            required: false %>
+      <% end %>
+    </div>
+  </div>
+<% end %>

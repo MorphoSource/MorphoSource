@@ -50,11 +50,6 @@ module Morphosource
       ml.join(', ').html_safe
     end
 
-    def doi_badge
-      return '' if doi.nil? || doi.empty?
-      content_tag(:span, "DOI: #{doi.first}", class: "badge badge-info")
-    end
-
     def id_badge
       content_tag(:span, "ID: #{id}", class: "badge badge-info")
     end

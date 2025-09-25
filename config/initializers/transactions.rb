@@ -8,15 +8,15 @@ class ApplicationContainerOverrides
       Morphosource::Transactions::Taxonomy::WorkCreate.new
     end
 
-    ops.register. 'set_source' do
+    ops.register 'set_source' do
       Morphosource::Transactions::Taxonomy::Steps::SetSource.new
     end
 
-    ops.register. 'set_title' do
+    ops.register 'set_title' do
       Morphosource::Transactions::Taxonomy::Steps::SetTitle.new
     end
 
-    ops.register. 'set_trusted' do
+    ops.register 'set_trusted' do
       Morphosource::Transactions::Taxonomy::Steps::SetTrusted.new
     end
 

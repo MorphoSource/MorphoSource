@@ -44,7 +44,7 @@ attributes:
       required: false
       primary: true
       multiple: true
-    predicate: ::RDF::Vocab::DWC.kingdom
+    predicate: RDF::Vocab::DWC.kingdom
   taxonomy_phylum:
     type: string
     multiple: true
@@ -55,7 +55,7 @@ attributes:
       required: false
       primary: true
       multiple: true
-    predicate: ::RDF::Vocab::DWC.phylum
+    predicate: RDF::Vocab::DWC.phylum
   taxonomy_superclass:
     type: string
     multiple: true
@@ -77,7 +77,7 @@ attributes:
       required: false
       primary: true
       multiple: true
-    predicate: ::RDF::Vocab::DWC.class
+    predicate: RDF::Vocab::DWC.class
   taxonomy_subclass:
     type: string
     multiple: true
@@ -110,7 +110,7 @@ attributes:
       required: false
       primary: true
       multiple: true
-    predicate: ::RDF::Vocab::DWC.order
+    predicate: RDF::Vocab::DWC.order
   taxonomy_suborder:
     type: string
     multiple: true
@@ -143,7 +143,7 @@ attributes:
       required: false
       primary: true
       multiple: true
-    predicate: ::RDF::Vocab::DWC.family
+    predicate: RDF::Vocab::DWC.family
   taxonomy_subfamily:
     type: string
     multiple: true
@@ -176,7 +176,7 @@ attributes:
       required: false
       primary: true
       multiple: true
-    predicate: ::RDF::Vocab::DWC.genus
+    predicate: RDF::Vocab::DWC.genus
   taxonomy_subgenus:
     type: string
     multiple: true
@@ -187,7 +187,7 @@ attributes:
       required: false
       primary: true
       multiple: true
-    predicate: ::RDF::Vocab::DWC.subgenus
+    predicate: RDF::Vocab::DWC.subgenus
   taxonomy_species:
     type: string
     multiple: true
@@ -220,7 +220,7 @@ attributes:
       required: false
       primary: false
       multiple: true
-    predicate: ::RDF::Vocab::DWC.taxonomicStatus
+    predicate: RDF::Vocab::DWC.taxonomicStatus
   gbif_key:
     type: string
     multiple: true

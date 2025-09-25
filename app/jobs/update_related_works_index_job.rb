@@ -7,12 +7,12 @@ class UpdateRelatedWorksIndexJob < Hyrax::ApplicationJob
 
   def perform(work_ids)
     return unless work_ids.present?
-    
+
     if Collection.exists?(work_ids.first)
       reindex_collections(work_ids)
     else
       work_ids.each do |work_id|
-        UpdateWorkIndexJob.perform_later(work_id) if ::ActiveFedora::Base.exists?(work_id)
+        UpdateWorkIndexJob.perform_later(work_id)
       end
     end
   end

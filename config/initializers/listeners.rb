@@ -1,0 +1,1 @@
+Hyrax.publisher.subscribe(Morphosource::Listeners::IndexRelatedWorksListener.new)

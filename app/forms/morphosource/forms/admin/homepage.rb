@@ -32,7 +32,7 @@ module Morphosource
         define_sorted_collections
 
         def featured_collections
-          block_for(:featured_collections, nil).split(",")
+          block_for(:featured_collections, "").split(",")
         end
       end
     end

@@ -26,6 +26,14 @@ if Hyrax.config.valkyrie_transition?
     )
     Valkyrie.config.metadata_adapter = :freyja
     Hyrax.config.query_index_from_valkyrie = true
+
+    Valkyrie::StorageAdapter.register(
+      Valkyrie::Storage::VersionedDisk.new(base_path: Rails.root.join("storage", "files"),
+        file_mover: FileUtils.method(:cp)),
+      :disk
+    )
+    Valkyrie.config.storage_adapter = :disk
+
     Hyrax.config.index_adapter = :solr_index
   end
 end

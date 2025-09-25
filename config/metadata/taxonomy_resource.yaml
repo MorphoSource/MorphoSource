@@ -25,7 +25,6 @@
 attributes:
   taxonomy_domain:
     type: string
-    # predicate: https://www.morphosource.org/terms/domain
     multiple: true
     index_keys:
      - "taxonomy_domain_tesim"
@@ -34,9 +33,9 @@ attributes:
       required: false
       primary: true
       multiple: true
+    predicate: https://www.morphosource.org/terms/domain
   taxonomy_kingdom:
     type: string
-    # predicate: ::RDF::Vocab::DWC.kingdom
     multiple: true
     index_keys:
      - "taxonomy_kingdom_tesim"
@@ -45,9 +44,9 @@ attributes:
       required: false
       primary: true
       multiple: true
+    predicate: ::RDF::Vocab::DWC.kingdom
   taxonomy_phylum:
     type: string
-    # predicate: ::RDF::Vocab::DWC.phylum
     multiple: true
     index_keys:
      - "taxonomy_phylum_tesim"
@@ -56,9 +55,9 @@ attributes:
       required: false
       primary: true
       multiple: true
+    predicate: ::RDF::Vocab::DWC.phylum
   taxonomy_superclass:
     type: string
-    # predicate: https://www.morphosource.org/terms/superclass
     multiple: true
     index_keys:
      - "taxonomy_superclass_tesim"
@@ -67,9 +66,9 @@ attributes:
       required: false
       primary: true
       multiple: true
+    predicate: https://www.morphosource.org/terms/superclass
   taxonomy_class:
     type: string
-    # predicate: ::RDF::Vocab::DWC.class
     multiple: true
     index_keys:
      - "taxonomy_class_tesim"
@@ -78,9 +77,9 @@ attributes:
       required: false
       primary: true
       multiple: true
+    predicate: ::RDF::Vocab::DWC.class
   taxonomy_subclass:
     type: string
-    # predicate: https://www.morphosource.org/terms/subclass
     multiple: true
     index_keys:
      - "taxonomy_subclass_tesim"
@@ -89,9 +88,9 @@ attributes:
       required: false
       primary: true
       multiple: true
+    predicate: https://www.morphosource.org/terms/subclass
   taxonomy_superorder:
     type: string
-    # predicate: https://www.morphosource.org/terms/superorder
     multiple: true
     index_keys:
      - "taxonomy_superorder_tesim"
@@ -100,9 +99,9 @@ attributes:
       required: false
       primary: true
       multiple: true
+    predicate: https://www.morphosource.org/terms/superorder
   taxonomy_order:
     type: string
-    # predicate: ::RDF::Vocab::DWC.order
     multiple: true
     index_keys:
      - "taxonomy_order_tesim"
@@ -111,9 +110,9 @@ attributes:
       required: false
       primary: true
       multiple: true
+    predicate: ::RDF::Vocab::DWC.order
   taxonomy_suborder:
     type: string
-    # predicate: https://www.morphosource.org/terms/suborder
     multiple: true
     index_keys:
      - "taxonomy_suborder_tesim"
@@ -122,9 +121,9 @@ attributes:
       required: false
       primary: true
       multiple: true
+    predicate: https://www.morphosource.org/terms/suborder
   taxonomy_superfamily:
     type: string
-    # predicate: https://www.morphosource.org/terms/superfamily
     multiple: true
     index_keys:
      - "taxonomy_superfamily_tesim"
@@ -133,9 +132,9 @@ attributes:
       required: false
       primary: true
       multiple: true
+    predicate: https://www.morphosource.org/terms/superfamily
   taxonomy_family:
     type: string
-    # predicate: ::RDF::Vocab::DWC.family
     multiple: true
     index_keys:
      - "taxonomy_family_tesim"
@@ -144,9 +143,9 @@ attributes:
       required: false
       primary: true
       multiple: true
+    predicate: ::RDF::Vocab::DWC.family
   taxonomy_subfamily:
     type: string
-    # predicate: https://www.morphosource.org/terms/subfamily
     multiple: true
     index_keys:
      - "taxonomy_subfamily_tesim"
@@ -155,9 +154,9 @@ attributes:
       required: false
       primary: true
       multiple: true
+    predicate: https://www.morphosource.org/terms/subfamily
   taxonomy_tribe:
     type: string
-    # predicate: https://www.morphosource.org/terms/tribe
     multiple: true
     index_keys:
      - "taxonomy_tribe_tesim"
@@ -166,9 +165,9 @@ attributes:
       required: false
       primary: true
       multiple: true
+    predicate: https://www.morphosource.org/terms/tribe
   taxonomy_genus:
     type: string
-    # predicate: ::RDF::Vocab::DWC.genus
     multiple: true
     index_keys:
      - "taxonomy_genus_tesim"
@@ -177,9 +176,9 @@ attributes:
       required: false
       primary: true
       multiple: true
+    predicate: ::RDF::Vocab::DWC.genus
   taxonomy_subgenus:
     type: string
-    # predicate: ::RDF::Vocab::DWC.subgenus
     multiple: true
     index_keys:
      - "taxonomy_subgenus_tesim"
@@ -188,9 +187,9 @@ attributes:
       required: false
       primary: true
       multiple: true
+    predicate: ::RDF::Vocab::DWC.subgenus
   taxonomy_species:
     type: string
-    # predicate: https://www.morphosource.org/terms/species
     multiple: true
     index_keys:
      - "taxonomy_species_tesim"
@@ -199,9 +198,9 @@ attributes:
       required: false
       primary: true
       multiple: true
+    predicate: https://www.morphosource.org/terms/species
   taxonomy_subspecies:
     type: string
-    # predicate: https://www.morphosource.org/terms/subspecies
     multiple: true
     index_keys:
      - "taxonomy_subspecies_tesim"
@@ -210,9 +209,9 @@ attributes:
       required: false
       primary: true
       multiple: true
+    predicate: https://www.morphosource.org/terms/subspecies
   trusted:
     type: string
-    # predicate: ::RDF::Vocab::DWC.taxonomicStatus
     multiple: true
     index_keys:
      - "trusted_tesim"
@@ -221,9 +220,9 @@ attributes:
       required: false
       primary: false
       multiple: true
+    predicate: ::RDF::Vocab::DWC.taxonomicStatus
   gbif_key:
     type: string
-    # predicate: https://www.morphosource.org/terms/gbifKey
     multiple: true
     index_keys:
      - "gbif_key_tesim"
@@ -232,5 +231,4 @@ attributes:
       required: false
       primary: false
       multiple: true
-
-
+    predicate: https://www.morphosource.org/terms/gbifKey

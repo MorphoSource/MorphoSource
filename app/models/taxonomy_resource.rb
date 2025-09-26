@@ -6,6 +6,9 @@ class TaxonomyResource < Hyrax::Work
   include Hyrax::Schema(:basic_metadata)
   include Hyrax::Schema(:taxonomy_resource)
 
+  delegate :download_groups, :download_groups=,
+           :download_users,  :download_users=, to: :permission_manager
+
   def short_title
     ranks = [:taxonomy_genus, :taxonomy_subgenus, :taxonomy_species, :taxonomy_subspecies]
     title = ranks.map { |rank| self.send(rank).first }.compact.join(' ')
@@ -27,7 +30,7 @@ class TaxonomyResource < Hyrax::Work
 
   # ToDoValk: Replace with persister method when BiologicalSpecimen gets Valkyrized
   def objects
-    BiologicalSpecimen.where(taxonomy_id: id).to_a
+    BiologicalSpecimen.where(taxonomy_id: id.to_s).to_a
   end
 
   def media

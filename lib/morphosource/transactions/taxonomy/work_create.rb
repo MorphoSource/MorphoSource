@@ -3,7 +3,7 @@ module Morphosource
     module Taxonomy
       ##
       # Creates a Taxonomy Work from a ChangeSet
-      class WorkCreate < Transaction
+      class WorkCreate < Hyrax::Transactions::Transaction
         DEFAULT_STEPS = ['change_set.set_default_admin_set',
                         'change_set.ensure_admin_set',
                         'change_set.set_user_as_depositor',
@@ -19,7 +19,7 @@ module Morphosource
 
         ##
         # @see Hyrax::Transactions::Transaction
-        def initialize(container: Container, steps: DEFAULT_STEPS)
+        def initialize(container: Hyrax::Transactions::Container, steps: DEFAULT_STEPS)
           super
         end
       end

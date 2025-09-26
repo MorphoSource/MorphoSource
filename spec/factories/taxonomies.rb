@@ -1,4 +1,12 @@
 FactoryBot.define do
+  # Valkyrie Taxonomy resource work
+  factory :taxonomy_resource, class: TaxonomyResource do
+    title       { ["example taxonomy title"] }
+    visibility  { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC }
+    depositor   { nil }
+  end
+
+  # ActiveFedora Taxonomy work
   factory :taxonomy, class: Taxonomy do
     # MorphoSource FactoryBehavior methods
     # see config/initializers/factory_bot.rb

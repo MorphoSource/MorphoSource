@@ -316,6 +316,7 @@ namespace :morphosource do
   end
 
   desc 'Transfer Physical Object Taxonomy parent to PO taxonomy_id metadata property'
+  # todovalk: fix this
   task :transfer_po_parent_taxonomy_to_metadata => :environment do
     BiologicalSpecimen.find_each do |b|
       taxonomy_id = b.taxonomy_id + b.
@@ -371,6 +372,7 @@ namespace :morphosource do
   end
 
   desc 'Dissolve parent/child relationships between taxonomies and objects'
+  # todovalk: fix this
   task :remove_taxonomy_object_relationships => :environment do
     Taxonomy.find_each do |t|
       puts("Removing BSO children from taxonomy #{t.id}")
@@ -581,7 +583,7 @@ namespace :morphosource do
 
               if @page.save
                 Rails.logger.info("Page created/updated: #{@page.slug}")
-              else 
+              else
                 Rails.logger.error("Failed to save page: #{@page.slug}")
                 Rails.logger.error(@page.errors.full_messages.join(', '))
               end
@@ -589,7 +591,7 @@ namespace :morphosource do
               Rails.logger.error("Invalid page data in #{file}: #{page.inspect}")
             end
           end
-        else 
+        else
           Rails.logger.error("Invalid pages data in #{file}: #{page_data.inspect}")
         end
       rescue StandardError => e

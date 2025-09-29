@@ -76,6 +76,7 @@ module Morphosource
           specimen
         end
 
+        # todovalk: update this and also the solr reference below
         def taxonomy
           taxonomy_doc = search_for_taxonomy
           return Taxonomy.find(taxonomy_doc['id']) if taxonomy_doc.present?

@@ -48,7 +48,7 @@ module Hyrax
       #@presenter.get_organization_data
       @countries_service = Morphosource::CountriesService.new
       @new_taxonomy_submit_submissions_url = '/submissions/new_taxonomy_submit'
-      @new_taxonomy_form = Hyrax::WorkFormService.build(::Taxonomy.new, current_ability, self)
+      @new_taxonomy_form = Hyrax::FormFactory.new.build(TaxonomyResource.new, current_ability, self)
       render 'edit', presenter: @presenter
     end
 
@@ -105,6 +105,7 @@ module Hyrax
       end
     end
 
+    # todovalk: update this for new TaxonomyResource
     def new_gbif_taxonomy(t_id)
       gbif_key = t_id.sub!('gbif:', '')
       gbif_params = ActionController::Parameters.new(

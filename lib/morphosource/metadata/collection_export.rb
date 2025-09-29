@@ -104,8 +104,9 @@ module Morphosource
         end
       end
 
+      # todovalk: fix this to work with taxonomy valkyrie resources
       def unique_works(works) # because .uniq doesn't work here
-        works.map(&:id).uniq.map { |id| ActiveFedora::Base.find(id) } 
+        works.map(&:id).uniq.map { |id| ActiveFedora::Base.find(id) }
       end
 
       def excluded_attributes

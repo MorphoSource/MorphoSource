@@ -39,11 +39,12 @@ module Morphosource
       @solr = solr_service.new
     end
 
-    # 
+    #
     def call
       all_children(names, absent_ranks)
     end
 
+    # todovalk: investigate how ValkyrieResources are solr indexed and how we can search both for current and legacy works in solr
     def count
       solr_params = {
         fq: [
@@ -65,7 +66,7 @@ module Morphosource
       solr.get_count(nil, solr_params)
     end
 
-    
+
     def all_children(names=[], absent_ranks=[])
       subrank = get_subrank(names, absent_ranks)
       return nil if !subrank
@@ -113,7 +114,7 @@ module Morphosource
         .flatten
         .each_with_object(Hash.new(0)) { |o, h| h[o] += 1 } # count name appearances
         .sort.to_h # sort alphabetically by key
-        .each_with_object({}) do |(k, v), a| 
+        .each_with_object({}) do |(k, v), a|
           if subrank == 'species' and (genus = names.find { |n| n[:rank] == 'genus' } ).present?
             count_names = [ { name: k, rank: subrank }, genus ]
           else
@@ -153,7 +154,7 @@ module Morphosource
     def get_subrank(names=[], absent_ranks=[])
       if absent_ranks.present?
         rank = absent_ranks.last
-      elsif names.present? 
+      elsif names.present?
         rank = names.last[:rank]
       else
         return TAXONOMY_RANKS.first

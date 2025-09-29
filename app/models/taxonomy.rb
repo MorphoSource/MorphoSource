@@ -1,3 +1,4 @@
+# @deprecated Use TaxonomyResource instead.
 class Taxonomy < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
   validates_with Morphosource::ParentChildValidator

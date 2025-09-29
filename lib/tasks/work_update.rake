@@ -10,6 +10,7 @@ namespace :work_update do
     end
     Rails.logger.info("commit = #{commit}")
 
+    # todovalk: fix and check this?
     taxonomies = Morphosource::SolrService.new.get_docs("has_model_ssim:Taxonomy")
       .map { |doc| [doc['id'], doc] }.to_h
     bsos = Morphosource::SolrService.new.get_docs("has_model_ssim:BiologicalSpecimen")
@@ -25,7 +26,7 @@ namespace :work_update do
       # Find best taxonomy to match to
       source_taxonomy_id = doc['canonical_taxonomy_tesim']&.first || doc['taxonomy_id_tesim']&.first
       source_taxonomy = taxonomies[source_taxonomy_id]
-      
+
       if !source_taxonomy_id.present? || !source_taxonomy.present?
         bsos_without_taxonomy << doc
         next
@@ -42,7 +43,7 @@ namespace :work_update do
         'taxonomy_species' => source_taxonomy['taxonomy_species_tesim']&.first,
         'taxonomy_subspecies' => source_taxonomy['taxonomy_subspecies_tesim']&.first,
       })
-      
+
       if !gbif_taxonomy_params.present? || !gbif_taxonomy_params['gbif_key'].present?
         bsos_no_gbif_match << doc
         next
@@ -81,7 +82,7 @@ namespace :work_update do
       end
     end
 
-     # TODO report statistics 
+     # TODO report statistics
      Rails.logger.info("Biological specimens finished processing")
      Rails.logger.info("#{bsos_match_success_existing.count} biological specimens were successfully associated with existing GBIF taxonomies")
      Rails.logger.info("#{bsos_match_success_new.count} biological specimens were successfully associated with new GBIF taxonomies")

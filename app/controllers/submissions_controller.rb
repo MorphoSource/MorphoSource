@@ -647,7 +647,7 @@ class SubmissionsController < ApplicationController
     @processing_event_form = Hyrax::WorkFormService.build(ProcessingEvent.new, current_ability, self)
     @organization_form = Hyrax::WorkFormService.build(Organization.new, current_ability, self)
     @media_form = Hyrax::WorkFormService.build(Media.new, current_ability, self)
-    @taxonomy_form = Hyrax::WorkFormService.build(Taxonomy.new, current_ability, self)
+    @taxonomy_form = Hyrax::FormFactory.new.build(TaxonomyResource.new, current_ability, self)
   end
 
   def save_params_to_session

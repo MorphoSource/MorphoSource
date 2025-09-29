@@ -23,6 +23,7 @@
       ) %>
     </div>
   </div>
+  <%# todovalk: figure out counts here! %>
   <% taxonomy_not_gbif_count = Taxonomy.where(gbif_key: nil).count %>
   <div class="row">
     <div class="col-9 showcase-label">Taxonomies (GBIF Linked)</div>

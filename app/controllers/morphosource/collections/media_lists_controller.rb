@@ -94,6 +94,10 @@ module Morphosource
         end
       end
 
+      def mint_doi
+        byebug
+      end
+
       private
 
         def load_media_preview_presenter(id)

@@ -46,10 +46,18 @@ module Hyrax
               env.curation_concern.remote_manifest_url.present?
             )
               return true
+            elsif env.curation_concern.file_sets.count > 0 
+              # if there is already a file set, skip adding more
+              return true
             end
           else
             # this block is for other work type (e.g. PE) and media that is not remote-backed (which includes local/cloud upload)
-            return true if files.blank?
+            if files.blank?
+              return true
+            elsif env.curation_concern.media? && env.curation_concern.file_sets.count > 0 
+              # if there is already a file set, skip adding more
+              return true 
+            end
           end
           AttachFilesToWorkJob.perform_later(env.curation_concern, files, **env.attributes.to_h.symbolize_keys)
           true

@@ -498,10 +498,15 @@ $( document ).ready(function() {
       }
     }); // /on submit
 
-    $(".nav-tabs.upload-file a").click(function(){
+    $("#tab-file-upload a").click(function(){
       // set the hash to the main nav tab name instead of sub tab name
       // so that reloading the page will open the file-upload tab
       window.location.hash = 'file-upload';
+
+      // temp fix to hide the file upload section if there is already a file uploaded
+      if ($('table.related-files').length) {
+        $('#file-upload-wrapper').hide();
+      }
     });
 
   } // end if edit media form page

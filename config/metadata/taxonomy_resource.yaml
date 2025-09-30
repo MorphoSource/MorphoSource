@@ -210,6 +210,17 @@ attributes:
       primary: true
       multiple: true
     predicate: https://www.morphosource.org/terms/subspecies
+  source: # copied from hyrax basic_metadata.yaml
+    type: string
+    multiple: true
+    form:
+      required: false
+      primary: false
+      multiple: true
+    index_keys:
+      - "source_sim"
+      - "source_tesim"
+    predicate: http://purl.org/dc/terms/source
   trusted:
     type: string
     multiple: true

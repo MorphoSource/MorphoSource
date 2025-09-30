@@ -3,7 +3,6 @@
 # Generated via
 #  `rails generate hyrax:work_resource TaxonomyResource`
 class TaxonomyResourceIndexer < Hyrax::Indexers::PcdmObjectIndexer(TaxonomyResource)
-  include Hyrax::Indexer(:basic_metadata)
   include Hyrax::Indexer(:taxonomy_resource)
 
   # Uncomment this block if you want to add custom indexing behavior:

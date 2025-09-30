@@ -13,9 +13,7 @@ module Morphosource
                         'change_set.apply',
                         'work_resource.apply_permission_template',
                         'work_resource.save_acl',
-                        'work_resource.add_file_sets',
-                        'work_resource.change_depositor',
-                        'work_resource.add_to_parent'].freeze
+                        'work_resource.change_depositor'].freeze
 
         ##
         # @see Hyrax::Transactions::Transaction

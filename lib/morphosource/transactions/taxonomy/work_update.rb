@@ -4,7 +4,7 @@ module Morphosource
     module Taxonomy
       ##
       # Update a Taxonomy work
-      class WorkUpdate < Transaction
+      class WorkUpdate < Hyrax::Transactions::Transaction
         DEFAULT_STEPS = ['taxonomy_change_set.set_title',
                         'taxonomy_change_set.set_source',
                         'taxonomy_change_set.set_trusted',
@@ -13,7 +13,7 @@ module Morphosource
 
         ##
         # @see Hyrax::Transactions::Transaction
-        def initialize(container: Container, steps: DEFAULT_STEPS)
+        def initialize(container: Hyrax::Transactions::Container, steps: DEFAULT_STEPS)
           super
         end
       end

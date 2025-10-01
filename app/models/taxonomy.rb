@@ -17,6 +17,11 @@ class Taxonomy < Morphosource::Works::Base
   # schema (by adding accepts_nested_attributes)
   include ::Hyrax::BasicMetadata
 
+  # To prevent record desync while migrating to Valkyrie
+  def readonly?
+    true
+  end
+
   def short_title
     ranks = [:taxonomy_genus, :taxonomy_subgenus, :taxonomy_species, :taxonomy_subspecies]
     title = ranks.map { |rank| self.send(rank).first }.compact.join(' ')

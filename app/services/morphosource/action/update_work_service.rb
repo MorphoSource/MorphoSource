@@ -6,37 +6,34 @@ module Morphosource
     # @since 5.0.0
     # @api public
     #
-    # Service to create Valkyrie work resource object. Compared to ActiveFedora "thick" works that
+    # Service to update Valkyrie work resource object. Compared to ActiveFedora "thick" works that
     # encapsulate their own methods for save, update, delete, etc., Valkyrie uses "thin" models
     # where attribute validation and work create/update/delete are carried out through interactions
-    # between multiple related modules. This service integrates the logic flow for creating a single
-    # Valkyrie work, and should be used anywhere outside of a work's primary controller for creating
+    # between multiple related modules. This service integrates the logic flow for updating a single
+    # Valkyrie work, and should be used anywhere outside of a work's primary controller for updating
     # works.
-    class CreateWorkService
-      attr_reader :model, :attributes, :user, :files, :permissions_params, :form
+    class UpdateWorkService
+      attr_reader :work, :attributes, :files, :permissions_params, :form
 
       ##
-      # Initialize the service specific to a model with attributes and depositing user.
+      # Initialize the service specific to a work with attributes to be updated.
       #
-      # @param model [Constant, String] Model class or string version of model class name for work.
-      # @param attributes [hash] Hash of key-value field attributes for work. Do not nest attributes
+      # @param work [Hyrax::Work] Valkyrie work resource object.
+      # @param attributes [hash] Hash of key-value field attributes to for work. Do not nest attributes
       #                          in param-style work type key (?). Special keys to be handled include
       #                          :uploaded_files and :permissions_attributes.
-      # @param user [User] the depositing user.
-      def initialize(model:, attributes:, user:)
-        @model = model
+      def initialize(work:, attributes:)
+        @work = work
         @attributes = attributes
-        @user = user
 
         uploaded_file_ids = attributes.delete(:uploaded_files)
         @files = Hyrax::UploadedFile.find(uploaded_file_ids) if uploaded_file_ids.present?
         @permissions_params = attributes.delete(:permissions_attributes)
-        work = model_class.new
         @form = Hyrax::FormFactory.new.build(work, nil, nil)
       end
 
       ##
-      # Creates work. Will return result status object containing created work or failure messages.
+      # Updates work. Will return result status object containing updated work or failure messages.
       #
       # @return [Result] Result monad, responds to :success? boolean, :value_or with block to return
       #                 created work or execute block if not present, and :failure as tuple with
@@ -48,33 +45,27 @@ module Morphosource
 
       private
 
-      def model_class
-        model.is_a?(String) ? model.constantize : model
-      end
-
       def transactions
         Hyrax::Transactions::Container
       end
 
       def transaction_name
-        case model_class
-        when TaxonomyResource
-          'taxonomy_change_set.create_work'
+        case work.model_name
+        when 'TaxonomyResource'
+          'taxonomy_change_set.update_work'
         else
-          raise "Unpermitted work type"
+          raise "Unpermitted work type #{work.class}"
         end
       end
 
       def step_args
-        case model_class
-        when TaxonomyResource
+        case work.model_name
+        when 'TaxonomyResource'
           {
-            'change_set.set_user_as_depositor' => { user: user },
-            'work_resource.change_depositor' => { user: ::User.find_by_user_key(form.on_behalf_of) },
             'work_resource.save_acl' => { permissions_params: permissions_params }
           }
         else
-          raise "Unpermitted work type"
+          raise "Unpermitted work type #{work.class}"
         end
       end
     end

@@ -5,6 +5,7 @@ module Morphosource
 
         SETTINGS = %w[featured_collections].freeze
 
+        # These fields are only used for editing the form; they are not stored directly.
         SORTED_COLLECTIONS = %w[featured_collection_1
                                 featured_collection_2
                                 featured_collection_3
@@ -16,8 +17,7 @@ module Morphosource
                                 featured_collection_9
                                 featured_collection_10].freeze
 
-        # Individual collection IDs for the featured collections are not stored in separate fields,
-        # but rather as a comma-separated list in the `featured_collections` block.
+        # Individual collection IDs for the featured collections are stored as a comma-separated list in the `featured_collections` block.
         def self.define_sorted_collections
           self::SORTED_COLLECTIONS.each do |method_name|
             define_method(method_name) do

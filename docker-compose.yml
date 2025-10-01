@@ -37,8 +37,6 @@ services:
       context: .
       target: morphosource-worker-dev
     container_name: app_worker
-    stdin_open: true
-    tty: true
     user: "101292838:0"
     env_file:
       - ./vendor/docker/credentials.env
@@ -156,7 +154,7 @@ services:
       - morphosource
 
   postgres:
-    image: postgres:17
+    image: postgres:16.9
     container_name: postgres
     env_file:
       - ./vendor/docker/credentials.env

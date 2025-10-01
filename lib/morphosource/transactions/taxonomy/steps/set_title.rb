@@ -13,7 +13,7 @@ module Morphosource
           #
           # @return [Dry::Monads::Result]
           def call(obj)
-            return Failure[:not_taxonomy_change_set, obj] unless obj.model.class == TaxonomyResource
+            return Failure[:not_taxonomy_change_set, obj] unless obj.is_a?(TaxonomyResourceForm)
 
             obj.title = [generated_title(obj)]
 

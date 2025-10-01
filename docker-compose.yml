@@ -194,7 +194,7 @@ services:
       - morphosource
 
   solr:
-    image: bitnami/solr:8.11.2-debian-11-r233
+    image: public.ecr.aws/bitnami/solr:8.11.2-debian-11-r233
     container_name: solr
     environment:
       SOLR_CORES: "hyrax, hyrax_test"

@@ -110,12 +110,14 @@ module Hyrax
       gbif_key = t_id.sub!('gbif:', '')
       gbif_params = ActionController::Parameters.new(
           Morphosource::GbifSearchService.taxonomy_params_from_gbif(gbif_key))
-      taxonomy_params = Hyrax::TaxonomyForm.model_attributes(gbif_params)
-      taxonomy_params.merge!({ visibility: Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC })
-      curation_concern = Taxonomy.new
-      env = Hyrax::Actors::Environment.new(curation_concern, current_ability, taxonomy_params)
-      Hyrax::CurationConcern.actor.create(env)
-      curation_concern.id
+      gbif_params.merge!({ visibility: Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC })
+
+      result = Morphosource::Action::CreateWorkService(
+        model: TaxonomyResource,
+        attributes: gbif_params,
+        user: User.batch_user
+      )
+      result.value!.id
     end
 
     def old_orgs

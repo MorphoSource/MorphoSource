@@ -56,7 +56,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
   end
 
   def taxonomies
-    Hyrax.query_service.find_many_by_ids(id: taxonomy_id.to_a)
+    Hyrax.query_service.find_many_by_ids(ids: taxonomy_id.to_a)
   end
 
   def taxonomies_titles

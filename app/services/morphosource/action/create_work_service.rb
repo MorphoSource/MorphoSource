@@ -57,24 +57,24 @@ module Morphosource
       end
 
       def transaction_name
-        case model_class
-        when TaxonomyResource
+        case model_class.to_s
+        when 'TaxonomyResource'
           'taxonomy_change_set.create_work'
         else
-          raise "Unpermitted work type"
+          raise "Unpermitted work type #{model_class.to_s}"
         end
       end
 
       def step_args
-        case model_class
-        when TaxonomyResource
+        case model_class.to_s
+        when 'TaxonomyResource'
           {
             'change_set.set_user_as_depositor' => { user: user },
             'work_resource.change_depositor' => { user: ::User.find_by_user_key(form.on_behalf_of) },
             'work_resource.save_acl' => { permissions_params: permissions_params }
           }
         else
-          raise "Unpermitted work type"
+          raise "Unpermitted work type #{model_class.to_s}"
         end
       end
     end

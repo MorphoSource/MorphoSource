@@ -38,6 +38,7 @@ module Hyrax
           # If ingesting from URL, don't spawn an IngestJob; instead
           # reach into the FileActor and run the ingest with the file instance in
           # hand. Do this because we don't have the underlying UploadedFile instance
+          file_actor = build_file_actor(relation)
           if file.present?
             file_actor.ingest_file(wrapper!(file: file, relation: relation))
           else

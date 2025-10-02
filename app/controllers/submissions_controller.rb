@@ -8,7 +8,6 @@ class SubmissionsController < ApplicationController
   include MorphosourceHelper
   include Morphosource::PermissionsHelper
   include Morphosource::LinkedTeams::LinkedTeamsManagement
-  include Morphosource::CustomThumbnails
   include SubmissionsControllerAjaxBehavior
   include SubmissionsControllerBehavior
 
@@ -319,9 +318,14 @@ class SubmissionsController < ApplicationController
       new_work_id, new_work = prepare_and_create_work(work, params)
       @submission.public_send(to_id(work) + '=', new_work_id)
       create_attachment_if_needed(work, new_work_id, new_work) if ['imaging_event', 'processing_event', 'media'].include?(work)
-      # Morphosource::CustomThumbnails #todo5 verify custom thumbnails work from submissions controller
+
       if work == 'media'
-        create_thumbnail
+        if params[:media][:custom_thumbnail].present?
+          Morphosource::MediaCustomThumbnailService.new(
+            media: new_work,
+            custom_thumbnail: params[:media][:custom_thumbnail]
+          ).create_thumbnail
+        end
         set_new_fund_code if @submission.fund_code.present?
         create_organization_transfer_request(new_work) if ( organization_media_transfer == :immediate )
       end

@@ -3,6 +3,7 @@ module Morphosource
 
     # called from submissions #create and media #update
     def create_thumbnail
+      Rails.logger.info "[in CustomThumbnails] media's representative_id #{media.representative_id}, thumbnail_id #{media.thumbnail_id},  ordered_members #{media.ordered_members&.to_a.map(&:id)}"
       return unless custom_thumbnail.present?
 
       return unless thumbnail_format_valid?
@@ -74,6 +75,7 @@ module Morphosource
     def update_thumbnail_id
       media.thumbnail_id = media.id
       media.save
+      Rails.logger.info "[in CustomThumbnails] media's representative_id #{media.representative_id}, thumbnail_id #{media.thumbnail_id},  ordered_members #{media.ordered_members&.to_a.map(&:id)}"
     end
 
     def thumbnail_path(work)

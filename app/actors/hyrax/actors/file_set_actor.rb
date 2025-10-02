@@ -1,9 +1,10 @@
 require 'digest'
 
+# frozen_string_literal: true
 module Hyrax
   module Actors
     # Actions are decoupled from controller logic so that they may be called from a controller or a background job.
-    class FileSetActor
+    class FileSetActor # rubocop:disable Metrics/ClassLength
       include Lockable
       attr_reader :file_set, :user, :attributes
 
@@ -27,27 +28,28 @@ module Hyrax
           file_set.label = File.basename(file.path)
           file_set.e_tag = MorphosourceHelper::RemoteFileInfo.new(file_set.import_url)&.e_tag
         end
+
         # If the file set doesn't have a title or label assigned, set a default.
         file_set.label ||= label_for(file)
         file_set.title = [file_set.label] if file_set.title.blank?
-        return false unless file_set.save # Need to save to get an id
-
+        @file_set = perform_save(file_set)
+        return false unless file_set
         if from_url
           # If ingesting from URL, don't spawn an IngestJob; instead
           # reach into the FileActor and run the ingest with the file instance in
           # hand. Do this because we don't have the underlying UploadedFile instance
-          file_actor = build_file_actor(relation)
           if file.present?
             file_actor.ingest_file(wrapper!(file: file, relation: relation))
           else
             file_actor.ingest_file(file: nil, relation: relation)
           end
-          # Copy visibility and permissions from parent (work) to
-          # FileSets even if they come in from BrowseEverything
-          VisibilityCopyJob.perform_later(file_set.parent)
-          InheritPermissionsJob.perform_later(file_set.parent.id)
+
+          parent = parent_for(file_set: file_set)
+          VisibilityCopyJob.perform_later(parent)
+          InheritPermissionsJob.perform_later(parent)
         else
           IngestJob.perform_later(wrapper!(file: file, relation: relation))
+
           # DropBox BrowseEverything does not use from_url, but needs these set
           VisibilityCopyJob.perform_later(file_set.parent) if file_set.parent.present?
           InheritPermissionsJob.perform_later(file_set.parent.id) if file_set.parent.present?
@@ -61,7 +63,6 @@ module Hyrax
       def update_content(file, relation = :original_file)
         IngestJob.perform_later(wrapper!(file: file, relation: relation), notification: true)
       end
-
       # @!endgroup
 
       # Adds the appropriate metadata, visibility and relationships to file_set
@@ -83,12 +84,12 @@ module Hyrax
         yield(file_set) if block_given?
       end
 
-      # Adds a FileSet to the work using ore:Aggregations.
       # Locks to ensure that only one process is operating on the list at a time.
       def attach_to_work(work, file_set_params = {})
         acquire_lock_for(work.id) do
           # Ensure we have an up-to-date copy of the members association, so that we append to the end of the list.
           work.reload unless work.new_record?
+
           # If File Visibility - private is selected, make the file set private.
           if work.fileset_visibility == ['restricted']
             restrict_fileset(file_set)
@@ -104,7 +105,7 @@ module Hyrax
           # Save the work so the association between the work and the file_set is persisted (head_id)
           # NOTE: the work may not be valid, in which case this save doesn't do anything.
           work.save
-          Hyrax.config.callback.run(:after_create_fileset, file_set, user)
+          Hyrax.config.callback.run(:after_create_fileset, file_set, user, warn: false)
         end
       end
       alias attach_file_to_work attach_to_work
@@ -115,7 +116,7 @@ module Hyrax
       # @return [Boolean] true on success, false otherwise
       def revert_content(revision_id, relation = :original_file)
         return false unless build_file_actor(relation).revert_to(revision_id)
-        Hyrax.config.callback.run(:after_revert_content, file_set, user, revision_id)
+        Hyrax.config.callback.run(:after_revert_content, file_set, user, revision_id, warn: false)
         true
       end
 
@@ -127,7 +128,7 @@ module Hyrax
       def destroy
         unlink_from_work
         file_set.destroy
-        Hyrax.config.callback.run(:after_destroy, file_set.id, user)
+        Hyrax.config.callback.run(:after_destroy, file_set.id, user, warn: false)
       end
 
       class_attribute :file_actor_class
@@ -135,75 +136,85 @@ module Hyrax
 
       private
 
-        def ability
-          @ability ||= ::Ability.new(user)
-        end
+      def ability
+        @ability ||= ::Ability.new(user)
+      end
 
-        def build_file_actor(relation)
-          file_actor_class.new(file_set, relation, user)
-        end
+      # @param file_set [FileSet]
+      # @return [ActiveFedora::Base]
+      def parent_for(file_set:)
+        file_set.parent
+      end
 
-        # uses create! because object must be persisted to serialize for jobs
-        def wrapper!(file:, relation:)
-          JobIoWrapper.create_with_varied_file_handling!(user: user, file: file, relation: relation, file_set: file_set)
-        end
+      def build_file_actor(relation)
+        file_actor_class.new(file_set, relation, user)
+      end
 
-        # For the label, use the original_filename or original_name if it's there.
-        # If the file was imported via URL, parse the original filename.
-        # If all else fails, use the basename of the file where it sits.
-        # @note This is only useful for labeling the file_set, because of the recourse to import_url
-        def label_for(file)
-          if file.is_a?(Hyrax::UploadedFile) # filename not present for uncached remote file!
-            file.uploader.filename.present? ? file.uploader.filename : File.basename(Addressable::URI.parse(file.file_url).path)
-          elsif file.respond_to?(:original_name) # e.g. Hydra::Derivatives::IoDecorator
-            file.original_name
-          elsif (@is_remote_backed || file_set.is_remote_backed?) && file.path.present?
-            File.basename(file.path)
-          elsif file_set.import_url.present?
-            # This path is taken when file is a Tempfile (e.g. from ImportUrlJob)
-            File.basename(Addressable::URI.parse(file_set.import_url).path)
-          else
-            File.basename(file)
-          end
-        end
+      # uses create! because object must be persisted to serialize for jobs
+      def wrapper!(file:, relation:)
+        JobIoWrapper.create_with_varied_file_handling!(user: user, file: file, relation: relation, file_set: file_set)
+      end
 
-        def assign_visibility?(file_set_params = {})
-          !((file_set_params || {}).keys.map(&:to_s) & %w[visibility embargo_release_date lease_expiration_date]).empty?
+      # For the label, use the original_filename or original_name if it's there.
+      # If the file was imported via URL, parse the original filename.
+      # If all else fails, use the basename of the file where it sits.
+      # @note This is only useful for labeling the file_set, because of the recourse to import_url
+      def label_for(file)
+        if file.is_a?(Hyrax::UploadedFile) # filename not present for uncached remote file!
+          file.uploader.filename.presence || File.basename(Addressable::URI.unencode(file.file_url))
+        elsif file.respond_to?(:original_name) # e.g. Hydra::Derivatives::IoDecorator
+          file.original_name
+        elsif (@is_remote_backed || file_set.is_remote_backed?) && file.path.present?
+          File.basename(file.path)
+        elsif file_set.import_url.present?
+          # This path is taken when file is a Tempfile (e.g. from ImportUrlJob)
+          File.basename(Addressable::URI.unencode(file.file_url))
+        elsif file.respond_to?(:original_filename) # e.g. Rack::Test::UploadedFile
+          file.original_filename
+        else
+          File.basename(file)
         end
+      end
 
-        # replaces file_set.apply_depositor_metadata(user)from hydra-access-controls so depositor doesn't automatically get edit access
-        def depositor_id(depositor)
-          depositor.respond_to?(:user_key) ? depositor.user_key : depositor
-        end
+      def assign_visibility?(file_set_params = {})
+        !((file_set_params || {}).keys.map(&:to_s) & %w[visibility embargo_release_date lease_expiration_date]).empty?
+      end
 
-        # Must clear the fileset from the thumbnail_id, representative_id and rendering_ids fields on the work
-        #   and force it to be re-solrized.
-        # Although ActiveFedora clears the children nodes it leaves those fields in Solr populated.
-        # rubocop:disable Metrics/CyclomaticComplexity
-        def unlink_from_work
-          work = file_set.parent
-          return unless work && (work.thumbnail_id == file_set.id || work.representative_id == file_set.id || work.rendering_ids.include?(file_set.id))
+      # replaces file_set.apply_depositor_metadata(user)from hydra-access-controls so depositor doesn't automatically get edit access
+      def depositor_id(depositor)
+        depositor.respond_to?(:user_key) ? depositor.user_key : depositor
+      end
 
-          new_fileset = other_fileset(work) # is nil if no other fileset
-          work.thumbnail = new_fileset if work.thumbnail_id == file_set.id
-          work.representative = new_fileset if work.representative_id == file_set.id
-          work.rendering_ids -= [file_set.id]
-          work.remote_origin_url = "" if new_fileset.nil?
-          work.save!
-        end
+      # Must clear the fileset from the thumbnail_id, representative_id and rendering_ids fields on the work
+      #   and force it to be re-solrized.
+      # Although ActiveFedora clears the children nodes it leaves those fields in Solr populated.
+      # rubocop:disable Metrics/CyclomaticComplexity
+      def unlink_from_work
+        work = parent_for(file_set: file_set)
+        return unless work && (work.thumbnail_id == file_set.id || work.representative_id == file_set.id || work.rendering_ids.include?(file_set.id))
 
-        def other_fileset(work)
-          work.file_sets.find { |fs| fs.id != file_set.id }
-        end
-      # rubocop:enable Metrics/AbcSize
-      # rubocop:enable Metrics/CyclomaticComplexity
+        new_fileset = other_fileset(work) # is nil if no other fileset
+        work.thumbnail = new_fileset if work.thumbnail_id == file_set.id
+        work.representative = new_fileset if work.representative_id == file_set.id
+        work.rendering_ids -= [file_set.id]
+        work.remote_origin_url = "" if new_fileset.nil?
+        work.save!
+      end
+
+      def perform_save(object)
+        object.save
+        object
+      end
+
+      def other_fileset(work)
+        work.file_sets.find { |fs| fs.id != file_set.id }
+      end
 
       def restrict_fileset(file_set)
         file_set.embargo_id = nil
         file_set.lease_id = nil
         file_set.visibility = 'restricted'
       end
-
     end
   end
 end

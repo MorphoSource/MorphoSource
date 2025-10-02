@@ -11,6 +11,6 @@
    <td><%= user.department %></td>
    <td><%= user.created_at.to_date %></td>
    <td><%= link_to presenter.managed_collection_count, main_app.managed_collections_search_path(user) %></td>
-   <td><%= link_to presenter.deposited_media_count, main_app.media_search_path({"f"=>{"depositor_ssim"=>["#{user.ms_id}"]}}) %></td>
-   <td><%= link_to presenter.managed_media_count, main_app.media_search_path({"f"=>{"user_with_ownership_ssi"=>["#{user.ms_id}"]}}) %></td>
+   <td><%= link_to presenter.deposited_media_count, main_app.media_search_path({"f"=>{"depositor"=>["#{user.ms_id}"]}}) %></td>
+   <td><%= link_to presenter.managed_media_count, main_app.media_search_path({"f"=>{"owner"=>["#{user.ms_id}"]}}) %></td>
 </tr>

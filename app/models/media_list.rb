@@ -1,9 +1,11 @@
 class MediaList < Collection
   include Morphosource::MediaListMetadata
+  include Morphosource::DoiBehavior
 
   self.indexer = MediaListIndexer
 
   after_create :create_collection_groups
+  before_destroy :prevent_doi_deletion
 
   DEFAULT_GROUP_ROLES = %w[managers viewers].freeze
 

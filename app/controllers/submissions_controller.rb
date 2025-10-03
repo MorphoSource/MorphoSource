@@ -508,7 +508,7 @@ class SubmissionsController < ApplicationController
             Organization.find_by(id: submission_params[:organization_for_attachment]) ||
             OrganizationCollection.find_by(id: submission_params[:organization_for_attachment])
           )
-          Morphosource::Media::CopyOrganizationAgreementAttachmentJob.perform_later(
+          CopyOrganizationAgreementAttachmentJob.perform_later(
             new_work_object.id,
             organization_for_attachment.id
           )
@@ -536,7 +536,7 @@ class SubmissionsController < ApplicationController
         file: params[:media][:custom_thumbnail],
         user: current_user
       )
-      Morphosource::Media::AddCustomThumbnailJob.perform_later(work.id, hyrax_uploaded_file)
+      AddCustomThumbnailJob.perform_later(work.id, hyrax_uploaded_file)
     end
   end
 
@@ -550,7 +550,7 @@ class SubmissionsController < ApplicationController
   end
 
   def create_organization_transfer_request(work)
-    Morphosource::Media::TransferToOrganizationJob.perform_later(work.id)
+    TransferToOrganizationJob.perform_later(work.id)
   end
 
   # Utility functions

@@ -1,5 +1,5 @@
 # Add custom thumbnail to media with record locking and latest record query
-class Morphosource::Media::AddCustomThumbnailJob < Hyrax::ApplicationJob
+class AddCustomThumbnailJob < Hyrax::ApplicationJob
   include Hyrax::Lockable
 
   queue_as Hyrax.config.ingest_queue_name
@@ -8,7 +8,7 @@ class Morphosource::Media::AddCustomThumbnailJob < Hyrax::ApplicationJob
   # @param [Array<Hyrax::UploadedFile>] custom_thumbnail - the uploaded thumbnail image
   def perform(media_id, custom_thumbnail)
     acquire_lock_for(media_id) do
-      media = ::Media.find(media_id)
+      media = Media.find(media_id)
       Morphosource::MediaCustomThumbnailService.new(
         media: media,
         custom_thumbnail: custom_thumbnail

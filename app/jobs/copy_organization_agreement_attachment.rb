@@ -1,5 +1,5 @@
 # Copy agreement attachment from organization to media with record locking and latest record query
-class Morphosource::Media::CopyOrganizationAgreementAttachmentJob < Hyrax::ApplicationJob
+class CopyOrganizationAgreementAttachmentJob < Hyrax::ApplicationJob
   include Hyrax::Lockable
 
   queue_as Hyrax.config.ingest_queue_name
@@ -9,9 +9,9 @@ class Morphosource::Media::CopyOrganizationAgreementAttachmentJob < Hyrax::Appli
   def perform(media_id, organization_id)
     acquire_lock_for(media_id) do
       organization = (
-        ::Organization.find_by(id: organization_id) || ::OrganizationCollection.find_by(id: organization_id)
+        Organization.find_by(id: organization_id) || OrganizationCollection.find_by(id: organization_id)
       )
-      media = ::Media.find(media_id)
+      media = Media.find(media_id)
       media.copy_organization_agreement_attachment(organization)
     end
   end

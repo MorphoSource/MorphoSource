@@ -61,9 +61,6 @@
             <%= render 'morphosource/dashboard/collections/details/temporary_access_links', f: f %>
           <% end %>
 
-        <% end %> <!-- end simple_form_for before creating new form in admin settings -->
-
-          <%= render 'morphosource/dashboard/collections/media_lists/admin_form' %>
         </div>
 
         <%# The following form fields might be needed.  Move them outside of the partial,
@@ -80,6 +77,8 @@
             <input type="hidden" name="batch_document_ids[]" value="<%= batch_item %>" />
           <% end %>
         <% end %>
+
+      <% end %>
     </div>
   </div>
 </div>

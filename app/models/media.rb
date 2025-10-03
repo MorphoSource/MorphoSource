@@ -2,6 +2,8 @@ class Media < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
   include Morphosource::MediaBehavior
   include Morphosource::PersistentIdentifiersBehavior
+  include Morphosource::DoiBehavior
+
   validates_with Morphosource::ParentChildValidator
   before_create :controlled_value_filter, :date_filter
   after_create :mint_ark
@@ -10,6 +12,7 @@ class Media < Morphosource::Works::Base
   after_update :update_ark_status, :update_cartitem_reviewer, :check_for_organization_transfer
   before_destroy :record_original_objects
   after_destroy :reindex_physical_objects, :publish_destroyed_event
+
 
   after_initialize do
     if self.new_record?
@@ -353,42 +356,42 @@ class Media < Morphosource::Works::Base
   # Persistent identifier methods
   #
 
-  def mint_doi(target_url)
-    if self.doi.empty?
-      depositor_user_or_org = User.find_by(ms_id: self.user_with_ownership) ||
-        OrganizationCollection.where(id: self.user_with_ownership)&.first
-      if !depositor_user_or_org.present?
-        Rails.logger.error "Failed to mint DOI for media #{self.id} because depositor user or organization not found"
-      end
+  # def mint_doi(target_url)
+  #   if self.doi.empty?
+  #     depositor_user_or_org = User.find_by(ms_id: self.user_with_ownership) ||
+  #       OrganizationCollection.where(id: self.user_with_ownership)&.first
+  #     if !depositor_user_or_org.present?
+  #       Rails.logger.error "Failed to mint DOI for media #{self.id} because depositor user or organization not found"
+  #     end
 
-      depositor_params = if depositor_user_or_org.is_a?(User)
-        depositor_user_name_components = depositor_user_or_org.display_name.split(' ')
-        {
-          'author_first' => depositor_user_name_components.first,
-          'author_last' => depositor_user_name_components.drop(1).join(' ')
-        }
-      elsif depositor_user_or_org.is_a?(OrganizationCollection)
-        { 'organization' => depositor_user_or_org.display_name }
-      else
-        { }
-      end
+  #     depositor_params = if depositor_user_or_org.is_a?(User)
+  #       depositor_user_name_components = depositor_user_or_org.display_name.split(' ')
+  #       {
+  #         'author_first' => depositor_user_name_components.first,
+  #         'author_last' => depositor_user_name_components.drop(1).join(' ')
+  #       }
+  #     elsif depositor_user_or_org.is_a?(OrganizationCollection)
+  #       { 'organization' => depositor_user_or_org.display_name }
+  #     else
+  #       { }
+  #     end
 
-      minted_doi = Morphosource::CrossrefDoiMinter.mint_doi( self.id,
-                                                            {
-                                                              'title' => self.title.first,
-                                                              'url' => target_url,
-                                                              'resource_type' => self.media_type.first
-                                                            }.merge(depositor_params) )
-      if minted_doi.present?
-        # minted_doi may be an exception if mint_doi failed
-        unless minted_doi.respond_to?(:message)
-          self.doi = [minted_doi]
-          self.save
-        end
-      end
-      return minted_doi
-    end
-  end
+  #     minted_doi = Morphosource::CrossrefDoiMinter.mint_doi( self.id,
+  #                                                           {
+  #                                                             'title' => self.title.first,
+  #                                                             'url' => target_url,
+  #                                                             'resource_type' => self.media_type.first
+  #                                                           }.merge(depositor_params) )
+  #     if minted_doi.present?
+  #       # minted_doi may be an exception if mint_doi failed
+  #       unless minted_doi.respond_to?(:message)
+  #         self.doi = [minted_doi]
+  #         self.save
+  #       end
+  #     end
+  #     return minted_doi
+  #   end
+  # end
 
   #
   # Methods for persisting and monitoring save around work updates
@@ -645,11 +648,11 @@ class Media < Morphosource::Works::Base
       end
     end
 
-    def prevent_doi_deletion
-      unless self.doi.empty?
-        throw(:abort)
-      end
-    end
+    # def prevent_doi_deletion
+    #   unless self.doi.empty?
+    #     throw(:abort)
+    #   end
+    # end
 
     def delete_fund_code_media_associations
       FundCodeMediaAssociation.where(media: self.id).each { |a| a.destroy! }

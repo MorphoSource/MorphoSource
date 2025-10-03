@@ -66,8 +66,10 @@ module Morphosource
         )
       ensure
         unless @preview_file.present? # no need to remove temp file for batch submission
-          custom_thumbnail.tempfile.close
-          custom_thumbnail.tempfile.unlink
+          if custom_thumbnail.respond_to?(:tempfile)
+            custom_thumbnail.tempfile.close
+            custom_thumbnail.tempfile.unlink
+          end
         end
       end
     end

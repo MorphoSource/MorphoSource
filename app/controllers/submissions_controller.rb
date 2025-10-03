@@ -321,17 +321,9 @@ class SubmissionsController < ApplicationController
       create_attachment_if_needed(work, new_work_id, new_work) if ['imaging_event', 'processing_event', 'media'].include?(work)
 
       if work == 'media'
-        # These steps are dangerous because they can happen in parallel with actor stack and save over each other
-        if params[:media][:custom_thumbnail].present?
-          # Acquires lock for media and queries newest copy of media for safety
-          Morphosource::MediaCustomThumbnailService.new(
-            media: new_work,
-            custom_thumbnail: params[:media][:custom_thumbnail]
-          ).create_thumbnail
-        end
+        create_custom_thumbnail(new_work) if params[:media][:custom_thumbnail].present?
         set_new_fund_code if @submission.fund_code.present?
-        # Acquires lock for media and queries newest copy of media for safety
-        create_organization_transfer_request(new_work) if ( organization_media_transfer == :immediate )
+        create_organization_transfer_request(new_work) if (organization_media_transfer == :immediate)
       end
     end
   end
@@ -512,8 +504,14 @@ class SubmissionsController < ApplicationController
           params.delete(field)
         elsif field == 'agreement' && submission_params[:organization_for_attachment].present?
           # copy agreement attachment from organization
-          organization_for_attachment = ( Organization.find_by(id: submission_params[:organization_for_attachment]) || OrganizationCollection.find_by(id: submission_params[:organization_for_attachment]) )
-          new_work_object.copy_organization_agreement_attachment(organization_for_attachment)
+          organization_for_attachment = (
+            Organization.find_by(id: submission_params[:organization_for_attachment]) ||
+            OrganizationCollection.find_by(id: submission_params[:organization_for_attachment])
+          )
+          Morphosource::Media::CopyOrganizationAgreementAttachmentJob.perform_later(
+            new_work_object.id,
+            organization_for_attachment.id
+          )
         end
       end
     end
@@ -527,6 +525,21 @@ class SubmissionsController < ApplicationController
     }
   end
 
+  ### Media additional work creation methods
+
+  def create_custom_thumbnail(work)
+    if (
+      params[:media][:custom_thumbnail].present? &&
+      params[:media][:custom_thumbnail].is_a?(ActionDispatch::Http::UploadedFile)
+    )
+      hyrax_uploaded_file = Hyrax::UploadedFile.create!(
+        file: params[:media][:custom_thumbnail],
+        user: current_user
+      )
+      Morphosource::Media::AddCustomThumbnailJob.perform_later(work.id, hyrax_uploaded_file)
+    end
+  end
+
   def set_new_fund_code
     return nil if !FundCode.exists?(@submission.fund_code) || !@submission.media_id.present?
     FundCodeMediaAssociation.new(
@@ -536,14 +549,8 @@ class SubmissionsController < ApplicationController
     ).save!
   end
 
-  # Methods related to transferring media to organization control
-
   def create_organization_transfer_request(work)
-    # Acquire lock to and get latest mutation of work to ensure safest update
-    acquire_lock_for(work.id) do
-      latest_work = Media.find(work.id)
-      latest_work.transfer_media_to_organization # this can save the work if user is org manager
-    end
+    Morphosource::Media::TransferToOrganizationJob.perform_later(work.id)
   end
 
   # Utility functions

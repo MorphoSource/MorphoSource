@@ -10,6 +10,7 @@ class SubmissionsController < ApplicationController
   include Morphosource::LinkedTeams::LinkedTeamsManagement
   include SubmissionsControllerAjaxBehavior
   include SubmissionsControllerBehavior
+  include Hyrax::Lockable
 
   load_and_authorize_resource except: [:search_po_ajax, :search_taxonomy_ajax, :validate_remote_file_ajax,
     :save_data, :organization_for_recordset, :organization_default_media_fields,
@@ -320,13 +321,16 @@ class SubmissionsController < ApplicationController
       create_attachment_if_needed(work, new_work_id, new_work) if ['imaging_event', 'processing_event', 'media'].include?(work)
 
       if work == 'media'
+        # These steps are dangerous because they can happen in parallel with actor stack and save over each other
         if params[:media][:custom_thumbnail].present?
+          # Acquires lock for media and queries newest copy of media for safety
           Morphosource::MediaCustomThumbnailService.new(
             media: new_work,
             custom_thumbnail: params[:media][:custom_thumbnail]
           ).create_thumbnail
         end
         set_new_fund_code if @submission.fund_code.present?
+        # Acquires lock for media and queries newest copy of media for safety
         create_organization_transfer_request(new_work) if ( organization_media_transfer == :immediate )
       end
     end
@@ -535,7 +539,11 @@ class SubmissionsController < ApplicationController
   # Methods related to transferring media to organization control
 
   def create_organization_transfer_request(work)
-    work.transfer_media_to_organization
+    # Acquire lock to and get latest mutation of work to ensure safest update
+    acquire_lock_for(work.id) do
+      latest_work = Media.find(work.id)
+      latest_work.transfer_media_to_organization # this can save the work if user is org manager
+    end
   end
 
   # Utility functions

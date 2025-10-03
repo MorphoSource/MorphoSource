@@ -73,9 +73,12 @@ module Morphosource
     end
 
     def update_thumbnail_id
-      media.thumbnail_id = media.id
-      media.save
-      Rails.logger.info "[in CustomThumbnails] media's representative_id #{media.representative_id}, thumbnail_id #{media.thumbnail_id},  ordered_members #{media.ordered_members&.to_a.map(&:id)}"
+      # get new work since this can hit race condition on work creation
+      media_to_be_saved = Media.find(media.id)
+      Rails.logger.info "[in CustomThumbnails before save] media's representative_id #{media_to_be_saved.representative_id}, thumbnail_id #{media_to_be_saved.thumbnail_id},  ordered_members #{media_to_be_saved.ordered_members&.to_a.map(&:id)}"
+      media_to_be_saved.thumbnail = media_to_be_saved
+      media_to_be_saved.save
+      Rails.logger.info "[in CustomThumbnails after save] media's representative_id #{media_to_be_saved.representative_id}, thumbnail_id #{media_to_be_saved.thumbnail_id},  ordered_members #{media_to_be_saved.ordered_members&.to_a.map(&:id)}"
     end
 
     def thumbnail_path(work)

@@ -1,0 +1,7 @@
+<h2>
+  <%= t('morphosource.collections.view.about.identifiers_and_external_links.header.title').upcase %>
+</h2>
+
+<%= @presenter.attribute_to_html(:doi, render_as: :showcase_doi_link, include_empty: true, text_if_empty: 'Not assigned') %>
+
+<%= @presenter.attribute_to_html(:related_url, label: t('morphosource.collections.view.about.identifiers_and_external_links.related_links'), render_as: :showcase_external_link, include_empty: true, html_dl: false) %>

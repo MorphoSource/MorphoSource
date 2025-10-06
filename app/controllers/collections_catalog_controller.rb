@@ -64,7 +64,10 @@ class CollectionsCatalogController < CatalogController
   private
 
   # Used for links to a user's managed collections
+  # E.g. /catalog/teams_projects/managed_by/1?locale=en
   def search_managed_collections
+    return unless managed_collections_search_path.include? request.path
+
     @user = User.find_by(ms_id: params["user"])
     blacklight_config.user = @user
     blacklight_config.search_builder_class = Morphosource::Users::ManagedCollectionsSearchBuilder

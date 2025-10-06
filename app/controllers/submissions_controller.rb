@@ -10,7 +10,6 @@ class SubmissionsController < ApplicationController
   include Morphosource::LinkedTeams::LinkedTeamsManagement
   include SubmissionsControllerAjaxBehavior
   include SubmissionsControllerBehavior
-  include Hyrax::Lockable
 
   load_and_authorize_resource except: [:search_po_ajax, :search_taxonomy_ajax, :validate_remote_file_ajax,
     :save_data, :organization_for_recordset, :organization_default_media_fields,

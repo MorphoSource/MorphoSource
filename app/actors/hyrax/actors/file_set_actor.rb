@@ -105,9 +105,7 @@ module Hyrax
           work.thumbnail = file_set if work.thumbnail_id.blank?
           # Save the work so the association between the work and the file_set is persisted (head_id)
           # NOTE: the work may not be valid, in which case this save doesn't do anything.
-          Rails.logger.info "[in FileSetActor] work's representative_id #{work.representative_id}, thumbnail_id #{work.thumbnail_id},  ordered_members #{work.ordered_members&.to_a.map(&:id)}"
           work.save
-          Rails.logger.info "[in FileSetActor after save] work's representative_id #{work.representative_id}, thumbnail_id #{work.thumbnail_id},  ordered_members #{work.ordered_members&.to_a.map(&:id)}"
           Hyrax.config.callback.run(:after_create_fileset, file_set, user, warn: false)
         end
       end

@@ -4,9 +4,9 @@ module Morphosource
 
 
 
-    included do
-      field :doi, type: Array, default: []
-    end
+    # included do
+    #   field :doi, type: Array, default: []
+    # end
 
     # Mints a DOI for this object if it doesn't already have one.
     # Uses Morphosource::CrossrefDoiMinter to mint the DOI.

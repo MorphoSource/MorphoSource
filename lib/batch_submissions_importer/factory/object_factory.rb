@@ -3,11 +3,10 @@ require 'batch_submissions_importer/log_subscriber'
 module BatchSubmissionsImporter
   module Factory
     class ObjectFactory
-      include Morphosource::CustomThumbnails
       extend ActiveModel::Callbacks
       define_model_callbacks :save, :create
       class_attribute :klass
-      attr_reader :attributes, :collection_ids, :files_directory, :object, :files, :parent_arks, :visibility, :do_update, 
+      attr_reader :attributes, :collection_ids, :files_directory, :object, :files, :parent_arks, :visibility, :do_update,
           :preview_file
 
       def initialize(attributes, files_dir = nil, do_update = false, preview_file = nil)
@@ -41,27 +40,26 @@ module BatchSubmissionsImporter
             work_actor.create(environment(attrs))
           end
         end
-        ingest_thumbnail_image
+        ingest_thumbnail_image(attrs)
         log_created(object)
       end
 
       def update
         attrs = create_attributes
         @object = klass.find(attrs[:id])
-        attrs.delete(:id)       
+        attrs.delete(:id)
         work_actor.update(environment(attrs))
-        ingest_thumbnail_image
+        ingest_thumbnail_image(attrs)
         log_created(object)
       end
 
-      def ingest_thumbnail_image
+      def ingest_thumbnail_image(attrs)
         if @preview_file.present? && @object.class == Media
-          @media = @object
-          @custom_thumbnail = ActionDispatch::Http::UploadedFile.new({
-            :filename => File.basename(@preview_file),
-            :tempfile => File.new("#{@preview_file}")
-          })
-          create_thumbnail 
+          custom_thumbnail = Hyrax::UploadedFile.create!(
+            file: File.new("#{@preview_file}"),
+            user: import_user(attrs)
+          )
+          AddCustomThumbnailJob.perform_later(@object.id, custom_thumbnail)
         end
       end
 

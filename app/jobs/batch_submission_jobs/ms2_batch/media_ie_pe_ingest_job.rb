@@ -208,7 +208,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
   def transfer_media_to_organization(media, organization_transfer_immediately)
     return unless media.present? && organization_transfer_immediately == true
     media.each do |m|
-      m.transfer_media_to_organization
+      TransferToOrganizationJob.perform_later(m.id)
     end
   end
 
@@ -217,7 +217,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
 
     if org.present? && org.agreement_attachment_url.present?
       media.each do |m|
-        m.copy_organization_agreement_attachment(org)
+        CopyOrganizationAgreementAttachmentJob.perform_later(m.id, org.id)
       end
     end
   end

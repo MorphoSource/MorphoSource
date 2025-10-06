@@ -527,8 +527,13 @@ module Hyrax
           delete_thumbnail
         end
         # add custom thumbnail
-        if params[:media][:custom_thumbnail].present?
-          create_thumbnail
+        if params[:media][:custom_thumbnail].present? && params[:media][:custom_thumbnail].is_a?(ActionDispatch::Http::UploadedFile)
+          hyrax_uploaded_file = Hyrax::UploadedFile.create!(
+            file: params[:media][:custom_thumbnail],
+            user: current_user
+          )
+          AddCustomThumbnailJob.perform_later(curation_concern.id, hyrax_uploaded_file)
+          flash[:info] = I18n.t('morphosource.media.alert.thumbnail_added')
         end
       end
 

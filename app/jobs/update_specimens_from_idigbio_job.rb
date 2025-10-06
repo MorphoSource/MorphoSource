@@ -8,7 +8,11 @@ class UpdateSpecimensFromIdigbioJob < Hyrax::ApplicationJob
         if force_update || Morphosource::IDigBioGetMetadataService.idigbio_record_different_from_specimen?(hit, params_for_update)
           Rails.logger.debug "Specimen #{hit.id} will be updated as a result of " + (force_update ? "force update" : "idigbio record different from specimen")
           if save_work
-            UpdateSingleSpecimenFromIdigbioJob.perform_later(hit.id, system_update=true, params_for_update)
+            # params_for_update can contain ActionController::Parameters, 
+            # which will raise UnfilteredParameters when passed to the job
+            # Therefore, recursively convert any ActionController::Parameters to Hash first
+            normalized_params = deep_normalize_for_job(params_for_update)
+            UpdateSingleSpecimenFromIdigbioJob.perform_later(hit.id, system_update=true, normalized_params)
           end
         end
       end
@@ -21,4 +25,19 @@ class UpdateSpecimensFromIdigbioJob < Hyrax::ApplicationJob
     ActiveFedora::SolrService.query(qry, rows: 999999, fl: fields)
   end
 
+  private
+
+  # Recursively convert ActionController::Parameters to Hash
+  def deep_normalize_for_job(obj)
+    case obj
+    when ActionController::Parameters
+      obj.to_unsafe_h
+    when Hash
+      obj.transform_values { |v| deep_normalize_for_job(v) }
+    when Array
+      obj.map { |v| deep_normalize_for_job(v) }
+    else
+      obj
+    end
+  end
 end

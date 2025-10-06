@@ -7,7 +7,7 @@ module Morphosource
 
       def initialize(scope)
         @current_ability = scope.current_ability
-        @user = scope.current_ability.current_user
+        @user ||= (scope.user || scope.current_ability.current_user)
         super
       end
 

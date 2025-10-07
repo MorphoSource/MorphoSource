@@ -40,7 +40,7 @@
   <% if Hyrax.config.site_announcements %>
     <div class="row showcase">
       <%= render(partial: 'announcements') %>
-      <%= render(partial: 'featured_projects') %>
+      <%= render(partial: 'featured_collections') %>
     </div>
 
     <div class="row showcase">
@@ -49,7 +49,7 @@
     </div>
   <% else %>
     <div class="row showcase">
-      <%= render(partial: 'featured_projects') %>
+      <%= render(partial: 'featured_collections') %>
       <%= render(partial: 'repository_statistics') %>
       <%= render(partial: 'for_educators') if is_core_site %>
     </div>

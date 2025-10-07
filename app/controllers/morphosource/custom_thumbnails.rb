@@ -65,15 +65,19 @@ module Morphosource
         )
       ensure
         unless @preview_file.present? # no need to remove temp file for batch submission
-          custom_thumbnail.tempfile.close
-          custom_thumbnail.tempfile.unlink
+          if custom_thumbnail.respond_to?(:tempfile)
+            custom_thumbnail.tempfile.close
+            custom_thumbnail.tempfile.unlink
+          end
         end
       end
     end
 
     def update_thumbnail_id
-      media.thumbnail_id = media.id
-      media.save
+      # get new work since this can hit race condition on work creation
+      media_to_be_saved = Media.find(media.id)
+      media_to_be_saved.thumbnail = media_to_be_saved
+      media_to_be_saved.save
     end
 
     def thumbnail_path(work)

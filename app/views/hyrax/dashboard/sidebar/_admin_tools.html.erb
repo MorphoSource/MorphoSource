@@ -92,20 +92,23 @@
         <%= menu.nav_link(hyrax.admin_appearance_path) do %>
           <span class="fa fa-paint-brush" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.appearance') %></span>
         <% end %>
+        <%= menu.nav_link(main_app.admin_homepage_path) do %>
+          <span class="fa fa-home" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.admin.sidebar.homepage') %></span>
+        <% end %>
         <%= menu.nav_link(main_app.admin_banner_path) do %>
-          <span class="fa fa-flag" aria-hidden="true"></span> <span class="sidebar-action-text"><%= "Sitewide Banner" %></span>
+          <span class="fa fa-flag" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.admin.sidebar.banner') %></span>
         <% end %>
         <%= menu.nav_link(main_app.admin_modal_path) do %>
-          <span class="fa fa-pager" aria-hidden="true"></span> <span class="sidebar-action-text"><%= "Sitewide Modal" %></span>
+          <span class="fa fa-pager" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.admin.sidebar.modal') %></span>
         <% end %>
         <%= menu.nav_link(main_app.admin_download_modal_path) do %>
-          <span class="fa fa-pager" aria-hidden="true"></span> <span class="sidebar-action-text"><%= "Download Modal" %></span>
+          <span class="fa fa-pager" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.admin.sidebar.download_modal') %></span>
         <% end %>
         <%= menu.nav_link(hyrax.admin_features_path) do %>
           <span class="fa fa-wrench" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.technical') %></span>
         <% end %>
         <%= menu.nav_link(Rails.application.routes.url_helpers.admin_pages_path) do %>
-          <span class="fa fa-newspaper" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('hyrax.admin.sidebar.simple_pages') %></span>
+          <span class="fa fa-newspaper" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.admin.sidebar.simple_pages') %></span>
         <% end %>
       <% end %>
     </li>

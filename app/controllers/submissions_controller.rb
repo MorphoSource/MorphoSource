@@ -8,7 +8,6 @@ class SubmissionsController < ApplicationController
   include MorphosourceHelper
   include Morphosource::PermissionsHelper
   include Morphosource::LinkedTeams::LinkedTeamsManagement
-  include Morphosource::CustomThumbnails
   include SubmissionsControllerAjaxBehavior
   include SubmissionsControllerBehavior
 
@@ -319,11 +318,11 @@ class SubmissionsController < ApplicationController
       new_work_id, new_work = prepare_and_create_work(work, params)
       @submission.public_send(to_id(work) + '=', new_work_id)
       create_attachment_if_needed(work, new_work_id, new_work) if ['imaging_event', 'processing_event', 'media'].include?(work)
-      # Morphosource::CustomThumbnails #todo5 verify custom thumbnails work from submissions controller
+
       if work == 'media'
-        create_thumbnail
+        create_custom_thumbnail(new_work) if params[:media][:custom_thumbnail].present?
         set_new_fund_code if @submission.fund_code.present?
-        create_organization_transfer_request(new_work) if ( organization_media_transfer == :immediate )
+        create_organization_transfer_request(new_work) if (organization_media_transfer == :immediate)
       end
     end
   end
@@ -504,8 +503,14 @@ class SubmissionsController < ApplicationController
           params.delete(field)
         elsif field == 'agreement' && submission_params[:organization_for_attachment].present?
           # copy agreement attachment from organization
-          organization_for_attachment = ( Organization.find_by(id: submission_params[:organization_for_attachment]) || OrganizationCollection.find_by(id: submission_params[:organization_for_attachment]) )
-          new_work_object.copy_organization_agreement_attachment(organization_for_attachment)
+          organization_for_attachment = (
+            Organization.find_by(id: submission_params[:organization_for_attachment]) ||
+            OrganizationCollection.find_by(id: submission_params[:organization_for_attachment])
+          )
+          CopyOrganizationAgreementAttachmentJob.perform_later(
+            new_work_object.id,
+            organization_for_attachment.id
+          )
         end
       end
     end
@@ -519,6 +524,21 @@ class SubmissionsController < ApplicationController
     }
   end
 
+  ### Media additional work creation methods
+
+  def create_custom_thumbnail(work)
+    if (
+      params[:media][:custom_thumbnail].present? &&
+      params[:media][:custom_thumbnail].is_a?(ActionDispatch::Http::UploadedFile)
+    )
+      hyrax_uploaded_file = Hyrax::UploadedFile.create!(
+        file: params[:media][:custom_thumbnail],
+        user: current_user
+      )
+      AddCustomThumbnailJob.perform_later(work.id, hyrax_uploaded_file)
+    end
+  end
+
   def set_new_fund_code
     return nil if !FundCode.exists?(@submission.fund_code) || !@submission.media_id.present?
     FundCodeMediaAssociation.new(
@@ -528,10 +548,8 @@ class SubmissionsController < ApplicationController
     ).save!
   end
 
-  # Methods related to transferring media to organization control
-
   def create_organization_transfer_request(work)
-    work.transfer_media_to_organization
+    TransferToOrganizationJob.perform_later(work.id)
   end
 
   # Utility functions

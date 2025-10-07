@@ -13,7 +13,7 @@
 <div class="list-group-item d-flex" style="gap: 5px;">
   <span class="mr-auto">
     <i class="far fa-arrow-alt-circle-up" aria-hidden="true"></i>
-    <%= link_to('Media Deposited', main_app.media_search_path({"f"=>{"depositor_ssim"=>["#{user.ms_id}"]}})) %>
+    <%= link_to('Media Deposited', main_app.media_search_path({"f"=>{"depositor"=>["#{user.ms_id}"]}})) %>
   </span>
   <% if @presenter.deposited_media_filesize.present? %>
     <span class="badge badge-bootstrap-default badge-pill badge-secondary"><%= @presenter.deposited_media_filesize %> </span>
@@ -24,7 +24,7 @@
 <div class="list-group-item d-flex" style="gap: 5px;">
   <span class="mr-auto">
     <i class="far fa-check-square" aria-hidden="true"></i>
-    <%= link_to('Media Managed', main_app.media_search_path({"f"=>{"user_with_ownership_ssi"=>["#{user.ms_id}"]}})) %>
+    <%= link_to('Media Managed', main_app.media_search_path({"f"=>{"owner"=>["#{user.ms_id}"]}})) %>
   </span>
   <% if @presenter.managed_media_filesize.present? %>
     <span class="badge badge-bootstrap-default badge-pill badge-secondary"><%= @presenter.managed_media_filesize %> </span>

@@ -146,7 +146,7 @@ module Morphosource
     end
 
     def uploaded_file_abilities
-      return unless registered_user?
+      return unless contributor? || admin?
       can :create, [Hyrax::UploadedFile, BatchUploadItem]
       can :destroy, Hyrax::UploadedFile, user: current_user
       can :find, Hyrax::UploadedFile, user: current_user

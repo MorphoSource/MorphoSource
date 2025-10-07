@@ -448,10 +448,12 @@ class Media < Morphosource::Works::Base
   end
 
   def check_for_organization_transfer
-    if ( self.visibility_changed? &&
-         self.visibility == 'open' &&
-         self.organization_transfer_on_publish )
-      transfer_media_to_organization
+    if (
+      self.visibility_changed? &&
+      self.visibility == 'open' &&
+      self.organization_transfer_on_publish
+    )
+      TransferToOrganizationJob.perform_later(self.id)
     end
   end
 

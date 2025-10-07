@@ -4,38 +4,49 @@ require 'rails_helper'
 RSpec.describe Hyrax::HomepageController, type: :controller do
   describe '#index' do
     context 'featured_projects' do
-      let(:guest)   { FactoryBot.build(:user, :guest) }
+      let(:homepage_form)             { Morphosource::Forms::Admin::Homepage.new }
 
-      let!(:projectA)               { Collection.create(id: 'projectA', title: ['Project_A'], collection_type_gid: project_collection_type.to_global_id, visibility: 'open') }
-      let!(:projectB)               { Collection.create(id: 'projectB', title: ['Project_B'], collection_type_gid: project_collection_type.to_global_id, visibility: 'open') }
-      let!(:projectC)               { Collection.create(id: 'projectC', title: ['Project_C'], collection_type_gid: project_collection_type.to_global_id, visibility: 'open') }
-      let!(:projectD)               { Collection.create(id: 'projectD', title: ['Project_D'], collection_type_gid: project_collection_type.to_global_id, visibility: 'open') }
-      let!(:projectE)               { Collection.create(id: 'projectE', title: ['Project_E'], collection_type_gid: project_collection_type.to_global_id, visibility: 'open') }
-      let!(:projectF)               { Collection.create(id: 'projectF', title: ['Project_F'], collection_type_gid: project_collection_type.to_global_id, visibility: 'open') }
-      let(:all_project_ids)         { [projectA.id, projectB.id, projectC.id, projectD.id, projectE.id, projectF.id] }
-      let(:selected_project_ids)    { [projectA.id, projectC.id, projectE.id] }
+      let!(:project)                  { FactoryBot.create(:project_document) }
+      let!(:projectA)                 { FactoryBot.create(:project_document) }
+      let!(:projectB)                 { FactoryBot.create(:project_document) }
+      let!(:projectC)                 { FactoryBot.create(:project_document) }
 
-      before do
-        sign_in guest
+      let!(:team)                     { FactoryBot.create(:team_document) }
+      let!(:organization)             { FactoryBot.create(:organization_collection_document) }
+      let!(:media_list)               { FactoryBot.create(:media_list_document) }
+      let!(:sequential_section_list)  { FactoryBot.create(:sequential_section_list_document) }
+
+      let(:all_project_team_ids)      { [project.id, projectA.id, projectB.id, projectC.id, team.id] }
+      let(:selected_collection_ids)   { [project.id, organization.id, media_list.id] }
+
+      context 'when no featured collections are configured' do
+        it 'returns 5 projects/teams' do
+          get :index
+          expect(controller.instance_variable_get(:@featured_collections).map(&:id)).to match_array(all_project_team_ids)
+        end
       end
 
-      it 'returns appropriate projects' do
-        # no featured projects configured
-        Rails.application.config.featured_project_ids = []
-        get :index
-        expect(controller.instance_variable_get(:@featured_projects).map(&:id)).to match_array(all_project_ids)
-        
-        # findable featured projects configured
-        controller.instance_variable_set(:@featured_projects, nil)
-        Rails.application.config.featured_project_ids = selected_project_ids
-        get :index
-        expect(controller.instance_variable_get(:@featured_projects).map(&:id)).to match_array(selected_project_ids)
-        
-        # un-findable featured projects configured
-        controller.instance_variable_set(:@featured_projects, nil)
-        Rails.application.config.featured_project_ids = ['A','B','C']
-        get :index
-        expect(controller.instance_variable_get(:@featured_projects).map(&:id)).to match_array(all_project_ids)
+      context 'when findable featured collections are configured' do
+        before do
+          homepage_form.send(:update_block,"featured_collections", selected_collection_ids.join(","))
+        end
+
+        it 'returns the selected collections' do
+          get :index
+          expect(controller.instance_variable_get(:@featured_collections).map(&:id)).to match_array(selected_collection_ids)
+        end
+      end
+
+      context 'when un-findable featured collections are configured' do
+        let(:bogus_ids) { ['bogus1', 'bogus2'] }
+        before do
+          homepage_form.send(:update_block,"featured_collections", (selected_collection_ids + bogus_ids).join(","))
+        end
+
+        it 'returns only the findable selected collections' do
+          get :index
+          expect(controller.instance_variable_get(:@featured_collections).map(&:id)).to match_array(selected_collection_ids)
+        end
       end
     end
   end

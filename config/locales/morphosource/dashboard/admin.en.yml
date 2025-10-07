@@ -1,5 +1,12 @@
 en:
   morphosource:
+    admin:
+      sidebar:
+        homepage: Homepage
+        banner: Sitewide Banner
+        modal: Sitewide Modal
+        download_modal: Download Modal
+        simple_pages: Simple Pages
     dashboard:
       admin:
         data_curation:
@@ -8,3 +15,4 @@ en:
           page_title: Fund Code Control Panel
         import_slides:
           page_title: Import Slides
+

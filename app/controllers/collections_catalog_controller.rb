@@ -2,6 +2,8 @@
 class CollectionsCatalogController < CatalogController
   include CatalogControllerRestApiBehavior
 
+  before_action :search_managed_collections, only: :index
+
   configure_blacklight do |config|
     config.search_builder_class = Morphosource::Catalog::CollectionsCatalogSearchBuilder
 
@@ -57,5 +59,17 @@ class CollectionsCatalogController < CatalogController
 
   def document_type
     'collection'
+  end
+
+  private
+
+  # Used for links to a user's managed collections
+  # E.g. /catalog/teams_projects/managed_by/1?locale=en
+  def search_managed_collections
+    return unless request.path.include? "/managed_by/"
+
+    @user = User.find_by(ms_id: params["user"])
+    blacklight_config.user = @user
+    blacklight_config.search_builder_class = Morphosource::Users::ManagedCollectionsSearchBuilder
   end
 end

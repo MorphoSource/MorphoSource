@@ -101,6 +101,7 @@ module Morphosource
           org_data_manager = User.find_by_user_key(organization_work&.data_manager&.first)
           organization_collection.managers << org_data_manager unless organization_collection.managers.include?(org_data_manager)
           organization_collection.media_ownership_transfer = true
+          organization_collection.save
         end
 
         ### STEP 3. Copy members and move projects from teams ###
@@ -129,9 +130,14 @@ module Morphosource
             end
             organization_team.save!
           end
+
+          # special case: re-save data managed to org coll in some cases
+          organization_collection.reload
+          if organization_collection.managers.present? && organization_work.date_managed.present? && organization_collection.date_managed != organization_work.date_managed
+            organization_collection.date_managed = organization_work.date_managed
+            organization_collection.save!
+          end
         end
-
-
 
         ### STEP 4. All media associated with the org and owned by the data manager should be owned by the organization directly ###
         # Note: Because we have to check org association, this has to be done before moving records to associate with new org
@@ -159,9 +165,9 @@ module Morphosource
 
           # banner and logo image
           CollectionBrandingInfo.where(collection_id: organization_team.id).each do |info|
-            old_file_path = info.local_path
+            old_file_path = info.local_path.sub("/opt/morphosource/root/", "/app/samvera/hyrax-webapp/")
             info.collection_id = organization_collection.id
-            info.local_path = info.find_local_filename(info.collection_id, info.role, File.basename(old_file_path))
+            # info.local_path = info.find_local_filename(info.collection_id, info.role, File.basename(old_file_path))
             info.save(old_file_path) # will delete old version of file
           end
 
@@ -197,6 +203,21 @@ module Morphosource
             "member_of_collection_ids_ssim:#{organization_team.id} AND -media_organization_id_ssim:#{organization_work.id}",
             rows: 999999
           )
+          non_organization_team_media_ids = non_organization_team_media_docs.map { |d| d["id"] }
+
+          # all organization media owned by the team should be removed from the team
+          # doing this here instead of at team deletion so we can check that the media are removed before completing migration
+          # Use ModifyCollectionMembershipJob instead of RemoveCollectionMembersJob to bypass reapply_org_team_access method
+          organization_team_media_ids = all_media_ids - non_organization_team_media_ids
+          organization_team_media_ids.each do |organization_team_media_id|
+            ModifyCollectionMembershipJob.set(
+              queue: Hyrax.config.update_slow_queue_name
+            ).perform_later(
+              media_id: organization_team_media_id,
+              add_to_collection_ids: [],
+              remove_from_collection_ids: [organization_team.id]
+            )
+          end
 
           if non_organization_team_media_docs.present?
             # create the custom project
@@ -227,7 +248,6 @@ module Morphosource
             organization_collection.save!
 
             # associate media with this project and not with the team
-            non_organization_team_media_ids = non_organization_team_media_docs.map { |d| d["id"] }
             non_organization_team_media_ids.each do |non_organization_team_media_id|
               ModifyCollectionMembershipJob.set(
                 queue: Hyrax.config.update_slow_queue_name
@@ -238,22 +258,6 @@ module Morphosource
               )
             end
 
-            # all organization media owned by the team should be removed from the team
-            # doing this here instead of at team deletion so we can check that the media are removed before completing migration
-            # Use ModifyCollectionMembershipJob instead of RemoveCollectionMembersJob to bypass reapply_org_team_access method
-            organization_team_media_ids = all_media_ids - non_organization_team_media_ids
-
-            organization_team_media_ids.each do |organization_team_media_id|
-              ModifyCollectionMembershipJob.set(
-                queue: Hyrax.config.update_slow_queue_name
-              ).perform_later(
-                media_id: organization_team_media_id,
-                add_to_collection_ids: [],
-                remove_from_collection_ids: [organization_team.id]
-              )
-            end
-
-
             # all media with team access grants need to have those grants removed
             team_access_media_ids = SolrDocument.where("has_model_ssim:Media AND
                                                         read_access_group_ssim:#{organization_team.id}_* OR
@@ -263,7 +267,7 @@ module Morphosource
             team_access_media_ids -= all_media_ids # team member media should have their access grants removed above by the ModifyCollectionMembershipJob
 
             team_access_media_ids.each do |team_access_media_id|
-              RemoveCollectionAccessGrantsJob.perform_later(collection_id: organization_team.id, work_id: team_access_media_id)
+              Morphosource::RemoveCollectionAccessGrantsJob.perform_later(collection_id: organization_team.id, work_id: team_access_media_id)
             end
           end
         end
@@ -419,14 +423,23 @@ module Morphosource
         end
 
         ### STEP 3. Have all team sub-projects been removed from the organization team? ###
-        Rails.logger.info "STEP 3. Have all media, objects, and sub-projects been removed from the organization team?"
+        Rails.logger.info "STEP 3. Have all non-org team media, objects, and sub-projects been removed from the organization team?"
 
         if organization_team.present?
           if Collection.where("member_of_collection_ids_ssim:#{organization_team.id}").present?
             raise "STEP 3 FAILED. Organization team still retains child projects."
           end
 
-          if organization_team.media_docs.present?
+          legacy_organization_team_media_docs = ActiveFedora::SolrService.query(
+            "member_of_collection_ids_ssim:#{organization_team.id} AND media_organization_id_ssim:#{organization_work.id}",
+            rows: 999999
+          )
+          non_organization_team_media_docs = ActiveFedora::SolrService.query(
+            "member_of_collection_ids_ssim:#{organization_team.id} AND -media_organization_id_ssim:#{organization_collection.id}",
+            rows: 999999
+          )
+
+          if legacy_organization_team_media_docs.present? || non_organization_team_media_docs.present?
             raise "STEP 3 FAILED. Organization team still retains media."
           end
         end
@@ -487,9 +500,14 @@ module Morphosource
         ### STEP 7. Do any organization transfers exist naming data manager as the receiving user? ###
         Rails.logger.info "STEP 7. Do any organization transfers exist naming data manager as the receiving user?"
 
+        org_media_ids = ActiveFedora::SolrService.query(
+          "has_model_ssim:Media && media_organization_id_ssim:#{organization_collection.id}", rows: 999999, fl: ["id"]
+        ).map { |doc| doc['id'] }
+
         if (
           org_data_manager.present? &&
-          ProxyDepositRequest.where(receiving_user_id: org_data_manager.id, organization_transfer: true).count > 0
+          org_media_ids.present? &&
+          ProxyDepositRequest.where(work_id: org_media_ids, receiving_user_id: org_data_manager.id, organization_transfer: true).count > 0
         )
           raise "STEP 7 FAILED. Data manager user is still named on organization transfer requests."
         end

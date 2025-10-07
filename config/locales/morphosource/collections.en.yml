@@ -71,10 +71,9 @@ en:
             required_archival_of_published_derivatives: Required archival of published derivatives
             rights_holder: IP holder
             rights_statement: Copyright statement
-          related_links:
+          identifiers_and_external_links:
             header:
-              title: Related Links
-              hint: this is a hint for related links
+              title: Identifiers and External Links
             related_links: Related links
           views:
             header:

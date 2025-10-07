@@ -200,6 +200,10 @@ Rails.application.routes.draw do
         get 'banner', action: :show, controller: :banners, as: 'admin_banner'
         patch 'banner', action: :update, controller: :banners, as: 'admin_banner_update'
 
+        # homepage configuration
+        get 'homepage', action: :show, controller: :homepage, as: 'admin_homepage'
+        patch 'homepage', action: :update, controller: :homepage, as: 'admin_homepage_update'
+
         # modal configuration
         get 'modal', action: :show, controller: :modals, as: 'admin_modal'
         patch 'modal', action: :update, controller: :modals, as: 'admin_modal_update'
@@ -619,7 +623,7 @@ Rails.application.routes.draw do
     get 'all', to: 'all_catalog#index', as: 'all_search'
 
     # user managed collections
-    get 'teams_projects/managed_by/:user', to: 'user_managed_collections_catalog#index', as: 'managed_collections_search'
+    get 'teams_projects/managed_by/:user', to: 'collections_catalog#index', as: 'managed_collections_search'
 
     # send to all_catalog controller in order to restrict access to admins only
     resource :catalog, only: [:index], as: 'catalog', path: '/', controller: 'all_catalog' do

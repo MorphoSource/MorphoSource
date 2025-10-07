@@ -62,7 +62,6 @@ en:
         media_lists: 'Media Lists'
         sequential_section_lists: 'Sequential Section Lists'
         settings: Configuration
-        simple_pages: Simple Pages
     user_profile:
       tab_administration: User Administration
     media:

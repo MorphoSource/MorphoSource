@@ -22,4 +22,38 @@ RSpec.describe Morphosource::Collections::MediaListPresenter do
   describe 'collection_type_title' do
     it { expect(subject.collection_type_title).to eq("Media List") }
   end
+
+  describe '#doi_badge' do
+    context 'when doi is present' do
+      before do
+        allow(subject).to receive(:doi).and_return(['10.1111/media.12345'])
+      end
+
+      it 'returns a span with the DOI and badge classes' do
+        expect(subject.doi_badge).to include('DOI: 10.1111/media.12345')
+        expect(subject.doi_badge).to include('badge')
+        expect(subject.doi_badge).to include('badge-info')
+      end
+    end
+
+    context 'when doi is empty' do
+      before do
+        allow(subject).to receive(:doi).and_return([])
+      end
+
+      it 'returns an empty string' do
+        expect(subject.doi_badge).to eq('')
+      end
+    end
+
+    context 'when doi is nil' do
+      before do
+        allow(subject).to receive(:doi).and_return(nil)
+      end
+
+      it 'returns an empty string' do
+        expect(subject.doi_badge).to eq('')
+      end
+    end
+  end
 end

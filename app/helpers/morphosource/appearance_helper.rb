@@ -40,6 +40,14 @@ module Morphosource
         modal.guilt_trip_body&.body&.to_html
       end
 
+      # Displays the current title of the collection id being edited in the featured collections form
+      def current_featured_collection_title(collection_id)
+        return if collection_id.blank?
+
+        collection = ::SolrDocument.find(collection_id) rescue nil
+        "Current: #{collection&.title_or_label || 'Not Found'}"
+      end
+
       private
 
       # returns true if the modal should be shown based on the frequency setting

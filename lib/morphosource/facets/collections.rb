@@ -2,11 +2,11 @@ module Morphosource
   module Facets
     module Collections
 
-    ID_HELPER_METHODS = [
-      :collection_title_by_id,
-      :device_title_by_id,
-      :title_by_id
-    ].freeze
+      ID_HELPER_METHODS = [
+        :collection_title_by_id,
+        :device_title_by_id,
+        :title_by_id
+      ].freeze
 
       # displays values and pagination links for a single facet field
       # overrides Blacklight 7.40.0 app/controllers/concerns/blacklight/catalog
@@ -155,11 +155,25 @@ module Morphosource
       # ex: {"000202905"=>"Collection Title 1", "000200071"=>"Collection Title 2"}
       def record_titles
         record_ids = @response.aggregations[@facet.field].items.map { |i| i.value }
-        if @facet.key == 'device'
-          Morphosource::SolrService.new.get_docs(nil, fl: 'id,title_tesim,creator_tesim', fq: ["id:(#{record_ids.join(' OR ')})"]).map {|h| [h["id"], "#{ h['creator_tesim']&.first || "" } #{ h['title_tesim']&.first }"] }.to_h
+        service = Morphosource::SolrService.new
+        fl, title = sort_title(@facet.key)
+        # batch requests to avoid solr limit
+        record_ids.each_slice(500).flat_map do |batch|
+          fq = "id:(#{batch.join(' OR ')})"
+          service.get_docs(nil, fl: fl, fq: [fq]).map { |h| [h["id"], title[h]] }
+        end.to_h
+      end
+
+      def sort_title(facet_key)
+        case facet_key
+        when 'device'
+          fl = 'id,title_tesim,creator_tesim'
+          title = ->(hash) { "#{ hash['creator_tesim']&.first || "" } #{ hash['title_tesim']&.first }" }
         else
-          Morphosource::SolrService.new.get_docs(nil, fl: 'id,title_tesim', fq: ["id:(#{record_ids.join(' OR ')})"]).map {|h| [h["id"], h["title_tesim"].first]}.to_h
+          fl = 'id,title_tesim'
+          title = ->(hash) { "#{hash["title_tesim"].first}" }
         end
+        [fl, title]
       end
     end
   end

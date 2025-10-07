@@ -11,8 +11,8 @@
   </div>
 </div>
 
-<div class="card">
-  <div class="card-body cart-page">
+<div class="card d-inline-block">
+  <div class="card-body cart-page" style="min-width: 946px">
     <h2 class="sr-only">Works listing</h2>
     <%= render 'morphosource/my/cart/batch_actions' %>
     <%= render 'morphosource/my/cart/downloadable_list' %>
@@ -24,8 +24,8 @@
     <span class="fa fa-minus-circle" aria-hidden="true" style="color: #555;"></span>
     Restricted Items ( <%= @restricted_count %> )
 </b></div>
-<div class="card">
-  <div class="card-body">
+<div class="card d-inline-block">
+  <div class="card-body cart-page" style="min-width: 946px">
     <h2 class="sr-only">Works listing</h2>
     <%= render 'morphosource/my/cart/batch_request_actions' %>
     <%= render 'morphosource/my/cart/requestable_list' %>

@@ -6,15 +6,15 @@ module Morphosource
 
         self.model_class = ::MediaList
 
-        self.terms += [:list_type]
+        self.terms += [:list_type, :doi]
 
-        self.single_valued_fields = [:title, :description, :list_type]
+        self.single_valued_fields = [:title, :description, :list_type, :doi]
 
         delegate :blacklight_config, to: Morphosource::Collections::MediaListsController
 
         # These show above the fold
         def primary_terms
-          super + [:list_type]
+          super + [:list_type, :doi]
         end
 
       end

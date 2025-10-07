@@ -1,0 +1,17 @@
+<% if @collection.doi.present? %>
+  <div class="doi-section">
+    <h5>DOI</h5>
+    <p>
+      This collection has been assigned the DOI:
+      <a href="https://doi.org/<%= @collection.doi %>" target="_blank" rel="noopener noreferrer">
+        <%= @collection.doi %>
+      </a>
+    </p>
+  </div>
+<% else %>
+  <div class="doi-section">
+    <h2>DOI</h2>
+    <p>This list does not have a DOI assigned. To request a DOI, please send an email to <a href="mailto:morphosource@duke.edu">morphosource@duke.edu</a>.</p>
+    <p>Note that once a DOI has been assigned, the media list metadata and contents can no longer be edited. List managers will still be able to add and remove other users as list managers in order to access metadata and usage statistics for the list.<p>
+  </div>
+<% end %>

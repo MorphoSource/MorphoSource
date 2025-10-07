@@ -3,7 +3,7 @@
     <div class="container-fluid mb-1 pt-0">
       <%= simple_form_for @form, url: collection_form_url(@form), wrapper: :showcase_default, html: { class: 'editor' } do |f| %>
 
-        <div class="row no-horizontal-padding <%= @collection.project? ? '' : 'mb-3' %>">
+        <div class="row no-horizontal-padding mb-3">
           <%= render 'morphosource/dashboard/collections/details/action_buttons', f: f %>
           <div class="col-md-6">
             <div class="content-block">
@@ -18,6 +18,9 @@
               <%= render_edit_field_partial('contributor', f: f) %>
               <%= render_edit_field_partial('based_near', f: f) %>
               <%= render_edit_field_partial('related_url', f: f) %>
+              <% byebug %>
+              <%= @presenter.attribute_to_html(:doi, render_as: :showcase_doi_link, include_empty: true, text_if_empty: 'Not assigned', show_hint: true) %>
+
 
               <div class="row">
                 <div class="col-6 showcase-label">
@@ -50,15 +53,13 @@
           <div class="col-md-6">
             <div class="content-block">
               <% if @form.persisted? %>
-                <% if collection_brandable?(collection: @collection) %>
-                  <%= render 'morphosource/dashboard/collections/details/branding', f: f %>
-                <% end %>
+                <%= render 'morphosource/dashboard/collections/details/branding', f: f %>
+                <%= render 'morphosource/dashboard/collections/media_lists/details/doi' %>
               <% end %>
             </div>
 
           <%# End form here %>
           <% end %>
-
             <div class="content-block">
               <%= render 'morphosource/dashboard/collections/media_lists/details/admin_form' %>
             </div>

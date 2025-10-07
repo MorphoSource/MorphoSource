@@ -6,6 +6,7 @@
 # @see https://github.com/samvera/hyrax/wiki/Hyrax-Valkyrie-Usage-Guide#forms
 # @see https://github.com/samvera/valkyrie/wiki/ChangeSets-and-Dirty-Tracking
 class TaxonomyResourceForm < Hyrax::Forms::PcdmObjectForm(TaxonomyResource)
+  include Morphosource::ValkyrieFormBehavior
   include Hyrax::FormFields(:taxonomy_resource)
 
   # Define custom form fields using the Valkyrie::ChangeSet interface

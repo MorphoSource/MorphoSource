@@ -4,7 +4,8 @@ module Morphosource
       ##
       # Creates a Taxonomy Work from a ChangeSet
       class WorkCreate < Hyrax::Transactions::Transaction
-        DEFAULT_STEPS = ['change_set.set_default_admin_set',
+        DEFAULT_STEPS = ['change_set.assign_id',
+                        'change_set.set_default_admin_set',
                         'change_set.ensure_admin_set',
                         'change_set.set_user_as_depositor',
                         'taxonomy_change_set.set_title',

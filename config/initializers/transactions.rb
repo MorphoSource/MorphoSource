@@ -3,6 +3,12 @@
 class ApplicationContainerOverrides
   extend Dry::Container::Mixin
 
+  namespace 'change_set' do |ops|
+    ops.register 'assign_id' do
+      Morphosource::Transactions::Taxonomy::Steps::AssignID.new
+    end
+  end
+
   namespace 'taxonomy_change_set' do |ops|
     ops.register 'create_work' do
       Morphosource::Transactions::Taxonomy::WorkCreate.new

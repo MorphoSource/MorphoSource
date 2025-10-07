@@ -13,24 +13,27 @@ module Morphosource
     # Valkyrie work, and should be used anywhere outside of a work's primary controller for creating
     # works.
     class CreateWorkService
-      attr_reader :model, :attributes, :user, :files, :permissions_params, :form
+      attr_reader :model, :params, :user, :work_attributes_key, :work_attributes, :files, :permissions_params, :form
 
       ##
       # Initialize the service specific to a model with attributes and depositing user.
       #
       # @param model [Constant, String] Model class or string version of model class name for work.
-      # @param attributes [hash] Hash of key-value field attributes for work. Do not nest attributes
-      #                          in param-style work type key (?). Special keys to be handled include
-      #                          :uploaded_files and :permissions_attributes.
+      # @param params [hash] The contextual parameters for the action; ApplicationController#params
       # @param user [User] the depositing user.
-      def initialize(model:, attributes:, user:)
+      # @param work_attributes_key [Symbol] the name of the key within the params that contains
+      #                                     the work's attributes. Optional, will try to use model
+      #                                     name if not present.
+      def initialize(model:, params:, user:, work_attributes_key: nil)
         @model = model
-        @attributes = attributes
+        @params = params
         @user = user
+        @work_attributes_key = work_attributes_key
 
-        uploaded_file_ids = attributes.delete(:uploaded_files)
+        @work_attributes = params.fetch(attributes_key, {})
+        uploaded_file_ids = params.fetch(:uploaded_files, [])
         @files = Hyrax::UploadedFile.find(uploaded_file_ids) if uploaded_file_ids.present?
-        @permissions_params = attributes.delete(:permissions_attributes)
+        @permissions_params = params.fetch(:permissions, [])
         work = model_class.new
         @form = Hyrax::FormFactory.new.build(work, nil, nil)
       end
@@ -42,7 +45,7 @@ module Morphosource
       #                 created work or execute block if not present, and :failure as tuple with
       #                 0) symbol error and 1) failure object with :full_messages method.
       def call
-        form.validate(attributes)
+        form.validate(work_attributes)
         transactions[transaction_name].with_step_args(**step_args).call(form)
       end
 
@@ -50,6 +53,10 @@ module Morphosource
 
       def model_class
         model.is_a?(String) ? model.constantize : model
+      end
+
+      def attributes_key
+        work_attributes_key.nil? ? model_class.to_s.underscore.to_sym : work_attributes_key
       end
 
       def transactions

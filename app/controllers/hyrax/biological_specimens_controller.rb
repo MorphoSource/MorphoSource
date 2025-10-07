@@ -105,19 +105,21 @@ module Hyrax
       end
     end
 
-    # todovalk: update this for new TaxonomyResource
+    # todovalkdone: update this for new TaxonomyResource
     def new_gbif_taxonomy(t_id)
       gbif_key = t_id.sub!('gbif:', '')
       gbif_params = ActionController::Parameters.new(
-          Morphosource::GbifSearchService.taxonomy_params_from_gbif(gbif_key))
-      gbif_params.merge!({ visibility: Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC })
-
-      result = Morphosource::Action::CreateWorkService(
-        model: TaxonomyResource,
-        attributes: gbif_params,
-        user: User.batch_user
+          { taxonomy: Morphosource::GbifSearchService.taxonomy_params_from_gbif(gbif_key) }
       )
-      result.value!.id
+      gbif_params[:taxonomy].merge!({ visibility: Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC })
+
+      result = Morphosource::Action::CreateWorkService.new(
+        model: TaxonomyResource,
+        params: gbif_params,
+        user: ::User.batch_user,
+        work_attributes_key: :taxonomy
+      ).call
+      result.value!.id.to_s
     end
 
     def old_orgs

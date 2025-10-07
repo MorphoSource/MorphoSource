@@ -48,7 +48,7 @@ module Morphosource
       private
 
       def attributes_key
-        work_attributes_key.nil? ? model_class.to_s.underscore.to_sym : work_attributes_key
+        work_attributes_key.nil? ? work.model_name.to_s.underscore.to_sym : work_attributes_key
       end
 
       def transactions

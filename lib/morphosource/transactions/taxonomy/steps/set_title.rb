@@ -24,14 +24,14 @@ module Morphosource
 
             def generated_title(obj)
               if obj.taxonomy_genus.present?
-                species_term = obj.taxonomy_species.present? ? " #{obj.taxonomy_species.first}" : " sp."
-                subspecies_term = obj.taxonomy_species.present? && obj.taxonomy_subspecies.present? ? " #{obj.taxonomy_subspecies.first}" : ""
-                obj.taxonomy_genus.first + species_term + subspecies_term
+                species_term = obj.taxonomy_species.present? ? " #{Array(obj.taxonomy_species).first}" : " sp."
+                subspecies_term = obj.taxonomy_species.present? && obj.taxonomy_subspecies.present? ? " #{Array(obj.taxonomy_subspecies).first}" : ""
+                Array(obj.taxonomy_genus).first + species_term + subspecies_term
               else
                 lowest_rank_term = 'Taxonomy'
                 higher_ranks.each do |hr|
                   rank_value = obj.public_send(hr)
-                  lowest_rank_term = rank_value.first if rank_value.present?
+                  lowest_rank_term = Array(rank_value).first if rank_value.present?
                 end
                 "#{lowest_rank_term} indet."
               end

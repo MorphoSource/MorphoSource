@@ -17,6 +17,9 @@ class InheritPermissionsJob < Hyrax::ApplicationJob
         work = Morphosource::Works::Base.find(work)
       end
 
+      fileset_ids = work.file_sets&.map(&:id)
+      Rails.logger.info "[InheritPermissionsJob] Copying permissions from work #{work.id} to filesets #{fileset_ids.join(', ')}"
+
       work.file_sets.each do |file|
         file.reload
         attribute_map = work.permissions.map(&:to_hash)

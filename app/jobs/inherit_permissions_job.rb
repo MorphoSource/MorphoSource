@@ -13,14 +13,16 @@ class InheritPermissionsJob < Hyrax::ApplicationJob
       retries ||= 0
 
       if work.is_a? String
-        return unless Morphosource::Works::Base.exists?(work)
-        work = Morphosource::Works::Base.find(work)
+        if Morphosource::Works::Base.exists?(work)
+          work = Morphosource::Works::Base.find(work)
+        else
+          Rails.logger.info "[InheritPermissionsJob] Work #{work} does not exist, skipping"
+          return
+        end
       end
 
-      fileset_ids = work.file_sets&.map(&:id)
-      Rails.logger.info "[InheritPermissionsJob] Copying permissions from work #{work.id} to filesets #{fileset_ids.join(', ')}"
-
       work.file_sets.each do |file|
+        Rails.logger.info "[InheritPermissionsJob] Copying permissions from work #{work.id} to fileset #{file.id}"
         file.reload
         attribute_map = work.permissions.map(&:to_hash)
 

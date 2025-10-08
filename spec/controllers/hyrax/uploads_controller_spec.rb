@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Hyrax::UploadsController do
-  let(:user) { create(:user) }
+  let(:user) { create(:contributor) }
 
   describe "#create" do
     let(:file) { File.open(fixture_path + '/bunny/bunny.ply') }
@@ -14,9 +14,9 @@ RSpec.describe Hyrax::UploadsController do
       context "when sending file as single chunk" do
         it "is successful" do
           post :create, params: {
-            files: [file], 
+            files: [file],
             upload_hash: SecureRandom.uuid,
-            format: 'json' 
+            format: 'json'
           }
           expect(response).to have_http_status(:success)
           expect(assigns(:upload)).to be_kind_of Hyrax::UploadedFile
@@ -34,9 +34,9 @@ RSpec.describe Hyrax::UploadsController do
         it "is successful" do
           # upload first chunk
           post :create, params: {
-              files: [file_chunk1], 
+              files: [file_chunk1],
               upload_hash: upload_hash,
-              format: 'json' 
+              format: 'json'
             }
           expect(response).to have_http_status(:success)
           expect(assigns(:upload)).to be_kind_of Hyrax::UploadedFile

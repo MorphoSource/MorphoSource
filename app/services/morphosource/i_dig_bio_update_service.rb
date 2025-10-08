@@ -40,14 +40,14 @@ module Morphosource
       end
     end
 
-    # todovalk: update this
     def prepare_and_create_taxonomy(params)
-      attributes_for_actor = Hyrax::TaxonomyForm.model_attributes(params)
-      attributes_for_actor.merge!({ visibility: Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC })
-      curation_concern = Taxonomy.new
-      env = Hyrax::Actors::Environment.new(curation_concern, ::Ability.new(User.find_by_ms_id(@specimen.depositor)), attributes_for_actor)
-      Hyrax::CurationConcern.actor.create(env)
-      return curation_concern.id
+      attrs = params.merge({ visibility: Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC })
+
+      Morphosource::Action::CreateWorkService.new(
+        model: TaxonomyResource,
+        params: { taxonomy_resource: attrs },
+        user: User.find_by_ms_id(@specimen.depositor)
+      ).call.value!.id.to_s
     end
 
     def link_taxonomies

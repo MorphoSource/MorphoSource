@@ -6,6 +6,8 @@ module BatchSubmissionsImporter
       extend ActiveModel::Callbacks
       define_model_callbacks :save, :create
       class_attribute :klass
+      class_attribute :valkyrie_klass
+
       attr_reader :attributes, :collection_ids, :files_directory, :object, :files, :parent_arks, :visibility, :do_update,
           :preview_file
 
@@ -34,21 +36,44 @@ module BatchSubmissionsImporter
 
       def create
         attrs = create_attributes
-        @object = klass.new
-        run_callbacks :save do
-          run_callbacks :create do
-            work_actor.create(environment(attrs))
+        if Hyrax.config.use_valkyrie? && valkyrie_klass.present?
+          # create Valkyrie resource
+          @object = Morphosource::Action::CreateWorkService.new(
+            model: valkyrie_klass,
+            params: { valkyrie_klass.to_s.underscore.to_sym: attrs },
+            user: import_user(attrs)
+          ).call.value!
+        else
+          # create AF work
+          @object = klass.new
+          run_callbacks :save do
+            run_callbacks :create do
+              work_actor.create(environment(attrs))
+            end
           end
         end
+
         ingest_thumbnail_image(attrs)
         log_created(object)
       end
 
       def update
         attrs = create_attributes
-        @object = klass.find(attrs[:id])
-        attrs.delete(:id)
-        work_actor.update(environment(attrs))
+        if Hyrax.config.use_valkyrie? && valkyrie_klass.present?
+          # update Valkyrie resource
+          unsaved_object = Hyrax.query_service.find_by(id: attrs[:id])
+          attrs.delete(:id)
+          @object = Morphosource::Action::UpdateWorkService.new(
+            work: unsaved_object,
+            params: { unsaved_object.model_name.to_s.underscore.to_sym: attrs }
+          ).call.value!
+        else
+          # update AF work
+          @object = klass.find(attrs[:id])
+          attrs.delete(:id)
+          work_actor.update(environment(attrs))
+        end
+
         ingest_thumbnail_image(attrs)
         log_created(object)
       end

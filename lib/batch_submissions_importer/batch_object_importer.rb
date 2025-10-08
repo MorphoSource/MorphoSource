@@ -21,7 +21,7 @@ module BatchSubmissionsImporter
       fc = factory_class(model)
       f = fc.new(attributes, files_directory, update, preview_file)
       begin
-        object = f.run          
+        object = f.run
       rescue Ldp::HttpError, Faraday::ConnectionFailed, Redis::CannotConnectError => e
         if num_retries > 0 && !object.present?
           puts "Exception in BatchObjectImporter: #{e.message}  Retrying in #{retry_interval} seconds..."

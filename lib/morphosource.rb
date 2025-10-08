@@ -6,7 +6,6 @@ module Morphosource
   autoload :Derivatives
   autoload :Gbif
   autoload :IDigBio
-  autoload :Metadata
   autoload :Minter
   autoload :PackratApi
   autoload :ResqueJobsHelper

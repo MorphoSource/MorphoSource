@@ -44,11 +44,10 @@ module Morphosource
       all_children(names, absent_ranks)
     end
 
-    # todovalk: investigate how ValkyrieResources are solr indexed and how we can search both for current and legacy works in solr
     def count
       solr_params = {
         fq: [
-          "#{solrize('has_model', :symbol)}:Taxonomy",
+          "#{solrize('has_model', :symbol)}:(Taxonomy OR TaxonomyResource)",
           "#{solrize('gbif_key', :stored_searchable)}:*"
         ]
       }
@@ -89,7 +88,7 @@ module Morphosource
     def direct_children(names=[], absent_ranks=[])
       solr_params = {
         fq: [
-          "#{solrize('has_model', :symbol)}:Taxonomy",
+          "#{solrize('has_model', :symbol)}:(Taxonomy OR TaxonomyResource)",
           "#{solrize('gbif_key', :stored_searchable)}:*"
         ]
       }
@@ -129,7 +128,7 @@ module Morphosource
       solr_params = {
         fl: 'id',
         fq: [
-          "#{solrize('has_model', :symbol)}:Taxonomy",
+          "#{solrize('has_model', :symbol)}:(Taxonomy OR TaxonomyResource)",
           "#{solrize('gbif_key', :stored_searchable)}:*"
         ]
       }
@@ -211,7 +210,7 @@ module Morphosource
       solr_params = {
         fl: ['id'],
         fq: [
-          "#{solrize('has_model', :symbol)}:Taxonomy",
+          "#{solrize('has_model', :symbol)}:(Taxonomy OR TaxonomyResource)",
           "#{solrize('gbif_key', :stored_searchable)}:*"
         ]
       }

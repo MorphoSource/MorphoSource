@@ -193,7 +193,6 @@ module Morphosource
       end.to_json
     end
 
-    # todovalk update this
     def member_of_taxonomies_json(work_type=nil)
       parent_works = model.in_works
       # If a work is deposited as a child of another work, it will have a parent_id

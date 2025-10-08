@@ -3,7 +3,7 @@ class BatchSubmissionJobs::Ms2Batch::TaxonomySubcontrolJob < Morphosource::Appli
   attr_accessor :background_job_id
 
   queue_as Hyrax.config.ingest_queue_name
-  #todovalk: update to be able to create taxonomy Valkyrie resource
+
   def perform(background_job_id, control_job_id)
     # Step 0. Initial preparation
     @background_job_id = background_job_id

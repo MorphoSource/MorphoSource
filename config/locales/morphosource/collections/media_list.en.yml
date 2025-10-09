@@ -1,5 +1,8 @@
 en:
   simple_form:
+    labels:
+      media_list:
+        doi: DOI
     hints:
       media_list:
         based_near: A place name related to the collection, such as its site of publication, or the city, state, or country the collection contents are about.
@@ -8,6 +11,7 @@ en:
         description: Free-text notes about the collection. Examples include abstracts of a paper or citation information for a journal article.
         keyword: Words or phrases you select to describe what the collection is about. These are used to search for content.
         title: A name to aid in identifying a collection.
+        doi: To request a DOI, please send an email to morphosource@duke.edu. Note that once a DOI has been assigned, the list media and metadata can no longer be edited. List managers will still be able to add and remove other users as list managers in order to access metadata and usage statistics for the list.
   morphosource:
     collections:
       media_list:

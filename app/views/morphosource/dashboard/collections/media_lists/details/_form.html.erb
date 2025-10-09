@@ -18,9 +18,6 @@
               <%= render_edit_field_partial('contributor', f: f) %>
               <%= render_edit_field_partial('based_near', f: f) %>
               <%= render_edit_field_partial('related_url', f: f) %>
-              <% byebug %>
-              <%= @presenter.attribute_to_html(:doi, render_as: :showcase_doi_link, include_empty: true, text_if_empty: 'Not assigned', show_hint: true) %>
-
 
               <div class="row">
                 <div class="col-6 showcase-label">
@@ -41,6 +38,27 @@
                 </div>
               </div>
 
+              <div class="row">
+                <div class="col-6 showcase-label">
+                  <%= t("simple_form.labels.media_list.doi") %>
+                  <i class="material-icons md-18 tooltip-icon"
+                     data-toggle="tooltip"
+                     data-placement="top"
+                     data-html="true"
+                     title='<%= t("simple_form.hints.media_list.doi") %>'>
+                  </i>
+                </div>
+                <div class="col-6 showcase-value ">
+                  <% if @collection.doi.present? %>
+                    <a href="https://doi.org/<%= @collection.doi %>" target="_blank">
+                      <%= @collection.doi %>
+                    </a>
+                  <% else %>
+                    <div class="col-6 showcase-value" style="padding-left: unset;">Not Assigned</div>
+                  <% end %>
+                </div>
+              </div>
+
               <h2>THUMBNAIL</h2>
               <p>Select a media managed by this team to serve as the project thumbnail in lists and search results.</p>
               <% if f.object.persisted? %>
@@ -54,7 +72,6 @@
             <div class="content-block">
               <% if @form.persisted? %>
                 <%= render 'morphosource/dashboard/collections/details/branding', f: f %>
-                <%= render 'morphosource/dashboard/collections/media_lists/details/doi' %>
               <% end %>
             </div>
 

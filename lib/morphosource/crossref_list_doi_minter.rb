@@ -1,12 +1,13 @@
-require 'nokogiri'
-require 'erb'
-require 'ostruct'
-require 'rest-client'
-require 'securerandom'
+# require 'nokogiri'
+# require 'erb'
+# require 'ostruct'
+# require 'rest-client'
+# require 'securerandom'
 
 module Morphosource
-  module CrossrefDoiMinter
+  module CrossrefListDoiMinter
     extend ActiveSupport::Autoload
+    include Morphosource::CrossrefDoiMinter
 
     SUBMISSION_PATH = 'servlet/deposit'
     @@xsd_schema = nil
@@ -63,43 +64,10 @@ module Morphosource
     # - resource_type
     # Also, either organization must be present OR both author_first and author_last must be present
     def self.generate_metadata_deposit_xml(identifier, params={})
-      # clean params and add additional params as necessary
-      params = prepare_params(identifier, params)
-
-      required_params = %w{ doi_batch_id title doi url resource_type timestamp publication_year }
-      required_params.each do |required_param|
-        if params[required_param].blank?
-          raise "CrossrefDoiMinter.generate_metadata_deposit_xml call missing required parameter: #{required_param}"
-        else
-          params[required_param] = params[required_param].to_s.encode(xml: :text)
-        end
-      end
-
-      template_path = Rails.root.join('data','xmls','doi.xml.erb')
-      rendered_xml = CrossrefMetadataTemplate.new(params).render(File.new(template_path).read)
-      Rails.logger.info("CrossrefDoiMinter.generate_metadata_deposit_xml rendered deposit XML: #{rendered_xml}")
-      return validate_metadata_deposit_xml(rendered_xml)
-    end
-
-    def self.prepare_params(identifier, params)
       doi = identifier_to_doi(identifier)
-      # set timestamp and publication_year if not passed in
-      params.reverse_merge!({'timestamp' => Time.now.to_i, 'publication_year' => Time.now.year})
-      # always set doi_batch_id and doi
-      params.merge!({'doi_batch_id' => SecureRandom.uuid, 'doi' => doi})
 
-      if model_name(identifier) == "MediaList"
-        prepare_list_params(params)
-      else
-        prepare_media_params(params)
-      end
-    end
+      # clean params and add additional params as necessary
 
-    def self.prepare_list_params(params)
-      params
-    end
-
-    def self.prepare_media_params(params)
       # if author_first or author_last are > 60 characters, truncate
       if params['author_first'] && params['author_first'].length > 60
         params['author_first'] = params['author_first'].truncate(60)
@@ -110,10 +78,29 @@ module Morphosource
       if params['organization'] && params['organization'].length > 511
         params['organization'] = params['organization'].truncate(511)
       end
+
+      # set timestamp and publication_year if not passed in
+      params.reverse_merge!({'timestamp' => Time.now.to_i, 'publication_year' => Time.now.year})
+      # always set doi_batch_id and doi
+      params.merge!({'doi_batch_id' => SecureRandom.uuid, 'doi' => doi})
+
+      required_params = %w{ doi_batch_id title doi url resource_type timestamp publication_year }
+      required_params.each do |required_param|
+        if params[required_param].blank?
+          raise "CrossrefDoiMinter.generate_metadata_deposit_xml call missing required parameter: #{required_param}"
+        else
+          params[required_param] = params[required_param].to_s.encode(xml: :text)
+        end
+      end
+
       if params['organization'].blank? && (params['author_first'].blank? || params['author_last'].blank?)
         raise "CrossrefDoiMinter.generate_metadata_deposit_xml call missing required parameter: organization OR author_first and author_last"
       end
-      params
+
+      template_path = Rails.root.join('data','xmls','doi.xml.erb')
+      rendered_xml = CrossrefMetadataTemplate.new(params).render(File.new(template_path).read)
+      Rails.logger.info("CrossrefDoiMinter.generate_metadata_deposit_xml rendered deposit XML: #{rendered_xml}")
+      return validate_metadata_deposit_xml(rendered_xml)
     end
 
     def self.mint_doi(identifier, metadata_params={})

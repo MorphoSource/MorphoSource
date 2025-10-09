@@ -13,8 +13,8 @@ class InheritPermissionsJob < Hyrax::ApplicationJob
       retries ||= 0
 
       if work.is_a? String
-        if Morphosource::Works::Base.exists?(work)
-          work = Morphosource::Works::Base.find(work)
+        if ActiveFedora::Base.exists?(work)
+          work = ActiveFedora::Base.find(work)
         else
           Rails.logger.info "[InheritPermissionsJob] Work #{work} does not exist, skipping"
           return

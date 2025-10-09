@@ -25,22 +25,22 @@ RSpec.describe Morphosource::Works::Base do
   end
 
   describe 'adding a specimen to an organization that already has a specimen' do
-    let!(:taxonomy2)        { Taxonomy.create(title: ['taxonomy 2']) }
-    let!(:specimen2)        { BiologicalSpecimen.create(title: ['old title'], vouchered: ['Yes'], taxonomy_id: [taxonomy2.id]) }
-    
-    let(:old_taxonomy2_doc) { SolrDocument.find(taxonomy2.id) }
+    let!(:taxonomy2)        { valkyrie_create(:taxonomy_resource, title: ['taxonomy 2']) }
+    let!(:specimen2)        { BiologicalSpecimen.create(title: ['old title'], vouchered: ['Yes'], taxonomy_id: [taxonomy2.id.to_s]) }
+
+    let(:old_taxonomy2_doc) { SolrDocument.find(taxonomy2.id.to_s) }
     let(:old_specimen2_doc) { SolrDocument.find(specimen2.id) }
-    let(:new_taxonomy2_doc) { SolrDocument.find(taxonomy2.id) }
+    let(:new_taxonomy2_doc) { SolrDocument.find(taxonomy2.id.to_s) }
     let(:new_specimen2_doc) { SolrDocument.find(specimen2.id) }
 
     it 'updates the organization and added specimen objects' do
-      expect { 
+      expect {
         specimen2.organization_id = [organization.id]
         specimen2.save
       }.to change      { specimen2.modified_date }
        .and not_change { organization.modified_date }
-       .and not_change { taxonomy.modified_date }
-       .and not_change { taxonomy2.modified_date }
+       .and not_change { taxonomy.date_modified }
+       .and not_change { taxonomy2.date_modified }
        .and not_change { specimen.modified_date }
        .and not_change { imaging_event.modified_date }
        .and not_change { media1.modified_date }
@@ -75,7 +75,7 @@ RSpec.describe Morphosource::Works::Base do
       expect { media1.keyword << 'keyword'
                media1.save
       }.to change      { media1.modified_date }
-       .and not_change { taxonomy.modified_date }
+       .and not_change { taxonomy.date_modified }
        .and not_change { organization.modified_date }
        .and not_change { specimen.modified_date }
        .and not_change { imaging_event.modified_date }
@@ -108,12 +108,12 @@ RSpec.describe Morphosource::Works::Base do
     let(:new_imaging_event2_doc)  { SolrDocument.find(imaging_event2.id) }
 
     it 'updates only the specimen object and added imaging event' do
-      expect { 
+      expect {
         imaging_event2.physical_object_id = [specimen.id]
         imaging_event2.save!
       }.to change      { imaging_event2.modified_date }
        .and not_change { specimen.modified_date }
-       .and not_change { taxonomy.modified_date }
+       .and not_change { taxonomy.date_modified }
        .and not_change { organization.modified_date }
        .and not_change { imaging_event.modified_date }
        .and not_change { media1.modified_date }

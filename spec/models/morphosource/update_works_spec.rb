@@ -121,18 +121,18 @@ RSpec.describe Morphosource::Works::Base do
        .and not_change { media2.modified_date }
     end
 
-    it 'updates only the specimen solr doc' do
+    it 'updates only the imaging event and specimen solr doc' do
       old_imaging_event2_doc
       old_docs
 
       imaging_event2.physical_object_id = [specimen.id]
       imaging_event2.save!
 
-      # imaging event is reindexed
+      # imaging event and specimen are reindexed
       expect(old_imaging_event2_doc['_version_']).not_to eq(new_imaging_event2_doc['_version_'])
+      expect(old_specimen_doc['_version_']).not_to eq(new_specimen_doc['_version_'])
 
       # associated works are not reindexed
-      expect(old_specimen_doc['_version_']).to eq(new_specimen_doc['_version_'])
       expect(old_taxonomy_doc['_version_']).to eq(new_taxonomy_doc['_version_'])
       expect(old_organization_doc['_version_']).to eq(new_organization_doc['_version_'])
       expect(old_imaging_event_doc['_version_']).to eq(new_imaging_event_doc['_version_'])

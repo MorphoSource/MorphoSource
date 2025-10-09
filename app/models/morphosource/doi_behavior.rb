@@ -23,43 +23,89 @@ module Morphosource
     # - The minted DOI string if successful, or nil if a DOI already exists or minting failed.
 
     def mint_doi(target_url)
-      byebug
-      if self.doi.empty?
-        depositor_user_or_org = User.find_by(ms_id: self.user_with_ownership) ||
-          OrganizationCollection.where(id: self.user_with_ownership)&.first
-        if !depositor_user_or_org.present?
-          Rails.logger.error "Failed to mint DOI for media #{self.id} because depositor user or organization not found"
-        end
+      return unless self.doi.empty?
 
-        depositor_params = if depositor_user_or_org.is_a?(User)
-          depositor_user_name_components = depositor_user_or_org.display_name.split(' ')
-          {
-            'author_first' => depositor_user_name_components.first,
-            'author_last' => depositor_user_name_components.drop(1).join(' ')
-          }
-        elsif depositor_user_or_org.is_a?(OrganizationCollection)
-          { 'organization' => depositor_user_or_org.display_name }
-        else
-          { }
-        end
-
-        # minted_doi = Morphosource::CrossrefDoiMinter.mint_doi( self.id,
-        #                                                       {
-        #                                                         'title' => self.title.first,
-        #                                                         'url' => target_url,
-        #                                                         'resource_type' => self.media_type.first
-        #                                                       }.merge(depositor_params) )
-
-        minted_doi = '10.5072/FK2/MYSAMPLEDOI'
-        if minted_doi.present?
-          # minted_doi may be an exception if mint_doi failed
-          unless minted_doi.respond_to?(:message)
-            self.doi = [minted_doi]
-            self.save
-          end
-        end
-        return minted_doi
+      case self
+      when Media
+        mint_media_doi(target_url)
+      when MediaList
+        mint_media_list_doi(target_url)
+      else
+        raise "DOI minting is only supported for Media and Collection objects"
       end
+    end
+
+    def creator_params(creator)
+      creator_user_name_components = depositor_user_or_org.display_name.split(' ')
+      {
+        'author_first' => depositor_user_name_components.first,
+        'author_last' => depositor_user_name_components.drop(1).join(' ')
+      }
+    end
+
+    def contributor_params(contributors)
+      return {} if contributors.empty?
+
+      {
+        'contributors': [
+          contributors.map do |contributor|
+            contributor_name_components = contributor.display_name.split(' ')
+            {
+              'contributor_first' => contributor_name_components.first,
+              'contributor_last' => contributor_name_components.drop(1).join(' ')
+            }
+          end
+        ]
+      }
+    end
+
+    def component_params(media)
+      return {} if media.empty?
+      {
+        'components': [
+          media.map do |m|
+            { 'doi' => m.doi.first,
+              'title' => m.title.first,
+              'resource_type' => m.media_type.first,
+              'url' => Rails.application.routes.url_helpers.media_showcase_url(m, host: Hyrax.config.host_name)
+            }
+          end
+        ]
+      }
+    end
+
+    def verify_creator
+      User.find_by(self.creator&.first)
+    end
+
+    def mint_list_doi(target_url)
+      unless creator = verify_creator
+        Rails.logger.error "Failed to mint DOI for media list #{self.id} because creator user was not found"
+      end
+
+      creator_params = creator_params(creator)
+      contributor_params = contributor_params(self.contributors)
+      component_params = component_params(self.media)
+
+      params = {
+                 'title' => self.title.first,
+                 'url' => target_url
+                }
+
+      params = params.merge(creator_params).merge(contributor_params).merge(component_params)
+
+
+      minted_doi = Morphosource::CrossrefDoiMinter.mint_doi( self.id, params)
+
+      minted_doi = '10.5072/FK2/MYSAMPLEDOI'
+      if minted_doi.present?
+        # minted_doi may be an exception if mint_doi failed
+        unless minted_doi.respond_to?(:message)
+          self.doi = [minted_doi]
+          self.save
+        end
+      end
+      return minted_doi
     end
 
     private

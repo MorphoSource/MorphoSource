@@ -19,9 +19,6 @@
               <% end %>
               <%= render_edit_field_partial('based_near', f: f) %>
               <%= render_edit_field_partial('related_url', f: f) %>
-              <% byebug %>
-              <%= @presenter.attribute_to_html(:doi, render_as: :showcase_doi_link, include_empty: true, text_if_empty: 'Not assigned', show_hint: true) %>
-
 
               <div class="row">
                 <div class="col-6 showcase-label">

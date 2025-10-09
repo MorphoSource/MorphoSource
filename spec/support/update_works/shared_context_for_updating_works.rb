@@ -5,8 +5,8 @@ RSpec.shared_context 'update works', :shared_context => :metadata do
   let(:contributors)              { Role.create(name: 'contributor') }
 
   let(:organization)              { Organization.create(title: ['old title']) }
-  let(:taxonomy)                  { Taxonomy.create(title: ['old title']) }
-  let(:specimen)                  { BiologicalSpecimen.create(title: ['old title'], vouchered: ['Yes'], organization_id: [organization.id], taxonomy_id: [taxonomy.id]) }
+  let(:taxonomy)                  { valkyrie_create(:taxonomy_resource, title: ['old title']) }
+  let(:specimen)                  { BiologicalSpecimen.create(title: ['old title'], vouchered: ['Yes'], organization_id: [organization.id], taxonomy_id: [taxonomy.id.to_s]) }
   let(:device)                    { Device.create(title: ['device'], modality: ["MagneticResonanceImaging"])}
   let(:imaging_event)             { ImagingEvent.create(title: ['old title'], ie_modality: device.modality, device_id: [device.id], physical_object_id: [specimen.id]) }
   let(:media1)                    { Media.create(title: ['old title']) }
@@ -15,7 +15,7 @@ RSpec.shared_context 'update works', :shared_context => :metadata do
   let(:specimen_works)            { [imaging_event, media1, processing_event, media2] }
 
   let(:old_organization_doc)      { SolrDocument.find(organization.id) }
-  let(:old_taxonomy_doc)          { SolrDocument.find(taxonomy.id) }
+  let(:old_taxonomy_doc)          { SolrDocument.find(taxonomy.id.to_s) }
   let(:old_specimen_doc)          { SolrDocument.find(specimen.id) }
   let(:old_imaging_event_doc)     { SolrDocument.find(imaging_event.id) }
   let(:old_media1_doc)            { SolrDocument.find(media1.id) }
@@ -25,7 +25,7 @@ RSpec.shared_context 'update works', :shared_context => :metadata do
   let(:old_docs)                  { [old_organization_doc, old_taxonomy_doc, old_specimen_doc, old_imaging_event_doc, old_media1_doc, old_processing_event_doc, old_media2_doc] }
 
   let(:new_organization_doc)      { SolrDocument.find(organization.id) }
-  let(:new_taxonomy_doc)          { SolrDocument.find(taxonomy.id) }
+  let(:new_taxonomy_doc)          { SolrDocument.find(taxonomy.id.to_s) }
   let(:new_specimen_doc)          { SolrDocument.find(specimen.id) }
   let(:new_imaging_event_doc)     { SolrDocument.find(imaging_event.id) }
   let(:new_media1_doc)            { SolrDocument.find(media1.id) }

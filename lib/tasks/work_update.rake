@@ -11,7 +11,7 @@ namespace :work_update do
     Rails.logger.info("commit = #{commit}")
 
     # todovalk: fix and check this?
-    taxonomies = Morphosource::SolrService.new.get_docs("has_model_ssim:Taxonomy")
+    taxonomies = Morphosource::SolrService.new.get_docs("*:*", { fq: ["has_model_ssim:(Taxonomy OR TaxonomyResource)"] })
       .map { |doc| [doc['id'], doc] }.to_h
     bsos = Morphosource::SolrService.new.get_docs("has_model_ssim:BiologicalSpecimen")
       .select { |doc| !doc['gbif_taxonomy_id_ssim'].present? }
@@ -60,19 +60,21 @@ namespace :work_update do
         # Associate with existing taxonomy
         Rails.logger.info("#{bso_text} will be matched to existing GBIF taxonomy #{existing_gbif_taxonomy.title&.first} (ID #{existing_gbif_taxonomy.id})")
         bsos_match_success_existing << doc
-        new_gbif_taxonomy_id = existing_gbif_taxonomy.id
+        new_gbif_taxonomy_id = existing_gbif_taxonomy.id.to_s
       else
         # Create new taxonomy
         Rails.logger.info("#{bso_text} will be matched to new GBIF taxonomy with GBIF key #{gbif_taxonomy_params['gbif_key']}")
         bsos_match_success_new << doc
         if commit
-          new_gbif_taxonomy_params = ActionController::Parameters.new(gbif_taxonomy_params)
-          attributes_for_actor = Hyrax::TaxonomyForm.model_attributes(gbif_taxonomy_params)
-          attributes_for_actor.merge!({ visibility: Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC })
-          curation_concern = Taxonomy.new
-          env = Hyrax::Actors::Environment.new(curation_concern, Ability.new(User.batch_user), attributes_for_actor)
-          Hyrax::CurationConcern.actor.create(env)
-          new_gbif_taxonomy_id = curation_concern.id
+          new_gbif_taxonomy_params = ActionController::Parameters.new({ taxonomy: gbif_taxonomy_params })
+          new_gbif_taxonomy_params[:taxonomy].merge!({ visibility: Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC })
+
+          new_gbif_taxonomy_id = Morphosource::Action::CreateWorkService.new(
+            model: TaxonomyResource,
+            params: new_gbif_taxonomy_params,
+            user: ::User.batch_user,
+            work_attributes_key: :taxonomy
+          ).call.value!.id.to_s
         end
       end
 

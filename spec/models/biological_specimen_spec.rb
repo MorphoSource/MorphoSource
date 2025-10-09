@@ -51,16 +51,16 @@ RSpec.describe BiologicalSpecimen do
     end
 
     describe "taxonomy methods" do
-      let (:taxonomy1)  { Taxonomy.create(id: "1", title: ["taxonomy1 title"], trusted: ["Yes"]) }
-      let (:taxonomy2)  { Taxonomy.create(id: "2", title: ["taxonomy2 title"], trusted: ["Yes"]) }
-      let (:taxonomy3)  { Taxonomy.create(id: "3", title: ["taxonomy3 title"], trusted: ["No"]) }
+      let (:taxonomy1)  { valkyrie_create(:taxonomy_resource, id: "1", title: ["taxonomy1 title"], trusted: ["Yes"])}
+      let (:taxonomy2)  { valkyrie_create(:taxonomy_resource, id: "2", title: ["taxonomy2 title"], trusted: ["Yes"])}
+      let (:taxonomy3)  { valkyrie_create(:taxonomy_resource, id: "3", title: ["taxonomy3 title"], trusted: ["No"])}
       let (:organization){ Organization.create(id: "4", title: ["organization title"]) }
       let (:parents) {[taxonomy1, taxonomy2, taxonomy3, organization]}
 
       before do
         subject.organization_id = [organization.id]
-        subject.taxonomy_id = [taxonomy1.id, taxonomy2.id, taxonomy3.id]
-        subject.canonical_taxonomy = [taxonomy1.id]
+        subject.taxonomy_id = [taxonomy1.id.to_s, taxonomy2.id.to_s, taxonomy3.id.to_s]
+        subject.canonical_taxonomy = [taxonomy1.id.to_s]
       end
 
       describe "#taxonomies" do

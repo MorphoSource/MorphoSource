@@ -16,7 +16,7 @@ class InheritPermissionsJob < Hyrax::ApplicationJob
         if ActiveFedora::Base.exists?(work)
           work = ActiveFedora::Base.find(work)
         else
-          Rails.logger.info "[InheritPermissionsJob] Work #{work} does not exist, skipping..."
+          Rails.logger.info "[InheritPermissionsJob] Work #{work} does not exist, skipping.."
           return
         end
       end

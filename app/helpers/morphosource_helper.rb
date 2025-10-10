@@ -599,9 +599,9 @@ module MorphosourceHelper
 
   def sftp_share_status(path)
     return "" unless path.present?
-    icon = '<i class="glyphicon glyphicon-alert tooltip-icon text-alert"><p class="hint hide">Not connected</p></i>'
+    icon = '<i class="fa fa-exclamation-triangle tooltip-icon text-alert" aria-hidden="true"><p class="hint hide">Not connected</p></i>'
     if sftp_share_connected? path
-      icon = '<i class="glyphicon glyphicon-ok-sign tooltip-icon text-success" data-original-title="" title=""><p class="hint hide">Connected</p></i>'
+      icon = '<i class="fa fa-check-circle tooltip-icon text-success" data-original-title="" title=""><p class="hint hide">Connected</p></i>'
     end
     return icon.html_safe
   end

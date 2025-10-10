@@ -29,21 +29,22 @@ module Morphosource
       when Media
         mint_media_doi(target_url)
       when MediaList
-        mint_media_list_doi(target_url)
+        mint_list_doi(target_url)
       else
         raise "DOI minting is only supported for Media and Collection objects"
       end
     end
 
     def creator_params(creator)
-      creator_user_name_components = depositor_user_or_org.display_name.split(' ')
+      creator_name_components = creator.display_name.split(' ')
       {
-        'author_first' => depositor_user_name_components.first,
-        'author_last' => depositor_user_name_components.drop(1).join(' ')
+        'author_first' => creator_name_components.first,
+        'author_last' => creator_name_components.drop(1).join(' ')
       }
     end
 
     def contributor_params(contributors)
+      contributors = contributors.map { |c| User.find_by(ms_id: c) }.compact
       return {} if contributors.empty?
 
       {
@@ -75,37 +76,39 @@ module Morphosource
     end
 
     def verify_creator
-      User.find_by(self.creator&.first)
+      User.find_by(ms_id: self.creator&.first)
     end
 
     def mint_list_doi(target_url)
+      byebug
       unless creator = verify_creator
         Rails.logger.error "Failed to mint DOI for media list #{self.id} because creator user was not found"
-      end
+      else
+        byebug
+        creator_params = creator_params(creator)
+        contributor_params = contributor_params(self.contributor)
+        component_params = component_params(self.media)
 
-      creator_params = creator_params(creator)
-      contributor_params = contributor_params(self.contributors)
-      component_params = component_params(self.media)
+        params = {
+                  'title' => self.title.first,
+                  'url' => target_url
+                  }
 
-      params = {
-                 'title' => self.title.first,
-                 'url' => target_url
-                }
+        params = params.merge(creator_params).merge(contributor_params).merge(component_params)
 
-      params = params.merge(creator_params).merge(contributor_params).merge(component_params)
-
-
-      minted_doi = Morphosource::CrossrefDoiMinter.mint_doi( self.id, params)
-
-      minted_doi = '10.5072/FK2/MYSAMPLEDOI'
-      if minted_doi.present?
-        # minted_doi may be an exception if mint_doi failed
-        unless minted_doi.respond_to?(:message)
-          self.doi = [minted_doi]
-          self.save
+        byebug
+        minted_doi = Morphosource::CrossrefListDoiMinter.mint_doi( self.id, params)
+        byebug
+        minted_doi = '10.5072/FK2/MYSAMPLEDOI'
+        if minted_doi.present?
+          # minted_doi may be an exception if mint_doi failed
+          unless minted_doi.respond_to?(:message)
+            self.doi = [minted_doi]
+            self.save
+          end
         end
+        []
       end
-      return minted_doi
     end
 
     private

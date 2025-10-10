@@ -63,9 +63,11 @@ module Morphosource
     # - url
     # - resource_type
     # Also, either organization must be present OR both author_first and author_last must be present
-    def self.generate_metadata_deposit_xml(identifier, params={})
-      doi = identifier_to_doi(identifier)
 
+    def self.generate_metadata_deposit_xml(identifier, params={})
+    byebug
+      doi = identifier_to_doi(identifier)
+    byebug
       # clean params and add additional params as necessary
 
       # if author_first or author_last are > 60 characters, truncate
@@ -84,7 +86,9 @@ module Morphosource
       # always set doi_batch_id and doi
       params.merge!({'doi_batch_id' => SecureRandom.uuid, 'doi' => doi})
 
-      required_params = %w{ doi_batch_id title doi url resource_type timestamp publication_year }
+      # resource type not needed for lists
+      required_params = %w{ doi_batch_id title doi url timestamp publication_year }
+      byebug
       required_params.each do |required_param|
         if params[required_param].blank?
           raise "CrossrefDoiMinter.generate_metadata_deposit_xml call missing required parameter: #{required_param}"
@@ -92,37 +96,45 @@ module Morphosource
           params[required_param] = params[required_param].to_s.encode(xml: :text)
         end
       end
-
+      byebug
       if params['organization'].blank? && (params['author_first'].blank? || params['author_last'].blank?)
         raise "CrossrefDoiMinter.generate_metadata_deposit_xml call missing required parameter: organization OR author_first and author_last"
       end
 
-      template_path = Rails.root.join('data','xmls','doi.xml.erb')
+      template_path = Rails.root.join('data','xmls','list_doi.xml.erb')
+      byebug
       rendered_xml = CrossrefMetadataTemplate.new(params).render(File.new(template_path).read)
+      byebug
       Rails.logger.info("CrossrefDoiMinter.generate_metadata_deposit_xml rendered deposit XML: #{rendered_xml}")
       return validate_metadata_deposit_xml(rendered_xml)
     end
 
     def self.mint_doi(identifier, metadata_params={})
-      %w{username password shoulder url}.each do |doi_param|
-        environment_param = "CROSSREF_DOI_#{doi_param.upcase}"
-        if ENV[environment_param].blank?
-          Rails.logger.error "Required environment variable for Crossref DOI minting is missing: #{environment_param}"
-          return nil
-        end
-      end
-      submission_url = "#{ENV['CROSSREF_DOI_URL']}/#{SUBMISSION_PATH}"
-      login_id = ENV['CROSSREF_DOI_USERNAME']
-      login_passwd = ENV['CROSSREF_DOI_PASSWORD']
+      # %w{username password shoulder url}.each do |doi_param|
+      #   environment_param = "CROSSREF_DOI_#{doi_param.upcase}"
+      #   if ENV[environment_param].blank?
+      #     Rails.logger.error "Required environment variable for Crossref DOI minting is missing: #{environment_param}"
+      #     return nil
+      #   end
+      # end
+      # submission_url = "#{ENV['CROSSREF_DOI_URL']}/#{SUBMISSION_PATH}"
+      # login_id = ENV['CROSSREF_DOI_USERNAME']
+      # login_passwd = ENV['CROSSREF_DOI_PASSWORD']
+      byebug
+      submission_url = "www.google.com"
+      login_id = "myusername"
+      login_passwd = "mypassword"
+      byebug
       deposit_xml = generate_metadata_deposit_xml(identifier, metadata_params)
       # See: https://www.crossref.org/education/member-setup/direct-deposit-xml/https-post/
+      byebug
       begin
-        submission_response = RestClient.post(submission_url, multipart: true, fname: string_to_file(deposit_xml), login_id: login_id, login_passwd: login_passwd, headers: {content_type: "multipart/form-data"})
-        Rails.logger.info("CrossrefDoiMinter.mint_doi submission response: #{submission_response.body}")
+        # submission_response = RestClient.post(submission_url, multipart: true, fname: string_to_file(deposit_xml), login_id: login_id, login_passwd: login_passwd, headers: {content_type: "multipart/form-data"})
+        # Rails.logger.info("CrossrefDoiMinter.mint_doi submission response: #{submission_response.body}")
       rescue RestClient::ExceptionWithResponse => exception
         return exception
       end
-      return identifier_to_doi(identifier)
+      identifier_to_doi(identifier)
     end
   end
 end

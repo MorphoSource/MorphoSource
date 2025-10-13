@@ -31,7 +31,9 @@ module Morphosource
   
     def add_new_taxonomies
       # add new taxonomy if any
-      taxonomy_params_array.each do |taxon_params|
+      taxonomy_params_array.each do |taxon_hash|
+        # wrap it in ActionController::Parameters before passing to Hyrax TaxonomyForm
+        taxon_params = ActionController::Parameters.new(taxon_hash)
         new_taxon_id = prepare_and_create_taxonomy(taxon_params)
         @taxonomy_id_array << new_taxon_id
         if taxon_params[:canonical]

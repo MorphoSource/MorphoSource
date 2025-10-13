@@ -95,10 +95,13 @@ module Morphosource
       end
 
       def mint_doi
-        byebug
-        doi = @collection.mint_doi(media_list_url(@collection))
-        byebug
-        render 'edit'
+        begin
+          doi = @collection.mint_doi(media_list_url(@collection))
+          flash[:notice] = "Successfully minted DOI #{doi}" if doi.present?
+        rescue => e
+          flash[:error] = "Failed to mint DOI. Please check the logs for details."
+        end
+        redirect_to edit
       end
 
       private
@@ -116,7 +119,7 @@ module Morphosource
         # link for facet filters
         def search_action_url(*args)
           args&.first&.delete("collection_id")
-          main_app.media_list_path(@curation_concern, *args)
+          main_app.media_list_path(@collection, *args)
         end
 
         # The url of the "more" link for additional facet values

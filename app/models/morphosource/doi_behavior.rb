@@ -48,30 +48,26 @@ module Morphosource
       return {} if contributors.empty?
 
       {
-        'contributors': [
-          contributors.map do |contributor|
-            contributor_name_components = contributor.display_name.split(' ')
-            {
-              'contributor_first' => contributor_name_components.first,
-              'contributor_last' => contributor_name_components.drop(1).join(' ')
-            }
-          end
-        ]
+        'contributors' => contributors.map do |contributor|
+          contributor_name_components = contributor.display_name.split(' ')
+          {
+            'contributor_first' => contributor_name_components.first,
+            'contributor_last' => contributor_name_components.drop(1).join(' ')
+          }
+        end
       }
     end
 
     def component_params(media)
       return {} if media.empty?
       {
-        'components': [
-          media.map do |m|
-            { 'doi' => m.doi.first,
-              'title' => m.title.first,
-              'resource_type' => m.media_type.first,
-              'url' => Rails.application.routes.url_helpers.media_showcase_url(m, host: Hyrax.config.host_name)
-            }
-          end
-        ]
+        'components': media.map do |m|
+          { 'doi' => m.doi.first,
+            'title' => m.title.first,
+            'resource_type' => m.media_type.first,
+            'url' => Rails.application.routes.url_helpers.media_showcase_url(m, host: Hyrax.config.host_name)
+          }
+        end
       }
     end
 

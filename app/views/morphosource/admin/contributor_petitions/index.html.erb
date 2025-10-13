@@ -1,7 +1,6 @@
 <% provide :page_title, page_title %>
 
 <%= render 'search_container' %>
-
 <% if @petition.present? %>
 <div class="card panel-default" style="display: table;">
   <div class="card-body">
@@ -82,31 +81,6 @@
       <%= link_to(main_app.admin_contributor_petitions_previous_path, class: "nav-link #{'active' if @tab == 'previous'}") do %>
         <%= t("Previous Applications") %>
         <span class="count badge badge-info" style="vertical-align: text-top;"><%= number_with_delimiter(@decided_petition_count, :delimiter => ',') %></span>
-      <% end %>
-    </li>
-  </ul>
-
-  <div class="card-body showcase">
-
-    <%= render 'document_list' %>
-    <div class="showcase">
-      <%= render 'results_pagination' %>
-    </div>
-  </div>
-</div>
-<div class="card panel-default tabs itemtable <%= controller.controller_name %>">
-
-  <ul class="nav nav-tabs" id="my_nav" role="navigation">
-    <li class="nav-item <%= 'active'.html_safe if @tab == 'current' %>">
-      <%= link_to(main_app.admin_contributor_petitions_previous_path, class: "nav-link #{'active' if @tab == 'current'}") do %>
-        <%= t("Current Applications") %>
-        <span class="count badge badge-danger" style="vertical-align: text-top;"><%= number_with_delimiter(@undecided_petition_count, :delimiter => ',') %></span>
-      <% end %>
-    </li>
-    <li class="nav-item <%= 'active'.html_safe if @tab == 'previous' %>">
-      <%= link_to(main_app.admin_contributor_petitions_previous_path, class: "nav-link #{'active' if @tab == 'previous'}") do %>
-        <%= t("Previous Applications") %>
-          <span class="count badge badge-info" style="vertical-align: text-top;"><%= number_with_delimiter(@decided_petition_count, :delimiter => ',') %></span>
       <% end %>
     </li>
   </ul>

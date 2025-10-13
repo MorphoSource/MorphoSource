@@ -24,11 +24,10 @@
             <given_name><%= author_first %></given_name>
             <surname><%= author_last %></surname>
           </person_name>
-          <% byebug %>
           <% contributors.each do |contributor| %>
             <person_name contributor_role="author" sequence="additional">
-              <given_name><%= contributor_first %></given_name>
-              <surname><%= contributor_last %></surname>
+              <given_name><%= contributor["contributor_first"] %></given_name>
+              <surname><%= contributor["contributor_last"] %></surname>
             </person_name>
           <% end %>
         </contributors>
@@ -48,12 +47,12 @@
           <% components.each do |component| %>
             <component parent_relation="isPartOf">
               <titles>
-                <title><%= title %></title>
+                <title><%= component["title"] %></title>
               </titles>
-              <format><%= resource_type %></format>
+              <format><%= component["resource_type"] %></format>
               <doi_data>
-                <doi><%= doi %></doi>
-                <resource><%= url %></resource>
+                <doi><%= component["doi"] %></doi>
+                <resource><%= component["url"] %></resource>
               </doi_data>
             </component>
           <% end %>

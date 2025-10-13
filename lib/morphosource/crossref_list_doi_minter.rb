@@ -40,6 +40,7 @@ module Morphosource
       # memoized XSD parsing, since parsing the XSD is somewhat time-consuming
       @@xsd_schema ||= Nokogiri::XML::Schema(File.open(Rails.root.join('data','xsds','crossref4.4.2.xsd')))
       validation_errors = @@xsd_schema.validate(Nokogiri::XML(input_xml))
+      byebug
       if validation_errors.empty?
         return input_xml
       else

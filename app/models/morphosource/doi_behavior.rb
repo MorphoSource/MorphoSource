@@ -2,8 +2,6 @@ module Morphosource
   module DoiBehavior
     extend ActiveSupport::Concern
 
-
-
     # included do
     #   field :doi, type: Array, default: []
     # end
@@ -24,15 +22,7 @@ module Morphosource
 
     def mint_doi(target_url)
       return unless self.doi.empty?
-
-      case self
-      when Media
-        mint_media_doi(target_url)
-      when MediaList
-        mint_list_doi(target_url)
-      else
-        raise "DOI minting is only supported for Media and Collection objects"
-      end
+      mint_doi(target_url)
     end
 
     def creator_params(creator)
@@ -75,12 +65,10 @@ module Morphosource
       User.find_by(ms_id: self.creator&.first)
     end
 
-    def mint_list_doi(target_url)
-      byebug
+    def mint_doi(target_url)
       unless creator = verify_creator
         Rails.logger.error "Failed to mint DOI for media list #{self.id} because creator user was not found"
       else
-        byebug
         creator_params = creator_params(creator)
         contributor_params = contributor_params(self.contributor)
         component_params = component_params(self.media)
@@ -92,10 +80,9 @@ module Morphosource
 
         params = params.merge(creator_params).merge(contributor_params).merge(component_params)
 
-        byebug
         minted_doi = Morphosource::CrossrefListDoiMinter.mint_doi( self.id, params)
-        byebug
         minted_doi = '10.5072/FK2/MYSAMPLEDOI'
+
         if minted_doi.present?
           # minted_doi may be an exception if mint_doi failed
           unless minted_doi.respond_to?(:message)
@@ -103,7 +90,7 @@ module Morphosource
             self.save
           end
         end
-        []
+        minted_doi
       end
     end
 

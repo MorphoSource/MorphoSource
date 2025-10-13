@@ -40,7 +40,6 @@ module Morphosource
       # memoized XSD parsing, since parsing the XSD is somewhat time-consuming
       @@xsd_schema ||= Nokogiri::XML::Schema(File.open(Rails.root.join('data','xsds','crossref4.4.2.xsd')))
       validation_errors = @@xsd_schema.validate(Nokogiri::XML(input_xml))
-      byebug
       if validation_errors.empty?
         return input_xml
       else
@@ -49,8 +48,10 @@ module Morphosource
     end
 
     def self.identifier_to_doi(identifier)
+      shoulder = ENV['CROSSREF_DOI_SHOULDER']
       type = model_name(identifier) == "MediaList" ? "L" : "M"
-      "#{ENV['CROSSREF_DOI_SHOULDER']}/#{type}#{identifier.sub(/^0*/,'')}"
+      identifier = identifier.sub(/^0*/,'')
+      "#{shoulder}/#{type}#{identifier}"
     end
 
     def self.model_name(identifier)
@@ -66,9 +67,7 @@ module Morphosource
     # Also, either organization must be present OR both author_first and author_last must be present
 
     def self.generate_metadata_deposit_xml(identifier, params={})
-    byebug
       doi = identifier_to_doi(identifier)
-    byebug
       # clean params and add additional params as necessary
 
       # if author_first or author_last are > 60 characters, truncate
@@ -89,7 +88,6 @@ module Morphosource
 
       # resource type not needed for lists
       required_params = %w{ doi_batch_id title doi url timestamp publication_year }
-      byebug
       required_params.each do |required_param|
         if params[required_param].blank?
           raise "CrossrefDoiMinter.generate_metadata_deposit_xml call missing required parameter: #{required_param}"
@@ -97,38 +95,30 @@ module Morphosource
           params[required_param] = params[required_param].to_s.encode(xml: :text)
         end
       end
-      byebug
       if params['organization'].blank? && (params['author_first'].blank? || params['author_last'].blank?)
         raise "CrossrefDoiMinter.generate_metadata_deposit_xml call missing required parameter: organization OR author_first and author_last"
       end
 
       template_path = Rails.root.join('data','xmls','list_doi.xml.erb')
-      byebug
       rendered_xml = CrossrefMetadataTemplate.new(params).render(File.new(template_path).read)
-      byebug
       Rails.logger.info("CrossrefDoiMinter.generate_metadata_deposit_xml rendered deposit XML: #{rendered_xml}")
       return validate_metadata_deposit_xml(rendered_xml)
     end
 
     def self.mint_doi(identifier, metadata_params={})
-      # %w{username password shoulder url}.each do |doi_param|
-      #   environment_param = "CROSSREF_DOI_#{doi_param.upcase}"
-      #   if ENV[environment_param].blank?
-      #     Rails.logger.error "Required environment variable for Crossref DOI minting is missing: #{environment_param}"
-      #     return nil
-      #   end
-      # end
-      # submission_url = "#{ENV['CROSSREF_DOI_URL']}/#{SUBMISSION_PATH}"
-      # login_id = ENV['CROSSREF_DOI_USERNAME']
-      # login_passwd = ENV['CROSSREF_DOI_PASSWORD']
+      %w{username password shoulder url}.each do |doi_param|
+        environment_param = "CROSSREF_DOI_#{doi_param.upcase}"
+        if ENV[environment_param].blank?
+          Rails.logger.error "Required environment variable for Crossref DOI minting is missing: #{environment_param}"
+          return nil
+        end
+      end
       byebug
-      submission_url = "www.google.com"
-      login_id = "myusername"
-      login_passwd = "mypassword"
-      byebug
+      submission_url = "#{ENV['CROSSREF_DOI_URL']}/#{SUBMISSION_PATH}"
+      login_id = ENV['CROSSREF_DOI_USERNAME']
+      login_passwd = ENV['CROSSREF_DOI_PASSWORD']
       deposit_xml = generate_metadata_deposit_xml(identifier, metadata_params)
       # See: https://www.crossref.org/education/member-setup/direct-deposit-xml/https-post/
-      byebug
       begin
         # submission_response = RestClient.post(submission_url, multipart: true, fname: string_to_file(deposit_xml), login_id: login_id, login_passwd: login_passwd, headers: {content_type: "multipart/form-data"})
         # Rails.logger.info("CrossrefDoiMinter.mint_doi submission response: #{submission_response.body}")

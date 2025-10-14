@@ -482,7 +482,7 @@ RSpec.describe Media do
       end
 
       it 'calls transfer_media_to_organization' do
-        expect(media).to receive(:transfer_media_to_organization)
+        expect(TransferToOrganizationJob).to receive(:perform_later).with(media.id)
         media.check_for_organization_transfer
       end
     end

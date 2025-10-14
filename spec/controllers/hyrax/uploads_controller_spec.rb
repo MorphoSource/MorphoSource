@@ -1,7 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Hyrax::UploadsController do
-  let(:user) { FactoryBot.create(:contributor) }
+  let(:user) { create(:contributor) }
 
   describe "#create" do
     let(:file) { File.open(fixture_path + '/bunny/bunny.ply') }

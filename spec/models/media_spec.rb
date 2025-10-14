@@ -482,8 +482,7 @@ RSpec.describe Media do
       end
 
       it 'calls transfer_media_to_organization' do
-        expect(TransferToOrganizationJob).to receive(:perform_later).with(media.id)
-        media.check_for_organization_transfer
+        expect { media.check_for_organization_transfer }.to have_enqueued_job(TransferToOrganizationJob)
       end
     end
 

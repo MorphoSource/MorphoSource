@@ -27,28 +27,13 @@ class ProxyDepositRequest < ActiveRecord::Base
   # @return [Enumerable] a set of requests that the given user can act upon to claim the ownership transfer
   # @note We are iterating through the found objects and querying SOLR each time. Assuming we are rendering this result in a view,
   #       this is reasonable. In the view we will render the #to_s of the associated work. So we may as well preload the SOLR document.
-  # Replacing deleted_work? with remove_deleted_transfers to avoid loading Fedora media objects
   def self.incoming_for(user:, number_of_days:)
     ids = user.collections_managed_ids << user.id
     if number_of_days == 'all'
       transfers = where(receiving_user_id: ids).order('created_at desc')
-      remove_deleted_transfers(transfers)
     else
       transfers = where(receiving_user_id: ids).where("created_at > ?", number_of_days.to_i.days.ago).order('created_at desc')
-      remove_deleted_transfers(transfers)
     end
-  end
-
-  def self.remove_deleted_transfers(transfers)
-    return transfers if transfers.empty?
-
-    media_ids = transfers.map(&:work_id)
-    existing_media_ids = fetch_existing_media_ids(media_ids, batch_size: 500)
-    missing_media_ids = media_ids - existing_media_ids
-    return transfers if missing_media_ids.empty?
-
-    missing_requests = ProxyDepositRequest.where(work_id: missing_media_ids)
-    transfers - missing_requests
   end
 
   # @param [User] user - the person who requested that a work be transfer to someone else
@@ -272,19 +257,6 @@ class ProxyDepositRequest < ActiveRecord::Base
       Hyrax::Engine.routes.url_helpers.transfers_url(host: host_name)
     )
   end
-
-  def self.fetch_existing_media_ids(media_ids, batch_size: 500)
-    existing_ids = []
-
-    media_ids.each_slice(batch_size) do |batch|
-      fq = ["id:(#{batch.join(' OR ')})"]
-      docs = Morphosource::SolrService.new.get_docs(nil, fq: fq, fl: ["id"])
-      existing_ids.concat(docs.map { |doc| doc["id"] })
-    end
-
-    existing_ids
-  end
-
 
   public
 

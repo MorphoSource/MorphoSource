@@ -1,0 +1,87 @@
+<div id="details" class="tab-pane active">
+  <div class="card panel-default labels">
+    <div class="container-fluid mb-1 pt-0">
+      <%= simple_form_for @form, url: collection_form_url(@form), wrapper: :showcase_default, html: { class: 'editor' } do |f| %>
+
+        <div class="row no-horizontal-padding mb-3">
+          <%= render 'morphosource/dashboard/collections/details/action_buttons', f: f %>
+          <div class="col-md-6">
+            <div class="content-block">
+
+              <h2>GENERAL DETAILS</h2>
+              <%= render_edit_field_partial('title', f: f) %>
+              <%= render_edit_field_partial('description', f: f) %>
+              <% if @collection.media_list? %>
+                <%= render_edit_field_partial('list_type', f: f) %>
+              <% end %>
+              <%= render 'morphosource/dashboard/collections/media_lists/details/creator', f: f %>
+              <%= render 'morphosource/dashboard/collections/media_lists/details/contributor', f: f %>
+              <%= render_edit_field_partial('based_near', f: f) %>
+              <%= render_edit_field_partial('related_url', f: f) %>
+
+              <div class="row">
+                <div class="col-6 showcase-label">
+                  Visibility
+                </div>
+                <div class="col-6 showcase-value">
+
+                  <div class="m-0 p-0 text-nowrap">
+                  <a aria-label="collapse/expand" data-toggle="collapse" href="#collapse-block-visibility" class="btn collapse-block-visibility pl-0">
+                    <span class="badge" id="current_visibility_value_for_collection">
+                      <%= @presenter.visibility %>
+                    </span>
+
+                    <span class="fas fa-caret-down collapse-block-visibility"></span></a></div>
+                  <div id="collapse-block-visibility" class="panel-collapse collapse-block fa-only table collapse out m-0 p-0" aria-expanded="false">
+                    <%= render 'hyrax/base/ms_form_visibility_component_for_collection', f: f %>
+                  </div>
+                </div>
+              </div>
+
+              <div class="row">
+                <div class="col-6 showcase-label">
+                  <%= t("simple_form.labels.media_list.doi") %>
+                  <i class="material-icons md-18 tooltip-icon"
+                     data-toggle="tooltip"
+                     data-placement="top"
+                     data-html="true"
+                     title='<%= t("simple_form.hints.media_list.doi") %>'>
+                  </i>
+                </div>
+                <div class="col-6 showcase-value ">
+                  <% if @collection.doi.present? %>
+                    <a href=<%="https://doi.org/#{@collection.doi.first}" %> target="_blank">
+                      <%= @collection.doi.first %>
+                    </a>
+                  <% else %>
+                    <div class="col-6 showcase-value" style="padding-left: unset;">Not Assigned</div>
+                  <% end %>
+                </div>
+              </div>
+
+              <h2>THUMBNAIL</h2>
+              <p>Select a media managed by this team to serve as the project thumbnail in lists and search results.</p>
+              <% if f.object.persisted? %>
+                <%# we're loading these values dynamically to speed page load %>
+                <%= f.input :representative_id, label: 'Media ID for Thumbnail', hint: 'Media IDs can be viewed in the Media tab', input_html: { data: { text: f.object.representative_id } } %>
+              <% end %>
+            </div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="content-block">
+              <% if @form.persisted? %>
+                <%= render 'morphosource/dashboard/collections/details/branding', f: f %>
+              <% end %>
+            </div>
+
+          <%# End form here %>
+          <% end %>
+            <div class="content-block">
+              <%= render 'morphosource/dashboard/collections/media_lists/details/admin_form' %>
+            </div>
+          </div>
+        </div>
+    </div>
+  </div>
+</div>

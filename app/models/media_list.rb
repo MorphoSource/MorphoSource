@@ -3,7 +3,9 @@ class MediaList < Collection
 
   self.indexer = MediaListIndexer
 
+  before_create :assign_creator
   after_create :create_collection_groups
+  before_validation :normalize_contributor
 
   DEFAULT_GROUP_ROLES = %w[managers viewers].freeze
 
@@ -59,4 +61,15 @@ class MediaList < Collection
     membership_list
   end
 
+  # Convert ["ms_id1,ms_id2,ms_id3"] to ["ms_id1","ms_id2","ms_id3"]
+  def normalize_contributor
+    self.contributor = self.contributor.map { |x| x.split(',') }.flatten
+  end
+
+  # If no creator is assigned, set the depositor as the creator
+  def assign_creator
+    if self.creator.blank?
+      self.creator = [self.depositor]
+    end
+  end
 end

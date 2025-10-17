@@ -1,0 +1,24 @@
+<div class="form-group row string optional media_download_reviewer">
+  <div class="col-6 showcase-label">
+    <label class="col-form-label string optional" for="media_list_contributor"><%= t('simple_form.labels.media_list.contributor') %></label>
+    <i class="material-icons tooltip-icon" data-toggle="tooltip" title="<%= t('simple_form.hints.defaults.contributor') %>"></i>
+  </div>
+  <div class="col-6 showcase-value">
+    <%= f.text_field :contributor,
+      id: 'media_list_contributor',
+      name: "#{f.object_name}[contributor][]",
+      placeholder: local_assigns[:placeholder],
+      'data-contributors' => contributor_data(f),
+      class: 'form-control string optional multi-search-field'
+    %>
+  </div>
+</div>
+
+<script>
+  $( document ).ready(function() {
+    contributorSelect = $('#media_list_contributor');
+
+    // add search to download reviewer
+    contributorSelect.userSearchMultiple(contributorSelect.data('contributors'));
+  });
+</script>

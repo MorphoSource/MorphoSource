@@ -1,0 +1,17 @@
+<div class="text-muted">
+  <%= @media_count.to_s + ' Media' %>
+  <span class="bso-count">
+    <% if @specimen_count > 0 %>
+      <%= ' · ' + @specimen_count.to_s + ' Specimen'.pluralize(@specimen_count) %>
+    <% end %>
+  </span>
+  <span class="cho-count">
+    <% if @cho_count > 0 %>
+      <%= ' · ' + @cho_count.to_s + ' Object'.pluralize(@cho_count) %>
+    <% end %>
+  </span>
+  <% if @presenter.creator.present? %>
+    · Creator: <%= User.find_by(ms_id: @presenter.creator&.first)&.display_name || '' %>
+  <% end %>
+  · Managed by: <%= @presenter.collection_managers %>
+</div>

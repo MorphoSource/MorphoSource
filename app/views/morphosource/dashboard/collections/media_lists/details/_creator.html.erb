@@ -1,0 +1,24 @@
+<div class="form-group row string optional media_download_reviewer">
+  <div class="col-6 showcase-label">
+    <label class="col-form-label string optional" for="media_list_creator"><%= t('simple_form.labels.media_list.creator') %></label>
+    <i class="material-icons tooltip-icon" data-toggle="tooltip" title="<%= t('simple_form.hints.defaults.creator') %>"></i>
+  </div>
+  <div class="col-6 showcase-value">
+    <%= f.text_field :creator,
+      id: 'media_list_creator',
+      name: "#{f.object_name}[creator][]",
+      placeholder: User.find_by(ms_id: f.object.creator&.first)&.display_name || User.find_by(ms_id: f.object.depositor)&.display_name,
+      'data-creators' => creator_data(f),
+      class: 'form-control string optional multi-search-field'
+    %>
+  </div>
+</div>
+
+<script>
+  $( document ).ready(function() {
+    creatorSelect = $('#media_list_creator');
+
+    // add search to download reviewer
+    creatorSelect.listCreatorSearch(creatorSelect.data('creators'));
+  });
+</script>

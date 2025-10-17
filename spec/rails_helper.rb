@@ -50,6 +50,14 @@ Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
 # If you are not using ActiveRecord, you can remove this line.
 ActiveRecord::Migration.maintain_test_schema!
 
+def clean_active_fedora_repository
+  return if Hyrax.config.disable_wings
+  ActiveFedora::Cleaner.clean!
+  # The JS is executed in a different thread, so that other thread
+  # may think the root path has already been created:
+  ActiveFedora.fedora.connection.send(:init_base_path)
+end
+
 RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
   config.fixture_path = "#{::Rails.root}/spec/fixtures"
@@ -84,11 +92,11 @@ RSpec.configure do |config|
   config.include Devise::Test::ControllerHelpers, :type => :controller
   config.include TestHelpers
 
-  config.before(:suite) do
-    ActiveFedora::Cleaner.clean!
+  config.before(:each) do
+    clean_active_fedora_repository
   end
 
-  config.after(:each) do
-    ActiveFedora::Cleaner.clean!
-  end
+  # config.after(:each) do
+  #   ActiveFedora::Cleaner.clean!
+  # end
 end

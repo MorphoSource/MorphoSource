@@ -36,4 +36,37 @@ if Hyrax.config.valkyrie_transition?
 
     Hyrax.config.index_adapter = :solr_index
   end
+
+  Rails.application.config.to_prepare do
+    AdminSetResource.class_eval do
+      attribute :internal_resource, Valkyrie::Types::Any.default("AdminSet"), internal: true
+    end
+
+    Valkyrie.config.resource_class_resolver = lambda do |resource_klass_name|
+      # TODO: Can we use some kind of lookup.
+      klass_name = resource_klass_name.gsub(/^Wings\((.+)\)$/, '\1')
+      klass_name = klass_name.gsub(/Resource$/, '')
+      if %w[
+        Taxonomy
+      ].include?(klass_name)
+        "#{klass_name}Resource".constantize
+      elsif 'AdminSet' == klass_name
+        AdminSetResource
+        # Without this mapping, we'll see cases of Postgres Valkyrie adapter attempting to write to
+        # Fedora.  Yeah!
+      elsif 'Hydra::AccessControl' == klass_name
+        Hyrax::AccessControl
+      elsif 'FileSet' == klass_name
+        Hyrax::FileSet
+      elsif 'Hydra::AccessControls::Embargo' == klass_name
+        Hyrax::Embargo
+      elsif 'Hydra::AccessControls::Lease' == klass_name
+        Hyrax::Lease
+      elsif 'Hydra::PCDM::File' == klass_name
+        Hyrax::FileMetadata
+      else
+        klass_name.constantize
+      end
+    end
+  end
 end

@@ -72,7 +72,7 @@ module Hyrax
         base = base.where(active: true) if search_only_active_users
         base = base.registered
             .where("#{Hydra.config.user_key_field} not in (?)",
-                   [::User.batch_user_key, ::User.audit_user_key])
+                   [::User.system_user_key, ::User.batch_user_key, ::User.audit_user_key])
             .references(:trophies)
             .order(sort_value)
             .page(params[:page] || 1).per(per_page_param)

@@ -99,6 +99,10 @@ Hyrax.config do |config|
   # (for receiving emails in dev / local test environments)
   config.override_mail_recipient = ENV['OVERRIDE_MAIL_RECIPIENT'] || ""
 
+  # The user who runs some jobs and other process not attributed to a specific user, such as default admin set creation.
+  # Should be user key of site-wide admin user or dedicated system job user
+  config.system_user_key = ENV['SYSTEM_USER_KEY'] || '614de0'
+
   # The user who runs batch jobs.
   # Should be user key of site-wide admin user or dedicated batch job user
   config.batch_user_key = ENV['BATCH_USER_KEY'] || '614de0'

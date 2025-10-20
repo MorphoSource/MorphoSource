@@ -17,11 +17,6 @@ class Media < Morphosource::Works::Base
     end
   end
 
-  # Publish object.deleted event when media is destroyed
-  def publish_destroyed_event
-    Hyrax.publisher.publish('object.deleted', object: self)
-  end
-
   self.work_requires_files = true
   self.indexer = MediaIndexer
   # Change this to restrict which works can be added as a child.
@@ -669,6 +664,11 @@ class Media < Morphosource::Works::Base
       @objects.each do |obj|
         UpdateWorkIndexJob.perform_later(obj.id)
       end
+    end
+
+    # Publish object.deleted event when media is destroyed
+    def publish_destroyed_event
+      Hyrax.publisher.publish('object.deleted', object: self)
     end
 
     def date_attributes_for_filter

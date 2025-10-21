@@ -11,7 +11,7 @@
     <% end %>
   </span>
   <% if @presenter.creator.present? %>
-    · Creator: <%= User.find_by(ms_id: @presenter.creator&.first)&.display_name || '' %>
+    · Creator: <%= @presenter.creator_display %>
   <% end %>
   · Managed by: <%= @presenter.collection_managers %>
 </div>

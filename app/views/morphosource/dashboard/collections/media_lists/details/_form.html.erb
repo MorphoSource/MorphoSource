@@ -11,11 +11,12 @@
               <h2>GENERAL DETAILS</h2>
               <%= render_edit_field_partial('title', f: f) %>
               <%= render_edit_field_partial('description', f: f) %>
+              <% # Do not show DOI related fields on Sequential Section Lists %>
               <% if @collection.media_list? %>
                 <%= render_edit_field_partial('list_type', f: f) %>
+                <%= render 'morphosource/dashboard/collections/media_lists/details/creator', f: f %>
+                <%= render 'morphosource/dashboard/collections/media_lists/details/contributor', f: f %>
               <% end %>
-              <%= render 'morphosource/dashboard/collections/media_lists/details/creator', f: f %>
-              <%= render 'morphosource/dashboard/collections/media_lists/details/contributor', f: f %>
               <%= render_edit_field_partial('based_near', f: f) %>
               <%= render_edit_field_partial('related_url', f: f) %>
 
@@ -38,26 +39,29 @@
                 </div>
               </div>
 
-              <div class="row">
-                <div class="col-6 showcase-label">
-                  <%= t("simple_form.labels.media_list.doi") %>
-                  <i class="material-icons md-18 tooltip-icon"
-                     data-toggle="tooltip"
-                     data-placement="top"
-                     data-html="true"
-                     title='<%= t("simple_form.hints.media_list.doi") %>'>
-                  </i>
+              <% # Do not show DOI related fields on Sequential Section Lists %>
+              <% if @collection.media_list? %>
+                <div class="row">
+                  <div class="col-6 showcase-label">
+                    <%= t("simple_form.labels.media_list.doi") %>
+                    <i class="material-icons md-18 tooltip-icon"
+                      data-toggle="tooltip"
+                      data-placement="top"
+                      data-html="true"
+                      title='<%= t("simple_form.hints.media_list.doi") %>'>
+                    </i>
+                  </div>
+                  <div class="col-6 showcase-value ">
+                    <% if @collection.doi.present? %>
+                      <a href=<%="https://doi.org/#{@collection.doi.first}" %> target="_blank">
+                        <%= @collection.doi.first %>
+                      </a>
+                    <% else %>
+                      <div class="col-6 showcase-value" style="padding-left: unset;">Not Assigned</div>
+                    <% end %>
+                  </div>
                 </div>
-                <div class="col-6 showcase-value ">
-                  <% if @collection.doi.present? %>
-                    <a href=<%="https://doi.org/#{@collection.doi.first}" %> target="_blank">
-                      <%= @collection.doi.first %>
-                    </a>
-                  <% else %>
-                    <div class="col-6 showcase-value" style="padding-left: unset;">Not Assigned</div>
-                  <% end %>
-                </div>
-              </div>
+              <% end %>
 
               <h2>THUMBNAIL</h2>
               <p>Select a media managed by this team to serve as the project thumbnail in lists and search results.</p>
@@ -77,9 +81,12 @@
 
           <%# End form here %>
           <% end %>
-            <div class="content-block">
-              <%= render 'morphosource/dashboard/collections/media_lists/details/admin_form' %>
-            </div>
+            <% # Do not show admin fields on Sequential Section Lists %>
+            <% if @collection.media_list? %>
+              <div class="content-block">
+                <%= render 'morphosource/dashboard/collections/media_lists/details/admin_form' %>
+              </div>
+            <% end %>
           </div>
         </div>
     </div>

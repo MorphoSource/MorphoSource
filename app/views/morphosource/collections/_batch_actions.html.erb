@@ -1,4 +1,7 @@
 <a id="add-selected-to-cart" class="btn btn-sm btn-secondary disabled" href="javascript:void(0)">Add <i class="material-icons">check_box</i> to cart</a>
 <% unless @presenter.organization? %>
-	<a id="remove-selected-from-collection" class="btn btn-sm btn-secondary disabled" href="javascript:void(0)">Remove <i class="material-icons">check_box</i> from collection</a>
+<% # Only show the remove from collection button if the user is a manager or editor of the collection %>
+	<% if ((current_user&.can? :edit, @collection) || (@collection.editors&.include?(current_user))) %>
+		<a id="remove-selected-from-collection" class="btn btn-sm btn-secondary disabled" href="javascript:void(0)">Remove <i class="material-icons">check_box</i> from collection</a>
+	<% end %>
 <% end %>

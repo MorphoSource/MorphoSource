@@ -1,5 +1,6 @@
 # Generated via
 #  `rails generate hyrax:work Device`
+# Modified to use DeviceResource
 module Hyrax
   # Generated controller for Device
   class DevicesController < ApplicationController
@@ -12,7 +13,11 @@ module Hyrax
 
     skip_authorize_resource only: :show
 
-    self.curation_concern_type = ::Device
+    self.curation_concern_type = ::DeviceResource
+    # Use a Valkyrie aware form service to generate Valkyrie::ChangeSet style
+    # forms.
+    self.work_form_service = Hyrax::FormFactory.new
+    
     with_themed_layout :decide_layout
 
     # Use this line if you want to use a custom presenter

@@ -1,26 +1,32 @@
-# @deprecated Use DeviceResource instead.
+# frozen_string_literal: true
+
 # Generated via
-#  `rails generate hyrax:work Device`
-class Device < Morphosource::Works::Base
-  include ::Hyrax::WorkBehavior
+#  `rails generate hyrax:work_resource DeviceResource`
+class DeviceResource < Hyrax::Work
+  include Hyrax::Schema(:basic_metadata)
+  include Hyrax::Schema(:device_resource)
+
+  delegate :download_groups, :download_groups=,
+           :download_users,  :download_users=, to: :permission_manager
+
+## see https://elrayle.github.io/samvera_docs/valkyrie-work-extra-model-code.html for dealing with extra code
+
+#  include ::Hyrax::WorkBehavior
   include Morphosource::PersistentIdentifiersBehavior
-  validates_with Morphosource::ParentChildValidator
-  after_create :mint_ark
-  after_save :update_organization_access
-  after_update :update_ark_status
-  after_destroy :delete_ark_if_reserved
 
-  self.indexer = DeviceIndexer
+## validations will be handled with change sets  
+
+#  validates_with Morphosource::ParentChildValidator
+#  after_create :mint_ark
+#  after_save :update_organization_access
+#  after_update :update_ark_status
+#  after_destroy :delete_ark_if_reserved
+
+#  self.indexer = DeviceIndexer
   # Change this to restrict which works can be added as a child.
-  self.valid_child_concerns = []
+#  self.valid_child_concerns = []
 
-  validates :title, presence: { message: 'Your device must have a model name.' }
-
-  include Morphosource::DeviceMetadata
-
-  # This must be included at the end, because it finalizes the metadata
-  # schema (by adding accepts_nested_attributes)
-  include ::Hyrax::BasicMetadata
+#  validates :title, presence: { message: 'Your device must have a model name.' }
 
   def organization
     organization_id.present? ? ActiveFedora::Base.find(organization_id.first) : member_of.select { |m| m.class == Organization || m.class == OrganizationCollection }&.first

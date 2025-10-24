@@ -7,7 +7,7 @@ en:
       media_list:
         based_near: A place name related to the collection, such as its site of publication, or the city, state, or country the collection contents are about.
         contributor: A person you want to recognize for playing a role in the creation of the list, but not the primary role.
-        creator: The person or group responsible for the creating the list.
+        creator: The person or group responsible for creating the list.
         description: Free-text notes about the collection. Examples include abstracts of a paper or citation information for a journal article.
         keyword: Words or phrases you select to describe what the collection is about. These are used to search for content.
         title: A name to aid in identifying a collection.

@@ -1,6 +1,7 @@
 # catalog/teams_projects
 class MediaListsCatalogController < CatalogController
   include CatalogControllerRestApiBehavior
+  include Morphosource::CatalogHelper
 
   configure_blacklight do |config|
     config.search_builder_class = Morphosource::Catalog::MediaListsCatalogSearchBuilder
@@ -11,7 +12,7 @@ class MediaListsCatalogController < CatalogController
     # search result metadata
     config.add_index_field solr_name("title", :stored_searchable), label: "Title", itemprop: 'name', if: false
     config.add_index_field solr_name("description", :stored_searchable), label: "Description", helper_method: :line_clamp
-    config.add_index_field solr_name("depositor", :stored_searchable), label: "Creator", helper_method: :link_to_profile
+    config.add_index_field solr_name("creator", :stored_searchable), label: "Creator", helper_method: :link_to_creator
     # for some reason the label is not getting rendered correctly in the catalog. For now, overriding in _index_list_default
     config.add_index_field solr_name("date_uploaded", :stored_sortable, type: :date), label: "Date Created", helper_method: :human_readable_date
 

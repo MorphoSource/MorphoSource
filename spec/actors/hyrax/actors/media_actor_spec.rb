@@ -39,8 +39,8 @@ RSpec.describe Hyrax::Actors::MediaActor do
       end
       context 'media is created through the submission process' do
         let(:device)              { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-        let(:taxonomy)            { Taxonomy.create(title: ['taxonomy']) }
-        let(:biological_specimen) { BiologicalSpecimen.create(title: ['title'], vouchered: [ "Yes" ], taxonomy_id: [taxonomy.id]) }
+        let(:taxonomy)            { valkyrie_create(:taxonomy_resource, title: ['taxonomy']) }
+        let(:biological_specimen) { BiologicalSpecimen.create(title: ['title'], vouchered: [ "Yes" ], taxonomy_id: [taxonomy.id.to_s]) }
         let(:imaging_event)       { ImagingEvent.create(title: ['imaging_event'], ie_modality: device.modality, device_id: [device.id], physical_object_id: [biological_specimen.id]) }
         let(:processing_event)    { ProcessingEvent.create(title: ['processing event']) }
 

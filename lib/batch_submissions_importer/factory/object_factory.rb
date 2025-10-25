@@ -40,7 +40,7 @@ module BatchSubmissionsImporter
           # create Valkyrie resource
           @object = Morphosource::Action::CreateWorkService.new(
             model: valkyrie_klass,
-            params: { valkyrie_klass.to_s.underscore.to_sym: attrs },
+            params: { valkyrie_klass.to_s.underscore.to_sym => attrs },
             user: import_user(attrs)
           ).call.value!
         else
@@ -65,7 +65,7 @@ module BatchSubmissionsImporter
           attrs.delete(:id)
           @object = Morphosource::Action::UpdateWorkService.new(
             work: unsaved_object,
-            params: { unsaved_object.model_name.to_s.underscore.to_sym: attrs }
+            params: { unsaved_object.model_name.to_s.underscore.to_sym => attrs }
           ).call.value!
         else
           # update AF work

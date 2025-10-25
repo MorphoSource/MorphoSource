@@ -278,7 +278,7 @@ Hyrax.config do |config|
   # Allow use of legacy AF models
   # If using Frayja/Frigg then use the resource they provide
   if Hyrax.config.valkyrie_transition?
-    config.collection_model = 'CollectionResource'
+    config.collection_model = '::Collection' # todovalk change this to CollectionResource
     config.admin_set_model = 'AdminSetResource'
     config.file_set_model = '::FileSet' # todovalk change Hyrax::FileSet when we valkyrize media and filesets
   else

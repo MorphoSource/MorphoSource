@@ -11,8 +11,8 @@ if Hyrax.config.valkyrie_transition?
       # we register itself so we can pre-translate the class in Freyja instead of having to translate in each query_service
       Wings::ModelRegistry.register(klass, klass)
     end
-    Wings::ModelRegistry.register(Collection, Collection)
-    Wings::ModelRegistry.register(CollectionResource, Collection)
+    # Wings::ModelRegistry.register(Collection, Collection)
+    # Wings::ModelRegistry.register(CollectionResource, Collection)
     Wings::ModelRegistry.register(AdminSet, AdminSet)
     Wings::ModelRegistry.register(AdminSetResource, AdminSet)
     Wings::ModelRegistry.register(FileSet, FileSet)

@@ -47,7 +47,7 @@ RSpec.describe Morphosource::FindExtraSolrJob do
       let(:ids)                   {
                                     { media_id => "Media",
                                       specimen_id => "BiologicalSpecimen",
-                                      taxonomy_id => "Taxonomy",
+                                      taxonomy_id.to_s => "Taxonomy",
                                       cho_id => "CulturalHeritageObject",
                                       organization_id => "Organization",
                                       device_id => "Device",

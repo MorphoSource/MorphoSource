@@ -30,7 +30,7 @@ RSpec.describe SequentialSectionListIndexer do
       end
 
       context 'media represent a biological specimen' do
-        let(:taxonomy)  { FactoryBot.create(:taxonomy, gbif_key: ['8675309'])}
+        let(:taxonomy)  { valkyrie_create(:taxonomy_resource, gbif_key: ['8675309'])}
         let(:object)    { FactoryBot.create(:biological_specimen, organization_id: [organization.id], taxonomy_id: [taxonomy.id], idigbio_uuid: ['12345'], occurrence_id: ['678910'])}
 
         it 'indexes specimen and taxonomy fields' do

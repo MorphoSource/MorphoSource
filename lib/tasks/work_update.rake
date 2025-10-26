@@ -60,7 +60,7 @@ namespace :work_update do
         # Associate with existing taxonomy
         Rails.logger.info("#{bso_text} will be matched to existing GBIF taxonomy #{existing_gbif_taxonomy.title&.first} (ID #{existing_gbif_taxonomy.id})")
         bsos_match_success_existing << doc
-        new_gbif_taxonomy_id = existing_gbif_taxonomy.id.to_s
+        new_gbif_taxonomy_id = existing_gbif_taxonomy.id
       else
         # Create new taxonomy
         Rails.logger.info("#{bso_text} will be matched to new GBIF taxonomy with GBIF key #{gbif_taxonomy_params['gbif_key']}")
@@ -74,7 +74,7 @@ namespace :work_update do
             params: new_gbif_taxonomy_params,
             user: ::User.batch_user,
             work_attributes_key: :taxonomy
-          ).call.value!.id.to_s
+          ).call.value!.id
         end
       end
 

@@ -4,9 +4,9 @@ require 'dry/container/stub'
 
 RSpec.describe Morphosource::Transactions::Taxonomy::WorkCreate, :clean_repo do
   subject(:tx)     { described_class.new }
-  let(:change_set) { Hyrax::ChangeSet.for(resource) }
   let(:depositor) { FactoryBot.create(:user) }
   let(:resource)   { build(:taxonomy_resource, depositor: depositor.user_key) }
+  let(:change_set) { Hyrax::FormFactory.new.build(resource, Ability.new(depositor), nil) }
   let(:default_admin_set_id) { Hyrax::AdminSetCreateService.find_or_create_default_admin_set.id }
 
   context 'default hyrax work create transaction behavior' do

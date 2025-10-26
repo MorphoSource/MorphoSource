@@ -8,7 +8,7 @@ RSpec.describe Morphosource::Works::Base do
 
   let(:organization)              { Organization.create(title: ['old title']) }
   let(:taxonomy)                  { valkyrie_create(:taxonomy_resource, title: ['old title']) }
-  let(:specimen)                  { BiologicalSpecimen.create(title: ['old title'], vouchered: ['Yes'], organization_id: [organization.id], taxonomy_id: [taxonomy.id.to_s]) }
+  let(:specimen)                  { BiologicalSpecimen.create(title: ['old title'], vouchered: ['Yes'], organization_id: [organization.id], taxonomy_id: [taxonomy.id]) }
   let(:device)                    { Device.create(title: ['device'], modality: ["MagneticResonanceImaging"])}
   let(:imaging_event)             { ImagingEvent.create(title: ['old title'], ie_modality: device.modality, device_id: [device.id], physical_object_id: [specimen.id]) }
   let(:media1)                    { Media.create(title: ['old title']) }

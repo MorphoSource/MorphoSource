@@ -26,7 +26,7 @@ RSpec.describe Morphosource::FindExtraSolrJob do
     context 'Missing objects are found' do
       let!(:media)                { Media.create(title: ['media']) }
       let!(:specimen)             { BiologicalSpecimen.create(title: ['specimen'], vouchered: ['Yes']) }
-      let!(:taxonomy)             { Taxonomy.create(title: ['taxonomy']) }
+      let!(:taxonomy)             { valkyrie_create(:taxonomy_resource, title: ['taxonomy']) }
       let!(:cho)                  { CulturalHeritageObject.create(title: ['cho'], vouchered: ['Yes']) }
       let!(:organization)         { Organization.create(title: ['organization']) }
       let!(:device)               { Device.create(title: ['device'], modality: ['Photogrammetry']) }
@@ -56,7 +56,7 @@ RSpec.describe Morphosource::FindExtraSolrJob do
                                     }
 
       before do
-        works.each(&:destroy)
+        works.select { |w| !w.is_a?(TaxonomyResource) }.each(&:destroy)
         ids.each do |id, model|
           ActiveFedora::SolrService.add( { "id" => id, "has_model_ssim" => model }, commit: true)
         end

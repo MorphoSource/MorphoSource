@@ -68,7 +68,7 @@ RSpec.describe Morphosource::PhysicalObjectsSearchService do
       end
     end
     describe 'taxonomy provided' do
-      let!(:taxonomy) { Taxonomy.create(title: [ 'Tax' ], taxonomy_genus: [ 'Test Genus' ], taxonomy_species: [ 'Test Species' ]) }
+      let!(:taxonomy) { valkyrie_create(:taxonomy_resource, title: [ 'Tax' ], taxonomy_genus: [ 'Test Genus' ], taxonomy_species: [ 'Test Species' ]) }
       let(:params) { { 'collection_code' => 'abc', 'taxonomy_genus' => 'Test Genus', 'taxonomy_species' => 'Test Species'  } }
       before do
         biospecs[1].taxonomy_id = [taxonomy.id]

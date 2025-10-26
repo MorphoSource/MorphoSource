@@ -14,6 +14,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
   after_destroy :delete_ark_if_reserved
 
   self.indexer = BiologicalSpecimenIndexer
+
   # Change this to restrict which works can be added as a child.
   self.valid_child_concerns = []
 
@@ -26,6 +27,9 @@ class BiologicalSpecimen < Morphosource::Works::Base
   # This must be included at the end, because it finalizes the metadata
   # schema (by adding accepts_nested_attributes)
   include Morphosource::BiologicalSpecimenMetadata
+
+  # Valkyrie foreign key associations, if Valkyrie::ID is found will convert to string
+  self.valkyrie_association_attributes = [:taxonomy_id]
 
   # :occurrence_id_changed? may change to :will_save_change_to_occurrence_id?
   # if ActiveFedora updates to reflect the Rails 5.1+ ActiveRecord/ActiveModel API

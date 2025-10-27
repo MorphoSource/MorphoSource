@@ -7,6 +7,8 @@ class MediaList < Collection
   before_create :assign_creator
   after_create :create_collection_groups
   before_validation :normalize_contributor
+  # Prevent deletion if DOI exists
+  before_destroy :prevent_doi_deletion
 
   DEFAULT_GROUP_ROLES = %w[managers viewers].freeze
 

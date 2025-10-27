@@ -645,12 +645,6 @@ class Media < Morphosource::Works::Base
       end
     end
 
-    def prevent_doi_deletion
-      unless self.doi.empty?
-        throw(:abort)
-      end
-    end
-
     def delete_fund_code_media_associations
       FundCodeMediaAssociation.where(media: self.id).each { |a| a.destroy! }
     end

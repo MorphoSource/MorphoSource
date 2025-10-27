@@ -2,12 +2,15 @@ class Media < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
   include Morphosource::MediaBehavior
   include Morphosource::PersistentIdentifiersBehavior
+  include Morphosource::DoiBehavior
+
   validates_with Morphosource::ParentChildValidator
   before_create :controlled_value_filter, :date_filter
   after_create :mint_ark
   before_update :record_original_member_of_public_collection_ids, :record_original_related_media_ids, :controlled_value_filter, :date_filter
   before_validation :normalize_download_reviewer
   after_update :update_ark_status, :update_cartitem_reviewer, :check_for_organization_transfer
+  before_destroy :prevent_doi_deletion
   before_destroy :record_original_objects
   after_destroy :reindex_physical_objects, :publish_destroyed_event
 
@@ -25,7 +28,6 @@ class Media < Morphosource::Works::Base
   validates :title, presence: { message: 'Your work must have a title.' }
 
   attr_accessor :download_permission, :tags, :delete_thumbnail, :generated_thumbnail
-  before_destroy :prevent_doi_deletion
   after_destroy :delete_ark_if_reserved, :delete_fund_code_media_associations
 
   include Morphosource::MediaMetadata

@@ -5,7 +5,7 @@ FactoryBot.define do
     after_create_collection # provides find methods for collections
 
     title               { ["example media list"] }
-    depositor           { nil }
+    depositor           { FactoryBot.create(:user).ms_id }
     visibility          { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE }
 
     after(:build) do |media_list|

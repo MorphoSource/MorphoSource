@@ -1,0 +1,63 @@
+<doi_batch xmlns="http://www.crossref.org/schema/4.4.2" version="4.4.2">
+  <head>
+    <doi_batch_id><%= doi_batch_id %></doi_batch_id>
+    <timestamp><%= timestamp %></timestamp>
+    <depositor>
+      <depositor_name>Duke University Libraries</depositor_name>
+      <email_address>ddrhelp@duke.edu</email_address>
+    </depositor>
+    <registrant>Duke University Libraries</registrant>
+  </head>
+  <body>
+    <database>
+      <database_metadata language="en">
+        <titles>
+          <title>MorphoSource Media List</title>
+        </titles>
+        <institution>
+          <institution_name>MorphoSource</institution_name>
+        </institution>
+      </database_metadata>
+      <dataset dataset_type="collection">
+        <contributors>
+          <person_name contributor_role="author" sequence="first">
+            <given_name><%= author_first %></given_name>
+            <surname><%= author_last %></surname>
+          </person_name>
+          <% contributors.each do |contributor| %>
+            <person_name contributor_role="author" sequence="additional">
+              <given_name><%= contributor["contributor_first"] %></given_name>
+              <surname><%= contributor["contributor_last"] %></surname>
+            </person_name>
+          <% end %>
+        </contributors>
+        <titles>
+          <title><%= title %></title>
+        </titles>
+        <database_date>
+          <publication_date>
+            <year><%= publication_year %></year>
+          </publication_date>
+        </database_date>
+        <doi_data>
+          <doi><%= doi %></doi>
+          <resource><%= url %></resource>
+        </doi_data>
+        <component_list>
+          <% components.each do |component| %>
+            <component parent_relation="isPartOf">
+              <titles>
+                <title><%= component["title"] %></title>
+              </titles>
+              <format><%= component["resource_type"] %></format>
+              <doi_data>
+                <doi><%= component["doi"] %></doi>
+                <resource><%= component["url"] %></resource>
+              </doi_data>
+            </component>
+          <% end %>
+        </component_list>
+      </dataset>
+    </database>
+  </body>
+</doi_batch>

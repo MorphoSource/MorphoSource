@@ -13,7 +13,9 @@ module Morphosource
           #
           # @return [Dry::Monads::Result]
           def call(obj) # obj is the form
-            obj.id = ::Noid::Rails::Service.new.mint if obj.id.blank?
+            if obj.id.blank?
+              obj.id = ::Noid::Rails::Service.new.mint
+            end
             Success(obj)
           end
         end

@@ -10,7 +10,10 @@ module SubmissionsControllerAjaxBehavior
   def new_taxonomy_submit
     # this method is expected to be called from a form in modal, or an ajax post
     begin
-      new_taxonomy_id = prepare_and_create_work('taxonomy', { 'taxonomy' => params[:taxonomy] })[0]
+      new_taxonomy_id = prepare_and_create_work(
+        'taxonomy',
+        { 'taxonomy' => params[:taxonomy] || params[:taxonomy_resource] }
+      )[0]
     rescue
       new_taxonomy_id = nil
     end

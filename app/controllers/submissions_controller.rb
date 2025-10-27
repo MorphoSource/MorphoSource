@@ -300,7 +300,7 @@ class SubmissionsController < ApplicationController
   def new_taxonomy_create(params)
     # this method is expected to be called from the backend
     begin
-      prepare_and_create_work('taxonomy', { 'taxonomy' => params[:taxonomy] })[0]
+      prepare_and_create_work('taxonomy', { 'taxonomy' => params[:taxonomy] || params[:taxonomy_resource] })[0]
     rescue
       nil
     end
@@ -650,11 +650,23 @@ class SubmissionsController < ApplicationController
   end
 
   def create_work(model, attributes_for_actor)
-    # TODO: Refactor this to rely on appropriate model methods and not submissions controller
-    curation_concern = model.new
-    env = Hyrax::Actors::Environment.new(curation_concern, current_ability, attributes_for_actor)
-    Hyrax::CurationConcern.actor.create(env)
-    return curation_concern.id, curation_concern
+    if (valkyrie_resource_model = Wings::ModelRegistry.reverse_lookup(model)).present?
+      # Create Valkyrie work
+      valkyrie_attribute_key = valkyrie_resource_model.to_s.downcase.to_sym
+      valkyrie_work = Morphosource::Action::CreateWorkService.new(
+        model: valkyrie_resource_model,
+        params: { valkyrie_attribute_key => attributes_for_actor },
+        user: current_user,
+        work_attributes_key: valkyrie_attribute_key
+      ).call.value!
+      return valkyrie_work.id.to_s, valkyrie_work
+    else
+      # Create AF work
+      curation_concern = model.new
+      env = Hyrax::Actors::Environment.new(curation_concern, current_ability, attributes_for_actor)
+      Hyrax::CurationConcern.actor.create(env)
+      return curation_concern.id, curation_concern
+    end
   end
 
   def instantiate_work_forms

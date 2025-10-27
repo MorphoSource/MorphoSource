@@ -3,13 +3,7 @@ module Morphosource
     extend ActiveSupport::Concern
 
     included do
-      property :id, prepopulator: :id_prepopulator
-    end
-
-    private
-
-    def id_prepopulator
-      self.id ||= ::Noid::Rails::Service.new.mint
+      property :id
     end
   end
 end

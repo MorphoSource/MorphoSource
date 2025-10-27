@@ -19,7 +19,7 @@ module Morphosource
       before_action :redirect_to_collection_type, only: []
 
       # media list managers do not necessarily have edit access to media in the list, so they shouldn't be able to view information about other users' downloads/requests for list media.
-      before_action :authorize_admin, only: [:media_downloads, :media_requests, :mint_doi]
+      before_action :authorize_admin, only: [:media_downloads, :media_requests]
 
       class_attribute :collection_type
 
@@ -92,17 +92,6 @@ module Morphosource
           format.js { render layout: false }
           format.html { render 'show'}
         end
-      end
-
-      def mint_doi
-        byebug
-        begin
-          doi = @collection.mint_doi(media_list_url(@collection))
-          flash[:notice] = "Successfully minted DOI #{doi}" if doi.present?
-        rescue => e
-          flash[:error] = "Failed to mint DOI. Please check the logs for details."
-        end
-        redirect_to edit
       end
 
       private

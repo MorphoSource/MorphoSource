@@ -19,7 +19,7 @@ module Morphosource
       before_action :redirect_to_collection_type, only: []
 
       # media list managers do not necessarily have edit access to media in the list, so they shouldn't be able to view information about other users' downloads/requests for list media.
-      before_action :authorize_admin, only: [:media_downloads, :media_requests]
+      before_action :authorize_admin, only: [:media_downloads, :media_requests, :mint_doi]
 
       class_attribute :collection_type
 
@@ -94,6 +94,17 @@ module Morphosource
         end
       end
 
+      def mint_doi
+        byebug
+        begin
+          doi = @collection.mint_doi(media_list_url(@collection))
+          flash[:notice] = "Successfully minted DOI #{doi}" if doi.present?
+        rescue => e
+          flash[:error] = "Failed to mint DOI. Please check the logs for details."
+        end
+        redirect_to edit
+      end
+
       private
 
         def load_media_preview_presenter(id)
@@ -109,7 +120,7 @@ module Morphosource
         # link for facet filters
         def search_action_url(*args)
           args&.first&.delete("collection_id")
-          main_app.media_list_path(@curation_concern, *args)
+          main_app.media_list_path(@collection, *args)
         end
 
         # The url of the "more" link for additional facet values

@@ -1,5 +1,6 @@
 class MediaList < Collection
   include Morphosource::MediaListMetadata
+  include Morphosource::DoiBehavior
 
   self.indexer = MediaListIndexer
 

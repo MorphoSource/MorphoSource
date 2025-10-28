@@ -1,0 +1,138 @@
+# require 'nokogiri'
+# require 'erb'
+# require 'ostruct'
+# require 'rest-client'
+# require 'securerandom'
+
+module Morphosource
+  module CrossrefListDoiMinter
+    extend ActiveSupport::Autoload
+    include Morphosource::CrossrefDoiMinter
+
+    SUBMISSION_PATH = 'servlet/deposit'
+    @@xsd_schema = nil
+
+    # Used to transform params hash into binding for ERB template rendering
+    class CrossrefMetadataTemplate < OpenStruct
+      def render(erb_template)
+        ERB.new(erb_template).result(binding)
+      end
+    end
+
+    # Used to transform XML string into an IO object suitable for RestClient multipart POST
+    def self.string_to_file(string, filename="file_#{rand 100000}", type=MIME::Types.type_for("xml").first.content_type)
+      file = StringIO.new(string)
+
+      file.instance_variable_set(:@path, filename)
+      def file.path
+        @path
+      end
+      file.instance_variable_set(:@type, type)
+      def file.content_type
+        @type
+      end
+
+      return file
+    end
+
+    # See: https://www.crossref.org/education/content-registration/crossrefs-metadata-deposit-schema/metadata-deposit-schema-4-4-2/
+    def self.validate_metadata_deposit_xml(input_xml)
+      # memoized XSD parsing, since parsing the XSD is somewhat time-consuming
+      @@xsd_schema ||= Nokogiri::XML::Schema(File.open(Rails.root.join('data','xsds','crossref4.4.2.xsd')))
+      validation_errors = @@xsd_schema.validate(Nokogiri::XML(input_xml))
+      if validation_errors.empty?
+        return input_xml
+      else
+        raise "Error(s) validating Crossref metadata deposit XML: #{validation_errors.inspect}"
+      end
+    end
+
+    def self.identifier_to_doi(identifier)
+      shoulder = ENV['CROSSREF_DOI_SHOULDER']
+      type = doi_type(model_name(identifier))
+      identifier = identifier.sub(/^0*/,'')
+      "#{shoulder}/#{type}#{identifier}"
+    end
+
+    def self.model_name(identifier)
+      @model ||= SolrDocument.find(identifier)["has_model_ssim"]&.first
+    rescue
+      nil
+    end
+
+    def self.doi_type(model)
+      case model
+      when "MediaList"
+        "L"
+      when "Media"
+        "M"
+      end
+    end
+
+    # Required keys in params hash:
+    # - title
+    # - url
+    # - resource_type
+    # Also, either organization must be present OR both author_first and author_last must be present
+
+    def self.generate_metadata_deposit_xml(identifier, params={})
+      doi = identifier_to_doi(identifier)
+      # clean params and add additional params as necessary
+
+      # if author_first or author_last are > 60 characters, truncate
+      if params['author_first'] && params['author_first'].length > 60
+        params['author_first'] = params['author_first'].truncate(60)
+      end
+      if params['author_last'] && params['author_last'].length > 60
+        params['author_last'] = params['author_last'].truncate(60)
+      end
+      if params['author'] && params['author'].length > 511
+        params['author'] = params['author'].truncate(511)
+      end
+
+      # set timestamp and publication_year if not passed in
+      params.reverse_merge!({'timestamp' => Time.now.to_i, 'publication_year' => Time.now.year})
+      # always set doi_batch_id and doi
+      params.merge!({'doi_batch_id' => SecureRandom.uuid, 'doi' => doi})
+
+      # resource type not needed for lists
+      required_params = %w{ doi_batch_id title doi url timestamp publication_year }
+      required_params.each do |required_param|
+        if params[required_param].blank?
+          raise "CrossrefDoiMinter.generate_metadata_deposit_xml call missing required parameter: #{required_param}"
+        else
+          params[required_param] = params[required_param].to_s.encode(xml: :text)
+        end
+      end
+      if params['organization'].blank? && (params['author_first'].blank? || params['author_last'].blank?)
+        raise "CrossrefDoiMinter.generate_metadata_deposit_xml call missing required parameter: organization OR author_first and author_last"
+      end
+      template_path = Rails.root.join('data','xmls','list_doi.xml.erb')
+      rendered_xml = CrossrefMetadataTemplate.new(params).render(File.new(template_path).read)
+      Rails.logger.info("CrossrefDoiMinter.generate_metadata_deposit_xml rendered deposit XML: #{rendered_xml}")
+      return validate_metadata_deposit_xml(rendered_xml)
+    end
+
+    def self.mint_doi(identifier, metadata_params={})
+      %w{username password shoulder url}.each do |doi_param|
+        environment_param = "CROSSREF_DOI_#{doi_param.upcase}"
+        if ENV[environment_param].blank?
+          Rails.logger.error "Required environment variable for Crossref DOI minting is missing: #{environment_param}"
+          return nil
+        end
+      end
+      submission_url = "#{ENV['CROSSREF_DOI_URL']}/#{SUBMISSION_PATH}"
+      login_id = ENV['CROSSREF_DOI_USERNAME']
+      login_passwd = ENV['CROSSREF_DOI_PASSWORD']
+      deposit_xml = generate_metadata_deposit_xml(identifier, metadata_params)
+      # See: https://www.crossref.org/education/member-setup/direct-deposit-xml/https-post/
+      begin
+        # submission_response = RestClient.post(submission_url, multipart: true, fname: string_to_file(deposit_xml), login_id: login_id, login_passwd: login_passwd, headers: {content_type: "multipart/form-data"})
+        # Rails.logger.info("CrossrefDoiMinter.mint_doi submission response: #{submission_response.body}")
+      rescue RestClient::ExceptionWithResponse => exception
+        return exception
+      end
+      identifier_to_doi(identifier)
+    end
+  end
+end

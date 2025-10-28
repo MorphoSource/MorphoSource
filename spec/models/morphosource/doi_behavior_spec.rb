@@ -25,4 +25,15 @@ RSpec.describe Morphosource::DoiBehavior do
       end
     end
   end
+
+  describe '#mint_doi' do
+    context 'when DOI exists' do
+      let!(:doi) { ['10.1234/existing.doi'] }
+
+      it 'raises an error' do
+        expect { media_list.mint_doi('http://example.com') }.to raise_error(StandardError)
+        expect { media.mint_doi('http://example.com') }.to raise_error(StandardError)
+      end
+    end
+  end
 end

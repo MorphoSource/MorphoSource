@@ -20,15 +20,21 @@
       </database_metadata>
       <dataset dataset_type="collection">
         <contributors>
-          <person_name contributor_role="author" sequence="first">
-            <given_name><%= author_first %></given_name>
-            <surname><%= author_last %></surname>
-          </person_name>
-          <% contributors.each do |contributor| %>
-            <person_name contributor_role="author" sequence="additional">
-              <given_name><%= contributor["contributor_first"] %></given_name>
-              <surname><%= contributor["contributor_last"] %></surname>
+        <% puts organization.inspect %>
+          <% if organization.present? %>
+            <organization sequence="first" contributor_role="author"><%= organization %></organization>
+          <% else %>
+            <person_name contributor_role="author" sequence="first">
+              <given_name><%= author_first %></given_name>
+              <surname><%= author_last %></surname>
             </person_name>
+            <% puts self.method(:contributors).source_location.inspect %>
+            <% contributors.each do |contributor| %>
+              <person_name contributor_role="author" sequence="additional">
+                <given_name><%= contributor["contributor_first"] %></given_name>
+                <surname><%= contributor["contributor_last"] %></surname>
+              </person_name>
+            <% end %>
           <% end %>
         </contributors>
         <titles>
@@ -40,6 +46,7 @@
           </publication_date>
         </database_date>
         <doi_data>
+        <% puts doi.inspect %>
           <doi><%= doi %></doi>
           <resource><%= url %></resource>
         </doi_data>
@@ -50,10 +57,12 @@
                 <title><%= component["title"] %></title>
               </titles>
               <format><%= component["resource_type"] %></format>
-              <doi_data>
-                <doi><%= component["doi"] %></doi>
-                <resource><%= component["url"] %></resource>
-              </doi_data>
+              <% if component["doi"].present? %>
+                <doi_data>
+                  <doi><%= component["doi"] %></doi>
+                  <resource><%= component["url"] %></resource>
+                </doi_data>
+              <% end %>
             </component>
           <% end %>
         </component_list>

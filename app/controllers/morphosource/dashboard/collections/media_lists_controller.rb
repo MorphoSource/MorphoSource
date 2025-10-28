@@ -15,7 +15,13 @@ module Morphosource
         def mint_doi
           begin
             doi = @collection.mint_doi(media_list_url(@collection))
-            flash[:notice] = "Successfully minted DOI #{doi}" if doi.present?
+            if doi.is_a?(Exception)
+              flash[:error] = "DOI minting failed: #{doi.message}."
+            elsif doi.nil?
+              flash[:error] = "DOI minting failed. Please check the logs for details."
+            else
+              flash[:notice] = "Successfully minted DOI: #{doi}" if doi.present?
+            end
           rescue => e
             flash[:error] = "Failed to mint DOI. Please check the logs for details."
           end

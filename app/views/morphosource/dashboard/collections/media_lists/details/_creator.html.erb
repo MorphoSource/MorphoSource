@@ -7,7 +7,9 @@
     <%= f.text_field :creator,
       id: 'media_list_creator',
       name: "#{f.object_name}[creator][]",
-      placeholder: User.find_by(ms_id: f.object.creator&.first)&.display_name || User.find_by(ms_id: f.object.depositor)&.display_name,
+      placeholder: (User.find_by(ms_id: f.object.creator&.first)&.display_name ||
+                   OrganizationCollection.find_by(id: f.object.creator&.first)&.title&.first ||
+                   User.find_by(ms_id: f.object.depositor)&.display_name),
       'data-creators' => creator_data(f),
       class: 'form-control string optional multi-search-field'
     %>

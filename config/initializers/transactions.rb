@@ -6,6 +6,17 @@ class ApplicationContainerOverrides
   namespace 'change_set' do |ops|
     ops.register 'assign_id' do
       Morphosource::Transactions::Taxonomy::Steps::AssignID.new
+      Morphosource::Transactions::Device::Steps::AssignID.new
+    end
+  end
+  
+  namespace 'device_change_set' do |ops|
+    ops.register 'create_work' do
+      Morphosource::Transactions::Device::WorkCreate.new
+    end
+
+    ops.register 'update_work' do
+      Morphosource::Transactions::Device::WorkUpdate.new
     end
 
     ops.register 'set_uploaded_date_unless_present' do

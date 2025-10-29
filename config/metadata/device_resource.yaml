@@ -30,7 +30,7 @@ attributes:
       primary: true
       multiple: true
     index_keys:
-      - "modality_tssim"
+      - "modality_tesim"
       - "modality_ssim"
     predicate: https://www.morphosource.org/terms/modality3D
   organization_id:

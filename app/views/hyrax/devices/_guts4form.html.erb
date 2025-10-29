@@ -13,9 +13,15 @@
       <div class="tab-content">
         <div class="form-tab-content">
           <div class="base-terms">
-            <% f.object.primary_terms.each do |term| %>
-              <%= render_edit_field_partial(term, f: f) %>
-            <% end %>
+            <%# f.object.primary_terms.each do |term| %>
+              <%#= render_edit_field_partial(term, f: f) %>
+            <%# end %>
+            <%# todo: get hint text from locale file %>
+            <%= f.input :title, label: 'Model', hint: 'The model of the device. Example: D800', input_html: { multiple: false } %>
+            <%= f.input :creator, label: 'Manufacturer', hint: 'The manufacturer of the device. Example: Nikon' %>
+            <%= render_edit_field_partial(:modality, f: f) %>
+            <%= render_edit_field_partial(:identifier, f: f) %>
+            <%= render_edit_field_partial(:description, f: f) %>
             <% if params[:organization_id] %>
               <% (f.object.in_works_ids + [params[:organization_id]]).uniq.each do |work_id| %>
                 <%= f.input :in_works_ids, as: :hidden, input_html: { value: work_id, multiple: true } %>

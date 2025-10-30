@@ -24,9 +24,9 @@ module Hyrax
 
     before_action :validate_individual_access, only: [:update]
     before_action :save_individual_access, only: [:update]
-    before_action :save_fileset_visibility, only: [:update]
+    before_action :save_publication_status, only: [:update]
     before_action :save_preview_fields, only: [:update]
-    before_action :set_fileset_visibility, only: [:create, :update]
+    before_action :set_fileset_visibility, only: [:create]
     before_action :authorize_media_with_temporary_link, only: [:showcase]
     before_action :set_fund_code, only: [:update]
     before_action :set_scene_attributes, only: [:update]
@@ -446,6 +446,7 @@ module Hyrax
 
       def update_fileset_accessibility
         curation_concern.file_sets.each do |file|
+          file.visibility = curation_concern.visibility
           file.accessibility = curation_concern.fileset_accessibility
           file.save!
         end
@@ -471,25 +472,48 @@ module Hyrax
         if browse_everything_file_present
           flash[:alert] = I18n.t("morphosource.media.alert.browse_everything")
         end
+        # byebug
+        # going from private to public
+        # (byebug) fileset_visibility_changed?
+        # false
+        # (byebug) curation_concern.visibility_changed?
+        # false
 
-        if (fileset_visibility_changed? || curation_concern.visibility_changed?)
-          if curation_concern.attributes["fileset_visibility"] == [""]
-            if permissions_changed?
-              return redirect_to hyrax.copy_access_permission_path(curation_concern), alert: flash[:alert]
-            else
-              return redirect_to main_app.copy_hyrax_permission_path(curation_concern), alert: flash[:alert]
-            end
-          end
-          if curation_concern.attributes["fileset_visibility"] == ["restricted"]
-            InheritPermissionsJob.perform_later(curation_concern.id) if permissions_changed?
-            restrict_all_filesets
-            flash_message = 'Updating file permissions to restricted. This may take a few minutes. You may want to refresh your browser or return to this record later to see the updated file permissions.'
-            return redirect_to [main_app, curation_concern], notice: flash_message
-          end
+        # changing public to private
+        # (byebug) fileset_visibility_changed?
+        # false
+        # (byebug) curation_concern.visibility_changed?
+        # false
+        # byebug
+        # if (fileset_accessibility_changed? || curation_concern.visibility_changed?)
+          # byebug
+          # if curation_concern.attributes["fileset_visibility"] == [""]
+          #   # byebug
+          #   if permissions_changed?
+          #     # byebug
+          #     return redirect_to hyrax.copy_access_permission_path(curation_concern), alert: flash[:alert]
+          #   else
+          #     return redirect_to main_app.copy_hyrax_permission_path(curation_concern), alert: flash[:alert]
+          #   end
+          # end
+          # # byebug
+          # if curation_concern.attributes["fileset_visibility"] == ["restricted"]
+          #   InheritPermissionsJob.perform_later(curation_concern.id) if permissions_changed?
+          #   restrict_all_filesets
+          #   flash_message = 'Updating file permissions to restricted. This may take a few minutes. You may want to refresh your browser or return to this record later to see the updated file permissions.'
+          #   return redirect_to [main_app, curation_concern], notice: flash_message
+          # end
+        byebug
+        if publication_status_changed?
+          set_fileset_visibility
+        end
+        if permissions_changed?
+          InheritPermissionsJob.perform_later(curation_concern.id)
         end
 
         respond_to do |wants|
-          wants.html { redirect_to [main_app, curation_concern], notice: "Work \"#{curation_concern}\" successfully updated." }
+
+          wants.html { redirect_to [main_app, curation_concern], notice: ("Media \"#{curation_concern}\" successfully updated. File permissions may take a few minutes to update.") }
           wants.json { render :show, status: :ok, location: polymorphic_path([main_app, curation_concern]) }
         end
       end
@@ -499,16 +523,38 @@ module Hyrax
       end
 
       # get the old file set visibility so we can tell if it is being changed
-      def save_fileset_visibility
-        if curation_concern.fileset_visibility == [""]
-          @saved_fileset_visibility = [""]
-        else
-          @saved_fileset_visibility = ["restricted"]
-        end
+      # def save_fileset_visibility
+      #   # byebug
+      #   # changing private to public
+      #   # (byebug) curation_concern.fileset_visibility
+      #   # [""]
+      #   # (byebug) curation_concern.visibility
+      #   # "restricted"
+
+      #   # changing public to private
+      #   # (byebug) curation_concern.fileset_visibility
+      #   # [""]
+      #   # (byebug) curation_concern.visibility
+      #   # "open"
+      #   if curation_concern.fileset_visibility == [""]
+      #     @saved_fileset_visibility = [""]
+      #   else
+      #     @saved_fileset_visibility = ["restricted"]
+      #   end
+      # end
+
+      # get the old file set visibility so we can tell if it is being changed
+      def save_publication_status
+        @saved_publication_status = curation_concern.fileset_accessibility&.first
+        @saved_publication_status.blank? ? "" : @saved_publication_status
       end
 
-      def fileset_visibility_changed?
-        @saved_fileset_visibility.first != curation_concern.fileset_visibility.first
+      # def fileset_visibility_changed?
+      #   @saved_fileset_visibility.first != curation_concern.fileset_visibility.first
+      # end
+
+      def publication_status_changed?
+        @saved_publication_status != curation_concern.fileset_accessibility&.first
       end
 
       def restrict_all_filesets

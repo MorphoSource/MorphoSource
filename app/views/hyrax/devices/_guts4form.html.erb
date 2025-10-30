@@ -16,7 +16,7 @@
             <%# f.object.primary_terms.each do |term| %>
               <%#= render_edit_field_partial(term, f: f) %>
             <%# end %>
-            <%# todo: get hint text from locale file %>
+            <%# todo: get hint text and labels from device.en.yml %>
             <%= f.input :title, label: 'Model', hint: 'The model of the device. Example: D800', input_html: { multiple: false } %>
             <%= f.input :creator, label: 'Manufacturer', hint: 'The manufacturer of the device. Example: Nikon' %>
             <%= render_edit_field_partial(:modality, f: f) %>

@@ -197,8 +197,10 @@ module Hyrax
       end
 
       if file_formats_valid? && actor.update(actor_environment)
+        Rails.logger.info("In update method: Media ID #{curation_concern.id} successfully updated - begin after_update_response processing.")
         after_update_response
       else
+        Rails.logger.error("In update method: Media ID #{curation_concern.id} failed to update. Errors: #{curation_concern.errors.full_messages.join(', ')}")
         respond_to do |wants|
           wants.html do
             build_form
@@ -466,6 +468,7 @@ module Hyrax
       end
 
       def after_update_response
+        Rails.logger.info("Media ID #{curation_concern.id} successfully updated - begin after_update_response processing.")
         if preview_fields_changed?
           flash[:alert] = I18n.t("morphosource.media.alert.rederive_preview")
           PrepareCreateDerivativesJob.perform_later(curation_concern.id)

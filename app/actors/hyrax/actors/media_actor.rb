@@ -14,6 +14,7 @@ module Hyrax
       end
 
       def update(env)
+        # byebug
         env.attributes['title'] = [ get_title(env) ]
         env.attributes['keyword'] = split_keywords(env)
         add_team_access(env)
@@ -42,7 +43,7 @@ module Hyrax
             end
           end
           return custom_title.first.titleize
-        else 
+        else
           return generated_title(env)
         end
       end

@@ -503,7 +503,7 @@ module Hyrax
           #   flash_message = 'Updating file permissions to restricted. This may take a few minutes. You may want to refresh your browser or return to this record later to see the updated file permissions.'
           #   return redirect_to [main_app, curation_concern], notice: flash_message
           # end
-        byebug
+        # byebug
         if publication_status_changed?
           set_fileset_visibility
         end

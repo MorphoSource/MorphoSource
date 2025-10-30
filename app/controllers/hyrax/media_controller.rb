@@ -440,11 +440,11 @@ module Hyrax
           when lease
             map_fileset_accessibility("","")
           end
-          update_fileset_accessibility
         end
       end
 
       def update_fileset_accessibility
+        Rails.logger.info("Updating fileset visibility and accessibility to match Media ID #{curation_concern.id}.")
         curation_concern.file_sets.each do |file|
           file.visibility = curation_concern.visibility
           file.accessibility = curation_concern.fileset_accessibility
@@ -454,8 +454,10 @@ module Hyrax
 
       # Sets work's fileset_visibility and fileset_accessibility values depending on publication status
       def map_fileset_accessibility(visibility,accessibility)
+        Rails.logger.info("Mapping fileset visibility to '#{visibility}' and accessibility to '#{accessibility}' for Media ID #{curation_concern.id}.")
         curation_concern.fileset_visibility = [visibility]
         curation_concern.fileset_accessibility = [accessibility]
+        update_fileset_accessibility
       end
 
       # Maps work visibility to Hyrax value for non-Hyrax publication status
@@ -505,9 +507,11 @@ module Hyrax
           # end
         # byebug
         if publication_status_changed?
+          Rails.logger.info("Publication status changed for Media ID #{curation_concern.id}, updating fileset visibility accordingly.")
           set_fileset_visibility
         end
         if permissions_changed?
+          Rails.logger.info("Permissions changed for Media ID #{curation_concern.id}, inheriting permissions for filesets. Media visibility: #{curation_concern.visibility}" )
           InheritPermissionsJob.perform_later(curation_concern.id)
         end
 

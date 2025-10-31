@@ -33,7 +33,6 @@ module Hyrax
       :side,
       :orientation,
       :description,
-      :fileset_accessibility,
       :keyword,
       :identifier,
       :related_url,
@@ -84,7 +83,7 @@ module Hyrax
     end
 
     def self.build_permitted_params
-      super + [:tags, :fileset_accessibility]
+      super + [:tags]
     end
 
   end

@@ -22,7 +22,6 @@ module Hyrax
 
     skip_authorize_resource only: [:showcase, :modal_file_archive_contents, :thumbnail]
 
-
     before_action :validate_individual_access, only: [:update]
     before_action :save_individual_access, only: [:update]
 
@@ -458,7 +457,6 @@ module Hyrax
         publication_status = params["media"]["visibility"]
         visibility = publication_status == "private" ? "restricted" : "open"
         params["media"]["visibility"] = visibility
-        # byebug
         params["media"]["fileset_accessibility"] = [publication_status]
       end
 

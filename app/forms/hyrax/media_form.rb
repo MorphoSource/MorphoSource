@@ -84,7 +84,7 @@ module Hyrax
     end
 
     def self.build_permitted_params
-      super + [:tags, :fileset_accessibility]
+      super + [:tags]
     end
 
   end

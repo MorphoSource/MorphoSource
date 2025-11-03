@@ -17,6 +17,7 @@ en:
         browse_everything: New media file is being downloaded from the cloud, this file will not be available until download and processing are complete.
         rederive_preview: Fields have been updated that require the preview to be rederived. The preview will be rederived in the background and will be available shortly.
         thumbnail_added: New thumbnail is being added and will be available shortly.
+        permissions_update: "Media record has been successfully updated. File permissions may take some time to update in the background."
       organization_transfer:
         transfer_message: This is an organization media transfer from the original media contributor to the receiving organization data manager. For more details, see our <a href="https://duke.atlassian.net/wiki/spaces/MD/pages/35423461/Organization+Ownership+Transfers">documentation</a>.
       annotations:

@@ -431,7 +431,7 @@ module Hyrax
         end
 
         respond_to do |wants|
-          wants.html { redirect_to [main_app, curation_concern], notice: ("Media \"#{curation_concern}\" successfully updated. File permissions may take a few minutes to update.") }
+          wants.html { redirect_to [main_app, curation_concern], notice: I18n.t("morphosource.media.alert.permissions_update") }
           wants.json { render :show, status: :ok, location: polymorphic_path([main_app, curation_concern]) }
         end
       end
@@ -453,6 +453,7 @@ module Hyrax
 
       # private media have a visibility of "restricted"
       # open and restricted_download media have a visibility of "open"
+      # fileset_accessibility is ["open"], ["restricted_download"], or ["private"]
       def map_publication_status_to_visibility
         publication_status = params["media"]["visibility"]
         visibility = publication_status == "private" ? "restricted" : "open"

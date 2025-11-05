@@ -426,11 +426,7 @@ module Hyrax
         end
 
         respond_to do |wants|
-<<<<<<< HEAD
-          wants.html { redirect_to [main_app, curation_concern], notice: "Work \"#{curation_concern}\" successfully updated." }
-=======
           wants.html { redirect_to [main_app, curation_concern], notice: I18n.t("morphosource.media.alert.permissions_update") }
->>>>>>> 0b05eb7a8 (add update message)
           wants.json { render :show, status: :ok, location: polymorphic_path([main_app, curation_concern]) }
         end
       end

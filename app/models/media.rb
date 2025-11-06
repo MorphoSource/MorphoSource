@@ -9,7 +9,7 @@ class Media < Morphosource::Works::Base
   before_validation :normalize_download_reviewer
   after_update :update_ark_status, :update_cartitem_reviewer, :check_for_organization_transfer
   before_destroy :record_original_objects
-  after_destroy :reindex_physical_objects
+  after_destroy :reindex_physical_objects, :publish_destroyed_event
 
   after_initialize do
     if self.new_record?
@@ -664,6 +664,11 @@ class Media < Morphosource::Works::Base
       @objects.each do |obj|
         UpdateWorkIndexJob.perform_later(obj.id)
       end
+    end
+
+    # Publish object.deleted event when media is destroyed
+    def publish_destroyed_event
+      Hyrax.publisher.publish('object.deleted', object: self)
     end
 
     def date_attributes_for_filter

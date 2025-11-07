@@ -1,0 +1,30 @@
+<div id="showcase-title">
+  <% # organizational team %>
+  <% if @collection.team? && @collection.organization&.present? %>
+    <div class="super-title"><%= @presenter.organization.institution_name&.first %></div>
+    <%= @presenter.organization.title.first %>
+    <%= @presenter.organization_badge %>
+    <%= @presenter.team_managed_badge %>
+
+  <% # organization collection %>
+  <% elsif @collection.organization_collection? %>
+    <div class="super-title"><%= @presenter.organization.institution_name&.first %></div>
+    <%= @presenter.organization.title.first %>
+    <%= @presenter.organization_badge %>
+
+  <% # media list %>
+  <% elsif @collection.media_list? %>
+    <%= @presenter.title.first %>
+    <%= @presenter.collection_type_badge %>
+    <%= @presenter.id_badge %>
+    <%= @presenter.doi_badge %>
+    <%= @presenter.permission_badge %>
+
+  <% # team, project, sequential section list %>
+  <% else %>
+    <%= @presenter.title.first %>
+    <%= @presenter.collection_type_badge %>
+    <%= @presenter.id_badge %>
+    <%= @presenter.permission_badge %>
+  <% end %>
+</div>

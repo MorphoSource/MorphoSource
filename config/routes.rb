@@ -328,6 +328,7 @@ Rails.application.routes.draw do
       get 'media-lists/:collection_id/cultural-heritage-objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'media_list_chos_facet'
       get 'media-lists/:id/order-media', to: 'media_lists#order_media', as: 'media_list_order_media'
       get 'media-lists/:id/preview/:media_id', to: 'media_lists#preview', as: 'media_list_preview'
+      post 'media-lists/:id/mint_doi', to: 'media_lists#mint_doi', as: 'media_list_mint_doi'
 
       # Media list CSV exports
       get 'media-lists/:id/media-export', to: 'media_lists#media_export_with_intersections_facet', as: 'media_list_media_export'
@@ -714,7 +715,10 @@ Rails.application.routes.draw do
   get '/batch_submissions/result', to: 'batch_submissions#result', as: 'batch_submissions_result'
 
   ### DATA MANAGER SEARCH ###
+  # Returns organizations and users with contributor status
   get '/data-managers', to: 'morphosource/data_managers#index', as: 'data_managers', constraints: { format: 'json' }
+  # Returns organizations, contributors, and registered users
+  get '/list-creators', to: 'morphosource/data_managers#index', as: 'list_creators', constraints: { format: 'json' }
 
   ### DOCS ###
   # Docs is deprecated, should use pages instead

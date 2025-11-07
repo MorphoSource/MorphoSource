@@ -37,7 +37,7 @@ module Morphosource
       private
 
         def authorize_collection_access
-          authorize! :edit, @collection
+          authorize! :deposit, @collection
         end
 
         def search_action_url(*args)

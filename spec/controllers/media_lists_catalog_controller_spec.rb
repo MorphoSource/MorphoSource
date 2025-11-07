@@ -49,13 +49,13 @@ RSpec.describe MediaListsCatalogController, :type => :controller do
         end
       end
 
-      describe 'depositor' do
-        subject { index_fields['depositor_tesim'] }
+      describe 'creator' do
+        subject { index_fields['creator_tesim'] }
 
         it 'has the correct attributes' do
           expect(subject.label).to eq('Creator')
-          expect(subject.helper_method).to eq(:link_to_profile)
-          expect(subject.field).to eq('depositor_tesim')
+          expect(subject.helper_method).to eq(:link_to_creator)
+          expect(subject.field).to eq('creator_tesim')
         end
 
       end

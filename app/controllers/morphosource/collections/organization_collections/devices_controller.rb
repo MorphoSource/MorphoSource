@@ -48,9 +48,10 @@ module Morphosource
 
           # The url of the "more" link for additional facet values
           def search_facet_path(args = {})
-            # args id is the solr facet
-            # params id is the collection id
             args.merge!(request.params)
+            # args :id is the solr facet
+            # params/args "id" is the collection id
+            args.delete("id")
             collection_type = @collection.collection_type.machine_id
             main_app.send("#{collection_type}_devices_facet_path", @collection.id, args)
           end

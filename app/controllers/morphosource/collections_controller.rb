@@ -122,5 +122,11 @@ module Morphosource
         false
       end
       helper_method :has_uv_preview?
+
+      # paginated results shown in the facet "more" modal
+      # see lib/morphosource/facets/collections.rb
+      def facet_search_response
+        blacklight_config.repository.search(search_builder.with(params).facet(@facet.key))
+      end
   end
 end

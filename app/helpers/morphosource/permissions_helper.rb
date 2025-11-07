@@ -44,6 +44,26 @@ module Morphosource
       end.to_json
     end
 
+    def contributor_data(f)
+      if f.object.model.id.present?
+        f.object.model.contributor.map do |ms_id|
+          { id: ms_id.to_i, user_key: ms_id, text: (u = User.where(ms_id: ms_id)&.first).present? ? u.name_or_email : '' }
+        end
+      else
+        { id: current_user.ms_id.to_i, user_key: current_user.ms_id, text: current_user.name_or_email }
+      end.to_json
+    end
+
+    def creator_data(f)
+      if f.object.model.id.present?
+        if creator = f.object.model.creator&.first
+          { id: creator.to_i, user_key: creator, text: (u = User.where(ms_id: creator)&.first).present? ? u.name_or_email : '' }
+        end
+      else
+        { id: current_user.ms_id.to_i, user_key: current_user.ms_id, text: current_user.name_or_email }
+      end.to_json
+    end
+
     def default_present?(form, field)
       form.model.send(field).reject(&:blank?).present?
     end

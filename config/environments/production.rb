@@ -105,5 +105,8 @@ Rails.application.configure do
   config.active_record.dump_schema_after_migration = false
 
   # Resolve CookieOverflow error in Submission flow (MR-493)
-  config.session_store :active_record_store, :key => '_morpho_source_sf_session'
+  config.session_store :active_record_store,
+    key: '_morpho_source_sf_session',
+    secure: true,
+    httponly: true
 end

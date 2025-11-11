@@ -44,4 +44,26 @@ RSpec.describe UpdateSpecimensFromIdigbioJob do
     end
   end
 
+  describe "#deep_normalize_for_job" do
+    # deep_normalize_for_job is a private method; access it via `send`
+    it 'converts ActionController::Parameters to hashes' do
+      params = ActionController::Parameters.new({ a: '1', b: '2' })
+      normalized = subject.send(:deep_normalize_for_job, params)
+      expect(normalized).to be_a(Hash)
+      expect(normalized).to eq({ 'a' => '1', 'b' => '2' })
+    end
+
+    it 'recursively normalizes nested structures' do
+      nested = ActionController::Parameters.new({ x: ActionController::Parameters.new({ y: ['z', ActionController::Parameters.new({ w: 'v' })] }) })
+      normalized = subject.send(:deep_normalize_for_job, nested)
+      expect(normalized).to eq({ 'x' => { 'y' => ['z', { 'w' => 'v' }] } })
+    end
+
+    it 'returns non-parameter primitives unchanged' do
+      expect(subject.send(:deep_normalize_for_job, 'string')).to eq('string')
+      expect(subject.send(:deep_normalize_for_job, 123)).to eq(123)
+      expect(subject.send(:deep_normalize_for_job, nil)).to be_nil
+    end
+  end
+
 end

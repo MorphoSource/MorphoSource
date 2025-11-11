@@ -42,14 +42,12 @@ module Morphosource
 
         # The url of the "more" link for additional facet values
         def search_facet_path(args = {})
-          # args id is the solr facet
-          # params id is the collection id
           args.merge!(request.params)
-          if @collection.project?
-            main_app.project_chos_facet_path(@collection.id, args)
-          elsif @collection.team?
-            main_app.team_chos_facet_path(@collection.id, args)
-          end
+          # args :id is the solr facet
+          # params/args "id" is the collection id
+          args.delete("id")
+          collection_type = @collection.collection_type.machine_id
+          main_app.send("#{collection_type}_chos_facet_path", @collection.id, args)
         end
 
         def tab

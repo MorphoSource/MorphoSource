@@ -109,4 +109,23 @@ module Morphosource::CatalogHelper
   def title_by_id(id)
     (ActiveFedora::SolrService.query("id:#{id}", rows: 1, fl: ["title_tesim"])&.first || {})["title_tesim"]&.first
   end
+
+  # Returns a link to the display name of the creator, whether a User or OrganizationCollection
+  # Used in media list catalog search results
+  def link_to_creator(args)
+    id = args[:value].first
+    creator = User.find_by(ms_id: id) ||
+              SolrDocument.where({"id" => id})&.first ||
+              ''
+    case creator
+    when User
+      link_to_profile(creator)
+    when SolrDocument
+      link_to creator['title_tesim']&.first, main_app.organization_path(id)
+    else
+      ''
+    end
+  rescue
+    ''
+  end
 end

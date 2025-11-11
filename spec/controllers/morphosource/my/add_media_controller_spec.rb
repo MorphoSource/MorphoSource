@@ -4,7 +4,13 @@ include Warden::Test::Helpers
 
 RSpec.describe Morphosource::My::AddMediaController, type: :controller do
   let(:user)                    { User.create(email: 'user@email.com', password: 'password') }
-  let(:project)                 { Collection.create(title: ['Project'], collection_type_gid: project_collection_type.to_global_id, depositor: user.ms_id) }
+  let(:depositor)               { FactoryBot.create(:user, email: 'depositor@email.com', password: 'password') }
+  let(:project)                 { Collection.create(title: ['Project'], collection_type_gid: project_collection_type.to_global_id, depositor: depositor.ms_id) }
+  let!(:contributor_role)        { Role.create(name: 'contributor') }
+
+  before do
+    user.make_contributor
+  end
 
   describe '#index' do
     context 'user is not signed in' do
@@ -26,33 +32,102 @@ RSpec.describe Morphosource::My::AddMediaController, type: :controller do
       end
     end
 
-    context 'user is not authorized to edit the collection' do
+    context 'user is not authorized to deposit to the collection' do
       let(:main_app) { Rails.application.routes.url_helpers }
-      
-      before do
-        sign_in user
-        get :index, params: { collection_id: project.id }
-      end
-      it 'redirects to site root with not found or unavailable flash' do
-        expect(response.status).to eq(302)
-        expect(response).to redirect_to main_app.root_path(locale: 'en')
-      end
-    end
 
-    context 'user is authorized to edit the collection' do
       before do
         project.create_collection_groups
         Morphosource::Collections::PermissionsCreateService.create_default(collection: project)
         sign_in user
-        get :index, params: { collection_id: project.id }
       end
-      it 'renders the media page with the correct variables' do
-        expect(response).to render_template("morphosource/my/works/index")
-        expect(response.status).to eq(200)
-        expect(subject.instance_variable_get(:@collection)).to eq(project)
-        expect(subject.instance_variable_get(:@tab)).to eq(:add_media)
-        expect(subject.instance_variable_get(:@page_title)).to eq("Select existing media to include in #{project.title.first}")
-        expect(subject.instance_variable_get(:@add_to_collection_button_label)).to eq("Add media to #{project.title.first}")
+
+      context 'user is a collection downloader' do
+        before do
+          project.downloaders << user
+          project.save!
+          user.reload
+          get :index, params: { collection_id: project.id }
+        end
+        it 'redirects to site root with not found or unavailable flash' do
+          expect(response.status).to eq(302)
+          expect(response).to redirect_to main_app.root_path(locale: 'en')
+        end
+      end
+
+      context 'user is a collection viewer' do
+        before do
+          project.viewers << user
+          project.save!
+          user.reload
+          get :index, params: { collection_id: project.id }
+        end
+
+        it 'redirects to site root with not found or unavailable flash' do
+          expect(response.status).to eq(302)
+          expect(response).to redirect_to main_app.root_path(locale: 'en')
+        end
+      end
+    end
+
+    context 'user is authorized to deposit to the collection' do
+      before do
+        project.create_collection_groups
+        Morphosource::Collections::PermissionsCreateService.create_default(collection: project)
+        sign_in user
+      end
+
+      context 'user is a collection manager' do
+        before do
+          project.managers << user
+          project.save!
+          user.reload
+          get :index, params: { collection_id: project.id }
+        end
+
+        it 'renders the media page with the correct variables' do
+          expect(response).to render_template("morphosource/my/works/index")
+          expect(response.status).to eq(200)
+          expect(subject.instance_variable_get(:@collection)).to eq(project)
+          expect(subject.instance_variable_get(:@tab)).to eq(:add_media)
+          expect(subject.instance_variable_get(:@page_title)).to eq("Select existing media to include in #{project.title.first}")
+          expect(subject.instance_variable_get(:@add_to_collection_button_label)).to eq("Add media to #{project.title.first}")
+        end
+      end
+
+      context 'user is a collection editor' do
+        before do
+          project.editors << user
+          project.save!
+          user.reload
+          get :index, params: { collection_id: project.id }
+        end
+
+        it 'renders the media page with the correct variables' do
+          expect(response).to render_template("morphosource/my/works/index")
+          expect(response.status).to eq(200)
+          expect(subject.instance_variable_get(:@collection)).to eq(project)
+          expect(subject.instance_variable_get(:@tab)).to eq(:add_media)
+          expect(subject.instance_variable_get(:@page_title)).to eq("Select existing media to include in #{project.title.first}")
+          expect(subject.instance_variable_get(:@add_to_collection_button_label)).to eq("Add media to #{project.title.first}")
+        end
+      end
+
+      context 'user is a collection depositor' do
+        before do
+          project.depositors << user
+          project.save!
+          user.reload
+          get :index, params: { collection_id: project.id }
+        end
+
+        it 'renders the media page with the correct variables' do
+          expect(response).to render_template("morphosource/my/works/index")
+          expect(response.status).to eq(200)
+          expect(subject.instance_variable_get(:@collection)).to eq(project)
+          expect(subject.instance_variable_get(:@tab)).to eq(:add_media)
+          expect(subject.instance_variable_get(:@page_title)).to eq("Select existing media to include in #{project.title.first}")
+          expect(subject.instance_variable_get(:@add_to_collection_button_label)).to eq("Add media to #{project.title.first}")
+        end
       end
     end
   end

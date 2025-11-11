@@ -33,7 +33,7 @@ module Morphosource::Derivatives::Processors
 
       begin
         Morphosource::Derivatives::Lightbox.new(source_path: source_path, out_path: thumbnail_path).call
-        output_file_service.call(thumbnail_path, directives)
+        output_file_service.call(File.open(thumbnail_path), directives)
       rescue StandardError => e
         cleanup_tmp_files
         raise e

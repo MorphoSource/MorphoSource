@@ -17,6 +17,14 @@ RSpec.describe Morphosource::ControlledVocabularies::Getty::Tgn do
   end
 
   describe 'rdf_label' do
+
+    before do
+      # Skip these tests if the TGN service is down
+      unless external_api_is_up?('https://vocab.getty.edu/tgn/7029392.json')
+        skip("!!! TGN API is down, skipping Getty::Tgn tests !!!")
+      end
+    end
+
     context 'Faraday response is an error' do
       subject { described_class.new(::RDF::URI(non_id)) }
 

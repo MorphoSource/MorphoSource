@@ -17,6 +17,14 @@ RSpec.describe Morphosource::ControlledVocabularies::Getty::Aat do
   end
 
   describe 'rdf_label' do
+
+    before do
+      # Skip these tests if the AAT service is down
+      unless external_api_is_up?('https://vocab.getty.edu/aat/300264092.json')
+        skip("!!! AAT API is down, skipping Getty::Aat tests !!!")
+      end
+    end
+
     context 'Faraday response is an error' do
       subject { described_class.new(::RDF::URI(non_id)) }
 

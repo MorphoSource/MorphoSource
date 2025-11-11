@@ -82,5 +82,8 @@ Rails.application.configure do
 
   config.reload_classes_only_on_change = true
 
-  config.session_store :active_record_store, :key => '_morpho_source_sf_session'
+  config.session_store :active_record_store,
+    key: '_morpho_source_sf_session',
+    secure: false,
+    httponly: true
 end

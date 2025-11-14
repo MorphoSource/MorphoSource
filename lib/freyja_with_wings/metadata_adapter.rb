@@ -7,7 +7,7 @@ module FreyjaWithWings
     ##
     # @return [Freyja::Persister]
     def persister
-      @persister ||= FreyjaWithWings::Persister.new(adapter: self)
+      @persister ||= Persister.new(adapter: self)
     end
   end
 end

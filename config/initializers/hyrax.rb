@@ -280,7 +280,7 @@ Hyrax.config do |config|
   if Hyrax.config.valkyrie_transition?
     config.collection_model = '::Collection' # todovalk change this to CollectionResource
     config.admin_set_model = 'AdminSetResource'
-    config.file_set_model = '::FileSet' # todovalk change Hyrax::FileSet when we valkyrize media and filesets
+    config.file_set_model = 'Hyrax::FileSet'
   else
     # allow legacy AF models
     config.collection_model = '::Collection'

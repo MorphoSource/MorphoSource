@@ -14,6 +14,21 @@ module Hyrax
     before_save :add_upload_hash_if_needed
     validates :user_id, presence: true
 
+    ##
+    # Associate a {FileSet} with this uploaded file.
+    #
+    # @param [Hyrax::Resource, ActiveFedora::Base] file_set
+    # @return [void]
+    def add_file_set!(file_set)
+      uri = case file_set
+            when ActiveFedora::Base
+              file_set.uri
+            when Hyrax::Resource
+              file_set.id
+            end
+      update!(file_set_uri: uri)
+    end
+
     private
 
     def add_upload_hash_if_needed

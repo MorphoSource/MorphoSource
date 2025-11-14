@@ -6,6 +6,10 @@ module Morphosource
       #
       # @param event [Dry::Event]
       def on_object_deleted(event)
+        # Check if :object key is present in event first. Somehow when a fileset is 
+        # deleted (from Media Edit page), the FileSetActor triggers this deletion event
+        return unless event.payload.key?(:object)
+
         case event[:object]
         when Media
           destroy_proxy_requests(event[:object])

@@ -2,7 +2,7 @@ module Morphosource
   module Files
     # Identifies and extracts archive files across multiple archive file formats
     class ArchiveService
-      attr_reader :file, :all_contents_files, :all_contents_file_count, 
+      attr_reader :file, :all_contents_files, :all_contents_file_count,
         :matching_contents_file_count, :matching_contents_file_groups
 
       #
@@ -63,9 +63,9 @@ module Morphosource
 
       # @!endgroup
       # @!group Archive extraction
-    
+
       #
-      # Extract archive files to destination, optionally preserving directory structure 
+      # Extract archive files to destination, optionally preserving directory structure
       #
       # @param [String] extract_dest Folder destination, where to extract files
       # @param [Array<String>] files_to_extract Optional, if provided, only listed files will be extracted
@@ -83,7 +83,7 @@ module Morphosource
       end
 
       #
-      # Extract ZIP archive files to destination, optionally preserving directory structure 
+      # Extract ZIP archive files to destination, optionally preserving directory structure
       #
       # @param [String] extract_dest Folder destination, where to extract files
       # @param [Array<String>] files_to_extract Optional, if provided, only listed files will be extracted
@@ -109,7 +109,7 @@ module Morphosource
       end
 
       #
-      # Extract TAR archive files to destination, optionally preserving directory structure 
+      # Extract TAR archive files to destination, optionally preserving directory structure
       #
       # @param [String] extract_dest Folder destination, where to extract files
       # @param [Array<String>] files_to_extract Optional, if provided, only listed files will be extracted
@@ -187,7 +187,7 @@ module Morphosource
       def tar_write_entry(f_data, f_path)
         # Remove file if already exists
         FileUtils.rm(f_path) if File.exist?(f_path)
-        
+
         # Create dir(s) if needed
         dir_path = File.dirname(f_path)
         unless File.directory?(dir_path)
@@ -238,7 +238,7 @@ module Morphosource
           end
         end
       end
-    
+
       #
       # Return largest group of files of same type in same dir location, with minimum number of files cut-off
       #
@@ -248,7 +248,7 @@ module Morphosource
       #
       # @return [Array(Array<String>,String)] Array of largest file group with file names, and file extension of that group
       #
-      def largest_file_group(file_exts, cutoff: 20, cutoff_exception_exts: [])
+      def largest_file_group(file_exts, cutoff: 10, cutoff_exception_exts: [])
         group_files_by_type_and_location(file_exts)
 
         # find largest sub-group for each file ext, if num files >= cutoff or file ext is an exception
@@ -266,7 +266,7 @@ module Morphosource
           return [], nil
         end
       end
-      
+
       #
       # Iterates through archive files, grouping files by file extension and directory location
       #
@@ -291,7 +291,7 @@ module Morphosource
             matching_file_groups[ext][loc] << file.name
           end
         end
-        
+
         @matching_contents_file_groups = matching_file_groups
         @matching_contents_file_count = matching_file_count
         @all_contents_files = all_files

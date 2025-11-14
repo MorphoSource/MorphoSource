@@ -40,7 +40,7 @@ module Hydra::Works
           end
           @parser_class, @tools = gltf_inspect_options
         end
-      
+
         extracted_md = extract_metadata(content)
 
         # Process metadata
@@ -82,11 +82,11 @@ module Hydra::Works
       recognized_file_count = 0
 
       archive_service = Morphosource::Files::ArchiveService.new(source)
-      
+
       # First, try to find a group of >20 image files with most preferred file extension
       file_group, ext = archive_service.largest_file_group(
-        image_formats, 
-        cutoff: 20,
+        image_formats,
+        cutoff: 10,
         cutoff_exception_exts: ['.dcm', '.dicom']
       )
 
@@ -96,7 +96,7 @@ module Hydra::Works
       else
         matching_files = archive_service.all_contents_files
           .select { |f| file_type_priorities.include?(File.extname(f).downcase) }
-        
+
         representative_file_name = matching_files
           .sort_by { |f| file_type_priorities.index(File.extname(f).downcase)}
           .first
@@ -108,9 +108,9 @@ module Hydra::Works
         representative_file_io = archive_service.get_contents_file(representative_file_name)
       end
 
-      return archive_service.all_contents_files, 
-        representative_file_io, 
-        representative_file_name, 
+      return archive_service.all_contents_files,
+        representative_file_io,
+        representative_file_name,
         recognized_file_count
     end
 
@@ -140,7 +140,7 @@ module Hydra::Works
       a = w_slash
         .group_by { |s| s[/[^\/]+/] }
         .map { |k, v| { k => nest_paths( v.map { |s| s[/(?<=\/).+/] }.compact ) } }
-      wo_slash + a 
+      wo_slash + a
     end
 
     # Extract all archive files to a tmp location

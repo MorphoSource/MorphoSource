@@ -217,7 +217,7 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
       allow_any_instance_of(described_class).to receive(:collection).and_return(collection)
     end
     context 'taxonomy exists' do
-      let!(:taxonomy)  { Taxonomy.create(title: ['taxonomy'], gbif_key: [taxon_key]) }
+      let!(:taxonomy)  { valkyrie_create(:taxonomy_resource, title: ['taxonomy'], gbif_key: [taxon_key]) }
       it 'returns the created taxonomy' do
         expect(subject.taxonomy).to eq(taxonomy)
       end

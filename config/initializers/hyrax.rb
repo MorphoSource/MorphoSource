@@ -1,3 +1,5 @@
+require 'wings' # fix issue with Hyrax::ValkyrieLazyMigration invoking Wings
+
 Hyrax.config do |config|
   # Injected via `rails g hyrax:work Media`
   config.register_curation_concern :media
@@ -15,6 +17,8 @@ Hyrax.config do |config|
   config.register_curation_concern :imaging_event
   # Injected via `rails g hyrax:work Taxonomy`
   config.register_curation_concern :taxonomy
+  # Injected via `rails g hyrax:work_resource TaxonomyResource`
+  config.register_curation_concern :taxonomy_resource
 
   # Register roles that are expected by your implementation.
   # @see Hyrax::RoleRegistry for additional details.
@@ -94,6 +98,10 @@ Hyrax.config do |config|
   # Email address for overriding all mail recipients when sending emails from actionmailer
   # (for receiving emails in dev / local test environments)
   config.override_mail_recipient = ENV['OVERRIDE_MAIL_RECIPIENT'] || ""
+
+  # The user who runs some jobs and other process not attributed to a specific user, such as default admin set creation.
+  # Should be user key of site-wide admin user or dedicated system job user
+  config.system_user_key = ENV['SYSTEM_USER_KEY'] || '614de0'
 
   # The user who runs batch jobs.
   # Should be user key of site-wide admin user or dedicated batch job user
@@ -266,6 +274,19 @@ Hyrax.config do |config|
   ]
 
   ### General configuration ###
+
+  # Allow use of legacy AF models
+  # If using Frayja/Frigg then use the resource they provide
+  if Hyrax.config.valkyrie_transition?
+    config.collection_model = '::Collection' # todovalk change this to CollectionResource
+    config.admin_set_model = 'AdminSetResource'
+    config.file_set_model = '::FileSet' # todovalk change Hyrax::FileSet when we valkyrize media and filesets
+  else
+    # allow legacy AF models
+    config.collection_model = '::Collection'
+    config.admin_set_model = 'AdminSet'
+    config.file_set_model = '::FileSet'
+  end
 
   # Options to control the file uploader
   config.uploader = {

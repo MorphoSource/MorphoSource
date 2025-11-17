@@ -20,7 +20,7 @@ module BatchSubmissionTools
         end
 
         def work
-          @work ||= ::Taxonomy.find(id) if id.present? && ::Taxonomy.exists?(id) 
+          @work ||= Hyrax.query_service.find_by(id: id) if id.present?
         end
 
         def create_new_attributes

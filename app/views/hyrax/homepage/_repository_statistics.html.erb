@@ -23,17 +23,16 @@
       ) %>
     </div>
   </div>
-  <% taxonomy_not_gbif_count = Taxonomy.where(gbif_key: nil).count %>
   <div class="row">
     <div class="col-9 showcase-label">Taxonomies (GBIF Linked)</div>
     <div class="col-3 showcase-value">
-      <%= number_with_delimiter(( Taxonomy.count - taxonomy_not_gbif_count ), :delimiter => ',') %>
+      <%= number_with_delimiter(taxonomy_counts[:gbif_taxonomy_count], :delimiter => ',') %>
     </div>
   </div>
   <div class="row">
     <div class="col-9 showcase-label">Taxonomies (User Created)</div>
     <div class="col-3 showcase-value">
-      <%= number_with_delimiter(taxonomy_not_gbif_count, :delimiter => ',') %>
+      <%= number_with_delimiter(taxonomy_counts[:non_gbif_taxonomy_count], :delimiter => ',') %>
     </div>
   </div>
   <div class="row">

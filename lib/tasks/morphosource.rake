@@ -263,123 +263,6 @@ namespace :morphosource do
     end
   end
 
-  desc 'Transfer Imaging Event Device parent IDs to IE device_id metadata property'
-  task :transfer_ie_parent_to_metadata => :environment do
-    ImagingEvent.find_each do |ie|
-      ie.member_of.each do |parent|
-        if parent.class == Device
-          puts("Adding device parent #{parent.id} to imaging event #{ie.id}")
-          ie.device_id = [parent.id]
-          ie.save!
-        end
-      end
-    end
-  end
-
-  desc 'Transfer Imaging Event Device parent physical object IDs to IE physical_object_id metadata property'
-  task :transfer_ie_parent_po_to_metadata => :environment do
-    ImagingEvent.find_each do |ie|
-      po_id = ie.member_of.map { |p| p.id if ( p.class == BiologicalSpecimen || p.class == CulturalHeritageObject ) }.compact
-      if po_id.present?
-        UpdateImagingEventMetadataJob.perform_later({
-          id: [ie.id],
-          physical_object_id: po_id
-        })
-      end
-    end
-  end
-
-  desc 'Transfer Physical Object Organization parent IDs to PO organization_id metadata property'
-  task :transfer_po_parent_to_metadata => :environment do
-    BiologicalSpecimen.find_each do |b|
-      org_ids = b.organization_id + b.
-        member_of.
-        map { |p| p.id if ( p.class == Organization && !b.organization_id.include?(p.id) ) }.
-        compact
-      if org_ids.present?
-        puts("Adding organizations #{org_ids.join(', ')} to BSO #{b.id}")
-        b.organization_id = org_ids
-        b.save!
-      end
-    end
-    CulturalHeritageObject.find_each do |c|
-      org_ids = c.organization_id + c.
-        member_of.
-        map { |p| p.id if ( p.class == Organization && !c.organization_id.include?(p.id) ) }.
-        compact
-      if org_ids.present?
-        puts("Adding organizations #{org_ids.join(', ')} to CHO #{c.id}")
-        c.organization_id = org_ids
-        c.save!
-      end
-    end
-  end
-
-  desc 'Transfer Physical Object Taxonomy parent to PO taxonomy_id metadata property'
-  task :transfer_po_parent_taxonomy_to_metadata => :environment do
-    BiologicalSpecimen.find_each do |b|
-      taxonomy_id = b.taxonomy_id + b.
-        member_of.
-        map { |p| p.id if ( p.class == Taxonomy && !b.taxonomy_id.include?(p.id) ) }.
-        compact
-      if taxonomy_id.present?
-        UpdateBiologicalSpecimenMetadataJob.perform_later({
-          id: [b.id],
-          taxonomy_id: taxonomy_id
-        })
-      end
-    end
-  end
-
-  desc 'Dissolve parent/child relationships between devices and imaging events'
-  task :remove_device_ie_relationships => :environment do
-    Device.find_each do |d|
-      puts("Removing children from device #{d.id}")
-      d.ordered_members = []
-      d.members = []
-      d.save!
-    end
-  end
-
-  desc 'Dissolve parent/child relationships between POs and imaging events'
-  task :remove_po_ie_relationships => :environment do
-    BiologicalSpecimen.find_each do |b|
-      puts("Removing children from BSO #{b.id}")
-      b.ordered_members = []
-      b.members = []
-      b.save!
-    end
-    CulturalHeritageObject.find_each do |c|
-      puts("Removing children from CHO #{c.id}")
-      c.ordered_members = []
-      c.members = []
-      c.save!
-    end
-  end
-
-  desc 'Dissolve parent/child relationships between organizations and objects'
-  task :remove_organization_object_relationships => :environment do
-    Organization.find_each do |o|
-      puts("Removing BSO and CHO children from organizaiton #{o.id}")
-      new_members = Array(o.ordered_members)
-        .select { |m| m.class != BiologicalSpecimen && m.class != CulturalHeritageObject }
-        .compact
-      o.ordered_members = new_members
-      o.members = new_members
-      o.save!
-    end
-  end
-
-  desc 'Dissolve parent/child relationships between taxonomies and objects'
-  task :remove_taxonomy_object_relationships => :environment do
-    Taxonomy.find_each do |t|
-      puts("Removing BSO children from taxonomy #{t.id}")
-      t.ordered_members = []
-      t.members = []
-      t.save!
-    end
-  end
-
   desc 'Set up MS email user'
   task :create_email_sender_user => :environment do
     if Hyrax.config.contact_email.present? && !User.find_by(email: Hyrax.config.contact_email)
@@ -581,7 +464,7 @@ namespace :morphosource do
 
               if @page.save
                 Rails.logger.info("Page created/updated: #{@page.slug}")
-              else 
+              else
                 Rails.logger.error("Failed to save page: #{@page.slug}")
                 Rails.logger.error(@page.errors.full_messages.join(', '))
               end
@@ -589,7 +472,7 @@ namespace :morphosource do
               Rails.logger.error("Invalid page data in #{file}: #{page.inspect}")
             end
           end
-        else 
+        else
           Rails.logger.error("Invalid pages data in #{file}: #{page_data.inspect}")
         end
       rescue StandardError => e

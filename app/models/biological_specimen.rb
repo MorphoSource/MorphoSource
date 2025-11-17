@@ -14,6 +14,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
   after_destroy :delete_ark_if_reserved
 
   self.indexer = BiologicalSpecimenIndexer
+
   # Change this to restrict which works can be added as a child.
   self.valid_child_concerns = []
 
@@ -27,13 +28,16 @@ class BiologicalSpecimen < Morphosource::Works::Base
   # schema (by adding accepts_nested_attributes)
   include Morphosource::BiologicalSpecimenMetadata
 
+  # Valkyrie foreign key associations, if Valkyrie::ID is found will convert to string
+  self.valkyrie_association_attributes = [:taxonomy_id]
+
   # :occurrence_id_changed? may change to :will_save_change_to_occurrence_id?
   # if ActiveFedora updates to reflect the Rails 5.1+ ActiveRecord/ActiveModel API
   after_update :update_from_idigbio, if: :occurrence_id_changed?
 
   def update_from_idigbio
     if occurrence_id.present?
-      if (params_for_update = Morphosource::IDigBioGetMetadataService.call(self.to_solr)).present?      
+      if (params_for_update = Morphosource::IDigBioGetMetadataService.call(self.to_solr)).present?
         if Morphosource::IDigBioGetMetadataService.idigbio_record_different_from_specimen?(self.to_solr, params_for_update)
           Morphosource::IDigBioUpdateService.call(id, save_work=true, system_update=false, params_for_update)
         end
@@ -56,7 +60,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
   end
 
   def taxonomies
-    Taxonomy.find(taxonomy_id.to_a)
+    Hyrax.query_service.find_many_by_ids(ids: taxonomy_id.to_a)
   end
 
   def taxonomies_titles
@@ -65,7 +69,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
 
   def canonical_taxonomy_object
     return nil unless canonical_taxonomy.present?
-    Taxonomy.find(canonical_taxonomy.first)
+    Hyrax.query_service.find_by(id: canonical_taxonomy.first)
   end
 
   def canonical_taxonomy_title

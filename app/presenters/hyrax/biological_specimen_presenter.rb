@@ -4,15 +4,15 @@ module Hyrax
   class BiologicalSpecimenPresenter < Hyrax::WorkShowPresenter
     include Morphosource::PresenterMethods
 
-    delegate :address, :bibliographic_citation, :catalog_number, :city, :collection_code, :context, 
-      :country, :dating_method, :dimensions, :formation, :institution_code, :numeric_time, 
-      :original_location, :periodic_time, :provenance_details, :provenance_name, :state_province, 
-      :tgn_label, :vouchered, :idigbio_recordset_id, :idigbio_uuid, :is_type_specimen, 
-      :occurrence_id, :sex, :geographic_coordinates, 
+    delegate :address, :bibliographic_citation, :catalog_number, :city, :collection_code, :context,
+      :country, :dating_method, :dimensions, :formation, :institution_code, :numeric_time,
+      :original_location, :periodic_time, :provenance_details, :provenance_name, :state_province,
+      :tgn_label, :vouchered, :idigbio_recordset_id, :idigbio_uuid, :is_type_specimen,
+      :occurrence_id, :sex, :geographic_coordinates,
       to: :solr_document
 
-    delegate :taxonomies, :taxonomies_titles, :canonical_taxonomy_object, :trusted_taxonomies, 
-      :gbif_taxonomies, :user_taxonomies, 
+    delegate :taxonomies, :taxonomies_titles, :canonical_taxonomy_object, :trusted_taxonomies,
+      :gbif_taxonomies, :user_taxonomies,
       to: :work
 
     def related_media_ids
@@ -48,7 +48,7 @@ module Hyrax
     end
 
     def canonical_taxonomy_solr
-      Taxonomy.find(work.canonical_taxonomy.first).to_solr
+      SolrDocument.find(work.canonical_taxonomy.first) if work.canonical_taxonomy.first.present?
     end
 
     # methods for showcase partials

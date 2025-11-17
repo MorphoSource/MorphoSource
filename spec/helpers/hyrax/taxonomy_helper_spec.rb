@@ -2,7 +2,7 @@ require 'rails_helper'
 
 RSpec.describe Hyrax::TaxonomyHelper, type: :helper do
 
-  let(:taxonomy)  { Taxonomy.new(depositor: "msid123") }
+  let(:taxonomy)  { build(:taxonomy_resource, depositor: "msid123") }
 
   before do
     allow(User).to receive(:find_by_user_key).with("msid123").and_return(user)

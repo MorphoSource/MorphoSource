@@ -1,5 +1,6 @@
 module Qa::Authorities
   class FindTaxonomies < Qa::Authorities::FindWorks
+    self.search_builder_class = Morphosource::FindWorks::FindTaxonomyWorksSearchBuilder
 
     def search(_q, controller)
       # The My::FindWorksSearchBuilder expects a current_user
@@ -30,11 +31,11 @@ module Qa::Authorities
         taxonomy_subspecies = doc.taxonomy_subspecies
         gbif_key = doc.gbif_key
         depositor = doc.depositor
-        { 
-          id: id, 
-          label: title, 
-          value: id, 
-          taxonomy_domain: taxonomy_domain, 
+        {
+          id: id,
+          label: title,
+          value: id,
+          taxonomy_domain: taxonomy_domain,
           taxonomy_kingdom: taxonomy_kingdom,
           taxonomy_phylum: taxonomy_phylum,
           taxonomy_superclass: taxonomy_superclass,
@@ -95,8 +96,8 @@ module Qa::Authorities
         source_info = build_source_info(taxonomy_attrs[:gbif_key], id)
         nice_title = build_title(name, source_info)
         {
-          id: id, 
-          label: [nice_title], 
+          id: id,
+          label: [nice_title],
           value: id,
           name: name,
           higher_taxonomy: title,

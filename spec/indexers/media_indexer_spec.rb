@@ -30,7 +30,7 @@ RSpec.describe MediaIndexer do
                                                        organization_id: [specimen_organization.id],
                                                        occurrence_id: ['ABC:1234'],
                                                        taxonomy_id: [taxonomy.id]) }
-    let(:taxonomy)                { FactoryBot.create(:taxonomy, title: ['genus species']) }
+    let(:taxonomy)                { valkyrie_create(:taxonomy_resource, title: ['genus species']) }
 
     let(:project)                 { FactoryBot.create(:project, visibility: 'open', depositor: depositor.ms_id) }
     let(:team)                    { FactoryBot.create(:team, visibility: 'open', depositor: depositor.ms_id) }

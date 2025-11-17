@@ -2,6 +2,7 @@
 #  `rails generate hyrax:work Taxonomy`
 module Hyrax
   # Generated form for Taxonomy
+  # @deprecated Use TaxonomyResourceForm instead.
   class TaxonomyForm < Hyrax::Forms::WorkForm
     self.model_class = ::Taxonomy
     include Morphosource::FormMethods
@@ -10,16 +11,16 @@ module Hyrax
     class_attribute :single_value_fields
 
     # Remove all default Hyrax metadata
-    self.terms -= [:title, :creator, :contributor, :description, :keyword, 
-      :license, :rights_statement, :publisher, :date_created, :subject, 
-      :language, :identifier, :based_near, :related_url, :source, 
+    self.terms -= [:title, :creator, :contributor, :description, :keyword,
+      :license, :rights_statement, :publisher, :date_created, :subject,
+      :language, :identifier, :based_near, :related_url, :source,
       :abstract, :access_right, :alternative_title, :rights_notes, :bibliographic_citation
     ]
-    self.terms += [:taxonomy_domain, :taxonomy_kingdom, :taxonomy_phylum, 
-      :taxonomy_superclass, :taxonomy_class, :taxonomy_subclass, 
-      :taxonomy_superorder, :taxonomy_order, :taxonomy_suborder, 
-      :taxonomy_superfamily, :taxonomy_family, :taxonomy_subfamily, 
-      :taxonomy_tribe, :taxonomy_genus, :taxonomy_subgenus, :taxonomy_species, 
+    self.terms += [:taxonomy_domain, :taxonomy_kingdom, :taxonomy_phylum,
+      :taxonomy_superclass, :taxonomy_class, :taxonomy_subclass,
+      :taxonomy_superorder, :taxonomy_order, :taxonomy_suborder,
+      :taxonomy_superfamily, :taxonomy_family, :taxonomy_subfamily,
+      :taxonomy_tribe, :taxonomy_genus, :taxonomy_subgenus, :taxonomy_species,
       :taxonomy_subspecies, :gbif_key
     ]
 

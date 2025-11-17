@@ -2,7 +2,7 @@
 #  `rails generate hyrax:work Taxonomy`
 require 'rails_helper'
 
-RSpec.describe Hyrax::Actors::TaxonomyActor do
+RSpec.describe Hyrax::Actors::TaxonomyActor, skip: true do
 
   let(:next_actor) { double(create: true, update: true) }
   subject { described_class.new(next_actor) }

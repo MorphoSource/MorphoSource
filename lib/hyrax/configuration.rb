@@ -1064,6 +1064,14 @@ module Hyrax
       [10, 50, 100, 500, 1000, 2000] # rows per page that users can choose
     end
 
+    # This user is logged as the acting user for jobs and other processes that
+    # run without being attributed to a specific user (e.g. creation of the
+    # default admin set).
+    attr_writer :system_user_key
+    def system_user_key
+      @system_user_key
+    end
+
     attr_writer :batch_user_key
     def batch_user_key
       @batch_user_key
@@ -1145,6 +1153,70 @@ module Hyrax
     attr_writer :index_field_mapper
     def index_field_mapper
       @index_field_mapper ||= ActiveFedora.index_field_mapper
+    end
+
+    attr_writer :administrative_set_form
+    ##
+    # @return [Class]
+    def administrative_set_form
+      @administrative_set_form ||= Hyrax::Forms::AdministrativeSetForm
+    end
+
+    attr_writer :file_set_form
+    ##
+    # @return [Class]
+    def file_set_form
+      @file_set_form ||= Hyrax::Forms::FileSetForm
+    end
+
+    attr_writer :pcdm_collection_form
+    ##
+    # @return [Class]
+    def pcdm_collection_form
+      @pcdm_collection_form ||= Hyrax::Forms::PcdmCollectionForm
+    end
+
+    attr_writer :pcdm_object_form_builder
+    ##
+    # @return [Proc]
+    def pcdm_object_form_builder
+      return @pcdm_object_form_builder unless @pcdm_object_form_builder.nil?
+      "Hyrax::Forms::PcdmObjectForm".constantize # autoload
+      @pcdm_object_form_builder = lambda do |model_class|
+        Hyrax::Forms::PcdmObjectForm(model_class)
+      end
+    end
+
+    attr_writer :administrative_set_indexer
+    ##
+    # @return [Class]
+    def administrative_set_indexer
+      @administrative_set_indexer ||= Hyrax::Indexers::AdministrativeSetIndexer
+    end
+
+    attr_writer :file_set_indexer
+    ##
+    # @return [Class]
+    def file_set_indexer
+      @file_set_indexer ||= Hyrax::Indexers::FileSetIndexer
+    end
+
+    attr_writer :pcdm_collection_indexer
+    ##
+    # @return [Class]
+    def pcdm_collection_indexer
+      @pcdm_collection_indexer ||= Hyrax::Indexers::PcdmCollectionIndexer
+    end
+
+    attr_writer :pcdm_object_indexer_builder
+    ##
+    # @return [Proc]
+    def pcdm_object_indexer_builder
+      return @pcdm_object_indexer_builder unless @pcdm_object_indexer_builder.nil?
+      "Hyrax::Indexers::PcdmObjectIndexer".constantize # autoload
+      @pcdm_object_indexer_builder = lambda do |model_class|
+        Hyrax::Indexers::PcdmObjectIndexer(model_class)
+      end
     end
 
     # Should a button with "Share my work" show on the front page to users who are not logged in?

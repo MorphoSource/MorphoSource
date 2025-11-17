@@ -78,17 +78,20 @@ module Morphosource
 
         def taxonomy
           taxonomy_doc = search_for_taxonomy
-          return Taxonomy.find(taxonomy_doc['id']) if taxonomy_doc.present?
+          return Hyrax.query_service.find_by(id: taxonomy_doc['id']) if taxonomy_doc.present?
 
-          taxonomy = Taxonomy.new
           params = taxonomy_params_from_gbif
-          attributes = { title: ['new taxonomy'],
-                         visibility: 'open',
-                         depositor: manager.user_key,
-                         source: ['Imported by Morphosource::Import::SlideSeriesService'] }.merge(params)
+          attributes = {
+            visibility: 'open',
+            depositor: manager.user_key,
+            source: ['Imported by Morphosource::Import::SlideSeriesService']
+          }.merge(params)
 
-          Hyrax::CurationConcern.actor.create(Hyrax::Actors::Environment.new(taxonomy, ::Ability.new(manager), attributes))
-          taxonomy
+          Morphosource::Action::CreateWorkService.new(
+            model: TaxonomyResource,
+            params: { taxonomy_resource: attributes },
+            user: manager
+          ).call.value!
         end
 
         def device
@@ -310,7 +313,10 @@ module Morphosource
           end
 
           def search_for_taxonomy
-            Morphosource::SolrService.new.get_docs("has_model_ssim:Taxonomy AND gbif_key_ssim:#{@occurrence_json['taxonKey']}")&.first
+            Morphosource::SolrService.new.get_docs(
+              "gbif_key_ssim:#{@occurrence_json['taxonKey']}",
+              { fq: ["has_model_ssim:(Taxonomy OR TaxonomyResource)"] }
+            )&.first
           end
 
           def specimen_params_from_occurrence_id

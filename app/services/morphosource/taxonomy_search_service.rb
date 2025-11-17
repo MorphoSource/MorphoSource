@@ -52,20 +52,20 @@ module Morphosource
     private
 
       def model_clause
-        "#{ActiveFedora.index_field_mapper.solr_name('has_model', :symbol)}:Taxonomy"
+        "#{ActiveFedora.index_field_mapper.solr_name('has_model', :symbol)}:(Taxonomy OR TaxonomyResource)"
       end
 
       def search_solr(qry)
-        ActiveFedora::SolrService.query(qry, rows: 999999, sort: "#{SORTABLE_TITLE_FIELD} ASC", method: :post)
+        ActiveFedora::SolrService.query(qry, fq: [model_clause], rows: 999999, sort: "#{SORTABLE_TITLE_FIELD} ASC", method: :post)
       end
 
       def assemble_strict_taxonomy_query
-        if params['taxonomy_genus'].present? && params['taxonomy_species'].present? 
-          query_clauses = [ model_clause ] + assemble_strict_scientific_name_param_clauses
+        if params['taxonomy_genus'].present? && params['taxonomy_species'].present?
+          query_clauses = assemble_strict_scientific_name_param_clauses
         else
-          query_clauses = [ model_clause ] + assemble_strict_higher_taxonomy_param_clauses
+          query_clauses = assemble_strict_higher_taxonomy_param_clauses
         end
-        query_clauses.join(' AND ')
+        query_clauses.join(' AND ').presence || "*:*"
       end
 
       def assemble_strict_scientific_name_param_clauses

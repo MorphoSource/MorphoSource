@@ -19,18 +19,19 @@ module Hydra::Works
 
     autoload :FitsDocument, 'hydra/works/characterization/fits_document.rb'
     autoload :BlenderDocument, 'hydra/works/characterization/blender_document.rb'
+    autoload :DicomSchema
+    autoload :ExtendedSchema
+    autoload :ImageExtSchema
+    autoload :MeshSchema
+    autoload :ZipContentsSchema
 
     autoload_under 'schema' do
       autoload :AudioSchema
       autoload :BaseSchema
       autoload :DocumentSchema
-      autoload :ExtendedSchema
       autoload :ImageSchema
       autoload :VideoSchema
-      autoload :DicomSchema
-      autoload :ImageExtSchema
-      autoload :MeshSchema
-      autoload :ZipContentsSchema
     end
+
   end
 end

@@ -24,12 +24,12 @@ module MorphosourceApplication
     end
 
     middleware.use(
-      ::ActionDispatch::Static, 
+      ::ActionDispatch::Static,
       File.join(
-        ENV.fetch("DERIVATIVES_PATH", Rails.root.join("tmp", "derivatives")), 
+        ENV.fetch("DERIVATIVES_PATH", Rails.root.join("tmp", "derivatives")),
         '..'
-      ), 
-      index: 'index', 
+      ),
+      index: 'index',
       headers: config.public_file_server.headers
     )
 

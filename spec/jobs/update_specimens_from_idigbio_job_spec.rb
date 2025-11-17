@@ -2,11 +2,11 @@ require 'rails_helper'
 RSpec.describe UpdateSpecimensFromIdigbioJob do
 
   let!(:org) { Organization.create({ title: ['test org'], recordset_id: ['abc'] }) }
-  let!(:taxonomy) { Taxonomy.create({ title: ['test'] }) }
-  let!(:bso) { 
+  let!(:taxonomy) { valkyrie_create(:taxonomy_resource, title: ['test']) }
+  let!(:bso) {
     BiologicalSpecimen.create(
-      title: ["BSO title"], 
-      vouchered: ["Yes"], 
+      title: ["BSO title"],
+      vouchered: ["Yes"],
       organization_id: [org.id],
       occurrence_id: ["occurrence_1"],
       canonical_taxonomy: ["taxonomy_1"],
@@ -23,7 +23,7 @@ RSpec.describe UpdateSpecimensFromIdigbioJob do
       original_location: ["location_1"]
     ) }
 
-  describe "#specimen_result" do 
+  describe "#specimen_result" do
     it 'returns a result containing the expected solr fields' do
       result = subject.specimen_result.first
       expect(result["id"]).not_to eq(nil)

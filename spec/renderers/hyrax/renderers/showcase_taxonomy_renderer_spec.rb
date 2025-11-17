@@ -55,7 +55,7 @@ RSpec.describe Hyrax::Renderers::ShowcaseTaxonomyRenderer do
 
     context 'canonical_taxonomy' do
       let(:field)                      { :canonical_taxonomy_object }
-      let(:canonical_taxonomy_object)  { Taxonomy.new(full_attrs) }
+      let(:canonical_taxonomy_object)  { build(:taxonomy_resource, **full_attrs) }
       let(:label)                      { I18n.t('morphosource.taxonomy.labels.canonical')}
       let(:renderer)                   { described_class.new(field, [canonical_taxonomy_object], data_parent: "taxonomy-accordion-group", label: label, is_collapsed: true) }
 
@@ -66,7 +66,7 @@ RSpec.describe Hyrax::Renderers::ShowcaseTaxonomyRenderer do
 
     context 'trusted_taxonomies' do
       let(:field)               { :trusted_taxonomies }
-      let(:taxonomy1)           { Taxonomy.new(some_attrs) }
+      let(:taxonomy1)           { build(:taxonomy_resource, **some_attrs) }
       let(:trusted_taxonomies)  { [ taxonomy1 ] }
       let(:label)               { I18n.t('morphosource.taxonomy.labels.trusted') }
       let(:renderer)            { described_class.new(field, trusted_taxonomies, data_parent: "taxonomy-accordion-group", label: label, is_collapsed: true) }
@@ -78,8 +78,8 @@ RSpec.describe Hyrax::Renderers::ShowcaseTaxonomyRenderer do
 
     context 'user_taxonomies' do
       let(:field)               { :user_taxonomies }
-      let(:taxonomy1)           { Taxonomy.new(full_attrs.merge({ depositor: "msid123"})) }
-      let(:taxonomy2)           { Taxonomy.new(some_attrs.merge({ depositor: "msid456"})) }
+      let(:taxonomy1)           { build(:taxonomy_resource, **full_attrs.merge({ depositor: "msid123"})) }
+      let(:taxonomy2)           { build(:taxonomy_resource, **some_attrs.merge({ depositor: "msid456"})) }
       let(:user_taxonomies)     { [ taxonomy1, taxonomy2 ] }
       let(:user1)               { User.new(id: 1, email: "example@email.com", display_name: "T. Ruxpin", ms_id: "msid123") }
       let(:user2)               { User.new(id: 2, email: "test@email.com", display_name: nil, ms_id: "msid456") }

@@ -1,3 +1,4 @@
+# @deprecated Use TaxonomyResource instead.
 class Taxonomy < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
   validates_with Morphosource::ParentChildValidator
@@ -15,6 +16,11 @@ class Taxonomy < Morphosource::Works::Base
   # This must be included at the end, because it finalizes the metadata
   # schema (by adding accepts_nested_attributes)
   include ::Hyrax::BasicMetadata
+
+  # To prevent record desync while migrating to Valkyrie
+  def readonly?
+    true
+  end
 
   def short_title
     ranks = [:taxonomy_genus, :taxonomy_subgenus, :taxonomy_species, :taxonomy_subspecies]

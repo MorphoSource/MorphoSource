@@ -50,6 +50,19 @@ module Hyrax
 
     private
 
+    # Override default Valkyrie update work transaction
+    def update_valkyrie_work
+byebug
+      form = build_form
+      return after_update_error(form_err_msg(form)) unless form.validate(params[hash_key_for_curation_concern])
+      result =
+        transactions['device_change_set.update_work']
+        .with_step_args('work_resource.save_acl' => { permissions_params: form.input_params["permissions"] })
+        .call(form)
+      @curation_concern = result.value_or { return after_update_error(transaction_err_msg(result)) }
+      after_update_response
+    end
+
     def viewable_device_media_ids
       device_media = Morphosource::DeviceMediaSearchService.new(self, params['id']).search_results
       return [] unless device_media.present?

@@ -8,8 +8,16 @@ class ApplicationContainerOverrides
       Morphosource::Transactions::Taxonomy::Steps::AssignID.new
       Morphosource::Transactions::Device::Steps::AssignID.new
     end
-  end
   
+    ops.register 'set_uploaded_date_unless_present' do
+      Morphosource::Transactions::Steps::SetUploadedDateUnlessPresent.new
+    end
+
+    ops.register 'save' do
+      Morphosource::Transactions::Steps::Save.new
+    end
+  end
+
   namespace 'device_change_set' do |ops|
     ops.register 'create_work' do
       Morphosource::Transactions::Device::WorkCreate.new
@@ -19,12 +27,8 @@ class ApplicationContainerOverrides
       Morphosource::Transactions::Device::WorkUpdate.new
     end
 
-    ops.register 'set_uploaded_date_unless_present' do
-      Morphosource::Transactions::Steps::SetUploadedDateUnlessPresent.new
-    end
-
-    ops.register 'save' do
-      Morphosource::Transactions::Steps::Save.new
+    ops.register 'set_organization_id' do
+      Morphosource::Transactions::Device::Steps::SetOrganizationID.new
     end
   end
 

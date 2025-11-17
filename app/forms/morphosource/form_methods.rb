@@ -120,7 +120,7 @@ module Morphosource
       end
       # if a device has an organization id, add that organization
       if model.organization_id.present?
-      (parent_works << Hyrax.query_service.find_by(id: model.organization_id)).uniq
+        (parent_works << Hyrax.query_service.find_by(id: model.organization_id.first)).uniq
       end
       # filter by work type
       if work_type.present?

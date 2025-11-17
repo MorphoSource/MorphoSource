@@ -1,7 +1,7 @@
+# Override Hyrax::FormFactory to pass the controller to the form
 module Morphosource
   class FormFactory < Hyrax::FormFactory
     def initialize(controller = nil)
-#      @controller = controller
       super()
     end
 

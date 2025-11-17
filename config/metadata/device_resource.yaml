@@ -24,7 +24,7 @@
 attributes:
   modality:
     type: string
-    multiple: false
+    multiple: true
     form:
       required: true
       primary: true
@@ -35,22 +35,22 @@ attributes:
     predicate: https://www.morphosource.org/terms/modality3D
   organization_id:
     type: string
-    multiple: false
+    multiple: true
     form:
       required: false
       primary: false
-      multiple: false
+      multiple: true
     index_keys:
       - "organization_id_tesim"
       - "organization_id_ssim"
     predicate: https://www.morphosource.org/terms/organizationID
   ark:
     type: string
-    multiple: false
+    multiple: true
     form:
       required: false
       primary: false
-      multiple: false
+      multiple: true
     index_keys:
       - "ark_tesim"
     predicate: https://www.morphosource.org/terms/ark

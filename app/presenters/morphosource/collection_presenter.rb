@@ -5,6 +5,8 @@ module Morphosource
 
     attr_writer :collection_type
 
+    delegate :doi, to: :solr_document
+
     def initialize(solr_document, current_ability, request = nil)
       super
       @search_form_url = ''
@@ -52,6 +54,11 @@ module Morphosource
 
     def id_badge
       content_tag(:span, "ID: #{id}", class: "badge badge-info")
+    end
+
+    def doi_badge
+      return '' if doi.nil? || doi.empty?
+      content_tag(:span, "DOI: #{doi.first}", class: "badge badge-info")
     end
 
     def organization_badge

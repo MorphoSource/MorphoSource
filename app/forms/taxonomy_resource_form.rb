@@ -18,5 +18,4 @@ class TaxonomyResourceForm < Hyrax::Forms::PcdmObjectForm(TaxonomyResource)
   #
   # property :user_input_not_destined_for_the_model, virtual: true
 
-  self.required_fields = []
 end

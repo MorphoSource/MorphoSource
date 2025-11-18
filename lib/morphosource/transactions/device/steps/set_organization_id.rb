@@ -16,7 +16,6 @@ module Morphosource
             return Failure[:no_organization_id, obj] unless obj.respond_to?(:organization_id=)
 
             obj.organization_id = save_organization_id(attributes)
-byebug
             Success(obj)
           end
 
@@ -31,22 +30,21 @@ byebug
             # If the organization is a work, proceed with adding it as a parent of the device.
             # If the organization is a collection, remove it from work_parents_attributes.
             def save_organization_id(attributes)
-byebug
-              attributes['organization_id'] = [] if attributes['organization_id'].blank?
+              organization_ids = attributes['organization_id']
+              organization_ids = [] if organization_ids.blank?
               organizations = attributes['work_parents_attributes']
-byebug
               organizations&.each do |k, v|
                 id = v['id']
                 if v['_destroy'] == "false"
-                  attributes['organization_id'] << id
+                  organization_ids << id
                 else
-                  attributes['organization_id'].delete(id)
+                  organization_ids.delete(id)
                 end
                 if OrganizationCollection.exists?(id)
                   attributes['work_parents_attributes'].delete(k)
                 end
               end
-              attributes['organization_id']
+              organization_ids
             end
 
         end

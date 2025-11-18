@@ -56,8 +56,6 @@ module Hyrax
       return after_update_error(form_err_msg(form)) unless form.validate(params[hash_key_for_curation_concern])
 #byebug
 
-# pass only organization_id to set_organization_id step instead? and in an array?
-
       result =
         transactions['device_change_set.update_work']
         .with_step_args(

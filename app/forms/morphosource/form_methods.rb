@@ -106,21 +106,14 @@ module Morphosource
     # originally created for editing organization in the specimen form
     # now used only in the device new/edit form
     def member_of_organizations_json(work_type=nil)
-      
-# TODO: model.in_works only works for legacy AF objects.  Need to look into this method:      
-#       Hyrax.query_service.find_parents(resource: model)
-# this might not work in New device form?
-
-      #parent_works = model.in_works
       parent_works = Hyrax.query_service.find_parents(resource: model)
-
       # If a work is deposited as a child of another work, it will have a parent_id
       if @controller.params[:parent_id]
         parent_works << Hyrax.query_service.find_by(id: @controller.params[:parent_id])
       end
-      # if a device has an organization id, add that organization
+      # if a device has organization ids, add the organizations
       if model.organization_id.present?
-        (parent_works << Hyrax.query_service.find_by(id: model.organization_id.first)).uniq
+        parent_works += Hyrax.query_service.find_many_by_ids(ids: model.organization_id.uniq)
       end
       # filter by work type
       if work_type.present?
@@ -128,7 +121,7 @@ module Morphosource
       end
       parent_works.map do |parent|
         {
-          id: parent.id,
+          id: parent.id.to_s,
           label: parent.title.first,
         }
       end.to_json

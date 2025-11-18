@@ -52,13 +52,18 @@ module Hyrax
 
     # Override default Valkyrie update work transaction
     def update_valkyrie_work
-byebug
       form = build_form
       return after_update_error(form_err_msg(form)) unless form.validate(params[hash_key_for_curation_concern])
+#byebug
+
+# pass only organization_id to set_organization_id step instead? and in an array?
+
       result =
         transactions['device_change_set.update_work']
-        .with_step_args('work_resource.save_acl' => { permissions_params: form.input_params["permissions"] })
-        .call(form)
+        .with_step_args(
+          'device_change_set.set_organization_id' => { attributes: form.input_params },
+          'work_resource.save_acl' => { permissions_params: form.input_params["permissions"] }
+        ).call(form)
       @curation_concern = result.value_or { return after_update_error(transaction_err_msg(result)) }
       after_update_response
     end

@@ -5,7 +5,8 @@ module Morphosource
       ##
       # Update a Device work
       class WorkUpdate < Hyrax::Transactions::Transaction
-        DEFAULT_STEPS = ['change_set.apply',
+        DEFAULT_STEPS = ['device_change_set.set_organization_id',
+                          'change_set.apply',
                         'work_resource.save_acl',
                         'work_resource.update_work_members'].freeze
 

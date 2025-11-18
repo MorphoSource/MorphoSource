@@ -12,12 +12,11 @@ module Morphosource
           # @param [#organization_id=] obj
           #
           # @return [Dry::Monads::Result]
-          def call(obj)
-byebug
+          def call(obj, attributes: nil)
             return Failure[:no_organization_id, obj] unless obj.respond_to?(:organization_id=)
 
-            obj.organization_id = ["No"] if !obj.organization_id&.first.present?
-
+            obj.organization_id = save_organization_id(attributes)
+byebug
             Success(obj)
           end
 
@@ -31,20 +30,23 @@ byebug
             # populate the device organization_id.
             # If the organization is a work, proceed with adding it as a parent of the device.
             # If the organization is a collection, remove it from work_parents_attributes.
-            def save_organization_id(env)
-              env.attributes['organization_id'] ||= []
-              organizations = env.attributes['work_parents_attributes']
+            def save_organization_id(attributes)
+byebug
+              attributes['organization_id'] = [] if attributes['organization_id'].blank?
+              organizations = attributes['work_parents_attributes']
+byebug
               organizations&.each do |k, v|
                 id = v['id']
                 if v['_destroy'] == "false"
-                  env.attributes['organization_id'] << id
+                  attributes['organization_id'] << id
                 else
-                  env.attributes['organization_id'].delete(id)
+                  attributes['organization_id'].delete(id)
                 end
                 if OrganizationCollection.exists?(id)
-                  env.attributes['work_parents_attributes'].delete(k)
+                  attributes['work_parents_attributes'].delete(k)
                 end
               end
+              attributes['organization_id']
             end
 
         end

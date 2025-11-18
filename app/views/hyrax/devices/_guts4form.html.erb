@@ -28,7 +28,6 @@
               <% (f.object.in_works_ids + [params[:organization_id]]).uniq.each do |work_id| %>
                 <%= f.input :in_works_ids, as: :hidden, input_html: { value: work_id, multiple: true } %>
               <% end %>
-<% byebug %>
               <%= hidden_field_tag 'parent_id', params[:organization_id] %>
             <% end %>
             <% if current_user&.admin? %>

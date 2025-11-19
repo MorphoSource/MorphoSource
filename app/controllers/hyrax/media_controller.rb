@@ -24,7 +24,13 @@ module Hyrax
 
     before_action :validate_individual_access, only: [:update]
     before_action :save_individual_access, only: [:update]
-    before_action :save_fileset_visibility, only: [:update]
+
+    # get the original publication status so we can update filesets if it changes
+    # must run before map_publication_status_to_visibility and check_for_published_doi
+    before_action :save_publication_status, only: [:update]
+    before_action :map_publication_status_to_visibility, only: [:create, :update]
+    before_action :check_for_published_doi, only: [:update]
+
     before_action :save_preview_fields, only: [:update]
     before_action :set_fileset_visibility, only: [:create, :update]
     before_action :authorize_media_with_temporary_link, only: [:showcase]

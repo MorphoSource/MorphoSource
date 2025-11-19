@@ -32,7 +32,6 @@ module Hyrax
     before_action :check_for_published_doi, only: [:update]
 
     before_action :save_preview_fields, only: [:update]
-    before_action :set_fileset_visibility, only: [:create, :update]
     before_action :authorize_media_with_temporary_link, only: [:showcase]
     before_action :set_fund_code, only: [:update]
     before_action :set_scene_attributes, only: [:update]

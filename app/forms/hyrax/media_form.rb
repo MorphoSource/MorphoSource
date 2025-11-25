@@ -33,6 +33,7 @@ module Hyrax
       :side,
       :orientation,
       :description,
+      :fileset_accessibility,
       :keyword,
       :identifier,
       :related_url,

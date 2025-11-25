@@ -5,6 +5,10 @@ include ActionDispatch::TestProcess
 include Warden::Test::Helpers
 
 RSpec.describe Hyrax::MediaController, type: :controller do
+  routes          { Rails.application.routes }
+  let(:main_app)  { Rails.application.routes.url_helpers }
+  let(:hyrax)     { Hyrax::Engine.routes.url_helpers }
+
   let(:work_solr_document) do
     SolrDocument.new(id: '999',
                      title_tesim: ['My Title'],
@@ -418,7 +422,7 @@ RSpec.describe Hyrax::MediaController, type: :controller do
     end
   end
 
-  describe "#set_fileset_visibility" do
+  describe "#map_publication_status_to_visibility" do
     let(:work)        { Media.new(title: ["Test Media Work"]) }
     let(:file_set_1)  { FileSet.new }
 
@@ -430,126 +434,118 @@ RSpec.describe Hyrax::MediaController, type: :controller do
     context 'when user selects "open" publication status' do
       before do
         allow(subject).to receive(:params).and_return({"media"=> {"visibility" => public}})
-        subject.send(:set_fileset_visibility)
+        subject.send(:map_publication_status_to_visibility)
       end
 
-      it 'sets work visibility param to "open"' do
-        expect(subject.params["media"]["visibility"]).to eq(public)
-      end
-      it 'sets work.fileset_visibility to ""' do
-        expect(subject.curation_concern.fileset_visibility).to match_array([""])
-      end
-      it 'sets work.fileset_accessibility and fileSet.accessibility to "open"' do
-        expect(subject.curation_concern.fileset_accessibility).to match_array(["open"])
-        expect(subject.curation_concern.file_sets.first.accessibility).to match_array(["open"])
+      it 'sets params for "open" publication status' do
+        expect(subject.params["media"]["visibility"]).to eq("open")
+        expect(subject.params["media"]["fileset_accessibility"]).to match_array(["open"])
       end
     end
 
     context 'when user selects "restricted_download" publication status' do
       before do
         allow(subject).to receive(:params).and_return({"media"=> {"visibility" => "restricted_download"}})
-        subject.send(:set_fileset_visibility)
+        subject.send(:map_publication_status_to_visibility)
       end
 
-      it 'sets work visibility param to "open"' do
-        expect(subject.params["media"]["visibility"]).to eq(public)
-      end
-      it 'sets work.fileset_visibility to ""' do
-        expect(subject.curation_concern.fileset_visibility).to match_array([""])
-      end
-      it 'sets work.fileset_accessibility and fileSet.accessibility to "restricted_download"' do
-        expect(subject.curation_concern.fileset_accessibility).to match_array(["restricted_download"])
-        expect(subject.curation_concern.file_sets.first.accessibility).to match_array(["restricted_download"])
-      end
-    end
-
-    context 'when user selects "preview" publication status' do
-      before do
-        allow(subject).to receive(:params).and_return({"media"=> {"visibility" => "preview"}})
-        subject.send(:set_fileset_visibility)
-      end
-
-      it 'sets work visibility param to "open"' do
-        expect(subject.params["media"]["visibility"]).to eq(public)
-      end
-      it 'sets work.fileset_visibility to ""' do
-        expect(subject.curation_concern.fileset_visibility).to match_array([""])
-      end
-      it 'sets work.fileset_accessibility and fileSet.accessibility to "preview_only"' do
-        expect(subject.curation_concern.fileset_accessibility).to match_array(["preview_only"])
-        expect(subject.curation_concern.file_sets.first.accessibility).to match_array(["preview_only"])
-      end
-    end
-
-    context 'when user selects "hidden" publication status' do
-      before do
-        allow(subject).to receive(:params).and_return({"media"=> {"visibility" => "hidden"}})
-        subject.send(:set_fileset_visibility)
-      end
-
-      it 'sets work visibility param to "open"' do
-        expect(subject.params["media"]["visibility"]).to eq(public)
-      end
-      it 'sets work.fileset_visibility to "restricted"' do
-        expect(subject.curation_concern.fileset_visibility).to match_array(["restricted"])
-      end
-      it 'sets work.fileset_accessibility and fileSet.accessibility to "hidden"' do
-        expect(subject.curation_concern.fileset_accessibility).to match_array(["hidden"])
-        expect(subject.curation_concern.file_sets.first.accessibility).to match_array(["hidden"])
+      it 'sets params for "restricted_download" publication status' do
+        expect(subject.params["media"]["visibility"]).to eq("open")
+        expect(subject.params["media"]["fileset_accessibility"]).to match_array(["restricted_download"])
       end
     end
 
     context 'when user selects "private" publication status' do
       before do
-        allow(subject).to receive(:params).and_return({"media"=> {"visibility" => private}})
-        subject.send(:set_fileset_visibility)
+        allow(subject).to receive(:params).and_return({"media"=> {"visibility" => "private"}})
+        subject.send(:map_publication_status_to_visibility)
       end
 
-      it 'sets work visibility param to "restricted"' do
-        expect(subject.params["media"]["visibility"]).to eq(private)
+      it 'sets params for "private" publication status' do
+        expect(subject.params["media"]["visibility"]).to eq("restricted")
+        expect(subject.params["media"]["fileset_accessibility"]).to match_array(["private"])
       end
-      it 'sets work.fileset_visibility to ""' do
-        expect(subject.curation_concern.fileset_visibility).to match_array([""])
+    end
+  end
+
+  describe '#update' do
+    let(:curation_concern)  { Media.create(title: ["title"]) }
+    let(:actor)             { double(update: true) }
+
+    before do
+      sign_in depositor
+      allow(Hyrax::CurationConcern).to receive(:actor).and_return(actor)
+      allow(Media).to receive(:find).and_return(curation_concern)
+      allow(controller).to receive(:authorize!).with(:update, curation_concern).and_return(true)
+      allow(subject).to receive(:attributes_for_actor).and_return( { "media_type" => ["Image"]} )
+    end
+
+    context 'file formats are valid' do
+      context 'actor update is successful' do
+        it 'calls update_filesets' do
+          expect(controller).to receive(:update_filesets)
+          patch :update, params: { id: curation_concern.id, media: {visibility: "open"}, action: "update" }
+        end
       end
-      it 'sets work.fileset_accessibility and fileSet.accessibility to "private"' do
-        expect(subject.curation_concern.fileset_accessibility).to match_array(["private"])
-        expect(subject.curation_concern.file_sets.first.accessibility).to match_array(["private"])
+    end
+  end
+
+  describe '#update_filesets' do
+    let(:curation_concern)  { Media.create(title: ["title"]) }
+
+    before do
+      allow(controller).to receive(:curation_concern).and_return(curation_concern)
+    end
+
+    context 'publication status has changed' do
+      before do
+        allow(controller).to receive(:publication_status_changed?).and_return(true)
+      end
+      context 'permissions have changed' do
+        before do
+          allow(controller).to receive(:permissions_changed?).and_return(true)
+        end
+        it 'calls VisibilityCopyJob and InheritPermissionsJob' do
+          expect(VisibilityCopyJob).to receive(:perform_later).with(curation_concern.id)
+          expect(InheritPermissionsJob).to receive(:perform_later).with(curation_concern.id)
+          controller.send(:update_filesets)
+        end
+      end
+      context 'permissions have not changed' do
+        before do
+          allow(controller).to receive(:permissions_changed?).and_return(false)
+        end
+        it 'calls VisibilityCopyJob only' do
+          expect(VisibilityCopyJob).to receive(:perform_later).with(curation_concern.id)
+          expect(InheritPermissionsJob).not_to receive(:perform_later)
+          controller.send(:update_filesets)
+        end
       end
     end
 
-    context 'when user selects "embargo" publication status' do
+    context 'publication status has not changed' do
       before do
-        allow(subject).to receive(:params).and_return({"media"=> {"visibility" => embargo}})
-        subject.send(:set_fileset_visibility)
+        allow(controller).to receive(:publication_status_changed?).and_return(false)
       end
-
-      it 'sets work visibility param to "embargo"' do
-        expect(subject.params["media"]["visibility"]).to eq(embargo)
+      context 'permissions have changed' do
+        before do
+          allow(controller).to receive(:permissions_changed?).and_return(true)
+        end
+        it 'calls InheritPermissionsJob only' do
+          expect(VisibilityCopyJob).not_to receive(:perform_later)
+          expect(InheritPermissionsJob).to receive(:perform_later).with(curation_concern.id)
+          controller.send(:update_filesets)
+        end
       end
-      it 'sets work.fileset_visibility to ""' do
-        expect(subject.curation_concern.fileset_visibility).to match_array([""])
-      end
-      it 'sets work.fileset_accessibility and fileSet.accessibility to ""' do
-        expect(subject.curation_concern.fileset_accessibility).to match_array([""])
-        expect(subject.curation_concern.file_sets.first.accessibility).to match_array([""])
-      end
-    end
-
-    context 'when user selects "lease" publication status' do
-      before do
-        allow(subject).to receive(:params).and_return({"media"=> {"visibility" => lease}})
-        subject.send(:set_fileset_visibility)
-      end
-
-      it 'sets work visibility param to "lease"' do
-        expect(subject.params["media"]["visibility"]).to eq(lease)
-      end
-      it 'sets work.fileset_visibility to ""' do
-        expect(subject.curation_concern.fileset_visibility).to match_array([""])
-      end
-      it 'sets work.fileset_accessibility and fileSet.accessibility to ""' do
-        expect(subject.curation_concern.fileset_accessibility).to match_array([""])
-        expect(subject.curation_concern.file_sets.first.accessibility).to match_array([""])
+      context 'permissions have not changed' do
+        before do
+          allow(controller).to receive(:permissions_changed?).and_return(false)
+        end
+        it 'does not call either job' do
+          expect(VisibilityCopyJob).not_to receive(:perform_later)
+          expect(InheritPermissionsJob).not_to receive(:perform_later)
+          controller.send(:update_filesets)
+        end
       end
     end
   end
@@ -558,19 +554,15 @@ RSpec.describe Hyrax::MediaController, type: :controller do
     let(:curation_concern) { Media.create(title: ["title"]) }
     let(:actor) { double(update: true) }
 
-    routes { Rails.application.routes }
-    let(:main_app) { Rails.application.routes.url_helpers }
-    let(:hyrax) { Hyrax::Engine.routes.url_helpers }
-
     let(:file_path1)  { fixture_path + '/images/duke.png' }
     let(:file_path2)  { fixture_path + '/images/ms.jpg' }
     let(:file_path3)  { fixture_path + '/images/ms_2.jpg' }
     let(:local_file1) { File.open(file_path1) }
     let(:local_file2) { File.open(file_path2) }
     let(:local_file3) { File.open(file_path3) }
-    let(:file_set_1)   { FileSet.new(visibility: "open") }
-    let(:file_set_2)   { FileSet.new(visibility: "open") }
-    let(:file_set_3)   { FileSet.new(visibility: "open") }
+    let(:file_set_1)  { FileSet.new(visibility: "open") }
+    let(:file_set_2)  { FileSet.new(visibility: "open") }
+    let(:file_set_3)  { FileSet.new(visibility: "open") }
 
     let(:fund_code1) { FundCode.new(title: 'Test Fund Code 1', user: depositor)}
     let(:fund_code2) { FundCode.new(title: 'Test Fund Code 2', user: depositor)}
@@ -579,7 +571,7 @@ RSpec.describe Hyrax::MediaController, type: :controller do
       sign_in depositor
       allow(Hyrax::CurationConcern).to receive(:actor).and_return(actor)
       allow(Media).to receive(:find).and_return(curation_concern)
-      allow(curation_concern).to receive(:visibility_changed?).and_return(false)
+      allow(controller).to receive(:publication_status_changed?).and_return(false)
       allow(controller).to receive(:authorize!).with(:update, curation_concern).and_return(true)
       # allow(curation_concern).to receive(:file_sets).and_return(double(present?: true))
       Hydra::Works::AddFileToFileSet.call(file_set_1, local_file1, :original_file, versioning: true)
@@ -593,116 +585,17 @@ RSpec.describe Hyrax::MediaController, type: :controller do
       fund_code2.save!
     end
 
-    # Meets one of the conditions to update file visibility
-    context 'saved fileset_visibility is changed' do
-      context 'the selected publication status has the same visibility settings for the work and attached files (all except "hidden")' do
-        before do
-          # results in fileset_visibility_changed? being true
-          curation_concern.fileset_visibility = ["restricted"]
-        end
-
-        context 'the work permissions are unchanged' do
-          before do
-            allow(controller).to receive(:permissions_changed?).and_return(false)
-            patch :update, params: { id: curation_concern, media: {visibility: "preview"}, action: "update" }
-          end
-
-          it 'redirects to permissions/#copy' do
-            expect(response).to redirect_to(main_app.copy_hyrax_permission_path(curation_concern, locale: 'en'))
-          end
-        end
-
-        context 'the work permissions change' do
-          before do
-            allow(controller).to receive(:permissions_changed?).and_return(true)
-            patch :update, params: { id: curation_concern, media: {visibility: "preview"}, action: "update" }
-          end
-
-          it 'redirects to permissions/#copy_access' do
-            expect(response).to redirect_to(hyrax.copy_access_permission_path(curation_concern, locale: 'en'))
-          end
-        end
+    context 'standard update' do
+      before do
+        patch :update, params: { id: curation_concern, media: {visibility: "open"}, action: "update" }
       end
 
-      context 'the user restricts the file visibility by choosing the "hidden" publication status' do
-        before do
-          # results in fileset_visibility_changed? being true
-          curation_concern.fileset_visibility = [""]
-        end
-
-        context 'the work permissions change' do
-          before do
-            allow(controller).to receive(:permissions_changed?).and_return(true)
-          end
-
-          it 'calls the InheritPermissionsJob' do
-            expect(InheritPermissionsJob).to receive(:perform_later).with(curation_concern.id)
-            patch :update, params: { id: curation_concern, media: {visibility: "hidden"}, action: "update" }
-          end
-        end
-
-        context 'the work permissions do not change' do
-          before do
-            allow(controller).to receive(:permissions_changed?).and_return(false)
-          end
-
-          it 'does not call the InheritPermissionsJob' do
-            expect(InheritPermissionsJob).not_to receive(:perform_later).with(curation_concern.id)
-            patch :update, params: { id: curation_concern, media: {visibility: "hidden"}, action: "update" }
-          end
-        end
-
-        it "sets the work's filesets' visibilities to 'restricted'" do
-          patch :update, params: { id: curation_concern, media: {visibility: "hidden"}, action: "update" }
-          expect(file_set_1.visibility).to eq("restricted")
-          expect(file_set_2.visibility).to eq("restricted")
-          expect(file_set_3.visibility).to eq("restricted")
-        end
-
-        it 'redirects to the work show page' do
-          patch :update, params: { id: curation_concern, media: {visibility: "hidden"}, action: "update" }
-          expect(response).to redirect_to main_app.hyrax_media_path(curation_concern, locale: 'en')
-        end
-
-        it 'displays a flash message' do
-          patch :update, params: { id: curation_concern, media: {visibility: "hidden"}, action: "update" }
-          expect(response.flash[:notice]).to eq('Updating file permissions to restricted. This may take a few minutes. You may want to refresh your browser or return to this record later to see the updated file permissions.')
-        end
-      end
-    end
-
-    context 'fileset_visibility_changed? and curation_concern.visibility_changed? are false' do
-
-      context 'the user selects the same fileset visibility as the work' do
-        before do
-          # results in fileset_visibility_changed? being false
-          curation_concern.fileset_visibility = [""]
-          patch :update, params: { id: curation_concern, media: {visibility: "preview"}, action: "update" }
-        end
-
-        it 'redirects to the work show page' do
-          expect(response).to redirect_to main_app.hyrax_media_path(curation_concern, locale: 'en')
-        end
-
-        it 'displays a flash message' do
-          expect(response.flash[:notice]).to eq("Work \"#{curation_concern}\" successfully updated.")
-        end
+      it 'redirects to the work show page' do
+        expect(response).to redirect_to main_app.hyrax_media_path(curation_concern, locale: 'en')
       end
 
-      context 'the user restricts the file visibility' do
-        before do
-          # results in fileset_visibility_changed? being false
-          curation_concern.fileset_visibility = ["restricted"]
-          patch :update, params: { id: curation_concern, media: {visibility: "hidden"}, action: "update" }
-        end
-
-        it 'redirects to the work show page' do
-          expect(response).to redirect_to main_app.hyrax_media_path(curation_concern, locale: 'en')
-        end
-
-        it 'displays a flash message' do
-          expect(response.flash[:notice]).to eq("Work \"#{curation_concern}\" successfully updated.")
-        end
+      it 'displays a flash message' do
+        expect(response.flash[:notice]).to eq(I18n.t("morphosource.media.alert.permissions_update"))
       end
     end
 

@@ -23,6 +23,10 @@ module Hyrax
     # Use this line if you want to use a custom presenter
     self.show_presenter = Hyrax::DevicePresenter
 
+    # Override default Valkyrie create work transaction
+    # registered in config/initializers/transactions.rb
+    self.create_valkyrie_work_action.transaction_name = "device_change_set.create_work"
+
     configure_blacklight do |config|
       config.max_per_page = 1000000
     end
@@ -54,7 +58,6 @@ module Hyrax
     def update_valkyrie_work
       form = build_form
       return after_update_error(form_err_msg(form)) unless form.validate(params[hash_key_for_curation_concern])
-#byebug
 
       result =
         transactions['device_change_set.update_work']
@@ -95,7 +98,6 @@ module Hyrax
     end
 
     def after_create_response
-      curation_concern.update_index if curation_concern.id.present?
       respond_to do |wants|
         wants.html do
           flash[:notice] = t('hyrax.devices.create.after_create_html', device_name: "#{curation_concern.creator.first} #{curation_concern.title.first}")

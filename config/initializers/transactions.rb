@@ -6,7 +6,6 @@ class ApplicationContainerOverrides
   namespace 'change_set' do |ops|
     ops.register 'assign_id' do
       Morphosource::Transactions::Taxonomy::Steps::AssignID.new
-      Morphosource::Transactions::Device::Steps::AssignID.new
     end
   
     ops.register 'set_uploaded_date_unless_present' do
@@ -23,8 +22,13 @@ class ApplicationContainerOverrides
       Morphosource::Transactions::Device::WorkCreate.new
     end
 
+    # This (device_change_set.update_work) is called from DevicesController update_valkyrie_work
     ops.register 'update_work' do
       Morphosource::Transactions::Device::WorkUpdate.new
+    end
+
+    ops.register 'assign_id' do
+      Morphosource::Transactions::Device::Steps::AssignID.new
     end
 
     ops.register 'set_organization_id' do

@@ -45,8 +45,12 @@ module Morphosource
       #                 created work or execute block if not present, and :failure as tuple with
       #                 0) symbol error and 1) failure object with :full_messages method.
       def call
-        form.validate(work_attributes)
-        transactions[transaction_name].with_step_args(**step_args).call(form)
+        if form.validate(work_attributes)
+          transactions[transaction_name].with_step_args(**step_args).call(form)
+        else
+          errors = ( form.errors&.messages || {} ).map { |k, vs| vs.map { |v| "#{k} #{v}" } }.flatten.to_sentence
+          raise "Error creating #{model} work: #{errors}"
+        end
       end
 
       private

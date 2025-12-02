@@ -3,11 +3,11 @@
 # Metadata adapter based on Freyja but using Wings for some work types
 # Allows hybrid approach with some Valkyrie resources alongside some AF works
 module FreyjaWithWings
-  class MetadataAdapter < Freyja::MetadataAdapter
+  class MetadataAdapter < ::Freyja::MetadataAdapter
     ##
-    # @return [Freyja::Persister]
+    # @return [FreyjaWithWings::Persister]
     def persister
-      @persister ||= FreyjaWithWings::Persister.new(adapter: self)
+      @persister ||= Persister.new(adapter: self)
     end
   end
 end

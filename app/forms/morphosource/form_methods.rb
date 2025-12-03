@@ -54,7 +54,7 @@ module Morphosource
       parent_works = model.in_works
       # If a work is deposited as a child of another work, it will have a parent_id
       if @controller.params[:parent_id]
-        parent_works << Hyrax.query_service.find_by(id: @controller.params[:parent_id])
+        parent_works << ::ActiveFedora::Base.find(@controller.params[:parent_id])
       end
       # filter by work type
       if work_type.present?
@@ -103,35 +103,27 @@ module Morphosource
         organization_institution
     end
 
-    # originally created for editing organization in the specimen form
-    # now used only in the device new/edit form
-    def member_of_organizations_json(work_type=nil)
-      parent_works = Hyrax.query_service.find_parents(resource: model)
-      # If a work is deposited as a child of another work, it will have a parent_id
-      if @controller.params[:parent_id]
-        parent_works << Hyrax.query_service.find_by(id: @controller.params[:parent_id])
+    def member_of_organizations_json
+      if (org_id = model.organization_id&.first).present?
+        if OrganizationCollection.exists?(org_id)
+          parent = OrganizationCollection.find(org_id)
+          [{
+            id: parent.id.to_s,
+            label: parent.title.first,
+          }].to_json
+        else
+          [].to_json
+        end
+      else  
+        [].to_json
       end
-      # if a device has organization ids, add the organizations
-      if model.organization_id.present?
-        parent_works += Hyrax.query_service.find_many_by_ids(ids: model.organization_id.uniq)
-      end
-      # filter by work type
-      if work_type.present?
-        parent_works = parent_works.select{ |item| item.class.to_s == work_type }
-      end
-      parent_works.map do |parent|
-        {
-          id: parent.id.to_s,
-          label: parent.title.first,
-        }
-      end.to_json
     end
 
     def member_of_biological_specimens_json(work_type=nil)
       parent_works = model.in_works
       # If a work is deposited as a child of another work, it will have a parent_id
       if @controller.params[:parent_id]
-        parent_works << Hyrax.query_service.find_by(id: @controller.params[:parent_id])
+        parent_works << ::ActiveFedora::Base.find(@controller.params[:parent_id])
       end
       # filter by work type
       if work_type.present?
@@ -166,7 +158,7 @@ module Morphosource
       parent_works = model.in_works
       # If a work is deposited as a child of another work, it will have a parent_id
       if @controller.params[:parent_id]
-        parent_works << Hyrax.query_service.find_by(id: @controller.params[:parent_id])
+        parent_works << ::ActiveFedora::Base.find(@controller.params[:parent_id])
       end
       # filter by work type
       if work_type.present?

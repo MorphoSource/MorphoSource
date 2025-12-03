@@ -54,6 +54,21 @@ module Hyrax
 
     private
 
+    # Override default Valkyrie create work transaction
+    def create_valkyrie_work
+      form = build_form
+      return after_create_error(form_err_msg(form)) unless form.validate(params[hash_key_for_curation_concern])
+
+      result = transactions['device_change_set.create_work']
+        .with_step_args(
+          'device_change_set.set_organization_id' => { attributes: form.input_params },
+          'work_resource.save_acl' => { permissions_params: form.input_params["permissions"] }
+        ).call(form)
+
+      @curation_concern = result.value_or { return after_create_error(transaction_err_msg(result)) }
+      after_create_response
+    end
+
     # Override default Valkyrie update work transaction
     def update_valkyrie_work
       form = build_form
@@ -114,7 +129,9 @@ module Hyrax
     def after_update_response
       respond_to do |wants|
         wants.html do
+byebug
           if @organization.present? && @organization.organization_collection?
+byebug
             redirect_to main_app.organization_devices_path(@organization)
           else
             redirect_to [main_app, curation_concern], notice: "Device \"#{curation_concern}\" successfully updated."

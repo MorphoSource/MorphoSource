@@ -2,10 +2,6 @@
   <div class="form-group xadmin-preview-mode-container">
     <h2 style="border-bottom: 3px solid #337ab7; text-transform: uppercase; font-size: 15px;">Admin Settings</h2>
     <%= render 'form_visibility_component', f: f %>
-    <%# Note: As of Nov 2025, there are still about 30+ devices with organizations as parent works (instead of using organization_id), device edit form should have the parent work section and fields, and listener to handle adding/removing organization.  But new device form should not.    
-    TODO: Once all existing devices have been updated to use organization_id, remove the following block and the partial _form_parent_work_relationships.html.erb %>
-    <% if controller.action_name == 'edit' %>
-      <%= render 'form_parent_work_relationships', f: f %>
-    <% end %>
+    <%= render 'form_parent_work_relationships', f: f %>
   </div>
 </div>

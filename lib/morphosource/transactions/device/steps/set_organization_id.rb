@@ -13,11 +13,6 @@ module Morphosource
           #
           # @return [Dry::Monads::Result]
           def call(obj, attributes: nil)
-byebug
-# TODO: investigate why attributes is coming back nil When creating a new device
-# (byebug) save_organization_id(attributes) 
-# []. <--- why is this coming back empty?
-
             return Failure[:no_organization_id, obj] unless obj.respond_to?(:organization_id=)
 
             organization_ids = save_organization_id(attributes)

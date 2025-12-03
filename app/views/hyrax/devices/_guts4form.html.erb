@@ -25,10 +25,7 @@
             input_html: { value: Array(f.object.description).first.to_s } %>
 
             <% if params[:organization_id] %>
-              <% (f.object.in_works_ids + [params[:organization_id]]).uniq.each do |work_id| %>
-                <%= f.input :in_works_ids, as: :hidden, input_html: { value: work_id, multiple: true } %>
-              <% end %>
-              <%= hidden_field_tag 'parent_id', params[:organization_id] %>
+              <%= hidden_field_tag 'from_org_id', params[:organization_id] %>
             <% end %>
             <% if current_user&.admin? %>
               <%= render 'form_admin', f: f %>

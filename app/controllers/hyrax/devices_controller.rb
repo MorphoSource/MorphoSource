@@ -61,8 +61,7 @@ module Hyrax
 
       result = transactions['device_change_set.create_work']
         .with_step_args(
-          'device_change_set.set_organization_id' => { attributes: form.input_params },
-          'work_resource.save_acl' => { permissions_params: form.input_params["permissions"] }
+          'device_change_set.set_organization_id' => { attributes: form.input_params }
         ).call(form)
 
       @curation_concern = result.value_or { return after_create_error(transaction_err_msg(result)) }
@@ -77,8 +76,7 @@ module Hyrax
       result =
         transactions['device_change_set.update_work']
         .with_step_args(
-          'device_change_set.set_organization_id' => { attributes: form.input_params },
-          'work_resource.save_acl' => { permissions_params: form.input_params["permissions"] }
+          'device_change_set.set_organization_id' => { attributes: form.input_params }
         ).call(form)
       @curation_concern = result.value_or { return after_update_error(transaction_err_msg(result)) }
       after_update_response
@@ -118,6 +116,8 @@ module Hyrax
           flash[:notice] = t('hyrax.devices.create.after_create_html', device_name: "#{curation_concern.creator.first} #{curation_concern.title.first}")
           if @organization.present? && @organization.organization_collection?
             redirect_to main_app.organization_devices_path(@organization)
+          elsif params["from_org_id"].present? # coming from organization page, redirect back there
+            redirect_to main_app.organization_devices_path(params["from_org_id"])
           else
             redirect_to [main_app, curation_concern]
           end
@@ -129,9 +129,7 @@ module Hyrax
     def after_update_response
       respond_to do |wants|
         wants.html do
-byebug
           if @organization.present? && @organization.organization_collection?
-byebug
             redirect_to main_app.organization_devices_path(@organization)
           else
             redirect_to [main_app, curation_concern], notice: "Device \"#{curation_concern}\" successfully updated."

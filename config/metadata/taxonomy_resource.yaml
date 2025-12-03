@@ -23,6 +23,18 @@
 
 ---
 attributes:
+  title:
+    type: string
+    multiple: true
+    index_keys:
+      - "title_sim"
+      - "title_tesim"
+    form:
+      display: false
+      required: false
+      primary: false
+      multiple: true
+    predicate: http://purl.org/dc/terms/title
   taxonomy_domain:
     type: string
     multiple: true
@@ -214,6 +226,7 @@ attributes:
     type: string
     multiple: true
     form:
+      display: false
       required: false
       primary: false
       multiple: true
@@ -228,6 +241,7 @@ attributes:
      - "trusted_tesim"
      - "trusted_sim"
     form:
+      display: false
       required: false
       primary: false
       multiple: true
@@ -239,6 +253,7 @@ attributes:
      - "gbif_key_tesim"
      - "gbif_key_ssim"
     form:
+      display: false
       required: false
       primary: false
       multiple: true

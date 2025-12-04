@@ -46,8 +46,12 @@ module Morphosource
       end
     end
 
+    # def self.identifier_to_doi(identifier)
+    #   "#{ENV['CROSSREF_DOI_SHOULDER']}/M#{identifier.sub(/^0*/,'')}"
+    # end
+
     def self.identifier_to_doi(identifier)
-      "#{ENV['CROSSREF_DOI_SHOULDER']}/M#{identifier.sub(/^0*/,'')}"
+      "#{ENV['CROSSREF_DOI_SHOULDER']}/#{type_letter}#{identifier.sub(/^0*/,'')}"
     end
 
     # Required keys in params hash:
@@ -76,7 +80,8 @@ module Morphosource
       # always set doi_batch_id and doi
       params.merge!({'doi_batch_id' => SecureRandom.uuid, 'doi' => doi})
 
-      required_params = %w{ doi_batch_id title doi url resource_type timestamp publication_year }
+      # required_params = %w{ doi_batch_id title doi url resource_type timestamp publication_year }
+
       required_params.each do |required_param|
         if params[required_param].blank?
           raise "CrossrefDoiMinter.generate_metadata_deposit_xml call missing required parameter: #{required_param}"
@@ -89,18 +94,19 @@ module Morphosource
         raise "CrossrefDoiMinter.generate_metadata_deposit_xml call missing required parameter: organization OR author_first and author_last"
       end
 
-      template_path = Rails.root.join('data','xmls','doi.xml.erb')
+      # template_path = Rails.root.join('data','xmls','doi.xml.erb')
       rendered_xml = CrossrefMetadataTemplate.new(params).render(File.new(template_path).read)
       Rails.logger.info("CrossrefDoiMinter.generate_metadata_deposit_xml rendered deposit XML: #{rendered_xml}")
       return validate_metadata_deposit_xml(rendered_xml)
     end
 
     def self.mint_doi(identifier, metadata_params={})
+      @model = SolrDocument.find(identifier)["has_model_ssim"]&.first
       %w{username password shoulder url}.each do |doi_param|
         environment_param = "CROSSREF_DOI_#{doi_param.upcase}"
         if ENV[environment_param].blank?
           Rails.logger.error "Required environment variable for Crossref DOI minting is missing: #{environment_param}"
-          return nil
+          nil
         end
       end
       submission_url = "#{ENV['CROSSREF_DOI_URL']}/#{SUBMISSION_PATH}"
@@ -109,12 +115,45 @@ module Morphosource
       deposit_xml = generate_metadata_deposit_xml(identifier, metadata_params)
       # See: https://www.crossref.org/education/member-setup/direct-deposit-xml/https-post/
       begin
-        submission_response = RestClient.post(submission_url, multipart: true, fname: string_to_file(deposit_xml), login_id: login_id, login_passwd: login_passwd, headers: {content_type: "multipart/form-data"})
-        Rails.logger.info("CrossrefDoiMinter.mint_doi submission response: #{submission_response.body}")
+        # submission_response = RestClient.post(submission_url, multipart: true, fname: string_to_file(deposit_xml), login_id: login_id, login_passwd: login_passwd, headers: {content_type: "multipart/form-data"})
+        # Rails.logger.info("CrossrefDoiMinter.mint_doi submission response: #{submission_response.body}")
       rescue RestClient::ExceptionWithResponse => exception
-        return exception
+        exception
       end
-      return identifier_to_doi(identifier)
+      identifier_to_doi(identifier)
+    end
+
+    # model type methods
+
+    TYPE_CONFIG = {
+      "Media" => {
+        required_params: %w[doi_batch_id title doi url resource_type timestamp publication_year],
+        template_path:   Rails.root.join("data", "xmls", "doi.xml.erb"),
+        type_letter:    "M"
+      },
+      "MediaList" => {
+        required_params: %w[doi_batch_id title doi url timestamp publication_year],
+        template_path:   Rails.root.join("data", "xmls", "list_doi.xml.erb"),
+        type_letter:    "L"
+      }
+    }.freeze
+
+    def self.type_config
+      TYPE_CONFIG.fetch(@model) do
+        raise "Unknown model type: #{@model.inspect}"
+      end
+    end
+
+    def self.required_params
+      type_config[:required_params]
+    end
+
+    def self.template_path
+      type_config[:template_path]
+    end
+
+    def self.type_letter
+      type_config[:type_letter]
     end
   end
 end

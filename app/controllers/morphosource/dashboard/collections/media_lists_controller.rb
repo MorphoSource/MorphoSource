@@ -17,13 +17,13 @@ module Morphosource
             doi = @collection.mint_doi(media_list_url(@collection))
             if doi.is_a?(Exception)
               flash[:error] = "DOI minting failed: #{doi.message}."
-            elsif doi.nil?
+            elsif doi.nil? || doi.blank?
               flash[:error] = "DOI minting failed. Please check the logs for details."
             else
-              flash[:notice] = "Successfully minted DOI: #{doi}" if doi.present?
+              flash[:notice] = "Successfully minted DOI: #{doi}"
             end
           rescue => e
-            flash[:error] = "Failed to mint DOI. Please check the logs for details."
+            flash[:error] = "DOI minting failed: #{e.message}."
           end
           redirect_to media_list_edit_path(@collection)
         end

@@ -3,10 +3,10 @@
     <doi_batch_id><%= doi_batch_id %></doi_batch_id>
     <timestamp><%= timestamp %></timestamp>
     <depositor>
-      <depositor_name>Duke University Libraries</depositor_name>
-      <email_address>ddrhelp@duke.edu</email_address>
+      <depositor_name>MorphoSource</depositor_name>
+      <email_address>morphosource@duke.edu</email_address>
     </depositor>
-    <registrant>Duke University Libraries</registrant>
+    <registrant>MorphoSource</registrant>
   </head>
   <body>
     <database>
@@ -20,7 +20,6 @@
       </database_metadata>
       <dataset dataset_type="collection">
         <contributors>
-        <% puts organization.inspect %>
           <% if organization.present? %>
             <organization sequence="first" contributor_role="author"><%= organization %></organization>
           <% else %>
@@ -28,7 +27,6 @@
               <given_name><%= author_first %></given_name>
               <surname><%= author_last %></surname>
             </person_name>
-            <% puts self.method(:contributors).source_location.inspect %>
             <% contributors.each do |contributor| %>
               <person_name contributor_role="author" sequence="additional">
                 <given_name><%= contributor["contributor_first"] %></given_name>
@@ -46,7 +44,6 @@
           </publication_date>
         </database_date>
         <doi_data>
-        <% puts doi.inspect %>
           <doi><%= doi %></doi>
           <resource><%= url %></resource>
         </doi_data>
@@ -57,12 +54,10 @@
                 <title><%= component["title"] %></title>
               </titles>
               <format><%= component["resource_type"] %></format>
-              <% if component["doi"].present? %>
-                <doi_data>
-                  <doi><%= component["doi"] %></doi>
-                  <resource><%= component["url"] %></resource>
-                </doi_data>
-              <% end %>
+              <doi_data>
+                <doi><%= component["doi"] %></doi>
+                <resource><%= component["url"] %></resource>
+              </doi_data>
             </component>
           <% end %>
         </component_list>

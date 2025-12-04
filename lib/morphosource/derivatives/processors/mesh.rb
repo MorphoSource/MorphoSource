@@ -41,7 +41,7 @@ module Morphosource::Derivatives::Processors
       'mi' => 1609.34
     }
     VERTEX_MAX = 1_000_000
-    
+
     def process
       timeout ? process_with_timeout : create_mesh_derivative
     end
@@ -134,7 +134,7 @@ module Morphosource::Derivatives::Processors
 
       Morphosource::Derivatives::GltfTransform.new(
         cli_command: :metalrough,
-        source_path: initial_glb_path, 
+        source_path: initial_glb_path,
         out_path:    metalr_glb_path
       ).call
     end
@@ -146,7 +146,7 @@ module Morphosource::Derivatives::Processors
 
       Morphosource::Derivatives::GltfTransform.new(
         cli_command: :center,
-        source_path: metalr_glb_path, 
+        source_path: metalr_glb_path,
         out_path:    center_glb_path
       ).call
     end
@@ -163,6 +163,12 @@ module Morphosource::Derivatives::Processors
           center_glb_path,
           scaled_glb_path,
           scale_factor(unit)
+        ).call
+        # Also need to re-center the mesh one more time
+        Morphosource::Derivatives::GltfTransform.new(
+          cli_command: :center,
+          source_path: scaled_glb_path,
+          out_path:    scaled_glb_path
         ).call
       else
         # Skip this step, just use the centered glb
@@ -204,7 +210,7 @@ module Morphosource::Derivatives::Processors
     def generate_glb(simplify: false, simplify_error: 0.0001)
       gltf_transform = Morphosource::Derivatives::GltfTransform.new(
         cli_command: :optimize,
-        source_path: scaled_glb_path, 
+        source_path: scaled_glb_path,
         out_path:    draco_glb_path,
         opts: {
           max_texture_size: max_texture_size,
@@ -220,7 +226,7 @@ module Morphosource::Derivatives::Processors
 
     # @!endgroup
     # @!group File output
-    
+
     def write_glb
       output_file_service.call(File.open(draco_glb_path), directives)
     end

@@ -18,8 +18,8 @@ module Morphosource::Derivatives::Processors
     def locate_images
       Morphosource::Files::ArchiveService.new(source_path)
         .largest_file_group(
-          acceptable_image_formats, 
-          cutoff: 20, 
+          acceptable_image_formats,
+          cutoff: 10,
           cutoff_exception_exts: ['.dcm', '.dicom']
         )
     end

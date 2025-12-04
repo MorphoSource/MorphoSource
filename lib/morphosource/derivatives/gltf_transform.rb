@@ -28,7 +28,7 @@ module Morphosource::Derivatives
     def opts_by_command
       {
         optimize: { max_texture_size: 1024, simplify: false, simplify_error: 0.0001 },
-        center: { pivot: 'below' },
+        center: { pivot: 'center' },
         metalrough: {}
       }
     end
@@ -41,7 +41,7 @@ module Morphosource::Derivatives
       internal_call
     end
 
-    protected  
+    protected
 
     def command
       case cli_command

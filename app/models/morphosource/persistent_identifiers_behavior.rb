@@ -133,26 +133,15 @@ module Morphosource
         end
         unless minted_ark.nil?
           self.ark = [minted_ark.id]
-          return persist_ark(persister)
+          Hyrax.persister.save(resource: self)
+          Hyrax.index_adapter.save(resource: self)
+          return self
         end
       end
       self
     end
 
     private
-
-      def persist_ark(persister)
-        if respond_to?(:save)
-          self.save
-          self
-        elsif persister
-          persister.save(resource: self)
-        elsif defined?(Hyrax) && Hyrax.respond_to?(:persister)
-          Hyrax.persister.save(resource: self)
-        else
-          self
-        end
-      end
     
       def delete_ark_if_reserved
         unless self.ark.empty?

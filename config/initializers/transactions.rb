@@ -40,6 +40,10 @@ class ApplicationContainerOverrides
     ops.register 'mint_ark' do
       Morphosource::Transactions::Device::Steps::MintArk.new
     end
+
+    ops.register 'update_ark_status' do
+      Morphosource::Transactions::Device::Steps::UpdateArkStatus.new
+    end
   end
 
   namespace 'taxonomy_change_set' do |ops|

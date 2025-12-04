@@ -23,7 +23,7 @@ module Morphosource
         end
       when 'BiologicalSpecimen', 'CulturalHeritageObject'
         return 'PhysicalObject'
-      when 'Device'
+      when 'Device', 'DeviceResource'
         # todo: currently getting an error invalid resource type 'Instrument' when the record is "public". 
         # change this back to "Instrument" when the issue is resolved
         return 'Service'
@@ -40,30 +40,33 @@ module Morphosource
     # - unavailable->public
     def update_ark_status
       unless self.ark.empty?
-        if visibility_changed
-          begin
-            ark_identifier = Ezid::Identifier.find(self.ark.first)
-            if %w{reserved unavailable}.include?(ark_identifier.status) && public_visibilities.include?(self_visibility)
-              ark_identifier.status = 'public'
-              ark_identifier.save
-            elsif (ark_identifier.status == 'public') && (!public_visibilities.include?(self_visibility))
-              ark_identifier.status = 'unavailable'
-              ark_identifier.save
-            end
-          rescue => e
-            Rails.logger.error("Error finding ARK. Exception: #{e.message}")
+        # visibility_changed no longer works with Valkyrie models, so we are comparing 
+        # pevious ARK status with the current visibility instead
+        begin
+          ark_identifier = Ezid::Identifier.find(self.ark.first)
+          if %w{reserved unavailable}.include?(ark_identifier.status) && public_visibilities.include?(self_visibility)
+            # ark status was reserved or unavailable, and now we are changing to public
+            ark_identifier.status = 'public'
+            ark_identifier.save
+          elsif (ark_identifier.status == 'public') && (!public_visibilities.include?(self_visibility))
+            # ark status was public, and now we are changing to unavailable
+            ark_identifier.status = 'unavailable'
+            ark_identifier.save
           end
+        rescue => e
+          Rails.logger.error("Error finding ARK. Exception: #{e.message}")
         end
       end
     end
 
-    def visibility_changed
-      if self.class.to_s == 'Media'
-        self.fileset_accessibility_changed?
-      else
-        self.visibility_changed?
-      end
-    end
+    # TODO: remove this method later if no longer needed
+    # def visibility_changed
+    #   if self.class.to_s == 'Media'
+    #     self.fileset_accessibility_changed?
+    #   else
+    #     self.visibility_changed?
+    #   end
+    # end
 
     def public_visibilities
       @public_visibilities ||= begin
@@ -126,20 +129,26 @@ module Morphosource
                         'datacite.resourcetypegeneral' => self.ark_resource_type
         }
         requested_ark = "#{ENV['EZID_DEFAULT_SHOULDER']}/#{self.id.to_s.sub(/^0*/,'')}"
+
         begin
           minted_ark = Ezid::Identifier.create(requested_ark, ark_metadata)
         rescue => e
           Rails.logger.error("Error minting ARK: Work #{self.id.to_s} not set. Exception: #{e.message}")
         end
+
         unless minted_ark.nil?
           self.ark = [minted_ark.id]
-          Hyrax.persister.save(resource: self)
-          Hyrax.index_adapter.save(resource: self)
-          return self
+          case self.class.to_s
+          when 'Device', 'DeviceResource'
+            Hyrax.persister.save(resource: self)
+            Hyrax.index_adapter.save(resource: self)
+          else
+            self.save
+          end
         end
       end
       self
-    end
+    end # /mint_ark
 
     private
     

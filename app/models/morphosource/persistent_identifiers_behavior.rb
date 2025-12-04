@@ -88,25 +88,26 @@ module Morphosource
     def datacite_target_url
       case self.class.to_s
       when 'Media'
-        Rails.application.routes.url_helpers.media_showcase_url(:host => ENV['EZID_TARGET_HOST'], id: self.id)
-      when 'Device'
-        Rails.application.routes.url_helpers.hyrax_device_url(:host => ENV['EZID_TARGET_HOST'], id: self.id)
+        Rails.application.routes.url_helpers.media_showcase_url(:host => ENV['EZID_TARGET_HOST'], id: self.id.to_s)
+      when 'Device', 'DeviceResource'
+        Rails.application.routes.url_helpers.hyrax_device_url(:host => ENV['EZID_TARGET_HOST'], id: self.id.to_s)
       when 'BiologicalSpecimen'
-        Rails.application.routes.url_helpers.specimen_showcase_url(:host => ENV['EZID_TARGET_HOST'], id: self.id)        
+        Rails.application.routes.url_helpers.specimen_showcase_url(:host => ENV['EZID_TARGET_HOST'], id: self.id.to_s)        
       when 'CulturalHeritageObject'
-        Rails.application.routes.url_helpers.cho_showcase_url(:host => ENV['EZID_TARGET_HOST'], id: self.id)        
+        Rails.application.routes.url_helpers.cho_showcase_url(:host => ENV['EZID_TARGET_HOST'], id: self.id.to_s)        
       when 'OrganizationCollection'
-        Rails.application.routes.url_helpers.organization_collection_url(:host => ENV['EZID_TARGET_HOST'], id: self.id)
+        Rails.application.routes.url_helpers.organization_collection_url(:host => ENV['EZID_TARGET_HOST'], id: self.id.to_s)
       end
     end
 
-    def mint_ark
-      return if Rails.env.test? # avoid ARK creation in test environment
+    def mint_ark(persister: nil)
+      return self if Rails.env.test? # avoid ARK creation in test environment
+
       if self.ark.empty?
         %w{DEFAULT_SHOULDER USER PASSWORD TARGET_HOST}.each do |required_env_variable|
           if ENV["EZID_#{required_env_variable}"].blank?
             Rails.logger.error("Error minting ARK: #{required_env_variable} environment variable not set")
-            return true
+            return self
           end
         end
         depositor_user = User.find_by(ms_id: self.depositor)
@@ -124,21 +125,34 @@ module Morphosource
                         'datacite.publicationyear' => Time.now.year.to_s,
                         'datacite.resourcetypegeneral' => self.ark_resource_type
         }
-        requested_ark = "#{ENV['EZID_DEFAULT_SHOULDER']}/#{self.id.sub(/^0*/,'')}"
+        requested_ark = "#{ENV['EZID_DEFAULT_SHOULDER']}/#{self.id.to_s.sub(/^0*/,'')}"
         begin
           minted_ark = Ezid::Identifier.create(requested_ark, ark_metadata)
         rescue => e
-          Rails.logger.error("Error minting ARK: Work #{self.id} not set. Exception: #{e.message}")
+          Rails.logger.error("Error minting ARK: Work #{self.id.to_s} not set. Exception: #{e.message}")
         end
         unless minted_ark.nil?
           self.ark = [minted_ark.id]
-          self.save
+          return persist_ark(persister)
         end
-        return true
       end
+      self
     end
 
     private
+
+      def persist_ark(persister)
+        if respond_to?(:save)
+          self.save
+          self
+        elsif persister
+          persister.save(resource: self)
+        elsif defined?(Hyrax) && Hyrax.respond_to?(:persister)
+          Hyrax.persister.save(resource: self)
+        else
+          self
+        end
+      end
     
       def delete_ark_if_reserved
         unless self.ark.empty?

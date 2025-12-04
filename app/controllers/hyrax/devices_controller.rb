@@ -54,15 +54,27 @@ module Hyrax
 
     private
 
-    # Override default Valkyrie create work transaction
+    # Override default Valkyrie create work transaction to pass organization_id
     def create_valkyrie_work
       form = build_form
-      return after_create_error(form_err_msg(form)) unless form.validate(params[hash_key_for_curation_concern])
+      action = create_valkyrie_work_action.new(form: form,
+                                               transactions: transactions,
+                                               user: current_user,
+                                               params: params,
+                                               work_attributes_key: hash_key_for_curation_concern)
 
-      result = transactions['device_change_set.create_work']
-        .with_step_args(
-          'device_change_set.set_organization_id' => { attributes: form.input_params }
-        ).call(form)
+      return after_create_error(form_err_msg(action.form), action.work_attributes) unless action.validate
+
+      step_args = action.step_args.except(
+        # remove default steps from Hyrax 
+        'work_resource.add_to_parent',
+        'work_resource.add_file_sets'
+      ).merge(
+        # add additional step args for Device
+        'device_change_set.set_organization_id' => { attributes: form.input_params }
+      )
+
+      result = transactions[action.class.transaction_name].with_step_args(**step_args).call(form)
 
       @curation_concern = result.value_or { return after_create_error(transaction_err_msg(result)) }
       after_create_response
@@ -129,11 +141,11 @@ module Hyrax
     def after_update_response
       respond_to do |wants|
         wants.html do
-          if @organization.present? && @organization.organization_collection?
-            redirect_to main_app.organization_devices_path(@organization)
-          else
+          #if @organization.present? && @organization.organization_collection?
+          #  redirect_to main_app.organization_devices_path(@organization)
+          #else
             redirect_to [main_app, curation_concern], notice: "Device \"#{curation_concern}\" successfully updated."
-          end
+          #end
         end
         wants.json { render :show, status: :ok, location: polymorphic_path([main_app, curation_concern]) }
       end

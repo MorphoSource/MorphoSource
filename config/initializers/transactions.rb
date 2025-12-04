@@ -36,6 +36,12 @@ class ApplicationContainerOverrides
     end
   end
 
+  namespace 'device_work_resource' do |ops|
+    ops.register 'mint_ark' do
+      Morphosource::Transactions::Device::Steps::MintArk.new
+    end
+  end
+
   namespace 'taxonomy_change_set' do |ops|
     ops.register 'create_work' do
       Morphosource::Transactions::Taxonomy::WorkCreate.new

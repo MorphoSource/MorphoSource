@@ -34,6 +34,10 @@ class ApplicationContainerOverrides
     ops.register 'set_organization_id' do
       Morphosource::Transactions::Device::Steps::SetOrganizationID.new
     end
+
+    ops.register 'update_organization_access' do
+      Morphosource::Transactions::Device::Steps::UpdateOrganizationAccess.new
+    end
   end
 
   namespace 'device_work_resource' do |ops|

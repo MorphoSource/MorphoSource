@@ -6,6 +6,7 @@ module Morphosource
       class WorkCreate < Hyrax::Transactions::Transaction
         DEFAULT_STEPS = ['device_change_set.assign_id',
                          'device_change_set.set_organization_id',
+                         'device_change_set.update_organization_access',
                          'change_set.set_default_admin_set',
                          'change_set.ensure_admin_set',
                          'change_set.set_user_as_depositor',

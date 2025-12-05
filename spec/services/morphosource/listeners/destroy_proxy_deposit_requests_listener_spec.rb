@@ -21,7 +21,10 @@ RSpec.describe Morphosource::Listeners::DestroyProxyDepositRequestsListener do
       it 'destroys all proxy deposit requests for that media' do
         expect(ProxyDepositRequest.where(work_id: media.id).count).to eq(2)
 
-        listener.on_object_deleted(object: media)
+        event = double('event')
+        allow(event).to receive(:payload).and_return({ object: media })
+        allow(event).to receive(:[]).with(:object).and_return(media)
+        listener.on_object_deleted(event)
 
         expect(ProxyDepositRequest.where(work_id: media.id).count).to eq(0)
       end
@@ -29,7 +32,10 @@ RSpec.describe Morphosource::Listeners::DestroyProxyDepositRequestsListener do
       it 'is tolerant when there are no requests' do
         ProxyDepositRequest.where(work_id: media.id).destroy_all
 
-        expect { listener.on_object_deleted(object: media) }.not_to raise_error
+        event = double('event')
+        allow(event).to receive(:payload).and_return({ object: media })
+        allow(event).to receive(:[]).with(:object).and_return(media)
+        expect { listener.on_object_deleted(event) }.not_to raise_error
       end
     end
 
@@ -44,7 +50,10 @@ RSpec.describe Morphosource::Listeners::DestroyProxyDepositRequestsListener do
       it 'does not destroy requests for other works' do
         expect(ProxyDepositRequest.count).to eq(1)
 
-        listener.on_object_deleted(object: specimen)
+        event = double('event')
+        allow(event).to receive(:payload).and_return({ object: specimen })
+        allow(event).to receive(:[]).with(:object).and_return(specimen)
+        listener.on_object_deleted(event)
 
         expect(ProxyDepositRequest.count).to eq(1)
       end

@@ -7,7 +7,6 @@ module Morphosource
       class WorkDestroy < Hyrax::Transactions::Transaction
         DEFAULT_STEPS = [
           'device_work_resource.delete_ark_if_reserved',
-          'work_resource.delete_all_file_sets',
           'work_resource.delete_acl',
           'work_resource.delete'
         ].freeze

@@ -57,8 +57,7 @@ module Hyrax
 
       transactions['device_work_resource.destroy']
         .with_step_args(
-          'work_resource.delete' => { user: current_user },
-          'work_resource.delete_all_file_sets' => { user: current_user }
+          'work_resource.delete' => { user: current_user }
         ).call(curation_concern).value!
 
       title = Array(curation_concern.title).first

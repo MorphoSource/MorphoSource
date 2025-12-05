@@ -5,7 +5,7 @@ module Morphosource
     private
 
       def models
-        [::Device]
+        [::Device, ::DeviceResource]
       end
 
     end

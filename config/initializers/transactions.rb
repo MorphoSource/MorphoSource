@@ -44,6 +44,14 @@ class ApplicationContainerOverrides
     ops.register 'update_ark_status' do
       Morphosource::Transactions::Device::Steps::UpdateArkStatus.new
     end
+
+    ops.register 'delete_ark_if_reserved' do
+      Morphosource::Transactions::Device::Steps::DeleteArkIfReserved.new
+    end
+
+    ops.register 'destroy' do
+      Morphosource::Transactions::Device::WorkDestroy.new
+    end
   end
 
   namespace 'taxonomy_change_set' do |ops|

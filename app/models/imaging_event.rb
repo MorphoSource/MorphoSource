@@ -19,7 +19,7 @@ class ImagingEventParentDeviceModalityValidator < ActiveModel::Validator
   def validate_device_id_valid
     return if @device_errors.present?
 
-    unless Device.exists?(@device_id)
+    unless Hyrax.query_service.find_many_by_ids(ids: [@device_id]).any?
       @device_errors << "A device with id: #{@device_id} does not exist."
     end
   end
@@ -152,7 +152,7 @@ class ImagingEvent < Morphosource::Works::Base
   end
 
   def device
-    Device.find(device_id.first)
+    Hyrax.query_service.find_by(id: device_id.first)
   end
 
   def media

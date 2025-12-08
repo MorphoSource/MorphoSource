@@ -60,7 +60,7 @@ module Morphosource
       # Perform a lookup on the Solr title field to find matching IDs
       case facet_key
       when 'device'
-        query = 'has_model_ssim:Device'
+        query = 'has_model_ssim:Device OR has_model_ssim:DeviceResource'
       when 'team', 'project'
         query = 'has_model_ssim:Collection'
       when 'media_list'

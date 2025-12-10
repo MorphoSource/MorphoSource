@@ -13,7 +13,9 @@ class MediaList < Collection
   DEFAULT_GROUP_ROLES = %w[managers viewers].freeze
 
   def initialize(params=nil)
+    byebug
     super
+    byebug
     self.collection_type_gid = collection_type.to_global_id
   end
 
@@ -22,7 +24,7 @@ class MediaList < Collection
   end
 
   def collection_type
-    self.class.collection_type
+    Hyrax::CollectionType.find_by(Morphosource::CollectionTypes::MediaLists::SETTINGS)
   end
 
   def presenter_class

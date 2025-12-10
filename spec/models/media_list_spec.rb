@@ -3,7 +3,7 @@ require 'rails_helper'
 
 RSpec.describe MediaList, type: :model do
   let(:user)                        { FactoryBot.create(:user) }
-  let(:media_list)                  { FactoryBot.create(:media_list, depositor: user.ms_id) }
+  let!(:media_list)                 { FactoryBot.create(:media_list, depositor: user.ms_id) }
 
   let(:media)                       { FactoryBot.create(:media, depositor: user.ms_id) }
   let(:media2)                      { FactoryBot.create(:media, depositor: user.ms_id) }
@@ -17,6 +17,9 @@ RSpec.describe MediaList, type: :model do
   end
 
   describe 'collection_type' do
+    # before do
+    #   Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::MediaLists::SETTINGS)
+    # end
     it { expect(described_class.collection_type).to eq(media_list_collection_type) }
     it { expect(subject.collection_type).to eq(media_list_collection_type) }
   end

@@ -46,10 +46,6 @@ module Morphosource
       end
     end
 
-    # def self.identifier_to_doi(identifier)
-    #   "#{ENV['CROSSREF_DOI_SHOULDER']}/M#{identifier.sub(/^0*/,'')}"
-    # end
-
     def self.identifier_to_doi(identifier)
       "#{ENV['CROSSREF_DOI_SHOULDER']}/#{type_letter}#{identifier.sub(/^0*/,'')}"
     end
@@ -80,8 +76,6 @@ module Morphosource
       # always set doi_batch_id and doi
       params.merge!({'doi_batch_id' => SecureRandom.uuid, 'doi' => doi})
 
-      # required_params = %w{ doi_batch_id title doi url resource_type timestamp publication_year }
-
       required_params.each do |required_param|
         if params[required_param].blank?
           raise "CrossrefDoiMinter.generate_metadata_deposit_xml call missing required parameter: #{required_param}"
@@ -94,7 +88,6 @@ module Morphosource
         raise "CrossrefDoiMinter.generate_metadata_deposit_xml call missing required parameter: organization OR author_first and author_last"
       end
 
-      # template_path = Rails.root.join('data','xmls','doi.xml.erb')
       rendered_xml = CrossrefMetadataTemplate.new(params).render(File.new(template_path).read)
       Rails.logger.info("CrossrefDoiMinter.generate_metadata_deposit_xml rendered deposit XML: #{rendered_xml}")
       return validate_metadata_deposit_xml(rendered_xml)

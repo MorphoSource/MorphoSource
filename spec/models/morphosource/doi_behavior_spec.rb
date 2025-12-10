@@ -1,8 +1,7 @@
 require 'rails_helper'
 
 RSpec.describe Morphosource::DoiBehavior do
-  let!(:media_list_collection_type)  { Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::MediaLists::SETTINGS) }
-  let!(:media_list)  { MediaList.create(title: ['media list title'], depositor: depositor.ms_id, doi: doi) }
+  let(:media_list)  { FactoryBot.create(:media_list, title: ['media list title'], depositor: depositor.ms_id, doi: doi) }
   let(:depositor)   { User.create(email: "depositor@email.com", password: 'password', display_name: 'DepositorFirst DepositorLast') }
   let(:media)       { Media.create(title: ['media title'], depositor: depositor.ms_id, doi: doi) }
   let(:doi)         { [] }
@@ -29,10 +28,10 @@ RSpec.describe Morphosource::DoiBehavior do
   end
 
   describe '#verify_creator' do
-      let(:organization)  { OrganizationCollection.create(title: ['Test Org'], depositor: depositor.ms_id) }
-      let(:doi)           { [] }
-      let(:media_list)    { MediaList.create(title: ['media list title'], depositor: depositor.ms_id, creator: creator, doi: doi) }
-      let(:media)         { Media.create(title: ['media title'], depositor: depositor.ms_id, doi: doi, owner: owner) }
+    let(:organization)  { FactoryBot.create(:organization_collection, title: ['Test Org'], depositor: depositor.ms_id) }
+    let(:doi)           { [] }
+    let(:media_list)    { FactoryBot.create(:media_list, title: ['media list title'], depositor: depositor.ms_id, creator: creator, doi: doi) }
+    let(:media)         { Media.create(title: ['media title'], depositor: depositor.ms_id, doi: doi, owner: owner) }
 
     context 'when creator is a valid User' do
       let(:creator)   { [depositor.ms_id] }
@@ -72,7 +71,7 @@ RSpec.describe Morphosource::DoiBehavior do
 
   describe '#mint_doi' do
     let(:media)       { Media.create(title: ['media title'], depositor: depositor.ms_id, doi: doi) }
-    let(:media_list)  { MediaList.create(title: ['media list title'], depositor: depositor.ms_id, creator: [depositor.ms_id], doi: doi) }
+    let(:media_list)  { FactoryBot.create(:media_list, title: ['media list title'], depositor: depositor.ms_id, creator: [depositor.ms_id], doi: doi) }
     let(:doi)         { [] }
 
     context 'when DOI exists' do
@@ -104,7 +103,7 @@ RSpec.describe Morphosource::DoiBehavior do
     end
 
     context 'when creator display name is empty' do
-      let(:organization)  { OrganizationCollection.create(title: ['Test Org'], depositor: depositor.ms_id) }
+      let(:organization)  { FactoryBot.create(:organization_collection, title: ['Test Org'], depositor: depositor.ms_id) }
       before do
         organization.title = []
         organization.save!(validate: false)
@@ -185,7 +184,7 @@ RSpec.describe Morphosource::DoiBehavior do
   describe 'mint_list_doi' do
     let(:contributor1)  { User.create(email: "contributor1@example.com", password: "password", display_name: "ContributorFirst ContributorLast") }
     let(:contributor2)  { User.create(email: "contributor2@example.com", password: "password", display_name: "Contributor2First Contributor2Last") }
-    let(:media_list)    { MediaList.create(title: ['media title'], depositor: depositor.ms_id, doi: [], creator: [depositor.ms_id], contributor: [contributor1.ms_id, contributor2.ms_id]) }
+    let(:media_list)    { FactoryBot.create(:media_list, title: ['media title'], depositor: depositor.ms_id, doi: [], creator: [depositor.ms_id], contributor: [contributor1.ms_id, contributor2.ms_id]) }
     let(:media1)        { Media.create(title: ['Media1'], depositor: depositor.ms_id, media_type: ["Mesh"], doi: media_doi ) }
     let(:media2)        { Media.create(title: ['Media2'], depositor: depositor.ms_id, media_type: ["Mesh"], doi: media_doi ) }
     let(:media3)        { Media.create(title: ['Media3'], depositor: depositor.ms_id, media_type: ["Image"], doi: media_doi ) }
@@ -247,7 +246,7 @@ RSpec.describe Morphosource::DoiBehavior do
 
       it 'calls Morphosource::CrossrefListDoiMinter.mint_doi with correct parameters' do
 
-        expect(Morphosource::CrossrefListDoiMinter).to receive(:mint_doi) do |id, params|
+        expect(Morphosource::CrossrefDoiMinter).to receive(:mint_doi) do |id, params|
           expect(id).to eq(media_list.id)
 
           expect(params["title"]).to eq(media.title.first)

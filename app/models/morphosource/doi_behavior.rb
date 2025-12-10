@@ -5,9 +5,7 @@ module Morphosource
     def mint_doi(target_url)
       @target_url = target_url
       raise StandardError.new "DOI already exists" if self.doi.present?
-      raise StandardError.new "Creator user or organization was not found" unless
-
-      @creator = verify_creator
+      raise StandardError.new "Creator user or organization was not found" unless @creator = verify_creator
       raise StandardError.new "Creator display name is nil" if @creator.display_name.empty?
 
       minted_doi = self.is_a?(Media) ? mint_media_doi : mint_list_doi

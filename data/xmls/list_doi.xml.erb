@@ -1,4 +1,8 @@
-<doi_batch xmlns="http://www.crossref.org/schema/5.4.0" version="5.4.0">
+<doi_batch
+  xmlns="http://www.crossref.org/schema/5.4.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:rel="http://www.crossref.org/relations.xsd"
+  version="5.4.0">
   <head>
     <doi_batch_id><%= doi_batch_id %></doi_batch_id>
     <timestamp><%= timestamp %></timestamp>
@@ -43,19 +47,21 @@
             <year><%= publication_year %></year>
           </publication_date>
         </database_date>
+        <rel:program name="relations">
+          <% child_media.each do |media| %>
+            <rel:related_item>
+              <rel:inter_work_relation
+                  relationship-type="hasPart"
+                  identifier-type="doi">
+                <%= media["doi"] %>
+              </rel:inter_work_relation>
+            </rel:related_item>
+          <% end %>
+        </rel:program>
         <doi_data>
           <doi><%= doi %></doi>
           <resource><%= url %></resource>
         </doi_data>
-        <rel:program name="relations">
-          <% child_media.each do |media| %>
-            <rel:related_item>
-              <rel:intra_work_relation relationship-type="has-part">
-                <%= media["doi"] %>
-              </rel:intra_work_relation>
-            </rel:related_item>
-          <% end %>
-        </rel:program>
       </dataset>
     </database>
   </body>

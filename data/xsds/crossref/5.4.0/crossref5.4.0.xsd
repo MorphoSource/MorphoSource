@@ -10,13 +10,13 @@
 	xmlns:jats="http://www.ncbi.nlm.nih.gov/JATS1">
 
 	<!--*************************************************************
-	Crossref Metadata Input Schema v. 5.4.0 
+	Crossref Metadata Input Schema v. 5.4.0
 	*************************************************************
-	
+
 This is the latest iteration of the Crossref Metadata Input Schema, used to register metadata records with Crossref. This schema was originally developed for Crossref by Inera (http://www.inera.com) and is currently maintained by Crossref staff.
 
 As of version 4.5.0 all changes are noted in the release notes for the schema repository in GitLab:  https://gitlab.com/crossref/schema/-/releases
-	
+
 Prior updates are noted as comments within previous schema versions.  -->
 
 	<!-- include common schema -->
@@ -25,8 +25,8 @@ Prior updates are noted as comments within previous schema versions.  -->
 
 	<!-- imported schema -->
 	<xsd:import namespace="http://www.ncbi.nlm.nih.gov/JATS1" schemaLocation="JATS-journalpublishing1-3d2-mathml3.xsd"/>
-	<xsd:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="http://www.w3.org/2009/01/xml.xsd"/>
-	<xsd:import namespace="http://www.w3.org/1998/Math/MathML" schemaLocation="http://www.w3.org/Math/XMLSchema/mathml3/mathml3.xsd"/>
+	<xsd:import namespace="http://www.w3.org/XML/1998/namespace" schemaLocation="xml.xsd"/>
+	<xsd:import namespace="http://www.w3.org/1998/Math/MathML" schemaLocation="standard-modules/mathml3/mathml3.xsd"/>
 	<xsd:import namespace="http://www.crossref.org/fundref.xsd" schemaLocation="fundref.xsd"/>
 	<xsd:import namespace="http://www.crossref.org/fundingdata5.4.0.xsd" schemaLocation="fundingdata5.4.0.xsd"/>
 	<xsd:import namespace="http://www.crossref.org/clinicaltrials.xsd" schemaLocation="clinicaltrials.xsd"/>
@@ -126,7 +126,7 @@ Prior updates are noted as comments within previous schema versions.  -->
 
 	<xsd:element name="abbrev_title">
 		<xsd:annotation>
-			<xsd:documentation> Common abbreviation or abbreviations used when citing a journal. It is recommended that periods be included after abbreviated words within the title. 
+			<xsd:documentation> Common abbreviation or abbreviations used when citing a journal. It is recommended that periods be included after abbreviated words within the title.
 			</xsd:documentation>
 		</xsd:annotation>
 		<xsd:simpleType>
@@ -320,9 +320,9 @@ Prior updates are noted as comments within previous schema versions.  -->
 	</xsd:simpleType>
 	<xsd:element name="conference_date">
 		<xsd:annotation>
-			<xsd:documentation>The start and end dates of a conference event. conference_date may be used in three ways: 
-				1. If publishers that do not have parsed date values, provide just text with the conference dates. The date text should be taken from the proceedings title page. 
-				2. If publishers have parsed date values, provide them in the attributes. 
+			<xsd:documentation>The start and end dates of a conference event. conference_date may be used in three ways:
+				1. If publishers that do not have parsed date values, provide just text with the conference dates. The date text should be taken from the proceedings title page.
+				2. If publishers have parsed date values, provide them in the attributes.
 				3. If both parsed date values and the date text are available, both should be provided. This is the preferred tagging for conference_date. For example:
 				<conference_date start_month="01" start_year="1997" start_day="15" end_year="1997" end_month="01" end_day="17">Jan. 15-17, 1997</conference_date>
 			</xsd:documentation>
@@ -1156,7 +1156,7 @@ Prior updates are noted as comments within previous schema versions.  -->
 	<!-- ===========================================================
 	     	Posted Content elements
          ============================================================== -->
-	
+
 	<xsd:element name="posted_content">
 		<xsd:annotation>
 			<xsd:documentation>Container for posted content metadata.
@@ -1210,10 +1210,10 @@ Prior updates are noted as comments within previous schema versions.  -->
 			</xsd:restriction>
 		</xsd:simpleType>
 	</xsd:element>
-	
-	
-	
-	
+
+
+
+
 	<xsd:element name="status">
 		<xsd:complexType>
 			<xsd:sequence>
@@ -1227,19 +1227,19 @@ Prior updates are noted as comments within previous schema versions.  -->
 					</xsd:restriction>
 				</xsd:simpleType>
 			</xsd:attribute>
-			<xsd:attribute name="date" type="xsd:date"/>	
+			<xsd:attribute name="date" type="xsd:date"/>
 		</xsd:complexType>
 	</xsd:element>
-	
+
 	<xsd:simpleType name="status_description">
 		<xsd:restriction base="xsd:string">
 			<xsd:maxLength value="2000"/>
 			<xsd:minLength value="1"/>
 		</xsd:restriction>
 	</xsd:simpleType>
-	
-	
-	
+
+
+
 	<!-- =============================================================
 
      Elements common to reports, dissertations and standards
@@ -1602,7 +1602,7 @@ Prior updates are noted as comments within previous schema versions.  -->
 		</xsd:complexType>
 	</xsd:element>
 	-->
-	<!--	
+	<!--
 	<xsd:element name="name">
 		<xsd:complexType>
 			<xsd:sequence>
@@ -1655,7 +1655,7 @@ Prior updates are noted as comments within previous schema versions.  -->
 			<xsd:attributeGroup ref="language.atts"/>
 		</xsd:complexType>
 	</xsd:element>
-	
+
 	-->
 	<xsd:element name="prefix">
 		<xsd:complexType mixed="true">
@@ -2095,9 +2095,9 @@ Prior updates are noted as comments within previous schema versions.  -->
 			<xsd:attribute ref="xml:lang"/>
 		</xsd:complexType>
 	</xsd:element>
-	
-	
-	
+
+
+
 	<xsd:simpleType name="format_t">
 		<xsd:restriction base="xsd:string">
 			<xsd:maxLength value="130"/>

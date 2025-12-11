@@ -37,8 +37,6 @@ module Morphosource
     # See: https://www.crossref.org/education/content-registration/crossrefs-metadata-deposit-schema/metadata-deposit-schema-4-4-2/
     def self.validate_metadata_deposit_xml(input_xml)
       # memoized XSD parsing, since parsing the XSD is somewhat time-consuming
-      # @@xsd_schema ||= Nokogiri::XML::Schema(File.open(Rails.root.join('data','xsds','crossref4.4.2.xsd')))
-      byebug
       @@xsd_schema ||= Nokogiri::XML::Schema(File.open(schema_path))
       validation_errors = @@xsd_schema.validate(Nokogiri::XML(input_xml))
       if validation_errors.empty?
@@ -115,7 +113,6 @@ module Morphosource
       rescue RestClient::ExceptionWithResponse => exception
         exception
       end
-      byebug
       identifier_to_doi(identifier)
     end
 
@@ -130,7 +127,7 @@ module Morphosource
       },
       "MediaList" => {
         required_params:  %w[doi_batch_id title doi url timestamp publication_year],
-        schema_path:      Rails.root.join('data','xsds','crossref5.4.0.xsd'),
+        schema_path:      Rails.root.join('data','xsds', 'crossref', '5.4.0', 'crossref5.4.0.xsd'),
         template_path:    Rails.root.join("data", "xmls", "list_doi.xml.erb"),
         type_letter:      "L"
       }

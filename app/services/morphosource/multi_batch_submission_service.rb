@@ -17,6 +17,11 @@ module Morphosource
   class MultiBatchSubmissionService
     attr_reader :xlsx_file_path, :user, :xlsx_file
 
+    def initialize(xlsx_file_path:, user:)
+      @xlsx_file_path = xlsx_file_path
+      @user = user
+    end
+
     ##
     # Create but not launch BackgroundJob objects, one per media collection from each
     # organization and device combination. BackgroundJobs should be launched later separately to
@@ -26,11 +31,10 @@ module Morphosource
     # @param [User] user User managing and triggering background jobs
     #
     # @return [Array<BackgroundJob>] Background jobs, one for each org/device combo, saved but not launched
-    def create_submissions(xlsx_file_path:, user:)
+    def create_submissions(xlsx_file_path: @xlsx_file_path, user: @user)
       @xlsx_file_path = xlsx_file_path
       @user = user
       @xlsx_file = Roo::Excelx.new(xlsx_file_path)
-
 
       batch_file_validity = BatchSubmissionTools::Ms2Batch::BatchFileValidator.new(
         xlsx_file: xlsx_file,
@@ -49,6 +53,9 @@ module Morphosource
         :field_names,
         :row_count
       )
+
+      log_messages("Warnings", validity_data[:warn_messages])
+      log_messages("Errors", validity_data[:error_messages])
 
       if validity_status == "success"
         create_background_jobs
@@ -69,6 +76,20 @@ module Morphosource
         user_id: user.user_key,
         created_objects: {}
       })
+    end
+
+    private
+
+    def log_messages(label, messages)
+      return if messages.blank?
+
+      puts "#{label}:"
+      messages.each do |row, msgs|
+        next if msgs.blank?
+        Array(msgs).reject(&:blank?).each do |msg|
+          puts "  Row #{row}: #{msg}"
+        end
+      end
     end
 
     ##

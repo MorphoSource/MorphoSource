@@ -156,6 +156,7 @@ class BatchSubmissionsController < ApplicationController
     media_ownership_fields["organization_transfer_on_publish"] = true if ( organization_media_transfer == :publication )
     @manifest_object = BatchSubmissionTools::Ms2Batch::Manifest.new(
       input_path:input_path,
+      input_data:nil,
       media_path:media_path,
       admin_user:admin_user,
       depositor:depositor,

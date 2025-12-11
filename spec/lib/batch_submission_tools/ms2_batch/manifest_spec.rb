@@ -27,6 +27,18 @@ RSpec.describe BatchSubmissionTools::Ms2Batch::Manifest do
                                     "agreement_uri"=>"",
                                     "member_of_collection_ids"=>"" } }
   let(:modality)                { 'Photogrammetry' }
+  let(:base_args) do
+    {
+      media_path: media_path,
+      admin_user: admin_user,
+      depositor: depositor,
+      owner: owner,
+      organization_id: organization.id,
+      device_id: device.id,
+      media_ownership_fields: media_ownership_fields,
+      modality: modality
+    }
+  end
 
   before do
     admins.users << [admin_user]
@@ -36,18 +48,7 @@ RSpec.describe BatchSubmissionTools::Ms2Batch::Manifest do
   end
 
   describe "Manifest object" do
-    subject { BatchSubmissionTools::Ms2Batch::Manifest.new(
-      input_path:input_path,
-      media_path:media_path,
-      admin_user:admin_user,
-      depositor:depositor,
-      owner:owner,
-      organization_id:organization.id,
-      device_id:device.id,
-      media_ownership_fields:media_ownership_fields,
-      modality:modality
-      )
-    }
+    subject(:manifest) { BatchSubmissionTools::Ms2Batch::Manifest.new(base_args.merge(input_path: input_path)) }
 
     it 'responds to owner' do
       expect(subject).to respond_to(:owner)
@@ -104,6 +105,21 @@ RSpec.describe BatchSubmissionTools::Ms2Batch::Manifest do
         :software=>["pe smc sw"],
         :description=>["pe smc desc"]
       )
+    end
+
+    context "with input_data" do
+      let(:input_data) do
+        parser = ::Morphosource::Ms2Batch::XLSXParser.new(input_path, false, false)
+        parser.map { |row| row }
+      end
+
+      it "parses provided rows without reading a file path" do
+        manifest_from_data = BatchSubmissionTools::Ms2Batch::Manifest.new(base_args.merge(input_data: input_data))
+
+        expect(manifest_from_data.instance_variable_get(:@rows).count).to eql(3)
+        expect(manifest_from_data.instance_variable_get(:@skipped_row_count)).to eq(0)
+        expect(manifest_from_data.instance_variable_get(:@summary)["manifest_tmp_file"]).to be_nil
+      end
     end
   end
 end

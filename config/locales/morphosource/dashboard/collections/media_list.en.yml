@@ -7,6 +7,8 @@ en:
             title: Media Lists
           edit:
             title: Details
+            doi_message: This Media List has been assigned a DOI and cannot be edited. User roles can still be modified on the Members tab.
+            doi_warning: This Media List has a DOI and cannot be edited.
           new:
             header: 'New Media List'
           action:

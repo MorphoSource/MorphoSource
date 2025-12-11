@@ -7,6 +7,8 @@ module Morphosource
         before_action :redirect_to_collection_type, only: []
         skip_before_action :authorize_contributor
         before_action :authorize_admin, only: [:mint_doi]
+        before_action :check_for_doi, only: [:update, :destroy]
+        before_action :add_doi_message, only: [:edit]
 
         self.presenter_class = Morphosource::Collections::MediaListPresenter
 
@@ -37,6 +39,21 @@ module Morphosource
 
           def collection_class
             MediaList
+          end
+
+          def check_for_doi
+            return if current_user.admin?
+
+            if @collection.doi.present?
+              flash[:error] = t('morphosource.dashboard.collections.media_list.edit.doi_warning')
+              redirect_to media_list_edit_path(@collection) and return
+            end
+          end
+
+          def add_doi_message
+            if @collection.doi.present?
+              flash.now[:notice] = t('morphosource.dashboard.collections.media_list.edit.doi_message')
+            end
           end
 
       end

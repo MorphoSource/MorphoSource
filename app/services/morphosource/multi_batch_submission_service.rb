@@ -15,6 +15,7 @@ module Morphosource
   #   background_jobs = service.create_submissions
   #   service.execute_background_job(background_jobs.first)
   class MultiBatchSubmissionService
+    include BatchSubmissionTools::Ms2Batch::BatchSubmission
     attr_reader :xlsx_file_path, :user, :xlsx_file
 
     def initialize(xlsx_file_path:, user:)
@@ -58,10 +59,42 @@ module Morphosource
       log_messages("Errors", validity_data[:error_messages])
 
       if validity_status == "success"
+        @batch_file_data = xlsx_to_collections
+
+        # next step: for each collection of rows, create a manifest
+
+
+
         create_background_jobs
       else
         raise "Batch file was invalid. See validity results: #{validity_data}"
       end
+    end
+
+    def xlsx_to_collections
+      headers = xlsx_file.row(7).drop(2)
+      grouped_rows = Hash.new { |h, k| h[k] = [] }
+
+      row_index = 8 # media list starts at row 8 (1-indexed in Excel)
+      xlsx_file.each_row_streaming(offset: 7, pad_cells: true) do |row|
+        data_row = row.drop(2)
+        # Skip empty rows
+        next if data_row.all? { |c| c.nil? || c.value.to_s.strip.empty? }
+
+        device_id = pad_id(xlsx_file.cell(row_index, 86))
+        organization_id = pad_id(xlsx_file.cell(row_index, 88))
+        combo_key = [organization_id, device_id]
+
+        grouped_rows[combo_key] << build_row_attributes(headers, data_row)
+        row_index += 1
+      end
+
+      return grouped_rows
+        .sort_by { |(org_id, device_id), _| [org_id.to_s, device_id.to_s] }
+        .map do |(org_id, device_id), rows|
+          parsed_rows, _ = parse_input_rows(rows)
+          { { organization_id: org_id, device_id: device_id } => parsed_rows }
+        end 
     end
 
     def create_background_jobs
@@ -90,6 +123,23 @@ module Morphosource
           puts "  Row #{row}: #{msg}"
         end
       end
+    end
+
+    def build_row_attributes(headers, data_row)
+      {}.tap do |processed|
+        headers.each_with_index do |header, index|
+          val = data_row[index]&.value
+          processed[header.to_sym] ||= []
+          processed[header.to_sym] += val.present? ? val.to_s.split(';').map(&:strip) : []
+        end
+      end
+    end
+
+    def pad_id(val)
+      return nil unless val.present?
+
+      str = val.is_a?(Numeric) ? val.to_i.to_s : val.to_s
+      str.length < 9 ? ("0" * (9 - str.length)) + str : str
     end
 
     ##

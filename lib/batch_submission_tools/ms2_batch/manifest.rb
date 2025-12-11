@@ -1,5 +1,8 @@
 module BatchSubmissionTools
   module Ms2Batch
+    # Data for a batch submission of multiple media processed asynchronously in the background.
+    # It is generated from a batch file (usually XLSX) and a JSON representation is stored in a
+    # BackgroundJob object to be processed async by BatchSubmission jobs.
     class Manifest
       include BatchSubmissionTools::Ms2Batch::BatchSubmission
       attr_accessor :input_path, :media_path, :admin_user, :depositor, :owner, :on_behalf_of,

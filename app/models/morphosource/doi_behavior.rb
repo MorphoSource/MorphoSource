@@ -35,7 +35,7 @@ module Morphosource
     def mint_list_doi
       params = base_params.merge(creator_params)
                           .merge(contributor_params)
-                          .merge(component_params)
+                          .merge(relation_params)
 
       Morphosource::CrossrefDoiMinter.mint_doi(self.id, params)
     end
@@ -61,7 +61,7 @@ module Morphosource
       }
     end
 
-    def component_params
+    def relation_params
       media = self.media
       raise StandardError.new "No media in list" if media.empty?
 
@@ -69,12 +69,8 @@ module Morphosource
       raise StandardError.new "MediaList #{self.id} has media without DOIs: #{missing_dois.join(', ')}" unless missing_dois.empty?
 
       {
-        'components' => media.map do |m|
-          { 'doi' => m.doi.first,
-            'title' => "#{m.id}: #{m.title.first}",
-            'resource_type' => m.media_type.first,
-            'url' => Rails.application.routes.url_helpers.media_showcase_url(m, host: Hyrax.config.host_name)
-          }
+        'child_media' => media.map do |m|
+          { 'doi' => m.doi.first  }
         end
       }
     end

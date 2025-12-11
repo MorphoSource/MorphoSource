@@ -37,12 +37,14 @@ module Morphosource
     # See: https://www.crossref.org/education/content-registration/crossrefs-metadata-deposit-schema/metadata-deposit-schema-4-4-2/
     def self.validate_metadata_deposit_xml(input_xml)
       # memoized XSD parsing, since parsing the XSD is somewhat time-consuming
-      @@xsd_schema ||= Nokogiri::XML::Schema(File.open(Rails.root.join('data','xsds','crossref4.4.2.xsd')))
+      # @@xsd_schema ||= Nokogiri::XML::Schema(File.open(Rails.root.join('data','xsds','crossref4.4.2.xsd')))
+      byebug
+      @@xsd_schema ||= Nokogiri::XML::Schema(File.open(schema_path))
       validation_errors = @@xsd_schema.validate(Nokogiri::XML(input_xml))
       if validation_errors.empty?
         return input_xml
       else
-        raise "Error(s) validating Crossref metadata deposit XML: #{validation_errors.inspect}"
+        raise "Error(s) validating Crossref metadata deposit XML: #{validation_errors.first.message}"
       end
     end
 
@@ -98,7 +100,7 @@ module Morphosource
       %w{username password shoulder url}.each do |doi_param|
         environment_param = "CROSSREF_DOI_#{doi_param.upcase}"
         if ENV[environment_param].blank?
-          Rails.logger.error "Required environment variable for Crossref DOI minting is missing: #{environment_param}"
+          raise "Required environment variable for Crossref DOI minting is missing: #{environment_param}"
           nil
         end
       end
@@ -113,6 +115,7 @@ module Morphosource
       rescue RestClient::ExceptionWithResponse => exception
         exception
       end
+      byebug
       identifier_to_doi(identifier)
     end
 
@@ -120,14 +123,16 @@ module Morphosource
 
     TYPE_CONFIG = {
       "Media" => {
-        required_params: %w[doi_batch_id title doi url resource_type timestamp publication_year],
-        template_path:   Rails.root.join("data", "xmls", "doi.xml.erb"),
-        type_letter:    "M"
+        required_params:  %w[doi_batch_id title doi url resource_type timestamp publication_year],
+        schema_path:      Rails.root.join('data','xsds','crossref4.4.2.xsd'),
+        template_path:    Rails.root.join("data", "xmls", "doi.xml.erb"),
+        type_letter:      "M"
       },
       "MediaList" => {
-        required_params: %w[doi_batch_id title doi url timestamp publication_year],
-        template_path:   Rails.root.join("data", "xmls", "list_doi.xml.erb"),
-        type_letter:    "L"
+        required_params:  %w[doi_batch_id title doi url timestamp publication_year],
+        schema_path:      Rails.root.join('data','xsds','crossref5.4.0.xsd'),
+        template_path:    Rails.root.join("data", "xmls", "list_doi.xml.erb"),
+        type_letter:      "L"
       }
     }.freeze
 
@@ -139,6 +144,10 @@ module Morphosource
 
     def self.required_params
       type_config[:required_params]
+    end
+
+    def self.schema_path
+      type_config[:schema_path]
     end
 
     def self.template_path

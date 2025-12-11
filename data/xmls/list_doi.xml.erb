@@ -1,4 +1,4 @@
-<doi_batch xmlns="http://www.crossref.org/schema/4.4.2" version="4.4.2">
+<doi_batch xmlns="http://www.crossref.org/schema/5.4.0" version="5.4.0">
   <head>
     <doi_batch_id><%= doi_batch_id %></doi_batch_id>
     <timestamp><%= timestamp %></timestamp>
@@ -47,20 +47,15 @@
           <doi><%= doi %></doi>
           <resource><%= url %></resource>
         </doi_data>
-        <component_list>
-          <% components.each do |component| %>
-            <component parent_relation="isPartOf">
-              <titles>
-                <title><%= component["title"] %></title>
-              </titles>
-              <format><%= component["resource_type"] %></format>
-              <doi_data>
-                <doi><%= component["doi"] %></doi>
-                <resource><%= component["url"] %></resource>
-              </doi_data>
-            </component>
+        <rel:program name="relations">
+          <% child_media.each do |media| %>
+            <rel:related_item>
+              <rel:intra_work_relation relationship-type="has-part">
+                <%= media["doi"] %>
+              </rel:intra_work_relation>
+            </rel:related_item>
           <% end %>
-        </component_list>
+        </rel:program>
       </dataset>
     </database>
   </body>

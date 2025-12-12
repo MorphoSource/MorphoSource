@@ -143,14 +143,34 @@ module Morphosource
         device_id: device_id,
         collection_ids: [],
         fund_code_id: nil, # ?
-        media_ownership_fields: media_ownership_fields,
+        media_ownership_fields: media_ownership_fields(organization_id),
         modality: modality
       }
     end
 
-    def media_ownership_fields
-      # todo: get media ownership fields 
-      {}
+    def media_ownership_fields(org_id)
+      # Get media ownership fields from the organization
+      
+# todo: check if the field values are set correctly
+      org = OrganizationCollection.find(org_id)
+      fields = {
+        "visibility" => Array(org.download_permission).first,
+        "download_reviewer" => Array(org.download_reviewer),
+        "rights_holder" => Array(org.rights_holder),
+        "rights_statement" => Array(org.rights_statement).first,
+        "license" => Array(org.license).first,
+        "morphosource_use_agreement_type" => Array(org.morphosource_use_agreement_type).first,
+        "permits_commercial_use" => Array(org.permits_commercial_use).first,
+        "permits_3d_use" => Array(org.permits_3d_use).first,
+        "required_archival_of_published_derivatives" => Array(org.required_archival_of_published_derivatives).first,
+        "publisher" => Array(org.publisher),
+        "preview_mode" => Array(org.preview_mode).first,
+        "agreement_uri" => Array(org.agreement_uri).first,
+        "member_of_collection_ids" => Array(org.member_of_collection_ids),
+        "owner" => org.depositor, # ?
+        "organization_transfer_on_publish" => false # ?
+      }
+      return fields
     end
 
     def user_share_full_path

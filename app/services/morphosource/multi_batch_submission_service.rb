@@ -59,12 +59,6 @@ module Morphosource
       log_messages("Errors", validity_data[:error_messages])
 
       if validity_status == "success"
-        @batch_file_data = xlsx_to_collections
-
-        # next step: for each collection of rows, create a manifest
-
-
-
         create_background_jobs
       else
         raise "Batch file was invalid. See validity results: #{validity_data}"
@@ -98,9 +92,15 @@ module Morphosource
     end
 
     def create_background_jobs
+      batch_file_data = xlsx_to_collections
+      return [] unless batch_file_data.present?
 
-
-
+      batch_file_data.flat_map do |combo|
+        combo.map do |org_device_group, media_rows|
+          manifest = build_manifest(org_device_group, media_rows)
+          create_background_job(manifest.to_h)
+        end
+      end
     end
 
     def create_background_job(manifest)
@@ -112,6 +112,61 @@ module Morphosource
     end
 
     private
+
+    def build_manifest(org_device_group, media_rows)
+      manifest_args = manifest_arguments(org_device_group, media_rows)
+      puts "media_rows (#{media_rows.count}) : #{media_rows.inspect[0,80]...}"
+      manifest_args.each do |key, value|
+        puts "#{key}: #{value.inspect[0,80]...}"
+      end
+      BatchSubmissionTools::Ms2Batch::Manifest.new(**manifest_args)
+    end
+
+    def manifest_arguments(org_device_group, media_rows)
+      media_path = user_share_full_path
+      raise "Media path directory not found for #{user.user_key}" if media_path == "NOT_FOUND"
+
+      organization_id = org_device_group[:organization_id]
+      device_id = org_device_group[:device_id]
+      modality = media_rows.first&.dig(:experimental, :device_modality)&.first
+
+      {
+        input_data: media_rows,
+        media_path: media_path,
+        admin_user: User.batch_user,
+        depositor: user,
+        owner: user.ms_id,
+        organization_id: organization_id,
+        device_id: device_id,
+        media_ownership_fields: media_ownership_fields,
+        modality: modality
+      }
+    end
+
+    def media_ownership_fields
+      # todo: get media ownership fields 
+      {}
+    end
+
+    def user_share_full_path
+      @user_share_full_path ||= begin
+        user_set_path = user.sftp_share
+        if !user_set_path.present?
+          "NOT_FOUND"
+        elsif Dir.exist?(Hyrax.config.sftp_share_root + user_set_path)
+          File.join(Hyrax.config.sftp_share_root, user_set_path, '/')
+        elsif Dir.exist?(user_set_path)
+          unless user_set_path.match(/^\//)
+            # if relative path, change it to absolute
+            File.join(Rails.root, user_set_path, '/')
+          else
+            File.join(user_set_path, '/')
+          end
+        else
+          "NOT_FOUND"
+        end
+      end
+    end
 
     def log_messages(label, messages)
       return if messages.blank?

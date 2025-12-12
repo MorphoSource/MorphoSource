@@ -217,30 +217,15 @@ RSpec.describe Morphosource::DoiBehavior do
                               }
                           ] }
 
-      let(:components)  {  [
+      let(:child_media)  {  [
                             {
-                              "doi" => media_doi.first,
-                              "title" => "#{media1.id}: #{media1.title.first}",
-                              "resource_type" => media1.media_type.first,
-                              "url" => Rails.application.routes.url_helpers.media_showcase_url(
-                                media1, host: Hyrax.config.host_name
-                              )
+                              "doi" => media_doi.first
                             },
                             {
-                              "doi" => media_doi.first,
-                              "title" => "#{media2.id}: #{media2.title.first}",
-                              "resource_type" => media2.media_type.first,
-                              "url" => Rails.application.routes.url_helpers.media_showcase_url(
-                                media2, host: Hyrax.config.host_name
-                              )
+                              "doi" => media_doi.first
                             },
                             {
-                              "doi" => media_doi.first,
-                              "title" => "#{media3.id}: #{media3.title.first}",
-                              "resource_type" => media3.media_type.first,
-                              "url" => Rails.application.routes.url_helpers.media_showcase_url(
-                                media3, host: Hyrax.config.host_name
-                              )
+                              "doi" => media_doi.first
                             }
                         ]}
 
@@ -255,7 +240,7 @@ RSpec.describe Morphosource::DoiBehavior do
           expect(params["author_last"]).to eq("DepositorLast")
 
           expect(params["contributors"]).to match_array(contributors)
-          expect(params["components"]).to match_array(components)
+          expect(params["child_media"]).to match_array(child_media)
         end
 
         media_list.send(:mint_list_doi)

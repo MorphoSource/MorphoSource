@@ -13,9 +13,7 @@ class MediaList < Collection
   DEFAULT_GROUP_ROLES = %w[managers viewers].freeze
 
   def initialize(params=nil)
-    byebug
     super
-    byebug
     self.collection_type_gid = collection_type.to_global_id
   end
 

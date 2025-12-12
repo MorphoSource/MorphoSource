@@ -71,16 +71,28 @@
     </div>
   <% end %>
   <% if @can_deposit %>
-    <div class="collection-manage-button-wrapper">
-      <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Add <span class="caret"></span>
-      </button>
-      <ul class="dropdown-menu shadow">
-        <li> <%= link_to "Select existing media", Rails.application.routes.url_helpers.my_add_media_index_path(@presenter.id), class: 'btn btn-sm btn-dropdown-item' %> </li>
-        <% if current_ability.can? :create, Media %>
-          <li> <%= link_to "Upload new media", main_app.new_submission_path(collection: @presenter.id), class: 'btn btn-sm btn-dropdown-item' %>
-          </li>
-        <% end %>
-      </ul>
+    <%# Do not show add media button if the media list has a DOI and user is not admin %>
+    <% if @collection.media_list? &&
+          @collection.doi.present? &&
+          !current_user.admin? %>
+      <div title="<%= t('morphosource.dashboard.collections.media_list.edit.doi_warning') %>" style="display: inline-block;">
+        <button type="button" class="btn btn-primary dropdown-toggle" disabled>
+          Add <span class="caret"></span>
+        </button>
+      </div>
     </div>
+    <% else %>
+      <div class="collection-manage-button-wrapper">
+        <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"> Add <span class="caret"></span>
+        </button>
+        <ul class="dropdown-menu shadow">
+          <li> <%= link_to "Select existing media", Rails.application.routes.url_helpers.my_add_media_index_path(@presenter.id), class: 'btn btn-sm btn-dropdown-item' %> </li>
+          <% if current_ability.can? :create, Media %>
+            <li> <%= link_to "Upload new media", main_app.new_submission_path(collection: @presenter.id), class: 'btn btn-sm btn-dropdown-item' %>
+            </li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
   <% end %>
 </div>

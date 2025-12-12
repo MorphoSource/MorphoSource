@@ -131,13 +131,18 @@ module Morphosource
       modality = media_rows.first&.dig(:experimental, :device_modality)&.first
 
       {
+        input_path: nil,
         input_data: media_rows,
         media_path: media_path,
         admin_user: User.batch_user,
         depositor: user,
         owner: user.ms_id,
+        on_behalf_of: nil, # ?
         organization_id: organization_id,
+        organization_transfer_immediately: false, # ?
         device_id: device_id,
+        collection_ids: [],
+        fund_code_id: nil, # ?
         media_ownership_fields: media_ownership_fields,
         modality: modality
       }

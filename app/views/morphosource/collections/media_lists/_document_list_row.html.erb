@@ -14,7 +14,7 @@
         <%= check_box_tag "batch_work_ids[]", document.id, false, class: "batch_add_selector interact-item", id: "batch_work_#{document.id}" %>
         <%= check_box_tag "batch_document_ids[]", document.id, false, class: "batch_document_selector hidden", id: "batch_document_#{document.id}" %>
       </div>
-      <% if @can_edit %>
+      <% if @can_edit && ( @collection.doi.blank? || current_user.admin? ) %>
         <i
           class="fa fa-solid fa-bars sort-handle interact-item"
           title="<%= t("morphosource.collection.actions.order_member.handle.title") %>"

@@ -108,8 +108,8 @@ module Morphosource
       deposit_xml = generate_metadata_deposit_xml(identifier, metadata_params)
       # See: https://www.crossref.org/education/member-setup/direct-deposit-xml/https-post/
       begin
-        # submission_response = RestClient.post(submission_url, multipart: true, fname: string_to_file(deposit_xml), login_id: login_id, login_passwd: login_passwd, headers: {content_type: "multipart/form-data"})
-        # Rails.logger.info("CrossrefDoiMinter.mint_doi submission response: #{submission_response.body}")
+        submission_response = RestClient.post(submission_url, multipart: true, fname: string_to_file(deposit_xml), login_id: login_id, login_passwd: login_passwd, headers: {content_type: "multipart/form-data"})
+        Rails.logger.info("CrossrefDoiMinter.mint_doi submission response: #{submission_response.body}")
       rescue RestClient::ExceptionWithResponse => exception
         exception
       end

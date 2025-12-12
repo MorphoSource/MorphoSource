@@ -111,6 +111,33 @@ module Morphosource
       })
     end
 
+    ##
+    # Trigger previously saved BackgroundJob batch submission. Will launch a background batch
+    # submission control job using data from saved BackgroundJob, which will in turn launch other
+    # secondary and tertiary jobs to carry out submission.
+    #
+    # @param [BackgroundJob] background_job BackgroundJob with data necessary for running batch submission.
+    #
+    # @return [BackgroundJob] BackgroundJob object with queued job details and status.
+    def execute_background_job(background_job)
+      job = ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_later(background_job.id, background_job.user)
+      background_job.update!({
+        job_id: job.job_id,
+        job_class: job.class.to_s,
+        status: job.status.status.to_s,
+      })
+
+      # If there is a manifest tmp file, rename to job id to locate easier
+      if (manifest_tmp_file = background_job.data["summary"]["manifest_tmp_file"]).present?
+        if File.exist?(manifest_tmp_file)
+          new_file = Rails.root.join(Dir.tmpdir, 'manifest_' + job.job_id + File.extname(manifest_tmp_file)).to_s
+          File.rename(manifest_tmp_file, new_file)
+        end
+      end
+
+      return background_job
+    end
+
     private
 
     def build_manifest(org_device_group, media_rows)
@@ -150,7 +177,7 @@ module Morphosource
 
     def media_ownership_fields(org_id)
       # Get media ownership fields from the organization
-      
+
 # todo: check if the field values are set correctly
       org = OrganizationCollection.find(org_id)
       fields = {
@@ -220,33 +247,6 @@ module Morphosource
 
       str = val.is_a?(Numeric) ? val.to_i.to_s : val.to_s
       str.length < 9 ? ("0" * (9 - str.length)) + str : str
-    end
-
-    ##
-    # Trigger previously saved BackgroundJob batch submission. Will launch a background batch
-    # submission control job using data from saved BackgroundJob, which will in turn launch other
-    # secondary and tertiary jobs to carry out submission.
-    #
-    # @param [BackgroundJob] background_job BackgroundJob with data necessary for running batch submission.
-    #
-    # @return [BackgroundJob] BackgroundJob object with queued job details and status.
-    def execute_background_job(background_job)
-      job = ::BatchSubmissionJobs::Ms2Batch::ControlJob.perform_later(background_job.id, background_job.user)
-      background_job.update!({
-        job_id: job.job_id,
-        job_class: job.class.to_s,
-        status: job.status.status.to_s,
-      })
-
-      # If there is a manifest tmp file, rename to job id to locate easier
-      if (manifest_tmp_file = background_job.data["summary"]["manifest_tmp_file"]).present?
-        if File.exist?(manifest_tmp_file)
-          new_file = Rails.root.join(Dir.tmpdir, 'manifest_' + job.job_id + File.extname(manifest_tmp_file)).to_s
-          File.rename(manifest_tmp_file, new_file)
-        end
-      end
-
-      return background_job
     end
   end
 end

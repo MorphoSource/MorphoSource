@@ -381,7 +381,7 @@ ActiveRecord::Schema.define(version: 2025_09_26_163538) do
     t.index ["namespace"], name: "index_minter_states_on_namespace", unique: true
   end
 
-  create_table "orm_resources", id: :uuid, default: -> { "uuid_generate_v4()" }, force: :cascade do |t|
+  create_table "orm_resources", id: :text, default: -> { "(uuid_generate_v4())::text" }, force: :cascade do |t|
     t.jsonb "metadata", default: {}, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false

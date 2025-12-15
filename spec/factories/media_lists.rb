@@ -5,7 +5,7 @@ FactoryBot.define do
     after_create_collection # provides find methods for collections
 
     transient do
-      collection_type { Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::MediaLists::SETTINGS).to_global_id }
+      collection_type { Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::MediaLists::SETTINGS) }
     end
 
     title               { ["example media list"] }
@@ -13,7 +13,7 @@ FactoryBot.define do
     visibility          { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE }
 
     initialize_with do
-      new(attributes.merge(collection_type_gid: collection_type))
+      new(attributes.merge(collection_type_gid: collection_type.to_global_id))
     end
   end
 end

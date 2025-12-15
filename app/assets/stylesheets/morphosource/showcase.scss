@@ -1030,6 +1030,12 @@ nav#masthead {
     padding:4px 15px;
   }
 
+  .object-showcase, .edit_biological_specimen {
+    .row.collapse-button {
+      .panel-title {width: 100%;}
+    }
+  } 
+
   .row.taxonomy-rank .showcase-label {
     padding-left: 8%;
   }
@@ -1269,7 +1275,7 @@ nav#masthead {
       row-gap: 10px;
 
       border: none;
-      margin-bottom: 4px;
+      margin-bottom: 12px;
       img {
         width: 100px;
         height: 100px;

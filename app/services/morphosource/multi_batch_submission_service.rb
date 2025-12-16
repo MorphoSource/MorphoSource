@@ -178,7 +178,7 @@ byebug
     end
 
     def media_ownership_fields(org_id)
-      # Prefer organization settings, then caller-provided ownership_options, then fall back to defaults.
+      # Prefer organization settings, then caller-provided ownership_options for that organization, then fall back to defaults.
       org = OrganizationCollection.find(org_id)
       org_fields = {
         "visibility" => Array(org.download_permission).first,
@@ -199,9 +199,11 @@ byebug
       }
 
       defaults = default_ownership_fields
-      defaults.keys.each_with_object({}) do |key, compiled|
+      org_overrides = ownership_options_for(org_id)
+
+      default.keys.each_with_object({}) do |key, compiled|
         org_value = org_fields[key]
-        ownership_value = ownership_options[key] || ownership_options[key.to_sym]
+        ownership_value = fetch_option_value(org_overrides, key)
         compiled[key] =
           if ownership_value_available?(org_value)
             org_value
@@ -239,6 +241,16 @@ byebug
       return true if value == false
 
       value.present?
+    end
+
+    def ownership_options_for(org_id)
+      return {} if ownership_options.blank?
+
+      ownership_options[org_id] || ownership_options[org_id.to_s] || ownership_options[org_id.to_sym] || {}
+    end
+
+    def fetch_option_value(options_hash, key)
+      options_hash[key] || options_hash[key.to_s] || options_hash[key.to_sym]
     end
 
     def user_share_full_path

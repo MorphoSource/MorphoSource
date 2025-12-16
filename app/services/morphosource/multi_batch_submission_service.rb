@@ -12,10 +12,17 @@ module Morphosource
   #
   # @example
   #   opts = {
-  #     ownership_options: { "000200001" => { "visibility" => "open" } },
+  #     ownership_options: { 
+  #       "000200001" => { "visibility" => "open", "rights_holder" => ["John Doe"] },
+  #       "000200018" => { "visibility" => "restricted", "cite_as" => "Mary Jane" } 
+  #     },
   #     organization_media_transfer: { all: "immediate" },
   #     fund_code_id: { "000200018" => "123456789" },
-  #     on_behalf_of: { all: User.first }
+  #     on_behalf_of: { all: User.first },
+  #     collection_ids: {
+  #       "000200001": ["000300123", "000300124"],
+  #       "000200018": ["000300125"]
+  #     } 
   #   }
   #   service = Morphosource::MultiBatchSubmissionService.new(xlsx_file_path: 'test.xlsx', user: User.last, options: opts)
   #   background_jobs = service.create_submissions
@@ -23,7 +30,7 @@ module Morphosource
   class MultiBatchSubmissionService
     include BatchSubmissionTools::Ms2Batch::BatchSubmission
     attr_reader :xlsx_file_path, :user, :xlsx_file, :ownership_options, :organization_media_transfer_options,
-                :on_behalf_of_options, :fund_code_options
+                :on_behalf_of_options, :fund_code_options, :collection_ids_options
 
     def initialize(xlsx_file_path:, user:, options: {})
       @xlsx_file_path = xlsx_file_path
@@ -33,6 +40,7 @@ module Morphosource
       @organization_media_transfer_options = fetch_option_value(opts, :organization_media_transfer) || {}
       @on_behalf_of_options = fetch_option_value(opts, :on_behalf_of)
       @fund_code_options = fetch_option_value(opts, :fund_code_id)
+      @collection_ids_options = fetch_option_value(opts, :collection_ids)
     end
 
     ##
@@ -182,7 +190,7 @@ module Morphosource
         organization_id: organization_id,
         organization_transfer_immediately:( org_media_transfer == :immediate ),
         device_id: device_id,
-        collection_ids: [],
+        collection_ids: collection_ids_for(organization_id),
         fund_code_id: fund_code_id_for(organization_id),
         media_ownership_fields: ownership_fields,
         modality: modality
@@ -293,6 +301,14 @@ module Morphosource
       per_org = fund_code_options.is_a?(Hash) ? fetch_option_value(fund_code_options, org_id) : fund_code_options
       per_org = fetch_option_value(fund_code_options, :all) if fund_code_options.is_a?(Hash) && !ownership_value_available?(per_org)
       per_org
+    end
+
+    def collection_ids_for(org_id)
+      return [] if collection_ids_options.blank?
+
+      per_org = collection_ids_options.is_a?(Hash) ? fetch_option_value(collection_ids_options, org_id) : collection_ids_options
+      per_org = fetch_option_value(collection_ids_options, :all) if collection_ids_options.is_a?(Hash) && !ownership_value_available?(per_org)
+      Array(per_org).compact
     end
 
     def normalize_transfer_option(value)

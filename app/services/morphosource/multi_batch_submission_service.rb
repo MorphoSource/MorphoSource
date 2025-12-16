@@ -16,12 +16,14 @@ module Morphosource
   #   service.execute_background_job(background_jobs.first)
   class MultiBatchSubmissionService
     include BatchSubmissionTools::Ms2Batch::BatchSubmission
-    attr_reader :xlsx_file_path, :user, :xlsx_file, :ownership_options
+    attr_reader :xlsx_file_path, :user, :xlsx_file, :ownership_options, :organization_media_transfer_options
 
-    def initialize(xlsx_file_path:, user:, ownership_options: {})
+    def initialize(xlsx_file_path:, user:, options: {})
       @xlsx_file_path = xlsx_file_path
       @user = user
-      @ownership_options = ownership_options || {}
+      opts = options || {}
+      @ownership_options = fetch_option_value(opts, :ownership_options) || {}
+      @organization_media_transfer_options = fetch_option_value(opts, :organization_media_transfer) || {}
     end
 
     ##
@@ -158,7 +160,8 @@ module Morphosource
       device_id = org_device_group[:device_id]
       modality = media_rows.first&.dig(:experimental, :device_modality)&.first
       ownership_fields = media_ownership_fields(organization_id)
-byebug
+      org_media_transfer = organization_media_transfer_for(organization_id)
+
       {
         input_path: nil,
         input_data: media_rows,
@@ -166,9 +169,9 @@ byebug
         admin_user: User.batch_user,
         depositor: user,
         owner: user.ms_id,
-        on_behalf_of: nil, # ?
+        on_behalf_of: nil, # should this be passed as optional argument?
         organization_id: organization_id,
-        organization_transfer_immediately: false, # ?
+        organization_transfer_immediately:( org_media_transfer == :immediate ),
         device_id: device_id,
         collection_ids: [],
         fund_code_id: nil, # ?
@@ -195,13 +198,15 @@ byebug
         "agreement_uri" => Array(org.agreement_uri).first,
         "member_of_collection_ids" => Array(org.member_of_collection_ids),
         "owner" => Array(org.depositor).first,
-        "organization_transfer_on_publish" => false # ?
+        "organization_transfer_on_publish" => (organization_media_transfer_for(org_id) == :publication)
       }
 
       defaults = default_ownership_fields
       org_overrides = ownership_options_for(org_id)
 
-      default.keys.each_with_object({}) do |key, compiled|
+      keys = defaults.keys | org_fields.keys | org_overrides.keys.map(&:to_s)
+
+      keys.each_with_object({}) do |key, compiled|
         org_value = org_fields[key]
         ownership_value = fetch_option_value(org_overrides, key)
         compiled[key] =
@@ -246,11 +251,29 @@ byebug
     def ownership_options_for(org_id)
       return {} if ownership_options.blank?
 
-      ownership_options[org_id] || ownership_options[org_id.to_s] || ownership_options[org_id.to_sym] || {}
+      per_org = fetch_option_value(ownership_options, org_id)
+      per_org = fetch_option_value(ownership_options, :all) unless ownership_value_available?(per_org)
+      per_org || {}
     end
 
     def fetch_option_value(options_hash, key)
+      return nil if options_hash.blank?
+
       options_hash[key] || options_hash[key.to_s] || options_hash[key.to_sym]
+    end
+
+    def organization_media_transfer_for(org_id)
+      return nil if organization_media_transfer_options.blank?
+
+      per_org = fetch_option_value(organization_media_transfer_options, org_id)
+      per_org = fetch_option_value(organization_media_transfer_options, :all) unless ownership_value_available?(per_org)
+      normalize_transfer_option(per_org)
+    end
+
+    def normalize_transfer_option(value)
+      return nil unless ownership_value_available?(value)
+
+      value.to_sym
     end
 
     def user_share_full_path

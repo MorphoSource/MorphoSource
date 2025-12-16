@@ -16,11 +16,12 @@ module Morphosource
   #   service.execute_background_job(background_jobs.first)
   class MultiBatchSubmissionService
     include BatchSubmissionTools::Ms2Batch::BatchSubmission
-    attr_reader :xlsx_file_path, :user, :xlsx_file
+    attr_reader :xlsx_file_path, :user, :xlsx_file, :ownership_options
 
-    def initialize(xlsx_file_path:, user:)
+    def initialize(xlsx_file_path:, user:, ownership_options: {})
       @xlsx_file_path = xlsx_file_path
       @user = user
+      @ownership_options = ownership_options || {}
     end
 
     ##
@@ -156,7 +157,8 @@ module Morphosource
       organization_id = org_device_group[:organization_id]
       device_id = org_device_group[:device_id]
       modality = media_rows.first&.dig(:experimental, :device_modality)&.first
-
+      ownership_fields = media_ownership_fields(organization_id)
+byebug
       {
         input_path: nil,
         input_data: media_rows,
@@ -170,17 +172,15 @@ module Morphosource
         device_id: device_id,
         collection_ids: [],
         fund_code_id: nil, # ?
-        media_ownership_fields: media_ownership_fields(organization_id),
+        media_ownership_fields: ownership_fields,
         modality: modality
       }
     end
 
     def media_ownership_fields(org_id)
-      # Get media ownership fields from the organization
-
-# todo: check if the field values are set correctly
+      # Prefer organization settings, then caller-provided ownership_options, then fall back to defaults.
       org = OrganizationCollection.find(org_id)
-      fields = {
+      org_fields = {
         "visibility" => Array(org.download_permission).first,
         "download_reviewer" => Array(org.download_reviewer),
         "rights_holder" => Array(org.rights_holder),
@@ -194,10 +194,57 @@ module Morphosource
         "preview_mode" => Array(org.preview_mode).first,
         "agreement_uri" => Array(org.agreement_uri).first,
         "member_of_collection_ids" => Array(org.member_of_collection_ids),
-        "owner" => org.depositor, # ?
+        "owner" => Array(org.depositor).first,
         "organization_transfer_on_publish" => false # ?
       }
-      return fields
+
+      defaults = default_ownership_fields
+      keys = defaults.keys | org_fields.keys | ownership_options.keys.map(&:to_s)
+byebug
+
+# test a few keys
+
+
+      keys.each_with_object({}) do |key, compiled|
+        org_value = org_fields[key]
+        ownership_value = ownership_options[key] || ownership_options[key.to_sym]
+        compiled[key] =
+          if ownership_value_available?(org_value)
+            org_value
+          elsif ownership_value_available?(ownership_value)
+            ownership_value
+          else
+            defaults[key]
+          end
+      end
+    end
+
+    def default_ownership_fields
+      {
+        "visibility"=>"restricted", 
+        "download_reviewer"=>user.ms_id, 
+        "rights_holder"=>[""], 
+        "rights_statement"=>"", 
+        "license"=>"", 
+        "morphosource_use_agreement_type"=>"Standard", 
+        "permits_commercial_use"=>"CommercialUseNotPermitted", 
+        "permits_3d_use"=>"3DPrintingLimited", 
+        "required_archival_of_published_derivatives"=>"OnMorphoSource", 
+        "funding"=>[""], 
+        "publisher"=>[""], 
+        "cite_as"=>"", 
+        "preview_mode"=>"Interactive/Embeddable", 
+        "agreement_uri"=>"", 
+        "member_of_collection_ids"=>"", 
+        "owner"=>user.ms_id,
+        "organization_transfer_on_publish"=>false
+      }
+    end
+
+    def ownership_value_available?(value)
+      return true if value == false
+
+      value.present?
     end
 
     def user_share_full_path

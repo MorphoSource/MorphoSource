@@ -199,13 +199,7 @@ byebug
       }
 
       defaults = default_ownership_fields
-      keys = defaults.keys | org_fields.keys | ownership_options.keys.map(&:to_s)
-byebug
-
-# test a few keys
-
-
-      keys.each_with_object({}) do |key, compiled|
+      defaults.keys.each_with_object({}) do |key, compiled|
         org_value = org_fields[key]
         ownership_value = ownership_options[key] || ownership_options[key.to_sym]
         compiled[key] =

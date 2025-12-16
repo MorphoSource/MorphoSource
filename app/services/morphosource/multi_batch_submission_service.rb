@@ -11,12 +11,19 @@ module Morphosource
   # launch any of those jobs. Each BackgroundJob sequence must be triggered separately.
   #
   # @example
-  #   service = Morphosource::MultiBatchSubmissionService.new(xlsx_file_path: 'test.xlsx', user: User.last)
+  #   opts = {
+  #     ownership_options: { "000200001" => { "visibility" => "open" } },
+  #     organization_media_transfer: { all: "immediate" },
+  #     fund_code_id: { "000200018" => "123456789" },
+  #     on_behalf_of: { all: User.first }
+  #   }
+  #   service = Morphosource::MultiBatchSubmissionService.new(xlsx_file_path: 'test.xlsx', user: User.last, options: opts)
   #   background_jobs = service.create_submissions
   #   service.execute_background_job(background_jobs.first)
   class MultiBatchSubmissionService
     include BatchSubmissionTools::Ms2Batch::BatchSubmission
-    attr_reader :xlsx_file_path, :user, :xlsx_file, :ownership_options, :organization_media_transfer_options
+    attr_reader :xlsx_file_path, :user, :xlsx_file, :ownership_options, :organization_media_transfer_options,
+                :on_behalf_of_options, :fund_code_options
 
     def initialize(xlsx_file_path:, user:, options: {})
       @xlsx_file_path = xlsx_file_path
@@ -24,6 +31,8 @@ module Morphosource
       opts = options || {}
       @ownership_options = fetch_option_value(opts, :ownership_options) || {}
       @organization_media_transfer_options = fetch_option_value(opts, :organization_media_transfer) || {}
+      @on_behalf_of_options = fetch_option_value(opts, :on_behalf_of)
+      @fund_code_options = fetch_option_value(opts, :fund_code_id)
     end
 
     ##
@@ -169,12 +178,12 @@ module Morphosource
         admin_user: User.batch_user,
         depositor: user,
         owner: user.ms_id,
-        on_behalf_of: nil, # should this be passed as optional argument?
+        on_behalf_of: on_behalf_of_for(organization_id),
         organization_id: organization_id,
         organization_transfer_immediately:( org_media_transfer == :immediate ),
         device_id: device_id,
         collection_ids: [],
-        fund_code_id: nil, # ?
+        fund_code_id: fund_code_id_for(organization_id),
         media_ownership_fields: ownership_fields,
         modality: modality
       }
@@ -268,6 +277,22 @@ module Morphosource
       per_org = fetch_option_value(organization_media_transfer_options, org_id)
       per_org = fetch_option_value(organization_media_transfer_options, :all) unless ownership_value_available?(per_org)
       normalize_transfer_option(per_org)
+    end
+
+    def on_behalf_of_for(org_id)
+      return nil if on_behalf_of_options.blank?
+
+      per_org = on_behalf_of_options.is_a?(Hash) ? fetch_option_value(on_behalf_of_options, org_id) : on_behalf_of_options
+      per_org = fetch_option_value(on_behalf_of_options, :all) if on_behalf_of_options.is_a?(Hash) && !ownership_value_available?(per_org)
+      per_org
+    end
+
+    def fund_code_id_for(org_id)
+      return nil if fund_code_options.blank?
+
+      per_org = fund_code_options.is_a?(Hash) ? fetch_option_value(fund_code_options, org_id) : fund_code_options
+      per_org = fetch_option_value(fund_code_options, :all) if fund_code_options.is_a?(Hash) && !ownership_value_available?(per_org)
+      per_org
     end
 
     def normalize_transfer_option(value)

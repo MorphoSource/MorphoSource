@@ -328,7 +328,6 @@ Rails.application.routes.draw do
       get 'media-lists/:collection_id/cultural-heritage-objects/facet/:id', to: 'cultural_heritage_objects#facet', as: 'media_list_chos_facet'
       get 'media-lists/:id/order-media', to: 'media_lists#order_media', as: 'media_list_order_media'
       get 'media-lists/:id/preview/:media_id', to: 'media_lists#preview', as: 'media_list_preview'
-      post 'media-lists/:id/mint_doi', to: 'media_lists#mint_doi', as: 'media_list_mint_doi'
 
       # Media list CSV exports
       get 'media-lists/:id/media-export', to: 'media_lists#media_export_with_intersections_facet', as: 'media_list_media_export'
@@ -473,6 +472,8 @@ Rails.application.routes.draw do
         put 'media-lists', to: 'media_lists#update'
         put 'media-lists/:id', to: 'media_lists#update', as: 'update_media_list'
         patch 'media-lists/:id', to: 'media_lists#update'
+        post 'media-lists/:id/mint-doi', to: 'media_lists#mint_doi', as: 'media_list_mint_doi'
+
 
         # Sequential section lists (in scope media_lists due to inheriting from media list)
         scope module: :media_lists do

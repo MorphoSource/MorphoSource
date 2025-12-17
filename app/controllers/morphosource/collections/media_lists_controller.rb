@@ -109,7 +109,7 @@ module Morphosource
         # link for facet filters
         def search_action_url(*args)
           args&.first&.delete("collection_id")
-          main_app.media_list_path(@curation_concern, *args)
+          main_app.media_list_path(@collection, *args)
         end
 
         # The url of the "more" link for additional facet values

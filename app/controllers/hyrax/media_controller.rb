@@ -122,7 +122,7 @@ module Hyrax
         {
           id: coll.id,
           label: coll.title.first,
-          removable: current_user.can?(:edit, Collection.find(coll.id))
+          removable: current_user.can?(:edit, coll.id) && coll.doi.blank?
         }
       end.to_json
     end

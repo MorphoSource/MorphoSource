@@ -4,15 +4,16 @@ FactoryBot.define do
     # see config/initializers/factory_bot.rb
     after_create_collection # provides find methods for collections
 
+    transient do
+      collection_type { Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::Teams::SETTINGS) }
+    end
+
     title               { ["example team"] }
     depositor           { nil }
     visibility          { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE }
 
-    after(:build) do |team|
-      team_collection_type = Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::Teams::SETTINGS)
-      team.collection_type_gid = team_collection_type.to_global_id
-
-
+   initialize_with do
+      new(attributes.merge(collection_type_gid: collection_type.to_global_id))
     end
   end
 end

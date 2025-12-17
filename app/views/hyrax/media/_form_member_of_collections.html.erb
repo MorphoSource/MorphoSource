@@ -26,10 +26,9 @@
   <td>
     <div class="row collection-edit-block">
       <div class="col-10 showcase-value">{%= o.title %}</div>
-      <div class="col-2">
+      <div class="col-2" title="{%= o.removable == false ? 'You do not have permission to remove this media from this collection' : '' %}">
         <i class="btn-remove {%= o.removable == false ? 'tooltip-icon' : '' %} fa fa-times-circle" aria-hidden="true"
           data-behavior="{%= o.removable == true ? 'remove-relationship' : '' %}" >
-          <p class="hint hide">You do not have permission to remove the media from this collection</p>
         </i>
       </div>
     </div>

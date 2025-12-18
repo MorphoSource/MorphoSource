@@ -48,7 +48,7 @@ RSpec.describe BatchSubmissionTools::Ms2Batch::Manifest do
   end
 
   describe "Manifest object" do
-    subject(:manifest) { BatchSubmissionTools::Ms2Batch::Manifest.new(base_args.merge(input_path: input_path)) }
+    subject(:manifest) { BatchSubmissionTools::Ms2Batch::Manifest.new(**base_args.merge(input_path: input_path)) }
 
     it 'responds to owner' do
       expect(subject).to respond_to(:owner)
@@ -114,7 +114,7 @@ RSpec.describe BatchSubmissionTools::Ms2Batch::Manifest do
       end
 
       it "parses provided rows without reading a file path" do
-        manifest_from_data = BatchSubmissionTools::Ms2Batch::Manifest.new(base_args.merge(input_data: input_data))
+        manifest_from_data = BatchSubmissionTools::Ms2Batch::Manifest.new(**base_args.merge(input_data: input_data))
 
         expect(manifest_from_data.instance_variable_get(:@rows).count).to eql(3)
         expect(manifest_from_data.instance_variable_get(:@skipped_row_count)).to eq(0)

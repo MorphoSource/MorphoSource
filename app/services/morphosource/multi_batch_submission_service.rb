@@ -10,13 +10,25 @@ module Morphosource
   # BackgroundJob object for each submission associated with a triggering user, but it will not
   # launch any of those jobs. Each BackgroundJob sequence must be triggered separately.
   #
+  # An options hash can be included to specify default options either on a per-organization basis
+  # (with different options specified for individual organizations) or for all media in the multi-
+  # batch. Each option value should be a hash where keys are either string IDs of organizations or
+  # :all for all media in the multi-batch. Valid option keys and descriptions of per-org values:
+  #   - ownership_options: Each per-org or :all value should be a hash of ownership attributes.
+  #       These will inherit from the organization by preference if org defaults exist.
+  #   - organization_media_transfer: Each per-org or :all value should be :immediate or :publication
+  #   - fund_code_id: Each per-org or :all value should be a string ID for an existing fund code
+  #   - on_behalf_of: Each per-org or :all value should be a User object
+  #   - collection_ids: Each per-org or :all value should be an array of string collection IDs that
+  #       media will be added to.
+  #
   # @example
   #   opts = {
   #     ownership_options: {
   #       "000200001" => { "visibility" => "open", "rights_holder" => ["John Doe"] },
   #       "000200018" => { "visibility" => "restricted", "cite_as" => "Mary Jane" }
   #     },
-  #     organization_media_transfer: { all: "immediate" },
+  #     organization_media_transfer: { all: :immediate },
   #     fund_code_id: { "000200018" => "123456789" },
   #     on_behalf_of: { all: User.first },
   #     collection_ids: {

@@ -12,9 +12,9 @@ module Morphosource
   #
   # @example
   #   opts = {
-  #     ownership_options: { 
+  #     ownership_options: {
   #       "000200001" => { "visibility" => "open", "rights_holder" => ["John Doe"] },
-  #       "000200018" => { "visibility" => "restricted", "cite_as" => "Mary Jane" } 
+  #       "000200018" => { "visibility" => "restricted", "cite_as" => "Mary Jane" }
   #     },
   #     organization_media_transfer: { all: "immediate" },
   #     fund_code_id: { "000200018" => "123456789" },
@@ -22,7 +22,7 @@ module Morphosource
   #     collection_ids: {
   #       "000200001": ["000300123", "000300124"],
   #       "000200018": ["000300125"]
-  #     } 
+  #     }
   #   }
   #   service = Morphosource::MultiBatchSubmissionService.new(xlsx_file_path: 'test.xlsx', user: User.last, options: opts)
   #   background_jobs = service.create_submissions
@@ -38,9 +38,9 @@ module Morphosource
       opts = options || {}
       @ownership_options = fetch_option_value(opts, :ownership_options) || {}
       @organization_media_transfer_options = fetch_option_value(opts, :organization_media_transfer) || {}
-      @on_behalf_of_options = fetch_option_value(opts, :on_behalf_of)
-      @fund_code_options = fetch_option_value(opts, :fund_code_id)
-      @collection_ids_options = fetch_option_value(opts, :collection_ids)
+      @on_behalf_of_options = fetch_option_value(opts, :on_behalf_of) || {}
+      @fund_code_options = fetch_option_value(opts, :fund_code_id) || {}
+      @collection_ids_options = fetch_option_value(opts, :collection_ids) || {}
     end
 
     ##
@@ -108,7 +108,7 @@ module Morphosource
         .map do |(org_id, device_id), rows|
           parsed_rows, _ = parse_input_rows(rows)
           { { organization_id: org_id, device_id: device_id } => parsed_rows }
-        end 
+        end
     end
 
     def create_background_jobs
@@ -239,76 +239,66 @@ module Morphosource
 
     def default_ownership_fields
       {
-        "visibility"=>"restricted", 
-        "download_reviewer"=>user.ms_id, 
-        "rights_holder"=>[""], 
-        "rights_statement"=>"", 
-        "license"=>"", 
-        "morphosource_use_agreement_type"=>"Standard", 
-        "permits_commercial_use"=>"CommercialUseNotPermitted", 
-        "permits_3d_use"=>"3DPrintingLimited", 
-        "required_archival_of_published_derivatives"=>"OnMorphoSource", 
-        "funding"=>[""], 
-        "publisher"=>[""], 
-        "cite_as"=>"", 
-        "preview_mode"=>"Interactive/Embeddable", 
-        "agreement_uri"=>"", 
-        "member_of_collection_ids"=>"", 
+        "visibility"=>"restricted",
+        "download_reviewer"=>user.ms_id,
+        "rights_holder"=>[""],
+        "rights_statement"=>"",
+        "license"=>"",
+        "morphosource_use_agreement_type"=>"Standard",
+        "permits_commercial_use"=>"CommercialUseNotPermitted",
+        "permits_3d_use"=>"3DPrintingLimited",
+        "required_archival_of_published_derivatives"=>"OnMorphoSource",
+        "funding"=>[""],
+        "publisher"=>[""],
+        "cite_as"=>"",
+        "preview_mode"=>"Interactive/Embeddable",
+        "agreement_uri"=>"",
+        "member_of_collection_ids"=>"",
         "owner"=>user.ms_id,
         "organization_transfer_on_publish"=>false
       }
     end
 
     def ownership_value_available?(value)
-      return true if value == false
-
-      value.present?
+      value.present? || value == false
     end
 
     def ownership_options_for(org_id)
-      return {} if ownership_options.blank?
-
-      per_org = fetch_option_value(ownership_options, org_id)
-      per_org = fetch_option_value(ownership_options, :all) unless ownership_value_available?(per_org)
-      per_org || {}
+      fetch_option_value(ownership_options, org_id).presence ||
+        fetch_option_value(ownership_options, :all).presence ||
+        {}
     end
 
     def fetch_option_value(options_hash, key)
-      return nil if options_hash.blank?
+      return nil unless options_hash.is_a?(Hash) && options_hash.present?
 
-      options_hash[key] || options_hash[key.to_s] || options_hash[key.to_sym]
+      options_hash.with_indifferent_access[key]
     end
 
     def organization_media_transfer_for(org_id)
       return nil if organization_media_transfer_options.blank?
 
-      per_org = fetch_option_value(organization_media_transfer_options, org_id)
-      per_org = fetch_option_value(organization_media_transfer_options, :all) unless ownership_value_available?(per_org)
-      normalize_transfer_option(per_org)
+      normalize_transfer_option(
+        fetch_option_value(organization_media_transfer_options, org_id).presence ||
+          fetch_option_value(organization_media_transfer_options, :all).presence
+      )
     end
 
     def on_behalf_of_for(org_id)
-      return nil if on_behalf_of_options.blank?
-
-      per_org = on_behalf_of_options.is_a?(Hash) ? fetch_option_value(on_behalf_of_options, org_id) : on_behalf_of_options
-      per_org = fetch_option_value(on_behalf_of_options, :all) if on_behalf_of_options.is_a?(Hash) && !ownership_value_available?(per_org)
-      per_org
+      fetch_option_value(on_behalf_of_options, org_id).presence ||
+        fetch_option_value(on_behalf_of_options, :all).presence
     end
 
     def fund_code_id_for(org_id)
-      return nil if fund_code_options.blank?
-
-      per_org = fund_code_options.is_a?(Hash) ? fetch_option_value(fund_code_options, org_id) : fund_code_options
-      per_org = fetch_option_value(fund_code_options, :all) if fund_code_options.is_a?(Hash) && !ownership_value_available?(per_org)
-      per_org
+      fetch_option_value(fund_code_options, org_id).presence ||
+        fetch_option_value(fund_code_options, :all).presence
     end
 
     def collection_ids_for(org_id)
-      return [] if collection_ids_options.blank?
-
-      per_org = collection_ids_options.is_a?(Hash) ? fetch_option_value(collection_ids_options, org_id) : collection_ids_options
-      per_org = fetch_option_value(collection_ids_options, :all) if collection_ids_options.is_a?(Hash) && !ownership_value_available?(per_org)
-      Array(per_org).compact
+      Array(
+        fetch_option_value(collection_ids_options, org_id).presence ||
+          fetch_option_value(collection_ids_options, :all).presence
+      ).compact
     end
 
     def normalize_transfer_option(value)

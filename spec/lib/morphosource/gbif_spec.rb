@@ -103,7 +103,7 @@ RSpec.describe Morphosource::Gbif do
       it 'returns a json view result' do
         result = described_class.view(key, 'occurrence')
         expect(result[:status]).to eq(:success)
-        expect(result[:data]['vernacularName']).to eq('Common Dog')
+        expect(result[:data]['vernacularName']).to eq('Dingo')
       end
     end
 

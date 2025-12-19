@@ -1,16 +1,24 @@
 module BatchSubmissionTools
   module Ms2Batch
+    # Data for a batch submission of multiple media processed asynchronously in the background.
+    # It is generated from a batch file (usually XLSX) and a JSON representation is stored in a
+    # BackgroundJob object to be processed async by BatchSubmission jobs.
     class Manifest
       include BatchSubmissionTools::Ms2Batch::BatchSubmission
-      attr_accessor :input_path, :media_path, :admin_user, :depositor, :owner, :on_behalf_of,
+      attr_accessor :input_path, :input_data, :media_path, :admin_user, :depositor, :owner, :on_behalf_of,
         :organization_id, :organization_transfer_immediately, :device_id, :device_modality,
         :collection_ids, :fund_code_id,
         :rows, :media_group_to_rows, :rows_to_bso, :biological_specimen_ingests,
         :taxonomy_ingests, :rows_to_taxonomy, :media_ie_pe_ingests, :media_ownership_fields,
         :skipped_row_count, :summary
 
-      def initialize(input_path:, media_path:, admin_user:, depositor:, owner: nil, organization_id:, organization_transfer_immediately: false, device_id:, on_behalf_of: nil, collection_ids: [], fund_code_id: nil, media_ownership_fields:, modality:)
+      def initialize(input_path: nil, input_data: nil, media_path:, admin_user:, depositor:, owner: nil, organization_id:, organization_transfer_immediately: false, device_id:, on_behalf_of: nil, collection_ids: [], fund_code_id: nil, media_ownership_fields:, modality:)
+        if input_path.blank? && input_data.blank?
+          raise ArgumentError, "Either input_path or input_data must be provided"
+        end
+
         @input_path = input_path
+        @input_data = input_data
         @media_path = media_path
         @admin_user = admin_user.user_key
         @depositor = depositor.user_key
@@ -59,7 +67,12 @@ module BatchSubmissionTools
       end
 
       def parse_manifest
-        @rows, @skipped_row_count = parse_xlsx_split_sections(input_path)
+        @rows, @skipped_row_count =
+          if input_data.present?
+            parse_input_rows(input_data)
+          else
+            parse_xlsx_split_sections(input_path)
+          end
       end
 
       def infer_media_relationships
@@ -336,7 +349,8 @@ module BatchSubmissionTools
             parent_row_index = mg[:parents].first
             media_attrs = rows[parent_row_index][:media]
 
-            if parent_row_index == sheet_index.first && media_attrs[:raw_or_derived].first.downcase == "raw"
+            raw_or_derived = media_attrs[:raw_or_derived]&.first&.downcase
+            if parent_row_index == sheet_index.first && raw_or_derived == "raw"
 
               ie_row_index = parent_row_index
 

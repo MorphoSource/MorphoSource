@@ -112,8 +112,8 @@ RSpec.describe BatchSubmissionsController, type: :controller do
   end
 
   describe "POST submit result" do
-    let (:organization_recordset_id) {'xyz'}
-    let (:organization_institution_code) {'abc'}
+    let (:organization) { create(:organization_collection, institution_code: ['abc']) }
+
     before do
       sign_in user
     end
@@ -122,8 +122,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
 
       context "result with MicroNanoXRayComputedTomography pre-selected" do
         let(:params) { {"manifest" => valid_file,
-          "organization_institution_code" => organization_institution_code,
-          "organization_recordset_id" => organization_recordset_id,
+          "organization_id" => organization.id,
           "batch_submission" => {
             "modality" => "MicroNanoXRayComputedTomography"
           }
@@ -152,7 +151,7 @@ RSpec.describe BatchSubmissionsController, type: :controller do
           expect(html).to include 'A value can be present in media.parent_file or media.parent_ms_id, but not in both.'
           expect(html).to include 'media.parent_ms_id: Existing media not_found not found.'
           expect(html).to include 'biological_specimen.ms_id: Existing biological specimen not_found not found.'
-          expect(html).to include 'biological_specimen.institution_code: It does not match the institution code from the pre-selected organization: ' + organization_institution_code
+          expect(html).to include 'biological_specimen.institution_code: Does not match the institution code from the organization: abc'
           expect(html).to include 'media.parent_file parent_file_not_found.zip not found in another row.'
           expect(html).to include 'media.parent_file ANSP_Fish_193352_Head.zip cannot be media.media_file in the same row.'
           expect(html).to include 'media.raw_or_derived: Please enter a valid value.'
@@ -264,15 +263,6 @@ RSpec.describe BatchSubmissionsController, type: :controller do
         expect(html).to include 'media.parent_file ANSP_Fish_180334_Head.jpg has invalid parent(s) (found in row 10).  Please check and make sure each parent_file is pointing to the correct row.'
         expect(html).to include 'biological_specimen.ms_id: Existing biological specimen TESTBSO123 is associated with an organization different from the one you have selected.'
       end
-    end
-
-  end
-
-  describe 'valid_media_unit' do
-    let(:valid_units) { ['Um', 'Cm', 'Ft', 'In', 'Km', 'M', 'Mi', 'Mm'] }
-
-    it 'returns a list of valid units' do
-      expect(subject.valid_media_unit).to match_array(valid_units)
     end
   end
 end

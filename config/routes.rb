@@ -447,6 +447,7 @@ Rails.application.routes.draw do
         put 'projects', to: 'projects#update'
         put 'projects/:id', to: 'projects#update', as: 'update_project'
         patch 'projects/:id', to: 'projects#update'
+        post 'projects/:id/create-list', to: 'projects#create_list', as: 'project_create_list'
 
         # Organization collections
         get 'organizations/new', to: 'organization_collections#new', as: 'new_organization'

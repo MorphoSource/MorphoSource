@@ -9,6 +9,11 @@ module Morphosource
 
         self.presenter_class = Morphosource::Collections::ProjectPresenter
 
+        def create_list
+          byebug
+          redirect_to project_edit_path(@collection)
+        end
+
         private
 
           def collection_type

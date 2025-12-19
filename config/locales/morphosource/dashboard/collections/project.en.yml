@@ -7,6 +7,8 @@ en:
             title: Projects
           edit:
             title: Details
+            fork_project:
+              title: Create Media List
           new:
             title: New Project
           members:

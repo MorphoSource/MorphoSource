@@ -13,6 +13,9 @@ module Morphosource
       property :doi, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/DOI") do |index|
         index.as :stored_searchable, :symbol
       end
+      property :source_collection_ids, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/sourceCollectionIDs") do |index|
+        index.as :stored_searchable
+      end
     end
   end
 end

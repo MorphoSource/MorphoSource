@@ -6,9 +6,13 @@ en:
           index:
             title: Projects
           edit:
-            title: Details
             fork_project:
+              button: Create media list from this project
+              confirm: Are you sure you want to create a media list from this project?
+              error: "There was an error forking the project to a media list: %{error_message}"
+              notice: New media list successfully created from project. Media are being copied in the background.
               title: Create Media List
+            title: Details
           new:
             title: New Project
           members:

@@ -107,11 +107,18 @@ module Morphosource
         # Skip empty rows
         next if data_row.all? { |c| c.nil? || c.value.to_s.strip.empty? }
 
-        device_id = pad_id(xlsx_file.cell(row_index, 86))
+        row_attributes = build_row_attributes(headers, data_row)
+        parent_ms_id = row_attributes[:"media.parent_ms_id"]&.first
+        # if parent_ms_id is present, get the device id from the parent media
+        if parent_ms_id.present? && (parent_media_solr = SolrDocument.find(pad_id(parent_ms_id))).present?
+          device_id = parent_media_solr["media_device_id_ssim"]&.first
+        else
+          device_id = pad_id(xlsx_file.cell(row_index, 86))
+        end
         organization_id = pad_id(xlsx_file.cell(row_index, 88))
         combo_key = [organization_id, device_id]
 
-        grouped_rows[combo_key] << build_row_attributes(headers, data_row)
+        grouped_rows[combo_key] << row_attributes
         row_index += 1
       end
 

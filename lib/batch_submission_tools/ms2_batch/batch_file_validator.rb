@@ -425,7 +425,6 @@ module BatchSubmissionTools
           if val.present?
             if valid_modalities.ignore_case_include?(val)
               val = valid_modalities.ignore_case_included_value(val)
-
               if !device_for_row(current_row).present?
                 error_msg = "experimental.device_modality: Device #{cell_value(current_row, field_column("experimental.device_id"))} not found, can not evaluate device modality."
               elsif !device_for_row(current_row).modality.map(&:upcase).include?(val.upcase)
@@ -801,9 +800,26 @@ module BatchSubmissionTools
         end
       end
 
+      # if parent media ID is specified for the row, return SolrDocument for parent media, else return nil
+      def parent_media_for_row(row_num)
+        if (parent_ms_id = cell_value(row_num, field_column("media.parent_ms_id"))).present?
+          if (parent_media_solr = SolrDocument.find(pad(parent_ms_id))).present?
+            return parent_media_solr
+          end 
+        end
+        return nil
+      end
+
       # For experimental multi-device multi-org sheets, get Device for row or return nil if not present
       def device_for_row(row_num)
-        device_id = pad(cell_value(row_num, field_column("experimental.device_id")))
+        # if parent media is present, get device from parent media
+        # otherwise, get device from experimental.device_id if present
+        if parent_media_for_row(row_num).present?
+          device_id = parent_media_for_row(row_num)["media_device_id_ssim"]&.first
+        else
+          device_id = pad(cell_value(row_num, field_column("experimental.device_id")))
+        end
+
         return nil if !device_id.present?
 
         if device_cache[device_id].present?
@@ -816,7 +832,15 @@ module BatchSubmissionTools
 
       # Return file-level modality or, for experimental multi-device multi-org files, return row-level modality
       def modality_for_row(row_num)
-        modality || cell_value(row_num, field_column("experimental.device_modality"))
+        return modality if modality.present?  # return modality from batch submission form 
+
+        # return device modality if device has only one modality
+        # otherwise return cell value from experimental.device_modality
+        if device_for_row(row_num).present? && device_for_row(row_num).modality.count == 1
+          return device_for_row(row_num).modality.first
+        else
+          return cell_value(row_num, field_column("experimental.device_modality"))
+        end        
       end
 
       # Return file-level organization or, for experimental multi-device multi-org files, return row-level organization

@@ -8,7 +8,7 @@ en:
           logo:
             description: An image to be displayed next to the %{collection_type} name and in search results. For best results, upload an image (JPG, GIF or PNG) that is 40 pixels in height. Larger images will be resized to 40 pixels in height.
           banner:
-            description: An image to be displayed at the top of the %{collection_type} page. For best results, upload an image (JPG, GIF or PNG) that is at least 120 pixels tall and 1200 pixels wide.
+            description: An image to be displayed at the top of the %{collection_type} page. For best results, upload an image (JPG, GIF or PNG) that is 120 pixels tall and 1170 pixels wide.
         form_members_table:
           managers:
             title: 'Managers'

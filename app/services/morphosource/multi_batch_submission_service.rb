@@ -115,7 +115,15 @@ module Morphosource
         else
           device_id = pad_id(xlsx_file.cell(row_index, 86))
         end
-        organization_id = pad_id(xlsx_file.cell(row_index, 88))
+        # if parent media is found above, get organization from parent media as well
+        if parent_media_solr.present?
+byebug
+          organization_id = parent_media_solr["media_organization_id_ssim"]&.first
+        #elsif get from bso
+        #smc
+        else
+          organization_id = pad_id(xlsx_file.cell(row_index, 88))
+        end
         combo_key = [organization_id, device_id]
 
         grouped_rows[combo_key] << row_attributes
@@ -191,7 +199,7 @@ module Morphosource
     def manifest_arguments(org_device_group, media_rows)
       media_path = user_share_full_path
       raise "Media path directory not found for #{user.user_key}" if media_path == "NOT_FOUND"
-
+byebug
       organization_id = org_device_group[:organization_id]
       device_id = org_device_group[:device_id]
       modality = media_rows.first&.dig(:experimental, :device_modality)&.first

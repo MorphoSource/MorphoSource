@@ -428,7 +428,7 @@ module BatchSubmissionTools
               if !device_for_row(current_row).present?
                 error_msg = "experimental.device_modality: Device #{cell_value(current_row, field_column("experimental.device_id"))} not found, can not evaluate device modality."
               elsif !device_for_row(current_row).modality.map(&:upcase).include?(val.upcase)
-                error_msg = "experimental.device_modality: Does not match the modality from the selected device: #{device_for_row(current_row).modality.join(', ')}"
+                error_msg = "experimental.device_modality: #{val} does not match the modality of the device (from device ID or from device of parent media): #{device_for_row(current_row).modality.join(', ')}"
               end
 
               media_type_for_row = valid_media_types.ignore_case_included_value(cell_value(current_row, field_column("media.media_type")))
@@ -845,7 +845,23 @@ module BatchSubmissionTools
 
       # Return file-level organization or, for experimental multi-device multi-org files, return row-level organization
       def organization_for_row(row_num)
-        org_id = organization_id || pad(cell_value(row_num, field_column("experimental.organization_id")))
+        if organization_id.present? # return organization from batch submission form
+          org_id = organization_id
+        else
+          # if parent media is present, get organization from parent media
+          # or if biological specimen is present, get organization from biological specimen
+          # otherwise, get organization from experimental.organization_id 
+          if parent_media_for_row(row_num).present?
+            org_id = parent_media_for_row(row_num)["media_organization_id_ssim"]&.first 
+  byebug
+#          elsif (bso_ms_id = pad(cell_value(row_num, field_column("biological_specimen.ms_id")))).present?
+#            bso = BiologicalSpecimen.find(bso_ms_id)
+#            org_id = bso.organization_id&.first
+          else
+            org_id = pad(cell_value(row_num, field_column("experimental.organization_id")))
+          end
+        end
+
         return nil if !org_id.present?
 
         if organization_cache[org_id].present?

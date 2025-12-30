@@ -323,6 +323,16 @@ module BatchSubmissionTools
               unless error_msg.present?
                 @parent_media_id = val
               end
+              ignored_experimental_values = []
+              if cell_value(current_row, field_column("experimental.organization_id")).present?
+                ignored_experimental_values << "experimental.organization_id"
+              end
+              if cell_value(current_row, field_column("experimental.device_id")).present?
+                ignored_experimental_values << "experimental.device_id"
+              end
+              if ignored_experimental_values.present?
+                warn_msg += "The following fields are ignored since media.parent_ms_id exists: " + ignored_experimental_values.join(', ')
+              end
             end
           end
         when "media.keyword"
@@ -367,6 +377,9 @@ module BatchSubmissionTools
             end
             if cell_value(current_row, field_column("biological_specimen.catalog_number")).present?
               ignored_values << "biological_specimen.catalog_number"
+            end
+            if cell_value(current_row, field_column("experimental.organization_id")).present?
+              ignored_values << "experimental.organization_id"
             end
             if ignored_values.present?
               warn_msg += "The following fields are ignored since biological_specimen.ms_id exists: " + ignored_values.join(', ')

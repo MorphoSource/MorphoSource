@@ -108,22 +108,27 @@ module Morphosource
         next if data_row.all? { |c| c.nil? || c.value.to_s.strip.empty? }
 
         row_attributes = build_row_attributes(headers, data_row)
-        parent_ms_id = row_attributes[:"media.parent_ms_id"]&.first
+        parent_ms_id = pad_id(row_attributes[:"media.parent_ms_id"]&.first)
+        bso_ms_id = pad_id(row_attributes[:"biological_specimen.ms_id"]&.first) 
         # if parent_ms_id is present, get the device id from the parent media
-        if parent_ms_id.present? && (parent_media_solr = SolrDocument.find(pad_id(parent_ms_id))).present?
+        if parent_ms_id.present? && (parent_media_solr = SolrDocument.find(parent_ms_id)).present?
           device_id = parent_media_solr["media_device_id_ssim"]&.first
         else
           device_id = pad_id(xlsx_file.cell(row_index, 86))
         end
         # if parent media is found above, get organization from parent media as well
         if parent_media_solr.present?
-byebug
           organization_id = parent_media_solr["media_organization_id_ssim"]&.first
-        #elsif get from bso
-        #smc
+        # else if biological_specimen.ms_id is present, get organization from specimen
+        elsif bso_ms_id.present? && (specimen_solr = SolrDocument.find(bso_ms_id)).present?
+          organization_id = specimen_solr["organization_id_ssim"]&.first
         else
           organization_id = pad_id(xlsx_file.cell(row_index, 88))
         end
+
+        raise "Organization ID missing for row #{row_index}" unless organization_id.present?
+        raise "Device ID missing for row #{row_index}" unless device_id.present?
+        
         combo_key = [organization_id, device_id]
 
         grouped_rows[combo_key] << row_attributes
@@ -199,7 +204,7 @@ byebug
     def manifest_arguments(org_device_group, media_rows)
       media_path = user_share_full_path
       raise "Media path directory not found for #{user.user_key}" if media_path == "NOT_FOUND"
-byebug
+
       organization_id = org_device_group[:organization_id]
       device_id = org_device_group[:device_id]
       modality = media_rows.first&.dig(:experimental, :device_modality)&.first

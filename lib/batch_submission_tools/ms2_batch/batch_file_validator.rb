@@ -810,6 +810,16 @@ module BatchSubmissionTools
         return nil
       end
 
+      # if specimen ID is specified for the row, return SolrDocument for the specimen, else return nil
+      def specimen_for_row(row_num)
+        if (bso_ms_id = pad(cell_value(row_num, field_column("biological_specimen.ms_id")))).present?
+          if (specimen_solr = SolrDocument.find(pad(bso_ms_id))).present?
+            return specimen_solr
+          end
+        end
+        return nil
+      end
+
       # For experimental multi-device multi-org sheets, get Device for row or return nil if not present
       def device_for_row(row_num)
         # if parent media is present, get device from parent media
@@ -853,10 +863,8 @@ module BatchSubmissionTools
           # otherwise, get organization from experimental.organization_id 
           if parent_media_for_row(row_num).present?
             org_id = parent_media_for_row(row_num)["media_organization_id_ssim"]&.first 
-  byebug
-#          elsif (bso_ms_id = pad(cell_value(row_num, field_column("biological_specimen.ms_id")))).present?
-#            bso = BiologicalSpecimen.find(bso_ms_id)
-#            org_id = bso.organization_id&.first
+          elsif specimen_for_row(row_num).present?
+            org_id = specimen_for_row(row_num)["organization_id_ssim"]&.first
           else
             org_id = pad(cell_value(row_num, field_column("experimental.organization_id")))
           end

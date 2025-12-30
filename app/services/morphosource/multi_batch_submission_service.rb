@@ -210,7 +210,13 @@ module Morphosource
 
       organization_id = org_device_group[:organization_id]
       device_id = org_device_group[:device_id]
-      modality = media_rows.first&.dig(:experimental, :device_modality)&.first
+      device = Device.where(id: device_id).first
+      if device.modality.count == 1
+        # override modality from device if only one modality
+        modality = device.modality.first.to_s
+      else
+        modality = media_rows.first&.dig(:experimental, :device_modality)&.first
+      end
       ownership_fields = media_ownership_fields(organization_id)
       org_media_transfer = organization_media_transfer_for(organization_id)
 

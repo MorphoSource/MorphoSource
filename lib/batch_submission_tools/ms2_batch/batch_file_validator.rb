@@ -440,6 +440,8 @@ module BatchSubmissionTools
               val = valid_modalities.ignore_case_included_value(val)
               if !device_for_row(current_row).present?
                 error_msg = "experimental.device_modality: Device #{cell_value(current_row, field_column("experimental.device_id"))} not found, can not evaluate device modality."
+              elsif device_for_row(current_row).modality.count == 1
+                warn_msg += "experimental.device_modality will be ignored since device has a single modality #{device_for_row(current_row).modality.first} and will be used."
               elsif !device_for_row(current_row).modality.map(&:upcase).include?(val.upcase)
                 error_msg = "experimental.device_modality: #{val} does not match the modality of the device (from device ID or from device of parent media): #{device_for_row(current_row).modality.join(', ')}"
               end

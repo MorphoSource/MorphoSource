@@ -1,5 +1,5 @@
 module FreyjaWithWings
-  class Persister < Freyja::Persister
+  class Persister < ::Freyja::Persister
     # Generic Valkyrie models that signal we are actually looking at an AF work
     AF_RESOURCES = ["Hyrax::PcdmCollection", "Hyrax::Work", "CollectionResource"]
 

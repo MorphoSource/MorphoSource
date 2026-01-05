@@ -211,7 +211,7 @@ module Morphosource
 
     def media_ownership_fields(org_id)
       # Prefer organization settings, then caller-provided ownership_options for that organization, then fall back to defaults.
-      org = OrganizationCollection.find(org_id)
+      org = OrganizationCollection.exists?(org_id) ? OrganizationCollection.find(org_id) : Organization.find(org_id)
       org_fields = {
         "visibility" => Array(org.download_permission).first,
         "download_reviewer" => Array(org.download_reviewer),

@@ -1,6 +1,9 @@
 # frozen_string_literal: true
 # rubocop:disable Metrics/BlockLength
 
+require 'freyja_with_wings/metadata_adapter'
+require 'freyja_with_wings/persister'
+
 # Freyja setup adapted from Hyrax dassie and thereby from hyku
 if Hyrax.config.valkyrie_transition?
   Rails.application.config.after_initialize do

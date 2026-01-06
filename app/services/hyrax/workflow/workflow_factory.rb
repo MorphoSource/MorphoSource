@@ -81,7 +81,7 @@ module Hyrax
       # @return [Sipity::Workflow]
       # @raise [Sipity::StateError]
       def workflow_for(work)
-        Sipity::Workflow.find_active_workflow_for(admin_set_id: work.try(:admin_set_id))
+        ::Sipity::Workflow.find_active_workflow_for(admin_set_id: work.try(:admin_set_id))
       end
     end
   end

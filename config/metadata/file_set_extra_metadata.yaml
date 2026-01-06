@@ -1,0 +1,47 @@
+# Simple yaml config-driven schema which is used to define model attributes,
+# index key names, and form properties.
+#
+# Attributes must have a type but all other configuration options are optional.
+# Please note: If using Valkyrie's Fedora Metadata Adapter, predicates for attributes
+# must be placed here.
+#
+# attributes:
+#   attribute_name:
+#     type: string
+#     multiple: false
+#     index_keys:
+#       - "attribute_name_sim"
+#     form:
+#       required: true
+#       primary: true
+#       multiple: false
+#
+# @see config/metadata/basic_metadata.yaml for an example configuration
+#
+
+---
+attributes:
+  accessibility:
+    type: string
+    multiple: true
+    index_keys:
+     - "accessibility_tesim"
+     - "accessibility_ssim"
+  mime_type_of_remote:
+    type: string
+    multiple: false
+    index_keys:
+     - "mime_type_of_remote_tesim"
+     - "mime_type_of_remote_ssim"
+  digest:
+    type: string
+    multiple: false
+    index_keys:
+     - "digest_tesim"
+     - "digest_ssim"
+  e_tag:
+    type: string
+    multiple: false
+    index_keys:
+     - "e_tag_tesim"
+     - "e_tag_ssim"

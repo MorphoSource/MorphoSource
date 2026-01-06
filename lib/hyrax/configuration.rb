@@ -500,6 +500,113 @@ module Hyrax
       @microdata_default_type ||= 'http://schema.org/CreativeWork'
     end
 
+    # @!endgroup
+    # @!group Files
+
+    ##
+    # @!attribute [rw] characterization_service
+    #   @return [#run] the service to use for charactaerization for Valkyrie
+    #     objects
+    #   @ see Hyrax::Characterization::ValkyrieCharacterizationService
+    attr_writer :characterization_service
+    def characterization_service
+      @characterization_service ||=
+        Hyrax::Characterization::ValkyrieCharacterizationService
+    end
+
+    ##
+    # Options to pass to the characterization service
+    # @!attribute [rw] characterization_options
+    #  @return [Hash] of options like {ch12n_tool: :fits_servlet}
+    attr_writer :characterization_options
+    def characterization_options
+      @characterization_options ||= { ch12n_tool: ENV.fetch('CH12N_TOOL', 'fits').to_sym }
+    end
+
+    ##
+    # @!attribute [w] characterization_proxy
+    #   Which FileSet file to use for mime type resolution
+    #   @ see Hyrax::FileSetTypeService
+    attr_writer :characterization_proxy
+    def characterization_proxy
+      @characterization_proxy ||= :original_file
+    end
+
+    # Override characterization runner
+    attr_accessor :characterization_runner
+
+    def mime_types_map # rubocop:disable Metrics/MethodLength
+      {
+        audio_mime_types: [
+          'audio/mp3',
+          'audio/mpeg',
+          'audio/wav',
+          'audio/x-wave',
+          'audio/x-wav',
+          'audio/ogg'
+        ],
+        image_mime_types: [
+          'image/png',
+          'image/jpeg',
+          'image/jpg',
+          'image/jp2',
+          'image/bmp',
+          'image/gif',
+          'image/tiff'
+        ],
+        office_mime_types: [
+          'text/rtf',
+          'application/msword',
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+          'application/vnd.oasis.opendocument.text',
+          'application/vnd.ms-excel',
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          'application/vnd.ms-powerpoint',
+          'application/vnd.openxmlformats-officedocument.presentationml.presentation'
+        ],
+        pdf_mime_types: ['application/pdf'],
+        video_mime_types: [
+          'video/mpeg',
+          'video/mp4',
+          'video/webm',
+          'video/x-msvideo',
+          'video/avi',
+          'video/quicktime',
+          'application/mxf'
+        ]
+      }
+    end
+
+    # First see if we can get them from the FileSet model. If not, use
+    # configuration.
+    # @param [Symbol] type as listed in mime_types_map keys, aligned with
+    # FileSet method names for backwards compatibility.
+    def lookup_mimes(type)
+      vals = "FileSet".safe_constantize.try(type)
+      return vals if vals.is_a?(Array)
+      mime_types_map[type]
+    end
+
+    attr_writer :derivative_mime_type_mappings
+
+    ##
+    # Maps mimetypes to create_*_derivatives methods
+    #
+    # @note these used to be set by +Hydra::Works::MimeTypes+ methods injected
+    #   into `FileSet`. for backwards compatibility, those are used as defaults
+    #   if present, but since `FileSet` is an application side model (and slated
+    #   to be removed) we shouldn't count on it providing these methods.
+    #
+    # @see Hyrax::VaDerivativeService
+    def derivative_mime_type_mappings
+      @derivative_mime_type_mappings ||=
+        { audio: lookup_mimes(:audio_mime_types),
+          image: lookup_mimes(:image_mime_types),
+          office: lookup_mimes(:office_mime_types),
+          pdf: lookup_mimes(:pdf_mime_types),
+          video: lookup_mimes(:video_mime_types) }
+    end
+
     attr_writer :derivative_services
     # The registered candidate derivative services.  In the array, the first `valid?` candidate will
     # handle the derivative generation.

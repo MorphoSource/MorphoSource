@@ -1,0 +1,104 @@
+---
+attributes:
+  point_count:
+    type: string
+    multiple: true
+    index_keys:
+      - "point_count_tesim"
+    predicate: https://www.morphosource.org/terms/pointCount
+  face_count:
+    type: string
+    multiple: true
+    index_keys:
+      - "face_count_tesim"
+    predicate: https://www.morphosource.org/terms/faceCount
+  edges_per_face:
+    type: string
+    multiple: true
+    index_keys:
+      - "edges_per_face_tesim"
+    predicate: https://www.morphosource.org/terms/edgesPerFace
+  bounding_box_x:
+    type: string
+    multiple: true
+    index_keys:
+      - "bounding_box_x_tesim"
+    predicate: https://www.morphosource.org/terms/boundingBoxX
+  bounding_box_y:
+    type: string
+    multiple: true
+    index_keys:
+      - "bounding_box_y_tesim"
+    predicate: https://www.morphosource.org/terms/boundingBoxY
+  bounding_box_z:
+    type: string
+    multiple: true
+    index_keys:
+      - "bounding_box_z_tesim"
+    predicate: https://www.morphosource.org/terms/boundingBoxZ
+  color_format:
+    type: string
+    multiple: true
+    index_keys:
+      - "color_format_tesim"
+    predicate: https://www.morphosource.org/terms/colorFormat
+  normals_format:
+    type: string
+    multiple: true
+    index_keys:
+      - "normals_format_tesim"
+    predicate: https://www.morphosource.org/terms/normalsFormat
+  has_uv_space:
+    type: string
+    multiple: true
+    index_keys:
+      - "has_uv_space_tesim"
+    predicate: https://www.morphosource.org/terms/hasUVSpace
+  vertex_color:
+    type: string
+    multiple: true
+    index_keys:
+      - "vertex_color_tesim"
+    predicate: https://www.morphosource.org/terms/vertexColor
+  centroid_x:
+    type: string
+    multiple: true
+    index_keys:
+      - "centroid_x_tesim"
+    predicate: https://www.morphosource.org/terms/centroidX
+  centroid_y:
+    type: string
+    multiple: true
+    index_keys:
+      - "centroid_y_tesim"
+    predicate: https://www.morphosource.org/terms/centroidY
+  centroid_z:
+    type: string
+    multiple: true
+    index_keys:
+      - "centroid_z_tesim"
+    predicate: https://www.morphosource.org/terms/centroidZ
+  centroid_method:
+    type: string
+    multiple: true
+    index_keys:
+      - "centroid_method_tesim"
+    predicate: https://www.morphosource.org/terms/centroidMethod
+  blender_version:
+    type: string
+    multiple: true
+    index_keys:
+      - "blender_version_tesim"
+    predicate: https://www.morphosource.org/terms/blenderVersion
+  gltf_inspect_version:
+    type: string
+    multiple: true
+    index_keys:
+      - "gltf_inspect_version_tesim"
+    predicate: https://www.morphosource.org/terms/gltfInspectVersion
+  pymeshlab_version:
+    type: string
+    multiple: true
+    index_keys:
+      - "pymeshlab_version_tesim"
+    predicate: https://www.morphosource.org/terms/pymeshlabVersion

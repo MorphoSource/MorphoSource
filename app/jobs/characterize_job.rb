@@ -54,8 +54,9 @@ class CharacterizeJob < HeavyJob
       file_set.parent&.in_collections&.each(&:update_index)
       Morphosource::Works::FileSetCharacterizationParentUpdateService.run(file_set)
     end
-    
-    CreateDerivativesJob.perform_later(file_set, file_id, filepath)
+
+# todo: change perform_now to perform_later once we have the new characterization service working for meshes and archives
+    CreateDerivativesJob.perform_now(file_set, file_id, filepath)
   end
 
   def blender_options

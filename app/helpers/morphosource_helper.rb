@@ -2,6 +2,19 @@ module MorphosourceHelper
 
   include ActionView::Helpers::UrlHelper
   include Hyrax::Renderers
+  DEEPBLUE_HOST = "deepblue.lib.umich.edu".freeze
+
+  def self.deepblue_url?(url)
+    uri = URI.parse(url.to_s)
+    uri.host == DEEPBLUE_HOST
+  rescue URI::InvalidURIError
+    false
+  end
+
+  def self.deepblue_headers_for(url)
+    return {} unless deepblue_url?(url)
+    { "User-Agent" => "http.rb/#{HTTP::VERSION} MorphoSource/5" }
+  end
 
   class RemoteFileInfo
     attr_accessor :message, :http_code, :file_ext, :status, :content_length, :e_tag
@@ -14,7 +27,12 @@ module MorphosourceHelper
       @content_length = ""
       @e_tag = ""
       begin
-        head = RestClient::Request.execute(method: :head, url: url, timeout: 15)
+        head = RestClient::Request.execute(
+          method: :head,
+          url: url,
+          timeout: 15,
+          headers: MorphosourceHelper.deepblue_headers_for(url)
+        )
         @http_code = head.code
         @file_ext = file_extension_from_content_type(head.headers[:content_type])
         @status = "success"

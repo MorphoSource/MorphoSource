@@ -18,8 +18,7 @@ class PrepareCharacterizeJob < Hyrax::ApplicationJob
 
     if work.is_remote_backed?
       if path_hint && File.exist?(path_hint)
-# todo: change perform_now to perform_later once we have the new characterization service working for meshes and archives      
-        CharacterizeJob.perform_now(work, work.original_file.id, path_hint)
+        CharacterizeJob.perform_later(work, work.original_file.id, path_hint)
       else
         user = User.find_by_user_key(work.depositor)
         operation =  Hyrax::Operation.create!(user: user, operation_type: "Attach Remote File")

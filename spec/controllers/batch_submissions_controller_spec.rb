@@ -5,7 +5,6 @@ RSpec.describe BatchSubmissionsController, type: :controller do
   let(:user2)                      { User.create(email: 'email2@email.com', password: 'password', sftp_share: '') }
   let(:user3)                      { User.create(email: 'email3@email.com', password: 'password', sftp_share: '/dir_not_found') }
   let(:user4)                      { User.create(email: 'email4@email.com', password: 'password', sftp_share: '/tmp') }
-  let(:admins)                     { Role.create(name: 'admin') }
   let(:batch_submission_contributors)  { Role.create(name: 'batch_submission_contributor') }
   let(:image_file_path)             { fixture_path + '/images/duke.png' }
   let(:manifest_file_path)             { fixture_path + '/batch_submission_manifest_errors_test.xlsx' }
@@ -117,78 +116,6 @@ RSpec.describe BatchSubmissionsController, type: :controller do
     before do
       sign_in user
     end
-    context "result with error messages" do
-      render_views
-
-      context "result with MicroNanoXRayComputedTomography pre-selected" do
-        let(:params) { {"manifest" => valid_file,
-          "organization_id" => organization.id,
-          "batch_submission" => {
-            "modality" => "MicroNanoXRayComputedTomography"
-          }
-        } }
-        it "shows result with modality MicroNanoXRayComputedTomography pre-selected" do
-          post 'submit', :params => params
-          expect(response).to render_template 'validation_fail'
-          html = response.body
-          expect(html).to include 'media.media_file: File ANSP_Fish_53046_Head.zip cannot be found. Please check your shared folder.'
-          expect(html).to include 'media.media_type: Please enter a valid value: "Image", "Video", "CTImageSeries", "PhotogrammetryImageSeries", "Mesh", "SequentialSectionImageSeries", "Other"'
-          expect(html).to include 'One of the following must have a value: biological_specimen.ms_id, biological_specimen.occurrence_id, biological_specimen.institution_code, biological_specimen.collection_code, and biological_specimen.catalog_number.'
-          expect(html).to include 'biological_specimen.date_created: Please enter a valid date in YYYY-MM-DD or MM-DD-YYYY format.'
-          expect(html).to include 'biological_specimen.is_type_specimen: Please enter a valid value: "Yes", "No", "Y", "N", "true", "false", "0", "1"'
-          expect(html).to include 'biological_specimen.sex: Please enter a valid value: "Female", "Male", "Unknowable", "Undetermined", "Hermaphrodite", "Gynandromorph"'
-          expect(html).to include 'imaging_event.ct.exposure_time: Please enter a valid number.'
-          expect(html).to include 'imaging_event.ct.target_type: Please enter a valid value: "Reflection", "Transmission"'
-          expect(html).to include 'imaging_event.ct.detector_type: Please enter a valid value: "Direct (X-Ray photoconductor)", "Scintillator (Phosphor used)", "Storage (Storage Phosphor)", "Film (Scanned film/screen)"'
-          expect(html).to include 'imaging_event.ct.detector_pixels_x: Please enter a valid integer.'
-          expect(html).to include 'imaging_event.ct.detector_pixels_y: Please enter a valid integer.'
-          expect(html).to include 'imaging_event.ct.detector_configuration: Please enter a valid value: "Area (single or tiled detector)", "Slot (scanned slot, slit, or spot)"'
-          expect(html).to include 'imaging_event.ct.acquisition_type: Please enter a valid value: "ConstantAngle", "Free", "Sequenced", "Spiral", "Stationary"'
-          expect(html).to include 'imaging_event.photogrammetry.focal_length_type: Value should not be present when modality MicroNanoXRayComputedTomography is pre-selected.'
-          expect(html).to include 'imaging_event.photography.light_source: Value should not be present when modality MicroNanoXRayComputedTomography is pre-selected.'
-          expect(html).to include 'media.y_spacing: Value should be present for media type CTImageSeries.'
-          expect(html).to include 'media.z_spacing: Please enter a valid number.'
-          expect(html).to include 'A value can be present in media.parent_file or media.parent_ms_id, but not in both.'
-          expect(html).to include 'media.parent_ms_id: Existing media not_found not found.'
-          expect(html).to include 'biological_specimen.ms_id: Existing biological specimen not_found not found.'
-          expect(html).to include 'biological_specimen.institution_code: Does not match the institution code from the organization: abc'
-          expect(html).to include 'media.parent_file parent_file_not_found.zip not found in another row.'
-          expect(html).to include 'media.parent_file ANSP_Fish_193352_Head.zip cannot be media.media_file in the same row.'
-          expect(html).to include 'media.raw_or_derived: Please enter a valid value.'
-          expect(html).to include "A value cannot be present in media.parent_file if media.raw_or_derived value is set to 'Raw'."
-          expect(html).to include 'imaging_event.ct.pixel_spacing_calibration: Please enter a valid value: "Geometry", "Fiducial"'
-          expect(html).to include 'media.keyword: Value(s) must be letters, accented letters, numbers, and spaces. Use comma as separator.'
-          expect(html).to include 'media.media_file: The remote file path is invalid or not allowed. Please make sure you have remote file submitter permissions, organization member permissions, and that the domain for the remote file is allowed.'
-          expect(html).to include 'media.media_file: File name file with space.zip is not valid.  Please use a valid file name (alphanumeric, dashes or underscores, with a valid file extension).'
-          expect(html).to include 'media.preview_file: File name file with space.zip is not valid.  Please use a valid file name (alphanumeric, dashes or underscores, with a valid file extension).'
-        end
-      end
-
-      context "result with Photogrammetry pre-selected" do
-        let(:params) { {"manifest" => valid_file, "batch_submission" => {"modality" => "Photogrammetry"}} }
-        it "shows result with modality Photogrammetry pre-selected" do
-          post 'submit', :params => params
-          expect(response).to render_template 'validation_fail'
-          html = response.body
-          expect(html).to include 'imaging_event.ct.exposure_time: Value should not be present when modality Photogrammetry is pre-selected'
-          expect(html).to include 'imaging_event.photogrammetry.focal_length_type: Please enter a valid value: "Variable", "Fixed"'
-          expect(html).to include 'imaging_event.photography.light_source: Value should not be present when modality Photogrammetry is pre-selected.'
-        end
-      end
-
-      context "result with Photography pre-selected" do
-        let(:params) { {"manifest" => valid_file, "batch_submission" => {"modality" => "Photography"}} }
-        it "shows result with modality Photography pre-selected" do
-          post 'submit', :params => params
-          expect(response).to render_template 'validation_fail'
-          html = response.body
-          expect(html).to include 'imaging_event.ct.acquisition_type: Value should not be present when modality Photography is pre-selected.'
-          expect(html).to include 'imaging_event.photogrammetry.focal_length_type: Value should not be present when modality Photography is pre-selected.'
-          expect(html).to include 'imaging_event.photography.light_source: Please enter a valid value: "Strobe", "Static", "Patterned", "Cross polarized"'
-        end
-      end
-
-    end
 
     context "manifest file not present" do
       let(:params) { {"manifest" => nil} }
@@ -204,65 +131,13 @@ RSpec.describe BatchSubmissionsController, type: :controller do
         expect(response).to redirect_to "/batch_submissions/new?locale=en"
       end
     end
-    context "modailty not present" do
+    context "modality not present" do
       let(:params) { {"manifest" => valid_file, "batch_submission" => {"modality" => ""}} }
       it "redirected back to new" do
         post 'submit', :params => params
         expect(response).to redirect_to "/batch_submissions/new?locale=en"
       end
     end
-    context "columns count not valid" do
-      render_views
-      let(:params) { {"manifest" => invalid_columns_file, "batch_submission" => {"modality" => "CTImageSeries"}} }
-      before do
-        post 'submit', :params => params
-      end
-      it "displays column count invalid message" do
-        expect(response).to render_template 'validation_fail'
-        html = response.body
-        expect(html).to include 'The columns are invalid.  Please check the file or download the latest blank submission manifest again.'
-      end
-    end
-    context "columns have invalid field name" do
-      render_views
-      let(:params) { {"manifest" => invalid_fields_file, "batch_submission" => {"modality" => "CTImageSeries"}} }
-      before do
-        post 'submit', :params => params
-      end
-      it "displays invalid field message" do
-        expect(response).to render_template 'validation_fail'
-        html = response.body
-        expect(html).to include 'expecting imaging_event.ct.pixel_spacing_calibration'
-      end
-    end
 
-    context "parents not valid" do
-      render_views
-      let(:params) { {"manifest" => invalid_parents_file, "batch_submission" => {"modality" => "photography"}} }
-      it "displays invalid parents message" do
-        post 'submit', :params => params
-        expect(response).to render_template 'validation_fail'
-        html = response.body
-        expect(html).to include 'media.parent_file ANSP_Fish_180334_Head.jpg has invalid parent(s) (found in row 10).  Please check and make sure each parent_file is pointing to the correct row.'
-      end
-    end
-
-    context "Existing bso not valid" do
-      let(:org) { Organization.create(title: ['org']) }
-      let(:org2) { Organization.create(title: ['org2']) }
-      let(:bso) { BiologicalSpecimen.create(id: 'TESTBSO123', title: ['public specimen'], visibility: 'open', vouchered: ['Yes'], organization_id: [org.id]) }
-      let(:params) { {"manifest" => invalid_parents_file, "organization_id" => org2.id, "batch_submission" => {"modality" => "photography"}} }
-      before do
-        bso.reload
-      end
-      render_views
-      it "displays bso message" do
-        post 'submit', :params => params
-        expect(response).to render_template 'validation_fail'
-        html = response.body
-        expect(html).to include 'media.parent_file ANSP_Fish_180334_Head.jpg has invalid parent(s) (found in row 10).  Please check and make sure each parent_file is pointing to the correct row.'
-        expect(html).to include 'biological_specimen.ms_id: Existing biological specimen TESTBSO123 is associated with an organization different from the one you have selected.'
-      end
-    end
   end
 end

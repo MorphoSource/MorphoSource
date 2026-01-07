@@ -7,6 +7,10 @@ class ApplicationContainerOverrides
     ops.register 'assign_id' do
       Morphosource::Transactions::Taxonomy::Steps::AssignID.new
     end
+
+    ops.register 'save' do
+      Morphosource::Transactions::Steps::Save.new
+    end
   end
 
   namespace 'taxonomy_change_set' do |ops|

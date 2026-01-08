@@ -43,8 +43,9 @@ module Morphosource
           Success(saved)
         end
 
+        private
+
         def publish_changes(resource:, user:, new: false, new_collections: [], skip_index_related_works: false)
-          resource.index
           if resource.collection?
             @publisher.publish('collection.metadata.updated', collection: resource, user: user, skip_index_related_works: skip_index_related_works)
           else

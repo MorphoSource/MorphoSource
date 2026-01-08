@@ -22,7 +22,7 @@ module Morphosource
       # @param params [hash] The contextual parameters for the action; ApplicationController#params
       # @param work_attributes_key [Symbol] the name of the key within the params that contains
       #                                     the work's attributes. Optional, will try to use model
-      def initialize(work:, params:, work_attributes_key: nil)
+      def initialize(work:, params:, work_attributes_key: nil, skip_index_related_works: false)
         @work = work
         @params = params
         @work_attributes_key = work_attributes_key
@@ -32,6 +32,7 @@ module Morphosource
         @files = Hyrax::UploadedFile.find(uploaded_file_ids) if uploaded_file_ids.present?
         @permissions_params = params.fetch(:permissions, [])
         @form = Hyrax::FormFactory.new.build(work, nil, nil)
+        form.skip_index_related_works = true if skip_index_related_works
       end
 
       ##

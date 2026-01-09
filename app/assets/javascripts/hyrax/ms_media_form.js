@@ -1,5 +1,5 @@
 /* Media Share tab specific */
-document.addEventListener("share-tab-loaded", function(event) {
+document.addEventListener("share-tab-loaded", function() {
 
   var transferToSelect = $('#proxy_deposit_request_transfer_to');
   transferToSelect.dataManagerSearch(); // returns a list of users & organization collections
@@ -329,7 +329,7 @@ $( document ).ready(function() {
       }
     });
 
-    $('#modal-select-physical-object').on('hidden.bs.modal', function (e) {
+    $('#modal-select-physical-object').on('hidden.bs.modal', function () {
       $('#s2id_imaging_event_find_physical_object').select2("val", "");
     })
 
@@ -374,7 +374,7 @@ $( document ).ready(function() {
         url: "/authorities/search/find_organizations_with_devices?type[]=Organization&id=NA&q=no organization",
         type: 'GET',
         dataType: 'json',
-        complete: function (xhr, status) {
+        complete: function (xhr) {
           var results = $.parseJSON(xhr.responseText);
           console.log(results);
           $('#s2id_find_device_organization').val(null).trigger('change');
@@ -628,8 +628,12 @@ var doSubmitMedia = function(view) {
 
 var remoteFileCheckAndSubmit = function(view=null) {
   try {
-    var url = (new URL($('#media_remote_origin_url').val()));
-    var extension = url.pathname.substring(url.pathname.lastIndexOf('.'));
+    var remote_url = $('#media_remote_origin_url').val();
+    // Initial URL check to avoid invalid characters
+    if (!/^https?:\/\/.+/.test(remote_url)) {
+      throw new Error('Invalid URL format');
+    }
+    var url = (new URL(remote_url));
   } catch (e) {
     $.alert('Please enter a valid Remote Origin URL.');
     return false;
@@ -641,7 +645,7 @@ var remoteFileCheckAndSubmit = function(view=null) {
     url: '/submissions/validate_remote_file_ajax?u=' + encodeURI(url) + '&o=' + $('#associated_organization_id').val(),
     type: 'POST',
     dataType: 'json',
-    complete: function (xhr, status) {
+    complete: function (xhr) {
       var results = $.parseJSON(xhr.responseText);
       console.log("remote file check results: ", results);
       if (results.status == "success") {
@@ -716,7 +720,7 @@ var updatePOandSave = function() {
 }
 
 var setMediaLocalRemoteEvent = function() {
-  $('#tab-local-file-section a').click(function(event) {
+  $('#tab-local-file-section a').click(function() {
     if ($('#media_remote_origin_url').val() != "") {
       $.alert('Please clear the Remote Origin URL if the file is not from a remote location.');
       return false;
@@ -725,7 +729,7 @@ var setMediaLocalRemoteEvent = function() {
     }
   });
 
-  $('#tab-remote-file-section a').click(function(event) {
+  $('#tab-remote-file-section a').click(function() {
     if (justUploaded > 0) {
       $.alert('Please remove the file uploaded from computer or cloud first.');
       return false;
@@ -735,7 +739,7 @@ var setMediaLocalRemoteEvent = function() {
   });
 }
 
-var noFileCheck = function(event) {
+var noFileCheck = function() {
   if (skipNoFileCheck) {
     return true;
   } else if (fileOrigin == "local") {

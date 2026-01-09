@@ -159,6 +159,7 @@ RSpec.describe Morphosource::MultiBatchSubmissionService do
         depositor: nil
       )
 
+      allow(OrganizationCollection).to receive(:exists?).with('000200001').and_return(org)
       allow(OrganizationCollection).to receive(:find).with('000200001').and_return(org)
       allow(service).to receive(:organization_media_transfer_for).and_return(:publication)
 

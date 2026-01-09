@@ -20,20 +20,20 @@ module Morphosource
     def call
       apply_idigbio_update
     end
-  
-    def apply_idigbio_update   
-      if save_work   
+
+    def apply_idigbio_update
+      if save_work
         add_new_taxonomies
         link_taxonomies
       end
       update_metadata_from_idigbio
     end
-  
+
     def add_new_taxonomies
       # add new taxonomy if any
-      taxonomy_params_array.each do |taxon_hash|
+      taxonomy_params_array.each do |taxon_params|
         # wrap it in ActionController::Parameters before passing to Hyrax TaxonomyForm
-        taxon_params = ActionController::Parameters.new(taxon_hash)
+        taxon_params = ActionController::Parameters.new(taxon_params) if taxon_params.is_a?(Hash)
         new_taxon_id = prepare_and_create_taxonomy(taxon_params)
         @taxonomy_id_array << new_taxon_id
         if taxon_params[:canonical]
@@ -50,7 +50,7 @@ module Morphosource
       Hyrax::CurationConcern.actor.create(env)
       return curation_concern.id
     end
-  
+
     def link_taxonomies
       # now link taxonomy (new or existing) to the specimen
       if taxonomy_id_array.present?
@@ -62,7 +62,7 @@ module Morphosource
         @specimen.canonical_taxonomy_will_change! unless old_canonical_taxonomy.include? canonical_taxonomy_id
         @specimen.canonical_taxonomy = (specimen.canonical_taxonomy << canonical_taxonomy_id).uniq
       end
-  
+
       if specimen.taxonomy_id_changed?
         Rails.logger.debug "IDigBioUpdateService: specimen #{specimen.id} : taxonomy_id #{old_taxonomy_id} will be updated to '#{specimen.taxonomy_id.to_a}'"
       end
@@ -70,7 +70,7 @@ module Morphosource
         Rails.logger.debug "IDigBioUpdateService: specimen #{specimen.id} : canonical_taxonomy #{old_canonical_taxonomy} will be updated to '#{specimen.canonical_taxonomy.to_a}'"
       end
     end
-  
+
     def update_metadata_from_idigbio
       # sync specimen metadata
       biospec_model_params.each do |key, value|

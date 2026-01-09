@@ -188,7 +188,7 @@ RUN apt update && \
 
 # Install Python packages
 RUN pip3 install --break-system-packages --no-cache-dir --upgrade pip && \
-  pip3 install --break-system-packages --no-cache-dir numpy Pillow pydicom
+  pip3 install --break-system-packages --no-cache-dir "numpy<2.0.0" Pillow pydicom
 
 # Install Python package pymeshlab, which has an annoying quirk for M1 platforms
 ARG TARGETPLATFORM

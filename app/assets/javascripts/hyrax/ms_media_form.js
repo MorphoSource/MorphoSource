@@ -1,5 +1,5 @@
 /* Media Share tab specific */
-document.addEventListener("share-tab-loaded", function() {
+document.addEventListener("share-tab-loaded", function(event) {
 
   var transferToSelect = $('#proxy_deposit_request_transfer_to');
   transferToSelect.dataManagerSearch(); // returns a list of users & organization collections
@@ -329,7 +329,7 @@ $( document ).ready(function() {
       }
     });
 
-    $('#modal-select-physical-object').on('hidden.bs.modal', function () {
+    $('#modal-select-physical-object').on('hidden.bs.modal', function (e) {
       $('#s2id_imaging_event_find_physical_object').select2("val", "");
     })
 
@@ -374,7 +374,7 @@ $( document ).ready(function() {
         url: "/authorities/search/find_organizations_with_devices?type[]=Organization&id=NA&q=no organization",
         type: 'GET',
         dataType: 'json',
-        complete: function (xhr) {
+        complete: function (xhr, status) {
           var results = $.parseJSON(xhr.responseText);
           console.log(results);
           $('#s2id_find_device_organization').val(null).trigger('change');
@@ -645,7 +645,7 @@ var remoteFileCheckAndSubmit = function(view=null) {
     url: '/submissions/validate_remote_file_ajax?u=' + encodeURI(url) + '&o=' + $('#associated_organization_id').val(),
     type: 'POST',
     dataType: 'json',
-    complete: function (xhr) {
+    complete: function (xhr, status) {
       var results = $.parseJSON(xhr.responseText);
       console.log("remote file check results: ", results);
       if (results.status == "success") {
@@ -720,7 +720,7 @@ var updatePOandSave = function() {
 }
 
 var setMediaLocalRemoteEvent = function() {
-  $('#tab-local-file-section a').click(function() {
+  $('#tab-local-file-section a').click(function(event) {
     if ($('#media_remote_origin_url').val() != "") {
       $.alert('Please clear the Remote Origin URL if the file is not from a remote location.');
       return false;
@@ -729,7 +729,7 @@ var setMediaLocalRemoteEvent = function() {
     }
   });
 
-  $('#tab-remote-file-section a').click(function() {
+  $('#tab-remote-file-section a').click(function(event) {
     if (justUploaded > 0) {
       $.alert('Please remove the file uploaded from computer or cloud first.');
       return false;
@@ -739,7 +739,7 @@ var setMediaLocalRemoteEvent = function() {
   });
 }
 
-var noFileCheck = function() {
+var noFileCheck = function(event) {
   if (skipNoFileCheck) {
     return true;
   } else if (fileOrigin == "local") {

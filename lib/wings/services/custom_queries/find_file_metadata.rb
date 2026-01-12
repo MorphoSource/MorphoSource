@@ -87,6 +87,7 @@ module Wings
       # @return [Array<Hyrax::FileMetadata, Hydra::PCDM::File>] or empty array
       #   if there are no ids or none of the ids map to Hyrax::FileMetadata
       def find_many_file_metadata_by_ids(ids:, use_valkyrie: true)
+        # NOTE: Skips missing AF records instead of raising so batch queries remain resilient.
         ids.each_with_object([]) do |alt_id, results|
           result = find_file_metadata_by_alternate_identifier(alternate_identifier: alt_id, use_valkyrie: use_valkyrie)
           results << result if result
@@ -110,6 +111,7 @@ module Wings
       #   Hyrax.query_service.find_file_metadata_by_use(use: ::RDF::URI("http://pcdm.org/ExtractedText"))
       #
       def find_many_file_metadata_by_use(resource:, use:, use_valkyrie: true)
+        # NOTE: Guard against nil results from missing AF file metadata during transition.
         pcdm_files = find_many_file_metadata_by_ids(ids: resource.file_ids, use_valkyrie: false)
         pcdm_files.select! { |pcdm_file| pcdm_file && !pcdm_file.empty? && pcdm_file.metadata_node.type.include?(use) }
 

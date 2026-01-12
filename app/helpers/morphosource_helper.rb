@@ -11,7 +11,7 @@ module MorphosourceHelper
     false
   end
 
-  def self.deepblue_headers_for(url)
+  def self.request_headers_for(url)
     return {} unless deepblue_url?(url)
     { "User-Agent" => "http.rb/#{HTTP::VERSION} MorphoSource/5" }
   end
@@ -31,7 +31,7 @@ module MorphosourceHelper
           method: :head,
           url: url,
           timeout: 15,
-          headers: MorphosourceHelper.deepblue_headers_for(url)
+          headers: MorphosourceHelper.request_headers_for(url)
         )
         @http_code = head.code
         @file_ext = file_extension_from_content_type(head.headers[:content_type])

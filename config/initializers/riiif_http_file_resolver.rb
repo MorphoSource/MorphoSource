@@ -24,7 +24,7 @@ Rails.application.config.to_prepare do
     def download_opts
       opts = basic_auth_credentials ? { http_basic_authentication: basic_auth_credentials } : {}
       headers = { "User-Agent" => "MorphoSource/5" }
-      headers.merge!(MorphosourceHelper.deepblue_headers_for(url))
+      headers.merge!(MorphosourceHelper.request_headers_for(url))
       opts.merge(headers)
     end
 
@@ -56,7 +56,7 @@ Rails.application.config.to_prepare do
 
     def request_headers_for(request_url)
       headers = { "User-Agent" => "MorphoSource/5" }
-      headers.merge!(MorphosourceHelper.deepblue_headers_for(request_url))
+      headers.merge!(MorphosourceHelper.request_headers_for(request_url))
       headers
     end
   end

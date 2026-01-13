@@ -42,8 +42,8 @@ module Hyrax
       def to_solr
         {
           "id": resource.id.to_s,
-          "date_uploaded_dtsi": resource.date_uploaded,
-          "date_modified_dtsi": resource.date_modified,
+          "date_uploaded_dtsi": resource.respond_to?(:date_uploaded) ? resource.date_uploaded : resource.created_at,
+          "date_modified_dtsi": resource.respond_to?(:date_modified) ? resource.date_modified : resource.updated_at,
           "system_create_dtsi": resource.created_at,
           "system_modified_dtsi": resource.updated_at,
           "has_model_ssim": resource.to_rdf_representation,

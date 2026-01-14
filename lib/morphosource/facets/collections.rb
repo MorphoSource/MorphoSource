@@ -58,7 +58,7 @@ module Morphosource
           organization_classes = ['Organization', 'OrganizationCollection']
           query = "has_model_ssim:(#{organization_classes.join(' OR ')})"
         when 'device'
-          query = '(has_model_ssim:Device OR has_model_ssim:DeviceResource)'
+          query = 'has_model_ssim:(Device OR DeviceResource)'
         else
           query = 'has_model_ssim:unknown'
           Rails.logger.warn("Unknown model for facet key: #{facet_config.key}")

@@ -18,7 +18,7 @@ module Morphosource
 
       # count of devices owned by organization
       def organization_device_count
-        Morphosource::SolrService.new.get_count("(has_model_ssim:Device OR has_model_ssim:DeviceResource) AND device_organization_id_ssim:#{@collection.id}")
+        Morphosource::SolrService.new.get_count("has_model_ssim:(Device OR DeviceResource) AND device_organization_id_ssim:#{@collection.id}")
       end
 
       # count of media imaged by organization devices and viewable by current user

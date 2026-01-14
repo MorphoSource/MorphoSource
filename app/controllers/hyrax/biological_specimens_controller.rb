@@ -48,7 +48,7 @@ module Hyrax
       #@presenter.get_organization_data
       @countries_service = Morphosource::CountriesService.new
       @new_taxonomy_submit_submissions_url = '/submissions/new_taxonomy_submit'
-      @new_taxonomy_form = Hyrax::WorkFormService.build(::Taxonomy.new, current_ability, self)
+      @new_taxonomy_form = Hyrax::FormFactory.new.build(TaxonomyResource.new, current_ability, self)
       render 'edit', presenter: @presenter
     end
 
@@ -108,13 +108,16 @@ module Hyrax
     def new_gbif_taxonomy(t_id)
       gbif_key = t_id.sub!('gbif:', '')
       gbif_params = ActionController::Parameters.new(
-          Morphosource::GbifSearchService.taxonomy_params_from_gbif(gbif_key))
-      taxonomy_params = Hyrax::TaxonomyForm.model_attributes(gbif_params)
-      taxonomy_params.merge!({ visibility: Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC })
-      curation_concern = Taxonomy.new
-      env = Hyrax::Actors::Environment.new(curation_concern, current_ability, taxonomy_params)
-      Hyrax::CurationConcern.actor.create(env)
-      curation_concern.id
+          { taxonomy: Morphosource::GbifSearchService.taxonomy_params_from_gbif(gbif_key) }
+      )
+      gbif_params[:taxonomy].merge!({ visibility: Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC })
+
+      Morphosource::Action::CreateWorkService.new(
+        model: TaxonomyResource,
+        params: gbif_params,
+        user: ::User.batch_user,
+        work_attributes_key: :taxonomy
+      ).call.value!.id.to_s
     end
 
     def old_orgs

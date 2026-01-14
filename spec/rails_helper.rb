@@ -18,6 +18,15 @@ end
 
 require 'active_fedora/cleaner'
 
+require 'valkyrie'
+Valkyrie::MetadataAdapter.register(Valkyrie::Persistence::Memory::MetadataAdapter.new, :test_adapter)
+Valkyrie::StorageAdapter.register(Valkyrie::Storage::Memory.new, :memory)
+
+require 'hyrax/specs/shared_specs/factories/strategies/json_strategy'
+require 'hyrax/specs/shared_specs/factories/strategies/valkyrie_resource'
+FactoryBot.register_strategy(:valkyrie_create, ValkyrieCreateStrategy)
+FactoryBot.register_strategy(:json, JsonStrategy)
+
 # Requires supporting ruby files with custom matchers and macros, etc,
 # in spec/support/ and its subdirectories.
 Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
@@ -40,6 +49,14 @@ Dir[Rails.root.join("spec/support/**/*.rb")].each {|f| require f}
 # Checks for pending migrations and applies them before tests are run.
 # If you are not using ActiveRecord, you can remove this line.
 ActiveRecord::Migration.maintain_test_schema!
+
+def clean_active_fedora_repository
+  return if Hyrax.config.disable_wings
+  ActiveFedora::Cleaner.clean!
+  # The JS is executed in a different thread, so that other thread
+  # may think the root path has already been created:
+  ActiveFedora.fedora.connection.send(:init_base_path)
+end
 
 RSpec.configure do |config|
   # Remove this line if you're not using ActiveRecord or ActiveRecord fixtures
@@ -75,11 +92,11 @@ RSpec.configure do |config|
   config.include Devise::Test::ControllerHelpers, :type => :controller
   config.include TestHelpers
 
-  config.before(:suite) do
-    ActiveFedora::Cleaner.clean!
+  config.before(:each) do
+    clean_active_fedora_repository
   end
 
-  config.after(:each) do
-    ActiveFedora::Cleaner.clean!
-  end
+  # config.after(:each) do
+  #   ActiveFedora::Cleaner.clean!
+  # end
 end

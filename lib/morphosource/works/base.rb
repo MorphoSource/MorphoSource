@@ -52,6 +52,19 @@ module Morphosource
         where(arg, *args).take
       end
 
+      # Dynamically defines setter methods for attributes that are associations to valkyrie records.
+      # This ensures that any Valkyrie::ID values are converted to strings upon assignment.
+      def self.valkyrie_association_attributes=(attributes)
+        attributes.each do |attr_name|
+          define_method("#{attr_name}=") do |value|
+            if value.is_a?(Array)
+              value = value.map { |v| v.is_a?(::Valkyrie::ID) ? v.to_s : v }
+            end
+            super(value)
+          end
+        end
+      end
+
       def descendants
         @descendants = ActiveFedora::Base.find(member_ids)
         get_all_children(@descendants)

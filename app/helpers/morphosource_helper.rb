@@ -262,15 +262,15 @@ module MorphosourceHelper
   end
 
   def find_taxonomy_autocomplete_url
-    Rails.application.routes.url_helpers.qa_path + '/search/find_taxonomies?type[]=Taxonomy&id=NA&q='
+    Rails.application.routes.url_helpers.qa_path + '/search/find_taxonomies?id=NA&q='
   end
 
   def find_taxonomy_submission_autocomplete_url
-    '/submissions/search_taxonomy_ajax?type[]=Taxonomy&id=NA&q='
+    '/submissions/search_taxonomy_ajax?id=NA&q='
   end
 
   def find_taxonomy_submission_autocomplete_url_bso_edit
-    '/submissions/search_taxonomy_ajax?type[]=Taxonomy&id=NA&q='
+    '/submissions/search_taxonomy_ajax?&id=NA&q='
   end
 
   def find_device_autocomplete_url
@@ -293,34 +293,34 @@ module MorphosourceHelper
     content_tag :div, :class => "row collapse-button" do
       content_tag :div, :class => "panel-title" do
         content_tag :a, :data => {:toggle => "collapse"}, :href => %(##{block}), :class => "btn #{block}", :aria => {:label => "collapse/expand"} do
-          concat content_tag(:span, "", class: "glyphicon glyphicon-triangle-bottom")
-          concat "Show more"
-          concat content_tag(:span, "", class: "glyphicon glyphicon-triangle-bottom")
+          concat content_tag(:span, "", class: "fas fa-caret-down")
+          concat " Show more "
+          concat content_tag(:span, "", class: "fas fa-caret-down")
         end
       end
     end
   end
 
-  def collapse_expand_panel_simple(label: "Show more", div_class: "", glyphicon_class: "glyphicon-triangle-bottom")
+  def collapse_expand_panel_simple(label: "Show more", div_class: "", glyphicon_class: "fa-caret-down")
     content_tag :div, class: "collapse-button #{div_class}" do
       content_tag :a, class: "collapse-a", data: { toggle: "collapse", target: ".collapse-simple" }, aria: { label: "collapse/expand" } do
         concat "#{label} "
-        concat content_tag(:span, "", class: "glyphicon #{glyphicon_class}")
+        concat content_tag(:span, "", class: "fas #{glyphicon_class}")
       end
     end
   end
 
   def collapse_accordion_panel(block, data_parent, label, value, is_collapsed)
     if is_collapsed == true
-      icon = "glyphicon-triangle-bottom"
+      icon = "fa-caret-down"
     else
-      icon = "glyphicon-triangle-top"
+      icon = "fa-caret-up"
     end
     content_tag :a, :data => {:toggle => "collapse", :parent => %(##{data_parent})}, :href => %(##{block}), :aria => {:label => "collapse/expand"} do
       content_tag :div, :class => "row" do
         concat content_tag(:div, label, class: "col-6 showcase-label")
         concat content_tag(:div, value, class: "col-5 showcase-value")
-        concat content_tag(:span, "", class: "col-1 glyphicon #{icon} #{block}")
+        concat content_tag(:span, "", class: "col-1 fas #{icon} #{block}")
       end
     end
   end

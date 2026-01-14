@@ -125,10 +125,10 @@ RSpec.describe SubmissionsController, type: :controller do
     context 'check organization collection remote file permissions' do
       let(:depositor)          { FactoryBot.build(:contributor) }
       let(:org)                 { OrganizationCollection.create(
-                                  title: ['org'], 
-                                  depositor: user.ms_id, 
-                                  institution_code: ['DEF'], 
-                                  can_submit_remote_files: "No", 
+                                  title: ['org'],
+                                  depositor: user.ms_id,
+                                  institution_code: ['DEF'],
+                                  can_submit_remote_files: "No",
                                   allowed_remote_source: "www.morphosource.org") }
 
       let(:params1) { { u: "https://www.morphosource.org/banner_image.png", o: org.id } }
@@ -298,8 +298,8 @@ RSpec.describe SubmissionsController, type: :controller do
   describe '#create' do
     describe 'when provided with correct params' do
       form_params = [
-        { work: 'taxonomy', params:
-          { taxonomy: { title: ['Test Title'] } }
+        { work: 'taxonomy_resource', params:
+          { taxonomy_resource: { title: ['Test Title'] } }
         },
         { work: 'biological_specimen', params:
           { biological_specimen: { title: ['Test Title'] } }

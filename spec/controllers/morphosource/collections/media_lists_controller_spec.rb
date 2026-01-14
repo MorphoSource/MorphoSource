@@ -62,7 +62,7 @@ RSpec.describe Morphosource::Collections::MediaListsController, type: :controlle
           get :about, params: params
           expect(response.status).to eq(200)
         end
-        
+
 
         it 'allows access to facet' do
           get :facet, params: { collection_id: list.id, id: 'media_type' }
@@ -82,7 +82,7 @@ RSpec.describe Morphosource::Collections::MediaListsController, type: :controlle
         it 'allows access to show' do
           get :show, params: params
           expect(response.status).to eq(200)
-        end 
+        end
 
         # deny
         it 'denies access to media_downloads' do
@@ -133,7 +133,7 @@ RSpec.describe Morphosource::Collections::MediaListsController, type: :controlle
 
   describe 'search_action_url' do
     before do
-      subject.instance_variable_set(:@curation_concern, list)
+      subject.instance_variable_set(:@collection, list)
     end
     it 'is media_list_path' do
       expect(subject.send(:search_action_url)).to eq(media_list_path(list.id))

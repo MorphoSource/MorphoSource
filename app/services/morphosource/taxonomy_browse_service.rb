@@ -39,7 +39,7 @@ module Morphosource
       @solr = solr_service.new
     end
 
-    # 
+    #
     def call
       all_children(names, absent_ranks)
     end
@@ -47,7 +47,7 @@ module Morphosource
     def count
       solr_params = {
         fq: [
-          "#{solrize('has_model', :symbol)}:Taxonomy",
+          "#{solrize('has_model', :symbol)}:(Taxonomy OR TaxonomyResource)",
           "#{solrize('gbif_key', :stored_searchable)}:*"
         ]
       }
@@ -65,7 +65,7 @@ module Morphosource
       solr.get_count(nil, solr_params)
     end
 
-    
+
     def all_children(names=[], absent_ranks=[])
       subrank = get_subrank(names, absent_ranks)
       return nil if !subrank
@@ -88,7 +88,7 @@ module Morphosource
     def direct_children(names=[], absent_ranks=[])
       solr_params = {
         fq: [
-          "#{solrize('has_model', :symbol)}:Taxonomy",
+          "#{solrize('has_model', :symbol)}:(Taxonomy OR TaxonomyResource)",
           "#{solrize('gbif_key', :stored_searchable)}:*"
         ]
       }
@@ -113,7 +113,7 @@ module Morphosource
         .flatten
         .each_with_object(Hash.new(0)) { |o, h| h[o] += 1 } # count name appearances
         .sort.to_h # sort alphabetically by key
-        .each_with_object({}) do |(k, v), a| 
+        .each_with_object({}) do |(k, v), a|
           if subrank == 'species' and (genus = names.find { |n| n[:rank] == 'genus' } ).present?
             count_names = [ { name: k, rank: subrank }, genus ]
           else
@@ -128,7 +128,7 @@ module Morphosource
       solr_params = {
         fl: 'id',
         fq: [
-          "#{solrize('has_model', :symbol)}:Taxonomy",
+          "#{solrize('has_model', :symbol)}:(Taxonomy OR TaxonomyResource)",
           "#{solrize('gbif_key', :stored_searchable)}:*"
         ]
       }
@@ -153,7 +153,7 @@ module Morphosource
     def get_subrank(names=[], absent_ranks=[])
       if absent_ranks.present?
         rank = absent_ranks.last
-      elsif names.present? 
+      elsif names.present?
         rank = names.last[:rank]
       else
         return TAXONOMY_RANKS.first
@@ -210,7 +210,7 @@ module Morphosource
       solr_params = {
         fl: ['id'],
         fq: [
-          "#{solrize('has_model', :symbol)}:Taxonomy",
+          "#{solrize('has_model', :symbol)}:(Taxonomy OR TaxonomyResource)",
           "#{solrize('gbif_key', :stored_searchable)}:*"
         ]
       }

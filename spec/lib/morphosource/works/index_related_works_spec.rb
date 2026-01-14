@@ -10,7 +10,7 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
 
   let(:organization_collection) { FactoryBot.create(:organization_collection) }
 
-  let(:taxonomy)                { Taxonomy.create(title: ['taxonomy']) }
+  let(:taxonomy)                { valkyrie_create(:taxonomy_resource, title: ['taxonomy']) }
 
   let(:specimen)                { BiologicalSpecimen.create(title: ['specimen'], vouchered: ['Yes'], organization_id: [organization.id], taxonomy_id: [taxonomy.id]) }
   let(:cho)                     { CulturalHeritageObject.create(title: ['cho'], vouchered: ['No'], organization_id: [organization.id]) }
@@ -240,22 +240,6 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
 
           organization_collection.city = ['Fargo']
           organization_collection.save
-        end
-      end
-    end
-
-    context 'work is a Taxonomy' do
-      let(:taxonomy_media)  { [media1a, media1b]}
-      before do
-        allow(taxonomy).to receive(:index_related)
-      end
-      context 'title is updated' do
-        it 'updates related media and objects' do
-          skip if !Hyrax.config.index_related_works
-          expect(taxonomy).to receive(:index_related).with(a_collection_containing_exactly(specimen)).and_call_original
-          expect(taxonomy).to receive(:index_related).with(a_collection_containing_exactly(*taxonomy_media))
-          taxonomy.title = ['New Title']
-          taxonomy.save
         end
       end
     end

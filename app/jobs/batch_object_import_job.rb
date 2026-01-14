@@ -4,7 +4,7 @@ class BatchObjectImportJob < Morphosource::ApplicationJobWithStatus
 
   def perform(model, attributes, files_directory, update = false)
     object = BatchSubmissionsImporter::BatchObjectImporter.call(model, attributes, files_directory, update)
-    status.update(id: object.id)
+    status.update(id: object.id&.to_s)
   end
 
 end

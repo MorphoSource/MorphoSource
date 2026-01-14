@@ -6,7 +6,7 @@ $( document ).ready(function() {
 													$('#biological_specimen_collection_code').val(),
 													$('#biological_specimen_catalog_number').val() ]
 			title = $.map( title, function(v){ return v === "" ? null : v; });
-			$('#showcase-title').text(title.join(':'));			
+			$('#showcase-title').text(title.join(':'));
 		}
 
     function addTaxonomy(taxonomy) {
@@ -31,7 +31,7 @@ $( document ).ready(function() {
         addTaxonomy(newTaxonomy);
       }
     }
-    
+
     function build_name(name, rank) {
       var s = "";
       if (rank) {
@@ -55,11 +55,11 @@ $( document ).ready(function() {
       return s;
     }
 
-    setupEmbeddedWorkForm('taxonomy', 'new', false, addNewTaxonomy);
+    setupEmbeddedWorkForm('taxonomy_resource', 'new', false, addNewTaxonomy);
     setupEmbeddedWorkForm('organization', 'new', false, updateObjectTitle);
     setupTooltip();
 		removeLastRepeatable();
-		
+
     // Select Organization Functions
 
     // select2-associated select organization button
@@ -89,10 +89,10 @@ $( document ).ready(function() {
         .attr('name', 'biological_specimen[organization_id][]')
         .attr('value', org.id )
         .appendTo($('form.edit_biological_specimen')
-      );   
+      );
     });
 
-		// remove organization when clicking no organization button  
+		// remove organization when clicking no organization button
 		$('#btn_no_organization').click(function() {
 			// modify current organization properties
       $('.organization-details #organization-id-value').val(null);
@@ -116,7 +116,7 @@ $( document ).ready(function() {
         .attr('name', 'biological_specimen[organization_id][]')
         .attr('value', '' )
         .appendTo($('form.edit_biological_specimen')
-      );  
+      );
 		})
 
     // Taxonomy select or add functions
@@ -161,12 +161,12 @@ $( document ).ready(function() {
     }).autocomplete('instance')._renderItem = function(ul, item) {
       // Overwrite default autocomplete list display
       return $(
-        "<li><div style='border-bottom: 1px solid #D2D2D2;'>" + 
-        build_name(item.name, item.rank) + 
-        "<br/><span style='font-size: small;'>" + 
-        item.higher_taxonomy + 
+        "<li><div style='border-bottom: 1px solid #D2D2D2;'>" +
+        build_name(item.name, item.rank) +
+        "<br/><span style='font-size: small;'>" +
+        item.higher_taxonomy +
         "</span><br/>" +
-        item.source_info + 
+        item.source_info +
         "</div></li>"
       ).appendTo(ul);
     };
@@ -196,7 +196,7 @@ $( document ).ready(function() {
 			if ($(this).val() == 'Yes')
 				$('#in-collection-badge').text('In Collection');
 			else
-				$('#in-collection-badge').text('Not in Collection');				
+				$('#in-collection-badge').text('Not in Collection');
 		})
 
     function taxonomy_short_title(t) {
@@ -235,7 +235,7 @@ $( document ).ready(function() {
       $.ajax({
         url: '/search_idigbio_by_occurrence_id_ajax',
         type: 'POST',
-        data: {"oid": occurrence_id}, 
+        data: {"oid": occurrence_id},
         dataType: 'json',
         timeout: 5000,
         complete: function(xhr, status) {
@@ -281,7 +281,7 @@ $( document ).ready(function() {
               $('#modal-idigbio-result #collection-code').html(results.collection_code);
               $('#modal-idigbio-result #catalog-number').html(results.catalog_number);
               $('#modal-idigbio-result #idb-link').attr("href", "//www.idigbio.org/portal/records/" + results.idigbio_uuid);
-              
+
               if (results.taxonomy.provider != null) {
                 populate_taxonomy('Provider', results.taxonomy.provider);
               }
@@ -305,7 +305,7 @@ $( document ).ready(function() {
       disablePage();
       $('form[data-param-key="biological_specimen"]').submit();
     }
-	  
+
     $(document).on('click', '#btn-save-bso', function(){
 			disablePage();
       // search iDigBio if occurrence_id has been changed

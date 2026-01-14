@@ -44,15 +44,9 @@ module Hyrax
           markup << "<div class='row taxonomy-rank'>
                       <div class='col-6 showcase-label'>Contributing User</div>
                       <div class='col-6 showcase-value'>#{user}</div>
-                    </div>"        
+                    </div>"
         end
         markup
-      end
-
-      # If an array of taxonomies, find the one whose title matches value
-      def select_taxonomy(value)
-        return @values if @values.class == Taxonomy
-        @values.select{|taxonomy| taxonomy == value}.first
       end
 
       def construct_title(taxonomy)
@@ -65,8 +59,7 @@ module Hyrax
       end
 
       def taxonomy_title(block, data_parent, label, value, is_collapsed)
-        taxonomy = select_taxonomy(value)
-        title = construct_title(taxonomy)
+        title = construct_title(value)
         icon = is_collapsed ? "down" : "up"
         content_tag :div, :class => "row align-items-center" do
           concat content_tag(:div, label, class: "col-6 showcase-label taxonomy-label")

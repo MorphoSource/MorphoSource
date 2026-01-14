@@ -3,6 +3,7 @@ module Morphosource
   module FileSetBehavior
     extend ActiveSupport::Concern
     include Hyrax::FileSetBehavior
+    include Morphosource::FileSetCharacterization
     include Morphosource::Works::MimeTypes
     include Morphosource::FileSetDerivatives
     include Morphosource::AccessControls::FileSetPermissions

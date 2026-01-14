@@ -24,9 +24,14 @@ module Hyrax
 
     before_action :validate_individual_access, only: [:update]
     before_action :save_individual_access, only: [:update]
-    before_action :save_fileset_visibility, only: [:update]
+
+    # get the original publication status so we can update filesets if it changes
+    # must run before map_publication_status_to_visibility and check_for_published_doi
+    before_action :save_publication_status, only: [:update]
+    before_action :map_publication_status_to_visibility, only: [:create, :update]
+    before_action :check_for_published_doi, only: [:update]
+
     before_action :save_preview_fields, only: [:update]
-    before_action :set_fileset_visibility, only: [:create, :update]
     before_action :authorize_media_with_temporary_link, only: [:showcase]
     before_action :set_fund_code, only: [:update]
     before_action :set_scene_attributes, only: [:update]
@@ -117,7 +122,7 @@ module Hyrax
         {
           id: coll.id,
           label: coll.title.first,
-          removable: current_user.can?(:edit, Collection.find(coll.id))
+          removable: current_user.can?(:edit, coll.id) && coll.doi.blank?
         }
       end.to_json
     end
@@ -195,8 +200,8 @@ module Hyrax
         Morphosource::AttachmentService.delete(curation_concern.id, 'agreement')
         params.delete(:media_attachment_delete)
       end
-
       if file_formats_valid? && actor.update(actor_environment)
+        update_filesets
         after_update_response
       else
         respond_to do |wants|
@@ -410,56 +415,9 @@ module Hyrax
         curation_concern.errors.empty?
       end
 
-      def set_fileset_visibility
-        selected_visibility = params["media"]["visibility"]
-        unrestrictable_doi_visibilities = %w{open restricted_download preview_only hidden}
-        if (!curation_concern.doi.empty?) && unrestrictable_doi_visibilities.include?(curation_concern.fileset_accessibility.first) && (!unrestrictable_doi_visibilities.include?(selected_visibility))
-          curation_concern.errors.add(:base, "Media has been assigned a DOI and published. Visibility can only be changed to one of: #{unrestrictable_doi_visibilities.join(', ')}")
-        else
-          public = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC
-          private = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE
-          embargo = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_EMBARGO
-          lease = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_LEASE
-
-          case selected_visibility
-          when public
-            map_fileset_accessibility("","open")
-          when "restricted_download"
-            map_work_visibility(public)
-            map_fileset_accessibility("","restricted_download")
-          when "preview"
-            map_work_visibility(public)
-            map_fileset_accessibility("","preview_only")
-          when "hidden"
-            map_work_visibility(public)
-            map_fileset_accessibility("restricted","hidden")
-          when private
-            map_fileset_accessibility("","private")
-          when embargo
-            map_fileset_accessibility("","")
-          when lease
-            map_fileset_accessibility("","")
-          end
-          update_fileset_accessibility
-        end
-      end
-
-      def update_fileset_accessibility
-        curation_concern.file_sets.each do |file|
-          file.accessibility = curation_concern.fileset_accessibility
-          file.save!
-        end
-      end
-
-      # Sets work's fileset_visibility and fileset_accessibility values depending on publication status
-      def map_fileset_accessibility(visibility,accessibility)
-        curation_concern.fileset_visibility = [visibility]
-        curation_concern.fileset_accessibility = [accessibility]
-      end
-
-      # Maps work visibility to Hyrax value for non-Hyrax publication status
-      def map_work_visibility(visibility)
-        params["media"]["visibility"] = visibility
+      def update_filesets
+        VisibilityCopyJob.perform_later(curation_concern.id) if publication_status_changed?
+        InheritPermissionsJob.perform_later(curation_concern.id) if permissions_changed?
       end
 
       def after_update_response
@@ -472,24 +430,8 @@ module Hyrax
           flash[:alert] = I18n.t("morphosource.media.alert.browse_everything")
         end
 
-        if (fileset_visibility_changed? || curation_concern.visibility_changed?)
-          if curation_concern.attributes["fileset_visibility"] == [""]
-            if permissions_changed?
-              return redirect_to hyrax.copy_access_permission_path(curation_concern), alert: flash[:alert]
-            else
-              return redirect_to main_app.copy_hyrax_permission_path(curation_concern), alert: flash[:alert]
-            end
-          end
-          if curation_concern.attributes["fileset_visibility"] == ["restricted"]
-            InheritPermissionsJob.perform_later(curation_concern.id) if permissions_changed?
-            restrict_all_filesets
-            flash_message = 'Updating file permissions to restricted. This may take a few minutes. You may want to refresh your browser or return to this record later to see the updated file permissions.'
-            return redirect_to [main_app, curation_concern], notice: flash_message
-          end
-        end
-
         respond_to do |wants|
-          wants.html { redirect_to [main_app, curation_concern], notice: "Work \"#{curation_concern}\" successfully updated." }
+          wants.html { redirect_to [main_app, curation_concern], notice: I18n.t("morphosource.media.alert.permissions_update") }
           wants.json { render :show, status: :ok, location: polymorphic_path([main_app, curation_concern]) }
         end
       end
@@ -498,27 +440,34 @@ module Hyrax
         params[:selected_files].present? && params[:uploaded_files].present?
       end
 
-      # get the old file set visibility so we can tell if it is being changed
-      def save_fileset_visibility
-        if curation_concern.fileset_visibility == [""]
-          @saved_fileset_visibility = [""]
-        else
-          @saved_fileset_visibility = ["restricted"]
-        end
+      # get the original publication status so we can update filesets if it changes
+      # "open", "restricted_download", "private"
+      def save_publication_status
+        @old_publication_status = curation_concern.fileset_accessibility&.first
+        @new_publication_status = params["media"]["visibility"]
       end
 
-      def fileset_visibility_changed?
-        @saved_fileset_visibility.first != curation_concern.fileset_visibility.first
+      def publication_status_changed?
+        @old_publication_status != @new_publication_status
       end
 
-      def restrict_all_filesets
-        curation_concern.file_sets.each do |file|
-          file.embargo&.deactivate!
-          file.lease&.deactivate!
-          file.visibility = "restricted"
-          file.save!
+      # private media have a visibility of "restricted"
+      # open and restricted_download media have a visibility of "open"
+      # fileset_accessibility is ["open"], ["restricted_download"], or ["private"]
+      def map_publication_status_to_visibility
+        publication_status = params["media"]["visibility"]
+        visibility = publication_status == "private" ? "restricted" : "open"
+        params["media"]["visibility"] = visibility
+        params["media"]["fileset_accessibility"] = [publication_status]
+      end
+
+      # Prevent changing visibility to private if media has a published DOI
+      def check_for_published_doi
+        if (curation_concern.doi.present? &&
+            curation_concern.visibility == "open" &&
+            @new_publication_status != "open")
+          curation_concern.errors.add(:base, "Media has been assigned a DOI and published. Visibility cannot be changed to private.")
         end
-        curation_concern.update_index
       end
 
       def update_thumbnail

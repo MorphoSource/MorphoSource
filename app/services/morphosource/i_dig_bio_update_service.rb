@@ -31,24 +31,23 @@ module Morphosource
 
     def add_new_taxonomies
       # add new taxonomy if any
-      taxonomy_params_array.each do |taxon_params|
-        # wrap it in ActionController::Parameters before passing to Hyrax TaxonomyForm
-        taxon_params = ActionController::Parameters.new(taxon_params) if taxon_params.is_a?(Hash)
-        new_taxon_id = prepare_and_create_taxonomy(taxon_params)
+      taxonomy_params_array.each do |taxon_hash|
+        new_taxon_id = prepare_and_create_taxonomy(taxon_hash)
         @taxonomy_id_array << new_taxon_id
-        if taxon_params[:canonical]
+        if taxon_hash[:canonical]
           @canonical_taxonomy_id = new_taxon_id
         end
       end
     end
 
     def prepare_and_create_taxonomy(params)
-      attributes_for_actor = Hyrax::TaxonomyForm.model_attributes(params)
-      attributes_for_actor.merge!({ visibility: Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC })
-      curation_concern = Taxonomy.new
-      env = Hyrax::Actors::Environment.new(curation_concern, ::Ability.new(User.find_by_ms_id(@specimen.depositor)), attributes_for_actor)
-      Hyrax::CurationConcern.actor.create(env)
-      return curation_concern.id
+      attrs = params.merge({ visibility: Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC })
+
+      Morphosource::Action::CreateWorkService.new(
+        model: TaxonomyResource,
+        params: { taxonomy_resource: attrs },
+        user: User.find_by_ms_id(@specimen.depositor)
+      ).call.value!.id.to_s
     end
 
     def link_taxonomies

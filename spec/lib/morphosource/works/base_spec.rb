@@ -113,7 +113,6 @@ RSpec.describe Morphosource::Works::Base do
   describe "remove_solr_record" do
     let!(:media)                { Media.create(title: ['media']) }
     let!(:specimen)             { BiologicalSpecimen.create(title: ['specimen'], vouchered: ['Yes']) }
-    let!(:taxonomy)             { Taxonomy.create(title: ['taxonomy']) }
     let!(:cho)                  { CulturalHeritageObject.create(title: ['cho'], vouchered: ['Yes']) }
     let!(:organization)         { Organization.create(title: ['organization']) }
     let!(:device)               { Device.create(title: ['device'], modality: ['Photogrammetry']) }
@@ -122,16 +121,15 @@ RSpec.describe Morphosource::Works::Base do
 
     let!(:media_id)             { media.id }
     let!(:specimen_id)          { specimen.id }
-    let!(:taxonomy_id)          { taxonomy.id }
     let!(:cho_id)               { cho.id }
     let!(:organization_id)      { organization.id }
     let!(:device_id)            { device.id }
     let!(:imaging_event_id)     { imaging_event.id }
     let!(:processing_event_id)  { processing_event.id }
 
-    let(:works)                 { [media, specimen, cho, taxonomy, organization, device, imaging_event, processing_event] }
+    let(:works)                 { [media, specimen, cho, organization, device, imaging_event, processing_event] }
 
-    let(:ids)                   { [media_id, specimen_id, taxonomy_id, cho_id, organization_id, device_id, imaging_event_id, processing_event_id] }
+    let(:ids)                   { [media_id, specimen_id, cho_id, organization_id, device_id, imaging_event_id, processing_event_id] }
 
     # in most cases, the remove_solr_record callback should be unnecessary
     context 'corresponding solr records are deleted as expected' do

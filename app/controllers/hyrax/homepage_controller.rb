@@ -61,4 +61,17 @@ class Hyrax::HomepageController < ApplicationController
   def sort_field
     "date_uploaded_dtsi desc"
   end
+
+  def taxonomy_counts
+    @taxonomy_counts ||= begin
+      taxons = ActiveFedora::SolrService.count("*:*", rows: 999_999, fq: [ "has_model_ssim:(Taxonomy OR TaxonomyResource)" ])
+      gbif_taxons = ActiveFedora::SolrService.count("gbif_key_ssim:*", rows: 999_999, fq: [ "has_model_ssim:(Taxonomy OR TaxonomyResource)" ])
+
+      {
+        non_gbif_taxonomy_count: taxons - gbif_taxons,
+        gbif_taxonomy_count: gbif_taxons
+      }
+    end
+  end
+  helper_method :taxonomy_counts
 end

@@ -1,5 +1,6 @@
 # Generated via
 #  `rails generate hyrax:work Taxonomy`
+# @deprecated Use TaxonomyResource with Transactions.
 module Hyrax
   module Actors
     class TaxonomyActor < Hyrax::Actors::BaseActor

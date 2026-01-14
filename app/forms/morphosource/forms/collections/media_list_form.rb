@@ -14,7 +14,11 @@ module Morphosource
 
         # These show above the fold
         def primary_terms
-          super + [:list_type]
+          [:title, :list_type]
+        end
+
+        def secondary_terms
+          []
         end
 
       end

@@ -115,7 +115,7 @@
             </div>
             <% if specimens['numFound'] > 100 %>
               <div style='margin-top: 20px; font-weight: bold'>
-                <%= link_to "See all #{specimens['numFound']} specimens for this taxonomy", main_app.object_search_path( { 'f[external_taxonomy_ssim]' => specimen_taxonomy_terms } ) %>
+                <%= link_to "See all #{specimens['numFound']} specimens for this taxonomy", main_app.object_search_path( f: { taxonomy_gbif: specimen_taxonomy_terms } ) %>
               </div>
             <% end %>
           </div>

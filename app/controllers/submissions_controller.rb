@@ -246,7 +246,7 @@ class SubmissionsController < ApplicationController
     else
       # Manual physical object creation, may need to do extra steps
       if @submission.will_create_taxonomy
-        @submission.taxonomy_params_array << params[:taxonomy]
+        @submission.taxonomy_params_array << params[:taxonomy_resource]
       end
 
       @submission.taxonomy_gbif_key_array.each do |gbif_key| # this may be empty
@@ -273,9 +273,9 @@ class SubmissionsController < ApplicationController
     end
 
     works.each do |work|
-      if work == 'taxonomy' && @submission.taxonomy_params_array.present?
+      if work == 'taxonomy_resource' && @submission.taxonomy_params_array.present?
         @submission.taxonomy_params_array.each do |taxon_params|
-          new_taxon_id = prepare_and_create_work('taxonomy', { 'taxonomy' => taxon_params })[0]
+          new_taxon_id = prepare_and_create_work('taxonomy_resource', { 'taxonomy_resource' => taxon_params })[0]
           @submission.taxonomy_id_array << new_taxon_id
           @submission.canonical_taxonomy_id = new_taxon_id if taxon_params[:canonical]
         end
@@ -300,7 +300,7 @@ class SubmissionsController < ApplicationController
   def new_taxonomy_create(params)
     # this method is expected to be called from the backend
     begin
-      prepare_and_create_work('taxonomy', { 'taxonomy' => params[:taxonomy] })[0]
+      prepare_and_create_work('taxonomy_resource', { 'taxonomy_resource' => params[:taxonomy_resource] })[0]
     rescue
       nil
     end
@@ -309,7 +309,7 @@ class SubmissionsController < ApplicationController
   private
 
   def works
-    ['taxonomy', 'biological_specimen', 'cultural_heritage_object', 'imaging_event', 'processing_event', 'media']
+    ['taxonomy_resource', 'biological_specimen', 'cultural_heritage_object', 'imaging_event', 'processing_event', 'media']
   end
 
   def create_work_if_needed(work, params)
@@ -334,24 +334,30 @@ class SubmissionsController < ApplicationController
   end
 
   def create_model_params(work, params)
-    model_params = to_form(work).model_attributes(params[work])
-    if work == 'media'
-      addl_params = { uploaded_files: params[:uploaded_files] }
-      addl_params[:selected_files] = params[:selected_files] if params[:selected_files].present?
-      addl_params[:collection_id] = params[:collection_id] if params[:collection_id].present?
-      addl_params[:organization_transfer_on_publish] = true if ( organization_media_transfer == :publication )
-      finalize_model_params(work, model_params, addl_params)
-    elsif work == 'imaging_event'
-      addl_params = { device_id: [@submission.device_id] }
-      finalize_model_params(work, model_params, addl_params)
-    elsif work == 'biological_specimen' || work == 'cultural_heritage_object'
-      organization_id = @submission.organization_id.present? ? @submission.organization_id : Hyrax.config.null_organization_id
-      addl_params = { organization_id: [organization_id] }
-      finalize_model_params(work, model_params, addl_params)
+    # Valkyrie or AF?
+    if work.include?('_resource')
+      # WorkCreateService handles for Valkyrie what form.model_attributes(params) handled for AF
+      finalize_model_params(work, params[work])
     else
-      finalize_model_params(work, model_params)
+      # AF
+      model_params = to_form(work).model_attributes(params[work])
+      if work == 'media'
+        addl_params = { uploaded_files: params[:uploaded_files] }
+        addl_params[:selected_files] = params[:selected_files] if params[:selected_files].present?
+        addl_params[:collection_id] = params[:collection_id] if params[:collection_id].present?
+        addl_params[:organization_transfer_on_publish] = true if ( organization_media_transfer == :publication )
+        finalize_model_params(work, model_params, addl_params)
+      elsif work == 'imaging_event'
+        addl_params = { device_id: [@submission.device_id] }
+        finalize_model_params(work, model_params, addl_params)
+      elsif work == 'biological_specimen' || work == 'cultural_heritage_object'
+        organization_id = @submission.organization_id.present? ? @submission.organization_id : Hyrax.config.null_organization_id
+        addl_params = { organization_id: [organization_id] }
+        finalize_model_params(work, model_params, addl_params)
+      else
+        finalize_model_params(work, model_params)
+      end
     end
-
   end
 
   def finalize_model_params(work, model_params, addl_params={})
@@ -438,7 +444,7 @@ class SubmissionsController < ApplicationController
     # the below cases are only required for temp show page instance object creation
     when 'organization'
       @organization_create_params = model_params
-    when 'taxonomy'
+    when 'taxonomy_resource'
       @taxonomy_create_params = model_params
     when 'device_organization'
       @device_organization_create_params = model_params
@@ -555,7 +561,12 @@ class SubmissionsController < ApplicationController
   # Utility functions
 
   def to_id(work)
-    work + '_id'
+    if work.include?('_resource')
+      work.gsub('_resource', '') + '_id'
+    else
+      work + '_id'
+    end
+
   end
 
   def to_form(work)
@@ -650,11 +661,23 @@ class SubmissionsController < ApplicationController
   end
 
   def create_work(model, attributes_for_actor)
-    # TODO: Refactor this to rely on appropriate model methods and not submissions controller
-    curation_concern = model.new
-    env = Hyrax::Actors::Environment.new(curation_concern, current_ability, attributes_for_actor)
-    Hyrax::CurationConcern.actor.create(env)
-    return curation_concern.id, curation_concern
+    if model < ActiveFedora::Base
+      # Create AF work
+      curation_concern = model.new
+      env = Hyrax::Actors::Environment.new(curation_concern, current_ability, attributes_for_actor)
+      Hyrax::CurationConcern.actor.create(env)
+      return curation_concern.id, curation_concern
+    else
+      # Create Valkyrie work
+      valkyrie_attribute_key = model.to_s.underscore.to_sym
+      valkyrie_work = Morphosource::Action::CreateWorkService.new(
+        model: model,
+        params: { valkyrie_attribute_key => attributes_for_actor },
+        user: current_user,
+        work_attributes_key: valkyrie_attribute_key
+      ).call.value!
+      return valkyrie_work.id.to_s, valkyrie_work
+    end
   end
 
   def instantiate_work_forms
@@ -665,7 +688,7 @@ class SubmissionsController < ApplicationController
     @processing_event_form = Hyrax::WorkFormService.build(ProcessingEvent.new, current_ability, self)
     @organization_form = Hyrax::WorkFormService.build(Organization.new, current_ability, self)
     @media_form = Hyrax::WorkFormService.build(Media.new, current_ability, self)
-    @taxonomy_form = Hyrax::WorkFormService.build(Taxonomy.new, current_ability, self)
+    @taxonomy_form = Hyrax::FormFactory.new.build(TaxonomyResource.new, current_ability, self)
   end
 
   def save_params_to_session

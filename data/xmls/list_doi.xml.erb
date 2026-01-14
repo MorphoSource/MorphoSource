@@ -1,0 +1,66 @@
+<doi_batch
+  xmlns="http://www.crossref.org/schema/5.4.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns:rel="http://www.crossref.org/relations.xsd"
+  version="5.4.0">
+  <head>
+    <doi_batch_id><%= doi_batch_id %></doi_batch_id>
+    <timestamp><%= timestamp %></timestamp>
+    <depositor>
+      <depositor_name>MorphoSource</depositor_name>
+      <email_address>morphosource-dev-team@duke.edu</email_address>
+    </depositor>
+    <registrant>MorphoSource</registrant>
+  </head>
+  <body>
+    <database>
+      <database_metadata language="en">
+        <titles>
+          <title>MorphoSource Media List</title>
+        </titles>
+        <institution>
+          <institution_name>MorphoSource</institution_name>
+        </institution>
+      </database_metadata>
+      <dataset dataset_type="collection">
+        <contributors>
+          <% if organization.present? %>
+            <organization sequence="first" contributor_role="author"><%= organization %></organization>
+          <% else %>
+            <person_name contributor_role="author" sequence="first">
+              <given_name><%= author_first %></given_name>
+              <surname><%= author_last %></surname>
+            </person_name>
+          <% end %>
+          <% if contributors.present? %>
+            <% contributors.each do |contributor| %>
+              <person_name contributor_role="author" sequence="additional">
+                <given_name><%= contributor["contributor_first"] %></given_name>
+                <surname><%= contributor["contributor_last"] %></surname>
+              </person_name>
+            <% end %>
+          <% end %>
+        </contributors>
+        <titles>
+          <title><%= title %></title>
+        </titles>
+        <database_date>
+          <publication_date>
+            <year><%= publication_year %></year>
+          </publication_date>
+        </database_date>
+        <rel:program name="relations">
+          <% child_media.each do |media| %>
+            <rel:related_item>
+              <rel:inter_work_relation relationship-type="hasPart" identifier-type="doi"><%= media["doi"] %></rel:inter_work_relation>
+            </rel:related_item>
+          <% end %>
+        </rel:program>
+        <doi_data>
+          <doi><%= doi %></doi>
+          <resource><%= url %></resource>
+        </doi_data>
+      </dataset>
+    </database>
+  </body>
+</doi_batch>

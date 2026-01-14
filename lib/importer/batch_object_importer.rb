@@ -1,4 +1,5 @@
 module Importer
+  # @deprecated use BatchSubmissionsImporter::BatchObjectImporter instead
   class BatchObjectImporter
 
     attr_reader :attributes, :files_directory, :model, :update

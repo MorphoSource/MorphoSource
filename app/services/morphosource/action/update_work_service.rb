@@ -64,6 +64,9 @@ module Morphosource
         case work.model_name
         when 'TaxonomyResource'
           'taxonomy_change_set.update_work'
+        when 'DeviceResource'
+byebug
+          'device_change_set.update_work'
         else
           raise "Unpermitted work type #{work.class}"
         end
@@ -72,6 +75,10 @@ module Morphosource
       def step_args
         case work.model_name
         when 'TaxonomyResource'
+          {
+            'work_resource.save_acl' => { permissions_params: permissions_params }
+          }
+        when 'DeviceResource'
           {
             'work_resource.save_acl' => { permissions_params: permissions_params }
           }

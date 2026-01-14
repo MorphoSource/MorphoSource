@@ -5,6 +5,7 @@
 class DeviceResource < Hyrax::Work
   include Hyrax::Schema(:basic_metadata)
   include Hyrax::Schema(:device_resource)
+  include Morphosource::ValkyrieWorkBehavior
 
   delegate :download_groups, :download_groups=,
            :download_users,  :download_users=, to: :permission_manager

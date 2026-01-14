@@ -65,7 +65,6 @@ module Morphosource
         when 'TaxonomyResource'
           'taxonomy_change_set.update_work'
         when 'DeviceResource'
-byebug
           'device_change_set.update_work'
         else
           raise "Unpermitted work type #{work.class}"

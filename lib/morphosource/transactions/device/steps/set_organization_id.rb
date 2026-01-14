@@ -14,7 +14,9 @@ module Morphosource
           # @return [Dry::Monads::Result]
           def call(obj, attributes: nil)
             return Failure[:no_organization_id, obj] unless obj.respond_to?(:organization_id=)
-
+            # if attributes is nil, there is no organization_id to set, so we can just return success with the object as is
+            return Success(obj) if attributes.nil?
+            
             organization_ids = save_organization_id(attributes)
             return Failure["Cannot associate device with more than one organization", obj] if organization_ids.size > 1
 

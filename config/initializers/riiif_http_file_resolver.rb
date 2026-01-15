@@ -28,7 +28,7 @@ Rails.application.config.to_prepare do
       http = Net::HTTP.new(uri.host, uri.port)
       http.use_ssl = uri.scheme == "https"
       request = Net::HTTP::Get.new(uri)
-      request_headers_for(request_url).each { |key, value| request[key] = value }
+      Hyrax.config.remote_request_headers.each { |key, value| request[key] = value }
       if basic_auth_credentials
         user, password = basic_auth_credentials
         request.basic_auth(user, password)
@@ -47,8 +47,5 @@ Rails.application.config.to_prepare do
       end
     end
 
-    def request_headers_for(request_url)
-      Hyrax.config.remote_request_headers
-    end
   end
 end

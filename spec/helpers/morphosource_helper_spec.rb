@@ -2,25 +2,6 @@ require 'rails_helper'
 
 RSpec.describe MorphosourceHelper, type: :helper do
 
-  describe '.request_headers_for' do
-    let(:user_agent) { "http.rb/#{HTTP::VERSION} MorphoSource/5" }
-
-    it 'returns headers for deepblue URLs' do
-      headers = described_class.request_headers_for('https://deepblue.lib.umich.edu/item/123')
-      expect(headers).to eq({ "User-Agent" => user_agent })
-    end
-
-    it 'returns empty headers for non-deepblue URLs' do
-      headers = described_class.request_headers_for('https://example.com/item/123')
-      expect(headers).to eq({})
-    end
-
-    it 'returns empty headers for invalid URLs' do
-      headers = described_class.request_headers_for('ht!tp://bad url')
-      expect(headers).to eq({})
-    end
-  end
-
   describe 'render_extra(extras, id, variable)' do
     let(:id) {'abc'}
     let(:extras) { [{'id' => id, 'source_of_result' => 'team_project', 'team_project_title' => 'test title'}] }

@@ -11,10 +11,12 @@ stages:
 
 .build:
   stage: build
+  image: docker:27
   variables:
     DOCKER_HOST: tcp://docker:2375/
     DOCKER_DRIVER: overlay2
     DOCKER_TLS_CERTDIR: ''
+    DOCKER_CLI_EXPERIMENTAL: enabled
   services:
     - name: docker:27-dind
   before_script:

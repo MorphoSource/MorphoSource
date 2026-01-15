@@ -82,7 +82,7 @@ class ImportUrlJob < Hyrax::ApplicationJob
 
       File.open(File.join(dir, filename), 'wb') do |f|
         begin
-          request_headers = headers.merge(MorphosourceHelper.request_headers_for(uri.to_s))
+          request_headers = headers.merge(Hyrax.config.remote_request_headers)
           if file_set.is_remote_backed?
             # BrowseEverything::Retriever cannot download certain remote file (Failed to download error)
             # Download by open-uri methods instead

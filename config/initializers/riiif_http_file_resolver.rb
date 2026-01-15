@@ -21,13 +21,6 @@ Rails.application.config.to_prepare do
       end
     end
 
-    def download_opts
-      opts = basic_auth_credentials ? { http_basic_authentication: basic_auth_credentials } : {}
-      headers = { "User-Agent" => "MorphoSource/5" }
-      headers.merge!(MorphosourceHelper.request_headers_for(url))
-      opts.merge(headers)
-    end
-
     def open_with_redirects(request_url, limit = 5, &block)
       raise OpenURI::HTTPError.new("Too many redirects", nil) if limit <= 0
 
@@ -55,9 +48,7 @@ Rails.application.config.to_prepare do
     end
 
     def request_headers_for(request_url)
-      headers = { "User-Agent" => "MorphoSource/5" }
-      headers.merge!(MorphosourceHelper.request_headers_for(request_url))
-      headers
+      Hyrax.config.remote_request_headers
     end
   end
 end

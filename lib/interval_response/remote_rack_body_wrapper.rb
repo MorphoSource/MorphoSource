@@ -22,7 +22,7 @@ module IntervalResponse
           end
         when RemoteInclusion
           hh = {'Range' => "bytes=#{range_in_segment.begin}-#{range_in_segment.end}"}
-          hh.merge!(MorphosourceHelper.request_headers_for(segment.url))
+          hh.merge!(Hyrax.config.remote_request_headers)
           response = HTTP.get(segment.url,  headers: hh)
           while chunk = response.readpartial
             yield(chunk)

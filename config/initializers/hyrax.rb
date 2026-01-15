@@ -48,6 +48,9 @@ Hyrax.config do |config|
   # Site URL
   config.host_name = ENV['HOST_NAME'] || 'www.morphosource.org'
 
+  # Headers for outbound remote file requests (e.g., IIIF downloads, URL imports)
+  config.remote_request_headers = { "User-Agent" => "MorphoSource/5" }
+
   # Title for UI header and front page tab title
   config.site_title = ENV['SITE_TITLE'].presence || 'MorphoSource'
 

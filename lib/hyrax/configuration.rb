@@ -92,6 +92,14 @@ module Hyrax
     # @note Changing this value after other AdminSet(s) are created does not alter the already created AdminSet(s)
     attr_accessor :default_active_workflow_name
 
+    # Headers to use for outbound remote file requests (e.g., IIIF downloads).
+    # @return [Hash]
+    attr_writer :remote_request_headers
+
+    def remote_request_headers
+      @remote_request_headers || {}
+    end
+
     # @return [Hyrax::RoleRegistry]
     attr_reader :role_registry
     private :role_registry

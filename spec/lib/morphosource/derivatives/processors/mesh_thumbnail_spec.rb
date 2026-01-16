@@ -6,7 +6,8 @@ describe Morphosource::Derivatives::Processors::MeshThumbnail do
   let(:file_name) { 'file_name' }
   let(:file_set)  { FactoryBot.create(:file_set) }
   let(:derivative_path) { Morphosource::DerivativePath.derivative_path_for_reference(file_set, 'thumbnail') }
-  let(:directives) { { label: :thumbnail, url: derivative_path } }
+  let(:derivative_url) { URI("file://#{Morphosource::DerivativePath.derivative_path_for_reference(file_set, 'thumbnail')}").to_s }
+  let(:directives) { { label: :thumbnail, url: derivative_url } }
 
   describe "#process" do
     context "when a timeout is set" do
@@ -37,7 +38,7 @@ describe Morphosource::Derivatives::Processors::MeshThumbnail do
           code: 200,
           body: File.open(File.join(fixture_path, 'images/duke.png')).read
         )
-        
+
         allow(RestClient::Request).to receive(:execute).and_return(response)
       end
 

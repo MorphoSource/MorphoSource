@@ -8,12 +8,13 @@ describe Morphosource::Derivatives::Processors::Mesh do
 
   let(:file_set)  { FactoryBot.create(:file_set) }
   let(:derivative_path) { Morphosource::DerivativePath.derivative_path_for_reference(file_set, 'glb') }
+  let(:derivative_url) { URI("file://#{Morphosource::DerivativePath.derivative_path_for_reference(file_set, 'glb')}").to_s }
   let(:file_name) { 'file_name' }
-  let(:directives) {{ 
-    label: :glb, 
-    format: 'glb', 
-    unit: 'm', 
-    url: derivative_path
+  let(:directives) {{
+    label: :glb,
+    format: 'glb',
+    unit: 'm',
+    url: derivative_url
   }}
 
   describe "#process" do

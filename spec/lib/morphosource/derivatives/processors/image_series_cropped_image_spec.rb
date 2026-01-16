@@ -5,11 +5,12 @@ describe Morphosource::Derivatives::Processors::ImageSeriesCroppedImage do
 
   let(:file_set)  { FactoryBot.create(:file_set) }
   let(:derivative_path) { Morphosource::DerivativePath.derivative_path_for_reference(file_set, 'thumbnail') }
+  let(:derivative_url) { URI("file://#{Morphosource::DerivativePath.derivative_path_for_reference(file_set, 'thumbnail')}").to_s }
   let(:file_name) { 'file_name' }
   let(:directives) {{
-    label: :dcm, 
-    format: 'dcm', 
-    url: derivative_path
+    label: :dcm,
+    format: 'dcm',
+    url: derivative_url
   }}
 
   describe "#process" do
@@ -37,7 +38,7 @@ describe Morphosource::Derivatives::Processors::ImageSeriesCroppedImage do
     context "with an input file" do
       context "where input zip file does not exist" do
         let(:file_name) { File.join(fixture_path, 'fake.zip') }
-  
+
         it "raises Zip::Error" do
           expect { subject.process }.to raise_error Zip::Error
         end
@@ -45,7 +46,7 @@ describe Morphosource::Derivatives::Processors::ImageSeriesCroppedImage do
 
       context "where input tar file does not exist" do
         let(:file_name) { File.join(fixture_path, 'fake.tar') }
-  
+
         it "raises Errno::ENOENT" do
           expect { subject.process }.to raise_error Errno::ENOENT
         end
@@ -53,7 +54,7 @@ describe Morphosource::Derivatives::Processors::ImageSeriesCroppedImage do
 
       context "ZIP archive format" do
         let(:file_name) { File.join(fixture_path, 'dcm_stack/dcm_stack.zip') }
-  
+
         it "produces the derivative dcm" do
           subject.process
 					expect(File.exist?(derivative_path)).to be true
@@ -63,7 +64,7 @@ describe Morphosource::Derivatives::Processors::ImageSeriesCroppedImage do
 
       context "TAR archive format" do
         let(:file_name) { File.join(fixture_path, 'dcm_stack/dcm_stack.tar') }
-  
+
         it "produces the derivative dcm" do
           subject.process
           expect(File.exist?(derivative_path)).to be true

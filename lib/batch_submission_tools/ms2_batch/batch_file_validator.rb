@@ -323,6 +323,16 @@ module BatchSubmissionTools
               unless error_msg.present?
                 @parent_media_id = val
               end
+              ignored_experimental_values = []
+              if cell_value(current_row, field_column("experimental.organization_id")).present?
+                ignored_experimental_values << "experimental.organization_id"
+              end
+              if cell_value(current_row, field_column("experimental.device_id")).present?
+                ignored_experimental_values << "experimental.device_id"
+              end
+              if ignored_experimental_values.present?
+                warn_msg += "The following fields are ignored since media.parent_ms_id exists: " + ignored_experimental_values.join(', ')
+              end
             end
           end
         when "media.keyword"
@@ -367,6 +377,9 @@ module BatchSubmissionTools
             end
             if cell_value(current_row, field_column("biological_specimen.catalog_number")).present?
               ignored_values << "biological_specimen.catalog_number"
+            end
+            if cell_value(current_row, field_column("experimental.organization_id")).present?
+              ignored_values << "experimental.organization_id"
             end
             if ignored_values.present?
               warn_msg += "The following fields are ignored since biological_specimen.ms_id exists: " + ignored_values.join(', ')
@@ -425,11 +438,12 @@ module BatchSubmissionTools
           if val.present?
             if valid_modalities.ignore_case_include?(val)
               val = valid_modalities.ignore_case_included_value(val)
-
               if !device_for_row(current_row).present?
                 error_msg = "experimental.device_modality: Device #{cell_value(current_row, field_column("experimental.device_id"))} not found, can not evaluate device modality."
+              elsif device_for_row(current_row).modality.count == 1
+                warn_msg += "experimental.device_modality will be ignored since device has a single modality #{device_for_row(current_row).modality.first} and will be used."
               elsif !device_for_row(current_row).modality.map(&:upcase).include?(val.upcase)
-                error_msg = "experimental.device_modality: Does not match the modality from the selected device: #{device_for_row(current_row).modality.join(', ')}"
+                error_msg = "experimental.device_modality: #{val} does not match the modality of the device (from device ID or from device of parent media): #{device_for_row(current_row).modality.join(', ')}"
               end
 
               media_type_for_row = valid_media_types.ignore_case_included_value(cell_value(current_row, field_column("media.media_type")))
@@ -801,9 +815,36 @@ module BatchSubmissionTools
         end
       end
 
+      # if parent media ID is specified for the row, return SolrDocument for parent media, else return nil
+      def parent_media_for_row(row_num)
+        if (parent_ms_id = cell_value(row_num, field_column("media.parent_ms_id"))).present?
+          if (parent_media_solr = SolrDocument.find(pad(parent_ms_id))).present?
+            return parent_media_solr
+          end 
+        end
+        return nil
+      end
+
+      # if specimen ID is specified for the row, return SolrDocument for the specimen, else return nil
+      def specimen_for_row(row_num)
+        if (bso_ms_id = pad(cell_value(row_num, field_column("biological_specimen.ms_id")))).present?
+          if (specimen_solr = SolrDocument.find(pad(bso_ms_id))).present?
+            return specimen_solr
+          end
+        end
+        return nil
+      end
+
       # For experimental multi-device multi-org sheets, get Device for row or return nil if not present
       def device_for_row(row_num)
-        device_id = pad(cell_value(row_num, field_column("experimental.device_id")))
+        # if parent media is present, get device from parent media
+        # otherwise, get device from experimental.device_id if present
+        if parent_media_for_row(row_num).present?
+          device_id = parent_media_for_row(row_num)["media_device_id_ssim"]&.first
+        else
+          device_id = pad(cell_value(row_num, field_column("experimental.device_id")))
+        end
+
         return nil if !device_id.present?
 
         if device_cache[device_id].present?
@@ -816,12 +857,34 @@ module BatchSubmissionTools
 
       # Return file-level modality or, for experimental multi-device multi-org files, return row-level modality
       def modality_for_row(row_num)
-        modality || cell_value(row_num, field_column("experimental.device_modality"))
+        return modality if modality.present?  # return modality from batch submission form 
+
+        # return device modality if device has only one modality
+        # otherwise return cell value from experimental.device_modality
+        if device_for_row(row_num).present? && device_for_row(row_num).modality.count == 1
+          return device_for_row(row_num).modality.first
+        else
+          return cell_value(row_num, field_column("experimental.device_modality"))
+        end        
       end
 
       # Return file-level organization or, for experimental multi-device multi-org files, return row-level organization
       def organization_for_row(row_num)
-        org_id = organization_id || pad(cell_value(row_num, field_column("experimental.organization_id")))
+        if organization_id.present? # return organization from batch submission form
+          org_id = organization_id
+        else
+          # if parent media is present, get organization from parent media
+          # or if biological specimen is present, get organization from biological specimen
+          # otherwise, get organization from experimental.organization_id 
+          if parent_media_for_row(row_num).present?
+            org_id = parent_media_for_row(row_num)["media_organization_id_ssim"]&.first 
+          elsif specimen_for_row(row_num).present?
+            org_id = specimen_for_row(row_num)["organization_id_ssim"]&.first
+          else
+            org_id = pad(cell_value(row_num, field_column("experimental.organization_id")))
+          end
+        end
+
         return nil if !org_id.present?
 
         if organization_cache[org_id].present?

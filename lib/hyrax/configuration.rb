@@ -480,6 +480,14 @@ module Hyrax
       return true if disable_wings # always return true if wings is disabled
       ActiveModel::Type::Boolean.new.cast(ENV.fetch('HYRAX_VALKYRIE', false))
     end
+
+    ##
+    # @return [Boolean] whether to allow writing to post-Valkyrization AF Taxonomy records (default read only)
+    def allow_af_taxonomy_write
+      return true if !use_valkyrie?
+      ActiveModel::Type::Boolean.new.cast(ENV.fetch('ALLOW_AF_TAXONOMY_WRITE', false))
+    end
+
     # @!endgroup
 
     attr_writer :feature_config_path

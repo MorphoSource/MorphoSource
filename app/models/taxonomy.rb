@@ -19,7 +19,7 @@ class Taxonomy < Morphosource::Works::Base
 
   # To prevent record desync while migrating to Valkyrie
   def readonly?
-    true
+    !Hyrax.config.allow_af_taxonomy_write
   end
 
   def short_title

@@ -5,6 +5,7 @@
 class TaxonomyResource < Hyrax::Work
   include Hyrax::ArResource
   include Hyrax::Schema(:taxonomy_resource)
+  include Morphosource::ValkyrieWorkBehavior
 
   delegate :download_groups, :download_groups=,
            :download_users,  :download_users=, to: :permission_manager

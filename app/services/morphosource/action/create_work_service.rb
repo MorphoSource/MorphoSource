@@ -24,7 +24,7 @@ module Morphosource
       # @param work_attributes_key [Symbol] the name of the key within the params that contains
       #                                     the work's attributes. Optional, will try to use model
       #                                     name if not present.
-      def initialize(model:, params:, user:, work_attributes_key: nil)
+      def initialize(model:, params:, user:, work_attributes_key: nil, skip_index_related_works: false)
         @model = model
         @params = params
         @user = user
@@ -36,6 +36,7 @@ module Morphosource
         @permissions_params = params.fetch(:permissions, [])
         work = model_class.new
         @form = Hyrax::FormFactory.new.build(work, nil, nil)
+        form.skip_index_related_works = true if skip_index_related_works
       end
 
       ##

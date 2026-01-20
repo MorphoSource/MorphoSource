@@ -7,6 +7,14 @@ class ApplicationContainerOverrides
     ops.register 'assign_id' do
       Morphosource::Transactions::Taxonomy::Steps::AssignID.new
     end
+
+    ops.register 'set_uploaded_date_unless_present' do
+      Morphosource::Transactions::Steps::SetUploadedDateUnlessPresent.new
+    end
+
+    ops.register 'save' do
+      Morphosource::Transactions::Steps::Save.new
+    end
   end
 
   namespace 'taxonomy_change_set' do |ops|

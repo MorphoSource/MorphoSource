@@ -24,6 +24,7 @@ module Morphosource
       # @param event [Dry::Event]
       def on_object_metadata_updated(event)
         log_non_resource(event) && return unless event[:object].is_a?(Valkyrie::Resource)
+        log_skip_reindex(event) && return if event[:skip_index_related_works]
 
         case event[:object]
         when TaxonomyResource
@@ -36,8 +37,12 @@ module Morphosource
       private
 
       def log_non_resource(event)
-        Hyrax.logger.info('Skipping object reindex because the object ' \
+        Hyrax.logger.info('Skipping related work reindex because the object ' \
                           "#{event[:object]} was not a Valkyrie::Resource.")
+      end
+
+      def log_skip_reindex(event)
+        Hyrax.logger.info('Skipping related work reindex because skip reindex flag was present.')
       end
 
       def index_all(works)

@@ -58,7 +58,7 @@ module Morphosource
 					]
 				end.to_h
 			end
-		
+
 			def field_transform(k)
 				case k
 				when 'work_id'
@@ -69,13 +69,13 @@ module Morphosource
 					k
 				end
 			end
-		
+
 			def value_transform(k, v)
 				case k
 				when 'user_id'
 					User.find_by_user_key(v).present? ? User.find_by_user_key(v).name_and_email : v
 				else
-					v
+					v.try(:join, '; ') || v
 				end
 			end
 

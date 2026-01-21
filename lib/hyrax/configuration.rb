@@ -519,7 +519,7 @@ module Hyrax
     attr_writer :characterization_service
     def characterization_service
       @characterization_service ||=
-        Hyrax::Characterization::ValkyrieCharacterizationService
+        Morphosource::Characterization::Valkyrie::CharacterizationService
     end
 
     ##
@@ -528,7 +528,13 @@ module Hyrax
     #  @return [Hash] of options like {ch12n_tool: :fits_servlet}
     attr_writer :characterization_options
     def characterization_options
-      @characterization_options ||= { ch12n_tool: ENV.fetch('CH12N_TOOL', 'fits').to_sym }
+      @characterization_options ||= {
+        ch12n_tool: ENV.fetch('CH12N_TOOL', 'fits').to_sym, # Can be changed on characterize
+        characterizer_config: {
+          fits: Hydra::Derivatives.fits_path,
+          blender: Hyrax.config.blender_path
+        }
+      }
     end
 
     ##

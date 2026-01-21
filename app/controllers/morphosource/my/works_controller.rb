@@ -40,6 +40,11 @@ module Morphosource
       end
       helper_method :sort_parameters
 
+      # paginated results shown in the facet "more" modal
+      def facet_search_response
+        search_service.facet_field_response(@facet.key)
+      end
+
     end
   end
 end

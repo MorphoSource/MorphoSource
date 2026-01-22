@@ -3,7 +3,6 @@
 # Generated via
 #  `rails generate hyrax:work_resource TaxonomyResource`
 class TaxonomyResource < Hyrax::Work
-  include Hyrax::ArResource
   include Hyrax::Schema(:taxonomy_resource)
   include Morphosource::ValkyrieWorkBehavior
 

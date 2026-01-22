@@ -1,6 +1,7 @@
 # @deprecated Use TaxonomyResource instead.
 class Taxonomy < Morphosource::Works::Base
   include ::Hyrax::WorkBehavior
+  include ::Morphosource::Works::ValkyrieAssociation # must include after Hyrax::WorkBehavior
   validates_with Morphosource::ParentChildValidator
 
   self.work_requires_files = false

@@ -100,6 +100,7 @@ module Morphosource
         # @param method_name [Symbol]
         # @return [HybridMemberProxy]
         def create_method_get_members(method_name)
+          alias_method "active_fedora_#{method_name}", method_name
           define_method method_name do
             Morphosource::Works::ValkyrieAssociation::HybridMemberProxy.new(
               self,
@@ -114,6 +115,7 @@ module Morphosource
         #
         # @param method_name [Symbol]
         def create_method_set_members(method_name)
+          alias_method "active_fedora_#{method_name}=", "#{method_name}="
           define_method "#{method_name}=" do |members_collection|
             members_collection ||= []
             valkyrie_items, af_items = members_collection.partition do |member|
@@ -131,6 +133,7 @@ module Morphosource
         # @param method_name [Symbol]
         # @return [Array] IDs of AF and Valkyrie members
         def create_method_get_member_ids(method_name)
+          alias_method "active_fedora_#{method_name}", method_name
           define_method method_name do
             (valkyrie_member_ids + super().to_a).uniq
           end
@@ -142,6 +145,7 @@ module Morphosource
         # @param method_name [Symbol]
         # @return [Array] Parent works both from AF and Valkyrie
         def create_method_get_member_of(method_name)
+          alias_method "active_fedora_#{method_name}", method_name
           define_method method_name do
             (valkyrie_member_of + super().to_a).uniq { |w| w.id.to_s }
           end

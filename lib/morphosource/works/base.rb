@@ -187,7 +187,7 @@ module Morphosource
 
       # Only allow valkyrie_resource when resource is registered with Wings - no Hyrax::Work generic resources
       def valkyrie_resource
-        Wings::ModelRegistry.reverse_lookup(self.class) ? super : nil
+        Wings::ModelRegistry.reverse_lookup(self.class) ? super : raise(::ActiveFedora::ObjectNotFoundError)
       end
 
       private

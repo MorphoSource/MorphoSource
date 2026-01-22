@@ -12,7 +12,7 @@ module Morphosource
   #
   # * Defined: The relationship is defined in the parent work's `:member_ids` attribute.
   # * Tested: The relationship is tested in shared spec `'a Hyrax::Work'` by testing
-  #   `it_behaves_like 'has_members'`.  Shared specs are defined in /lib/hyrax/specs/shared_specs/hydra_works.rb.
+  #   `it_behaves_like 'has_members'`.  Shared specs are defined in /lib /hyrax/specs/shared_specs/hydra_works.rb.
   # * Work to child Work: (0..m)  A work can have many child works.
   #
   # @example Add a child work to a work:
@@ -34,7 +34,11 @@ module Morphosource
 
     # This will currently double-query AF works, but could modify Wings query_service.rb to prevent that by checking model registry before query
     def members(include_af_works: true)
-      children = Hyrax.custom_queries.find_child_works(resource: self)
+      children = member_ids.map do |id|
+        Hyrax.query_service.postgres_service.find_by(id: id)
+      rescue Valkyrie::Persistence::ObjectNotFoundError
+        next
+      end.compact
 
       if include_af_works
         children.concat(
@@ -47,6 +51,18 @@ module Morphosource
       end
 
       return children
+    end
+
+    def member_of(include_af_works: true)
+      parents = Hyrax.query_service.postgres_service.find_inverse_references_by(
+        id: id.to_s, property: :member_ids
+      ).to_a
+
+      if include_af_works
+        parents.concat(ActiveFedora::Base.where(valkyrie_member_ids_ssim: id.to_s).to_a)
+      end
+
+      return parents
     end
   end
 end

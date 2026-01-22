@@ -850,6 +850,7 @@ module BatchSubmissionTools
         else
           device_id = pad(cell_value(row_num, field_column("experimental.device_id")))
         end
+byebug
 
         return nil if !device_id.present?
 

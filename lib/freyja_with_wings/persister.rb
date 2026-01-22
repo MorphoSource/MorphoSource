@@ -36,7 +36,7 @@ module FreyjaWithWings
           # Migrate child works able to be valkyrized but have not yet been migrated
           new_resource.member_ids.map(&:to_s).each do |member_id|
             child = Hyrax.query_service.find_by(id: member_id)
-            MigrateResourcesJob.perform_later(ids: [member_id]) if (child.present && child.wings?)
+            MigrateResourcesJob.perform_later(ids: [member_id]) if (child.present? && child.wings?)
           rescue Valkyrie::Persistence::ObjectNotFoundError
             next
           end

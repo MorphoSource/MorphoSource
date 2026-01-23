@@ -1,0 +1,12 @@
+<div>
+  <div class="content-block">
+    <h2><%= t('morphosource.dashboard.collections.project.edit.fork_project.title') %></h2>
+    <div style="padding: 2px 10px;">
+      <%= link_to t('morphosource.dashboard.collections.project.edit.fork_project.button'),
+        project_create_list_path(@collection),
+        method: :post,
+        data: { confirm: t('morphosource.dashboard.collections.project.edit.fork_project.confirm') },
+        class: "btn btn-primary" %>
+    </div>
+  </div>
+</div>

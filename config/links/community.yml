@@ -1,4 +1,8 @@
 # List of external document URLs for front page community menu
+- label: hyrax.controls.links.community.slack
+  url: https://forms.gle/zhJuhDc1nPvsoU9K8
+  header: true
+  footer: true
 - label: hyrax.controls.links.community.community_hub
   url: https://github.com/MorphoSource/Community
   header: true
@@ -10,7 +14,7 @@
 - label: hyrax.controls.links.community.roadmap
   url: https://github.com/orgs/MorphoSource/projects/2
   header: true
-  footer: true
+  footer: false
 - label: hyrax.controls.links.community.discussions
   url: https://github.com/MorphoSource/Community/discussions/categories/general
   header: true

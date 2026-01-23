@@ -41,6 +41,13 @@ module Morphosource
           main_app.my_organizations_path
         end
 
+        def allowed_sort_parameters
+          ['date_modified_dtsi asc',
+           'date_modified_dtsi desc',
+           'title_ssi asc',
+           'title_ssi desc']
+        end
+
         private
 
           def add_collection_type_breadcrumb

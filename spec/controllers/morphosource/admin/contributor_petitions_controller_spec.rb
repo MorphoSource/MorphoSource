@@ -4,9 +4,9 @@ include ActionDispatch::TestProcess
 RSpec.describe Morphosource::Admin::ContributorPetitionsController, :type => :controller do
   let(:user) { User.create(email: 'user@email.com', password: 'password')}
   let(:admin_user) { User.create(email: 'adminuser@email.com', password: 'password')}
-  
+
   describe 'GET #current_applications' do
-    before do 
+    before do
       allow(controller).to receive(:current_user) { user }
     end
 
@@ -53,7 +53,7 @@ RSpec.describe Morphosource::Admin::ContributorPetitionsController, :type => :co
     }
     let!(:contributor_group) { Role.create(name: 'contributor') }
 
-    before do 
+    before do
       allow(controller).to receive(:current_user) { admin_user }
       petition.save!
     end
@@ -104,6 +104,43 @@ RSpec.describe Morphosource::Admin::ContributorPetitionsController, :type => :co
         expect(response).to have_http_status(302)
         expect(response).to redirect_to('/?locale=en')
       end
+    end
+  end
+
+  describe 'allowed_sort_parameters' do
+    let(:allowed_sort_params) do
+      ['contribution_amount asc',
+       'contribution_amount desc',
+       'created_at asc',
+       'created_at desc',
+       'date_approved asc',
+       'date_approved desc',
+       'date_denied asc',
+       'date_denied desc',
+       'date_returned asc',
+       'date_returned desc',
+       'decision_message asc',
+       'decision_message desc',
+       'decision_state asc',
+       'decision_state desc',
+       'reason asc',
+       'reason desc',
+       'terms_agree asc',
+       'terms_agree desc',
+       'user_advisor asc',
+       'user_advisor desc',
+       'user_affiliation asc',
+       'user_affiliation desc',
+       'user_demographics asc',
+       'user_demographics desc',
+       'user_department asc',
+       'user_department desc',
+       'users.display_name asc',
+       'users.display_name desc']
+    end
+
+    it 'includes custom sort parameters' do
+      expect(subject.allowed_sort_parameters).to match_array(allowed_sort_params)
     end
   end
 end

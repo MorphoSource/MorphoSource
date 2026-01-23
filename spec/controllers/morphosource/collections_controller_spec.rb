@@ -294,4 +294,27 @@ RSpec.describe Morphosource::CollectionsController, type: :controller do
       end
     end
   end
+
+  describe 'allowed_sort_parameters' do
+    let(:allowed_sort_params) do
+      ['date_uploaded_dtsi asc',
+       'date_uploaded_dtsi desc',
+       'human_readable_media_type_ssi asc',
+       'human_readable_media_type_ssi desc',
+       'part_ssi asc',
+       'part_ssi desc',
+       'physical_object_title_ssi asc',
+       'physical_object_title_ssi desc',
+       'publication_status_ssi asc',
+       'publication_status_ssi desc',
+       'short_description_ssi asc',
+       'short_description_ssi desc',
+       'taxonomy_ssi asc',
+       'taxonomy_ssi desc']
+    end
+
+    it 'includes custom sort parameters' do
+      expect(subject.allowed_sort_parameters).to match_array(allowed_sort_params)
+    end
+  end
 end

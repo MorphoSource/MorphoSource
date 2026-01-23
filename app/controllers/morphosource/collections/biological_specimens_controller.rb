@@ -55,6 +55,16 @@ module Morphosource
           :specimens
         end
 
+        def allowed_sort_parameters
+          ["date_uploaded_dtsi asc",
+           "date_uploaded_dtsi desc",
+           "record_source_si asc",
+           "record_source_si desc",
+           "taxonomy_name_si asc",
+           "taxonomy_name_si desc",
+           "title_ssi asc",
+           "title_ssi desc"]
+        end
     end
   end
 end

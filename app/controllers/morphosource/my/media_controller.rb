@@ -59,6 +59,24 @@ module Morphosource
         def add_breadcrumbs
           # no need to add breadcrumbs as they have been added already
         end
+
+        # allowlist sort parameters for collection media
+        # see also application_controller #sanitize_sort_param
+        # see also _document_list partial
+        def allowed_sort_parameters
+          ["date_uploaded_dtsi asc",
+          "date_uploaded_dtsi desc",
+          "human_readable_media_type_ssi asc",
+          "human_readable_media_type_ssi desc",
+          "part_ssi asc",
+          "part_ssi desc",
+          "physical_object_title_ssi asc",
+          "physical_object_title_ssi desc",
+          "publication_status_ssi asc",
+          "publication_status_ssi desc",
+          "taxonomy_ssi asc",
+          "taxonomy_ssi desc"]
+        end
     end
   end
 end

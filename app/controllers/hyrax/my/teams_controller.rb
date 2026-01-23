@@ -116,6 +116,10 @@ module Hyrax
         collection_list_type.pluralize
       end
 
+      def allowed_sort_parameters
+        []
+      end
+
       private
 
         def collection_list_type

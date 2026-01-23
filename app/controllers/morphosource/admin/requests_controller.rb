@@ -32,6 +32,31 @@ module Morphosource
         ]
       end
 
+      def allowed_sort_parameters
+        ["date_approved asc",
+         "date_approved desc",
+         "date_canceled asc",
+         "date_canceled desc",
+         "date_cleared asc",
+         "date_cleared desc",
+         "date_denied asc",
+         "date_denied desc",
+         "date_downloaded asc",
+         "date_downloaded desc",
+         "date_expired asc",
+         "date_expired desc",
+         "date_requested asc",
+         "date_requested desc",
+         "reviewers asc",
+         "reviewers desc",
+         "use asc",
+         "use desc",
+         "users.display_name asc",
+         "users.display_name desc",
+         "work_id asc",
+         "work_id desc"]
+      end
+
       def default_sort_param
         'date_requested DESC'
       end

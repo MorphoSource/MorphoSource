@@ -22,6 +22,22 @@ module Morphosource
       end
       configure_facets
 
+      # allowlist sort parameters for collection cultural heritage objects
+      # see also application_controller #sanitize_sort_param
+      # see also _document_list partial
+      def allowed_sort_parameters
+        ["cho_type_si asc",
+         "cho_type_si desc",
+         "date_uploaded_dtsi asc",
+         "date_uploaded_dtsi desc",
+         "material_si asc",
+         "material_si desc",
+         "title_ssi asc",
+         "title_ssi desc",
+         "vouchered_si asc",
+         "vouchered_si desc"]
+      end
+
       private
 
         def query_collection_counts

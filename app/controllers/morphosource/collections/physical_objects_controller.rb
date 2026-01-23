@@ -20,6 +20,7 @@ module Morphosource
         @object_ids = collection_object_ids
         @media_count = collection_media_count
       end
+
     end
   end
 end

@@ -28,6 +28,7 @@ module Morphosource
       self.collection_type = collection_type
 
       def show
+        byebug
         @tab = tab
         # save abilities so we won't have to check multiple times in views.
         @can_edit = current_ability.can? :edit, @collection

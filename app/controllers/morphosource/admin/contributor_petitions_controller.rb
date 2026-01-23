@@ -94,6 +94,37 @@ module Morphosource
         end
       end
 
+      def allowed_sort_parameters
+        ["contribution_amount asc",
+         "contribution_amount desc",
+         "created_at asc",
+         "created_at desc",
+         "date_approved asc",
+         "date_approved desc",
+         "date_denied asc",
+         "date_denied desc",
+         "date_returned asc",
+         "date_returned desc",
+         "decision_message asc",
+         "decision_message desc",
+         "decision_state asc",
+         "decision_state desc",
+         "reason asc",
+         "reason desc",
+         "terms_agree asc",
+         "terms_agree desc",
+         "user_advisor asc",
+         "user_advisor desc",
+         "user_affiliation asc",
+         "user_affiliation desc",
+         "user_demographics asc",
+         "user_demographics desc",
+         "user_department asc",
+         "user_department desc",
+         "users.display_name asc",
+         "users.display_name desc"]
+      end
+
       private
 
       def get_current_items

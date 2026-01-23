@@ -23,6 +23,17 @@ module Morphosource
 
       before_action :modify_search_builder_class_for_admin, only: [:index]
 
+      def allowed_sort_parameters
+        ["date_uploaded_dtsi asc",
+          "date_uploaded_dtsi desc",
+          "record_source_si asc",
+          "record_source_si desc",
+          "taxonomy_name_si asc",
+          "taxonomy_name_si desc",
+          "title_ssi asc",
+          "title_ssi desc"]
+      end
+
       private
         # If user is admin, use different search builder class
         def modify_search_builder_class_for_admin

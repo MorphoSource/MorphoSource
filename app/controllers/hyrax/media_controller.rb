@@ -444,7 +444,7 @@ module Hyrax
       # "open", "restricted_download", "private"
       def save_publication_status
         @old_publication_status = curation_concern.fileset_accessibility&.first
-        @new_publication_status = params["media"]["visibility"]
+        @new_publication_status = params["media"]["visibility"] == "restricted" ? "private" : params["media"]["visibility"]
       end
 
       def publication_status_changed?
@@ -455,10 +455,9 @@ module Hyrax
       # open and restricted_download media have a visibility of "open"
       # fileset_accessibility is ["open"], ["restricted_download"], or ["private"]
       def map_publication_status_to_visibility
-        publication_status = params["media"]["visibility"]
-        visibility = publication_status == "private" ? "restricted" : "open"
+        visibility = ["private", "restricted"].include?(@new_publication_status) ? "restricted" : "open"
         params["media"]["visibility"] = visibility
-        params["media"]["fileset_accessibility"] = [publication_status]
+        params["media"]["fileset_accessibility"] = [@new_publication_status]
       end
 
       # Prevent changing visibility to private if media has a published DOI

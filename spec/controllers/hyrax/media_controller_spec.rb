@@ -429,13 +429,25 @@ RSpec.describe Hyrax::MediaController, type: :controller do
     before do
       allow(subject).to receive(:curation_concern).and_return(work)
       work.ordered_members << file_set_1
+      allow(subject).to receive(:params).and_return(params)
+      subject.send(:save_publication_status)
+      subject.send(:map_publication_status_to_visibility)
+    end
+
+    # allow for either "restricted" or "private" to represent private media
+    context 'when no publication status is selected' do
+      context 'media is private' do
+        let(:params)  { {"media"=> {"visibility" => "restricted"}} }
+
+        it 'sets params for private media' do
+          expect(subject.params["media"]["visibility"]).to eq("restricted")
+          expect(subject.params["media"]["fileset_accessibility"]).to match_array(["private"])
+        end
+      end
     end
 
     context 'when user selects "open" publication status' do
-      before do
-        allow(subject).to receive(:params).and_return({"media"=> {"visibility" => public}})
-        subject.send(:map_publication_status_to_visibility)
-      end
+      let(:params)  { {"media"=> {"visibility" => public}} }
 
       it 'sets params for "open" publication status' do
         expect(subject.params["media"]["visibility"]).to eq("open")
@@ -444,10 +456,7 @@ RSpec.describe Hyrax::MediaController, type: :controller do
     end
 
     context 'when user selects "restricted_download" publication status' do
-      before do
-        allow(subject).to receive(:params).and_return({"media"=> {"visibility" => "restricted_download"}})
-        subject.send(:map_publication_status_to_visibility)
-      end
+      let(:params)  { {"media"=> {"visibility" => "restricted_download"}} }
 
       it 'sets params for "restricted_download" publication status' do
         expect(subject.params["media"]["visibility"]).to eq("open")
@@ -456,10 +465,7 @@ RSpec.describe Hyrax::MediaController, type: :controller do
     end
 
     context 'when user selects "private" publication status' do
-      before do
-        allow(subject).to receive(:params).and_return({"media"=> {"visibility" => "private"}})
-        subject.send(:map_publication_status_to_visibility)
-      end
+      let(:params)  { {"media"=> {"visibility" => "private"}} }
 
       it 'sets params for "private" publication status' do
         expect(subject.params["media"]["visibility"]).to eq("restricted")

@@ -63,8 +63,8 @@ RSpec.describe Morphosource::Dashboard::Collections::ProjectsController, type: :
       it 'redirects to the new media list' do
         get :create_list, params: params
         new_list = MediaList.last
-        expect(response).to redirect_to(media_list_path(new_list))
-        expect(flash[:notice]).to eq("New Media List successfully created from Project. Media are being copied in the background.")
+        expect(response).to redirect_to(media_list_path(new_list.id))
+        expect(flash[:notice]).to eq(I18n.t("morphosource.dashboard.collections.project.edit.fork_project.notice"))
       end
     end
 
@@ -76,7 +76,7 @@ RSpec.describe Morphosource::Dashboard::Collections::ProjectsController, type: :
       it 'redirects to the project edit page with an error message' do
         get :create_list, params: params
         expect(response).to redirect_to(project_edit_path(project))
-        expect(flash[:error]).to eq("There was an error forking the Project to a Media List: Test error")
+        expect(flash[:error]).to eq(I18n.t("morphosource.dashboard.collections.project.edit.fork_project.error", error_message: "Test error"))
       end
     end
   end

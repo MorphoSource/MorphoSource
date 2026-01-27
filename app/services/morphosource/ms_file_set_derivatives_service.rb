@@ -46,6 +46,7 @@ module Morphosource
           outputs: [ {
             label: :glb,
             format: 'glb',
+            point_count: file_set&.point_count&.first&.to_i,
             unit: parent_work&.unit&.first,
             url: derivative_url('glb')
           } ]

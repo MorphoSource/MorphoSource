@@ -9,6 +9,10 @@ RSpec.describe Morphosource::ArResourceMembership do
     end
   end
 
+  before do
+    allow_any_instance_of(Taxonomy).to receive(:readonly?).and_return(false)
+  end
+
   after(:all) do
     Object.send(:remove_const, :TestTaxonomyWithValkyrie) if Object.const_defined?(:TestTaxonomyWithValkyrie)
   end

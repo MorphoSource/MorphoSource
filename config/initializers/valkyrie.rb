@@ -58,7 +58,7 @@ if Hyrax.config.valkyrie_transition?
       klass_name = resource_klass_name.gsub(/^Wings\((.+)\)$/, '\1')
       klass_name = klass_name.gsub(/Resource$/, '')
       if %w[
-        Taxonomy,
+        Taxonomy
         Device
       ].include?(klass_name)
         "#{klass_name}Resource".constantize

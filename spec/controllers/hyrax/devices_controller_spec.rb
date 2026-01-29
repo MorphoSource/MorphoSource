@@ -6,7 +6,7 @@ RSpec.describe Hyrax::DevicesController do
   let(:main_app) { Rails.application.routes.url_helpers }
 
   it "should have curation_concern_type ::Device" do
-    expect(Hyrax::DevicesController.curation_concern_type).to be(::Device)
+    expect(Hyrax::DevicesController.curation_concern_type).to be(::DeviceResource)
   end
   it "should have show_presenter Hyrax::DevicePresenter" do
   	expect(Hyrax::DevicesController.show_presenter).to be(Hyrax::DevicePresenter)
@@ -16,7 +16,7 @@ RSpec.describe Hyrax::DevicesController do
     let(:depositor)         { User.create(email: 'depositor@email.com', password: 'password') }
     let!(:collection_type)  { Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::Organizations::SETTINGS)}
     let!(:organization)     { FactoryBot.create(:organization_collection, depositor: depositor.ms_id) }
-    let!(:device)           { FactoryBot.create(:device, title: ['device title'], creator: ['device creator'], depositor: depositor.ms_id) }
+    let!(:device)           { FactoryBot.valkyrie_create(:device_resource, title: ['device title'], creator: ['device creator'], depositor: depositor.ms_id) }
 
     before do
       sign_in user
@@ -31,7 +31,7 @@ RSpec.describe Hyrax::DevicesController do
       end
 
       context 'user creates a device from an organization page' do
-        let(:params)  { { organization_id: organization.id, device: { title: 'title', creator: 'creator' } } }
+        let(:params)  { { organization_id: organization.id, device_resource: { title: ['title'], creator: ['creator'], modality: ['XRay'] } } }
 
         before do
           organization.create_collection_groups
@@ -95,7 +95,7 @@ RSpec.describe Hyrax::DevicesController do
           end
         end
         context 'user tries to create a device without an organization id' do
-          let(:params)  { { device: { title: 'title', creator: 'creator' } } }
+          let(:params)  { { device_resource: { title: ['title'], creator: ['creator'], modality: ['XRay'] } } }
           context 'user is an org manager or editor' do
             context 'user is a manager' do
               before do
@@ -156,12 +156,12 @@ RSpec.describe Hyrax::DevicesController do
 
     describe 'user is an admin' do
       let(:user)    { FactoryBot.create(:admin) }
-      let(:params)  { { device: { title: 'title', creator: 'creator' } } }
+      let(:params)  { { device_resource: { title: ['title'], creator: ['creator'], modality: ['XRay'] } } }
       context 'admin can create a device without an organization' do
         it 'creates the device' do
           post :create, params: params
           expect(response.status).to eq(302)
-          expect(response).to redirect_to(main_app.hyrax_device_path(Device.last, locale: 'en'))
+          expect(response).to redirect_to(main_app.hyrax_device_path(controller.curation_concern, locale: 'en'))
         end
       end
     end

@@ -12,7 +12,8 @@ module Morphosource
     # This code block is extending self.build_permitted_params from Hyrax::Forms::WorkForm
     # @return [Array] a list of parameters used by sanitize_params
     def build_permitted_params
-      super + [
+      base_params = defined?(super) ? super : []
+      base_params + [
        :on_behalf_of,
        :version,
        :add_works_to_collection,

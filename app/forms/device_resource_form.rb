@@ -10,6 +10,7 @@ class DeviceResourceForm < Hyrax::Forms::PcdmObjectForm(DeviceResource)
   include Hyrax::FormFields(:basic_metadata)
   include Hyrax::FormFields(:device_resource)
   include Morphosource::FormMethods
+  include SingleValuedResourceForm
   
   attr_accessor :controller
 

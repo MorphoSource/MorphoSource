@@ -33,6 +33,8 @@ module Morphosource
                        when 'device', 'team', 'project', 'media_list', 'seq_section_list'
                          response = fetch_ids_by_title(contains_title, facet_config.key)
                          response['response']['docs'].map { |doc| doc['id'] }
+                       when 'owner', 'depositor'
+                         fetch_ms_ids_by_name(contains_title)
                        else
                          []
                        end
@@ -77,6 +79,10 @@ module Morphosource
         fl: 'id',
         rows: 999999
       })
+    end
+
+    def fetch_ms_ids_by_name(name)
+      User.where('display_name ILIKE ?', "%#{name}%").pluck(:ms_id).map(&:to_s)
     end
 
   end

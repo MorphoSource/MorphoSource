@@ -5,7 +5,8 @@ module Morphosource
       ID_HELPER_METHODS = [
         :collection_title_by_id,
         :device_title_by_id,
-        :title_by_id
+        :title_by_id,
+        :user_name_by_id
       ].freeze
 
       # displays values and pagination links for a single facet field
@@ -13,9 +14,10 @@ module Morphosource
       def facet
         @facet = blacklight_config.facet_fields[params[:id]]
         raise ActionController::RoutingError, 'Not Found' unless @facet
+
         # if the facet has an id helper method we need to handle sorting and searching differently
         if id_helper_method? && params["facet.containsTitle"].present?
-          # if searching by title, proceed to filter_facet
+          # if searching by title or display name, proceed to filter_facet
           filter_facet(params["facet.containsTitle"])
         elsif id_helper_method? && params["facet.sort"] == "index"
           # if sorting alphabetically, proceed to alphabetized_facet
@@ -47,8 +49,13 @@ module Morphosource
 
         @response = facet_search_response
 
-        title_search_response = fetch_ids_by_title(contains_title, @facet.key)
-        matching_ids = title_search_response['response']['docs'].map { |doc| doc['id'] }
+        if @facet.helper_method == :user_name_by_id
+          matching_ids = fetch_ms_ids_by_name(contains_title)
+        else
+          title_search_response = fetch_ids_by_title(contains_title, @facet.key)
+          matching_ids = title_search_response['response']['docs'].map { |doc| doc['id'] } # ["000200423"]
+        end
+
         set_display_facet_items(filtered_values: matching_ids)
         # pass the modified display_facet to the facet_paginator
         @pagination = facet_paginator(@facet, @display_facet)
@@ -86,7 +93,6 @@ module Morphosource
           query = 'has_model_ssim:unknown'
           Rails.logger.warn("Unknown model for facet key: #{facet_config.key}")
         end
-
         full_query = "#{query} AND title_tesim:\"#{title}\""
         solr_service = Blacklight.default_index.connection
         solr_service.get('select', params: {
@@ -94,6 +100,10 @@ module Morphosource
           fl: 'id, has_model_ssim, title_tesim',
           rows: 999999
         })
+      end
+
+      def fetch_ms_ids_by_name(name)
+        User.where('display_name ILIKE ?', "%#{name}%").pluck(:ms_id).map(&:to_s)
       end
 
       # modifies blacklight behavior to retrieve all values for a collection id facet instead of only the values for one page.

@@ -29,8 +29,8 @@ class MediaCatalogController < CatalogController
     config.add_facet_field "project", field: "member_of_project_ids_ssim", label: 'Project', limit: DEFAULT_LIMIT, helper_method: :collection_title_by_id
     config.add_facet_field "media_list", field: "member_of_media_list_ids_ssim", label: 'Media List', limit: DEFAULT_LIMIT, helper_method: :collection_title_by_id
     config.add_facet_field "seq_section_list", field: "member_of_sequential_section_list_ids_ssim", label: 'Seq. Section List', limit: DEFAULT_LIMIT, helper_method: :collection_title_by_id
-    config.add_facet_field "owner", field: "user_with_ownership_ssi", label: 'Data Manager', limit: DEFAULT_LIMIT, helper_method: :user_name_by_id
-    config.add_facet_field "depositor", field: "depositor_ssim", label: 'Data Uploader', limit: DEFAULT_LIMIT, helper_method: :user_name_by_id
+    config.add_facet_field "owner", field: "user_with_ownership_ssi", label: 'Data Manager', limit: 1, helper_method: :user_name_by_id
+    config.add_facet_field "depositor", field: "depositor_ssim", label: 'Data Uploader', limit: 1, helper_method: :user_name_by_id
     config.add_facet_field "sponsor", field: "active_fund_code_title_ssim", label: 'Data Sponsor', limit: DEFAULT_LIMIT
 
     # Search Results Fields

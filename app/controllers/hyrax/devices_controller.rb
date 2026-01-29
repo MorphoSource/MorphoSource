@@ -121,6 +121,8 @@ module Hyrax
     def find_organization
       organization_id = (
         params["organization_id"] ||
+        params.dig("device_resource", "work_parents_attributes")&.permit!&.to_h&.values&.first&.dig("id") ||
+        params.dig("device_resource", "organization_id")&.first ||
         params.dig("device","work_parents_attributes")&.permit!&.to_h&.values&.first&.dig("id") ||
         params.dig("device", "organization_id")&.first ||
         ::SolrDocument.where({"id" => params['id']})&.first&.to_h&.dig("organization_id_ssim")&.first

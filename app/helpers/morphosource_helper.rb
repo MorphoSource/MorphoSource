@@ -141,7 +141,8 @@ module MorphosourceHelper
 
   def devices
     sortable_title_field = ActiveFedora.index_field_mapper.solr_name('title', :stored_sortable)
-    qry = "(#{ActiveFedora.index_field_mapper.solr_name('has_model', :symbol)}:(Device OR DeviceResource)"
+    model_field = ActiveFedora.index_field_mapper.solr_name('has_model', :symbol)
+    qry = "(#{model_field}:(\"Device\" OR \"DeviceResource\"))"
     ActiveFedora::SolrService.query(qry, rows: 999999, sort: "#{sortable_title_field} ASC")
   end
 

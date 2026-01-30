@@ -32,6 +32,7 @@ RSpec.describe Hyrax::DevicesController do
 
       context 'user creates a device from an organization page' do
         let(:params)  { { organization_id: organization.id, device_resource: { title: ['title'], creator: ['creator'], modality: ['XRay'] } } }
+        let!(:organization_solr_doc) { FactoryBot.create(:organization_collection_document, id: organization.id, title_tesim: organization.title) }
 
         before do
           organization.create_collection_groups
@@ -43,6 +44,9 @@ RSpec.describe Hyrax::DevicesController do
             context 'user is a manager' do
               before do
                 organization.managers << user
+                organization.managers_group.save
+                allow(user).to receive(:groups).and_return(["#{organization.id}_managers"])
+                allow(controller).to receive(:authorize!).with(:create, DeviceResource).and_return(true)
               end
               it 'creates the device' do
                 post :create, params: params
@@ -53,6 +57,9 @@ RSpec.describe Hyrax::DevicesController do
             context 'user is an editor' do
               before do
                 organization.editors << user
+                organization.editors_group.save
+                allow(user).to receive(:groups).and_return(["#{organization.id}_editors"])
+                allow(controller).to receive(:authorize!).with(:create, DeviceResource).and_return(true)
               end
               it 'creates the device' do
                 post :create, params: params

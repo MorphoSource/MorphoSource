@@ -109,6 +109,7 @@ module Morphosource
       # modifies blacklight behavior to retrieve all values for a collection id facet instead of only the values for one page.
       # can then sort all of the collections by title, and then return the section of the sorted array that corresponds to the requested page
       def alphabetized_facet(facet_type: nil)
+        byebug
         raise ActionController::RoutingError, 'Not Found' unless @facet
         # save page number, but delete facet.page to set offset to 0 for searching
         params["az_facet.page"] = params.delete("facet.page")
@@ -116,11 +117,17 @@ module Morphosource
         blacklight_config.default_more_limit = 999999
 
         @response = facet_search_response
-
-        # sort all the facet items by title
-        sort_records_by_title
+        byebug
+        # sort all the facet items by title/name
+        if @facet.helper_method == :user_name_by_id
+          sort_records_by_name
+        else
+          sort_records_by_title
+        end
+        byebug
         # modify the display facet to include only the items for the current page
         set_display_facet_items
+        byebug
         # pass the modified display_facet to the facet_paginator
         @pagination = facet_paginator(@facet, @display_facet)
         respond_to do |format|
@@ -133,8 +140,17 @@ module Morphosource
         end
       end
 
+
+      # [#<Blacklight::Solr::Response::Facets::FacetItem value="000200331", hits=5>, #<Blacklight::Solr::Response::Facets::FacetItem value="000200423", hits=5>, #<Blacklight::Solr::Response::Facets::FacetItem value="000200000", hits=1>]
       def sort_records_by_title
+        byebug
         @response.aggregations[@facet.field].items.sort_by! { |i| filtered_record_title_by_id(i.value).downcase }
+      end
+
+      # [#<Blacklight::Solr::Response::Facets::FacetItem value="1", hits=19>, #<Blacklight::Solr::Response::Facets::FacetItem value="7f6d1c", hits=1>, #<Blacklight::Solr::Response::Facets::FacetItem value="cf587b", hits=2>, #<Blacklight::Solr::Response::Facets::FacetItem value="dbff7e", hits=3>, #<Blacklight::Solr::Response::Facets::FacetItem value="420dde", hits=4>, #<Blacklight::Solr::Response::Facets::FacetItem value="94d771", hits=3>, #<Blacklight::Solr::Response::Facets::FacetItem value="2", hits=3>, #<Blacklight::Solr::Response::Facets::FacetItem value="3", hits=2>, #<Blacklight::Solr::Response::Facets::FacetItem value="833a0a", hits=3>]
+      def sort_records_by_name
+        byebug
+        @response.aggregations[@facet.field].items.sort_by! { |i| filtered_record_name_by_id(i.value).split.last.downcase }
       end
 
       def set_display_facet_items(filtered_values: nil)
@@ -165,6 +181,11 @@ module Morphosource
         @record_titles[id] || "Record #{id} Not Found"
       end
 
+      def filtered_record_name_by_id(id)
+        @record_names ||= record_names
+        @record_names[id] || "User #{id} Not Found"
+      end
+
       # returns a hash of record ids and titles:
       # ex: {"000202905"=>"Collection Title 1", "000200071"=>"Collection Title 2"}
       def record_titles
@@ -176,6 +197,12 @@ module Morphosource
           fq = "id:(#{batch.join(' OR ')})"
           service.get_docs(nil, fl: fl, fq: [fq]).map { |h| [h["id"], title[h]] }
         end.to_h
+      end
+
+      def record_names
+        record_ids = @response.aggregations[@facet.field].items.map { |i| i.value }
+        byebug
+        User.where(ms_id: record_ids).pluck(:ms_id, :display_name).to_h
       end
 
       def sort_title(facet_key)

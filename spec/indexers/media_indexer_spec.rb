@@ -15,7 +15,7 @@ RSpec.describe MediaIndexer do
     let(:registered_user)         { FactoryBot.create(:registered_user) }
     let(:owner)                   { FactoryBot.create(:contributor) }
 
-    let(:device)                  { FactoryBot.create(:device, creator: ['Device Make'], title: ['Device Model'], modality: ['Photogrammetry']) }
+    let(:device)                  { FactoryBot.create(:device, creator: ['Device Make'], title: ['Device Model'], modality: ['Photogrammetry'], organization_id: [device_organization.id]) }
     let(:device_organization)     { FactoryBot.create(:organization, title: ['Device Organization']) }
     let(:specimen_organization)   { FactoryBot.create(:organization, title: ['Specimen Organization'])}
     let(:file_set)                { FactoryBot.create(:file_set, visibility: 'open') }
@@ -104,7 +104,6 @@ RSpec.describe MediaIndexer do
       Hyrax::CurationConcern.actor.create(Hyrax::Actors::Environment.new(media, ::Ability.new(depositor), {}))
       media.keyword = ['red', 'yellow', 'blue'] # TODO: keyword is disappearing from media if added before Hyrax::CurationConcern.actor.create
       media.download_users += [registered_user]
-      add_ordered_members(device_organization, device)
       add_ordered_members(imaging_event, processing_event1)
       add_ordered_members(processing_event1, parent_media)
       add_ordered_members(parent_media, processing_event2)
@@ -304,8 +303,8 @@ RSpec.describe MediaIndexer do
       let(:organization)  { FactoryBot.create(:organization, title: ['organization work'], institution_name: ['institution name']) }
 
       before do
-        organization.ordered_members << device
-        organization.save!
+        device.organization_id = [organization.id]
+        device.save!
         imaging_event.ordered_members << media
         imaging_event.save!
         media.update_index

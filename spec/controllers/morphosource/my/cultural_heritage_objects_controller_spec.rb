@@ -68,7 +68,7 @@ RSpec.describe Morphosource::My::CulturalHeritageObjectsController, type: :contr
         sign_in user
         get :index
       end
-      
+
       it 'search_builder_class is EditSpecimensSearchBuilder' do
         expect(controller.blacklight_config.search_builder_class).to eq(Morphosource::Users::EditChosSearchBuilder)
       end
@@ -111,5 +111,24 @@ RSpec.describe Morphosource::My::CulturalHeritageObjectsController, type: :contr
     end
 
     it { expect(subject.search_action_for_dashboard).to eq(main_app.my_cultural_heritage_objects_path(locale: 'en')) }
+  end
+
+  describe 'allowed_sort_parameters' do
+    let(:allowed_sort_params) do
+      ['cho_type_si asc',
+       'cho_type_si desc',
+       'date_uploaded_dtsi asc',
+       'date_uploaded_dtsi desc',
+       'material_si asc',
+       'material_si desc',
+       'title_ssi asc',
+       'title_ssi desc',
+       'vouchered_si asc',
+       'vouchered_si desc']
+    end
+
+    it 'includes custom sort parameters' do
+      expect(subject.allowed_sort_parameters).to match_array(allowed_sort_params)
+    end
   end
 end

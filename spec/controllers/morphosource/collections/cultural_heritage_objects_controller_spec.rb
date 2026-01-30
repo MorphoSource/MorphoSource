@@ -98,4 +98,23 @@ RSpec.describe Morphosource::Collections::CulturalHeritageObjectsController, typ
       it { expect(subject.search_action_for_dashboard).to eq(main_app.organization_chos_path(id: collection.id, locale: 'en')) }
     end
   end
+
+  describe 'allowed_sort_parameters' do
+    let(:allowed_sort_params) do
+      ['cho_type_si asc',
+       'cho_type_si desc',
+       'date_uploaded_dtsi asc',
+       'date_uploaded_dtsi desc',
+       'material_si asc',
+       'material_si desc',
+       'title_ssi asc',
+       'title_ssi desc',
+       'vouchered_si asc',
+       'vouchered_si desc']
+    end
+
+    it 'includes custom sort parameters' do
+      expect(subject.allowed_sort_parameters).to match_array(allowed_sort_params)
+    end
+  end
 end

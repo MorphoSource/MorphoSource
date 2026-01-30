@@ -56,10 +56,12 @@ module Morphosource
           title_search_response = fetch_ids_by_title(contains_title, @facet.key)
           matching_ids = title_search_response['response']['docs'].map { |doc| doc['id'] } # ["000200423"]
         end
-
+        byebug
         set_display_facet_items(filtered_values: matching_ids)
+        byebug
         # pass the modified display_facet to the facet_paginator
         @pagination = facet_paginator(@facet, @display_facet)
+        byebug
         respond_to do |format|
           format.html do
             # Draw the partial for the "more" facet modal window:
@@ -161,20 +163,23 @@ module Morphosource
       end
 
       def set_display_facet_items(filtered_values: nil)
+        byebug
         per_page_count = 20 # set this to the number of items to display per page
         limit = per_page_count + 1 # need to set this because we temporarily set blacklight_config.default_more_limit to 999999
         page = params["az_facet.page"]&.to_i || 1
         offset = page*per_page_count - per_page_count
-
+        byebug
         @display_facet = @response.aggregations[@facet.field]
+        byebug
         # set display_facet limit to one more than the page item count
         options = @display_facet.instance_variable_get(:@options)
         options[:offset] = offset
         options[:limit] = limit
-
+        byebug
         if (filtered_values).present?
           filtered_items = @display_facet.items.select { |item| filtered_values.include?(item.value) }
           @display_facet.instance_variable_set(:@items, filtered_items[offset, limit])
+          byebug
         else
           # remove items not from the page
           @display_facet.instance_variable_set(:@items,@display_facet.items[offset,limit])

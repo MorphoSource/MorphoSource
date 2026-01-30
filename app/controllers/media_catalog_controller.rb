@@ -26,7 +26,7 @@ class MediaCatalogController < CatalogController
     config.add_facet_field "taxonomy_gbif", field: "external_taxonomy_ssim", label: "Taxonomy (GBIF)", limit: 25
     config.add_facet_field "tag", field: "keyword_ssim", label: "Tag", limit: DEFAULT_LIMIT
     config.add_facet_field "team", field: "member_of_team_ids_ssim", label: 'Team', limit: DEFAULT_LIMIT, helper_method: :collection_title_by_id
-    config.add_facet_field "project", field: "member_of_project_ids_ssim", label: 'Project', limit: DEFAULT_LIMIT, helper_method: :collection_title_by_id
+    config.add_facet_field "project", field: "member_of_project_ids_ssim", label: 'Project', limit: 5, helper_method: :collection_title_by_id
     config.add_facet_field "media_list", field: "member_of_media_list_ids_ssim", label: 'Media List', limit: DEFAULT_LIMIT, helper_method: :collection_title_by_id
     config.add_facet_field "seq_section_list", field: "member_of_sequential_section_list_ids_ssim", label: 'Seq. Section List', limit: DEFAULT_LIMIT, helper_method: :collection_title_by_id
     config.add_facet_field "owner", field: "user_with_ownership_ssi", label: 'Data Manager', limit: 5, helper_method: :user_name_by_id

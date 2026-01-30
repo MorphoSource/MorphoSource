@@ -36,8 +36,8 @@ RSpec.describe Morphosource::Collections::OrganizationCollectionsControllerBehav
     let(:depositor)       { FactoryBot.create(:contributor) }
     let!(:organization)   { FactoryBot.create(:organization_collection, depositor: depositor.ms_id) }
     let(:specimen)        { FactoryBot.create(:biological_specimen) }
-    let(:device)          { FactoryBot.create(:device, modality: ['Photogrammetry']) }
-    let(:device2)         { FactoryBot.create(:device, modality: ['Photogrammetry']) }
+    let(:device)          { FactoryBot.create(:device, modality: ['Photogrammetry'], organization_id: [organization.id]) }
+    let(:device2)         { FactoryBot.create(:device, modality: ['Photogrammetry'], organization_id: [organization.id]) }
     let(:imaging_event)   { FactoryBot.create(:imaging_event, device_id: [device.id], ie_modality: device.modality, physical_object_id: [specimen.id]) }
     let(:imaging_event2)  { FactoryBot.create(:imaging_event, device_id: [device2.id], ie_modality: device2.modality, physical_object_id: [specimen.id]) }
     let(:media)           { FactoryBot.create(:public_media) }
@@ -65,11 +65,11 @@ RSpec.describe Morphosource::Collections::OrganizationCollectionsControllerBehav
     let!(:organization)   { FactoryBot.create(:organization_collection, depositor: depositor.ms_id) }
     let(:org_specimen)    { FactoryBot.create(:biological_specimen, organization_id: [organization.id]) }
     let(:org_cho)         { FactoryBot.create(:cultural_heritage_object, organization_id: [organization.id]) }
-    let(:org_device)      { FactoryBot.create(:device, modality: ['Photogrammetry']) }
+    let(:org_device)      { FactoryBot.create(:device, modality: ['Photogrammetry'], organization_id: [organization.id]) }
 
     let(:outside_org)     { FactoryBot.create(:organization_collection, depositor: depositor.ms_id) }
     let(:outside_cho)     { FactoryBot.create(:cultural_heritage_object, organization_id: [outside_org.id]) }
-    let(:outside_device)  { FactoryBot.create(:device, modality: ['Photogrammetry']) }
+    let(:outside_device)  { FactoryBot.create(:device, modality: ['Photogrammetry'], organization_id: [outside_org.id]) }
 
     # linked through organization specimen and device
     let(:imaging_event1)  { FactoryBot.create(:imaging_event, device_id: [org_device.id], ie_modality: org_device.modality, physical_object_id: [org_specimen.id]) }

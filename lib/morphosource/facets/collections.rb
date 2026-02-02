@@ -112,6 +112,7 @@ module Morphosource
       # modifies blacklight behavior to retrieve all values for a collection id facet instead of only the values for one page.
       # can then sort all of the collections by title, and then return the section of the sorted array that corresponds to the requested page
       def alphabetized_facet(facet_type: nil)
+        byebug
         raise ActionController::RoutingError, 'Not Found' unless @facet
 
         # save page number, but delete facet.page to set offset to 0 for searching
@@ -164,9 +165,10 @@ module Morphosource
 
       def set_display_facet_items(filtered_values: nil)
         byebug
-        per_page_count = 20 # set this to the number of items to display per page
+        per_page_count = 2 # set this to the number of items to display per page
         limit = per_page_count + 1 # need to set this because we temporarily set blacklight_config.default_more_limit to 999999
-        page = params["az_facet.page"]&.to_i || 1
+        byebug
+        page = params["facet.page"]&.to_i || params["az_facet.page"]&.to_i || 1
         offset = page*per_page_count - per_page_count
         byebug
         @display_facet = @response.aggregations[@facet.field]
@@ -185,7 +187,7 @@ module Morphosource
           @display_facet.instance_variable_set(:@items,@display_facet.items[offset,limit])
         end
         # reset page params
-        params["facet.page"] = params.delete("az_facet.page")
+        params["facet.page"] ||= params.delete("az_facet.page") || "1"
       end
 
       def filtered_record_title_by_id(id)

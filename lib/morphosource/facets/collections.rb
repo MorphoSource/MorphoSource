@@ -24,19 +24,23 @@ module Morphosource
           # if searching by title or display name, proceed to filter_facet
           filter_facet(@contains_title)
         else
-          @response = facet_search_response
-          @display_facet = @response.aggregations[@facet.field]
-          @presenter = (@facet.presenter || Blacklight::FacetFieldPresenter).new(@facet, @display_facet, view_context)
-          @pagination = @presenter.paginator
+          default_facet_response
+        end
+      end
 
-          respond_to do |format|
-            format.html do
-              # Draw the partial for the "more" facet modal window:
-              return render layout: false if request.xhr?
-              # Otherwise draw the facet selector for users who have javascript disabled.
-            end
-            format.json
+      def default_facet_response
+        @response = facet_search_response
+        @display_facet = @response.aggregations[@facet.field]
+        @presenter = (@facet.presenter || Blacklight::FacetFieldPresenter).new(@facet, @display_facet, view_context)
+        @pagination = @presenter.paginator
+
+        respond_to do |format|
+          format.html do
+            # Draw the partial for the "more" facet modal window:
+            return render layout: false if request.xhr?
+            # Otherwise draw the facet selector for users who have javascript disabled.
           end
+          format.json
         end
       end
 

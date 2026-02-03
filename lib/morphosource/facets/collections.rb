@@ -13,13 +13,10 @@ module Morphosource
       def facet
         @facet = blacklight_config.facet_fields[params[:id]]
         raise ActionController::RoutingError, 'Not Found' unless @facet
+
         # if the facet has an id helper method we need to handle sorting and searching differently
-        if id_helper_method? && params["facet.containsTitle"].present?
-          # if searching by title, proceed to filter_facet
-          filter_facet(params["facet.containsTitle"])
-        elsif id_helper_method? && params["facet.sort"] == "index"
-          # if sorting alphabetically, proceed to alphabetized_facet
-          alphabetized_facet
+        if id_helper_method?
+          everything_facet(contains_title: params["facet.containsTitle"])
         else
           @response = facet_search_response
           @display_facet = @response.aggregations[@facet.field]
@@ -39,27 +36,6 @@ module Morphosource
 
       def id_helper_method?
         Morphosource::Facets::Collections::ID_HELPER_METHODS.include? @facet&.helper_method
-      end
-
-      # Run a filter on the returned facet values to only include the IDs that match the title
-      def filter_facet(contains_title)
-        blacklight_config.default_more_limit = 999999
-
-        @response = facet_search_response
-
-        title_search_response = fetch_ids_by_title(contains_title, @facet.key)
-        matching_ids = title_search_response['response']['docs'].map { |doc| doc['id'] }
-        set_display_facet_items(filtered_values: matching_ids)
-        # pass the modified display_facet to the facet_paginator
-        @pagination = facet_paginator(@facet, @display_facet)
-        respond_to do |format|
-          format.html do
-            # Draw the partial for the "more" facet modal window:
-            return render layout: false if request.xhr?
-            # Otherwise draw the facet selector for users who have javascript disabled.
-          end
-          format.json
-        end
       end
 
       # Query Solr to fetch IDs by matching title and model
@@ -98,7 +74,7 @@ module Morphosource
 
       # modifies blacklight behavior to retrieve all values for a collection id facet instead of only the values for one page.
       # can then sort all of the collections by title, and then return the section of the sorted array that corresponds to the requested page
-      def alphabetized_facet(facet_type: nil)
+      def everything_facet(facet_type: nil, contains_title: nil)
         raise ActionController::RoutingError, 'Not Found' unless @facet
         # save page number, but delete facet.page to set offset to 0 for searching
         params["az_facet.page"] = params.delete("facet.page")
@@ -106,11 +82,14 @@ module Morphosource
         blacklight_config.default_more_limit = 999999
 
         @response = facet_search_response
-
-        # sort all the facet items by title
-        sort_records_by_title
+        title_search_response = fetch_ids_by_title(contains_title, @facet.key)
+        matching_ids = title_search_response['response']['docs'].map { |doc| doc['id'] }
+        if params["facet.sort"] == "index"
+          # sort all the facet items by title
+          sort_records_by_title
+        end
         # modify the display facet to include only the items for the current page
-        set_display_facet_items
+        set_display_facet_items(filtered_values: matching_ids)
         # pass the modified display_facet to the facet_paginator
         @pagination = facet_paginator(@facet, @display_facet)
         respond_to do |format|
@@ -138,7 +117,6 @@ module Morphosource
         options = @display_facet.instance_variable_get(:@options)
         options[:offset] = offset
         options[:limit] = limit
-
         if (filtered_values).present?
           filtered_items = @display_facet.items.select { |item| filtered_values.include?(item.value) }
           @display_facet.instance_variable_set(:@items, filtered_items[offset, limit])

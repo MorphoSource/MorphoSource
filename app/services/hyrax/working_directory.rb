@@ -38,15 +38,16 @@ module Hyrax
         working_path = full_filename(id, file.original_name)
         Rails.logger.debug "in WorkingDirectory: Writing #{file.original_name} to the working directory at #{working_path}"
         FileUtils.mkdir_p(File.dirname(working_path))
+        file_set = ::FileSet.find(id)
 
         File.open(working_path, 'wb') do |f|
-          write_to_temp_file(file, f)
+          write_to_temp_file(file, f, file_set)
         end
         working_path
       end
 
-      def write_to_temp_file(file, temp_file)
-        if remote_url?(file.original_name)
+      def write_to_temp_file(file, temp_file, file_set)
+        if file_set&.is_remote_backed?
           stream_remote_url(file.original_name, temp_file)
         else
           stream_fedora_file(file, temp_file)
@@ -78,11 +79,6 @@ module Hyrax
             end
           end
         end
-      end
-
-      def remote_url?(value)
-        return false unless value.is_a?(String)
-        value.start_with?('http://', 'https://')
       end
 
       def remote_request_headers

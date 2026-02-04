@@ -46,9 +46,47 @@ module Hyrax
       end
 
       def write_to_temp_file(file, temp_file)
+        if remote_url?(file.original_name)
+          stream_remote_url(file.original_name, temp_file)
+        else
+          stream_fedora_file(file, temp_file)
+        end
+      end
+
+      def stream_fedora_file(file, temp_file)
         file.stream.each do |chunk|
           temp_file.write(chunk)
         end
+      end
+
+      def stream_remote_url(url, temp_file, redirect_limit = 3)
+        raise ArgumentError, 'HTTP redirect too deep' if redirect_limit.zero?
+        uri = URI.parse(url)
+        Net::HTTP.start(uri.host, uri.port, use_ssl: (uri.scheme == 'https')) do |http|
+          request = Net::HTTP::Get.new(uri, remote_request_headers)
+          http.request request do |response|
+            case response
+            when Net::HTTPSuccess
+              response.read_body do |chunk|
+                temp_file.write(chunk)
+              end
+            when Net::HTTPRedirection
+              new_url = response['location']
+              stream_remote_url(new_url, temp_file, redirect_limit - 1)
+            else
+              raise "Couldn't get data from remote URL (#{url}). Response: #{response.code}"
+            end
+          end
+        end
+      end
+
+      def remote_url?(value)
+        return false unless value.is_a?(String)
+        value.start_with?('http://', 'https://')
+      end
+
+      def remote_request_headers
+        Hyrax.config.remote_request_headers || {}
       end
 
       def full_filename(id, original_name)

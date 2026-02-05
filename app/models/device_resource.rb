@@ -21,6 +21,6 @@ class DeviceResource < Hyrax::Work
   end
 
   def media
-    Media.where("media_device_id_ssim" => id)
+    Media.where("media_device_id_ssim" => id.to_s)
   end
 end

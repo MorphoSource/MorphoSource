@@ -9,7 +9,7 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
   let!(:manager)        { User.create(email: 'manager@email.com', password: 'password', ms_id: provider['manager']) }
   let!(:manager)        { FactoryBot.create(:user, ms_id: provider['manager']) }
   let!(:organization)   { FactoryBot.create(:organization_collection, id: provider['id'], depositor: manager.ms_id) }
-  let!(:device)         { FactoryBot.create(:device, title: [device_name], modality: ['SequentialSectionScan'], organization_id: [organization.id]) }
+  let!(:device)         { FactoryBot.create(:device_resource, title: [device_name], modality: ['SequentialSectionScan'], organization_id: [organization.id]) }
 
   let(:collection)      { double('collection') }
   let(:occurrence_key)  { 4003219413 }
@@ -268,7 +268,7 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
 
   describe 'create_new_media' do
     let!(:reviewer)       { FactoryBot.create(:user, ms_id: provider['download_reviewer']) }
-    let!(:imaging_event)  { FactoryBot.create(:imaging_event, device_id: [device.id], ie_modality: device.modality, physical_object_id: [specimen.id]) }
+    let!(:imaging_event)  { FactoryBot.create(:imaging_event, device_id: [device.id.to_s], ie_modality: device.modality, physical_object_id: [specimen.id]) }
     let!(:specimen)       { FactoryBot.create(:biological_specimen, organization_id: [organization.id]) }
 
     before do

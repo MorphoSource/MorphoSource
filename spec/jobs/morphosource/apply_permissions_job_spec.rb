@@ -253,9 +253,9 @@ RSpec.describe Morphosource::ApplyPermissionsJob do
       let(:params)  { { media_id: media.id, update_hierarchy: true } }
 
       context 'media has a broken hierarchy' do
-        let!(:device)           { FactoryBot.create(:device, id: '000000001', title: ['device'], modality: ['XRay']) }
+        let!(:device)           { FactoryBot.create(:device_resource, id: '000000001', title: ['device'], modality: ['XRay']) }
         let!(:specimen)         { FactoryBot.create(:biological_specimen, id: '000000002') }
-        let!(:imaging_event)    { FactoryBot.create(:imaging_event, id: '000000003', physical_object_id: [specimen.id], device_id: [device.id], ie_modality: device.modality) }
+        let!(:imaging_event)    { FactoryBot.create(:imaging_event, id: '000000003', physical_object_id: [specimen.id], device_id: [device.id.to_s], ie_modality: device.modality) }
         let!(:processing_event) { FactoryBot.create(:processing_event, id: '000000004') }
         let!(:media)            { FactoryBot.create(:media, id: '000000005', visibility: 'open', fileset_visibility: ['open'], fileset_accessibility: ['open'], depositor: depositor.ms_id)}
 

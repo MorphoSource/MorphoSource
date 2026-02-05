@@ -15,11 +15,11 @@ RSpec.describe MediaIndexer do
     let(:registered_user)         { FactoryBot.create(:registered_user) }
     let(:owner)                   { FactoryBot.create(:contributor) }
 
-    let(:device)                  { FactoryBot.create(:device, creator: ['Device Make'], title: ['Device Model'], modality: ['Photogrammetry'], organization_id: [device_organization.id]) }
+    let(:device)                  { FactoryBot.create(:device_resource, creator: ['Device Make'], title: ['Device Model'], modality: ['Photogrammetry'], organization_id: [device_organization.id]) }
     let(:device_organization)     { FactoryBot.create(:organization, title: ['Device Organization']) }
     let(:specimen_organization)   { FactoryBot.create(:organization, title: ['Specimen Organization'])}
     let(:file_set)                { FactoryBot.create(:file_set, visibility: 'open') }
-    let(:imaging_event)           { FactoryBot.create(:imaging_event, device_id: [device.id], ie_modality: device.modality, physical_object_id: [specimen.id])}
+    let(:imaging_event)           { FactoryBot.create(:imaging_event, device_id: [device.id.to_s], ie_modality: device.modality, physical_object_id: [specimen.id])}
     let(:parent_media)            { FactoryBot.create(:media) }
     let(:processing_event1)       { FactoryBot.create(:processing_event) }
     let(:processing_event2)       { FactoryBot.create(:processing_event) }
@@ -183,8 +183,8 @@ RSpec.describe MediaIndexer do
       expect(subject['media_device_facility_organization_id_tesim']).to match_array([device_organization.id])
       expect(subject['media_device_facility_organization_ssim']).to match_array(device_organization.title)
       expect(subject['media_device_facility_organization_tesim']).to match_array(device_organization.title)
-      expect(subject['media_device_id_ssim']).to match_array([device.id])
-      expect(subject['media_device_id_tesim']).to match_array([device.id])
+      expect(subject['media_device_id_ssim']).to match_array([device.id.to_s])
+      expect(subject['media_device_id_tesim']).to match_array([device.id.to_s])
       expect(subject['media_device_ssim']).to match_array(["#{device.creator.first} #{device.title.first}"])
       expect(subject['media_device_tesim']).to match_array(["#{device.creator.first} #{device.title.first}"])
       expect(subject['media_organization_id_ssim']).to match_array(specimen.organization_id)
@@ -293,9 +293,9 @@ RSpec.describe MediaIndexer do
   end
 
   describe 'organization fields' do
-    let(:device)          { Device.create(title: ['device'], modality: ['Photogrammetry']) }
+    let(:device)          { FactoryBot.create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
     let(:specimen)        { FactoryBot.create(:biological_specimen, organization_id: [organization.id]) }
-    let(:imaging_event)   { FactoryBot.create(:imaging_event, title: ['imaging event'], ie_modality: device.modality, physical_object_id: [specimen.id], device_id: [device.id]) }
+    let(:imaging_event)   { FactoryBot.create(:imaging_event, title: ['imaging event'], ie_modality: device.modality, physical_object_id: [specimen.id], device_id: [device.id.to_s]) }
     let(:media)           { Media.create(title: ['media']) }
     subject               { SolrDocument.find(media.id) }
 
@@ -304,7 +304,7 @@ RSpec.describe MediaIndexer do
 
       before do
         device.organization_id = [organization.id]
-        device.save!
+        Hyrax.persister.save(resource: device)
         imaging_event.ordered_members << media
         imaging_event.save!
         media.update_index
@@ -328,7 +328,7 @@ RSpec.describe MediaIndexer do
 
       before do
         device.organization_id = [organization.id]
-        device.save!
+        Hyrax.persister.save(resource: device)
         imaging_event.ordered_members << media
         imaging_event.save!
         media.update_index

@@ -16,14 +16,22 @@ RSpec.describe Morphosource::Collections::OrganizationCollectionsControllerBehav
   describe 'organization_device_count' do
     let(:depositor)     { FactoryBot.create(:contributor) }
     let!(:organization) { FactoryBot.create(:organization_collection, depositor: depositor.ms_id) }
-    let(:device)        { FactoryBot.create(:device) }
-    let(:device2)       { FactoryBot.create(:device) }
+    let(:device)        { FactoryBot.create(:device_resource) }
+    let(:device2)       { FactoryBot.create(:device_resource) }
 
     before do
-      organization.ordered_members << device
-      organization.ordered_members << device2
-      organization.save!
-      [device, device2].each(&:update_index)
+      model_field = ActiveFedora.index_field_mapper.solr_name('has_model', :symbol)
+      [device, device2].each do |device_resource|
+        ActiveFedora::SolrService.add(
+          {
+            id: device_resource.id.to_s,
+            model_field => ['DeviceResource'],
+            'device_organization_id_ssim' => [organization.id]
+          },
+          softCommit: true
+        )
+      end
+      ActiveFedora::SolrService.commit
       subject.instance_variable_set(:@collection, organization)
     end
 
@@ -36,20 +44,31 @@ RSpec.describe Morphosource::Collections::OrganizationCollectionsControllerBehav
     let(:depositor)       { FactoryBot.create(:contributor) }
     let!(:organization)   { FactoryBot.create(:organization_collection, depositor: depositor.ms_id) }
     let(:specimen)        { FactoryBot.create(:biological_specimen) }
-    let(:device)          { FactoryBot.create(:device, modality: ['Photogrammetry'], organization_id: [organization.id]) }
-    let(:device2)         { FactoryBot.create(:device, modality: ['Photogrammetry'], organization_id: [organization.id]) }
-    let(:imaging_event)   { FactoryBot.create(:imaging_event, device_id: [device.id], ie_modality: device.modality, physical_object_id: [specimen.id]) }
-    let(:imaging_event2)  { FactoryBot.create(:imaging_event, device_id: [device2.id], ie_modality: device2.modality, physical_object_id: [specimen.id]) }
+    let(:device)          { FactoryBot.create(:device_resource, modality: ['Photogrammetry'], organization_id: [organization.id]) }
+    let(:device2)         { FactoryBot.create(:device_resource, modality: ['Photogrammetry'], organization_id: [organization.id]) }
     let(:media)           { FactoryBot.create(:public_media) }
     let(:media2)          { FactoryBot.create(:public_media) }
 
     before do
-      organization.ordered_members << device
-      organization.ordered_members << device2
-      imaging_event.ordered_members << media
-      imaging_event.ordered_members << media2
-      [organization, imaging_event, imaging_event2].each(&:save!)
-      [media, media2].each(&:update_index)
+      ActiveFedora::SolrService.add(
+        {
+          id: media.id,
+          'has_model_ssim' => ['Media'],
+          'media_device_facility_organization_id_ssim' => [organization.id],
+          'read_access_group_ssim' => ['public']
+        },
+        softCommit: true
+      )
+      ActiveFedora::SolrService.add(
+        {
+          id: media2.id,
+          'has_model_ssim' => ['Media'],
+          'media_device_facility_organization_id_ssim' => [organization.id],
+          'read_access_group_ssim' => ['public']
+        },
+        softCommit: true
+      )
+      ActiveFedora::SolrService.commit
       subject.instance_variable_set(:@collection, organization)
       subject.instance_variable_set(:@current_user, depositor)
       sign_in depositor
@@ -65,23 +84,11 @@ RSpec.describe Morphosource::Collections::OrganizationCollectionsControllerBehav
     let!(:organization)   { FactoryBot.create(:organization_collection, depositor: depositor.ms_id) }
     let(:org_specimen)    { FactoryBot.create(:biological_specimen, organization_id: [organization.id]) }
     let(:org_cho)         { FactoryBot.create(:cultural_heritage_object, organization_id: [organization.id]) }
-    let(:org_device)      { FactoryBot.create(:device, modality: ['Photogrammetry'], organization_id: [organization.id]) }
+    let(:org_device)      { FactoryBot.create(:device_resource, modality: ['Photogrammetry'], organization_id: [organization.id]) }
 
     let(:outside_org)     { FactoryBot.create(:organization_collection, depositor: depositor.ms_id) }
     let(:outside_cho)     { FactoryBot.create(:cultural_heritage_object, organization_id: [outside_org.id]) }
-    let(:outside_device)  { FactoryBot.create(:device, modality: ['Photogrammetry'], organization_id: [outside_org.id]) }
-
-    # linked through organization specimen and device
-    let(:imaging_event1)  { FactoryBot.create(:imaging_event, device_id: [org_device.id], ie_modality: org_device.modality, physical_object_id: [org_specimen.id]) }
-    # linked through organization cho and device
-    let(:imaging_event2)  { FactoryBot.create(:imaging_event, device_id: [org_device.id], ie_modality: org_device.modality, physical_object_id: [org_cho.id]) }
-    # linked through organization specimen
-    let(:imaging_event3)  { FactoryBot.create(:imaging_event, device_id: [outside_device.id], ie_modality: outside_device.modality, physical_object_id: [org_specimen.id]) }
-    # linked through organization cho
-    let(:imaging_event4)  { FactoryBot.create(:imaging_event, device_id: [outside_device.id], ie_modality: outside_device.modality, physical_object_id: [org_cho.id]) }
-    # linked through organization device
-    let(:imaging_event5)  { FactoryBot.create(:imaging_event, device_id: [org_device.id], ie_modality: org_device.modality, physical_object_id: [outside_cho.id]) }
-    let(:imaging_events)  { [imaging_event1, imaging_event2, imaging_event3, imaging_event4, imaging_event5] }
+    let(:outside_device)  { FactoryBot.create(:device_resource, modality: ['Photogrammetry'], organization_id: [outside_org.id]) }
 
     let(:media1)          { FactoryBot.create(:public_media, title: ['media1']) }
     let(:media2)          { FactoryBot.create(:public_media, title: ['media2']) }
@@ -91,16 +98,69 @@ RSpec.describe Morphosource::Collections::OrganizationCollectionsControllerBehav
     let(:media)           { [media1, media2, media3, media4, media5] }
 
     before do
-      organization.ordered_members << org_device
-      organization.save!
-      org_device.update_index
-      imaging_event1.ordered_members << media1
-      imaging_event2.ordered_members << media2
-      imaging_event3.ordered_members << media3
-      imaging_event4.ordered_members << media4
-      imaging_event5.ordered_members << media5
-      imaging_events.each(&:save!)
-      media.each(&:update_index)
+      model_field = ActiveFedora.index_field_mapper.solr_name('has_model', :symbol)
+      ActiveFedora::SolrService.add(
+        {
+          id: org_device.id.to_s,
+          model_field => ['DeviceResource'],
+          'device_organization_id_ssim' => [organization.id]
+        },
+        softCommit: true
+      )
+      ActiveFedora::SolrService.add(
+        {
+          id: media1.id,
+          'has_model_ssim' => ['Media'],
+          'media_organization_id_ssim' => [organization.id],
+          'media_device_facility_organization_id_ssim' => [organization.id],
+          'physical_object_id_ssim' => [org_specimen.id],
+          'read_access_group_ssim' => ['public']
+        },
+        softCommit: true
+      )
+      ActiveFedora::SolrService.add(
+        {
+          id: media2.id,
+          'has_model_ssim' => ['Media'],
+          'media_organization_id_ssim' => [organization.id],
+          'media_device_facility_organization_id_ssim' => [organization.id],
+          'physical_object_id_ssim' => [org_cho.id],
+          'read_access_group_ssim' => ['public']
+        },
+        softCommit: true
+      )
+      ActiveFedora::SolrService.add(
+        {
+          id: media3.id,
+          'has_model_ssim' => ['Media'],
+          'media_device_facility_organization_id_ssim' => [organization.id],
+          'physical_object_id_ssim' => [outside_cho.id],
+          'read_access_group_ssim' => ['public']
+        },
+        softCommit: true
+      )
+      ActiveFedora::SolrService.add(
+        {
+          id: media4.id,
+          'has_model_ssim' => ['Media'],
+          'media_organization_id_ssim' => [organization.id],
+          'physical_object_id_ssim' => [org_specimen.id],
+          'read_access_group_ssim' => ['public']
+        },
+        softCommit: true
+      )
+      ActiveFedora::SolrService.add(
+        {
+          id: media5.id,
+          'has_model_ssim' => ['Media'],
+          'media_organization_id_ssim' => [organization.id],
+          'physical_object_id_ssim' => [org_cho.id],
+          'read_access_group_ssim' => ['public']
+        },
+        softCommit: true
+      )
+      ActiveFedora::SolrService.commit
+      [org_specimen, org_cho, outside_cho].each(&:update_index)
       subject.instance_variable_set(:@collection, organization)
       subject.instance_variable_set(:@current_user, depositor)
       subject.instance_variable_set(:@object_ids, subject.send(:collection_object_ids))

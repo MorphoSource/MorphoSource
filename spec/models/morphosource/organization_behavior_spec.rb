@@ -8,10 +8,10 @@ RSpec.describe Organization, type: :model do
   describe 'device_cultural_heritage_objects, device_media, device_physical_objects, device_specimens' do
     let(:specimen)        { FactoryBot.create(:biological_specimen, organization_id: [another_org.id]) }
     let(:cho)             { FactoryBot.create(:cultural_heritage_object, organization_id: [another_org.id]) }
-    let(:deviceA)         { FactoryBot.create(:device, organization_id: [organization.id]) }
-    let(:deviceB)         { FactoryBot.create(:device, organization_id: [organization.id]) }
-    let(:imaging_eventA)  { FactoryBot.create(:imaging_event, device_id: [deviceA.id], ie_modality: deviceA.modality, physical_object_id: [cho.id]) }
-    let(:imaging_eventB)  { FactoryBot.create(:imaging_event, device_id: [deviceB.id], ie_modality: deviceB.modality, physical_object_id: [specimen.id]) }
+    let(:deviceA)         { FactoryBot.create(:device_resource, organization_id: [organization.id]) }
+    let(:deviceB)         { FactoryBot.create(:device_resource, organization_id: [organization.id]) }
+    let(:imaging_eventA)  { FactoryBot.create(:imaging_event, device_id: [deviceA.id.to_s], ie_modality: deviceA.modality, physical_object_id: [cho.id]) }
+    let(:imaging_eventB)  { FactoryBot.create(:imaging_event, device_id: [deviceB.id.to_s], ie_modality: deviceB.modality, physical_object_id: [specimen.id]) }
     let(:mediaA)          { FactoryBot.create(:media) }
     let(:mediaB)          { FactoryBot.create(:media) }
 
@@ -19,7 +19,7 @@ RSpec.describe Organization, type: :model do
       imaging_eventA.ordered_members << mediaA
       imaging_eventB.ordered_members << mediaB
       [imaging_eventA, imaging_eventB].each(&:save!)
-      [mediaA, mediaB].each(&:save!)
+      [mediaA, mediaB].each(&:update_index)
     end
 
     it 'returns the correct records' do
@@ -38,10 +38,10 @@ RSpec.describe Organization, type: :model do
   describe 'cultural_heritage_objects, media, physical_objects, specimens' do
     let(:specimen)        { FactoryBot.create(:biological_specimen, organization_id: [organization.id]) }
     let(:cho)             { FactoryBot.create(:cultural_heritage_object, organization_id: [organization.id]) }
-    let(:deviceA)         { FactoryBot.create(:device, organization_id: [organization.id]) }
-    let(:deviceB)         { FactoryBot.create(:device, organization_id: [organization.id]) }
-    let(:imaging_eventA)  { FactoryBot.create(:imaging_event, device_id: [deviceA.id], ie_modality: deviceA.modality, physical_object_id: [cho.id]) }
-    let(:imaging_eventB)  { FactoryBot.create(:imaging_event, device_id: [deviceB.id], ie_modality: deviceB.modality, physical_object_id: [specimen.id]) }
+    let(:deviceA)         { FactoryBot.create(:device_resource, organization_id: [organization.id]) }
+    let(:deviceB)         { FactoryBot.create(:device_resource, organization_id: [organization.id]) }
+    let(:imaging_eventA)  { FactoryBot.create(:imaging_event, device_id: [deviceA.id.to_s], ie_modality: deviceA.modality, physical_object_id: [cho.id]) }
+    let(:imaging_eventB)  { FactoryBot.create(:imaging_event, device_id: [deviceB.id.to_s], ie_modality: deviceB.modality, physical_object_id: [specimen.id]) }
     let(:mediaA)          { FactoryBot.create(:media) }
     let(:mediaB)          { FactoryBot.create(:media) }
 
@@ -49,7 +49,7 @@ RSpec.describe Organization, type: :model do
       imaging_eventA.ordered_members << mediaA
       imaging_eventB.ordered_members << mediaB
       [imaging_eventA, imaging_eventB].each(&:save!)
-      [mediaA, mediaB].each(&:save!)
+      [mediaA, mediaB].each(&:update_index)
     end
 
     it 'returns the correct records' do
@@ -73,10 +73,10 @@ RSpec.describe OrganizationCollection, type: :model do
   describe 'device_cultural_heritage_objects, device_media, device_physical_objects, device_specimens' do
     let(:specimen)        { FactoryBot.create(:biological_specimen, organization_id: [another_org.id]) }
     let(:cho)             { FactoryBot.create(:cultural_heritage_object, organization_id: [another_org.id]) }
-    let(:deviceA)         { FactoryBot.create(:device, organization_id: [organization.id]) }
-    let(:deviceB)         { FactoryBot.create(:device, organization_id: [organization.id]) }
-    let(:imaging_eventA)  { FactoryBot.create(:imaging_event, device_id: [deviceA.id], ie_modality: deviceA.modality, physical_object_id: [cho.id]) }
-    let(:imaging_eventB)  { FactoryBot.create(:imaging_event, device_id: [deviceB.id], ie_modality: deviceB.modality, physical_object_id: [specimen.id]) }
+    let(:deviceA)         { FactoryBot.create(:device_resource, organization_id: [organization.id]) }
+    let(:deviceB)         { FactoryBot.create(:device_resource, organization_id: [organization.id]) }
+    let(:imaging_eventA)  { FactoryBot.create(:imaging_event, device_id: [deviceA.id.to_s], ie_modality: deviceA.modality, physical_object_id: [cho.id]) }
+    let(:imaging_eventB)  { FactoryBot.create(:imaging_event, device_id: [deviceB.id.to_s], ie_modality: deviceB.modality, physical_object_id: [specimen.id]) }
     let(:mediaA)          { FactoryBot.create(:media) }
     let(:mediaB)          { FactoryBot.create(:media) }
 
@@ -84,7 +84,7 @@ RSpec.describe OrganizationCollection, type: :model do
       imaging_eventA.ordered_members << mediaA
       imaging_eventB.ordered_members << mediaB
       [imaging_eventA, imaging_eventB].each(&:save!)
-      [mediaA, mediaB].each(&:save!)
+      [mediaA, mediaB].each(&:update_index)
     end
 
     it 'returns the correct records' do
@@ -103,10 +103,10 @@ RSpec.describe OrganizationCollection, type: :model do
   describe 'cultural_heritage_objects, media, physical_objects, specimens' do
     let(:specimen)                  { FactoryBot.create(:biological_specimen, organization_id: [organization.id]) }
     let(:cho)  { FactoryBot.create(:cultural_heritage_object, organization_id: [organization.id]) }
-    let(:deviceA)                   { FactoryBot.create(:device, organization_id: [organization.id]) }
-    let(:deviceB)                   { FactoryBot.create(:device, organization_id: [organization.id]) }
-    let(:imaging_eventA)            { FactoryBot.create(:imaging_event, device_id: [deviceA.id], ie_modality: deviceA.modality, physical_object_id: [cho.id]) }
-    let(:imaging_eventB)            { FactoryBot.create(:imaging_event, device_id: [deviceB.id], ie_modality: deviceB.modality, physical_object_id: [specimen.id]) }
+    let(:deviceA)                   { FactoryBot.create(:device_resource, organization_id: [organization.id]) }
+    let(:deviceB)                   { FactoryBot.create(:device_resource, organization_id: [organization.id]) }
+    let(:imaging_eventA)            { FactoryBot.create(:imaging_event, device_id: [deviceA.id.to_s], ie_modality: deviceA.modality, physical_object_id: [cho.id]) }
+    let(:imaging_eventB)            { FactoryBot.create(:imaging_event, device_id: [deviceB.id.to_s], ie_modality: deviceB.modality, physical_object_id: [specimen.id]) }
     let(:mediaA)                    { FactoryBot.create(:media) }
     let(:mediaB)                    { FactoryBot.create(:media) }
 
@@ -114,7 +114,7 @@ RSpec.describe OrganizationCollection, type: :model do
       imaging_eventA.ordered_members << mediaA
       imaging_eventB.ordered_members << mediaB
       [imaging_eventA, imaging_eventB].each(&:save!)
-      [mediaA, mediaB].each(&:save!)
+      [mediaA, mediaB].each(&:update_index)
     end
 
     it 'returns the correct records' do

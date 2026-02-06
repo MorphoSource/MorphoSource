@@ -38,18 +38,19 @@ RSpec.describe MorphosourceHelper, type: :helper do
     describe 'there are devices' do
       let!(:devices) do
         [
-          { id: 'device-resource-1', title_ssi: 'Foo' },
-          { id: 'device-resource-2', title_ssi: 'Bar' }
+          { id: 'device-resource-1', title_ssi: 'Foo', has_model: 'DeviceResource' },
+          { id: 'device-1', title_ssi: 'Bar', has_model: 'Device' }
         ]
       end
       before do
         model_field = ActiveFedora.index_field_mapper.solr_name('has_model', :symbol)
         devices.each do |device|
           ActiveFedora::SolrService.add(
-            device.merge(model_field => ['DeviceResource']),
+            device.except(:has_model).merge(model_field => [device[:has_model]]),
             softCommit: true
           )
         end
+        ActiveFedora::SolrService.commit
       end
       it 'returns the appropriate array' do
         results = helper.devices
@@ -61,6 +62,24 @@ RSpec.describe MorphosourceHelper, type: :helper do
       it 'returns an empty array' do
         expect(helper.organizations).to match([])
       end
+    end
+  end
+
+  describe '#organization_devices' do
+    it 'queries for Device or DeviceResource records for the organization' do
+      id = 'org-1'
+      doc = double('SolrDocument',
+                   id: 'device-1',
+                   title: ['Title'],
+                   creator: ['Creator'],
+                   modality: ['Modality'],
+                   description: ['Description'])
+      expect(SolrDocument).to receive(:where)
+        .with("has_model_ssim:(Device OR DeviceResource) AND device_organization_id_ssim:#{id}")
+        .and_return([doc])
+
+      results = helper.organization_devices(id)
+      expect(results.first[:id]).to eq('device-1')
     end
   end
 

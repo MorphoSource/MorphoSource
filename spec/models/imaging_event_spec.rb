@@ -18,7 +18,24 @@ RSpec.describe ImagingEvent do
   describe "instance" do
     subject { described_class.new }
 
-    let!(:device) { Device.create(title: ['title'], modality: ['Photogrammetry']) }
+    let!(:device) { FactoryBot.valkyrie_create(:device_resource, title: ['title'], modality: ['Photogrammetry']) }
+    let(:query_service) { double('Hyrax::QueryService') }
+
+    before do
+      allow(Hyrax).to receive(:query_service).and_return(query_service)
+      allow(query_service).to receive(:find_many_by_ids) do |ids:|
+        if ids.include?(device.id.to_s)
+          expect(ids).to include(device.id.to_s)
+          [device]
+        else
+          []
+        end
+      end
+      allow(query_service).to receive(:find_by) do |id:|
+        expect(id).to eq(device.id.to_s)
+        device
+      end
+    end
 
     it "is valid with valid attributes" do
           subject.description = ["foo"]
@@ -26,7 +43,7 @@ RSpec.describe ImagingEvent do
           subject.title = ["foo"]
           subject.software = ["foo"]
           subject.ie_modality = device.modality
-          subject.device_id = [device.id]
+          subject.device_id = [device.id.to_s]
           # X-ray CT metadata
           subject.exposure_time = ["foo"]
           subject.flux_normalization = ["foo"]
@@ -72,7 +89,7 @@ RSpec.describe ImagingEvent do
         subject.title = ["foo"]
         subject.software = ["foo"]
         subject.ie_modality = device.modality
-        subject.device_id = [device.id]
+        subject.device_id = [device.id.to_s]
         # X-ray CT metadata
         subject.exposure_time = ["foo"]
         subject.flux_normalization = ["foo"]
@@ -172,9 +189,33 @@ RSpec.describe ImagingEvent do
     let(:cho)       { CulturalHeritageObject.create(title: ['cho'], vouchered: ['No']) }
     let(:ie)        { ImagingEvent.create(title: ['ie'], device_id: [device.id], physical_object_id: [specimen.id, cho.id], ie_modality: device.modality) }
     let(:device)    { Device.create(title: ['device'], modality: ['Photogrammetry']) }
+    let(:query_service) { instance_double('Hyrax::QueryService') }
+
+    before do
+      allow(Hyrax).to receive(:query_service).and_return(query_service)
+      allow(query_service).to receive(:find_many_by_ids) do |ids:|
+        ids.include?(device.id) ? [device] : []
+      end
+      allow(query_service).to receive(:find_by).and_return(device)
+    end
 
     it 'returns all parent objects' do
       expect(ie.objects).to match_array([specimen, cho])
+    end
+  end
+
+  describe '#device' do
+    let(:device) { instance_double('Device') }
+    let(:query_service) { instance_double('Hyrax::QueryService') }
+    let(:imaging_event) { ImagingEvent.new(device_id: ['dev-1']) }
+
+    before do
+      allow(Hyrax).to receive(:query_service).and_return(query_service)
+      allow(query_service).to receive(:find_by).with(id: 'dev-1').and_return(device)
+    end
+
+    it 'looks up the device via Hyrax query service' do
+      expect(imaging_event.device).to eq(device)
     end
   end
 

@@ -17,15 +17,18 @@ RSpec.describe Morphosource::Collections::OrganizationCollectionsControllerBehav
     let(:depositor)     { FactoryBot.create(:contributor) }
     let!(:organization) { FactoryBot.create(:organization_collection, depositor: depositor.ms_id) }
     let(:device)        { FactoryBot.create(:device_resource) }
-    let(:device2)       { FactoryBot.create(:device_resource) }
+    let(:device2)       { FactoryBot.create(:device) }
 
     before do
       model_field = ActiveFedora.index_field_mapper.solr_name('has_model', :symbol)
-      [device, device2].each do |device_resource|
+      [
+        [device.id.to_s, 'DeviceResource'],
+        [device2.id.to_s, 'Device']
+      ].each do |id, model_name|
         ActiveFedora::SolrService.add(
           {
-            id: device_resource.id.to_s,
-            model_field => ['DeviceResource'],
+            id: id,
+            model_field => [model_name],
             'device_organization_id_ssim' => [organization.id]
           },
           softCommit: true

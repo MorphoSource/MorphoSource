@@ -171,6 +171,22 @@ RSpec.describe Hyrax::DevicesController do
           expect(response).to redirect_to(main_app.hyrax_device_path(controller.curation_concern, locale: 'en'))
         end
       end
+
+      context 'admin creates from an organization page' do
+        let(:params) do
+          {
+            from_org_id: organization.id,
+            device_resource: { title: ['title'], creator: ['creator'], modality: ['XRay'] }
+          }
+        end
+
+        it 'redirects back to the organization devices list' do
+          post :create, params: params
+          expect(response.status).to eq(302)
+          expect(response).to redirect_to(main_app.organization_devices_path(organization.id, locale: 'en'))
+        end
+      end
     end
   end
+
 end

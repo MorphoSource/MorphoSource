@@ -4,7 +4,7 @@ module Morphosource
       class Tgn < ActiveTriples::Resource
         include  Morphosource::ControlledVocabularies::GettyAuthorities
 
-        class_attribute :label
+        class_attribute :label, :full_label
 
         def cache_key_prefix
           'morphosource_getty_tgn_label-v1-'

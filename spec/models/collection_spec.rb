@@ -396,10 +396,10 @@ RSpec.describe Collection, type: :model do
     let!(:specimen)  { BiologicalSpecimen.create(title: ['specimen'], vouchered: ['Yes']) }
     let!(:cho)       { CulturalHeritageObject.create(title: ['cho'], vouchered: ['Yes']) }
     let!(:cho2)      { CulturalHeritageObject.create(title: ['cho2'], vouchered: ['Yes']) }
-    let!(:device)    { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-    let!(:ie)        { ImagingEvent.create(title: ['ie'], device_id: [device.id], ie_modality: device.modality, physical_object_id: [specimen.id]) }
-    let!(:ie2)       { ImagingEvent.create(title: ['ie'], device_id: [device.id], ie_modality: device.modality, physical_object_id: [cho.id]) }
-    let!(:ie3)       { ImagingEvent.create(title: ['ie'], device_id: [device.id], ie_modality: device.modality, physical_object_id: [cho2.id]) }
+    let!(:device)    { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
+    let!(:ie)        { ImagingEvent.create(title: ['ie'], device_id: [device.id.to_s], ie_modality: device.modality, physical_object_id: [specimen.id]) }
+    let!(:ie2)       { ImagingEvent.create(title: ['ie'], device_id: [device.id.to_s], ie_modality: device.modality, physical_object_id: [cho.id]) }
+    let!(:ie3)       { ImagingEvent.create(title: ['ie'], device_id: [device.id.to_s], ie_modality: device.modality, physical_object_id: [cho2.id]) }
     let(:objects)    { [specimen, cho, cho2] }
     let(:imaging_events)  { [ie, ie2, ie3] }
     let(:all_members) { all_media + [project] }

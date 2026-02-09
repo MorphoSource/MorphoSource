@@ -162,9 +162,9 @@ RSpec.describe Organization do
         let(:media1)          { Media.create(title: ['title']) }
         let(:media2)          { Media.create(title: ['title']) }
         let(:media3)          { Media.create(title: ['title']) }
-        let(:device)          { Device.create(title: ['title'], modality: ['Photogrammetry']) }
-        let(:imagingEvent)    { ImagingEvent.create(title: ['title'], device_id: [device.id], physical_object_id: [specimen1.id], ie_modality: device.modality) }
-        let(:imagingEvent2)   { ImagingEvent.create(title: ['title'], device_id: [device.id], physical_object_id: [specimen2.id], ie_modality: device.modality) }
+        let(:device)          { FactoryBot.valkyrie_create(:device_resource, title: ['title'], modality: ['Photogrammetry']) }
+        let(:imagingEvent)    { ImagingEvent.create(title: ['title'], device_id: [device.id.to_s], physical_object_id: [specimen1.id], ie_modality: device.modality) }
+        let(:imagingEvent2)   { ImagingEvent.create(title: ['title'], device_id: [device.id.to_s], physical_object_id: [specimen2.id], ie_modality: device.modality) }
         let(:processingEvent) { ProcessingEvent.new(title: ['title']) }
 
         before do

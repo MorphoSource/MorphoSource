@@ -58,8 +58,8 @@ RSpec.describe Morphosource::Users::AccountMergerService do
     let!(:file_set2)        { FileSet.create(depositor: old_user.ms_id) }
     let!(:specimen)         { BiologicalSpecimen.create(title: ['specimen'], vouchered: ['Yes'], depositor: old_user.ms_id) }
     let!(:cho)              { CulturalHeritageObject.create(title: ['cho'], vouchered: ['No'], depositor: old_user.ms_id) }
-    let!(:device)           { Device.create(title: ['device'], depositor: old_user.ms_id, modality: ['Photogrammetry']) }
-    let!(:imaging_event)    { ImagingEvent.create(title: ['imaging event'], device_id: [device.id], ie_modality: device.modality, depositor: old_user.ms_id) }
+    let!(:device)           { FactoryBot.valkyrie_create(:device_resource, title: ['device'], depositor: old_user.ms_id, modality: ['Photogrammetry']) }
+    let!(:imaging_event)    { ImagingEvent.create(title: ['imaging event'], device_id: [device.id.to_s], ie_modality: device.modality, depositor: old_user.ms_id) }
     let!(:processing_event) { ProcessingEvent.create(title: ['processing event'], depositor: old_user.ms_id) }
     let!(:organization)     { Organization.create(title: ['specimen'], depositor: old_user.ms_id) }
 
@@ -86,7 +86,13 @@ RSpec.describe Morphosource::Users::AccountMergerService do
       [media1, media2, media3, media4, media5].each(&:save!)
       media.each { |m| InheritPermissionsJob.perform_now(m.id) }
       subject
-      works.each(&:reload)
+      works.each do |work|
+        if work.respond_to?(:reload)
+          work.reload
+        else
+          work = Hyrax.query_service.find_by(id: work.id.to_s)
+        end
+      end
     end
 
     describe 'transfer_works' do

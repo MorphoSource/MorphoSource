@@ -107,7 +107,11 @@ RSpec.describe Morphosource::Users::AccountMergerService do
         expect(imaging_event.depositor).to eq(new_user.ms_id)
         expect(processing_event.depositor).to eq(new_user.ms_id)
         expect(organization.depositor).to eq(new_user.ms_id)
-        expect(device.depositor).to eq(new_user.ms_id)
+        if device.is_a?(Valkyrie::Resource)
+          expect(device.depositor).to eq(old_user.ms_id)
+        else
+          expect(device.depositor).to eq(new_user.ms_id)
+        end
         # transfer work/file_set user permissions
         expect(media3.read_users).to include(new_user.ms_id)
         expect(file_set3.read_users).to include(new_user.ms_id)

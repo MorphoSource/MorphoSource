@@ -233,6 +233,13 @@ module Morphosource
           @tempfile.rewind
         end
 
+        # override Morphosource::CustomThumbnails update_thumbnail_id to save the thumbnail_id here.
+        # Morphosource::CustomThumbnails reloads and saves the media record with the correct thumbnail_id; when @media is saved afterwards it overwrites media with the un-updated value.
+        def update_thumbnail_id
+          media.thumbnail_id = media.id
+          media.save
+        end
+
         private
 
           def admin

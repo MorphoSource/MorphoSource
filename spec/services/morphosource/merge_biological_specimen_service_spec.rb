@@ -17,12 +17,12 @@ RSpec.describe Morphosource::MergeBiologicalSpecimenService do
     ]
   end
 
-  let(:device)                { Device.create(title: ['device'], modality: ['Photogrammetry']) }
+  let(:device)                { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
 
   let(:imaging_event) do 
     [
-      ImagingEvent.create(title: ['imaging event 1'], device_id: [device.id], physical_object_id: [specimen[0].id], ie_modality: ['Photogrammetry']),
-      ImagingEvent.create(title: ['imaging event 2'], device_id: [device.id], physical_object_id: [specimen[1].id], ie_modality: ['Photogrammetry'])
+      ImagingEvent.create(title: ['imaging event 1'], device_id: [device.id.to_s], physical_object_id: [specimen[0].id], ie_modality: ['Photogrammetry']),
+      ImagingEvent.create(title: ['imaging event 2'], device_id: [device.id.to_s], physical_object_id: [specimen[1].id], ie_modality: ['Photogrammetry'])
     ]
   end
 

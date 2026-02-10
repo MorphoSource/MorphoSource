@@ -196,7 +196,7 @@ RSpec.describe Morphosource::MultiBatchSubmissionService do
 
   describe '#manifest_arguments' do
     it 'uses the device modality when the device has a single modality' do
-      device = instance_double(Device, modality: ['MicroCT'])
+      device = instance_double('DeviceResource', modality: ['MicroCT'])
       allow(Device).to receive(:where).with(id: '000000222').and_return([device])
       allow(service).to receive(:user_share_full_path).and_return('/tmp/')
       allow(User).to receive(:batch_user).and_return(user)

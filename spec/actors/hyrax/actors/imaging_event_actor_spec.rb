@@ -4,7 +4,7 @@ RSpec.describe Hyrax::Actors::ImagingEventActor do
 
   subject { described_class.new(next_actor) }
 
-  let(:device)     { instance_double('Device', title: ['Model'], creator: ['Manufacturer']) }
+  let(:device)     { instance_double('DeviceResource', title: ['Model'], creator: ['Manufacturer']) }
   let(:device_id)  { 'device-1' }
 
   let(:next_actor)  { double(create: true, update: true) }

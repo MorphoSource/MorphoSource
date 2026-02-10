@@ -31,7 +31,14 @@ class Organization < Morphosource::Works::Base
   end
 
   def devices
-    members.select { |m| m.device? }
+    return [] if id.blank?
+
+    query = "has_model_ssim:(Device OR DeviceResource) AND device_organization_id_ssim:#{id}"
+    docs = ActiveFedora::SolrService.query(query, fl: 'id', rows: 999_999)
+    ids = docs.map { |doc| doc['id'] }.compact
+    return [] if ids.blank?
+
+    Hyrax.query_service.find_many_by_ids(ids: ids)
   end
 
   # Specimens that belong to the organization, but are not part of the liked team's items.

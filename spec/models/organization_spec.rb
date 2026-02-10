@@ -194,6 +194,26 @@ RSpec.describe Organization do
         end
       end
     end
+
+    describe '#devices' do
+      let(:device) { FactoryBot.valkyrie_create(:device_resource, organization_id: [subject.id]) }
+      let(:query_service) { instance_double('Hyrax::QueryService') }
+
+      before do
+        allow(ActiveFedora::SolrService).to receive(:query)
+          .with("has_model_ssim:(Device OR DeviceResource) AND device_organization_id_ssim:#{subject.id}",
+                fl: 'id', rows: 999_999)
+          .and_return([{ 'id' => device.id.to_s }])
+        allow(Hyrax).to receive(:query_service).and_return(query_service)
+        allow(query_service).to receive(:find_many_by_ids)
+          .with(ids: [device.id.to_s])
+          .and_return([device])
+      end
+
+      it 'returns devices linked by organization id' do
+        expect(subject.devices).to eq([device])
+      end
+    end
   end
 
   describe 'record_original_team' do

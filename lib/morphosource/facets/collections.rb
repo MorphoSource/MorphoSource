@@ -5,7 +5,8 @@ module Morphosource
       ID_HELPER_METHODS = [
         :collection_title_by_id,
         :device_title_by_id,
-        :title_by_id
+        :title_by_id,
+        :user_name_by_id
       ].freeze
 
       # displays values and pagination links for a single facet field
@@ -16,7 +17,7 @@ module Morphosource
 
         # if the facet has an id helper method we need to handle sorting and searching differently
         if id_helper_method?
-          everything_facet(contains_title: params["facet.containsTitle"])
+          id_helper_facet(contains_title: params["facet.containsTitle"])
         else
           @response = facet_search_response
           @display_facet = @response.aggregations[@facet.field]
@@ -72,9 +73,13 @@ module Morphosource
         })
       end
 
+      def fetch_ms_ids_by_name(name)
+        User.where('display_name ILIKE ?', "%#{name}%").pluck(:ms_id).map(&:to_s)
+      end
+
       # modifies blacklight behavior to retrieve all values for a collection id facet instead of only the values for one page.
       # can then sort all of the collections by title, and then return the section of the sorted array that corresponds to the requested page
-      def everything_facet(facet_type: nil, contains_title: nil)
+      def id_helper_facet(facet_type: nil, contains_title: nil)
         raise ActionController::RoutingError, 'Not Found' unless @facet
         # save page number, but delete facet.page to set offset to 0 for searching
         params["az_facet.page"] = params.delete("facet.page")
@@ -82,11 +87,21 @@ module Morphosource
         blacklight_config.default_more_limit = 999999
 
         @response = facet_search_response
-        title_search_response = fetch_ids_by_title(contains_title, @facet.key)
-        matching_ids = title_search_response['response']['docs'].map { |doc| doc['id'] }
+
+        if @facet.helper_method == :user_name_by_id
+          matching_ids = fetch_ms_ids_by_name(contains_title)
+        else
+          title_search_response = fetch_ids_by_title(contains_title, @facet.key)
+          matching_ids = title_search_response['response']['docs'].map { |doc| doc['id'] }
+        end
         if params["facet.sort"] == "index"
-          # sort all the facet items by title
-          sort_records_by_title
+          if @facet.helper_method == :user_name_by_id
+            # sort all the facet items by user display name
+            sort_records_by_name
+          else
+            # sort all the facet items by title
+            sort_records_by_title
+          end
         end
         # modify the display facet to include only the items for the current page
         set_display_facet_items(filtered_values: matching_ids)
@@ -156,6 +171,20 @@ module Morphosource
           title = ->(hash) { "#{hash["title_tesim"].first}" }
         end
         [fl, title]
+      end
+
+      def sort_records_by_name
+        @response.aggregations[@facet.field].items.sort_by! { |i| filtered_record_name_by_id(i.value).split.last.downcase }
+      end
+
+      def filtered_record_name_by_id(id)
+        @record_names ||= record_names
+        @record_names[id] || "User #{id} Not Found"
+      end
+
+      def record_names
+        record_ids = @response.aggregations[@facet.field].items.map { |i| i.value }
+        User.where(ms_id: record_ids).pluck(:ms_id, :display_name).to_h
       end
     end
   end

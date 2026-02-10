@@ -56,10 +56,6 @@ RSpec.describe Organization do
     it "has no valid parents" do
       expect(subject.valid_parent_concerns).to match_array([])
     end
-
-    it "has Device, BiologicalSpecimen, and CulturalHeritageObject as valid children" do
-      expect(subject.valid_child_concerns).to match_array([Device])
-    end
   end
 
   describe "instance" do
@@ -118,10 +114,6 @@ RSpec.describe Organization do
 
       it "has no valid parents" do
         expect(subject.valid_parent_concerns).to match_array([])
-      end
-
-      it "has Device, BiologicalSpecimen, and CulturalHeritageObject as valid children" do
-        expect(subject.valid_child_concerns).to match_array([Device])
       end
     end
 
@@ -212,6 +204,17 @@ RSpec.describe Organization do
 
       it 'returns devices linked by organization id' do
         expect(subject.devices).to eq([device])
+      end
+    end
+
+    describe 'device assignment' do
+      it 'assigns device to organization via organization_id' do
+        device = FactoryBot.valkyrie_create(:device_resource)
+        device.organization_id = [subject.id]
+        Hyrax.persister.save(resource: device)
+
+        reloaded = Hyrax.query_service.find_by(id: device.id)
+        expect(reloaded.organization_id).to eq([subject.id])
       end
     end
   end

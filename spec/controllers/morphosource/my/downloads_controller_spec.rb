@@ -113,6 +113,16 @@ RSpec.describe Morphosource::My::DownloadsController, :type => :controller  do
       get :batch_create, params: {:batch_document_ids => [cartItem4.id]}
       expect(response).to redirect_to(my_cart_path)
     end
+  end
 
+  describe 'allowed_sort_parameters' do
+    let(:allowed_sort_params) do
+      ['date_downloaded asc',
+       'date_downloaded desc']
+    end
+
+    it 'includes custom sort parameters' do
+      expect(subject.allowed_sort_parameters).to match_array(allowed_sort_params)
+    end
   end
 end

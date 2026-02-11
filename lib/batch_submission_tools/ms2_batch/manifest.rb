@@ -302,7 +302,7 @@ module BatchSubmissionTools
               admin_user: admin_user,
               depositor: depositor,
               on_behalf_of: on_behalf_of,
-              idigbio_uuid: bso.work_imported ? bso.idigbio_uuid : nil
+              occurrence_id: bso.work_imported ? bso.occurrence_id : nil
             )
 
             bso_taxonomies.each do |taxonomy|

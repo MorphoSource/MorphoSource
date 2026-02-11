@@ -41,4 +41,23 @@ RSpec.describe Morphosource::My::Collections::MediaListsController, type: :contr
   describe 'search_action_for_dashboard' do
     it { expect(subject.search_action_for_dashboard).to eq(my_media_lists_path) }
   end
+
+  describe 'allowed_sort_parameters' do
+    let(:allowed_sort_params) do
+      ['date_modified_dtsi asc',
+       'date_modified_dtsi desc',
+       'date_uploaded_dtsi asc',
+       'date_uploaded_dtsi desc',
+       'list_type_ssim asc',
+       'list_type_ssim desc',
+       'publication_status_si asc',
+       'publication_status_si desc',
+       'title_ssi asc',
+       'title_ssi desc']
+    end
+
+    it 'includes custom sort parameters' do
+      expect(subject.allowed_sort_parameters).to match_array(allowed_sort_params)
+    end
+  end
 end

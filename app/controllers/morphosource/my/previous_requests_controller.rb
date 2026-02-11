@@ -60,6 +60,25 @@ module Morphosource
         ]
       end
 
+      def allowed_sort_parameters
+        ['date_decided asc',
+         'date_decided desc',
+         'date_downloaded asc',
+         'date_downloaded desc',
+         'date_expired asc',
+         'date_expired desc',
+         'date_requested asc',
+         'date_requested desc',
+         'decision_users.display_name asc',
+         'decision_users.display_name desc',
+         'use asc',
+         'use desc',
+         'users.display_name asc',
+         'users.display_name desc',
+         'work_id asc',
+         'work_id desc']
+      end
+
       def custom_sort_params
         {
           'date_decided' => 'greatest(date_approved,date_denied,date_canceled,date_cleared)'

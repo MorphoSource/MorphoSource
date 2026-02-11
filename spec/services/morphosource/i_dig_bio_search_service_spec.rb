@@ -60,4 +60,22 @@ RSpec.describe Morphosource::IDigBioSearchService, :vcr do
       end
     end
   end
+
+  describe '.taxonomy_param_sets_from_occurrence_id' do
+    describe 'an IDigBio occurrence ID' do
+      it 'returns params suitable for Taxonomy construction' do
+        results = described_class.taxonomy_param_sets_from_occurrence_id('urn:catalog:CM:VP:604')
+        expect(results).to be_a(Hash)
+        expect(results).to have_key(:provider)
+        expect(results).to have_key(:gbif)
+      end
+    end
+
+    describe 'an unknown IDigBio occurrence ID' do
+      it 'returns empty taxonomy param sets' do
+        results = described_class.taxonomy_param_sets_from_occurrence_id('urn:catalog:CM:VP:604-not-found')
+        expect(results).to eq({ provider: {}, gbif: {} })
+      end
+    end
+  end
 end

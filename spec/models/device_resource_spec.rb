@@ -51,4 +51,19 @@ RSpec.describe DeviceResource do
       work.media
     end
   end
+
+  describe 'indexing' do
+    it 'indexes the device resource when saved' do
+      device = FactoryBot.valkyrie_create(:device_resource, title: ['Device A'], modality: ['MicroCT'])
+
+      initial_doc = SolrDocument.find(device.id.to_s)
+      expect(initial_doc['has_model_ssim']).to include('DeviceResource')
+
+      device.title = ['Device B']
+      device.save!
+
+      updated_doc = SolrDocument.find(device.id.to_s)
+      expect(updated_doc['title_tesim']).to include('Device B')
+    end
+  end
 end

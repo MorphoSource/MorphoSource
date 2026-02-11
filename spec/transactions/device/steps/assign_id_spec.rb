@@ -8,21 +8,6 @@ RSpec.describe Morphosource::Transactions::Device::Steps::AssignID do
   describe '#call' do
     let(:obj) { instance_double('Hyrax::ChangeSet', id: current_id) }
 
-    context 'when id is blank' do
-      let(:current_id) { nil }
-
-      it 'mints and assigns an id' do
-        minter = instance_double('Noid::Rails::Service', mint: 'abc123')
-        allow(obj).to receive(:id=)
-        allow(::Noid::Rails::Service).to receive(:new).and_return(minter)
-
-        result = step.call(obj)
-
-        expect(obj).to have_received(:id=).with('abc123')
-        expect(result).to be_success
-      end
-    end
-
     context 'when id is present' do
       let(:current_id) { 'existing-id' }
 

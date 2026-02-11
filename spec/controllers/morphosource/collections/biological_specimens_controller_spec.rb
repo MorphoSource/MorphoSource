@@ -189,4 +189,21 @@ RSpec.describe Morphosource::Collections::BiologicalSpecimensController, type: :
       it { expect(subject.search_action_for_dashboard).to eq(main_app.organization_specimens_path(id: collection.id, locale: 'en')) }
     end
   end
+
+  describe 'allowed_sort_parameters' do
+    let(:allowed_sort_params) do
+      ['date_uploaded_dtsi asc',
+       'date_uploaded_dtsi desc',
+       'record_source_si asc',
+       'record_source_si desc',
+       'taxonomy_name_si asc',
+       'taxonomy_name_si desc',
+       'title_ssi asc',
+       'title_ssi desc']
+    end
+
+    it 'includes custom sort parameters' do
+      expect(subject.allowed_sort_parameters).to match_array(allowed_sort_params)
+    end
+  end
 end

@@ -1,5 +1,5 @@
 <%# Only for projects, partial for temporary access link management %>
-<div class="col-sm-12">
+<div>
   <div class="content-block">
     <h2><%= t('.temporary_access_links') %></h2>
 
@@ -35,7 +35,7 @@
                       <% else %>
                         <% link_url = main_app.project_show_temporary_link_url(f.object, token: link.token) %>
                       <% end %>
-                      
+
                       <%= link_to link_url, link_url, style: 'overflow-wrap: anywhere;' %>
                       <button type="button" class="btn btn-link copy-temporary-collection-link" style="color: black; padding: 0;"
                               data-clipboard-text="<%= link_url %>"
@@ -51,7 +51,7 @@
                         <%= link_to "Revoke", main_app.temporary_collection_access_link_destroy_path(link), method: :delete, class: 'btn btn-sm btn-danger' %>
                       <% end %>
                     </td>
-                  </tr> 
+                  </tr>
                 <% end %>
                 </tbody>
               </table>

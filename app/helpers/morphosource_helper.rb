@@ -14,7 +14,12 @@ module MorphosourceHelper
       @content_length = ""
       @e_tag = ""
       begin
-        head = RestClient::Request.execute(method: :head, url: url, timeout: 15)
+        head = RestClient::Request.execute(
+          method: :head,
+          url: url,
+          timeout: 15,
+          headers: Hyrax.config.remote_request_headers
+        )
         @http_code = head.code
         @file_ext = file_extension_from_content_type(head.headers[:content_type])
         @status = "success"

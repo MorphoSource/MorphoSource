@@ -3,30 +3,30 @@ module BatchSubmissionTools
     module Factory
       # Create 1+ taxonomy params model instances from input attributes and optional iDigBio UUID
       class TaxonomyManifests
-        attr_accessor :attrs, :admin_user, :depositor, :on_behalf_of, :idigbio_uuid
+        attr_accessor :attrs, :admin_user, :depositor, :on_behalf_of, :occurrence_id
         attr_accessor :ingests, :works_attrs
 
-        def self.call(attrs:, admin_user:, depositor:, on_behalf_of: nil, idigbio_uuid: nil)
+        def self.call(attrs:, admin_user:, depositor:, on_behalf_of: nil, occurrence_id: nil)
           new(
             attrs: attrs, 
             admin_user: admin_user,
             depositor: depositor,
             on_behalf_of: on_behalf_of,
-            idigbio_uuid: idigbio_uuid
+            occurrence_id: occurrence_id
           ).call
         end
 
-        def initialize(attrs:, admin_user:, depositor:, on_behalf_of: nil, idigbio_uuid: nil)
+        def initialize(attrs:, admin_user:, depositor:, on_behalf_of: nil, occurrence_id: nil)
           @attrs = attrs
           @admin_user = admin_user
           @depositor = depositor
           @on_behalf_of = on_behalf_of
-          @idigbio_uuid = idigbio_uuid
+          @occurrence_id = occurrence_id
           @ingests = [] 
         end
 
         def call
-          if idigbio_uuid.present?
+          if occurrence_id.present?
             import_works_attrs
           else
             new_work_attrs
@@ -68,7 +68,7 @@ module BatchSubmissionTools
 
         def works_attrs
           @works_attrs ||= 
-            Morphosource::IDigBioSearchService.taxonomy_param_sets_from_idigbio(idigbio_uuid)
+            Morphosource::IDigBioSearchService.taxonomy_param_sets_from_occurrence_id(occurrence_id)
         end
 
         def new_work_attrs

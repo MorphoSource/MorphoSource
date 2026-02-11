@@ -28,4 +28,29 @@ RSpec.describe Morphosource::My::PreviousRequestsController, :type => :controlle
       expect(response).to redirect_to(previous_requests_path)
     end
   end
+
+  describe 'allowed_sort_parameters' do
+    let(:allowed_sort_params) do
+      ['date_decided asc',
+       'date_decided desc',
+       'date_downloaded asc',
+       'date_downloaded desc',
+       'date_expired asc',
+       'date_expired desc',
+       'date_requested asc',
+       'date_requested desc',
+       'decision_users.display_name asc',
+       'decision_users.display_name desc',
+       'use asc',
+       'use desc',
+       'users.display_name asc',
+       'users.display_name desc',
+       'work_id asc',
+       'work_id desc']
+    end
+
+    it 'includes custom sort parameters' do
+      expect(subject.allowed_sort_parameters).to match_array(allowed_sort_params)
+    end
+  end
 end

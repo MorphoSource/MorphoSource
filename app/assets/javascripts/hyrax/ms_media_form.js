@@ -628,8 +628,12 @@ var doSubmitMedia = function(view) {
 
 var remoteFileCheckAndSubmit = function(view=null) {
   try {
-    var url = (new URL($('#media_remote_origin_url').val()));
-    var extension = url.pathname.substring(url.pathname.lastIndexOf('.'));
+    var remote_url = $('#media_remote_origin_url').val();
+    // Initial URL check to avoid invalid characters
+    if (!/^https?:\/\/.+/.test(remote_url)) {
+      throw new Error('Invalid URL format');
+    }
+    var url = (new URL(remote_url));
   } catch (e) {
     $.alert('Please enter a valid Remote Origin URL.');
     return false;

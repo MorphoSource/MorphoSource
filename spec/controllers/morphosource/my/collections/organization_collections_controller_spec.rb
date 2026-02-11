@@ -2,6 +2,8 @@ require 'rails_helper'
 
 RSpec.describe Morphosource::My::Collections::OrganizationCollectionsController, type: :controller do
 
+  let!(:collection_type)  { Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::Organizations::SETTINGS) }
+
   describe 'configure_facets' do
     let(:facet_fields)  { described_class.blacklight_config.facet_fields }
 
@@ -96,5 +98,18 @@ RSpec.describe Morphosource::My::Collections::OrganizationCollectionsController,
 
   describe 'search_action_for_dashboard' do
     it { expect(subject.search_action_for_dashboard).to eq("/dashboard/my/organizations?locale=en") }
+  end
+
+  describe 'allowed_sort_parameters' do
+    let(:allowed_sort_params) do
+      ['date_modified_dtsi asc',
+       'date_modified_dtsi desc',
+       'title_ssi asc',
+       'title_ssi desc']
+   end
+
+    it 'includes custom sort parameters' do
+      expect(subject.allowed_sort_parameters).to match_array(allowed_sort_params)
+    end
   end
 end

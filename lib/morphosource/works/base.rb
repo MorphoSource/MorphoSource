@@ -185,6 +185,11 @@ module Morphosource
         end
       end
 
+      # Only allow valkyrie_resource when resource is registered with Wings - no Hyrax::Work generic resources
+      def valkyrie_resource
+        Wings::ModelRegistry.reverse_lookup(self.class) ? super : raise(::ActiveFedora::ObjectNotFoundError)
+      end
+
       private
 
       # if everything is working as it should be, the solr document should already have been deleted before this.

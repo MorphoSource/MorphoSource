@@ -7,6 +7,13 @@ module Morphosource
 
       before_action :filter_docs_with_access_by_collection_type, only: [:update_members]
 
+      def after_update
+        respond_to do |format|
+          format.html { redirect_to success_return_path, notice: t('hyrax.dashboard.my.action.collection_membership_update_success') }
+          format.json { render json: @collection, status: :updated, location: dashboard_collection_path(@collection) }
+        end
+      end
+
       def update_members
         @batch_ids = batch_ids
         if (err_msg = validate).present?
@@ -62,7 +69,7 @@ module Morphosource
             sequential_section_list_path(@collection.id)
           else
             dashboard_collections_path
-          end          
+          end
         end
 
         def filter_docs_with_access_by_collection_type

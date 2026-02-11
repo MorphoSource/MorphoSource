@@ -16,7 +16,7 @@ en:
             delete: 'Delete List'
             new: 'New List'
             view: 'View List'
-            collection_update_success: ' was successfully updated.'
+            collection_update_success: Media List was successfully updated.
           members:
             title: Members
             roles:

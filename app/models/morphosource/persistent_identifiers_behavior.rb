@@ -139,9 +139,11 @@ module Morphosource
         unless minted_ark.nil?
           self.ark = [minted_ark.id]
           case self.class.to_s
-          when 'Device', 'DeviceResource'
+          when 'Device'
             Hyrax.persister.save(resource: self)
             Hyrax.index_adapter.save(resource: self)
+          when 'DeviceResource'
+            # DeviceResource persistence/indexing is handled by MintWorkArkJob.
           else
             self.save
           end

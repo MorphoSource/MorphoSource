@@ -19,8 +19,7 @@ RSpec.describe Morphosource::Transactions::Device::WorkCreate do
         'change_set.apply',
         'work_resource.apply_permission_template',
         'work_resource.save_acl',
-        'work_resource.change_depositor',
-        'device_work_resource.mint_ark'
+        'work_resource.change_depositor'
       ]
     )
   end

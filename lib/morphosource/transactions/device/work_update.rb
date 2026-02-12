@@ -10,8 +10,7 @@ module Morphosource
           'device_change_set.update_organization_access',
           'change_set.apply',
           'work_resource.save_acl',
-          'work_resource.update_work_members',
-          'device_work_resource.update_ark_status'
+          'work_resource.update_work_members'
         ].freeze
 
 

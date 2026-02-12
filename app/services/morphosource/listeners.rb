@@ -13,5 +13,6 @@ module Morphosource
     autoload :DestroyProxyDepositRequestsListener
     autoload :IndexRelatedWorksListener
     autoload :MintDeviceArkListener
+    autoload :UpdateDeviceArkStatusListener
   end
 end

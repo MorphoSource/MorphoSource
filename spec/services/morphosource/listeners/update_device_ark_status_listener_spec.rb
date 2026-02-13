@@ -7,7 +7,7 @@ RSpec.describe Morphosource::Listeners::UpdateDeviceArkStatusListener do
 
   describe '#on_object_metadata_updated' do
     it 'enqueues ark status update job for a DeviceResource' do
-      resource = instance_double(DeviceResource, id: 'abc-123')
+      resource = build(:device_resource, id: Valkyrie::ID.new('abc-123'))
       event = instance_double('Dry::Event', payload: { object: resource })
 
       expect(UpdateWorkArkStatusJob).to receive(:perform_later).with('abc-123')

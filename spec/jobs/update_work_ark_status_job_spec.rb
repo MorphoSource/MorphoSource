@@ -6,10 +6,10 @@ RSpec.describe UpdateWorkArkStatusJob do
   describe '#perform' do
     it 'updates ark status for a DeviceResource with an ark' do
       work_id = 'device-123'
-      resource = instance_double(DeviceResource, ark: ['ark:/99999/fk4/123'])
+      resource = build(:device_resource, id: Valkyrie::ID.new(work_id), ark: ['ark:/99999/fk4/123'])
 
       allow(Hyrax.query_service).to receive(:find_by).with(id: work_id).and_return(resource)
-      allow(resource).to receive(:update_ark_status)
+      allow(resource).to receive(:update_ark_status).and_return(resource)
       allow(Hyrax.persister).to receive(:save)
       allow(Hyrax.index_adapter).to receive(:save)
 
@@ -22,7 +22,7 @@ RSpec.describe UpdateWorkArkStatusJob do
 
     it 'does nothing when resource has no ark' do
       work_id = 'device-123'
-      resource = instance_double(DeviceResource, ark: [])
+      resource = build(:device_resource, id: Valkyrie::ID.new(work_id), ark: [])
 
       allow(Hyrax.query_service).to receive(:find_by).with(id: work_id).and_return(resource)
       allow(resource).to receive(:update_ark_status)

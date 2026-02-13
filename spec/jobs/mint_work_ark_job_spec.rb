@@ -6,10 +6,11 @@ RSpec.describe MintWorkArkJob do
   describe '#perform' do
     it 'mints, saves, and indexes a DeviceResource' do
       work_id = 'device-123'
-      resource = instance_double(DeviceResource, ark: [], mint_ark: true)
+      resource = build(:device_resource, id: Valkyrie::ID.new(work_id), ark: [])
       saved_resource = instance_double(DeviceResource)
 
       allow(Hyrax.query_service).to receive(:find_by).with(id: work_id).and_return(resource)
+      allow(resource).to receive(:mint_ark).and_return(resource)
       allow(Hyrax.persister).to receive(:save).with(resource: resource).and_return(saved_resource)
       allow(Hyrax.index_adapter).to receive(:save).with(resource: saved_resource)
 

@@ -7,7 +7,7 @@ RSpec.describe Morphosource::Listeners::MintDeviceArkListener do
 
   describe '#on_object_deposited' do
     it 'enqueues minting job for a DeviceResource' do
-      resource = instance_double(DeviceResource, id: 'abc-123')
+      resource = build(:device_resource, id: Valkyrie::ID.new('abc-123'))
       event = instance_double('Dry::Event', payload: { object: resource })
 
       expect(MintWorkArkJob).to receive(:perform_later).with('abc-123')

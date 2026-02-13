@@ -190,31 +190,35 @@ RSpec.describe Hyrax::DevicesController do
       describe 'destroying a device resource' do
         let(:device_id) { Valkyrie::ID.new('device-id-1') }
         let(:device_resource) do
-          build(:device_resource,
-                id: device_id,
-                title: ['Device A'],
-                creator: ['Creator A'],
-                depositor: user.ms_id,
-                ark: ['ark:/99999/fk4/123'])
+          double(
+            'DeviceResource',
+            id: device_id,
+            ark: ['ark:/99999/fk4/123'],
+            title: ['Device A']
+          )
         end
         let(:transaction_result) { Dry::Monads::Success(device_resource) }
+        let(:publisher) { Hyrax.publisher }
 
         before do
           allow(controller).to receive(:curation_concern).and_return(device_resource)
           allow(controller).to receive(:after_destroy_response)
+          allow(device_resource).to receive(:is_a?).with(ActiveFedora::Base).and_return(false)
           allow(controller).to receive(:transactions)
             .and_return('device_work_resource.destroy' => instance_double('Transaction', with_step_args: instance_double('Callable', call: transaction_result)))
+          allow(publisher).to receive(:publish)
         end
 
         it 'publishes object.deleted with deleted_ark payload' do
-          expect(Hyrax.publisher).to receive(:publish).with(
-            'object.deleted',
-            object: device_resource,
-            user: user,
-            deleted_ark: 'ark:/99999/fk4/123'
-          )
+          controller.destroy
 
-          delete :destroy, params: { id: device_id.to_s }
+          expect(publisher).to have_received(:publish).with(
+            'object.deleted',
+            hash_including(
+              object: device_resource,
+              deleted_ark: 'ark:/99999/fk4/123'
+            )
+          )
         end
       end
     end

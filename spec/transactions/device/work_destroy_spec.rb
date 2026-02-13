@@ -10,7 +10,6 @@ RSpec.describe Morphosource::Transactions::Device::WorkDestroy do
   it 'defines the expected default steps' do
     expect(described_class::DEFAULT_STEPS).to eq(
       [
-        'device_work_resource.delete_ark_if_reserved',
         'work_resource.delete_acl',
         'work_resource.delete'
       ]

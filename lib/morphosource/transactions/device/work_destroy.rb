@@ -6,7 +6,6 @@ module Morphosource
       # Destroys a DeviceResource work
       class WorkDestroy < Hyrax::Transactions::Transaction
         DEFAULT_STEPS = [
-          'device_work_resource.delete_ark_if_reserved',
           'work_resource.delete_acl',
           'work_resource.delete'
         ].freeze

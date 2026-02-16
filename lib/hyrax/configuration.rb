@@ -282,6 +282,12 @@ module Hyrax
       @working_path ||= Rails.root.join('tmp', 'uploads')
     end
 
+    # Path on the local file system where temporary copies of external files are stored (they will never be ingested).
+    attr_writer :working_external_path
+    def working_external_path
+      @working_external_path ||= File.join(working_path, 'external')
+    end
+
     # NOTE: This used to be called `working_path` in CurationConcerns
     attr_writer :upload_path
     def upload_path

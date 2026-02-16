@@ -7,6 +7,10 @@ abort("The Rails environment is running in production mode!") if Rails.env.produ
 require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
 
+# Downstream tests may use Webmock and block requests, this is to prevent conflicts
+require 'webmock/rspec'
+WebMock.allow_net_connect!
+
 require 'shoulda/matchers'
 require 'shoulda/callback/matchers'
 Shoulda::Matchers.configure do |config|
@@ -19,9 +23,11 @@ end
 require 'active_fedora/cleaner'
 
 require 'valkyrie'
+# require 'storage/hoard'
 test_adapter_uploads_path = Rails.root / 'tmp' / 'test_adapter_uploads'
+test_versioned_disk = Valkyrie::Storage::VersionedDisk.new(base_path: test_adapter_uploads_path)
 Valkyrie::StorageAdapter.register(
-  Valkyrie::Storage::VersionedDisk.new(base_path: test_adapter_uploads_path),
+  Valkyrie::Storage::Hoard.new(services: [test_versioned_disk, Valkyrie::Storage::ExternalUrl.new]),
   :test_disk
 )
 FileUtils.mkdir_p(test_adapter_uploads_path)

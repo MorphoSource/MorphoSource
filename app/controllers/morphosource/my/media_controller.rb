@@ -21,8 +21,8 @@ module Morphosource
           config.add_facet_field "taxonomy_name", field: "taxonomy_ssim", label: "Taxonomy (Name)", limit: 10
           config.add_facet_field "team", field: "member_of_team_ids_ssim", label: "Team", limit: 10, helper_method: :collection_title_by_id
           config.add_facet_field "project", field: "member_of_project_ids_ssim", label: "Project", limit: 10, helper_method: :collection_title_by_id
-          config.add_facet_field "owner", field: "user_with_ownership_name_ssim", label: "Data Manager", limit: 10
-          config.add_facet_field "depositor", field: "depositor_name_ssim", label: "Data Uploader", limit: 10
+          config.add_facet_field "owner", field: "user_with_ownership_ssi", label: "Data Manager", limit: 10, helper_method: :user_name_by_id
+          config.add_facet_field "depositor", field: "depositor_ssim", label: "Data Uploader", limit: 10, helper_method: :user_name_by_id
           config.default_solr_params = {
             qt: "search",
             qf: "id title_tesim description_tesim creator_tesim keyword_tesim physical_object_title_tesim taxonomy_tesim"

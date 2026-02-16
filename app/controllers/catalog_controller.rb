@@ -390,4 +390,12 @@ class CatalogController < ApplicationController
   def facet_search_response
     search_service.facet_field_response(@facet.key)
   end
+
+  # https://github.com/projectblacklight/blacklight/blob/7ab22ddebb7f47c34a4f5011585ea6428ab44884/app/controllers/concerns/blacklight/catalog.rb#L263C3-L269C6
+  # remove facet.containsTitle from params outside of facet modal context
+  def search_action_url options = {}
+    options.delete("facet.containsTitle")
+    options = options.to_h if options.is_a? Blacklight::SearchState
+    url_for(options.reverse_merge(action: 'index'))
+  end
 end

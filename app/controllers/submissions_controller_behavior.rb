@@ -36,8 +36,8 @@ module SubmissionsControllerBehavior
     end.to_h
 
 
-    # Get devices and add devices with .organization_id relationship to device orgs select2 data
-    @devices = Device.all_solr
+    # Include both legacy AF Device and Valkyrie DeviceResource records.
+    @devices = Morphosource::SolrService.new.get_docs("has_model_ssim:(Device OR DeviceResource)")
     @devices_with_ids = @devices.map do |d|
       if (organization_id = d['organization_id_ssim']&.first).present?
         org_devices = @device_organizations_hash.dig(organization_id, :devices)

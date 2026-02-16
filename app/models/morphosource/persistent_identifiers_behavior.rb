@@ -39,34 +39,33 @@ module Morphosource
     # - public->unavailable
     # - unavailable->public
     def update_ark_status
-      unless self.ark.empty?
-        # visibility_changed no longer works with Valkyrie models, so we are comparing 
-        # pevious ARK status with the current visibility instead
-        begin
-          ark_identifier = Ezid::Identifier.find(self.ark.first)
-          if %w{reserved unavailable}.include?(ark_identifier.status) && public_visibilities.include?(self_visibility)
-            # ark status was reserved or unavailable, and now we are changing to public
-            ark_identifier.status = 'public'
-            ark_identifier.save
-          elsif (ark_identifier.status == 'public') && (!public_visibilities.include?(self_visibility))
-            # ark status was public, and now we are changing to unavailable
-            ark_identifier.status = 'unavailable'
-            ark_identifier.save
-          end
-        rescue => e
-          Rails.logger.error("Error finding ARK. Exception: #{e.message}")
+      return if self.ark.empty?
+      # AF models still support visibility_changed dirty tracking; DeviceResource does not.
+      return if self.class.to_s != 'DeviceResource' && !visibility_changed
+
+      begin
+        ark_identifier = Ezid::Identifier.find(self.ark.first)
+        if %w{reserved unavailable}.include?(ark_identifier.status) && public_visibilities.include?(self_visibility)
+          # ark status was reserved or unavailable, and now we are changing to public
+          ark_identifier.status = 'public'
+          ark_identifier.save
+        elsif (ark_identifier.status == 'public') && (!public_visibilities.include?(self_visibility))
+          # ark status was public, and now we are changing to unavailable
+          ark_identifier.status = 'unavailable'
+          ark_identifier.save
         end
+      rescue => e
+        Rails.logger.error("Error finding ARK. Exception: #{e.message}")
       end
     end
 
-    # TODO: remove this method later if no longer needed
-    # def visibility_changed
-    #   if self.class.to_s == 'Media'
-    #     self.fileset_accessibility_changed?
-    #   else
-    #     self.visibility_changed?
-    #   end
-    # end
+    def visibility_changed
+      if self.class.to_s == 'Media'
+        self.fileset_accessibility_changed?
+      else
+        self.visibility_changed?
+      end
+    end
 
     def public_visibilities
       @public_visibilities ||= begin
@@ -140,8 +139,8 @@ module Morphosource
           self.ark = [minted_ark.id]
           case self.class.to_s
           when 'Device'
-            Hyrax.persister.save(resource: self)
-            Hyrax.index_adapter.save(resource: self)
+            self.save
+            self.update_index
           when 'DeviceResource'
             # DeviceResource persistence/indexing is handled by MintWorkArkJob.
           else

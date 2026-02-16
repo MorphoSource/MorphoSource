@@ -12,7 +12,13 @@ module Morphosource
     # This code block is extending self.build_permitted_params from Hyrax::Forms::WorkForm
     # @return [Array] a list of parameters used by sanitize_params
     def build_permitted_params
+      # Some forms include this concern through different inheritance chains.
+      # Use `super` when available (Hyrax form params), otherwise start from
+      # an empty list so this concern remains reusable.
       base_params = defined?(super) ? super : []
+
+      # Keep MS-specific fields and nested parent/member relationship attrs
+      # appended to the base permitted params for both AF and Valkyrie flows.
       base_params + [
        :on_behalf_of,
        :version,

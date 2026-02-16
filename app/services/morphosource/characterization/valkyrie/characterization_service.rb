@@ -18,7 +18,7 @@ module Morphosource
           saved = Hyrax.persister.save(resource: metadata)
           Hyrax.publisher.publish('file.metadata.updated', metadata: saved, user: user)
 
-          if publish
+          if publish_characterized
             Hyrax.publisher.publish('file.characterized',
                                     file_set: Hyrax.query_service.find_by(id: saved.file_set_id),
                                     file_id: saved.id.to_s,
@@ -73,6 +73,40 @@ module Morphosource
           @parser              = parser
           @tools               = ch12n_tool
           @characterizer_config = characterizer_config
+        end
+
+        def characterize
+          terms = parse_metadata(extract_metadata(content))
+          apply_metadata(terms)
+        end
+
+        protected
+
+        # todovalk: implement support for remote URLs?
+        def content
+          if source.is_a? File
+            source
+          elsif source_file_path.present? && File.exist?(source_file_path)
+            File.open(source_file_path)
+          else
+            source.rewind
+            source.read
+          end
+        end
+
+        # Different ways to get local file path from source object or string
+        def source_file_path
+          @source_file_path ||= begin
+            if source.respond_to?(:disk_path)
+              source.disk_path
+            elsif source.respond_to?(:io) && source.io.respond_to?(:path)
+              source.io.path
+            elsif source.is_a?(String)
+              source
+            else
+              nil
+            end
+          end
         end
 
         def extract_metadata(content)

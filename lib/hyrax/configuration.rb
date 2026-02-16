@@ -1327,7 +1327,7 @@ module Hyrax
     ##
     # @return [Class]
     def file_set_indexer
-      @file_set_indexer ||= Hyrax::Indexers::FileSetIndexer
+      @file_set_indexer ||= ::FileSetIndexer
     end
 
     attr_writer :pcdm_collection_indexer

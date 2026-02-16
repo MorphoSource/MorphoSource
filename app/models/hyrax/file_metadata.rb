@@ -178,6 +178,9 @@ module Hyrax
     # attributes set by fits for video
     attribute :aspect_ratio, ::Valkyrie::Types::Set
 
+    alias :file_size :recorded_size
+    alias :file_size= :recorded_size=
+
     class << self
       ##
       # @return [String]

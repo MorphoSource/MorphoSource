@@ -19,8 +19,13 @@ end
 require 'active_fedora/cleaner'
 
 require 'valkyrie'
-Valkyrie::MetadataAdapter.register(Valkyrie::Persistence::Memory::MetadataAdapter.new, :test_adapter)
-Valkyrie::StorageAdapter.register(Valkyrie::Storage::Memory.new, :memory)
+test_adapter_uploads_path = Rails.root / 'tmp' / 'test_adapter_uploads'
+Valkyrie::StorageAdapter.register(
+  Valkyrie::Storage::VersionedDisk.new(base_path: test_adapter_uploads_path),
+  :test_disk
+)
+FileUtils.mkdir_p(test_adapter_uploads_path)
+Valkyrie.config.storage_adapter = :test_disk
 
 require 'hyrax/specs/shared_specs/factories/strategies/json_strategy'
 require 'hyrax/specs/shared_specs/factories/strategies/valkyrie_resource'
@@ -94,9 +99,15 @@ RSpec.configure do |config|
 
   config.before(:each) do
     clean_active_fedora_repository
+
+    if !Dir.exist?(test_adapter_uploads_path)
+      FileUtils.mkdir_p(test_adapter_uploads_path)
+    end
   end
 
-  # config.after(:each) do
-  #   ActiveFedora::Cleaner.clean!
-  # end
+  config.after(:each) do
+    if Dir.exist?(test_adapter_uploads_path)
+      FileUtils.rm_rf(test_adapter_uploads_path)
+    end
+  end
 end

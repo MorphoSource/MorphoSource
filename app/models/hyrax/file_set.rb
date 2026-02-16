@@ -54,6 +54,7 @@ module Hyrax
     include Hyrax::Schema(:core_metadata)
     include Hyrax::Schema(:file_set_metadata)
     include Hyrax::Schema(:file_set_extra_metadata)
+    include Morphosource::ArResourceMembership
 
     def self.model_name(name_class: Hyrax::Name)
       @_model_name ||= name_class.new(self, nil, 'FileSet')
@@ -67,109 +68,108 @@ module Hyrax
     delegate :download_groups, :download_groups=,
              :download_users,  :download_users=, to: :permission_manager
 
-    # For AF FileSets, we delegated a lot of OF metadata to stick to the FS, not sure if still needed here?
+    # for all file types
+    delegate(
+      :crc32,
+      :file_size,
+      :mime_type,
+      to: :original_file
+    )
 
-    # # for all file types
-    # delegate(
-    #   :crc32,
-    #   to: :characterization_proxy
-    # )
+    # for images
+    delegate(
+      :bits_per_sample,
+      :color_space,
+      :compression,
+      :focal_length,
+      :aperture_value,
+      :iso_speed_ratings,
+      :shutter_speed,
+      to: :original_file
+      )
 
-    # # for images
-    # delegate(
-    #   :bits_per_sample,
-    #   :color_space,
-    #   :compression,
-    #   :focal_length,
-    #   :aperture_value,
-    #   :iso_speed_ratings,
-    #   :shutter_speed,
-    #   to: :characterization_proxy
-    #   )
+    # for dicom
+    delegate(
+      :spacing_between_slices,
+      :modality,
+      :secondary_capture_device_manufacturer,
+      :secondary_capture_device_software_vers,
+      :file_type_extension,
+      :image_type,
+      :study_date,
+      :series_date,
+      :content_date,
+      :study_time,
+      :series_time,
+      :content_time,
+      :accession_number,
+      :instance_number,
+      :image_position_patient,
+      :image_orientation_patient,
+      :samples_per_pixel,
+      :photometric_interpretation,
+      :rows,
+      :columns,
+      :pixel_spacing,
+      :slice_thickness,
+      :bits_allocated,
+      :bits_stored,
+      :high_bit,
+      :pixel_representation,
+      :window_center,
+      :window_width,
+      :rescale_intercept,
+      :rescale_slope,
+      :window_center_and_width_explanation,
+      :exposure_time,
+      :pixel_spacing_calibration_type,
+      :contrast_frame_averaging,
+      :images_in_acquisition,
+      :KVP,
+      :generator_power,
+      :x_ray_tube_current,
+      :container_description,
+      :generator_id,
+      :detector_description,
+      :distance_source_to_patient,
+      :distance_source_to_detector,
+      :anode_target_material,
+      :spiral_pitch_factor,
+      :number_of_series_related_instances,
+      to: :original_file
+    )
 
-    # # for dicom
-    # delegate(
-    #   :spacing_between_slices,
-    #   :modality,
-    #   :secondary_capture_device_manufacturer,
-    #   :secondary_capture_device_software_vers,
-    #   :file_type_extension,
-    #   :image_type,
-    #   :study_date,
-    #   :series_date,
-    #   :content_date,
-    #   :study_time,
-    #   :series_time,
-    #   :content_time,
-    #   :accession_number,
-    #   :instance_number,
-    #   :image_position_patient,
-    #   :image_orientation_patient,
-    #   :samples_per_pixel,
-    #   :photometric_interpretation,
-    #   :rows,
-    #   :columns,
-    #   :pixel_spacing,
-    #   :slice_thickness,
-    #   :bits_allocated,
-    #   :bits_stored,
-    #   :high_bit,
-    #   :pixel_representation,
-    #   :window_center,
-    #   :window_width,
-    #   :rescale_intercept,
-    #   :rescale_slope,
-    #   :window_center_and_width_explanation,
+    # for mesh
+    delegate(
+      :point_count,
+      :face_count,
+      :edges_per_face,
+      :bounding_box_x,
+      :bounding_box_y,
+      :bounding_box_z,
+      :centroid_x,
+      :centroid_y,
+      :centroid_z,
+      :color_format,
+      :normals_format,
+      :has_uv_space,
+      :vertex_color,
+      :centroid_method,
+      :blender_version,
+      :gltf_inspect_version,
+      :pymeshlab_version,
+      to: :original_file
+    )
 
-    #   :exposure_time,
-    #   :pixel_spacing_calibration_type,
-    #   :contrast_frame_averaging,
-    #   :images_in_acquisition,
-    #   :KVP,
-    #   :generator_power,
-    #   :x_ray_tube_current,
-    #   :container_description,
-    #   :generator_id,
-    #   :detector_description,
-    #   :distance_source_to_patient,
-    #   :distance_source_to_detector,
-    #   :anode_target_material,
-    #   :spiral_pitch_factor,
-    #   :number_of_series_related_instances,
-    #   to: :characterization_proxy
-    # )
-
-    # # for mesh
-    # delegate(
-    #   :point_count,
-    #   :face_count,
-    #   :edges_per_face,
-    #   :bounding_box_x,
-    #   :bounding_box_y,
-    #   :bounding_box_z,
-    #   :centroid_x,
-    #   :centroid_y,
-    #   :centroid_z,
-    #   :color_format,
-    #   :normals_format,
-    #   :has_uv_space,
-    #   :vertex_color,
-    #   :centroid_method,
-    #   :blender_version,
-    #   :gltf_inspect_version,
-    #   :pymeshlab_version,
-    #   to: :characterization_proxy
-    # )
-
-    # # for zip archive contents
-    # delegate(
-    #   :contents_all_files,
-    #   :contents_mime_type,
-    #   :contents_file_name,
-    #   :contents_file_size,
-    #   :contents_accepted_file_count,
-    #   to: :characterization_proxy
-    # )
+    # for zip archive contents
+    delegate(
+      :contents_all_files,
+      :contents_mime_type,
+      :contents_file_name,
+      :contents_file_size,
+      :contents_accepted_file_count,
+      to: :original_file
+    )
 
     # @return [Hyrax::FileMetadata, nil]
     def original_file

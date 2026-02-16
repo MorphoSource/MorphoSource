@@ -160,11 +160,11 @@ module Hyrax
     def after_update_response
       respond_to do |wants|
         wants.html do
-          #if @organization.present? && @organization.organization_collection?
-          #  redirect_to main_app.organization_devices_path(@organization)
-          #else
+          if @organization.present? && @organization.organization_collection?
+            redirect_to main_app.organization_devices_path(@organization)
+          else
             redirect_to [main_app, curation_concern], notice: "Device \"#{curation_concern}\" successfully updated."
-          #end
+          end
         end
         wants.json { render :show, status: :ok, location: polymorphic_path([main_app, curation_concern]) }
       end

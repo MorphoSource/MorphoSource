@@ -22,7 +22,7 @@ RSpec.describe Valkyrie::CharacterizationJob do
   describe '#perform' do
     context 'non-archive deposits' do
       describe 'DICOM characterization' do
-        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_dcm_file) }
+        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file, fixture_path: 'CMB06020_R-m1_011.dcm') }
         let(:file_metadata) { get_file_metadata(file_set) }
 
         before do
@@ -46,7 +46,7 @@ RSpec.describe Valkyrie::CharacterizationJob do
       end
 
       describe 'PLY characterization' do
-        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_ply_file) }
+        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file, fixture_path: 'bunny/bunny.ply') }
         let(:file_metadata) { get_file_metadata(file_set) }
 
         before do
@@ -81,7 +81,7 @@ RSpec.describe Valkyrie::CharacterizationJob do
       end
 
       describe 'OBJ characterization' do
-        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_obj_file) }
+        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file, fixture_path: 'bunny/bunny.obj') }
         let(:file_metadata) { get_file_metadata(file_set) }
 
         before do
@@ -105,7 +105,7 @@ RSpec.describe Valkyrie::CharacterizationJob do
       end
 
       describe 'simple GLTF characterization' do
-        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_gltf_file) }
+        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file, fixture_path: 'bunny/bunny.gltf') }
         let(:file_metadata) { get_file_metadata(file_set) }
 
         before do
@@ -130,7 +130,7 @@ RSpec.describe Valkyrie::CharacterizationJob do
       end
 
       describe 'simple GLB characterization' do
-        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_glb_file) }
+        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file, fixture_path: 'bunny/bunny.glb') }
         let(:file_metadata) { get_file_metadata(file_set) }
 
         before do
@@ -151,7 +151,7 @@ RSpec.describe Valkyrie::CharacterizationJob do
       end
 
       describe 'complex GLB characterization' do
-        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_glb_complex_file) }
+        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file, fixture_path: 'whale/whale-mpc-677-150k-4096.glb') }
         let(:file_metadata) { get_file_metadata(file_set) }
 
         before do
@@ -173,7 +173,7 @@ RSpec.describe Valkyrie::CharacterizationJob do
       end
 
       describe 'STL characterization' do
-        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_stl_file) }
+        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file, fixture_path: 'bunny/bunny.stl') }
         let(:file_metadata) { get_file_metadata(file_set) }
 
         before do
@@ -197,7 +197,7 @@ RSpec.describe Valkyrie::CharacterizationJob do
       end
 
       describe 'WRL characterization' do
-        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_wrl_file) }
+        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file, fixture_path: 'bunny/bunny.wrl') }
         let(:file_metadata) { get_file_metadata(file_set) }
 
         before do
@@ -221,7 +221,7 @@ RSpec.describe Valkyrie::CharacterizationJob do
       end
 
       describe 'X3D characterization' do
-        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_x3d_file) }
+        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file, fixture_path: 'bunny/bunny.x3d') }
         let(:file_metadata) { get_file_metadata(file_set) }
 
         before do
@@ -244,8 +244,25 @@ RSpec.describe Valkyrie::CharacterizationJob do
         end
       end
 
+      describe 'JPEG image characterization' do
+        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file, fixture_path: 'images/ms.jpg') }
+        let(:file_metadata) { get_file_metadata(file_set) }
+
+        before do
+          described_class.perform_now(file_metadata.id.to_s)
+        end
+
+        subject { Hyrax.custom_queries.find_file_metadata_by(id: file_metadata.id) }
+
+        it "has image attributes in the metadata" do
+          expect(subject.mime_type).to eq("image/jpeg")
+          expect(subject.height.first).to eq("360")
+          expect(subject.width.first).to eq("360")
+        end
+      end
+
       describe 'Invalid file characterization' do
-        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_docx_file) }
+        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file, fixture_path: 'bunny/Source.docx') }
         let(:file_metadata) { get_file_metadata(file_set) }
 
         before do
@@ -262,7 +279,7 @@ RSpec.describe Valkyrie::CharacterizationJob do
 
     context 'archive deposits' do
       describe 'DICOM (ZIP) characterization' do
-        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_dcm_zip) }
+        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file, fixture_path: 'dcm_stack/dcm_stack.zip') }
         let(:file_metadata) { get_file_metadata(file_set) }
 
         before do
@@ -285,7 +302,7 @@ RSpec.describe Valkyrie::CharacterizationJob do
       end
 
       describe 'DICOM (TAR) characterization' do
-        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_dcm_tar) }
+        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file, fixture_path: 'dcm_stack/dcm_stack.tar') }
         let(:file_metadata) { get_file_metadata(file_set) }
 
         before do
@@ -305,7 +322,7 @@ RSpec.describe Valkyrie::CharacterizationJob do
       end
 
       describe 'OBJ with textures (ZIP) characterization' do
-        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_obj_zip) }
+        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file, fixture_path: 'whale/whale-mpc-677-150k-4096-obj.zip') }
         let(:file_metadata) { get_file_metadata(file_set) }
 
         before do
@@ -331,7 +348,7 @@ RSpec.describe Valkyrie::CharacterizationJob do
       end
 
       describe 'OBJ with textures (TAR) characterization' do
-        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_obj_tar) }
+        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file, fixture_path: 'whale/whale-mpc-677-150k-4096-obj.tar') }
         let(:file_metadata) { get_file_metadata(file_set) }
 
         before do
@@ -350,7 +367,7 @@ RSpec.describe Valkyrie::CharacterizationJob do
       end
 
       describe 'GLTF (ZIP) characterization' do
-        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_gltf_zip) }
+        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file, fixture_path: 'whale/whale-mpc-677-150k-4096-gltf.zip') }
         let(:file_metadata) { get_file_metadata(file_set) }
 
         before do
@@ -377,7 +394,7 @@ RSpec.describe Valkyrie::CharacterizationJob do
       end
 
       describe 'GLTF (TAR) characterization' do
-        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_gltf_tar) }
+        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file, fixture_path: 'whale/whale-mpc-677-150k-4096-gltf.tar') }
         let(:file_metadata) { get_file_metadata(file_set) }
 
         before do
@@ -396,7 +413,7 @@ RSpec.describe Valkyrie::CharacterizationJob do
       end
 
       describe 'PLY (DEFLATE64 ZIP) characterization' do
-        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_ply_deflate64_zip) }
+        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file, fixture_path: 'bunny/bunny_deflate64.zip') }
         let(:file_metadata) { get_file_metadata(file_set) }
 
         before do
@@ -421,7 +438,7 @@ RSpec.describe Valkyrie::CharacterizationJob do
 
     context 'event publishing' do
       let(:listener) { Hyrax::Specs::AppendingSpyListener.new }
-      let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_ply_file) }
+      let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file, fixture_path: 'bunny/bunny.ply') }
       let(:file_metadata) { get_file_metadata(file_set) }
 
       before { Hyrax.publisher.subscribe(listener) }
@@ -440,7 +457,7 @@ RSpec.describe Valkyrie::CharacterizationJob do
     end
 
     context 'CRC32 job enqueueing' do
-      let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_ply_file) }
+      let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file, fixture_path: 'bunny/bunny.ply') }
       let(:file_metadata) { get_file_metadata(file_set) }
 
       it "enqueues CharacterizeCrc32Job with correct parameters" do
@@ -452,7 +469,7 @@ RSpec.describe Valkyrie::CharacterizationJob do
     end
 
     context 'parent update service' do
-      let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_ply_file) }
+      let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file, fixture_path: 'bunny/bunny.ply') }
       let(:file_metadata) { get_file_metadata(file_set) }
 
       it "calls parent update service twice (after FITS and after specialized)" do
@@ -472,6 +489,102 @@ RSpec.describe Valkyrie::CharacterizationJob do
           end.twice
 
         described_class.perform_now(file_metadata.id.to_s)
+      end
+    end
+
+    context 'external URL file' do
+      let(:working_external_path) { Rails.root.join('tmp', 'test_external_cache') }
+
+      before do
+        FileUtils.mkdir_p(working_external_path)
+        allow(Hyrax.config).to receive(:working_external_path).and_return(working_external_path.to_s)
+      end
+
+      after do
+        FileUtils.rm_rf(working_external_path)
+      end
+
+      describe 'external JPEG image characterization' do
+        let(:remote_url) { 'https://remote.example.com/files/ms.jpg' }
+        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_external_file, remote_url: remote_url) }
+        let(:file_metadata) { get_file_metadata(file_set) }
+
+        before do
+          stub_request(:get, remote_url)
+            .to_return(body: File.binread(Rails.root.join('spec', 'fixtures', 'images', 'ms.jpg')), status: 200)
+          described_class.perform_now(file_metadata.id.to_s)
+        end
+
+        subject { Hyrax.custom_queries.find_file_metadata_by(id: file_metadata.id) }
+
+        it "has image attributes in the metadata" do
+          expect(subject.mime_type).to eq("image/jpeg")
+          expect(subject.height.first).to eq("360")
+          expect(subject.width.first).to eq("360")
+        end
+
+        it "preserves the external URL as file_identifier" do
+          expect(subject.file_identifier.to_s).to eq(remote_url)
+        end
+      end
+
+      describe 'external GLB characterization' do
+        let(:remote_url) { 'https://remote.example.com/files/whale-mpc-677-150k-4096.glb' }
+        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_external_file, remote_url: remote_url) }
+        let(:file_metadata) { get_file_metadata(file_set) }
+
+        before do
+          stub_request(:get, remote_url)
+            .to_return(body: File.binread(Rails.root.join('spec', 'fixtures', 'whale', 'whale-mpc-677-150k-4096.glb')), status: 200)
+          described_class.perform_now(file_metadata.id.to_s)
+        end
+
+        subject { Hyrax.custom_queries.find_file_metadata_by(id: file_metadata.id) }
+
+        it "has GLB attributes in the metadata" do
+          expect(subject.point_count.first).to eq("86317")
+          expect(subject.face_count.first).to eq("149999")
+          expect(subject.edges_per_face.first).to eq("3")
+          expect(subject.normals_format.first).to eq("vertex normals")
+          expect(subject.has_uv_space.first).to eq("True")
+          expect(subject.vertex_color.first).to eq("False")
+          expect(subject.centroid_method.first).to eq("Bounding Box")
+          expect(subject.gltf_inspect_version&.first.present?).to be true
+        end
+
+        it "preserves the external URL as file_identifier" do
+          expect(subject.file_identifier.to_s).to eq(remote_url)
+        end
+      end
+
+      describe 'external DICOM (ZIP) characterization' do
+        let(:remote_url) { 'https://remote.example.com/files/dcm_stack.zip' }
+        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_external_file, remote_url: remote_url) }
+        let(:file_metadata) { get_file_metadata(file_set) }
+
+        before do
+          stub_request(:get, remote_url)
+            .to_return(body: File.binread(Rails.root.join('spec', 'fixtures', 'dcm_stack', 'dcm_stack.zip')), status: 200)
+          described_class.perform_now(file_metadata.id.to_s)
+        end
+
+        subject { Hyrax.custom_queries.find_file_metadata_by(id: file_metadata.id) }
+
+        it "has DICOM archive attributes in the metadata" do
+          expect(subject.mime_type).to eq("application/zip")
+          expect(subject.contents_mime_type).to eq(["application/dicom"])
+          expect(subject.contents_accepted_file_count).to eq([518])
+          expect(JSON.parse(subject.contents_all_files&.first)).to be_a(Array)
+          expect(JSON.parse(subject.contents_all_files&.first).length).to be > 0
+          expect(subject.pixel_spacing.first).to eq("0.592047\\0.59091")
+          expect(subject.modality.first).to eq("OT")
+          expect(subject.secondary_capture_device_manufacturer.first).to eq("Thermo Fisher Scientific")
+          expect(subject.secondary_capture_device_software_vers.first).to eq("Avizo")
+        end
+
+        it "preserves the external URL as file_identifier" do
+          expect(subject.file_identifier.to_s).to eq(remote_url)
+        end
       end
     end
   end

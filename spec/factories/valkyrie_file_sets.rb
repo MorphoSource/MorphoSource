@@ -44,91 +44,39 @@ FactoryBot.define do
       end
     end
 
-    # Convenience traits for specific file types
-    trait :with_dcm_file do
-      with_fixture_file
-      fixture_path { 'CMB06020_R-m1_011.dcm' }
-    end
+    # External URL file trait - creates a FileSet backed by a remote HTTP URL.
+    # The file_identifier is set to the URL; no actual upload occurs.
+    # Tests should stub the HTTP request via WebMock so LazyHTTPFile
+    # downloads fixture content instead of making a real request.
+    trait :with_external_file do
+      transient do
+        remote_url { 'https://remote.example.com/files/test.bin' }
+      end
 
-    trait :with_ply_file do
-      with_fixture_file
-      fixture_path { 'bunny/bunny.ply' }
-    end
+      after(:create) do |file_set, evaluator|
+        url = evaluator.remote_url
+        filename = File.basename(URI.parse(url).path)
 
-    trait :with_obj_file do
-      with_fixture_file
-      fixture_path { 'bunny/bunny.obj' }
-    end
+        # Upload via storage adapter - routes to ExternalUrl for https:// URLs
+        saved = Hyrax.storage_adapter.upload(
+          resource: file_set,
+          file: StringIO.new(''),
+          original_filename: url
+        )
 
-    trait :with_gltf_file do
-      with_fixture_file
-      fixture_path { 'bunny/bunny.gltf' }
-    end
+        # Create FileMetadata with URL as file_identifier
+        file_metadata = Hyrax::FileMetadata.new(
+          file_identifier: saved.id,
+          file_set_id: file_set.id,
+          original_filename: filename,
+          pcdm_use: [Hyrax::FileMetadata::Use::ORIGINAL_FILE]
+        )
+        saved_metadata = Hyrax.persister.save(resource: file_metadata)
 
-    trait :with_glb_file do
-      with_fixture_file
-      fixture_path { 'bunny/bunny.glb' }
-    end
-
-    trait :with_glb_complex_file do
-      with_fixture_file
-      fixture_path { 'whale/whale-mpc-677-150k-4096.glb' }
-    end
-
-    trait :with_stl_file do
-      with_fixture_file
-      fixture_path { 'bunny/bunny.stl' }
-    end
-
-    trait :with_wrl_file do
-      with_fixture_file
-      fixture_path { 'bunny/bunny.wrl' }
-    end
-
-    trait :with_x3d_file do
-      with_fixture_file
-      fixture_path { 'bunny/bunny.x3d' }
-    end
-
-    trait :with_docx_file do
-      with_fixture_file
-      fixture_path { 'bunny/Source.docx' }
-    end
-
-    # Archive file traits
-    trait :with_dcm_zip do
-      with_fixture_file
-      fixture_path { 'dcm_stack/dcm_stack.zip' }
-    end
-
-    trait :with_dcm_tar do
-      with_fixture_file
-      fixture_path { 'dcm_stack/dcm_stack.tar' }
-    end
-
-    trait :with_obj_zip do
-      with_fixture_file
-      fixture_path { 'whale/whale-mpc-677-150k-4096-obj.zip' }
-    end
-
-    trait :with_obj_tar do
-      with_fixture_file
-      fixture_path { 'whale/whale-mpc-677-150k-4096-obj.tar' }
-    end
-
-    trait :with_gltf_zip do
-      with_fixture_file
-      fixture_path { 'whale/whale-mpc-677-150k-4096-gltf.zip' }
-    end
-
-    trait :with_gltf_tar do
-      with_fixture_file
-      fixture_path { 'whale/whale-mpc-677-150k-4096-gltf.tar' }
-    end
-
-    trait :with_ply_deflate64_zip do
-      with_fixture_file
-      fixture_path { 'bunny/bunny_deflate64.zip' }
+        # Link to file_set
+        file_set.file_ids = [saved_metadata.id]
+        Hyrax.persister.save(resource: file_set)
+      end
     end
   end
 end

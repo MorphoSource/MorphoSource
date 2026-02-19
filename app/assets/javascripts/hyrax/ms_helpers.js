@@ -332,6 +332,9 @@ function modalityAbbrev(m) {
     case 'ScanningElectronMicroscopy':
       return 'SEM';
       break;
+    case 'TransmissionElectronMicroscopy':
+      return 'TEM';
+      break;
     case 'BornDigital':
       return 'BD';
       break;

@@ -65,6 +65,10 @@ terms:
     term: Scanning Electron Microscopy
     abbreviation: SEM
     active: true
+  - id: TransmissionElectronMicroscopy
+    term: Transmission Electron Microscopy
+    abbreviation: TEM
+    active: true
   - id: BornDigital
     term: Born Digital
     abbreviation: BD

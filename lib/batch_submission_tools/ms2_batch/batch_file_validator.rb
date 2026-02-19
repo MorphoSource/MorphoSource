@@ -793,6 +793,8 @@ module BatchSubmissionTools
           'photography'
         when 'ScanningElectronMicroscopy'
           'SEM'
+        when 'TransmissionElectronMicroscopy'
+          'TEM'
         when 'BornDigital'
           'BD'
         when 'XRay'

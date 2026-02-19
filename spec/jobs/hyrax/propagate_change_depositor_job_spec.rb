@@ -10,8 +10,6 @@ RSpec.describe Hyrax::PropagateChangeDepositorJob do
     let(:file_set) { instance_double('ValkyrieFileSet') }
     let(:acl) { instance_double('Acl') }
     let(:permission_manager) { instance_double('PermissionManager', acl: acl) }
-    let(:acl_builder) { instance_double(Hyrax::AccessControlList) }
-    let(:grant_builder) { instance_double('GrantBuilder') }
 
     it 'updates each child file set via Valkyrie services' do
       allow(Hyrax.query_service).to receive(:find_by).with(id: source_id).and_return(resource)
@@ -22,11 +20,8 @@ RSpec.describe Hyrax::PropagateChangeDepositorJob do
       allow(file_set).to receive(:depositor=)
       allow(acl).to receive(:permissions=)
       allow(acl).to receive(:save)
-
-      allow(Hyrax::AccessControlList).to receive(:new).with(resource: file_set).and_return(acl_builder)
-      allow(acl_builder).to receive(:grant).with(:edit).and_return(grant_builder)
-      allow(grant_builder).to receive(:to).with(user).and_return(grant_builder)
-      allow(grant_builder).to receive(:save)
+      allow(acl).to receive(:grant).with(:edit).and_return(acl)
+      allow(acl).to receive(:to).with(user).and_return(acl)
       allow(User).to receive(:find_by_user_key).with('new-owner').and_return(user)
 
       job.perform(source_id, user, true)
@@ -44,11 +39,8 @@ RSpec.describe Hyrax::PropagateChangeDepositorJob do
       allow(file_set).to receive(:depositor=)
       allow(acl).to receive(:permissions=)
       allow(acl).to receive(:save)
-
-      allow(Hyrax::AccessControlList).to receive(:new).with(resource: file_set).and_return(acl_builder)
-      allow(acl_builder).to receive(:grant).with(:edit).and_return(grant_builder)
-      allow(grant_builder).to receive(:to).with(user).and_return(grant_builder)
-      allow(grant_builder).to receive(:save)
+      allow(acl).to receive(:grant).with(:edit).and_return(acl)
+      allow(acl).to receive(:to).with(user).and_return(acl)
       allow(User).to receive(:find_by_user_key).with('new-owner').and_return(user)
 
       job.perform(source_id, user, false)

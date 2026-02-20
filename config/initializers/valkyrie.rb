@@ -30,6 +30,13 @@ if Hyrax.config.valkyrie_transition?
     Valkyrie.config.metadata_adapter = :freyja
     Hyrax.config.query_index_from_valkyrie = true
 
+    # Register custom query strategies for find_first/last_of_model
+    Freyja::CustomQueryContainer.known_custom_queries_and_their_strategies =
+      Freyja::CustomQueryContainer.known_custom_queries_and_their_strategies.merge(
+        find_first_of_model: :find_single_or_nil,
+        find_last_of_model: :find_single_or_nil
+      )
+
     Valkyrie::StorageAdapter.register(
       Valkyrie::Storage::Hoard.new(services: [
         Valkyrie::Storage::VersionedDisk.new(

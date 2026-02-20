@@ -21,7 +21,13 @@ module Goddess
 
       def setup_model(model_name)
         model_name = model_class_for(model_name)
-        model_name.respond_to?(:valkyrie_class) ? model_name.valkyrie_class : model_name
+        if model_name.respond_to?(:valkyrie_class)
+          model_name.valkyrie_class
+        elsif Wings::ModelRegistry.reverse_lookup(model_name)
+          Wings::ModelRegistry.reverse_lookup(model_name)
+        else
+          model_name
+        end
       end
 
       def total_results(result_sets)

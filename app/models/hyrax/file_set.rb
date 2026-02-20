@@ -54,6 +54,7 @@ module Hyrax
     include Hyrax::Schema(:core_metadata)
     include Hyrax::Schema(:file_set_metadata)
     include Hyrax::Schema(:file_set_extra_metadata)
+    include Morphosource::ArResource
     include Morphosource::ArResourceMembership
 
     def self.model_name(name_class: Hyrax::Name)

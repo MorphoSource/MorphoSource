@@ -37,8 +37,8 @@ module Morphosource
           config.add_facet_field "device_organization", field: "media_device_facility_organization_ssim", label: "Device Organization", limit: 10
           config.add_facet_field "team", field: "member_of_team_ids_ssim", label: "Team", limit: 10, helper_method: :collection_title_by_id
           config.add_facet_field "project", field: "member_of_project_ids_ssim", label: "Project", limit: 10, helper_method: :collection_title_by_id
-          config.add_facet_field "owner", field: "user_with_ownership_name_ssim", label: "Data Manager", limit: 10
-          config.add_facet_field "depositor", field: "depositor_name_ssim", label: "Data Uploader", limit: 10
+          config.add_facet_field "owner", field: "user_with_ownership_ssi", label: "Data Manager", limit: 10, helper_method: :user_name_by_id
+          config.add_facet_field "depositor", field: "depositor_ssim", label: "Data Uploader", limit: 10, helper_method: :user_name_by_id
           # hidden field used to determine if there are specimens on the page
           config.add_facet_field "object_type", field: "media_physical_object_type_ssim", label: "Object Type", limit: 10, show: false
         end

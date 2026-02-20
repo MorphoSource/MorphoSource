@@ -21,6 +21,8 @@ Hyrax.config do |config|
   config.register_curation_concern :taxonomy_resource
   # Injected via `rails g hyrax:work_resource DeviceResource`
   config.register_curation_concern :device_resource
+  # Injected via `rails g hyrax:work_resource ImagingEventResource`
+  config.register_curation_concern :imaging_event_resource
 
   # Register roles that are expected by your implementation.
   # @see Hyrax::RoleRegistry for additional details.

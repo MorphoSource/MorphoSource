@@ -9,6 +9,7 @@ module Morphosource
       PAGE_TITLE = I18n.t('morphosource.dashboard.admin.import_slides.page_title')
 
       def import_slides
+        Rails.logger.info "[Morphosource::Admin::ImportSlidesController] Starting import of slide series for occurrence key: #{occurrence_key} and collection id: #{@collection.id}"
         Morphosource::ImportSlideSeriesJob.perform_later(occurrence_key, @collection.id)
         redirect_to sequential_section_list_path(@collection.id), flash: { notice: I18n.t('morphosource.admin.import.slides.job_submitted') }
       rescue StandardError => e

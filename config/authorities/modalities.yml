@@ -25,6 +25,10 @@ terms:
     term: Synchrotron Imaging
     abbreviation: Synchro
     active: true
+  - id: NeutrinoImaging
+    term: Neutrino Imaging
+    abbreviation: Neutrino
+    active: true
   - id: Photogrammetry
     term: Photogrammetry
     abbreviation: Photogram

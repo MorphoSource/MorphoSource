@@ -5,4 +5,7 @@
 class ImagingEventResource < Hyrax::Work
   include Hyrax::Schema(:basic_metadata)
   include Hyrax::Schema(:imaging_event_resource)
+  include Morphosource::ValkyrieWorkBehavior
+
+
 end

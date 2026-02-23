@@ -286,87 +286,15 @@ function removeLastRepeatable() {
 }
 
 function modalityAbbrev(m) {
-  switch(m) {
-    case 'MicroNanoXRayComputedTomography':
-      return 'CT';
-      break;
-    case 'MagneticResonanceImaging':
-      return 'MRI';
-      break;
-    case 'PositronEmissionTomography':
-      return 'PET';
-      break;
-    case 'SinglePhotonEmissionComputedTomography':
-      return 'SPECT';
-      break;
-    case 'NeutronComputedTomography':
-      return 'NCT';
-      break;
-    case 'SynchrotronImaging':
-      return 'Synchro';
-      break;
-    case 'Photogrammetry':
-      return 'Photogram';
-      break;
-    case 'StructuredLight':
-      return 'StrLight';
-      break;
-    case 'LaserScan':
-      return 'Laser';
-      break;
-    case 'ConfocalImageStacking':
-      return 'Confocal';
-      break;
-    case 'LightSheetFluorescenceMicroscopy':
-      return 'LSFM';
-      break;
-    case 'Infrared':
-      return 'Infrared';
-      break;
-    case 'ReflectanceTransformationImaging':
-      return 'RTI';
-      break;
-    case 'Photography':
-      return 'Photo';
-      break;
-    case 'ScanningElectronMicroscopy':
-      return 'SEM';
-      break;
-    case 'TransmissionElectronMicroscopy':
-      return 'TEM';
-      break;
-    case 'BornDigital':
-      return 'BD';
-      break;
-    case 'XRay':
-      return 'XRay';
-      break;
-    case 'LaserAidedProfiling':
-      return 'LAP';
-      break;
-    case 'Video':
-      return 'Video';
-      break;
-    default:
-      return 'Etc';
-  }
+  var modalityInfo = (window.morphosourceModalities || {})[m];
+  return (modalityInfo && modalityInfo.abbreviation) || 'Etc';
 }
 
 function modalityTerm(m) {
-  switch (m) {
-    case 'MicroNanoXRayComputedTomography':
-      return 'X-Ray Computed Tomography (CT/microCT)';
-    case 'MagneticResonanceImaging':
-      return 'Magnetic Resonance Imaging (MRI)';
-    case 'PositronEmissionTomography':
-      return 'Positron Emission Tomography (PET)';
-    case 'SinglePhotonEmissionComputedTomography':
-      return 'Single Photon Emission Computed Tomography (SPECT)';
-    case 'NeutronComputedTomography':
-      return 'Neutron Computed Tomography (NCT)';
-    case 'XRay':
-      return 'X-Ray';
-    default:
-      return m.replace(/([A-Z])/g, ' $1').trim();
+  if (!m) { return ''; }
+  var modalityInfo = (window.morphosourceModalities || {})[m];
+  if (modalityInfo && modalityInfo.term) {
+    return modalityInfo.term;
   }
+  return m.replace(/([A-Z])/g, ' $1').trim();
 }

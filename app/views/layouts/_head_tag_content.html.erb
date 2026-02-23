@@ -25,6 +25,9 @@ signed in %>
 <%= javascript_include_tag 'application' %>
 
 <%= javascript_pack_tag 'application' %>
+<script type="text/javascript">
+  window.morphosourceModalities = <%= modalities_client_lookup_json %>;
+</script>
 
 <%= render 'shared/appearance_styles' %>
 

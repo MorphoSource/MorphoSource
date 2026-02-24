@@ -214,7 +214,7 @@ deploy_dev:
     - mkdir helm_chart
     - cd helm_chart/
     - git clone https://$GITLAB_CI_REPO_READ_USER:$GITLAB_CI_REPO_READ_TOKEN@gitlab.oit.duke.edu/morphosource/helm-chart.git .
-    - helm upgrade morphosource charts/hyrax -f charts/hyrax/values.yaml -f charts/hyrax/values.dev.yaml --set image.tagPrefix=app-dev- --set worker.image.tagPrefix=worker-dev- --set workerHeavy.image.tagPrefix=worker-dev- --set image.tagVersion=$CI_COMMIT_SHORT_SHA --set strategyType=$K8S_STRATEGY --set runDbMigrate=$K8S_RUN_DB_MIGRATE
+    - helm upgrade morphosource charts/hyrax -f charts/hyrax/values.yaml -f charts/hyrax/values.dev.yaml --set image.tagPrefix=app-dev- --set worker.image.tagPrefix=worker-dev- --set workerBatch.image.tagPrefix=worker-dev- --set workerHeavy.image.tagPrefix=worker-dev- --set image.tagVersion=$CI_COMMIT_SHORT_SHA --set strategyType=$K8S_STRATEGY --set runDbMigrate=$K8S_RUN_DB_MIGRATE
 
 deploy_prod:
   extends: .deploy
@@ -230,4 +230,4 @@ deploy_prod:
     - mkdir helm_chart
     - cd helm_chart/
     - git clone https://$GITLAB_CI_REPO_READ_USER:$GITLAB_CI_REPO_READ_TOKEN@gitlab.oit.duke.edu/morphosource/helm-chart.git .
-    - helm upgrade morphosource charts/hyrax -f charts/hyrax/values.yaml -f charts/hyrax/values.prod.yaml --set image.tagPrefix=app-main- --set worker.image.tagPrefix=worker-main- --set workerHeavy.image.tagPrefix=worker-main- --set image.tagVersion=$CI_COMMIT_SHORT_SHA --set strategyType=$K8S_STRATEGY --set runDbMigrate=$K8S_RUN_DB_MIGRATE
+    - helm upgrade morphosource charts/hyrax -f charts/hyrax/values.yaml -f charts/hyrax/values.prod.yaml --set image.tagPrefix=app-main- --set worker.image.tagPrefix=worker-main- --set workerBatch.image.tagPrefix=worker-main- --set workerHeavy.image.tagPrefix=worker-main- --set image.tagVersion=$CI_COMMIT_SHORT_SHA --set strategyType=$K8S_STRATEGY --set runDbMigrate=$K8S_RUN_DB_MIGRATE

@@ -146,6 +146,11 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
   end
 
   describe 'import_slide_series' do
+    let(:media) { double('media', id: 'media123') }
+    before do
+      # subject.instance_variable_set(:@media, media)
+      allow(subject).to receive(:create_new_media).and_return(media)
+    end
     it 'calls methods to create a new media record and add it to the collection' do
       expect(subject).to receive(:create_new_imaging_event)
       expect(subject).to receive(:create_new_media)

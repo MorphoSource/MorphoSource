@@ -1,7 +1,7 @@
 require 'rails_helper'
 require 'hyrax/specs/spy_listener'
 
-RSpec.describe Valkyrie::CharacterizationJob do
+RSpec.describe ValkyrieCharacterizationJob do
   before do
     ActiveJob::Base.queue_adapter = :test
   end

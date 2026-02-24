@@ -6,6 +6,19 @@ module Morphosource
 
       PAGE_TITLE = I18n.t("morphosource.dashboard.sidebar.admin_tools.content.all_downloads")
 
+      def allowed_sort_parameters
+        ['date_downloaded asc',
+         'date_downloaded desc',
+         'download_usage asc',
+         'download_usage desc',
+         'download_usage_list asc',
+         'download_usage_list desc',
+         'users.display_name asc',
+         'users.display_name desc',
+         'work_id asc',
+         'work_id desc']
+      end
+
       private
 
       def require_permissions

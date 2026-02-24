@@ -16,7 +16,7 @@ class ApplicationController < ActionController::Base
 
   # Fixes a bug in CanCanCan, see https://github.com/CanCanCommunity/cancancan/issues/500
   include CanCanSkipperFixInheritance
-  
+
   # Adds a few additional behaviors into the application controller
   include Blacklight::Controller
   include Hydra::Controller::ControllerBehavior
@@ -29,16 +29,35 @@ class ApplicationController < ActionController::Base
   protect_from_forgery with: :exception
 
   before_action :set_sitewide_announcement
+  before_action :sanitize_sort_parameters
 
   rescue_from CanCan::AccessDenied, ActiveFedora::ObjectNotFoundError, Ldp::Gone do |exception|
     respond_to do |format|
-      format.json { 
-        render json: { code: 404, message: t("cancan.not_found.message"), description: t("cancan.not_found.description")}, status: :not_found 
+      format.json {
+        render json: { code: 404, message: t("cancan.not_found.message"), description: t("cancan.not_found.description")}, status: :not_found
       }
       format.html { redirect_to main_app.root_url, notice: "#{t("cancan.not_found.message")}: #{t("cancan.not_found.description")}" }
       format.js   { render nothing: true, status: :not_found }
       format.any  { redirect_to main_app.root_url, notice: "#{t("cancan.not_found.message")}: #{t("cancan.not_found.description")}" }
     end
+  end
+
+  # Sanitize sort parameters to prevent injection of invalid sort keys, e.g.,
+  # taxonomy_si descscnr_engine_sink_tracer_f1165c50ee74d729a882a37ea5ef44e6
+  def sanitize_sort_parameters
+    sort_key = params[:sort].presence
+    return unless sort_key
+
+    unless allowed_sort_parameters.include?(sort_key)
+      Rails.logger.warn("Dropping invalid sort param: #{sort_key.inspect}")
+      params.delete(:sort)
+      true
+    end
+  end
+
+  # override in controller to allow additional sort parameters
+  def allowed_sort_parameters
+    blacklight_config.sort_fields.keys
   end
 
   protected

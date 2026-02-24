@@ -26,6 +26,17 @@ module Morphosource
       end
       configure_facets
 
+      def allowed_sort_parameters
+        ["date_uploaded_dtsi asc",
+         "date_uploaded_dtsi desc",
+         "record_source_si asc",
+         "record_source_si desc",
+         "taxonomy_name_si asc",
+         "taxonomy_name_si desc",
+         "title_ssi asc",
+         "title_ssi desc"]
+      end
+
       private
 
         def query_collection_counts
@@ -54,7 +65,6 @@ module Morphosource
         def tab
           :specimens
         end
-
     end
   end
 end

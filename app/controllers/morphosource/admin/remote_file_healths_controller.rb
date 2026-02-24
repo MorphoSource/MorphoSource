@@ -25,8 +25,8 @@ module Morphosource
       def verify_media
         media = Media.find(params[:id])
         media.set_remote_file_health
-        flash[:notice] = "Remote file verification of media #{media.id} has been completed."    
-        redirect_to(request.referrer || main_app.remote_file_health_path) and return      
+        flash[:notice] = "Remote file verification of media #{media.id} has been completed."
+        redirect_to(request.referrer || main_app.remote_file_health_path) and return
       end
 
       def verify_all
@@ -35,11 +35,15 @@ module Morphosource
         else
           RemoteFileVerificationJob.perform_later
           flash[:notice] = "System-wide remote file verification has been started.  Please check this page later to see the updates."
-        end          
-        redirect_to(main_app.remote_file_health_path) and return      
+        end
+        redirect_to(main_app.remote_file_health_path) and return
       end
 
-      
+      def allowed_sort_parameters
+        ['media asc',
+         'media desc']
+      end
+
       private
 
       def authorize
@@ -79,7 +83,7 @@ module Morphosource
           }
         end
       end
- 
+
     end
   end
 end

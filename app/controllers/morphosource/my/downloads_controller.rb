@@ -27,6 +27,11 @@ module Morphosource
         redirect_to main_app.my_cart_path
       end
 
+      def allowed_sort_parameters
+        ['date_downloaded asc',
+         'date_downloaded desc']
+      end
+
       private
 
       def get_items

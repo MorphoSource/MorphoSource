@@ -17,7 +17,7 @@ class PrepareCharacterizeJob < Hyrax::ApplicationJob
     path_hint = wrapper.uploaded_file ? wrapper.uploaded_file.uploader.path : wrapper.path
 
     if work.is_remote_backed?
-      if path_hint && File.exist?(path_hint)      
+      if path_hint && File.exist?(path_hint)
         CharacterizeJob.perform_later(work, work.original_file.id, path_hint)
       else
         user = User.find_by_user_key(work.depositor)

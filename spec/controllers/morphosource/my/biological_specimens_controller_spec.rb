@@ -102,7 +102,7 @@ RSpec.describe Morphosource::My::BiologicalSpecimensController, type: :controlle
         sign_in user
         get :index
       end
-      
+
       it 'search_builder_class is EditSpecimensSearchBuilder' do
         expect(controller.blacklight_config.search_builder_class).to eq(Morphosource::Users::EditSpecimensSearchBuilder)
       end
@@ -145,5 +145,22 @@ RSpec.describe Morphosource::My::BiologicalSpecimensController, type: :controlle
     end
 
     it { expect(subject.search_action_for_dashboard).to eq(main_app.my_specimens_path(locale: 'en')) }
+  end
+
+  describe 'allowed_sort_parameters' do
+    let(:allowed_sort_params) do
+      ['date_uploaded_dtsi asc',
+       'date_uploaded_dtsi desc',
+       'record_source_si asc',
+       'record_source_si desc',
+       'taxonomy_name_si asc',
+       'taxonomy_name_si desc',
+       'title_ssi asc',
+       'title_ssi desc']
+    end
+
+    it 'includes custom sort parameters' do
+      expect(subject.allowed_sort_parameters).to match_array(allowed_sort_params)
+    end
   end
 end

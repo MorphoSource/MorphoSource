@@ -54,7 +54,7 @@ class CharacterizeJob < HeavyJob
       file_set.parent&.in_collections&.each(&:update_index)
       Morphosource::Works::FileSetCharacterizationParentUpdateService.run(file_set)
     end
-    
+
     CreateDerivativesJob.perform_later(file_set, file_id, filepath)
   end
 

@@ -3,6 +3,10 @@ module MorphosourceHelper
   include ActionView::Helpers::UrlHelper
   include Hyrax::Renderers
 
+  def modalities_client_lookup_json
+    @modalities_client_lookup_json ||= json_escape(Morphosource::ModalitiesService.client_lookup.to_json).html_safe
+  end
+
   class RemoteFileInfo
     attr_accessor :message, :http_code, :file_ext, :status, :content_length, :e_tag
 

@@ -132,6 +132,37 @@ RSpec.describe MorphosourceHelper, type: :helper do
     end
   end
 
+  describe '#modalities_client_lookup_json' do
+    it 'serializes the modalities lookup for JS consumption' do
+      allow(Morphosource::ModalitiesService).to receive(:client_lookup).and_return(
+        'TransmissionElectronMicroscopy' => {
+          term: 'Transmission Electron Microscopy',
+          abbreviation: 'TEM'
+        }
+      )
+
+      json = helper.modalities_client_lookup_json.to_s
+
+      expect(json).to include('TransmissionElectronMicroscopy')
+      expect(json).to include('Transmission Electron Microscopy')
+      expect(json).to include('TEM')
+    end
+
+    it 'escapes HTML-sensitive characters in JSON output' do
+      allow(Morphosource::ModalitiesService).to receive(:client_lookup).and_return(
+        'BadModality' => {
+          term: '</script><script>alert(1)</script>',
+          abbreviation: 'BAD'
+        }
+      )
+
+      json = helper.modalities_client_lookup_json.to_s
+
+      expect(json).not_to include('</script>')
+      expect(json).to include('\\u003c/script\\u003e')
+    end
+  end
+
   describe '#organizations' do
     describe 'there are organizations' do
       let!(:organizations) do

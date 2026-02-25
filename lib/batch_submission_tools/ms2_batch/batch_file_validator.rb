@@ -418,7 +418,7 @@ module BatchSubmissionTools
                 error_msg = error_by_type(field_name, val)
               else
                 # no need to check the values if they should not be present
-                error_msg = "#{field_name}: Value should not be present when modality #{modality} is pre-selected."
+                error_msg = "#{field_name}: Value should not be present when modality #{m} is pre-selected."
               end
             end
           else

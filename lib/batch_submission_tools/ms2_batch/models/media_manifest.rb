@@ -105,7 +105,7 @@ module BatchSubmissionTools
               :fileset_visibility => "",
               :fileset_accessibility => "open"
             }
-          when private
+          when private, 'private'
             {
               :visibility => private,
               :fileset_visibility => "",

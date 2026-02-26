@@ -203,7 +203,7 @@ class Collection < ActiveFedora::Base
           Rails.logger.info("[AddMemberObjects] member=#{member.id} about to save!")
           Rails.logger.info("[AddMemberObjects] member.save! has been run to add #{member.id} to collection #{self.id}")
           s = SolrDocument.find(member.id)
-          Rails.logger.info("[AddMemberObjects] SolrDocument for member #{member.id} has thumbnail #{s["thumbnail_path_ss"]} and member_of_collection_ids #{s['member_of_collection_ids_ssim']}")
+          Rails.logger.info("[AddMemberObjects] SolrDocument for member #{member.id} has thumbnail #{s["thumbnail_path_ss"]} and member_of_collection_ids #{s["member_of_collection_ids_ssim"]}")
         end
         UpdateWorkIndexJob.perform_later(object_id) if object_id.present?
       end

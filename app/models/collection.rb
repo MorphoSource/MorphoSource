@@ -201,7 +201,6 @@ class Collection < ActiveFedora::Base
         else
           Rails.logger.info("[AddMemberObjects] collection=#{self.id} member=#{member.id}, thumbnail=#{member.thumbnail_id}")
           Rails.logger.info("[AddMemberObjects] member=#{member.id} about to save!")
-          member.save!
           Rails.logger.info("[AddMemberObjects] member.save! has been run to add #{member.id} to collection #{self.id}")
           s = SolrDocument.find(member.id)
           Rails.logger.info("[AddMemberObjects] SolrDocument for member #{member.id} has thumbnail #{s["thumbnail_path_ss"]} and member_of_collection_ids #{s["member_of_collection_ids_ssim"]}")

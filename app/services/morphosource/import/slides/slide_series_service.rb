@@ -45,12 +45,11 @@ module Morphosource
 
         def import_slide_series
           Hyrax.config.index_related_works = false
-          media_ids = []
           slides.each do |slide_json|
             @slide = slide_class.new(slide_json)
             @imaging_event = create_new_imaging_event
             @media = create_new_media
-            media_ids << @media.id
+
             characterize_file unless @slide.metadata_blank?
             create_thumbnail unless @slide.metadata_blank?
             normalize_media if normalize_permissions
@@ -58,20 +57,10 @@ module Morphosource
             @collection.add_member_objects(@media)
             Rails.logger.info "[Morphosource::Import::SlideSeriesService] Added media #{@media.id} to collection #{@collection.id}."
             s = SolrDocument.find(@media.id)
-            Rails.logger.info("[Morphosource::Import::SlideSeriesService] End of  processing for media #{@media.id}. @media.thumbnail_id: #{@media.thumbnail_id}, @media.member_of_collection_ids: #{@media.member_of_collection_ids}. SolrDocument for member #{@media.id} has thumbnail #{s["thumbnail_path_ss"]} and member_of_collection_ids #{s["member_of_collection_ids_ssim"]}")
+            Rails.logger.info("[Morphosource::Import::SlideSeriesService] End of  processing for media #{@media.id}. @media.thumbnail_id: #{@media.thumbnail_id}, @media.member_of_collection_ids: #{@media.member_of_collection_ids}. SolrDocument for member #{@media.id} has thumbnail #{s["thumbnail_path_ss"]} and member_of_collection_ids #{s['member_of_collection_ids_ssim']}")
           end
           @specimen.update_index
           @collection.update_index
-          Rails.logger.info "[Morphosource::Import::SlideSeriesService] Finished importing slide series for occurrence key: #{@occurrence_key} and collection id: #{@collection.id}. Media ids imported: #{media_ids.join(', ')}."
-          media_ids.each do |id|
-            m = Media.find(id)
-            s = SolrDocument.find(id)
-            Rails.logger.info("[Morphosource::Import::SlideSeriesService] media.id: #{m.id}, media.thumbnail_id: #{m.thumbnail_id}, media.member_of_collection_ids: #{m.member_of_collection_ids}. document.thumbnail_path #{s["thumbnail_path_ss"]} document.member_of_collection_ids #{s["member_of_collection_ids_ssim"]}")
-            m.update_index
-            m.reload
-            s = SolrDocument.find(id)
-            Rails.logger.info("[Morphosource::Import::SlideSeriesService] Finished reindexing media #{m.id}. media.thumbnail_id: #{m.thumbnail_id}, media.member_of_collection_ids: #{m.member_of_collection_ids}. document.thumbnail_path #{s["thumbnail_path_ss"]} document.member_of_collection_ids #{s["member_of_collection_ids_ssim"]}")
-          end
         end
 
         # find_or_create_series_works

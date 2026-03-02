@@ -14,7 +14,6 @@ module Morphosource
         define_provider_methods
 
         def self.call(occurrence_key)
-          Rails.logger.info "[Morphosource::Import::SlideSeriesService] Importing slide series for occurrence key: #{occurrence_key}"
           new(occurrence_key).call
         end
 
@@ -45,33 +44,17 @@ module Morphosource
 
         def import_slide_series
           Hyrax.config.index_related_works = false
-          media_ids = []
           slides.each do |slide_json|
             @slide = slide_class.new(slide_json)
             @imaging_event = create_new_imaging_event
             @media = create_new_media
-            media_ids << @media.id
             characterize_file unless @slide.metadata_blank?
             create_thumbnail unless @slide.metadata_blank?
             normalize_media if normalize_permissions
-            Rails.logger.info "[Morphosource::Import::SlideSeriesService] Created media #{@media.inspect} about to add to collection #{@collection.id}."
             @collection.add_member_objects(@media)
-            Rails.logger.info "[Morphosource::Import::SlideSeriesService] Added media #{@media.id} to collection #{@collection.id}."
-            s = SolrDocument.find(@media.id)
-            Rails.logger.info("[Morphosource::Import::SlideSeriesService] End of  processing for media #{@media.id}. @media.thumbnail_id: #{@media.thumbnail_id}, @media.member_of_collection_ids: #{@media.member_of_collection_ids}. SolrDocument for member #{@media.id} has thumbnail #{s["thumbnail_path_ss"]} and member_of_collection_ids #{s["member_of_collection_ids_ssim"]}")
           end
           @specimen.update_index
           @collection.update_index
-          Rails.logger.info "[Morphosource::Import::SlideSeriesService] Finished importing slide series for occurrence key: #{@occurrence_key} and collection id: #{@collection.id}. Media ids imported: #{media_ids.join(', ')}."
-          media_ids.each do |id|
-            m = Media.find(id)
-            s = SolrDocument.find(id)
-            Rails.logger.info("[Morphosource::Import::SlideSeriesService] media.id: #{m.id}, media.thumbnail_id: #{m.thumbnail_id}, media.member_of_collection_ids: #{m.member_of_collection_ids}. document.thumbnail_path #{s["thumbnail_path_ss"]} document.member_of_collection_ids #{s["member_of_collection_ids_ssim"]}")
-            m.update_index
-            m.reload
-            s = SolrDocument.find(id)
-            Rails.logger.info("[Morphosource::Import::SlideSeriesService] Finished reindexing media #{m.id}. media.thumbnail_id: #{m.thumbnail_id}, media.member_of_collection_ids: #{m.member_of_collection_ids}. document.thumbnail_path #{s["thumbnail_path_ss"]} document.member_of_collection_ids #{s["member_of_collection_ids_ssim"]}")
-          end
         end
 
         # find_or_create_series_works
@@ -226,13 +209,9 @@ module Morphosource
 
         # override Morphosource::CustomThumbnails create_thumbnail
         def create_thumbnail
-          Rails.logger.info("[Morphosource::Import::SlideSeriesService] Creating thumbnail for media #{@media.id}.")
-          Rails.logger.info("[Morphosource::Import::SlideSeriesService] Media #{@media.id} @media.thumbnail_id: #{@media.thumbnail_id}, @media.member_of_collection_ids: #{@media.member_of_collection_ids}.")
           copy_remote_file
           create_derivative
           update_thumbnail_id
-          s = SolrDocument.find(@media.id)
-          Rails.logger.info("[Morphosource::Import::SlideSeriesService] Finished creating thumbnail for media #{@media.id}. @media.thumbnail_id: #{@media.thumbnail_id}, @media.member_of_collection_ids: #{@media.member_of_collection_ids} SolrDocument for member #{@media.id} has thumbnail #{s["thumbnail_path_ss"]} and member_of_collection_ids #{s['member_of_collection_ids_ssim']}")
         end
 
         def custom_thumbnail
@@ -311,7 +290,6 @@ module Morphosource
           # Updates media according to team permissions template
           # This will override settings in the providers profile.
           def normalize_media
-            Rails.logger.info("[Morphosource::Import::SlideSeriesService] Normalizing media #{@media.id}.")
             OrganizationNormalizationJob.perform_later(media_id: @media.id, organization_id: @organization.id, user_email: org_manager_email, remove_previous_reviewers: false, update_publication_status: true)
           end
 

@@ -41,6 +41,18 @@ RSpec.describe Morphosource::Collections::OrganizationCollectionsControllerBehav
     it 'returns the number of devices owned by the organization' do
       expect(subject.organization_device_count).to eq(2)
     end
+
+    it 'queries by organization id and applies has_model as an fq filter' do
+      solr_service = instance_double(Morphosource::SolrService)
+      allow(Morphosource::SolrService).to receive(:new).and_return(solr_service)
+
+      expect(solr_service).to receive(:get_count)
+        .with("device_organization_id_ssim:#{organization.id}",
+              fq: ["has_model_ssim:(Device OR DeviceResource)"])
+        .and_return(2)
+
+      expect(subject.organization_device_count).to eq(2)
+    end
   end
 
   describe 'device_media_count' do

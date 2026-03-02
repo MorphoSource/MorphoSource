@@ -68,14 +68,18 @@ RSpec.describe MorphosourceHelper, type: :helper do
   describe '#organization_devices' do
     it 'queries for Device or DeviceResource records for the organization' do
       id = 'org-1'
-      doc = double('SolrDocument',
-                   id: 'device-1',
-                   title: ['Title'],
-                   creator: ['Creator'],
-                   modality: ['Modality'],
-                   description: ['Description'])
-      expect(SolrDocument).to receive(:where)
-        .with("has_model_ssim:(Device OR DeviceResource) AND device_organization_id_ssim:#{id}")
+      solr_service = instance_double(Morphosource::SolrService)
+      doc = {
+        'id' => 'device-1',
+        'title_tesim' => ['Title'],
+        'creator_tesim' => ['Creator'],
+        'modality_tesim' => ['Modality'],
+        'description_tesim' => ['Description']
+      }
+      allow(Morphosource::SolrService).to receive(:new).and_return(solr_service)
+      expect(solr_service).to receive(:get_docs)
+        .with("device_organization_id_ssim:#{id}",
+              fq: ["has_model_ssim:(Device OR DeviceResource)"])
         .and_return([doc])
 
       results = helper.organization_devices(id)

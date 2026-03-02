@@ -193,8 +193,8 @@ RSpec.describe Organization do
 
       before do
         allow(ActiveFedora::SolrService).to receive(:query)
-          .with("has_model_ssim:(Device OR DeviceResource) AND device_organization_id_ssim:#{subject.id}",
-                fl: 'id', rows: 999_999)
+          .with("device_organization_id_ssim:#{subject.id}",
+                fl: 'id', fq: ["has_model_ssim:(Device OR DeviceResource)"], rows: 999_999)
           .and_return([{ 'id' => device.id.to_s }])
         allow(Hyrax).to receive(:query_service).and_return(query_service)
         allow(query_service).to receive(:find_many_by_ids)

@@ -105,6 +105,8 @@ module BatchSubmissionTools
               :fileset_visibility => "",
               :fileset_accessibility => "open"
             }
+          # Multi-batch manifests can pass "private" as a raw string from publication status,
+          # so map both forms to Hyrax private visibility/download settings.
           when private, 'private'
             {
               :visibility => private,

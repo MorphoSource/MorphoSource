@@ -35,7 +35,6 @@ module Morphosource
       return false if [media_id, remove_previous_reviewers, update_publication_status].any?(&:blank?)
 
       @media = Media.find(media_id)
-      Rails.logger.info("[OrganizationNormalizationJob] Normalizing media #{@media.id} for organization collection #{@organization.id}. @media.thumbnail_id: #{@media.thumbnail_id}, @media.member_of_collection_ids: #{@media.member_of_collection_ids}.")
       @team = Collection.find_by(id: @organization&.team_id&.first)
       @remove_previous_reviewers = remove_previous_reviewers
       @update_publication_status = update_publication_status
@@ -44,8 +43,6 @@ module Morphosource
       update_data_manager
       update_permissions
       save_and_reindex
-      Rails.logger.info("[OrganizationNormalizationJob] Finished normalizing media #{@media.id} for organization collection #{@organization.id}.")
-      Rails.logger.info("[OrganizationNormalizationJob] Media #{@media.id} @media.thumbnail_id: #{@media.thumbnail_id}, @media.member_of_collection_ids: #{@media.member_of_collection_ids}.")
       true
     end
 

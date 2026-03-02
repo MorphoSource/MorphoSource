@@ -199,7 +199,6 @@ class Collection < ActiveFedora::Base
           member.save!
           InheritPermissionsJob.perform_later(member.id)
         else
-          Rails.logger.info("[AddMemberObjects] collection=#{self.id} member=#{member.inspect}")
           member.save!
         end
         UpdateWorkIndexJob.perform_later(object_id) if object_id.present?

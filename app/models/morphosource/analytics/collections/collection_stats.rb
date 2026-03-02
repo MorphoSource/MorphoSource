@@ -105,8 +105,9 @@ module Morphosource
 
         # returns the total count of devices managed by this organization
         def device_count
-          @device_count ||= ActiveFedora::SolrService.count("has_model_ssim:(Device OR DeviceResource) AND organization_id_ssim:#{@id}",
-                                                            opts: { fl: 'id', rows: 999_999 } )
+          @device_count ||= ActiveFedora::SolrService.count("organization_id_ssim:#{@id}",
+                                                            fq: ["has_model_ssim:(Device OR DeviceResource)"],
+                                                            rows: 999_999)
         end
 
         # returns the total count of projects in this organization

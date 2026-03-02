@@ -42,6 +42,7 @@ module Morphosource
       # Query Solr to fetch IDs by matching title and model
       def fetch_ids_by_title(title, facet_key)
         # Perform a lookup on the Solr title field to find matching IDs
+        solr_fq = nil
         case facet_key
         when 'team'
           query = 'has_model_ssim:Collection AND human_readable_type_tesim:Team'
@@ -58,19 +59,23 @@ module Morphosource
           organization_classes = ['Organization', 'OrganizationCollection']
           query = "has_model_ssim:(#{organization_classes.join(' OR ')})"
         when 'device'
-          query = 'has_model_ssim:(Device OR DeviceResource)'
+          query = "title_tesim:\"#{title}\""
+          solr_fq = ['has_model_ssim:(Device OR DeviceResource)']
         else
           query = 'has_model_ssim:unknown'
           Rails.logger.warn("Unknown model for facet key: #{facet_config.key}")
         end
 
-        full_query = "#{query} AND title_tesim:\"#{title}\""
-        solr_service = Blacklight.default_index.connection
-        solr_service.get('select', params: {
+        full_query = facet_key == 'device' ? query : "#{query} AND title_tesim:\"#{title}\""
+        params = {
           q: full_query,
           fl: 'id, has_model_ssim, title_tesim',
           rows: 999999
-        })
+        }
+        params[:fq] = solr_fq if solr_fq.present?
+
+        solr_service = Blacklight.default_index.connection
+        solr_service.get('select', params: params)
       end
 
       def fetch_ms_ids_by_name(name)

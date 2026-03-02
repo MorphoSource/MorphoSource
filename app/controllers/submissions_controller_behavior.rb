@@ -37,7 +37,7 @@ module SubmissionsControllerBehavior
 
 
     # Include both legacy AF Device and Valkyrie DeviceResource records.
-    @devices = Morphosource::SolrService.new.get_docs("has_model_ssim:(Device OR DeviceResource)")
+    @devices = Morphosource::SolrService.new.get_docs(nil, fq: ["has_model_ssim:(Device OR DeviceResource)"])
     @devices_with_ids = @devices.map do |d|
       if (organization_id = d['organization_id_ssim']&.first).present?
         org_devices = @device_organizations_hash.dig(organization_id, :devices)

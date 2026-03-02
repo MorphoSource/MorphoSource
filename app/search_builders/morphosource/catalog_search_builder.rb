@@ -58,27 +58,31 @@ module Morphosource
     # Query Solr to fetch IDs by matching title and model
     def fetch_ids_by_title(title, facet_key)
       # Perform a lookup on the Solr title field to find matching IDs
+      solr_fq = nil
       case facet_key
       when 'device'
-        query = 'has_model_ssim:(Device OR DeviceResource)'
+        query = "title_tesim:\"#{title}\""
+        solr_fq = ['has_model_ssim:(Device OR DeviceResource)']
       when 'team', 'project'
-        query = 'has_model_ssim:Collection'
+        query = "has_model_ssim:Collection AND title_tesim:\"#{title}\""
       when 'media_list'
-        query = 'has_model_ssim:MediaList'
+        query = "has_model_ssim:MediaList AND title_tesim:\"#{title}\""
       when 'seq_section_list'
-        query = 'has_model_ssim:SequentialSectionList'
+        query = "has_model_ssim:SequentialSectionList AND title_tesim:\"#{title}\""
       else
-        query = 'has_model_ssim:unknown'
+        query = "has_model_ssim:unknown AND title_tesim:\"#{title}\""
         Rails.logger.warn("Unknown model for facet key: #{facet_config.key}")
       end
 
-      full_query = "#{query} AND title_tesim:\"#{title}\""
-      solr_service = Blacklight.default_index.connection
-      solr_service.get('select', params: {
-        q: full_query,
+      params = {
+        q: query,
         fl: 'id',
         rows: 999999
-      })
+      }
+      params[:fq] = solr_fq if solr_fq.present?
+
+      solr_service = Blacklight.default_index.connection
+      solr_service.get('select', params: params)
     end
 
     def fetch_ms_ids_by_name(name)

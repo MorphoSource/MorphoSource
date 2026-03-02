@@ -141,9 +141,10 @@ module MorphosourceHelper
 
   def devices
     sortable_title_field = ActiveFedora.index_field_mapper.solr_name('title', :stored_sortable)
-    model_field = ActiveFedora.index_field_mapper.solr_name('has_model', :symbol)
-    qry = "(#{model_field}:(\"Device\" OR \"DeviceResource\"))"
-    ActiveFedora::SolrService.query(qry, rows: 999999, sort: "#{sortable_title_field} ASC")
+    ActiveFedora::SolrService.query("*:*",
+                                    fq: ["has_model_ssim:(Device OR DeviceResource)"],
+                                    rows: 999999,
+                                    sort: "#{sortable_title_field} ASC")
   end
 
   def device_organization
@@ -394,13 +395,14 @@ module MorphosourceHelper
 
   def organization_devices(id)
     # get device id, make, and model for all devices associated with organization id
-    SolrDocument.where("has_model_ssim:(Device OR DeviceResource) AND device_organization_id_ssim:#{id}").map do |d|
+    Morphosource::SolrService.new.get_docs("device_organization_id_ssim:#{id}",
+                                           fq: ["has_model_ssim:(Device OR DeviceResource)"]).map do |d|
       {
-        'id': d.id,
-        'title': d.title,
-        'creator': d.creator,
-        'modality': d.modality,
-        'description': d.description
+        'id': d['id'],
+        'title': d['title_tesim'],
+        'creator': d['creator_tesim'],
+        'modality': d['modality_tesim'],
+        'description': d['description_tesim']
       }
     end
   end

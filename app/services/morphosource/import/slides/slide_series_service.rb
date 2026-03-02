@@ -14,7 +14,6 @@ module Morphosource
         define_provider_methods
 
         def self.call(occurrence_key)
-          Rails.logger.info "[Morphosource::Import::SlideSeriesService] Importing slide series for occurrence key: #{occurrence_key}"
           new(occurrence_key).call
         end
 
@@ -52,9 +51,7 @@ module Morphosource
             characterize_file unless @slide.metadata_blank?
             create_thumbnail unless @slide.metadata_blank?
             normalize_media if normalize_permissions
-            Rails.logger.info "[Morphosource::Import::SlideSeriesService] Created media #{@media.inspect} about to add to collection #{@collection.id}."
             @collection.add_member_objects(@media)
-            Rails.logger.info "[Morphosource::Import::SlideSeriesService] Added media #{@media.id} to collection #{@collection.id}."
           end
           @specimen.update_index
           @collection.update_index

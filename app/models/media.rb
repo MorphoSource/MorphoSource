@@ -3,6 +3,7 @@ class Media < Morphosource::Works::Base
   include Morphosource::MediaBehavior
   include Morphosource::PersistentIdentifiersBehavior
   include Morphosource::DoiBehavior
+  include Morphosource::Works::ValkyrieAssociation
 
   validates_with Morphosource::ParentChildValidator
   before_create :controlled_value_filter, :date_filter

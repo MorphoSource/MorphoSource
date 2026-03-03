@@ -284,21 +284,23 @@ module Hyrax
     end
 
     def is_remote_backed?
-      return false unless self.parent.present?
-      return self.parent.is_remote_backed?
+      parent = member_of.first
+      return false unless parent.present?
+      parent.is_remote_backed?
     end
 
     def has_remote_manifest?
-      return false unless self.parent.present?
-      return self.parent.has_remote_manifest?
+      parent = member_of.first
+      return false unless parent.present?
+      parent.has_remote_manifest?
     end
 
     def remote_manifest_url
-      self.parent&.remote_manifest_url
+      member_of.first&.remote_manifest_url
     end
 
     def remote_origin_url
-      self.parent&.remote_origin_url
+      member_of.first&.remote_origin_url
     end
   end
 end

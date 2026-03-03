@@ -150,6 +150,8 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
     before do
       # subject.instance_variable_set(:@media, media)
       allow(subject).to receive(:create_new_media).and_return(media)
+      allow(ActiveFedora::Base).to receive(:find).with(media.id).and_return(media)
+      allow(media).to receive(:update_index).and_return(true)
     end
     it 'calls methods to create a new media record and add it to the collection' do
       expect(subject).to receive(:create_new_imaging_event)

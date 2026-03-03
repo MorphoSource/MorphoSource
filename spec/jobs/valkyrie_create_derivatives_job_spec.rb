@@ -166,8 +166,7 @@ RSpec.describe ValkyrieCreateDerivativesJob do
 
       before do
         set_mime_type(file_metadata, 'image/jpeg')
-        allow(Hyrax.custom_queries).to receive(:find_parent_work)
-          .with(resource: anything).and_return(parent_work)
+        allow_any_instance_of(Hyrax::FileSet).to receive(:member_of).and_return([parent_work])
         # Stub index_adapter.save completely — the parent is a test double,
         # not a real Valkyrie resource, so we can't let the indexer serialize it.
         allow(Hyrax.index_adapter).to receive(:save)

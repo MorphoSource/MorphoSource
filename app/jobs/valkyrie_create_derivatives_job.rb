@@ -2,7 +2,7 @@
 
 # Overrides Hyrax's ValkyrieCreateDerivativesJob to support MorphoSource's
 # broad range of file types (mesh, CT image series, archives, images, audio, video)
-# via Morphosource::MsFileSetDerivativesService.
+# via Hyrax::DerivativeService (which dispatches to Morphosource::MsFileSetDerivativesService).
 #
 # Triggered by the 'file.characterized' event published by ValkyrieCharacterizationJob,
 # which Hyrax's FileListener routes to this job class.
@@ -17,8 +17,8 @@ class ValkyrieCreateDerivativesJob < HeavyJob
     file_set = Hyrax.query_service.find_by(id: file_set_id)
     file = Hyrax.storage_adapter.find_by(id: file_metadata.file_identifier)
 
-    Morphosource::MsFileSetDerivativesService
-      .new(file_set)
+    Hyrax::DerivativeService
+      .for(file_set)
       .create_derivatives(file.disk_path)
 
     file_set.set_final_attributes
@@ -30,8 +30,13 @@ class ValkyrieCreateDerivativesJob < HeavyJob
   private
 
   def reindex_parent(file_set)
-    parent = Hyrax.custom_queries.find_parent_work(resource: file_set)
-    return unless parent&.thumbnail_id == file_set.id
-    Hyrax.index_adapter.save(resource: parent)
+    file_set.member_of.each do |parent|
+      next unless parent.respond_to?(:thumbnail_id) && parent.thumbnail_id.to_s == file_set.id.to_s
+      if parent.is_a?(ActiveFedora::Base)
+        parent.update_index
+      else
+        Hyrax.index_adapter.save(resource: parent)
+      end
+    end
   end
 end

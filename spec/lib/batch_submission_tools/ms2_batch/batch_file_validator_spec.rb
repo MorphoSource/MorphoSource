@@ -95,7 +95,7 @@ RSpec.describe BatchSubmissionTools::Ms2Batch::BatchFileValidator do
         error_msg, _warn_msg = error_for('biological_specimen.ms_id', nil)
 
         expect(error_msg).to eq(
-          'One of the following must have a value: biological_specimen.ms_id, biological_specimen.occurrence_id, biological_specimen.institution_code, biological_specimen.collection_code, and biological_specimen.catalog_number.'
+          'One of the following must have a value: biological_specimen.ms_id, biological_specimen.occurrence_id, biological_specimen.institution_code, biological_specimen.collection_code, biological_specimen.catalog_number, or media.parent_ms_id.'
         )
       end
 
@@ -212,7 +212,7 @@ RSpec.describe BatchSubmissionTools::Ms2Batch::BatchFileValidator do
         allow(validator).to receive(:field_column).with('media.raw_or_derived').and_return(2)
         allow(validator).to receive(:cell_value).and_return(nil)
         allow(validator).to receive(:cell_value).with(8, 2).and_return('Derived')
-        allow(Media).to receive(:where).with(id: 'not_found').and_return([])
+        allow(validator).to receive(:parent_media_for_row).with(8).and_return(nil)
 
         error_msg, _warn_msg = error_for('media.parent_ms_id', 'not_found')
 
@@ -222,7 +222,7 @@ RSpec.describe BatchSubmissionTools::Ms2Batch::BatchFileValidator do
       it 'returns a not found error for biological_specimen.ms_id' do
         allow(validator).to receive(:field_column).and_return(1)
         allow(validator).to receive(:cell_value).and_return(nil)
-        allow(BiologicalSpecimen).to receive(:where).with(id: 'not_found').and_return([])
+        allow(validator).to receive(:specimen_for_row).with(8).and_return(nil)
 
         error_msg, _warn_msg = error_for('biological_specimen.ms_id', 'not_found')
 
@@ -414,11 +414,11 @@ RSpec.describe BatchSubmissionTools::Ms2Batch::BatchFileValidator do
       end
 
       it 'returns an organization mismatch error for biological_specimen.ms_id' do
-        specimen = instance_double(BiologicalSpecimen, organization_id: ['ORG1'])
+        specimen = instance_double(SolrDocument, organization_id: ['ORG1'])
         allow(validator).to receive(:organization_for_row).with(8).and_return(instance_double(OrganizationCollection, id: 'ORG2'))
+        allow(validator).to receive(:specimen_for_row).with(8).and_return(specimen)
         allow(validator).to receive(:field_column).and_return(1)
         allow(validator).to receive(:cell_value).and_return(nil)
-        allow(BiologicalSpecimen).to receive(:where).with(id: 'TESTBSO123').and_return([specimen])
 
         error_msg, _warn_msg = error_for('biological_specimen.ms_id', 'TESTBSO123')
 

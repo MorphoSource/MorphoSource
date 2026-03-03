@@ -82,44 +82,6 @@ RSpec.describe Morphosource::FormMethods do
     end
   end
 
-  describe '#member_of_devices_json' do
-    let(:dummy_model) { instance_double('Model', in_works: []) }
-    let(:dummy_form) do
-      Class.new do
-        include Morphosource::FormMethods
-        def initialize(model, controller)
-          @model = model
-          @controller = controller
-        end
-        attr_reader :model
-      end.new(dummy_model, controller)
-    end
-    let(:query_service) { instance_double('Hyrax::QueryService') }
-    let(:parent) do
-      instance_double(
-        'Device',
-        id: 'parent-1',
-        to_s: 'Device 1',
-        creator: ['Maker'],
-        modality: ['XRay'],
-        description: ['Desc']
-      )
-    end
-
-    before do
-      allow(controller).to receive(:params).and_return(parent_id: 'parent-1')
-      allow(Hyrax).to receive(:query_service).and_return(query_service)
-      allow(query_service).to receive(:find_by).with(id: 'parent-1').and_return(parent)
-      allow(dummy_form).to receive(:organization_institution).and_return('Org Name')
-    end
-
-    it 'uses Hyrax.query_service for parent lookup' do
-      result = JSON.parse(dummy_form.member_of_devices_json)
-      expect(result.first['id']).to eq('parent-1')
-      expect(result.first['organization_institution']).to eq('Org Name')
-    end
-  end
-
   describe '#member_of_taxonomies_json' do
     let(:dummy_model) { instance_double('Model', in_works: []) }
     let(:dummy_form) do

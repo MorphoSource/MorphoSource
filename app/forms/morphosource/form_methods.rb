@@ -76,40 +76,6 @@ module Morphosource
       end.to_json
     end
 
-    def member_of_devices_json(work_type=nil)
-      parent_works = model.in_works
-      # If a work is deposited as a child of another work, it will have a parent_id
-      if @controller.params[:parent_id]
-        parent_works << Hyrax.query_service.find_by(id: @controller.params[:parent_id])
-      end
-      # filter by work type
-      if work_type.present?
-        parent_works = parent_works.select{ |item| item.class.to_s == work_type }
-      end
-      parent_works.map do |parent|
-        {
-          id: parent.id,
-          label: parent.to_s,
-          creator: parent.creator.first.to_s,
-          modality: parent.modality.first.to_s,
-          description: parent.description.first.to_s,
-          organization_institution: organization_institution(parent.id)
-        }
-      end.to_json
-    end
-
-    def organization_institution(id)
-        # get the device organization title and institution name for display
-        organization_institution = ''
-        organizations = Organization.where('member_ids_ssim' => id)
-        if organizations.present?
-          organization = organizations.first
-          organization_institution = organization.title.first
-          organization_institution += ' (' + organization.institution_name.first + ')' if organization.institution_name.present?
-        end
-        organization_institution
-    end
-
     def member_of_organizations_json
       if (org_id = model.organization_id&.first).present?
         if OrganizationCollection.exists?(org_id)

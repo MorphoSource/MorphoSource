@@ -25,21 +25,23 @@ RSpec.describe User, type: :model do
     describe 'creating a new user' do
       context 'no users exist' do
         before do
-          User.create(email: 'newUser@email.com', password: 'password')
+          User.delete_all
+          ActiveRecord::Base.connection.reset_pk_sequence!('users')
         end
         it 'assigns an id of 1' do
-          expect(User.find(1)).to be_present
+          user = User.create(email: 'newUser@email.com', password: 'password')
+          expect(user.id).to eq(1)
         end
       end
       context 'other users exist' do
-        let!(:consoleUser1) { User.create(id: 5, email: 'console1@email.com', password: 'password') }
-        let!(:consoleUser2) { User.create(id: 10, email: 'console2@email.com', password: 'password') }
-        let!(:consoleUser3) { User.create(id: 15, email: 'console3@email.com', password: 'password') }
-        before do
-          User.create(email: 'newUser@email.com', password: 'password')
-        end
+        let!(:consoleUser1) { User.create(email: 'console1@email.com', password: 'password') }
+        let!(:consoleUser2) { User.create(email: 'console2@email.com', password: 'password') }
+        let!(:consoleUser3) { User.create(email: 'console3@email.com', password: 'password') }
+
         it 'assigns the next highest id' do
-          expect(User.find(16)).to be_present
+          expected_next_id = User.maximum(:id) + 1
+          user = User.create(email: 'newUser@email.com', password: 'password')
+          expect(user.id).to eq(expected_next_id)
         end
       end
     end

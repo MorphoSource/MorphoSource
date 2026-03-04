@@ -12,6 +12,6 @@ class HeavyJob < Hyrax::ApplicationJob
   # If resque-kubernetes is enabled, max number of parallel k8s jobs spawned
   def max_workers
     # Simply return an integer value, or do something more complicated if needed.
-    1
+    Resque::Kubernetes.max_workers || 1
   end
 end

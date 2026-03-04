@@ -120,6 +120,18 @@ RSpec.describe BatchSubmissionTools::Ms2Batch::Manifest do
         expect(manifest_from_data.instance_variable_get(:@skipped_row_count)).to eq(0)
         expect(manifest_from_data.instance_variable_get(:@summary)["manifest_tmp_file"]).to be_nil
       end
+
+      it "removes newline characters from parsed field values" do
+        dirty_input_data = input_data.deep_dup
+        dirty_input_data.first[:"biological_specimen.ms_id"] = ["\n000200530\r\n"]
+        dirty_input_data.first[:"media.identifier"] = ["id\nwith\rlinebreaks"]
+
+        manifest_from_data = BatchSubmissionTools::Ms2Batch::Manifest.new(**base_args.merge(input_data: dirty_input_data))
+        first_row = manifest_from_data.instance_variable_get(:@rows).first
+
+        expect(first_row.dig(:biological_specimen, :ms_id)).to eq(["000200530"])
+        expect(first_row.dig(:media, :identifier)).to eq(["id with linebreaks"])
+      end
     end
   end
 end

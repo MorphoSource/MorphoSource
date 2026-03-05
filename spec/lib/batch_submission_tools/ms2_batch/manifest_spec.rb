@@ -107,6 +107,43 @@ RSpec.describe BatchSubmissionTools::Ms2Batch::Manifest do
       )
     end
 
+    it "uses existing parent media specimen when specimen columns are blank" do
+      parent_media_ms_id = '000001234'
+      parent_specimen_id = '000009876'
+
+      input_data = [
+        {
+          media: {
+            media_file: ['ANSP_Fish_181150.zip'],
+            raw_or_derived: ['Derived'],
+            parent_ms_id: [parent_media_ms_id]
+          },
+          biological_specimen: {
+            ms_id: [],
+            occurrence_id: [],
+            institution_code: [],
+            collection_code: [],
+            catalog_number: []
+          },
+          imaging_event: {},
+          processing_event: {},
+          taxonomy: {}
+        }
+      ]
+
+      allow(SolrDocument).to receive(:find).with(parent_media_ms_id).and_return(
+        'physical_object_id_ssim' => [parent_specimen_id]
+      )
+
+      manifest = BatchSubmissionTools::Ms2Batch::Manifest.new(
+        **base_args.merge(input_data: input_data)
+      )
+
+      expect(manifest.instance_variable_get(:@biological_specimen_ingests).count).to eq(1)
+      expect(manifest.instance_variable_get(:@biological_specimen_ingests).first.to_h[:id]).to eq(parent_specimen_id)
+      expect(manifest.instance_variable_get(:@rows_to_bso)).to eq({ 0 => 0 })
+    end
+
     context "with input_data" do
       let(:input_data) do
         parser = ::Morphosource::Ms2Batch::XLSXParser.new(input_path, false, false)

@@ -109,6 +109,12 @@ describe 'morphosource rake tasks' do
       { user: contributor, settings: contributor_defaults },
       { user: registered, settings: registered_defaults } ] }
 
+    before do
+      stub_const('Morphosource::Users::Defaults::ADMIN', defaults::ADMIN.except(:id))
+      stub_const('Morphosource::Users::Defaults::CONTRIBUTOR', defaults::CONTRIBUTOR.except(:id))
+      stub_const('Morphosource::Users::Defaults::REGISTERED', defaults::REGISTERED.except(:id))
+    end
+
     it 'creates admin, contributor, registered, and email users (if contact email present)' do
       if Hyrax.config.contact_email.present? # 4 users created if contact email present
         expect { create_development_users.invoke }.to change { User.count }.by(4)

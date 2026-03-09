@@ -49,12 +49,12 @@ module Hyrax
       end
 
       def attach_files(env, remote_files)
-        ingest_remote_files_service_class.new(user: env.user,
-                                              curation_concern: env.curation_concern,
-                                              remote_files: remote_files,
-                                              file_set_actor_class: file_set_actor_class).attach!
+        return true if remote_files.blank?
+        AttachRemoteFilesToWorkJob.perform_later(env.curation_concern, remote_files)
+        true
       end
 
+      # @deprecated No longer used, instead use AttachRemoteFilesToWorkJob
       class IngestRemoteFilesService
         ##
         # @parm user [User]

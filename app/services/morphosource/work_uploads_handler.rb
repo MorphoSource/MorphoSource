@@ -53,7 +53,6 @@ module Morphosource
     #
     # @return [Boolean] true if all requested files were attached
     def attach
-      return attach_remote_files if @remote_files
       return true if Array.wrap(files).empty?
 
       acquire_lock_for(work.id) do

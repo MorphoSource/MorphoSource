@@ -143,14 +143,13 @@ module Valkyrie
                 "Failed to fetch #{@url}: #{e.message}"
         end
 
-        # Deterministic local cache path based on a SHA256 hash of the URL,
-        # preserving the original file extension.
+        # Deterministic local cache path: digest as folder, original basename as filename.
         # @return [String]
         def local_path
           @local_path ||= begin
             digest = Digest::SHA256.hexdigest(@url)
-            ext = ::File.extname(URI.parse(@url).path)
-            ::File.join(Hyrax.config.working_external_path, "#{digest}#{ext}")
+            basename = ::File.basename(URI.parse(@url).path).presence || digest
+            ::File.join(Hyrax.config.working_external_path, digest, basename)
           end
         end
       end

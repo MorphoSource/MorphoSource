@@ -131,6 +131,10 @@ RSpec.describe BatchSubmissionTools::Ms2Batch::Manifest do
         }
       ]
 
+      allow(Dir).to receive(:exist?).and_wrap_original do |original_method, path|
+        path.present? ? original_method.call(path) : false
+      end
+
       allow(SolrDocument).to receive(:find).with(parent_media_ms_id).and_return(
         'physical_object_id_ssim' => [parent_specimen_id]
       )

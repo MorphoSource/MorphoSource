@@ -55,13 +55,8 @@ class ImportUrlJob < Hyrax::ApplicationJob
     # @todo Use Hydra::Works::AddExternalFileToFileSet instead of manually
     #       copying the file here. This will be gnarly.
     copy_remote_file(uri, name, headers) do |f|
-      # Reload the FileSet now that the data is copied since this is a long running task.
-      # For Valkyrie resources, re-fetch from the query service; for AF, use reload.
-      if @file_set.is_a?(Hyrax::Resource)
-        @file_set = Hyrax.query_service.find_by(id: @file_set.id)
-      else
-        file_set.reload
-      end
+      # reload the FileSet once the data is copied since this is a long running task
+      file_set.reload
       # FileSetActor operates synchronously so that this tempfile is available.
       # If asynchronous, the job might be invoked on a machine that did not have this temp file on its file system!
       # NOTE: The return status may be successful even if the content never attaches.
@@ -132,37 +127,10 @@ class ImportUrlJob < Hyrax::ApplicationJob
     # @param f [IO] the stream to write to
     # @param user [User]
     def log_import_status(uri, f, user)
-      if @file_set.is_a?(Hyrax::Resource)
-        log_import_status_valkyrie(f, user)
-      elsif Hyrax::Actors::FileSetActor.new(@file_set, user).create_content(f, from_url: true)
+      if Hyrax::Actors::FileSetActor.new(@file_set, user).create_content(f, from_url: true)
         operation.success!
       else
-        send_error(uri.path)
+        send_error(uri.path, nil)
       end
-    end
-
-    # Upload file content for a Valkyrie FileSet via ValkyrieUpload.
-    # For remote-backed FileSets with a real file, also captures digest/e_tag/label.
-    # @param f [IO, nil] the downloaded tempfile, or nil for remote-manifest FileSets
-    # @param user [User]
-    def log_import_status_valkyrie(f, user)
-      if f.present?
-        if @file_set.is_remote_backed? && f.respond_to?(:path) && f.path.present?
-          @file_set.digest = Digest::SHA1.file(f.path).to_s
-          @file_set.label  = File.basename(f.path)
-          @file_set.e_tag  = MorphosourceHelper::RemoteFileInfo.new(@file_set.import_url)&.e_tag
-          @file_set = Hyrax.persister.save(resource: @file_set)
-        end
-        Hyrax::ValkyrieUpload.file(
-          io: f,
-          filename: @file_set.label || File.basename(f.path),
-          file_set: @file_set,
-          use: Hyrax::FileMetadata::Use::ORIGINAL_FILE,
-          user: user
-        )
-      end
-      operation.success!
-    rescue StandardError => e
-      send_error(e.message)
     end
 end

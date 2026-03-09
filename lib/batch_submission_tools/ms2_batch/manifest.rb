@@ -264,6 +264,15 @@ module BatchSubmissionTools
         end
       end
 
+      # Normalizes biological specimen metadata from the manifest row before ingest construction.
+      #
+      # Priority:
+      # 1. If media includes a parent_ms_id, resolve that media to a biological specimen id and
+      #    return it as { ms_id: [id] } so child ingest can attach to the existing BSO.
+      # 2. Otherwise, return the row's :biological_specimen attributes as-is.
+      #
+      # Raises:
+      # - If parent_ms_id is present but cannot be resolved to a specimen id, we fail fast.
       def normalize_biological_specimen_attrs(row)
         bso = row[:biological_specimen]
         media = row[:media] || {}

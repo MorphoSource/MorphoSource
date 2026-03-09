@@ -207,9 +207,26 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
 
   def transfer_media_to_organization(media, organization_transfer_immediately)
     return unless media.present? && organization_transfer_immediately == true
+
+    if !organization_allows_media_ownership_transfer?(media)
+      Rails.logger.warn "iN MediaIePeIngestJob: organization does not allow media ownership transfer. Skipping transfer for media #{media.map(&:id)} "
+      return
+    end
+
     media.each do |m|
+      Rails.logger.debug "iN MediaIePeIngestJob: enqueuing TransferToOrganizationJob for media #{m.id} "
       TransferToOrganizationJob.perform_later(m.id)
     end
+  end
+
+  def organization_allows_media_ownership_transfer?(media)
+    org_id = @organization_id || media.first&.organization_id&.first
+    return false unless org_id.present?
+
+    org_doc = SolrDocument.find(org_id)
+    return false unless org_doc.present?
+
+    org_doc["media_ownership_transfer_bsi"] == true
   end
 
   def add_org_attachment_to_media(media, org_id)

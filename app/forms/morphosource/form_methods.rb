@@ -76,22 +76,6 @@ module Morphosource
       end.to_json
     end
 
-    def member_of_organizations_json
-      if (org_id = model.organization_id&.first).present?
-        if OrganizationCollection.exists?(org_id)
-          parent = OrganizationCollection.find(org_id)
-          [{
-            id: parent.id.to_s,
-            label: parent.title.first,
-          }].to_json
-        else
-          [].to_json
-        end
-      else  
-        [].to_json
-      end
-    end
-
     def member_of_biological_specimens_json(work_type=nil)
       parent_works = model.in_works
       # If a work is deposited as a child of another work, it will have a parent_id

@@ -26,27 +26,10 @@ module Morphosource
 
           private
 
-            # TODO: Currently all devices should be associated with organization using the organization_id (and not through a parent/child relationship).  For now, the device form is still using the parent work relations widget for add and remove organization.  Eventually we can remove the widget and this code.
-            # 
-            # Coming from the device new/edit form, use work_parents_attributes to
-            # populate the device organization_id.
-            # If the organization is a work, proceed with adding it as a parent of the device.
-            # If the organization is a collection, remove it from work_parents_attributes.
             def save_organization_id(attributes)
-              organization_ids = attributes['organization_id']
+              organization_ids = Array(attributes['organization_id']).compact
+              organization_ids = organization_ids.map(&:presence).compact
               organization_ids = [] if organization_ids.blank?
-              organizations = attributes['work_parents_attributes']
-              organizations&.each do |k, v|
-                id = v['id']
-                if v['_destroy'] == "false"
-                  organization_ids << id
-                else
-                  organization_ids.delete(id)
-                end
-                if OrganizationCollection.exists?(id)
-                  attributes['work_parents_attributes'].delete(k)
-                end
-              end
               organization_ids
             end
 

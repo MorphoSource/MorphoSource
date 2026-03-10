@@ -30,8 +30,7 @@ RSpec.describe Morphosource::Transactions::Device::Steps::SetOrganizationID do
       obj = double('ChangeSet')
       allow(obj).to receive(:organization_id=)
 
-      attributes = { 'organization_id' => ['org-1'], 'work_parents_attributes' => {} }
-      allow(OrganizationCollection).to receive(:exists?).and_return(false)
+      attributes = { 'organization_id' => ['org-1'] }
 
       result = step.call(obj, attributes: attributes)
 
@@ -43,11 +42,7 @@ RSpec.describe Morphosource::Transactions::Device::Steps::SetOrganizationID do
       obj = double('ChangeSet')
       allow(obj).to receive(:organization_id=)
 
-      attributes = {
-        'organization_id' => ['org-1'],
-        'work_parents_attributes' => { '0' => { 'id' => 'org-2', '_destroy' => 'false' } }
-      }
-      allow(OrganizationCollection).to receive(:exists?).and_return(false)
+      attributes = { 'organization_id' => ['org-1', 'org-2'] }
 
       result = step.call(obj, attributes: attributes)
 
@@ -57,21 +52,16 @@ RSpec.describe Morphosource::Transactions::Device::Steps::SetOrganizationID do
       expect(obj).not_to have_received(:organization_id=)
     end
 
-    it 'removes organization collections from work_parents_attributes' do
+    it 'filters blank organization ids' do
       obj = double('ChangeSet')
       allow(obj).to receive(:organization_id=)
 
-      attributes = {
-        'organization_id' => [],
-        'work_parents_attributes' => { '0' => { 'id' => 'col-1', '_destroy' => 'false' } }
-      }
-      allow(OrganizationCollection).to receive(:exists?).with('col-1').and_return(true)
+      attributes = { 'organization_id' => ['', nil] }
 
       result = step.call(obj, attributes: attributes)
 
       expect(result).to be_success
-      expect(obj).to have_received(:organization_id=).with(['col-1'])
-      expect(attributes['work_parents_attributes']).to eq({})
+      expect(obj).to have_received(:organization_id=).with([])
     end
   end
 end

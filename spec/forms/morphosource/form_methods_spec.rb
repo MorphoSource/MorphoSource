@@ -34,54 +34,6 @@ RSpec.describe Morphosource::FormMethods do
     end
   end
 
-  describe '#member_of_organizations_json' do
-    let(:dummy_model) { instance_double('Model', organization_id: organization_id) }
-    let(:dummy_form) do
-      Class.new do
-        include Morphosource::FormMethods
-        def initialize(model)
-          @model = model
-        end
-        attr_reader :model
-      end.new(dummy_model)
-    end
-
-    context 'when organization_id is blank' do
-      let(:organization_id) { [] }
-
-      it 'returns an empty array json' do
-        expect(dummy_form.member_of_organizations_json).to eq([].to_json)
-      end
-    end
-
-    context 'when organization collection exists' do
-      let(:organization_id) { ['org-1'] }
-      let(:org_collection) { instance_double('OrganizationCollection', id: 'org-1', title: ['Org Title']) }
-
-      before do
-        allow(OrganizationCollection).to receive(:exists?).with('org-1').and_return(true)
-        allow(OrganizationCollection).to receive(:find).with('org-1').and_return(org_collection)
-      end
-
-      it 'returns organization collection json' do
-        result = JSON.parse(dummy_form.member_of_organizations_json)
-        expect(result).to eq([{ 'id' => 'org-1', 'label' => 'Org Title' }])
-      end
-    end
-
-    context 'when organization id is not an organization collection' do
-      let(:organization_id) { ['org-1'] }
-
-      before do
-        allow(OrganizationCollection).to receive(:exists?).with('org-1').and_return(false)
-      end
-
-      it 'returns an empty array json' do
-        expect(dummy_form.member_of_organizations_json).to eq([].to_json)
-      end
-    end
-  end
-
   describe '#member_of_taxonomies_json' do
     let(:dummy_model) { instance_double('Model', in_works: []) }
     let(:dummy_form) do

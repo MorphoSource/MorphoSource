@@ -75,7 +75,8 @@ module Hyrax
       :crc32,
       :file_size,
       :mime_type,
-      to: :original_file
+      to: :original_file,
+      allow_nil: true
     )
 
     # for images
@@ -87,7 +88,8 @@ module Hyrax
       :aperture_value,
       :iso_speed_ratings,
       :shutter_speed,
-      to: :original_file
+      to: :original_file,
+      allow_nil: true
       )
 
     # for dicom
@@ -138,7 +140,8 @@ module Hyrax
       :anode_target_material,
       :spiral_pitch_factor,
       :number_of_series_related_instances,
-      to: :original_file
+      to: :original_file,
+      allow_nil: true
     )
 
     # for mesh
@@ -160,7 +163,8 @@ module Hyrax
       :blender_version,
       :gltf_inspect_version,
       :pymeshlab_version,
-      to: :original_file
+      to: :original_file,
+      allow_nil: true
     )
 
     # for zip archive contents
@@ -170,7 +174,8 @@ module Hyrax
       :contents_file_name,
       :contents_file_size,
       :contents_accepted_file_count,
-      to: :original_file
+      to: :original_file,
+      allow_nil: true
     )
 
     # @return [Hyrax::FileMetadata, nil]

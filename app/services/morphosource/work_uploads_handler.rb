@@ -53,13 +53,15 @@ module Morphosource
     #
     # @return [Boolean] true if all requested files were attached
     def attach
-      return true if Array.wrap(files).empty?
+      return true if Array.wrap(files).empty? && Array.wrap(remote_files).empty?
 
       acquire_lock_for(work.id) do
         @new_member_ids = []
-        event_payloads = remote_files
-          ? remote_files.map { |rf| make_remote_file_set_and_ingest(rf) }
-          : files.map { |file| make_file_set_and_ingest(file) }
+        event_payloads = if remote_files
+          remote_files.map { |rf| make_remote_file_set(rf) }
+        else
+          files.map { |file| make_file_set_and_ingest(file) }
+        end
         work.reload unless work.new_record?
         work.valkyrie_member_ids = (work.valkyrie_member_ids.to_a + @new_member_ids).uniq
         work.save!

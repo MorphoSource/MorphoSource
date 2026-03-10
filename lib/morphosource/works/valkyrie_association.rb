@@ -153,6 +153,14 @@ module Morphosource
       end
 
       ##
+      # For members with .file_set? true, return ID strings. Override from Hydra::Works::WorkBehavior.
+      #
+      # @return [Array<String>]
+      def file_set_ids
+        file_sets.map { |fs| fs.id.to_s }
+      end
+
+      ##
       # Valkyrie resources that have this AF work stored in their member_ids property
       #
       # @return [Array<Valkyrie::Resource>]

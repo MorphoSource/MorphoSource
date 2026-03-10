@@ -28,11 +28,11 @@ class AttachFilesToWorkJob < Hyrax::ApplicationJob
     metadata = visibility_attributes(work_attributes)
     uploaded_files.each do |uploaded_file|
       next if uploaded_file.file_set_uri.present?
-      attach_work(user, work, work_attributes, work_permissions, uploaded_file)
+      attach_work(user, work, metadata, work_permissions, uploaded_file)
     end
   end
 
-  def attach_work(user, work, work_attributes, work_permissions, uploaded_file)
+  def attach_work(user, work, metadata, work_permissions, uploaded_file)
     actor = Hyrax::Actors::FileSetActor.new(FileSet.create, user, work.is_remote_backed?)
     uploaded_file.add_file_set!(actor.file_set)
     actor.file_set.permissions_attributes = work_permissions

@@ -58,7 +58,7 @@ class ValkyrieRemoteIngestJob < Hyrax::ApplicationJob
       @file_set.label = File.basename(file_path)
       @file_set = Hyrax.persister.save(resource: @file_set)
     end
-    Hyrax::ValkyrieUpload.file(
+    Morphosource::ValkyrieUpload.file(
       io: File.open(file_path),
       filename: @file_set.label,
       file_set: @file_set,
@@ -77,14 +77,21 @@ class ValkyrieRemoteIngestJob < Hyrax::ApplicationJob
 
 
     if @file_set.is_remote_backed? # If FileSet is remote backed, this is remote scenario 3 or 4
-      # If FileSet label filename doesn't have extension, try to find one
+      # If FileSet label filename doesn't have extension, try to find one via Content-Type.
+      # Save the label to DB so it persists after the find_by reload below.
       if @file_set.label.present? && !File.extname(@file_set.label).present?
-        @file_set.label = "#{@file_set.label}#{MorphosourceHelper::RemoteFileInfo.new(uri.to_s).file_ext}"
+        ext = MorphosourceHelper::RemoteFileInfo.new(uri.to_s).file_ext
+        if ext.present?
+          old_label = @file_set.label
+          @file_set.label = "#{old_label}#{ext}"
+          @file_set.title = [@file_set.label] if Array(@file_set.title).first == old_label
+          @file_set = Hyrax.persister.save(resource: @file_set)
+        end
       end
 
       # Remote scenario 3
       if !@file_set.has_remote_manifest?
-        if !@user.can_submit_remote_file?(uri, @file_set.parent.organization_id&.first)
+        if !@user.can_submit_remote_file?(uri, @file_set.parent&.organization_id&.first)
           send_error('User is not allowed to submit the remote file')
           return
         end
@@ -123,12 +130,12 @@ class ValkyrieRemoteIngestJob < Hyrax::ApplicationJob
   # io is intentionally nil — ExternalUrl storage ignores it and reads from the URL.
   def upload_remote_backed(uri)
     cache_path = external_url_local_path(uri.to_s)
-    if cache_path.present?
+    if File.exist?(cache_path) # only compute digest/e_tag when local cache copy exists
       @file_set.digest = Digest::SHA1.file(cache_path).to_s
       @file_set.e_tag  = MorphosourceHelper::RemoteFileInfo.new(uri)&.e_tag
       @file_set = Hyrax.persister.save(resource: @file_set)
     end
-    Hyrax::ValkyrieUpload.file(
+    Morphosource::ValkyrieUpload.file(
       io: nil,
       filename: uri,
       file_set: @file_set,
@@ -166,7 +173,7 @@ class ValkyrieRemoteIngestJob < Hyrax::ApplicationJob
 
   # Upload BrowseEverything file content to the FileSet and mark the operation successful.
   def upload_and_complete(f)
-    Hyrax::ValkyrieUpload.file(
+    Morphosource::ValkyrieUpload.file(
       io: f,
       filename: @file_set.label || File.basename(f.path),
       file_set: @file_set,
@@ -188,8 +195,7 @@ class ValkyrieRemoteIngestJob < Hyrax::ApplicationJob
 
   # Fail the operation and run the failure callback.
   def send_error(error_message)
-    @file_set.errors.add('Error:', error_message)
     Hyrax.config.callback.run(:after_import_url_failure, @file_set, @user)
-    @operation.fail!(@file_set.errors.full_messages.join(' '))
+    @operation.fail!(error_message)
   end
 end

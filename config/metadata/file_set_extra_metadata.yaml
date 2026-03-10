@@ -45,3 +45,10 @@ attributes:
     index_keys:
      - "e_tag_tesim"
      - "e_tag_ssim"
+  import_url:
+    type: string
+    multiple: false
+    predicate: http://scholarsphere.psu.edu/ns#importUrl
+    index_keys:
+     - "import_url_tesim"
+     - "import_url_ssim"

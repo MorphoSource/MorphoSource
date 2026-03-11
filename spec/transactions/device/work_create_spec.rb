@@ -23,4 +23,16 @@ RSpec.describe Morphosource::Transactions::Device::WorkCreate do
       ]
     )
   end
+
+  describe '#with_step_args' do
+    it 'ignores legacy parent/file-set args without raising' do
+      transaction = described_class.new
+
+      expect { transaction.with_step_args(
+        'work_resource.add_to_parent' => {},
+        'work_resource.add_file_sets' => {},
+        'change_set.set_user_as_depositor' => { user: nil }
+      ) }.not_to raise_error
+    end
+  end
 end

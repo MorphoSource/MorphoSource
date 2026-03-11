@@ -16,35 +16,73 @@ RSpec.describe Morphosource::Transactions::Device::Steps::SetOrganizationID do
       expect(result.failure[1]).to eq(obj)
     end
 
-    it 'returns success when attributes are nil' do
+    it 'returns success when no org value is provided' do
+      obj = double('ChangeSet')
+      allow(obj).to receive(:to_h).and_return({ 'organization_id' => [] })
+      allow(obj).to receive(:organization_id=)
+
+      result = step.call(obj, attributes: nil)
+
+      expect(result).to be_success
+      expect(obj).to have_received(:organization_id=).with([])
+    end
+
+    it 'falls back to request params when input params do not include organization_id' do
+      controller = double('Controller', params: {
+        'device_resource' => { 'organization_id' => ['org-2'] }
+      })
+      obj = double('ChangeSet', controller: controller)
+      allow(obj).to receive(:to_h).and_return({})
+      allow(obj).to receive(:organization_id=)
+
+      result = step.call(obj, attributes: nil)
+
+      expect(result).to be_success
+      expect(obj).to have_received(:organization_id=).with(['org-2'])
+    end
+
+    it 'clears organization when input_params explicitly provides blank values' do
+      obj = double('ChangeSet', input_params: { 'organization_id' => [] })
+      allow(obj).to receive(:to_h).and_return({})
+      allow(obj).to receive(:organization_id=)
+
+      result = step.call(obj, attributes: nil)
+
+      expect(result).to be_success
+      expect(obj).to have_received(:organization_id=).with([])
+    end
+
+    it 'reads organization_id from controller params when form did not provide values' do
+      controller = double('Controller', params: {
+        'organization_id' => 'org-1',
+        'device_resource' => { 'organization_id' => ['org-2'] }
+      })
+      obj = double('ChangeSet', controller: controller)
+      allow(obj).to receive(:to_h).and_return({})
+      allow(obj).to receive(:organization_id=)
+
+      result = step.call(obj, attributes: nil)
+
+      expect(result).to be_success
+      expect(obj).to have_received(:organization_id=).with(['org-1'])
+    end
+
+    it 'falls back to empty when no form or request organization_id is provided' do
       obj = double('ChangeSet')
       allow(obj).to receive(:organization_id=)
 
       result = step.call(obj, attributes: nil)
 
       expect(result).to be_success
-      expect(obj).not_to have_received(:organization_id=)
-    end
-
-    it 'sets organization_id from attributes' do
-      obj = double('ChangeSet')
-      allow(obj).to receive(:organization_id=)
-
-      attributes = { 'organization_id' => ['org-1'] }
-
-      result = step.call(obj, attributes: attributes)
-
-      expect(result).to be_success
-      expect(obj).to have_received(:organization_id=).with(['org-1'])
+      expect(obj).to have_received(:organization_id=).with([])
     end
 
     it 'fails when more than one organization is present' do
       obj = double('ChangeSet')
+      allow(obj).to receive(:input_params).and_return({ 'organization_id' => ['org-1', 'org-2'] })
       allow(obj).to receive(:organization_id=)
 
-      attributes = { 'organization_id' => ['org-1', 'org-2'] }
-
-      result = step.call(obj, attributes: attributes)
+      result = step.call(obj, attributes: { 'organization_id' => ['org-1', 'org-2'] })
 
       expect(result).to be_failure
       expect(result.failure[0]).to eq('Cannot associate device with more than one organization')
@@ -54,11 +92,10 @@ RSpec.describe Morphosource::Transactions::Device::Steps::SetOrganizationID do
 
     it 'filters blank organization ids' do
       obj = double('ChangeSet')
+      allow(obj).to receive(:input_params).and_return({ 'organization_id' => ['', nil] })
       allow(obj).to receive(:organization_id=)
 
-      attributes = { 'organization_id' => ['', nil] }
-
-      result = step.call(obj, attributes: attributes)
+      result = step.call(obj, attributes: {})
 
       expect(result).to be_success
       expect(obj).to have_received(:organization_id=).with([])

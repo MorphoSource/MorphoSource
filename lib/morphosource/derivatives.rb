@@ -14,6 +14,7 @@ module Morphosource
     autoload :Processors
 
     autoload :Alembic
+    autoload :Assimp
     autoload :Blender
     autoload :CompressZip
     autoload :Dcmcjpeg

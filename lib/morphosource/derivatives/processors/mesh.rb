@@ -74,6 +74,8 @@ module Morphosource::Derivatives::Processors
         when '.obj'
           @obj_path = @source_path
           convert_obj_to_glb
+        when '.ply', '.wrl', '.x3d'
+          convert_to_glb_via_assimp
         when *MESH_FORMATS
           convert_mesh_to_obj
           convert_obj_to_glb
@@ -121,6 +123,13 @@ module Morphosource::Derivatives::Processors
       @initial_glb_path = File.join(tmp_dir_path, initial_glb_name)
 
       Morphosource::Derivatives::Obj2gltf.new(obj_path, initial_glb_path).call
+    end
+
+    def convert_to_glb_via_assimp
+      initial_glb_name = File.basename(source_path, '.*') + '-initial.glb'
+      @initial_glb_path = File.join(tmp_dir_path, initial_glb_name)
+
+      Morphosource::Derivatives::Assimp.new(source_path, initial_glb_path).call
     end
 
     # @!endgroup

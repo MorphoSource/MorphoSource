@@ -152,7 +152,7 @@ class ImagingEvent < Morphosource::Works::Base
   end
 
   def device
-    Hyrax.query_service.find_by(id: device_id.first)
+    DeviceResource.find(device_id.first)
   end
 
   def media

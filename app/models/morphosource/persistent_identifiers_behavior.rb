@@ -40,8 +40,8 @@ module Morphosource
     # - unavailable->public
     def update_ark_status
       return if self.ark.empty?
-      # AF models still support visibility_changed dirty tracking; DeviceResource does not.
-      return if self.class.to_s != 'DeviceResource' && !visibility_changed
+      # AF models support visibility_changed? dirty tracking; if unavailable, always continue.
+      return if self.respond_to?(:visibility_changed?) && !visibility_changed
 
       begin
         ark_identifier = Ezid::Identifier.find(self.ark.first)

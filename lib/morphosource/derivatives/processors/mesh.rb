@@ -130,6 +130,17 @@ module Morphosource::Derivatives::Processors
       @initial_glb_path = File.join(tmp_dir_path, initial_glb_name)
 
       Morphosource::Derivatives::Assimp.new(source_path, initial_glb_path).call
+      fix_ply_vertex_color_srgb(source_path, initial_glb_path) if File.extname(source_path).downcase == '.ply'
+    end
+
+    # Assimp writes PLY uchar (sRGB) colors as GLTF FLOAT by dividing by 255,
+    # without applying gamma. GLTF FLOAT vertex colors must be linear, so this
+    # step applies the sRGB->linear transfer function in-place on the GLB.
+    # The script self-guards: it reads the PLY header and skips non-uchar color types.
+    def fix_ply_vertex_color_srgb(ply_path, glb_path)
+      cmd = "#{Morphosource::Derivatives.python_path} vendor/assimp/fix_vertex_color_srgb.py" \
+            " --ply '#{ply_path}' --glb '#{glb_path}' 2>&1"
+      IO.popen(cmd) { |io| io.read }
     end
 
     # @!endgroup

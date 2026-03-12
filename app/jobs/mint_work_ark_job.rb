@@ -6,9 +6,7 @@ class MintWorkArkJob < Hyrax::ApplicationJob
   # @param work_id [String]
   def perform(work_id)
     resource = find_resource(work_id)
-    return mint_resource_ark(resource, work_id) if resource.is_a?(DeviceResource)
-
-    mint_active_fedora_ark(work_id)
+    resource.is_a?(Valkyrie::Resource) ? mint_resource_ark(resource) : mint_active_fedora_ark(work_id)
   end
 
   private
@@ -19,8 +17,8 @@ class MintWorkArkJob < Hyrax::ApplicationJob
     nil
   end
 
-  def mint_resource_ark(resource, work_id)
-    return Rails.logger.error("ARK for #{work_id} exists already") if resource.ark.present?
+  def mint_resource_ark(resource)
+    return Rails.logger.error("ARK for #{resource.id.to_s} exists already") if resource.ark.present?
 
     resource.mint_ark
     saved = Hyrax.persister.save(resource: resource)

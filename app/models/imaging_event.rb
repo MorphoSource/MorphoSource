@@ -19,7 +19,7 @@ class ImagingEventParentDeviceModalityValidator < ActiveModel::Validator
   def validate_device_id_valid
     return if @device_errors.present?
 
-    unless Hyrax.query_service.find_many_by_ids(ids: [@device_id]).any?
+    unless Device.exists?(id: @device_id) || DeviceResource.exists?(id: @device_id)
       @device_errors << "A device with id: #{@device_id} does not exist."
     end
   end

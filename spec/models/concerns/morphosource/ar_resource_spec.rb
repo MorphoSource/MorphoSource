@@ -64,4 +64,21 @@ RSpec.describe Morphosource::ArResource do
       end
     end
   end
+
+  describe '.exists?' do
+    let!(:resource) { valkyrie_create(:taxonomy_resource, title: ['Exists Resource'], with_index: false) }
+
+    it 'returns true when find_by finds a resource' do
+      expect(TaxonomyResource.exists?(id: resource.id)).to be true
+    end
+
+    it 'returns false when find_by does not find a resource' do
+      expect(TaxonomyResource.exists?(id: 'missing')).to be false
+    end
+
+    it 'returns false when find_by raises an error' do
+      allow(TaxonomyResource).to receive(:find_by).and_raise(StandardError)
+      expect(TaxonomyResource.exists?(id: resource.id)).to be false
+    end
+  end
 end

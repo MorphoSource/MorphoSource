@@ -22,6 +22,16 @@ module Morphosource
     extend ActiveSupport::Concern
 
     class_methods do
+      # Determine whether a record exists using find_by, returning a boolean.
+      #
+      # @param args [Hash] query to pass to find_by
+      # @return [Boolean]
+      def exists?(**args)
+        !!find_by(**args)
+      rescue StandardError
+        false
+      end
+
       # Find the first resource of this type (oldest by created_at).
       #
       # @param query_service [#custom_queries] the query service to use

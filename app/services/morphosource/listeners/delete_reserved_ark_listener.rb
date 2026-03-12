@@ -2,13 +2,10 @@
 
 module Morphosource
   module Listeners
-    class DeleteDeviceReservedArkListener
+    class DeleteReservedArkListener
       def on_object_deleted(event)
         payload = event.respond_to?(:payload) ? event.payload : {}
-        object = payload[:object]
-        return unless object.is_a?(DeviceResource)
-
-        ark = payload[:deleted_ark].presence || Array(object.ark).first
+        ark = payload[:deleted_ark].presence
         return if ark.blank?
 
         DeleteReservedArkJob.perform_later(ark)

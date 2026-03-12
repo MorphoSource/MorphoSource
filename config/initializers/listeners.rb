@@ -8,7 +8,7 @@ Rails.application.config.to_prepare do
   stored_listeners.each { |listener| publisher.unsubscribe(listener) }
 
   listener_classes = [
-    Morphosource::Listeners::DeleteDeviceReservedArkListener,
+    Morphosource::Listeners::DeleteReservedArkListener,
     Morphosource::Listeners::DestroyProxyDepositRequestsListener,
     Morphosource::Listeners::IndexRelatedWorksListener,
     Morphosource::Listeners::MintDeviceArkListener,

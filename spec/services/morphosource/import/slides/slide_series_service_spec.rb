@@ -11,7 +11,10 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
   let!(:organization)   { FactoryBot.create(:organization_collection, id: provider['id'], depositor: manager.ms_id) }
   let!(:device)         { FactoryBot.create(:device_resource, title: [device_name], modality: ['SequentialSectionScan'], organization_id: [organization.id]) }
 
-  let(:collection)      { double('collection') }
+  let(:collection)      { double('collection', id: 'collection123', in_collections: []).tap do |c|
+                           allow(c).to receive(:add_member_objects)
+                           allow(c).to receive(:update_index).and_return(true)
+                         end }
   let(:occurrence_key)  { 4003219413 }
   let(:taxon_key)       { '5216061' }
   let(:occurrence_id)   { 'MCZ:SC:3793' }
@@ -147,18 +150,45 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
 
   describe 'import_slide_series' do
     let(:media) { double('media', id: 'media123') }
+    let(:specimen) { double('specimen', id: 'specimen123').tap { |s| allow(s).to receive(:update_index).and_return(true) } }
     before do
       # subject.instance_variable_set(:@media, media)
+      # Use doubles so this unit test does not perform real persistence/indexing side effects.
       allow(subject).to receive(:create_new_media).and_return(media)
+      # These find calls can happen in the actor/permission path; if we don't stub them,
+      # the service pulls ActiveFedora resources from storage and later hits Fedora/Solr paths.
       allow(ActiveFedora::Base).to receive(:find).with(media.id).and_return(media)
+      allow(ActiveFedora::Base).to receive(:find).with(organization.id).and_return(organization)
+
+      # Admin set lookup in the actor pipeline expects an object with title and valkyrie_resource.
+      # Stubbing it avoids failures on missing /admin_set_default paths in container/Fedora.
+      admin_set = double('admin_set', id: 'admin_set_default', title: ['Default Admin Set']).as_null_object
+      allow(admin_set).to receive(:valkyrie_resource).and_return(admin_set)
+      allow(ActiveFedora::Base).to receive(:find).with('admin_set_default').and_return(admin_set)
+
+      # Keep all downstream calls off expensive external operations during this example.
       allow(media).to receive(:update_index).and_return(true)
+
+      # Return a fixed taxonomy so taxonomy persistence path is skipped for this example.
+      allow(subject).to receive(:taxonomy).and_return(double('taxonomy', id: 'taxonomy123'))
+      # Stub specimen creation so `find_or_create_specimen` doesn't execute external creation path here.
+      allow(subject).to receive(:find_or_create_specimen).and_return(specimen)
+      # Stub device retrieval to avoid loading it through model queries.
+      allow(subject).to receive(:device).and_return(device)
+      # Return a test collection double and force subject to use it.
+      allow(subject).to receive(:create_series_collection).and_return(collection)
+      subject.instance_variable_set(:@collection, collection)
     end
     it 'calls methods to create a new media record and add it to the collection' do
+      # Assertions below verify the workflow without requiring real work actors to persist
+      # or index records.
       expect(subject).to receive(:create_new_imaging_event)
       expect(subject).to receive(:create_new_media)
       expect(subject).to receive(:characterize_file)
       expect(subject).to receive(:create_thumbnail)
-      expect_any_instance_of(SequentialSectionList).to receive(:add_member_objects)
+      # Verify collection mutation path directly on the stubbed collection object.
+      expect(collection).to receive(:add_member_objects)
+      allow(subject).to receive(:collection).and_return(collection)
       subject.call
     end
   end

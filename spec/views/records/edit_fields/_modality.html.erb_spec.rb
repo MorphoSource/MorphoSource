@@ -12,7 +12,6 @@ RSpec.describe 'records/edit_fields/_modality.html.erb', type: :view do
   end
 
   before do
-    form.controller = controller
     assign(:form, form)
     render inline: form_template
   end

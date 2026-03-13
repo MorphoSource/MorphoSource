@@ -9,7 +9,6 @@ RSpec.describe 'hyrax/devices/_form_parent_work_relationships.html.erb', type: :
   end
   let(:form) { DeviceResourceForm.new(work) }
   let(:page) do
-    form.controller = controller
     assign(:organization, organization)
     assign(:form, form)
     render inline: <<~ERB

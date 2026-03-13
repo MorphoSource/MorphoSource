@@ -11,8 +11,6 @@ class DeviceResourceForm < Hyrax::Forms::PcdmObjectForm(DeviceResource)
   include Hyrax::FormFields(:device_resource)
   include Morphosource::FormMethods
   include SingleValuedResourceForm
-  
-  attr_accessor :controller
 
   validates :title, presence: { message: 'Your device must have a model name.' }
 

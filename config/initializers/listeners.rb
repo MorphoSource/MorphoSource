@@ -11,7 +11,7 @@ Rails.application.config.to_prepare do
     Morphosource::Listeners::DeleteReservedArkListener,
     Morphosource::Listeners::DestroyProxyDepositRequestsListener,
     Morphosource::Listeners::IndexRelatedWorksListener,
-    Morphosource::Listeners::MintDeviceArkListener,
+    Morphosource::Listeners::MintArkListener,
     Morphosource::Listeners::UpdateDeviceArkStatusListener
   ]
 

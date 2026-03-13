@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Morphosource::Listeners::MintDeviceArkListener do
+RSpec.describe Morphosource::Listeners::MintArkListener do
   include ActiveJob::TestHelper
 
   subject(:listener) { described_class.new }

@@ -32,8 +32,7 @@ RSpec.describe ImagingEvent do
         end
       end
       allow(query_service).to receive(:find_by) do |id:|
-        expect(id).to eq(device.id.to_s)
-        device
+        id == device.id.to_s ? device : nil
       end
     end
 

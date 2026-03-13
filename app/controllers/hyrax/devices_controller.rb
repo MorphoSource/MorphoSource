@@ -16,7 +16,7 @@ module Hyrax
     self.curation_concern_type = ::DeviceResource
     # Use a Valkyrie aware form service to generate Valkyrie::ChangeSet style
     # forms.
-    self.work_form_service = Morphosource::FormFactory.new(self)
+    self.work_form_service = Hyrax::FormFactory.new
     
     with_themed_layout :decide_layout
 

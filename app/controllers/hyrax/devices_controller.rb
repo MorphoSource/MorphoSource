@@ -116,7 +116,7 @@ module Hyrax
     # the flash error message reflects the labels shown in the form rather than raw attribute names.
     def form_err_msg(form)
       form.errors.messages.map do |k, vs|
-        label = I18n.t("simple_form.labels.device.#{k}", default: k.to_s.humanize)
+        label = I18n.t("simple_form.labels.device_resource.#{k}", default: k.to_s.humanize)
         vs.map { |v| "#{label} #{v}" }
       end.flatten.to_sentence
     end

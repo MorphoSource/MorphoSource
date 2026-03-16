@@ -24,7 +24,8 @@ en:
             title: Organization title
   simple_form:
     labels:
-      device:
+      # Keyed by model name (device_resource) so SimpleForm resolves them automatically
+      device_resource:
         id: Device ID
         title: Model
         creator: Manufacturer
@@ -32,7 +33,8 @@ en:
         description: Description
         modality: Modality
     hints:
-      device:
+      # Keyed by model name (device_resource) so SimpleForm resolves them automatically
+      device_resource:
         title: "The model of the device. Example: D800"
         creator: "The manufacturer of the device. Example: Nikon"
         identifier: "An external identifier for the device. Example: 123456"

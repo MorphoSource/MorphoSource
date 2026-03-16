@@ -10,7 +10,7 @@
 
     <%= f.submit class: 'btn btn-primary', style: "margin-left:10px;"%>
 
-    <%= submit_tag "Test Modal", :type => 'button', class: "btn btn-primary", data: { toggle: "modal", target: "#test-modal" } %>
+    <%= submit_tag "Test Modal", :type => 'button', class: "btn btn-primary", data: { target: "#test-modal" } %>
   </div>
   <div class="card">
     <div class="card-body">
@@ -44,5 +44,5 @@
     </div>
 <% end %>
 
-<div id="test-modal" class="modal fade"></div>
-<div id="test-guilt-trip-modal" class="modal fade"></div>
+<div id="test-modal" class="configured-modal" style="display:none; top:0; right:0; bottom:0; left:0;" aria-hidden="true"></div>
+<div id="test-guilt-trip-modal" class="configured-modal" style="display:none; top:0; right:0; bottom:0; left:0;" aria-hidden="true"></div>

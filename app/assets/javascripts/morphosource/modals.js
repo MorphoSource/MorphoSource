@@ -1,4 +1,4 @@
-// modals.js
+// code for handling site-wide modals
 
 function initSitewideModals() {
   const modal1 = document.getElementById("sitewide-modal");

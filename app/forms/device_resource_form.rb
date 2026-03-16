@@ -12,8 +12,6 @@ class DeviceResourceForm < Hyrax::Forms::PcdmObjectForm(DeviceResource)
   include Morphosource::FormMethods
   include SingleValuedResourceForm
 
-  validates :title, presence: { message: 'Your device must have a model name.' }
-
   # Define custom form fields using the Valkyrie::ChangeSet interface
   #
   # property :my_custom_form_field

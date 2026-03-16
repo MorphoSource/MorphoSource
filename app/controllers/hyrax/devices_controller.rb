@@ -111,6 +111,16 @@ module Hyrax
       @organization.present? ? [@organization.id] : []
     end
 
+    # Override Hyrax's default form_err_msg which only uses attribute names (e.g. "Title").
+    # This version looks up the SimpleForm locale label (e.g. "Model", "Manufacturer") so
+    # the flash error message reflects the labels shown in the form rather than raw attribute names.
+    def form_err_msg(form)
+      form.errors.messages.map do |k, vs|
+        label = I18n.t("simple_form.labels.device.#{k}", default: k.to_s.humanize)
+        vs.map { |v| "#{label} #{v}" }
+      end.flatten.to_sentence
+    end
+
     def after_create_response
       respond_to do |wants|
         wants.html do

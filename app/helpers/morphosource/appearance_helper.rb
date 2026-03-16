@@ -15,7 +15,7 @@ module Morphosource
       # first check that the user has not temporarily opted out of seeing the modal
       # then check how often the modal should be shown
       def sitewide_modal?
-        return false if cookies[:hide_donation_modal]
+        # return false if cookies[:hide_donation_modal]
 
         modal_form = Morphosource::Forms::Admin::Modal.new
         # returns true if a random float is less than the frequency setting

@@ -22,7 +22,6 @@ class ApplicationContainerOverrides
       Morphosource::Transactions::Device::WorkCreate.new
     end
 
-    # This (device_change_set.update_work) is called from DevicesController update_valkyrie_work
     ops.register 'update_work' do
       Morphosource::Transactions::Device::WorkUpdate.new
     end
@@ -41,18 +40,6 @@ class ApplicationContainerOverrides
   end
 
   namespace 'device_work_resource' do |ops|
-    ops.register 'mint_ark' do
-      Morphosource::Transactions::Device::Steps::MintArk.new
-    end
-
-    ops.register 'update_ark_status' do
-      Morphosource::Transactions::Device::Steps::UpdateArkStatus.new
-    end
-
-    ops.register 'delete_ark_if_reserved' do
-      Morphosource::Transactions::Device::Steps::DeleteArkIfReserved.new
-    end
-
     ops.register 'destroy' do
       Morphosource::Transactions::Device::WorkDestroy.new
     end

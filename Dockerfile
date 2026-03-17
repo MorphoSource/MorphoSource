@@ -76,7 +76,7 @@ CMD ["bundle", "exec", "puma", "-v", "-b", "tcp://0.0.0.0:3000"]
 ### MORPHOSOURCE-WORKER-DEV STAGE
 # To decrease container size, this stage does not inherit from build stage but just copies files from it
 
-FROM gitlab-registry.oit.duke.edu/morphosource/morphosource/morphosource-worker-base:0.0.2 AS morphosource-worker-dev
+FROM gitlab-registry.oit.duke.edu/morphosource/morphosource/morphosource-worker-base:0.0.3 AS morphosource-worker-dev
 
 COPY --chown=1001:0 --from=morphosource-build-dev $RAILS_ROOT $RAILS_ROOT
 
@@ -88,7 +88,7 @@ CMD ["bundle", "exec", "resque-pool"]
 ### MORPHOSOURCE-WORKER-PROD STAGE
 # To decrease container size, this stage does not inherit from build stage but just copies files from it
 
-FROM gitlab-registry.oit.duke.edu/morphosource/morphosource/morphosource-worker-base:0.0.2 AS morphosource-worker-prod
+FROM gitlab-registry.oit.duke.edu/morphosource/morphosource/morphosource-worker-base:0.0.3 AS morphosource-worker-prod
 
 COPY --chown=1001:0 --from=morphosource-build-prod $RAILS_ROOT $RAILS_ROOT
 

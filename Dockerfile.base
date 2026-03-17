@@ -62,6 +62,7 @@ RUN echo "deb https://packages.adoptium.net/artifactory/deb \
 RUN apt update && \
   apt install -y \
   temurin-8-jdk \
+  assimp-utils \
   blender \
   dcmtk \
   ffmpeg \
@@ -73,7 +74,7 @@ RUN apt update && \
 
 # Install Python packages
 RUN pip3 install --break-system-packages --no-cache-dir --upgrade pip && \
-  pip3 install --break-system-packages --no-cache-dir "numpy<2.0.0" Pillow pydicom
+  pip3 install --break-system-packages --no-cache-dir "numpy<2.0.0" Pillow pydicom trimesh
 
 # Install Python package pymeshlab, which has an annoying quirk for M1 platforms
 ARG TARGETPLATFORM

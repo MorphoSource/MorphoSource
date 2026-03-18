@@ -6,7 +6,7 @@ module Morphosource
       class WorkCreate < Hyrax::Transactions::Transaction
         IGNORED_STEP_ARGS = ['work_resource.add_to_parent', 'work_resource.add_file_sets'].freeze
 
-        DEFAULT_STEPS = ['device_change_set.assign_id',
+        DEFAULT_STEPS = ['change_set.assign_id',
                          'device_change_set.set_organization_id',
                          'device_change_set.update_organization_access',
                          'change_set.set_default_admin_set',

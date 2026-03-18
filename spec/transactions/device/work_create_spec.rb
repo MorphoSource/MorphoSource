@@ -10,7 +10,7 @@ RSpec.describe Morphosource::Transactions::Device::WorkCreate do
   it 'defines the expected default steps' do
     expect(described_class::DEFAULT_STEPS).to eq(
       [
-        'device_change_set.assign_id',
+        'change_set.assign_id',
         'device_change_set.set_organization_id',
         'device_change_set.update_organization_access',
         'change_set.set_default_admin_set',

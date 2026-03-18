@@ -26,10 +26,6 @@ class ApplicationContainerOverrides
       Morphosource::Transactions::Device::WorkUpdate.new
     end
 
-    ops.register 'assign_id' do
-      Morphosource::Transactions::Device::Steps::AssignID.new
-    end
-
     ops.register 'set_organization_id' do
       Morphosource::Transactions::Device::Steps::SetOrganizationID.new
     end

@@ -50,7 +50,8 @@ module Morphosource::Derivatives
           --compress draco \\
           --simplify #{opts[:simplify]} \\
           --simplify-error #{opts[:simplify_error]} \\
-          --texture-size #{opts[:max_texture_size]}"
+          --texture-size #{opts[:max_texture_size]} \\
+          --no-limit-input-pixels"
       when :center
         "gltf-transform center '#{source_path}' '#{out_path}' \\
           --pivot #{opts[:pivot]}"

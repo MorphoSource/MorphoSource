@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Morphosource::Transactions::Device::Steps::UpdateOrganizationAccess do
+RSpec.describe Morphosource::Transactions::Steps::UpdateOrganizationAccess do
   subject(:step) { described_class.new }
 
   describe '#call' do

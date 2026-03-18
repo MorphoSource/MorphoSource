@@ -31,7 +31,7 @@ class ApplicationContainerOverrides
     end
 
     ops.register 'update_organization_access' do
-      Morphosource::Transactions::Device::Steps::UpdateOrganizationAccess.new
+      Morphosource::Transactions::Steps::UpdateOrganizationAccess.new
     end
   end
 

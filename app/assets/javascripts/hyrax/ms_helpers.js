@@ -1,4 +1,5 @@
 // shared helper functions
+//= require morphosource/modalities
 
 // dedupe and return a unique array of strings
 Array.prototype.uniq = function(){
@@ -286,13 +287,13 @@ function removeLastRepeatable() {
 }
 
 function modalityAbbrev(m) {
-  var modalityInfo = (window.morphosourceModalities || {})[m];
+  var modalityInfo = modalities[m];
   return (modalityInfo && modalityInfo.abbreviation) || 'Etc';
 }
 
 function modalityTerm(m) {
   if (!m) { return ''; }
-  var modalityInfo = (window.morphosourceModalities || {})[m];
+  var modalityInfo = modalities[m];
   if (modalityInfo && modalityInfo.term) {
     return modalityInfo.term;
   }

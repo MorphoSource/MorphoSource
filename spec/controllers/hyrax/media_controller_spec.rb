@@ -474,6 +474,62 @@ RSpec.describe Hyrax::MediaController, type: :controller do
     end
   end
 
+  describe '#check_for_published_doi' do
+    let(:doi)  { nil }
+    let(:work) { Media.new(title: ["Test Media Work"], doi: doi) }
+
+    before do
+      allow(subject).to receive(:curation_concern).and_return(work)
+      allow(subject).to receive(:params).and_return(params)
+      subject.send(:save_publication_status)
+      subject.send(:check_for_published_doi)
+    end
+
+    context 'when media has no DOI' do
+      let(:params) { { "media" => { "visibility" => "private" } } }
+
+      it 'does not add an error' do
+        expect(work.errors[:base]).to be_empty
+      end
+    end
+
+    context 'when media has a DOI' do
+      let(:doi) { ["10.1234/test"] }
+
+      context 'and new status is "open"' do
+        let(:params) { { "media" => { "visibility" => "open" } } }
+
+        it 'does not add an error' do
+          expect(work.errors[:base]).to be_empty
+        end
+      end
+
+      context 'and new status is "restricted_download"' do
+        let(:params) { { "media" => { "visibility" => "restricted_download" } } }
+
+        it 'does not add an error' do
+          expect(work.errors[:base]).to be_empty
+        end
+      end
+
+      context 'and new status is "private"' do
+        let(:params) { { "media" => { "visibility" => "private" } } }
+
+        it 'adds a DOI visibility error' do
+          expect(work.errors[:base]).to include("Media has been assigned a DOI and published. Visibility cannot be changed to private.")
+        end
+      end
+
+      context 'and new status is "restricted" (mapped to private)' do
+        let(:params) { { "media" => { "visibility" => "restricted" } } }
+
+        it 'adds a DOI visibility error' do
+          expect(work.errors[:base]).to include("Media has been assigned a DOI and published. Visibility cannot be changed to private.")
+        end
+      end
+    end
+  end
+
   describe '#update' do
     let(:curation_concern)  { Media.create(title: ["title"]) }
     let(:actor)             { double(update: true) }

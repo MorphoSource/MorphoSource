@@ -59,6 +59,22 @@ RSpec.describe BatchSubmissionTools::Ms2Batch::BatchFileValidator do
       expect(error_msg).to eq('imaging_event.ct.exposure_time: Value should not be present when modality Photogrammetry is pre-selected.')
     end
 
+    context 'with row-level modality only' do
+      let(:modality) { nil }
+
+      it 'includes the resolved row modality in mismatch errors' do
+        valid_modalities = instance_double('valid_modalities', ignore_case_included_value: 'TransmissionElectronMicroscopy')
+        allow(validator).to receive(:valid_modalities).and_return(valid_modalities)
+        allow(validator).to receive(:modality_for_row).with(8).and_return('TransmissionElectronMicroscopy')
+
+        error_msg, _warn_msg = error_for('imaging_event.photogrammetry.focal_length_type', 'Fixed')
+
+        expect(error_msg).to eq(
+          'imaging_event.photogrammetry.focal_length_type: Value should not be present when modality TransmissionElectronMicroscopy is pre-selected.'
+        )
+      end
+    end
+
     context 'with MicroNanoXRayComputedTomography modality' do
       let(:modality) { 'MicroNanoXRayComputedTomography' }
 

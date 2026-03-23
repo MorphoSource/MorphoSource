@@ -420,7 +420,7 @@ module BatchSubmissionTools
                 error_msg = error_by_type(field_name, val)
               else
                 # no need to check the values if they should not be present
-                error_msg = "#{field_name}: Value should not be present when modality #{modality} is pre-selected."
+                error_msg = "#{field_name}: Value should not be present when modality #{m} is pre-selected."
               end
             end
           else
@@ -762,50 +762,9 @@ module BatchSubmissionTools
       end
 
       def modality_mapped(m)
-        case m
-        when 'MicroNanoXRayComputedTomography'
-          'ct'
-        when 'MagneticResonanceImaging'
-          'MRI'
-        when 'PositronEmissionTomography'
-          'PET'
-        when 'SinglePhotonEmissionComputedTomography'
-          'SPECT'
-        when 'NeutronComputedTomography'
-          'NCT'
-        when 'SynchrotronImaging'
-          'Synchro'
-        when 'NeutrinoImaging'
-          'Neutrino'
-        when 'Photogrammetry'
-          'photogrammetry'
-        when 'StructuredLight'
-          'StrLight'
-        when 'LaserScan'
-          'Laser'
-        when 'ConfocalImageStacking'
-          'Confocal'
-        when 'LightSheetFluorescenceMicroscopy'
-          'LSFM'
-        when 'Infrared'
-          'Infrared'
-        when 'ReflectanceTransformationImaging'
-          'RTI'
-        when 'Photography'
-          'photography'
-        when 'ScanningElectronMicroscopy'
-          'SEM'
-        when 'BornDigital'
-          'BD'
-        when 'XRay'
-          'XRay'
-        when 'LaserAidedProfiling'
-          'LAP'
-        when 'Video'
-          'Video'
-        else
-          'Etc'
-        end
+        return 'Neutrino' if m == 'NeutrinoImaging'
+
+        Morphosource::ModalitiesService.field_prefix(m)
       end
 
       def cell_value(row_num, col_num)

@@ -310,9 +310,9 @@ module Morphosource
 
         # Get BSO and BSO media IDs for later reindexing
         biological_specimen_ids = biological_specimens.map { |doc| doc['id'] }
-        if biological_specimen_ids.present?
+        biological_specimen_ids.each_slice(250) do |id_batch|
           all_media_ids.concat Morphosource::SolrService.new.get_docs(
-            "has_model_ssim:Media && physical_object_id_ssim:(#{biological_specimen_ids.join(' OR ')})", {rows: 999999, fl: ["id"]}
+            "has_model_ssim:Media && physical_object_id_ssim:(#{id_batch.join(' OR ')})", {rows: 999999, fl: ["id"]}
           ).map { |doc| doc['id'] }
         end
 
@@ -335,9 +335,9 @@ module Morphosource
 
         # Get CHO and CHO media IDs for later reindexing
         cultural_heritage_object_ids = cultural_heritage_objects.map { |doc| doc['id'] }
-        if cultural_heritage_object_ids.present?
+        cultural_heritage_object_ids.each_slice(250) do |id_batch|
           all_media_ids.concat Morphosource::SolrService.new.get_docs(
-            "has_model_ssim:Media && physical_object_id_ssim:(#{cultural_heritage_object_ids.join(' OR ')})", {rows: 999999, fl: ["id"]}
+            "has_model_ssim:Media && physical_object_id_ssim:(#{id_batch.join(' OR ')})", {rows: 999999, fl: ["id"]}
           ).map { |doc| doc['id'] }
         end
 

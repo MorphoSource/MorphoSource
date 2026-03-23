@@ -3,7 +3,7 @@ module MorphosourceHelper
   include ActionView::Helpers::UrlHelper
   include Hyrax::Renderers
 
-class RemoteFileInfo
+  class RemoteFileInfo
     attr_accessor :message, :http_code, :file_ext, :status, :content_length, :e_tag
 
     def initialize(url)

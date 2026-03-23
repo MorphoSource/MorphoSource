@@ -7,8 +7,10 @@ RSpec.describe AttachRemoteFilesToWorkJob do
   let(:user2) { create(:user) }
   let(:work)  { create(:public_media, depositor: user.user_key) }
 
-  let(:remote_url)   { 'https://remote.example.com/specimens/model.ply' }
-  let(:remote_files) { [{ url: remote_url, file_name: 'model.ply' }] }
+  # Use a real fixture file so ValkyrieRemoteIngestJob can read and store actual content.
+  let(:fixture_path) { Rails.root.join('spec/fixtures/images/duke.png').to_s }
+  let(:remote_url)   { "file://#{fixture_path}" }
+  let(:remote_files) { [{ url: remote_url, file_name: 'duke.png' }] }
 
   before { ActiveJob::Base.queue_adapter = :test }
 
@@ -24,24 +26,33 @@ RSpec.describe AttachRemoteFilesToWorkJob do
   context "when use_valkyrie? is true" do
     before do
       allow(Hyrax.config).to receive(:use_valkyrie?).and_return(true)
-      # Stub jobs that require the AF work to exist in Fedora (Wings query path).
-      # ValkyrieRemoteIngestJob is enqueued via instance .enqueue (not .perform_later)
-      # so it sits in the test queue without executing — no stub needed.
+      allow(Hyrax.config).to receive(:whitelisted_ingest_dirs)
+        .and_return([Rails.root.join('spec/fixtures').to_s])
+      # These jobs require the AF work to exist in Fedora (Wings query path),
+      # which the test factory doesn't set up. Stub them out.
       allow(ValkyrieCharacterizationJob).to receive(:perform_later)
       allow(FileSetAttachedEventJob).to receive(:perform_later)
     end
 
-    it "creates a Valkyrie FileSet with label and import_url, attaches it, and enqueues ValkyrieRemoteIngestJob" do
-      described_class.perform_now(work, remote_files)
+    it "creates a FileSet, links FileMetadata, stores a file, sets label and import_url, and inherits visibility" do
+      perform_enqueued_jobs { described_class.perform_now(work, remote_files) }
 
       file_sets = find_file_sets(work)
-      fs = file_sets.first
       expect(file_sets.count).to eq 1
-      expect(fs).to be_a(Hyrax::FileSet)
-      expect(fs.label).to eq 'model.ply'
-      expect(fs.import_url).to eq remote_url
-      expect(ValkyrieRemoteIngestJob).to have_been_enqueued
-        .with(instance_of(Hyrax::FileSet), remote_files.first)
+      file_set = file_sets.first
+      expect(file_set).to be_a(Hyrax::FileSet)
+      expect(file_set.label).to eq 'duke.png'
+      expect(file_set.import_url).to eq remote_url
+
+      file_metadata = Hyrax.custom_queries.find_original_file(file_set: file_set)
+      expect(file_metadata).to be_a(Hyrax::FileMetadata)
+      expect(file_metadata.file_set_id).to eq file_set.id
+      expect(file_metadata.file_identifier).to be_present
+
+      storage_file = Valkyrie.config.storage_adapter.find_by(id: file_metadata.file_identifier)
+      expect(storage_file).to be_a(Valkyrie::StorageAdapter::File)
+
+      expect(file_set.visibility).to eq work.visibility
     end
 
     context "when deposited on behalf of another user (proxy)" do
@@ -57,6 +68,19 @@ RSpec.describe AttachRemoteFilesToWorkJob do
       end
     end
 
+    context "when deposited as 'Yourself' (blank on_behalf_of)" do
+      before do
+        work.on_behalf_of = ''
+        work.save
+      end
+
+      it "uses the work's own depositor" do
+        described_class.perform_now(work, remote_files)
+        file_set = find_file_sets(work).first
+        expect(file_set.depositor).to eq work.depositor
+      end
+    end
+
     context "when remote_files is blank" do
       it "returns without creating any FileSets" do
         described_class.perform_now(work, [])
@@ -66,7 +90,7 @@ RSpec.describe AttachRemoteFilesToWorkJob do
     end
 
     context "when an entry has a blank url" do
-      let(:remote_files) { [{ url: '', file_name: 'ignored.ply' }, { url: remote_url, file_name: 'model.ply' }] }
+      let(:remote_files) { [{ url: '', file_name: 'ignored.ply' }, { url: remote_url, file_name: 'duke.png' }] }
 
       it "skips blank entries and attaches only the valid file" do
         described_class.perform_now(work, remote_files)
@@ -93,24 +117,16 @@ RSpec.describe AttachRemoteFilesToWorkJob do
         }.to raise_error(ArgumentError, /doesn't pass validation/)
       end
     end
-
-    context "when a file:// URL is in a whitelisted ingest dir" do
-      let(:fixture_path) { Rails.root.join('spec/fixtures/images/duke.png').to_s }
-      let(:remote_files) { [{ url: "file://#{fixture_path}", file_name: 'duke.png' }] }
-
-      before { allow(Hyrax.config).to receive(:whitelisted_ingest_dirs).and_return([Rails.root.join('spec/fixtures').to_s]) }
-
-      it "accepts the file:// URL and creates a FileSet" do
-        described_class.perform_now(work, remote_files)
-        expect(find_file_sets(work).count).to eq 1
-      end
-    end
   end
 
   # ---------------------------------------------------------------------------
   # ActiveFedora path
   # ---------------------------------------------------------------------------
   context "when use_valkyrie? is false" do
+    # AF path routes file:// to IngestLocalFileJob; use https to exercise ImportUrlJob.
+    let(:remote_url)   { 'https://remote.example.com/specimens/model.ply' }
+    let(:remote_files) { [{ url: remote_url, file_name: 'model.ply' }] }
+
     before do
       allow(Hyrax.config).to receive(:use_valkyrie?).and_return(false)
       allow(ImportUrlJob).to receive(:perform_later)

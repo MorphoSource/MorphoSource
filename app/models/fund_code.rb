@@ -4,6 +4,7 @@ class FundCode < ApplicationRecord
   has_many :members, :through => :fund_code_memberships, :source => :user
   has_many :fund_code_media_associations
   has_many :charges, class_name: "FundCodeCharge"
+  has_many :data_allocations
 
   mount_uploaders :attachments, FundCodeAttachmentUploader
 

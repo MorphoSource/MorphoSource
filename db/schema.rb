@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2025_09_26_163538) do
+ActiveRecord::Schema.define(version: 2026_03_23_142746) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -187,6 +187,25 @@ ActiveRecord::Schema.define(version: 2025_09_26_163538) do
     t.index ["parent_id"], name: "index_curation_concerns_operations_on_parent_id"
     t.index ["rgt"], name: "index_curation_concerns_operations_on_rgt"
     t.index ["user_id"], name: "index_curation_concerns_operations_on_user_id"
+  end
+
+  create_table "data_allocation_users", force: :cascade do |t|
+    t.bigint "data_allocation_id", null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["data_allocation_id"], name: "index_data_allocation_users_on_data_allocation_id"
+    t.index ["user_id"], name: "index_data_allocation_users_on_user_id"
+  end
+
+  create_table "data_allocations", force: :cascade do |t|
+    t.integer "allocation_type", null: false
+    t.decimal "storage_total_gb"
+    t.decimal "storage_current_gb", default: "0.0", null: false
+    t.bigint "fund_code_id"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.index ["fund_code_id"], name: "index_data_allocations_on_fund_code_id"
   end
 
   create_table "featured_works", force: :cascade do |t|
@@ -835,6 +854,9 @@ ActiveRecord::Schema.define(version: 2025_09_26_163538) do
   add_foreign_key "collection_type_participants", "hyrax_collection_types"
   add_foreign_key "contributor_petitions", "users"
   add_foreign_key "curation_concerns_operations", "users"
+  add_foreign_key "data_allocation_users", "data_allocations"
+  add_foreign_key "data_allocation_users", "users"
+  add_foreign_key "data_allocations", "fund_codes"
   add_foreign_key "fund_code_media_associations", "fund_codes"
   add_foreign_key "fund_code_memberships", "fund_codes"
   add_foreign_key "fund_code_memberships", "users"

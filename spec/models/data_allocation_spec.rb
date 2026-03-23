@@ -1,0 +1,55 @@
+require 'rails_helper'
+
+RSpec.describe DataAllocation do
+  it { should belong_to(:fund_code) }
+  it { should have_many(:data_allocation_users) }
+  it { should have_many(:users).through(:data_allocation_users) }
+
+  describe "allocation_type enum" do
+    it "defines user and fund_code values" do
+      expect(DataAllocation.allocation_types).to eq({ "user" => 0, "fund_code" => 1 })
+    end
+  end
+
+  describe "storage defaults" do
+    it "defaults storage_total_gb to Hyrax.config.default_storage_total_gb on new record" do
+      da = DataAllocation.new(allocation_type: :user)
+      expect(da.storage_total_gb).to eq(Hyrax.config.default_storage_total_gb)
+    end
+
+    it "defaults storage_current_gb to 0" do
+      da = DataAllocation.new(allocation_type: :user)
+      expect(da.storage_current_gb).to eq(0)
+    end
+
+    it "does not override an explicitly set storage_total_gb" do
+      da = DataAllocation.new(allocation_type: :user, storage_total_gb: 50)
+      expect(da.storage_total_gb).to eq(50)
+    end
+  end
+
+  describe "#owner" do
+    let(:user) { User.create!(email: 'owner@example.com', password: 'password') }
+    let(:fund_code) { FundCode.create!(user: user) }
+
+    context "when allocation_type is fund_code" do
+      it "returns the associated FundCode" do
+        da = DataAllocation.create!(allocation_type: :fund_code, fund_code: fund_code)
+        expect(da.owner).to eq(fund_code)
+      end
+    end
+
+    context "when allocation_type is user" do
+      it "returns the users collection" do
+        da = DataAllocation.create!(allocation_type: :user)
+        da.users << user
+        expect(da.owner).to include(user)
+      end
+
+      it "returns an empty collection when no users are assigned" do
+        da = DataAllocation.create!(allocation_type: :user)
+        expect(da.owner).to be_empty
+      end
+    end
+  end
+end

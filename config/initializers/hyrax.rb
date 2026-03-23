@@ -471,6 +471,9 @@ Hyrax.config do |config|
 
   config.index_related_works = true
 
+  # Default storage allocation in gigabytes for new DataAllocations
+  config.default_storage_total_gb = 15
+
   # Fund code reporting fields (if not using fund code reporting features, these fields are unnecessary)
   config.subsidizing_fund_code_id = ENV.fetch('SUBSIDIZING_FUND_CODE_ID', Rails.env.production? ? 4 : nil)
   config.unused_storage_fund_code_id = ENV.fetch('UNUSED_STORAGE_FUND_CODE_ID', Rails.env.production? ? 18 : nil)

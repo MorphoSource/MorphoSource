@@ -241,7 +241,9 @@ module BatchSubmissionTools
       end
 
       def construct_biological_specimen_ingests
-        rows.pluck(:biological_specimen).each_with_index do |bso, index|
+        rows.each_with_index do |row, index|
+          bso = normalize_biological_specimen_attrs(row)
+
           if !bso.present?
             raise "Empty biological specimen issue"
           end
@@ -259,6 +261,40 @@ module BatchSubmissionTools
             biological_specimen_ingests << bso_ingest
             rows_to_bso[index] = biological_specimen_ingests.count - 1
           end
+        end
+      end
+
+      # Normalizes biological specimen metadata from the manifest row before ingest construction.
+      #
+      # Priority:
+      # 1. If media includes a parent_ms_id, resolve that media to a biological specimen id and
+      #    return it as { ms_id: [id] } so child ingest can attach to the existing BSO.
+      # 2. Otherwise, return the row's :biological_specimen attributes as-is.
+      #
+      # Raises:
+      # - If parent_ms_id is present but cannot be resolved to a specimen id, we fail fast.
+      def normalize_biological_specimen_attrs(row)
+        bso = row[:biological_specimen]
+        media = row[:media] || {}
+
+        if media[:parent_ms_id].present?
+          parent_ms_id = media[:parent_ms_id].first
+          if (specimen_id = parent_media_specimen_id(parent_ms_id)).present?
+            return { ms_id: [specimen_id] }
+          else
+            raise "Unable to resolve biological specimen for parent media #{parent_ms_id}"
+          end
+        end
+
+        return bso
+      end
+
+      def parent_media_specimen_id(parent_ms_id)
+        parent_media_id = pad(parent_ms_id)
+        @parent_media_specimen_ids ||= {}
+        @parent_media_specimen_ids[parent_media_id] ||= begin
+          parent_media = SolrDocument.find(parent_media_id)
+          parent_media["physical_object_id_ssim"].first
         end
       end
 

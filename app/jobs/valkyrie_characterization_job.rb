@@ -27,7 +27,7 @@ class ValkyrieCharacterizationJob < HeavyJob
   # Perform multiple characterization steps, persisting file metadata at each step
   def characterize(file_metadata)
     # Calculate Crc32, needed for file download
-    Valkyrie::CharacterizeCrc32Job.perform_later(file_metadata.id.to_s)
+    ValkyrieCharacterizeCrc32Job.perform_later(file_metadata.id.to_s)
 
     # Generic file characterization based on FITS applied to the upload's single file
     # Want to run this on all uploads, to get basic file info

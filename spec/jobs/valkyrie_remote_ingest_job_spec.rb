@@ -298,4 +298,37 @@ RSpec.describe ValkyrieRemoteIngestJob do
       expect(@operation).to have_received(:success!)
     end
   end
+
+  # ---------------------------------------------------------------------------
+  # send_error — does not invoke the AF-only after_import_url_failure callback
+  # ---------------------------------------------------------------------------
+  # Hyrax's after_import_url_failure callback calls ImportUrlFailureService#message
+  # → file_set.errors, an AF-only API. ValkyrieRemoteIngestJob skips this callback
+  # entirely and calls @operation.fail! directly.
+  describe "send_error with a Valkyrie FileSet" do
+    let(:remote_url) { 'https://remote.example.com/send-error-compat.ply' }
+    let(:file_info)  { { url: remote_url, file_name: 'model.ply' } }
+    let(:file_set) do
+      Hyrax.persister.save(resource: Hyrax::FileSet.new(
+        depositor: user.user_key,
+        label: 'model.ply',
+        import_url: remote_url
+      ))
+    end
+
+    before do
+      # Drive into send_error via the "user not allowed" branch (scenario 3).
+      # The after_import_url_failure callback is NOT stubbed — it must not be called.
+      allow(file_set).to receive(:is_remote_backed?).and_return(true)
+      allow(file_set).to receive(:has_remote_manifest?).and_return(false)
+      allow(file_set).to receive(:parent).and_return(double(organization_id: []))
+      allow(user).to receive(:can_submit_remote_file?).and_return(false)
+    end
+
+    it "does not invoke the after_import_url_failure callback and marks the operation failed" do
+      expect(Hyrax.config.callback).not_to receive(:run).with(:after_import_url_failure, anything, anything)
+      expect { described_class.perform_now(file_set, file_info) }.not_to raise_error
+      expect(@operation).to have_received(:fail!)
+    end
+  end
 end

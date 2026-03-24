@@ -55,7 +55,7 @@ module Hyrax
     include Hyrax::Schema(:file_set_metadata)
     include Hyrax::Schema(:file_set_extra_metadata)
     include Morphosource::ArResource
-    include Morphosource::ArResourceMembership
+    include Morphosource::ArResourceParentship
     include Morphosource::Works::MimeTypes
 
     def self.model_name(name_class: Hyrax::Name)

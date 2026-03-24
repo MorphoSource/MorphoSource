@@ -70,7 +70,7 @@ RSpec.describe Valkyrie::Storage::ExternalUrl do
         result.read
 
         digest = Digest::SHA256.hexdigest('https://example.com/test-file.txt')
-        expected_path = File.join(working_external_path, "#{digest}.txt")
+        expected_path = File.join(working_external_path, digest, 'test-file.txt')
         expect(File.exist?(expected_path)).to be true
         expect(File.read(expected_path)).to eq('file contents')
       end
@@ -93,7 +93,7 @@ RSpec.describe Valkyrie::Storage::ExternalUrl do
         result = adapter.find_by(id: Valkyrie::ID.new('https://example.com/test-file.txt'))
 
         digest = Digest::SHA256.hexdigest('https://example.com/test-file.txt')
-        expected_path = File.join(working_external_path, "#{digest}.txt")
+        expected_path = File.join(working_external_path, digest, 'test-file.txt')
         expect(result.disk_path.to_s).to eq(expected_path)
       end
     end

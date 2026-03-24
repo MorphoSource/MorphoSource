@@ -117,7 +117,7 @@ RSpec.describe ValkyrieCreateDerivativesJob do
       let(:glb_path) do
         Morphosource::DerivativePath.derivative_path_for_reference(file_set, 'glb')
       end
-      let(:parent_work) { double('parent_work', media_type: ['Mesh'], unit: ['mm']) }
+      let(:parent_work) { double('parent_work', media_type: ['Mesh'], unit: ['mm'], is_remote_backed?: false, remote_manifest_url: nil) }
 
       before do
         set_mime_type(file_metadata, 'application/zip')
@@ -162,7 +162,7 @@ RSpec.describe ValkyrieCreateDerivativesJob do
                                    fixture_path: 'images/ms.jpg')
       end
       let(:file_metadata) { get_file_metadata(file_set) }
-      let(:parent_work) { double('parent_work', thumbnail_id: file_set.id) }
+      let(:parent_work) { double('parent_work', thumbnail_id: file_set.id, is_remote_backed?: false) }
 
       before do
         set_mime_type(file_metadata, 'image/jpeg')

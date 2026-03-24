@@ -463,7 +463,7 @@ RSpec.describe ValkyrieCharacterizationJob do
       it "enqueues CharacterizeCrc32Job with correct parameters" do
         expect {
           described_class.perform_now(file_metadata.id.to_s)
-        }.to have_enqueued_job(Valkyrie::CharacterizeCrc32Job)
+        }.to have_enqueued_job(ValkyrieCharacterizeCrc32Job)
           .with(file_metadata.id.to_s)
       end
     end

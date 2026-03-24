@@ -89,6 +89,13 @@ module Valkyrie
           _inner_io.read(*args)
         end
 
+        def each(chunk_size = 65_536, &block)
+          _inner_io.rewind
+          while (chunk = _inner_io.read(chunk_size))
+            block.call(chunk)
+          end
+        end
+
         def rewind
           _inner_io.rewind
         end

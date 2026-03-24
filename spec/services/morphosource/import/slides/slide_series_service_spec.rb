@@ -3,6 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
+  include ActiveJob::TestHelper
 
   let!(:providers)      { YAML.load_file('config/import/slides/providers.yml') }
   let!(:provider)       { providers.first }
@@ -272,7 +273,8 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
       allow(slide).to receive(:validate_technical_metadata).and_return(true)
     end
     it 'creates a new media' do
-      media = subject.create_new_media
+      media = nil
+      perform_enqueued_jobs { media = subject.create_new_media }
 
       # media permissions
       expect(media.edit_users).to match_array([manager.ms_id])
@@ -308,7 +310,7 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
       expect(media.related_url).to match_array(['http://mczbase.mcz.harvard.edu/media/3823260'])
 
       # file set
-      file_set = media.file_sets.first
+      file_set = media.reload.file_sets.first
       expect(file_set.mime_type_of_remote).to eq('image/tiff')
       expect(file_set.depositor).to eq(manager.ms_id)
       expect(file_set.title).to eq([file_name])

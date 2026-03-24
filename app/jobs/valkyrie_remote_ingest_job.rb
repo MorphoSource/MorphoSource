@@ -193,9 +193,8 @@ class ValkyrieRemoteIngestJob < Hyrax::ApplicationJob
     File.join(Hyrax.config.working_external_path, digest, basename)
   end
 
-  # Fail the operation and run the failure callback.
+  # Fail the operation.
   def send_error(error_message)
-    Hyrax.config.callback.run(:after_import_url_failure, @file_set, @user)
     @operation.fail!(error_message)
   end
 end

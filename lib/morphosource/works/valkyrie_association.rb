@@ -165,6 +165,7 @@ module Morphosource
       #
       # @return [Array<Valkyrie::Resource>]
       def valkyrie_member_of
+        return [] unless id.present?
         Hyrax.query_service.postgres_service.find_inverse_references_by(id: id, property: :member_ids).to_a
       end
 

@@ -150,9 +150,9 @@ RSpec.describe Morphosource::PermissionsHelper, type: :helper do
           media.fileset_accessibility = ['private']
           media.save
         end
-        it 'is restricted' do
+        it 'is private' do
           helper.simple_form_for form, url: '' do |f|
-            expect(helper.download_permission(f)).to eq('restricted')
+            expect(helper.download_permission(f)).to eq('private')
             expect(helper.badge_class(f)).to eq('badge badge-danger')
             expect(helper.human_readable_publication_status(f)).to eq('Private')
           end
@@ -190,12 +190,12 @@ RSpec.describe Morphosource::PermissionsHelper, type: :helper do
       end
       context 'organization download permission is private' do
         before do
-          organization.download_permission = ['restricted']
+          organization.download_permission = ['private']
           organization.save
         end
-        it 'is restricted' do
+        it 'is private' do
           helper.simple_form_for form, url: '' do |f|
-            expect(helper.download_permission(f)).to eq('restricted')
+            expect(helper.download_permission(f)).to eq('private')
             expect(helper.badge_class(f)).to eq('badge badge-danger')
             expect(helper.human_readable_publication_status(f)).to eq('Private')
           end

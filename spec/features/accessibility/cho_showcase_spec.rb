@@ -5,7 +5,7 @@ RSpec.feature "Showcase pages accessibility check", :skiptravis => true, :access
   let(:public)      { Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC }
 
   before do
-   	@test_user = User.create(id: 1, email: "example@email.com", password: "password") 
+   	@test_user = User.create(email: "example@email.com", password: "password") 
     # PO > IE > media 
     # or
     # PO > IE > PE > media (media with absentee parent) 

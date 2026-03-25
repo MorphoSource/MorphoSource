@@ -16,14 +16,9 @@
             <%= presenter.device_organization_institution %>
             </div>
         </div>
-        <%= presenter.attribute_to_html(
-          :device_label,
-          label: 'Model',
-          link: main_app.hyrax_device_path(presenter.device_id),
-          render_as: :showcase_link, include_empty: false, value_per_line: true) %>
         <div class="row">
-            <div class="col-6 showcase-label">Manufacturer</div>
-            <div class="col-6 showcase-value" id="device-title-value"><%= presenter.device_creator&.first %></div>
+            <div class="col-6 showcase-label">Manufacturer &amp; Model</div>
+            <div class="col-6 showcase-value" id="device-title-value"><%= presenter.device_label %></div>
         </div>
         <div class="row">
             <div class="col-6 showcase-label">Modality</div>

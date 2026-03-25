@@ -44,16 +44,19 @@ module Morphosource
 
         def import_slide_series
           Hyrax.config.index_related_works = false
+          collection_media_ids = []
           slides.each do |slide_json|
             @slide = slide_class.new(slide_json)
             @imaging_event = create_new_imaging_event
             @media = create_new_media
+            collection_media_ids << @media.id
             characterize_file unless @slide.metadata_blank?
             create_thumbnail unless @slide.metadata_blank?
             normalize_media if normalize_permissions
             @collection.add_member_objects(@media)
           end
           @specimen.update_index
+          collection_media_ids.each { |id| Media.find(id).update_index }
           @collection.update_index
         end
 
@@ -231,6 +234,13 @@ module Morphosource
             @tempfile.write(chunk)
           end
           @tempfile.rewind
+        end
+
+        # override Morphosource::CustomThumbnails update_thumbnail_id to save the thumbnail_id here.
+        # Morphosource::CustomThumbnails reloads and saves the media record with the correct thumbnail_id; when @media is saved afterwards it overwrites media with the un-updated value.
+        def update_thumbnail_id
+          media.thumbnail_id = media.id
+          media.save
         end
 
         private

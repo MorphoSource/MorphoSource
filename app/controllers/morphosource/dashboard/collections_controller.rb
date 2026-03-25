@@ -57,7 +57,12 @@ module Morphosource
           format.html {
             redirect_to permissions_path, notice: "Remote file submission settings updated" and return if params[:update_remote_file_submission_settings]
 
-            redirect_to helpers.collection_media_path(@collection), notice: t('hyrax.dashboard.my.action.collection_update_success')
+            collection_key = @collection.class.name.underscore
+            notice = t("morphosource.dashboard.collections.#{collection_key}.action.collection_update_success",
+                        default: :'hyrax.dashboard.my.action.collection_update_success',
+                        collection_type: @collection.human_readable_type)
+
+            redirect_to helpers.collection_media_path(@collection), notice: notice
           }
           format.json { render json: @collection, status: :updated, location: helpers.collection_media_path(@collection) }
         end

@@ -31,5 +31,18 @@ RSpec.describe BatchSubmissionTools::Ms2Batch::Models::MediaManifest do
     it 'includes owner' do
       expect(subject.additional_attributes[:owner]).to eq(owner)
     end
+
+    it 'maps publication status private to Hyrax private visibility' do
+      manifest = described_class.new(
+        initial_attrs: {},
+        depositor: depositor.ms_id,
+        owner: owner,
+        media_ownership_fields: { "visibility" => "private" }
+      )
+
+      attrs = manifest.additional_attributes
+      expect(attrs[:visibility]).to eq(Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PRIVATE)
+      expect(attrs[:fileset_accessibility]).to eq("private")
+    end
   end
 end

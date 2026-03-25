@@ -7,5 +7,17 @@ module FreyjaWithWings
     def wings_service
       services.find { |service| service.is_a? Wings::Valkyrie::QueryService }
     end
+
+    def setup_custom_queries
+      super
+
+      postgres_service.custom_queries.register_query_handler(
+        Morphosource::CustomQueries::FindFirstAndLastOfModel
+      )
+
+      wings_service.custom_queries.register_query_handler(
+        Morphosource::CustomQueries::Wings::FindFirstAndLastOfModel
+      )
+    end
   end
 end

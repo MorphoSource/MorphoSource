@@ -23,7 +23,8 @@ end
 require 'active_fedora/cleaner'
 
 require 'valkyrie'
-# require 'storage/hoard'
+Valkyrie::MetadataAdapter.register(Valkyrie::Persistence::Memory::MetadataAdapter.new, :test_adapter)
+
 test_adapter_uploads_path = Rails.root / 'tmp' / 'test_adapter_uploads'
 test_versioned_disk = Valkyrie::Storage::VersionedDisk.new(base_path: test_adapter_uploads_path)
 Valkyrie::StorageAdapter.register(

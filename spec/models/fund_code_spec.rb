@@ -6,6 +6,44 @@ RSpec.describe FundCode do
   it { should have_many(:members) }
   it { should have_many(:fund_code_media_associations) }
   it { should have_many(:charges) }
+  it { should have_many(:data_allocations) }
+
+  describe "data allocation" do
+    let(:creator) { User.create!(email: 'alloc@email.com', password: 'password') }
+
+    context "on creation" do
+      it "creates a data allocation automatically" do
+        fc = FundCode.create!(user: creator, storage_total_gb: 50)
+        expect(fc.data_allocations.count).to eq(1)
+        expect(fc.data_allocations.first.allocation_type).to eq("fund_code")
+        expect(fc.data_allocations.first.storage_total_gb).to eq(50)
+      end
+
+      it "does not create a duplicate if one already exists" do
+        fc = FundCode.create!(user: creator)
+        expect { fc.run_callbacks(:create) }.not_to change { fc.data_allocations.reload.count }
+      end
+
+      it "creates a data allocation with the default storage_total_gb when fund code has none" do
+        fc = FundCode.create!(user: creator)
+        expect(fc.data_allocations.first.storage_total_gb).to eq(Hyrax.config.default_storage_total_gb)
+      end
+    end
+
+    context "on update" do
+      let(:fund_code) { FundCode.create!(user: creator, storage_total_gb: 50) }
+
+      it "syncs storage_total_gb to data allocation when changed" do
+        fund_code.update!(storage_total_gb: 100)
+        expect(fund_code.data_allocations.first.reload.storage_total_gb).to eq(100)
+      end
+
+      it "does not update data allocation when other fields change" do
+        fund_code.update!(title: "New Title")
+        expect(fund_code.data_allocations.first.reload.storage_total_gb).to eq(50)
+      end
+    end
+  end
 
   describe "instance" do
     let(:creator) { User.create(email: 'admin@email.com', password: 'password')}

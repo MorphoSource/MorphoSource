@@ -9,6 +9,8 @@ class FundCode < ApplicationRecord
   mount_uploaders :attachments, FundCodeAttachmentUploader
 
   before_save :set_total_and_remaining, :set_storage_remaining
+  after_create  :create_data_allocation_if_needed
+  after_update  :sync_data_allocation_storage_total
 
   def add_user(user, manager = false)
     return nil if fund_code_memberships.where(user_id: user.id).present?
@@ -45,6 +47,19 @@ class FundCode < ApplicationRecord
 
   def media
     media_ids.map { |m_id| Media.find(m_id) if Media.exists?(m_id) }.compact
+  end
+
+  def create_data_allocation_if_needed
+    return if data_allocations.exists?
+    data_allocations.create!(
+      allocation_type: :fund_code,
+      storage_total_gb: storage_total_gb
+    )
+  end
+
+  def sync_data_allocation_storage_total
+    return unless saved_change_to_storage_total_gb?
+    data_allocations.update_all(storage_total_gb: storage_total_gb)
   end
 
   def set_total_and_remaining

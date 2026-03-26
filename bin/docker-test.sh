@@ -25,7 +25,7 @@ case "$TEST_GROUP" in
   4)
     # Run test set 4
     echo "Running test group 4: presenters, renderers, routing, search_builders, services, tasks, views, vocabularies"
-    bundle exec rspec spec/presenters spec/renderers spec/routing spec/search_builders spec/services spec/tasks spec/views spec/vocabularies --fail-fast
+    bundle exec rspec spec/presenters spec/renderers spec/routing spec/search_builders spec/services spec/tasks spec/views spec/vocabularies --fail-fast --format documentation
     ;;
   *)
     # Fallback: Run all tests or a default set

@@ -4,6 +4,14 @@ require 'rails_helper'
 RSpec.describe ValkyrieCreateDerivativesJob do
   before do
     ActiveJob::Base.queue_adapter = :test
+
+    # Stub the Lightbox HTTP call so tests pass without a running lightbox service.
+    # process_file is the RestClient boundary; we write a minimal file to out_path
+    # so that post_process (which checks existence and size) still runs for real.
+    allow_any_instance_of(Morphosource::Derivatives::Lightbox).to receive(:process_file) do |lightbox|
+      File.binwrite(lightbox.out_path, "stub-thumbnail")
+      200
+    end
   end
 
   # Helper: get the original FileMetadata for a file_set

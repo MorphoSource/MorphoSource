@@ -1,143 +1,170 @@
 // code for handling site-wide modals
 
-document.addEventListener("DOMContentLoaded", () => {
+function initSitewideModals() {
+  if (document.body.classList.contains("modal-config")) return;
 
-    const modal1 = document.getElementById("sitewide-modal");
-    const modal2 = document.getElementById("sitewide-modal-2");
+  const modal1 = document.getElementById("sitewide-modal");
+  const modal2 = document.getElementById("sitewide-modal-2");
 
-    function openModal(modal) {
-      if (modal) {
-        // Create overlay
-        const overlay = document.createElement("div");
-        overlay.classList.add("modal-overlay");
-        overlay.id = "modal-overlay";
-        document.body.appendChild(overlay);
+  const downloadForm = document.getElementById("download-form");
+  const downloadModal = document.getElementById("download-modal");
+  const downloadModal2 = document.getElementById("download-modal-2");
 
-        modal.style.display = "block";
-        modal.setAttribute("aria-hidden", "false");
-      }
+  function ensureOverlay() {
+    let overlay = document.getElementById("modal-overlay");
+    if (!overlay) {
+      overlay = document.createElement("div");
+      overlay.classList.add("modal-overlay");
+      overlay.id = "modal-overlay";
+      document.body.appendChild(overlay);
     }
+    return overlay;
+  }
 
-    function closeModal(modal) {
-      if (modal) {
-        document.activeElement.blur();
-        modal.style.display = "none";
-        modal.setAttribute("aria-hidden", "true");
-        document.body.classList.remove("modal-open");
+  function anyModalOpen() {
+    return !!document.querySelector('.configured-modal[aria-hidden="false"]');
+  }
 
-        // Remove overlay if it exists
-        const overlay = document.getElementById("modal-overlay");
-        if (overlay) overlay.remove();
-      }
+  function removeOverlayIfNoneOpen() {
+    if (!anyModalOpen()) {
+      document.getElementById("modal-overlay")?.remove();
+      document.body.classList.remove("modal-open");
     }
+  }
 
-    // Start with modal1 open
-    openModal(modal1);
+  function openModal(modal) {
+    if (!modal) return;
+    ensureOverlay();
+    modal.removeAttribute("hidden");
+    modal.setAttribute("aria-hidden", "false");
+    modal.style.display = "block";
+    document.body.classList.add("modal-open");
+  }
 
-    // For pages that have a download form, open modal1 after form submission
-    const downloadForm = document.getElementById("download-form");
-    const downloadModal = document.getElementById("download-modal");
-    const downloadModal2 = document.getElementById("download-modal-2");
+  function closeModal(modal) {
+    if (!modal) return;
+    modal.setAttribute("aria-hidden", "true");
+    modal.style.display = "none";
+    // Remove overlay only if no other configured modal is open
+    removeOverlayIfNoneOpen();
+  }
 
-    if (downloadForm) {
-      downloadForm.addEventListener("submit", () => {
-        setTimeout(() => {
-          openModal(downloadModal);
-        }, 500);
-      });
-    }
+  // force everything hidden
+  [modal1, modal2, downloadModal, downloadModal2].forEach((m) => {
+    if (!m) return;
+    m.setAttribute("aria-hidden", "true");
+    m.style.display = "none";
+  });
 
-    // Attach click listeners to document (event delegation)
-    document.body.addEventListener("click", function (e) {
-      const target = e.target;
+  // Start with modal1 open
+  openModal(modal1);
 
-      if (target.matches(".maybe-later") || target.matches(".already-donated")) {
-        e.preventDefault();
-        closeModal(modal1);
-        closeModal(downloadModal);
-      }
-
-      if (target.closest("#sitewide-modal") && target.matches(".no-thanks")) {
-        e.preventDefault();
-        closeModal(modal1);
-        if (modal2) {
-          openModal(modal2);
-        }
-      }
-
-      if (target.matches("#download-modal .no-thanks")) {
-        e.preventDefault();
-        closeModal(downloadModal);
-        if (downloadModal2) {
-          openModal(downloadModal2);
-        }
-      }
-
-      if (target.matches("#sitewide-modal .not-now")) {
-        e.preventDefault();
-        closeModal(modal1);
-      }
-
-      if (target.matches("#sitewide-modal-2 .not-now")) {
-        e.preventDefault();
-        closeModal(modal2);
-      }
-
-      if (target.matches("#download-modal .not-now")) {
-        e.preventDefault();
-        closeModal(downloadModal);
-      }
-
-      if (target.matches("#download-modal-2 .not-now")) {
-        e.preventDefault();
-        closeModal(downloadModal2);
-      }
-
-      if (target.matches("#closeModal2")) {
-        e.preventDefault();
-        closeModal(modal2);
-        closeModal(downloadModal2);
-      }
+  // After download form submission, open download modal
+  if (downloadForm) {
+    downloadForm.addEventListener("submit", () => {
+      setTimeout(() => openModal(downloadModal), 500);
     });
+  }
 
-    // Escape key handling
-    document.addEventListener("keydown", function (e) {
-      if (e.key === "Escape") {
-        if (modal1 && modal1.style.display === "block") {
-          closeModal(modal1);
-          if (modal2) openModal(modal2);
-        } else if (modal2 && modal2.style.display === "block") {
-          closeModal(modal2);
-        } else if (downloadModal && downloadModal.style.display === "block") {
-          closeModal(downloadModal);
-        } else if (downloadModal2 && downloadModal2.style.display === "block") {
-          closeModal(downloadModal2);
-        }
-      }
-    });
+  // Attach click listeners to document (event delegation)
+  document.body.addEventListener("click", function (e) {
+    const maybeLater = e.target.closest("a.maybe-later");
+    const alreadyDonated = e.target.closest("a.already-donated");
+    const noThanksSite1 = e.target.closest("#sitewide-modal a.no-thanks");
+    const notNowSite2 = e.target.closest("#sitewide-modal-2 a.not-now");
+    const notNowSite1 = e.target.closest("#sitewide-modal a.not-now");
 
-    // Click outside to close modal2 only
-    if (modal2 || downloadModal2) {
-      var modal = (modal2 || downloadModal2);
-      modal.addEventListener("click", (e) => {
-        closeModal(modal);
-      });
+    const noThanksDownload = e.target.closest("#download-modal a.no-thanks");
+    const noThanksDownload2 = e.target.closest("#download-modal-2 a.no-thanks");
+    const notNowDownload = e.target.closest("#download-modal a.not-now");
+    const notNowDownload2 = e.target.closest("#download-modal-2 a.not-now");
+
+    if (maybeLater || alreadyDonated) {
+      e.preventDefault();
+      closeModal(modal1);
+      closeModal(downloadModal);
+      closeModal(downloadModal2);
+      return;
     }
+    if (noThanksSite1) {
+      e.preventDefault();
+      closeModal(modal1);
+      openModal(modal2);
+      return;
+    }
+    if (notNowSite1) {
+      e.preventDefault();
+      closeModal(modal1);
+      return;
+    }
+    if (notNowSite2) {
+      e.preventDefault();
+      closeModal(modal2);
+      return;
+    }
+    if (noThanksDownload) {
+      e.preventDefault();
+      closeModal(downloadModal);
+      openModal(downloadModal2);
+      return;
+    }
+    if (notNowDownload) {
+      e.preventDefault();
+      closeModal(downloadModal);
+      return;
+    }
+    if (noThanksDownload2) {
+      e.preventDefault();
+      closeModal(downloadModal2);
+      return;
+    }
+    if (notNowDownload2) {
+      e.preventDefault();
+      closeModal(downloadModal2);
+      return;
+    }
+  });
 
-    document.addEventListener("ajax:success", function (e) {
-      const target = e.target;
-      const siteModal = document.getElementById("sitewide-modal");
-      const downModal = document.getElementById("download-modal");
+  // Escape key handling
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Escape") return;
 
-      if (target.classList.contains("already-donated") || target.classList.contains("maybe-later")) {
+    if (modal1?.getAttribute("aria-hidden") === "false") {
+      closeModal(modal1);
+      if (modal2) openModal(modal2);
+      return;
+    }
+    if (modal2?.getAttribute("aria-hidden") === "false") {
+      closeModal(modal2);
+      return;
+    }
+    if (downloadModal?.getAttribute("aria-hidden") === "false") {
+      closeModal(downloadModal);
+      return;
+    }
+    if (downloadModal2?.getAttribute("aria-hidden") === "false") {
+      closeModal(downloadModal2);
+      return;
+    }
+  });
 
-        if (siteModal) {
-          siteModal.style.display = "none";
-          siteModal.setAttribute("aria-hidden", "true");
-        } else if (downModal) {
-          downModal.style.display = "none";
-          downModal.setAttribute("aria-hidden", "true");
-        }
-      }
+  [modal2, downloadModal2].filter(Boolean).forEach((m) => {
+    m.addEventListener("click", (e) => {
+      if (e.target === m) closeModal(m);
     });
   });
+
+  document.addEventListener("ajax:success", function (e) {
+    const link = e.target.closest("a.already-donated, a.maybe-later");
+    if (!link) return;
+
+    const parentModal = link.closest("#sitewide-modal, #download-modal");
+    if (!parentModal) return;
+
+    closeModal(parentModal);
+  });
+
+}
+
+document.addEventListener("turbo:load", initSitewideModals);
+document.addEventListener("DOMContentLoaded", initSitewideModals);

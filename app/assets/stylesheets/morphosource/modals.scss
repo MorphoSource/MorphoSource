@@ -31,6 +31,14 @@
   }
 }
 
+.configured-modal[aria-hidden="true"] {
+  display: none !important;
+}
+
+.configured-modal[aria-hidden="false"] {
+  display: block !important;
+}
+
 #sitewide-modal-2,
 #download-modal-2 {
   background-color: unset;

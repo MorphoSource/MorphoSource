@@ -62,5 +62,170 @@ class ImagingEventResource < Hyrax::Work
   include Hyrax::Schema(:imaging_event_resource)
   include Morphosource::ValkyrieWorkBehavior
 
+  # ToDoValk: Morphosource::ParentChildValidator uses record.works and
+  # record.valid_child_concerns which are not available on Valkyrie resources.
+  validates_with ImagingEventResourceParentDeviceModalityValidator
+
+  def description_uploader
+    @description_uploader ||= ImagingEventDescriptionAttachmentUploader.new.tap { |u| u.work_id = id.to_s }
+  end
+
+  def description_attachment=(file)
+    if file.nil?
+      # delete attachment
+      return unless self.description_attachment_url.present?
+      file_name = File.basename(self.description_attachment_url.first)
+      description_uploader.retrieve_from_store!(file_name)
+      if description_uploader.file.present? && File.exist?(description_uploader.file.path)
+        Rails.logger.info "Deleting file: #{description_uploader.file.path}"
+        description_uploader.remove!
+      else
+        Rails.logger.warn "File not found: #{description_uploader.file&.path}"
+      end
+      self.description_attachment_url = []
+      self.save
+    else
+      # add attachment
+      extension = File.extname(file.original_filename).downcase
+      if description_attachment_formats.include?(extension)
+        description_uploader.store!(file)
+        self.description_attachment_url = [description_uploader.url]
+        self.save
+      else
+        raise ArgumentError, "Invalid file format: #{extension}"
+      end
+    end
+  end
+
+  def description_attachment
+    self.description_attachment_url.first
+  end
+
+  def description_attachment_formats
+    @description_attachment_formats ||= Morphosource.attachment_formats
+  end
+
+  def reference_uploader
+    @reference_uploader ||= ImagingEventReferenceAttachmentUploader.new.tap { |u| u.work_id = id.to_s }
+  end
+
+  def reference_attachment=(file)
+    if file.nil?
+      # delete attachment
+      return unless self.reference_attachment_url.present?
+      file_name = File.basename(self.reference_attachment_url.first)
+      reference_uploader.retrieve_from_store!(file_name)
+      if reference_uploader.file.present? && File.exist?(reference_uploader.file.path)
+        Rails.logger.info "Deleting file: #{reference_uploader.file.path}"
+        reference_uploader.remove!
+      else
+        Rails.logger.warn "File not found: #{reference_uploader.file&.path}"
+      end
+      self.reference_attachment_url = []
+      self.save
+    else
+      # add attachment
+      extension = File.extname(file.original_filename).downcase
+      if reference_attachment_formats.include?(extension)
+        reference_uploader.store!(file)
+        self.reference_attachment_url = [reference_uploader.url]
+        self.save
+      else
+        raise ArgumentError, "Invalid file format: #{extension}"
+      end
+    end
+  end
+
+  def reference_attachment
+    self.reference_attachment_url.first
+  end
+
+  def reference_attachment_formats
+    @reference_attachment_formats ||= Morphosource.reference_attachment_formats
+  end
+
+  def device
+    Hyrax.query_service.find_by(id: Valkyrie::ID.new(device_id.first))
+  end
+
+  # ToDoValk: only checks direct members; should recurse into descendants like
+  # ImagingEvent#media does. Update when descendant traversal is supported for
+  # Valkyrie resources.
+  def media
+    members.select { |m| m.is_a?(Media) || ('MediaResource'.safe_constantize && m.is_a?('MediaResource'.safe_constantize)) }
+  end
+
+  def objects
+    Array(physical_object_id).filter_map do |id|
+      Hyrax.query_service.find_by(id: Valkyrie::ID.new(id))
+    rescue Valkyrie::Persistence::ObjectNotFoundError
+      nil
+    end
+  end
+
+  # Valkyrie does not support AR-style before_create/before_update/after_save
+  # callbacks. We override save to run the filters before persisting and to
+  # apply the IE prefix post-persist (the id is not available until after the
+  # persister runs). The second save for the title prefix only occurs when the
+  # prefix is absent (i.e. on first save or if the prefix was somehow lost).
+  def save(**opts)
+    controlled_value_filter
+    date_filter
+    result = super
+    return result unless result
+    unless title.first.to_s.start_with?("IE#{id}: ")
+      add_id_to_title
+      result = Hyrax.persister.save(resource: self)
+      Hyrax.index_adapter.save(resource: result)
+    end
+    result
+  end
+
+  private
+
+    def add_id_to_title
+      self.title = ["IE#{id}: #{title.first.to_s}"]
+    end
+
+    def controlled_value_filter
+      controlled_attributes.each do |attr, service|
+        self.send(attr.to_s+"=", self.send(attr).collect { |e| e ? service.controlled_value(e.strip) : e })
+      end
+    end
+
+    # Valkyrie resources do not support _changed? dirty tracking, so the date
+    # format is applied unconditionally (the operation is idempotent).
+    def date_filter
+      date_attributes_for_filter.each do |attr|
+        str = self.send(attr)&.first
+        case str
+        when /^(\d{4})[\-\/](\d{1,2})[\-\/](\d{1,2})$/
+          str = $1 + "-" + $2.rjust(2, "0") + "-" + $3.rjust(2, "0") if Date.valid_date? $1.to_i, $2.to_i, $3.to_i
+        when /^(\d{1,2})[\-\/](\d{1,2})[\-\/](\d{4})$/
+          str = $3 + "-" + $1.rjust(2, "0") + "-" + $2.rjust(2, "0") if Date.valid_date? $3.to_i, $1.to_i, $2.to_i
+        when nil
+          str = ''
+        else
+          # leave str as it is
+        end
+        self.send(attr.to_s+"=", [str])
+      end
+    end
+
+    def date_attributes_for_filter
+      [ :date_created ]
+    end
+
+    def controlled_attributes
+      {
+        :pixel_spacing_calibration => Morphosource::PixelSpacingCalibrationService.new,
+        :target_type => Morphosource::TargetTypesService.new,
+        :detector_type => Morphosource::DetectorTypesService.new,
+        :detector_configuration => Morphosource::DetectorConfigurationService.new,
+        :acquisition_type => Morphosource::AcquisitionTypesService.new,
+        :focal_length_type => Morphosource::FocalLengthTypesService.new,
+        :light_source => Morphosource::LightSourceService.new
+      }
+    end
 
 end

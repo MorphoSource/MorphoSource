@@ -12,7 +12,7 @@ USER app
 COPY --chmod=0775 --chown=1001:0 $APP_PATH/Gemfile $RAILS_ROOT/Gemfile
 COPY --chmod=0775 --chown=1001:0 $APP_PATH/Gemfile.lock $RAILS_ROOT/Gemfile.lock
 RUN --mount=type=cache,uid=1001,gid=0,target=/tmp/bundler-cache \
-    bundle install --jobs "$(nproc)" --cache-path /tmp/bundler-cache
+    BUNDLE_USER_CACHE=/tmp/bundler-cache bundle install --jobs "$(nproc)"
 
 COPY --chmod=0775 --chown=1001:0 $APP_PATH/package.json $RAILS_ROOT/package.json
 COPY --chmod=0775 --chown=1001:0 $APP_PATH/yarn.lock $RAILS_ROOT/yarn.lock
@@ -35,7 +35,7 @@ USER app
 COPY --chmod=0775 --chown=1001:0 $APP_PATH/Gemfile $RAILS_ROOT/Gemfile
 COPY --chmod=0775 --chown=1001:0 $APP_PATH/Gemfile.lock $RAILS_ROOT/Gemfile.lock
 RUN --mount=type=cache,uid=1001,gid=0,target=/tmp/bundler-cache \
-    bundle install --jobs "$(nproc)" --without development --cache-path /tmp/bundler-cache
+    BUNDLE_USER_CACHE=/tmp/bundler-cache bundle install --jobs "$(nproc)" --without development
 
 COPY --chmod=0775 --chown=1001:0 $APP_PATH/package.json $RAILS_ROOT/package.json
 COPY --chmod=0775 --chown=1001:0 $APP_PATH/yarn.lock $RAILS_ROOT/yarn.lock

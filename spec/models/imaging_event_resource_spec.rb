@@ -10,6 +10,56 @@ RSpec.describe ImagingEventResource do
 
   # it_behaves_like 'a Hyrax::Work'
 
+  describe ImagingEventResourceParentDeviceModalityValidator do
+    let(:device) { Device.create(title: ['device'], modality: ['Photogrammetry']) }
+
+    subject do
+      ImagingEventResource.new(
+        title: ['test'],
+        device_id: [device.id],
+        ie_modality: device.modality
+      )
+    end
+
+    it 'is valid with a valid device_id and matching modality' do
+      expect(subject).to be_valid
+    end
+
+    context 'missing device_id' do
+      it 'is not valid' do
+        subject.device_id = []
+        expect(subject).not_to be_valid
+        expect(subject.errors[:device_id]).to eq(["device_id is missing"])
+      end
+    end
+
+    context 'device_id does not exist' do
+      it 'is not valid' do
+        subject.device_id = ['nonexistent-id']
+        expect(subject).not_to be_valid
+        expect(subject.errors[:device_id]).to eq(["A device with id: nonexistent-id does not exist."])
+      end
+    end
+
+    context 'missing ie_modality' do
+      it 'is not valid' do
+        subject.ie_modality = []
+        expect(subject).not_to be_valid
+        expect(subject.errors[:ie_modality]).to eq(["ie_modality is missing"])
+      end
+    end
+
+    context "ie_modality doesn't match device modality" do
+      let(:modality) { 'Image' }
+
+      it 'is not valid' do
+        subject.ie_modality = [modality]
+        expect(subject).not_to be_valid
+        expect(subject.errors[:ie_modality]).to eq(["Imaging Event modality \"#{modality}\" does not match parent device modality: #{device.modality.join(', ')}"])
+      end
+    end
+  end
+
   context 'includes schema defined metadata' do
     it { is_expected.to respond_to(:acquisition_type) }
     it { is_expected.to respond_to(:amperage) }

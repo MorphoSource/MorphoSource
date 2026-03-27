@@ -1,6 +1,6 @@
 # MorphoSource_SF 
 
-MorphoSource is a digital repository for 3D, 2D, and AV media content representing physical objects of scholarly relevance, with specific support for biological specimen objects, built from and on top of [Hyrax 2.9](https://github.com/samvera/hyrax). 
+MorphoSource is a digital repository for 3D, 2D, and AV media content representing physical objects of scholarly relevance, with specific support for biological specimen objects, built from and on top of [Hyrax 2.9](https://github.com/samvera/hyrax).
 
 ## Technical stack
 

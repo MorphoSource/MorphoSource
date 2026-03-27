@@ -14,6 +14,7 @@ module Morphosource
     autoload :Processors
 
     autoload :Alembic
+    autoload :Assimp
     autoload :Blender
     autoload :CompressZip
     autoload :Dcmcjpeg
@@ -29,6 +30,7 @@ module Morphosource
     autoload :Lightbox
     autoload :Obj2gltf
     autoload :Pymeshlab
+    autoload :Trimesh
 
     def self.blender_path
       Hyrax.config.blender_path

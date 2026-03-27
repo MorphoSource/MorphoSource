@@ -136,6 +136,7 @@ RSpec.describe Media do
         "ReflectanceTransformationImaging" => "Reflectance Transformation Imaging",
         "Photography" => "Photography",
         "ScanningElectronMicroscopy" => "Scanning Electron Microscopy",
+        "TransmissionElectronMicroscopy" => "Transmission Electron Microscopy",
         "BornDigital" => "Born Digital",
         "XRay" => "X-Ray",
         "LaserAidedProfiling" => "Laser Aided Profiling",

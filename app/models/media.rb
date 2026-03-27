@@ -624,7 +624,10 @@ class Media < Morphosource::Works::Base
 
     # Publish object.deleted event when media is destroyed
     def publish_destroyed_event
-      Hyrax.publisher.publish('object.deleted', object: self, user: User.find_by_user_key(Hyrax.config.system_user_key))
+      event_user = User.find_by_user_key(Hyrax.config.system_user_key) || User.find_by_user_key(depositor)
+      return if event_user.nil?
+
+      Hyrax.publisher.publish('object.deleted', object: self, user: event_user)
     end
 
     def date_attributes_for_filter

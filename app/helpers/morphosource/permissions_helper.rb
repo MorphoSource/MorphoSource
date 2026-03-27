@@ -75,21 +75,21 @@ module Morphosource
     def download_permission(f)
       case form_model_name(f)
       when 'organization'
-        f.object.download_permission
+        normalized_download_permission(f.object.download_permission)
       when 'organization_collection'
-        f.object.download_permission
+        normalized_download_permission(f.object.download_permission)
       when 'media'
         media_download_permission(f.object)
       end
     end
 
     def badge_class(f)
-      case download_permission(f)
+      case normalized_download_permission(download_permission(f))
       when 'open'
         'badge badge-success'
       when 'restricted_download'
         'badge badge-info'
-      when 'restricted'
+      when 'private'
         'badge badge-danger'
       end
     end
@@ -102,17 +102,17 @@ module Morphosource
       when 'restricted'
         'restricted_download'
       when 'private'
-        'restricted'
+        'private'
       end
     end
 
     def human_readable_publication_status(f)
-      case download_permission(f)
+      case normalized_download_permission(download_permission(f))
       when 'open'
         'Open Download'
       when 'restricted_download'
         'Restricted Download'
-      when 'restricted'
+      when 'private'
         'Private'
       end
     end
@@ -126,6 +126,13 @@ module Morphosource
       when 'media'
         "<input type='hidden' id= 'media_download_permission' name='media[visibility]' class='download-permission' value= #{download_permission(f)} >".html_safe
       end
+    end
+
+    private
+
+    def normalized_download_permission(value)
+      value = Array(value).first
+      value == 'restricted' ? 'private' : value
     end
   end
 end

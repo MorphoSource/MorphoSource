@@ -309,11 +309,11 @@ module BatchSubmissionTools
               if cell_value(current_row, field_column("media.raw_or_derived")).downcase == "raw"
                 error_msg = "A value cannot be present in media.parent_ms_id if media.raw_or_derived value is set to 'Raw'."
               else
-                ms_parent_media = Media.where(id:pad(val.to_s))&.first
+                ms_parent_media = parent_media_for_row(current_row)
                 if ms_parent_media.present?
                   if (bso_ms_id = pad(cell_value(current_row, field_column("biological_specimen.ms_id")))).present?
-                    if (ms_parent_media.specimens.present?) && (ms_parent_media.specimens.first.id != bso_ms_id)
-                      error_msg = "media.parent_ms_id: parent media's specimen id #{ms_parent_media.specimens.first.id} does not match the biological_specimen.ms_id #{bso_ms_id}"
+                    if (ms_parent_media.physical_object_id.present?) && (ms_parent_media.physical_object_id.first != bso_ms_id)
+                      error_msg = "media.parent_ms_id: parent media's specimen id #{ms_parent_media.physical_object_id.first} does not match the biological_specimen.ms_id #{bso_ms_id}"
                     end
                   end
                 else
@@ -355,7 +355,7 @@ module BatchSubmissionTools
         when "biological_specimen.ms_id"
           if val.present?
             val = pad(val.to_s)
-            if (b = BiologicalSpecimen.where(id:val)&.first).present?
+            if (b = specimen_for_row(current_row)).present?
               org_for_row = organization_for_row(current_row)
               if !org_for_row.present?
                 error_msg = "biological_specimen.ms_id: No organization information provided, can not evaluate existing biological specimen."
@@ -385,12 +385,14 @@ module BatchSubmissionTools
               warn_msg += "The following fields are ignored since biological_specimen.ms_id exists: " + ignored_values.join(', ')
             end
           else
-            if !cell_value(current_row, field_column("biological_specimen.occurrence_id")).present? &&
-              !cell_value(current_row, field_column("biological_specimen.institution_code")).present? &&
-              !cell_value(current_row, field_column("biological_specimen.collection_code")).present? &&
-              !cell_value(current_row, field_column("biological_specimen.catalog_number")).present?
-
-              error_msg = "One of the following must have a value: biological_specimen.ms_id, biological_specimen.occurrence_id, biological_specimen.institution_code, biological_specimen.collection_code, and biological_specimen.catalog_number."
+            if (
+                !parent_media_for_row(current_row).present? &&
+                !cell_value(current_row, field_column("biological_specimen.occurrence_id")).present? &&
+                !cell_value(current_row, field_column("biological_specimen.institution_code")).present? &&
+                !cell_value(current_row, field_column("biological_specimen.collection_code")).present? &&
+                !cell_value(current_row, field_column("biological_specimen.catalog_number")).present?
+            )
+              error_msg = "One of the following must have a value: biological_specimen.ms_id, biological_specimen.occurrence_id, biological_specimen.institution_code, biological_specimen.collection_code, biological_specimen.catalog_number, or media.parent_ms_id."
             end
           end
         when "biological_specimen.institution_code"
@@ -418,7 +420,7 @@ module BatchSubmissionTools
                 error_msg = error_by_type(field_name, val)
               else
                 # no need to check the values if they should not be present
-                error_msg = "#{field_name}: Value should not be present when modality #{modality} is pre-selected."
+                error_msg = "#{field_name}: Value should not be present when modality #{m} is pre-selected."
               end
             end
           else
@@ -760,50 +762,9 @@ module BatchSubmissionTools
       end
 
       def modality_mapped(m)
-        case m
-        when 'MicroNanoXRayComputedTomography'
-          'ct'
-        when 'MagneticResonanceImaging'
-          'MRI'
-        when 'PositronEmissionTomography'
-          'PET'
-        when 'SinglePhotonEmissionComputedTomography'
-          'SPECT'
-        when 'NeutronComputedTomography'
-          'NCT'
-        when 'SynchrotronImaging'
-          'Synchro'
-        when 'NeutrinoImaging'
-          'Neutrino'
-        when 'Photogrammetry'
-          'photogrammetry'
-        when 'StructuredLight'
-          'StrLight'
-        when 'LaserScan'
-          'Laser'
-        when 'ConfocalImageStacking'
-          'Confocal'
-        when 'LightSheetFluorescenceMicroscopy'
-          'LSFM'
-        when 'Infrared'
-          'Infrared'
-        when 'ReflectanceTransformationImaging'
-          'RTI'
-        when 'Photography'
-          'photography'
-        when 'ScanningElectronMicroscopy'
-          'SEM'
-        when 'BornDigital'
-          'BD'
-        when 'XRay'
-          'XRay'
-        when 'LaserAidedProfiling'
-          'LAP'
-        when 'Video'
-          'Video'
-        else
-          'Etc'
-        end
+        return 'Neutrino' if m == 'NeutrinoImaging'
+
+        Morphosource::ModalitiesService.field_prefix(m)
       end
 
       def cell_value(row_num, col_num)
@@ -818,18 +779,22 @@ module BatchSubmissionTools
       # if parent media ID is specified for the row, return SolrDocument for parent media, else return nil
       def parent_media_for_row(row_num)
         if (parent_ms_id = cell_value(row_num, field_column("media.parent_ms_id"))).present?
-          if (parent_media_solr = SolrDocument.find(pad(parent_ms_id))).present?
-            return parent_media_solr
-          end 
+          begin
+            return SolrDocument.find(pad(parent_ms_id))
+          rescue Blacklight::Exceptions::RecordNotFound
+            return nil
+          end
         end
         return nil
       end
 
       # if specimen ID is specified for the row, return SolrDocument for the specimen, else return nil
       def specimen_for_row(row_num)
-        if (bso_ms_id = pad(cell_value(row_num, field_column("biological_specimen.ms_id")))).present?
-          if (specimen_solr = SolrDocument.find(pad(bso_ms_id))).present?
-            return specimen_solr
+        if (bso_ms_id = cell_value(row_num, field_column("biological_specimen.ms_id"))).present?
+          begin
+            return SolrDocument.find(pad(bso_ms_id))
+          rescue Blacklight::Exceptions::RecordNotFound
+            return nil
           end
         end
         return nil
@@ -857,7 +822,7 @@ module BatchSubmissionTools
 
       # Return file-level modality or, for experimental multi-device multi-org files, return row-level modality
       def modality_for_row(row_num)
-        return modality if modality.present?  # return modality from batch submission form 
+        return modality if modality.present?  # return modality from batch submission form
 
         # return device modality if device has only one modality
         # otherwise return cell value from experimental.device_modality
@@ -865,7 +830,7 @@ module BatchSubmissionTools
           return device_for_row(row_num).modality.first
         else
           return cell_value(row_num, field_column("experimental.device_modality"))
-        end        
+        end
       end
 
       # Return file-level organization or, for experimental multi-device multi-org files, return row-level organization
@@ -875,9 +840,9 @@ module BatchSubmissionTools
         else
           # if parent media is present, get organization from parent media
           # or if biological specimen is present, get organization from biological specimen
-          # otherwise, get organization from experimental.organization_id 
+          # otherwise, get organization from experimental.organization_id
           if parent_media_for_row(row_num).present?
-            org_id = parent_media_for_row(row_num)["media_organization_id_ssim"]&.first 
+            org_id = parent_media_for_row(row_num)["media_organization_id_ssim"]&.first
           elsif specimen_for_row(row_num).present?
             org_id = specimen_for_row(row_num)["organization_id_ssim"]&.first
           else

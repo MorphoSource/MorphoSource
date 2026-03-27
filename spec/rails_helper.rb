@@ -104,6 +104,10 @@ RSpec.configure do |config|
   config.include Devise::Test::ControllerHelpers, :type => :controller
   config.include TestHelpers
 
+  config.before(:suite) do
+    User.find_or_create_system_user(Hyrax.config.system_user_key)
+  end
+
   config.before(:each) do
     clean_active_fedora_repository
 

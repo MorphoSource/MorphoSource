@@ -675,6 +675,14 @@ module Hyrax
         ActiveModel::Type::Boolean.new.cast(ENV.fetch('VALKYRIE_TRANSITION', false))
     end
 
+    # When true, use S3/object storage (via valkyrie-shrine) instead of local VersionedDisk
+    attr_writer :use_valkyrie_object_storage
+    attr_reader :use_valkyrie_object_storage
+    def use_valkyrie_object_storage?
+      @use_valkyrie_object_storage ||=
+        ActiveModel::Type::Boolean.new.cast(ENV.fetch('VALKYRIE_OBJECT_STORAGE', false))
+    end
+
     attr_writer :max_days_between_fixity_checks
     def max_days_between_fixity_checks
       @max_days_between_fixity_checks ||= 7

@@ -3,6 +3,7 @@
 
 require 'freyja_with_wings/metadata_adapter'
 require 'freyja_with_wings/persister'
+require 'shrine/storage/s3'
 
 # Freyja setup adapted from Hyrax dassie and thereby from hyku
 if Hyrax.config.valkyrie_transition?
@@ -37,12 +38,30 @@ if Hyrax.config.valkyrie_transition?
         find_last_of_model: :find_single_or_nil
       )
 
+    primary_storage = if Hyrax.config.use_valkyrie_object_storage?
+      s3_config = YAML.safe_load(ERB.new(File.read(Rails.root.join('config', 's3.yml'))).result,
+                                 permitted_classes: [Symbol])[Rails.env]
+      Valkyrie::Storage::Shrine.new(
+        Shrine::Storage::S3.new(
+          bucket:            s3_config['bucket'],
+          region:            s3_config['region'],
+          access_key_id:     s3_config['access_key_id'],
+          secret_access_key: s3_config['secret_access_key'],
+          endpoint:          s3_config['endpoint'],
+          force_path_style:  s3_config['force_path_style'],
+          public:            s3_config['public']
+        )
+      )
+    else
+      Valkyrie::Storage::VersionedDisk.new(
+        base_path: Rails.root.join("storage", "files"),
+        file_mover: FileUtils.method(:cp)
+      )
+    end
+
     Valkyrie::StorageAdapter.register(
       Valkyrie::Storage::Hoard.new(services: [
-        Valkyrie::Storage::VersionedDisk.new(
-          base_path: Rails.root.join("storage", "files"),
-          file_mover: FileUtils.method(:cp)
-        ),
+        primary_storage,
         Valkyrie::Storage::ExternalUrl.new
       ]),
       :hoard

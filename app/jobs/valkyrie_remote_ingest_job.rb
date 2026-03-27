@@ -128,6 +128,11 @@ class ValkyrieRemoteIngestJob < Hyrax::ApplicationJob
 
   # Registers the remote URL with ValkyrieUpload for remote-backed FileSets.
   # io is intentionally nil — ExternalUrl storage ignores it and reads from the URL.
+  #
+  # skip_derivatives is true when the FileSet has a remote manifest (scenario 4):
+  # the slide series service handles characterization itself; standard characterization
+  # and derivatives jobs must not run because they would attempt to download the
+  # potentially very large remote file.
   def upload_remote_backed(uri)
     cache_path = external_url_local_path(uri.to_s)
     if File.exist?(cache_path) # only compute digest/e_tag when local cache copy exists
@@ -140,7 +145,8 @@ class ValkyrieRemoteIngestJob < Hyrax::ApplicationJob
       filename: uri,
       file_set: @file_set,
       use: Hyrax::FileMetadata::Use::ORIGINAL_FILE,
-      user: @user
+      user: @user,
+      skip_derivatives: @file_set.has_remote_manifest?
     )
     @operation.success!
   rescue StandardError => e

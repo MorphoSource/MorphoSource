@@ -273,6 +273,9 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
       allow(slide).to receive(:validate_technical_metadata).and_return(true)
     end
     it 'creates a new media' do
+      expect(ValkyrieCharacterizationJob).not_to receive(:perform_later)
+      expect(ValkyrieCreateDerivativesJob).not_to receive(:perform_later)
+
       media = nil
       perform_enqueued_jobs { media = subject.create_new_media }
 

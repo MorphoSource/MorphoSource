@@ -25,28 +25,36 @@ stages:
   tags:
     - oit-shared
 
+build_cache:
+  extends: .build
+  script:
+    - BUILD_CACHE_IMAGE="gitlab-registry.oit.duke.edu/morphosource/morphosource:build-prod-cache-$CI_COMMIT_BRANCH"
+    - docker pull "$BUILD_CACHE_IMAGE" || true
+    - docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from "$BUILD_CACHE_IMAGE" --target morphosource-build-prod --tag "$BUILD_CACHE_IMAGE" .
+    - docker push "$BUILD_CACHE_IMAGE"
+
 build_app:
   extends: .build
+  needs:
+    - build_cache
   script:
     - APP_IMAGE="gitlab-registry.oit.duke.edu/morphosource/morphosource:app-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA"
     - BUILD_CACHE_IMAGE="gitlab-registry.oit.duke.edu/morphosource/morphosource:build-prod-cache-$CI_COMMIT_BRANCH"
     - if docker manifest inspect "$APP_IMAGE" > /dev/null 2>&1; then echo "Image $APP_IMAGE already exists. Skipping build."; exit 0; fi
     - docker pull "$BUILD_CACHE_IMAGE" || true
-    - docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from "$BUILD_CACHE_IMAGE" --target morphosource-build-prod --tag "$BUILD_CACHE_IMAGE" .
-    - docker push "$BUILD_CACHE_IMAGE"
     - docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from "$BUILD_CACHE_IMAGE" --target morphosource-prod --tag "gitlab-registry.oit.duke.edu/morphosource/morphosource:app-$CI_COMMIT_BRANCH" --tag "$APP_IMAGE" .
     - docker push "$APP_IMAGE"
     - docker push gitlab-registry.oit.duke.edu/morphosource/morphosource:app-$CI_COMMIT_BRANCH
 
 build_worker:
   extends: .build
+  needs:
+    - build_cache
   script:
     - WORKER_IMAGE="gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA"
     - BUILD_CACHE_IMAGE="gitlab-registry.oit.duke.edu/morphosource/morphosource:build-prod-cache-$CI_COMMIT_BRANCH"
     - if docker manifest inspect "$WORKER_IMAGE" > /dev/null 2>&1; then echo "Image $WORKER_IMAGE already exists. Skipping build."; exit 0; fi
     - docker pull "$BUILD_CACHE_IMAGE" || true
-    - docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from "$BUILD_CACHE_IMAGE" --target morphosource-build-prod --tag "$BUILD_CACHE_IMAGE" .
-    - docker push "$BUILD_CACHE_IMAGE"
     - docker build --build-arg BUILDKIT_INLINE_CACHE=1 --cache-from "$BUILD_CACHE_IMAGE" --target morphosource-worker-prod --tag "gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-$CI_COMMIT_BRANCH" --tag "$WORKER_IMAGE" .
     - docker push "$WORKER_IMAGE"
     - docker push gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-$CI_COMMIT_BRANCH

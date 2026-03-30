@@ -81,6 +81,16 @@ class ImagingEventResource < Hyrax::Work
   # record.valid_child_concerns which are not available on Valkyrie resources.
   validates_with ImagingEventResourceParentDeviceModalityValidator
 
+  # Mirrors ImagingEvent.valid_child_concerns; used by Hyrax::ChildWorkRedirect.
+  # ToDoValk: update when Media and ProcessingEvent are valkyrized.
+  def self.valid_child_concerns
+    [Media, ProcessingEvent]
+  end
+
+  def imaging_event?
+    true
+  end
+
   def description_uploader
     @description_uploader ||= ImagingEventDescriptionAttachmentUploader.new.tap { |u| u.work_id = id.to_s }
   end

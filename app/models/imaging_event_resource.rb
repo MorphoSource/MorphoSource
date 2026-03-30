@@ -91,6 +91,14 @@ class ImagingEventResource < Hyrax::Work
     true
   end
 
+  def physical_object?
+    false
+  end
+
+  def file_sets
+    []
+  end
+
   def description_uploader
     @description_uploader ||= ImagingEventDescriptionAttachmentUploader.new.tap { |u| u.work_id = id.to_s }
   end

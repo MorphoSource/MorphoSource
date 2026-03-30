@@ -97,6 +97,14 @@ module Hyrax
         super
       end
 
+      # Guard against nil when the imaging_event_resource params key is absent
+      # (e.g. a minimal update that doesn't include the work hash).
+      # LinkedTeamsManagement#parents_attributes does params[work_type][...] without
+      # a nil check, which raises NoMethodError when params[work_type] is nil.
+      def parents_attributes
+        params[work_type]&.[](:work_parents_attributes)
+      end
+
       def old_physical_objects
         select_physical_objects(@original_objects)
       end

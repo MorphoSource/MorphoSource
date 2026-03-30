@@ -3,8 +3,13 @@
 
 docker_files
 node_modules
+vendor/bundle
+.bundle
+coverage
 
 log/*
 tmp/*
+*.log
 
-fits.log
+spec/cassettes
+spec/fixtures/*.xlsx

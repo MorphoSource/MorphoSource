@@ -25,6 +25,10 @@ terms:
     term: Synchrotron Imaging
     abbreviation: Synchro
     active: true
+  - id: NeutrinoImaging
+    term: Neutrino Imaging
+    abbreviation: Neutrino
+    active: true
   - id: Photogrammetry
     term: Photogrammetry
     abbreviation: Photogram
@@ -64,6 +68,10 @@ terms:
   - id: ScanningElectronMicroscopy
     term: Scanning Electron Microscopy
     abbreviation: SEM
+    active: true
+  - id: TransmissionElectronMicroscopy
+    term: Transmission Electron Microscopy
+    abbreviation: TEM
     active: true
   - id: BornDigital
     term: Born Digital

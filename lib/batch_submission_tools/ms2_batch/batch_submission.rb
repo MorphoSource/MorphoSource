@@ -33,10 +33,13 @@ module BatchSubmissionTools
 
       def pad(id)
         return id unless id.present?
-        if id.length < 9
-          ("0" * (9 - id.length)) + id
+        normalized_id = id.to_s.gsub(/[\r\n]+/, '').strip
+        return normalized_id unless normalized_id.present?
+
+        if normalized_id.length < 9
+          ("0" * (9 - normalized_id.length)) + normalized_id
         else
-          id
+          normalized_id
         end
       end
 
@@ -95,15 +98,29 @@ module BatchSubmissionTools
           if val.is_a?(Hash) && field_terms_ary.length == 1
             # Handle already-sectioned hashes (e.g., deserialized manifest data)
             converted_val = val.each_with_object({}) do |(k, v), h|
-              h[k.to_sym] = Array(v).map(&:to_s)
+              h[k.to_sym] = sanitize_submission_value(Array(v).map(&:to_s))
             end
             row_data[model].merge!(converted_val)
           else
-            row_data[model][field] = Array(val).map(&:to_s)
+            row_data[model][field] = sanitize_submission_value(Array(val).map(&:to_s))
           end
           # Note: Values will be converted (e.g. from float) to strings, to avoid Invalid datatype error in ActiveFedora::Indexing::InvalidIndexDescriptor
         end
         return row_data
+      end
+
+      # Normalize incoming batch strings so embedded newlines do not break IDs/URIs.
+      def sanitize_submission_value(value)
+        case value
+        when Hash
+          value.each_with_object({}) { |(k, v), h| h[k] = sanitize_submission_value(v) }
+        when Array
+          value.map { |v| sanitize_submission_value(v) }
+        when String
+          value.gsub(/[\r\n]+/, ' ').strip
+        else
+          value
+        end
       end
 
       def notify_user(user, status, main_job_id)

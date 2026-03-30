@@ -18,7 +18,7 @@ Rails.application.config.to_prepare do
     Morphosource::Listeners::DestroyProxyDepositRequestsListener,
     Morphosource::Listeners::IndexRelatedWorksListener,
     Morphosource::Listeners::MintArkListener,
-    Morphosource::Listeners::UpdateDeviceArkStatusListener
+    Morphosource::Listeners::UpdateArkStatusListener
   ]
 
   Rails.application.config.x.morphosource_event_listeners =

@@ -2,12 +2,12 @@
 
 require 'rails_helper'
 
-RSpec.describe Morphosource::Listeners::UpdateDeviceArkStatusListener do
+RSpec.describe Morphosource::Listeners::UpdateArkStatusListener do
   subject(:listener) { described_class.new }
 
   describe '#on_object_metadata_updated' do
     it 'enqueues ark status update job for a DeviceResource' do
-      resource = build(:device_resource, id: Valkyrie::ID.new('abc-123'))
+      resource = build(:device_resource, id: Valkyrie::ID.new('abc-123'), ark: ["TestArk"])
       event = instance_double('Dry::Event', payload: { object: resource })
 
       expect(UpdateWorkArkStatusJob).to receive(:perform_later).with('abc-123')
@@ -15,7 +15,7 @@ RSpec.describe Morphosource::Listeners::UpdateDeviceArkStatusListener do
       listener.on_object_metadata_updated(event)
     end
 
-    it 'does not enqueue for non-device resources' do
+    it 'does not enqueue for resources that do not have ark attribute' do
       event = instance_double('Dry::Event', payload: { object: instance_double('TaxonomyResource') })
 
       expect(UpdateWorkArkStatusJob).not_to receive(:perform_later)

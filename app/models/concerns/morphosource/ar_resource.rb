@@ -22,12 +22,24 @@ module Morphosource
     extend ActiveSupport::Concern
 
     class_methods do
-      # Determine whether a record exists using find_by, returning a boolean.
+      # Determine whether a record exists, mirroring ActiveRecord::Base.exists?.
       #
-      # @param args [Hash] query to pass to find_by
+      # @overload exists?(id)
+      #   @param id [String, Valkyrie::ID] a resource ID to look up
+      # @overload exists?(conditions)
+      #   @param conditions [Hash] attribute conditions to pass to find_by
       # @return [Boolean]
-      def exists?(**args)
-        !!find_by(**args)
+      def exists?(id_or_conditions = nil, **conditions)
+        return false if id_or_conditions == false
+        return false if id_or_conditions.nil? && conditions.empty?
+
+        if id_or_conditions.is_a?(Hash)
+          !!find_by(**id_or_conditions.merge(conditions))
+        elsif id_or_conditions
+          !!find_by(id: id_or_conditions)
+        else
+          !!find_by(**conditions)
+        end
       rescue StandardError
         false
       end

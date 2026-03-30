@@ -19,7 +19,7 @@ class ImagingEventParentDeviceModalityValidator < ActiveModel::Validator
   def validate_device_id_valid
     return if @device_errors.present?
 
-    unless Device.exists?(id: @device_id) || DeviceResource.exists?(id: @device_id)
+    unless DeviceResource.exists?(@device_id)
       @device_errors << "A device with id: #{@device_id} does not exist."
     end
   end
@@ -177,12 +177,12 @@ class ImagingEvent < Morphosource::Works::Base
 
     def controlled_attributes
       {
-        :pixel_spacing_calibration => Morphosource::PixelSpacingCalibrationService.new, 
-        :target_type => Morphosource::TargetTypesService.new, 
-        :detector_type => Morphosource::DetectorTypesService.new, 
-        :detector_configuration => Morphosource::DetectorConfigurationService.new, 
-        :acquisition_type => Morphosource::AcquisitionTypesService.new, 
-        :focal_length_type => Morphosource::FocalLengthTypesService.new, 
+        :pixel_spacing_calibration => Morphosource::PixelSpacingCalibrationService.new,
+        :target_type => Morphosource::TargetTypesService.new,
+        :detector_type => Morphosource::DetectorTypesService.new,
+        :detector_configuration => Morphosource::DetectorConfigurationService.new,
+        :acquisition_type => Morphosource::AcquisitionTypesService.new,
+        :focal_length_type => Morphosource::FocalLengthTypesService.new,
         :light_source => Morphosource::LightSourceService.new
       }
     end

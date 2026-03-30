@@ -12,4 +12,3 @@ tmp/*
 *.log
 
 spec/cassettes
-spec/fixtures/*.xlsx

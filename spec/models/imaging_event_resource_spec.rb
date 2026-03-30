@@ -10,6 +10,12 @@ RSpec.describe ImagingEventResource do
 
   # it_behaves_like 'a Hyrax::Work'
 
+  # Hyrax::ArResource#save publishes object.deposited/object.metadata.updated
+  # events. Listeners such as ContentDepositEventJob attempt to call
+  # imaging_event_resource_path, which has no route yet. Stub the publisher
+  # to avoid this in model specs.
+  before { allow(Hyrax.publisher).to receive(:publish) }
+
   describe ImagingEventResourceParentDeviceModalityValidator do
     let(:device) { Device.create(title: ['device'], modality: ['Photogrammetry']) }
 
@@ -56,6 +62,184 @@ RSpec.describe ImagingEventResource do
         subject.ie_modality = [modality]
         expect(subject).not_to be_valid
         expect(subject.errors[:ie_modality]).to eq(["Imaging Event modality \"#{modality}\" does not match parent device modality: #{device.modality.join(', ')}"])
+      end
+    end
+  end
+
+  describe 'description attachment methods' do
+    let(:imaging_event) { Hyrax.persister.save(resource: ImagingEventResource.new(title: ['test'])) }
+    let(:valid_file) { Rack::Test::UploadedFile.new('spec/fixtures/text/text.txt', 'text/plain') }
+    let(:invalid_file) { Rack::Test::UploadedFile.new('spec/fixtures/images/ms.jpg', 'application/jpeg') }
+    let(:uploader) { imaging_event.description_uploader }
+
+    describe '#description_uploader' do
+      it 'initializes an uploader with the correct work_id' do
+        expect(uploader).to be_an_instance_of(ImagingEventDescriptionAttachmentUploader)
+        expect(uploader.work_id).to eq(imaging_event.id.to_s)
+      end
+    end
+
+    describe '#description_attachment=' do
+      context 'when assigning a valid file' do
+        it 'stores the file and sets description_attachment_url' do
+          imaging_event.description_attachment = valid_file
+          expect(imaging_event.description_attachment_url).to be_present
+          expect(File.exist?(uploader.file.path)).to be_truthy
+        end
+      end
+
+      context 'when assigning an invalid file' do
+        it 'raises an error for unsupported file format' do
+          expect {
+            imaging_event.description_attachment = invalid_file
+          }.to raise_error(ArgumentError, /Invalid file format: .jpg/)
+        end
+      end
+
+      context 'when assigning nil' do
+        before do
+          imaging_event.description_attachment = valid_file
+          expect(imaging_event.description_attachment_url).to be_present
+        end
+
+        it 'deletes the attachment and clears description_attachment_url' do
+          file_path = uploader.file.path
+          expect(File.exist?(file_path)).to be_truthy
+
+          imaging_event.description_attachment = nil
+          expect(imaging_event.description_attachment_url).to be_empty
+          expect(File.exist?(file_path)).to be_falsey
+        end
+
+        it 'logs a warning if the file does not exist' do
+          allow(File).to receive(:exist?).and_return(false)
+          imaging_event.description_attachment = nil
+        end
+      end
+    end
+
+    describe '#description_attachment' do
+      it 'returns the first description_attachment_url' do
+        imaging_event.description_attachment = valid_file
+        expect(imaging_event.description_attachment).to eq(imaging_event.description_attachment_url.first)
+      end
+    end
+  end
+
+  describe 'reference attachment methods' do
+    let(:imaging_event) { Hyrax.persister.save(resource: ImagingEventResource.new(title: ['test'])) }
+    let(:valid_file) { Rack::Test::UploadedFile.new('spec/fixtures/images/ms.jpg', 'application/jpeg') }
+    let(:invalid_file) { Rack::Test::UploadedFile.new('spec/fixtures/text/text.txt', 'text/plain') }
+    let(:uploader) { imaging_event.reference_uploader }
+
+    describe '#reference_uploader' do
+      it 'initializes an uploader with the correct work_id' do
+        expect(uploader).to be_an_instance_of(ImagingEventReferenceAttachmentUploader)
+        expect(uploader.work_id).to eq(imaging_event.id.to_s)
+      end
+    end
+
+    describe '#reference_attachment=' do
+      context 'when assigning a valid file' do
+        it 'stores the file and sets reference_attachment_url' do
+          imaging_event.reference_attachment = valid_file
+          expect(imaging_event.reference_attachment_url).to be_present
+          expect(File.exist?(uploader.file.path)).to be_truthy
+        end
+      end
+
+      context 'when assigning an invalid file' do
+        it 'raises an error for unsupported file format' do
+          expect {
+            imaging_event.reference_attachment = invalid_file
+          }.to raise_error(ArgumentError, /Invalid file format: .txt/)
+        end
+      end
+
+      context 'when assigning nil' do
+        before do
+          imaging_event.reference_attachment = valid_file
+          expect(imaging_event.reference_attachment_url).to be_present
+        end
+
+        it 'deletes the attachment and clears reference_attachment_url' do
+          file_path = uploader.file.path
+          expect(File.exist?(file_path)).to be_truthy
+
+          imaging_event.reference_attachment = nil
+          expect(imaging_event.reference_attachment_url).to be_empty
+          expect(File.exist?(file_path)).to be_falsey
+        end
+
+        it 'logs a warning if the file does not exist' do
+          allow(File).to receive(:exist?).and_return(false)
+          imaging_event.reference_attachment = nil
+        end
+      end
+    end
+
+    describe '#reference_attachment' do
+      it 'returns the first reference_attachment_url' do
+        imaging_event.reference_attachment = valid_file
+        expect(imaging_event.reference_attachment).to eq(imaging_event.reference_attachment_url.first)
+      end
+    end
+  end
+
+  describe '#device' do
+    let(:device) { Device.create(title: ['device'], modality: ['Photogrammetry']) }
+    let(:ie) { ImagingEventResource.new(device_id: [device.id]) }
+
+    it 'returns the device by device_id' do
+      expect(ie.device.id.to_s).to eq(device.id)
+    end
+  end
+
+  describe '#media' do
+    let(:ie) { Hyrax.persister.save(resource: ImagingEventResource.new(title: ['ie'])) }
+    let(:media1) { Media.create(title: ['media1']) }
+
+    before do
+      ie.member_ids = ie.member_ids + [Valkyrie::ID.new(media1.id)]
+      Hyrax.persister.save(resource: ie)
+    end
+
+    it 'returns Media members' do
+      expect(ie.media.map { |m| m.id.to_s }).to include(media1.id)
+    end
+  end
+
+  describe '#objects' do
+    let(:specimen) { BiologicalSpecimen.create(title: ['specimen'], vouchered: ['Yes']) }
+    let(:ie) { ImagingEventResource.new(physical_object_id: [specimen.id]) }
+
+    it 'returns physical objects by physical_object_id' do
+      expect(ie.objects.map { |o| o.id.to_s }).to include(specimen.id)
+    end
+  end
+
+  describe '#save' do
+    describe 'add_id_to_title' do
+      let(:ie) { ImagingEventResource.new(title: ['My Imaging Event']) }
+
+      it 'prefixes title with IE<id> on first save' do
+        result = ie.save
+        expect(result.title.first).to match(/^IE.+: My Imaging Event$/)
+      end
+
+      it 'does not double-prefix on subsequent saves' do
+        ie.save
+        result = ie.save
+        expect(result.title.length).to eq(1)
+        expect(result.title.first.scan('IE').length).to eq(1)
+      end
+    end
+
+    describe 'date_filter' do
+      it 'normalizes date_created to YYYY-MM-DD format' do
+        ie = ImagingEventResource.new(title: ['test'], date_created: ['5/6/2019'])
+        result = ie.save
+        expect(result.date_created.first).to eq('2019-05-06')
       end
     end
   end

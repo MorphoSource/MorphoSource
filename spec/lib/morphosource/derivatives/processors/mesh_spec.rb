@@ -88,6 +88,16 @@ describe Morphosource::Derivatives::Processors::Mesh do
         end
       end
 
+      describe "point cloud PLY format with vertex colors" do
+        let(:file_name) { File.join(fixture_path, 'point_cloud_vertex_color.ply') }
+
+        it "produces the derivative mesh with a non-zero filesize" do
+          subject.process
+          expect(File.exist?(derivative_path)).to be true
+          expect(File.size(derivative_path)).to be > 0
+        end
+      end
+
       describe "OBJ (single file) format" do
         let(:file_name) { File.join(fixture_path, 'bunny/bunny.obj') }
 

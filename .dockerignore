@@ -10,5 +10,3 @@ coverage
 log/*
 tmp/*
 *.log
-
-spec/cassettes

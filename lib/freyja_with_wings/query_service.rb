@@ -14,9 +14,15 @@ module FreyjaWithWings
       postgres_service.custom_queries.register_query_handler(
         Morphosource::CustomQueries::FindFirstAndLastOfModel
       )
+      postgres_service.custom_queries.register_query_handler(
+        Morphosource::CustomQueries::FindAllByMetadataProperties
+      )
 
       wings_service.custom_queries.register_query_handler(
         Morphosource::CustomQueries::Wings::FindFirstAndLastOfModel
+      )
+      wings_service.custom_queries.register_query_handler(
+        Morphosource::CustomQueries::Wings::FindAllByMetadataProperties
       )
     end
   end

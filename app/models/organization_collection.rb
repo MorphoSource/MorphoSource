@@ -126,10 +126,8 @@ class OrganizationCollection < Collection
   end
 
   def devices
-    ds = devices_solr
-    return [] if ds.blank?
-    ids = ds.map(&:id)
-    Hyrax.query_service.find_many_by_ids(ids: ids)
+    return [] if id.blank?
+    DeviceResource.where(organization_id: id)
   end
 
   # Create manager and viewer roles for each Organization collection

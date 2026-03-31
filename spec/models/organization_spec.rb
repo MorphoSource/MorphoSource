@@ -188,17 +188,14 @@ RSpec.describe Organization do
     end
 
     describe '#devices' do
-      let(:device) { FactoryBot.valkyrie_create(:device_resource, organization_id: [subject.id]) }
-      let(:query_service) { instance_double('Hyrax::QueryService') }
+      let!(:device) { FactoryBot.valkyrie_create(:device_resource, organization_id: [subject.id]) }
+      let(:custom_queries) { double('custom_queries') } # rubocop:disable RSpec/VerifiedDoubles
+      let(:query_service) { instance_double('Hyrax::QueryService', custom_queries: custom_queries) }
 
       before do
-        allow(ActiveFedora::SolrService).to receive(:query)
-          .with("device_organization_id_ssim:#{subject.id}",
-                fl: 'id', fq: ["has_model_ssim:(Device OR DeviceResource)"], rows: 999_999)
-          .and_return([{ 'id' => device.id.to_s }])
         allow(Hyrax).to receive(:query_service).and_return(query_service)
-        allow(query_service).to receive(:find_many_by_ids)
-          .with(ids: [device.id.to_s])
+        allow(custom_queries).to receive(:find_all_by_metadata_properties)
+          .with(properties: { organization_id: subject.id }, model: DeviceResource)
           .and_return([device])
       end
 

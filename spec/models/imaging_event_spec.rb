@@ -186,17 +186,8 @@ RSpec.describe ImagingEvent do
   describe 'objects' do
     let(:specimen)  { BiologicalSpecimen.create(title: ['specimen'], vouchered: ['Yes']) }
     let(:cho)       { CulturalHeritageObject.create(title: ['cho'], vouchered: ['No']) }
-    let(:ie)        { ImagingEvent.create(title: ['ie'], device_id: [device.id], physical_object_id: [specimen.id, cho.id], ie_modality: device.modality) }
-    let(:device)    { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-    let(:query_service) { instance_double('Hyrax::QueryService') }
-
-    before do
-      allow(Hyrax).to receive(:query_service).and_return(query_service)
-      allow(query_service).to receive(:find_many_by_ids) do |ids:|
-        ids.include?(device.id) ? [device] : []
-      end
-      allow(query_service).to receive(:find_by).and_return(device)
-    end
+    let(:device)    { FactoryBot.valkyrie_create(:device_resource, modality: ['Photogrammetry']) }
+    let(:ie)        { ImagingEvent.create(title: ['ie'], device_id: [device.id.to_s], physical_object_id: [specimen.id, cho.id], ie_modality: device.modality) }
 
     it 'returns all parent objects' do
       expect(ie.objects).to match_array([specimen, cho])

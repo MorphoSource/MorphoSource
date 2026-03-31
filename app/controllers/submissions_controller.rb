@@ -683,7 +683,6 @@ class SubmissionsController < ApplicationController
   def instantiate_work_forms
     @biological_specimen_form = Hyrax::WorkFormService.build(BiologicalSpecimen.new, current_ability, self)
     @cho_form = Hyrax::WorkFormService.build(CulturalHeritageObject.new, current_ability, self)
-    @device_form = Hyrax::WorkFormService.build(Device.new, current_ability, self)
     @imaging_event_form = Hyrax::WorkFormService.build(ImagingEvent.new, current_ability, self)
     @processing_event_form = Hyrax::WorkFormService.build(ProcessingEvent.new, current_ability, self)
     @organization_form = Hyrax::WorkFormService.build(Organization.new, current_ability, self)

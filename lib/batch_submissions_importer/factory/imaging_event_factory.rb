@@ -4,6 +4,7 @@ module BatchSubmissionsImporter
       include WithAssociatedCollection
 
       self.klass = ImagingEvent
+      self.valkyrie_klass = ImagingEventResource
 
     end
   end

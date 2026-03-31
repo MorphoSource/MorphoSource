@@ -309,7 +309,7 @@ class SubmissionsController < ApplicationController
   private
 
   def works
-    ['taxonomy_resource', 'biological_specimen', 'cultural_heritage_object', 'imaging_event', 'processing_event', 'media']
+    ['taxonomy_resource', 'biological_specimen', 'cultural_heritage_object', 'imaging_event_resource', 'processing_event', 'media']
   end
 
   def create_work_if_needed(work, params)
@@ -317,7 +317,7 @@ class SubmissionsController < ApplicationController
       #puts("Creating #{work}")
       new_work_id, new_work = prepare_and_create_work(work, params)
       @submission.public_send(to_id(work) + '=', new_work_id)
-      create_attachment_if_needed(work, new_work_id, new_work) if ['imaging_event', 'processing_event', 'media'].include?(work)
+      create_attachment_if_needed(work, new_work_id, new_work) if ['imaging_event_resource', 'processing_event', 'media'].include?(work)
 
       if work == 'media'
         create_custom_thumbnail(new_work) if params[:media][:custom_thumbnail].present?
@@ -405,6 +405,24 @@ class SubmissionsController < ApplicationController
           raise StandardError.new "Debug no device id #{@submission.device_id}"
       end
       model_params.merge!(addl_params)
+      @imaging_event_create_params = model_params
+
+    when 'imaging_event_resource'
+      if @submission.biological_specimen_or_cultural_heritage_object == 'bso'
+        if !@submission.biological_specimen_id.present?
+          raise StandardError.new "Debug no biological specimen id #{@submission.biological_specimen_id}"
+        end
+        model_params.merge!(physical_object_id: [@submission.biological_specimen_id])
+      elsif @submission.biological_specimen_or_cultural_heritage_object == 'cho'
+        if !@submission.cultural_heritage_object_id.present?
+          raise StandardError.new "Debug no cho id #{@submission.cultural_heritage_object_id}"
+        end
+        model_params.merge!(physical_object_id: [@submission.cultural_heritage_object_id])
+      end
+      if !@submission.device_id.present?
+        raise StandardError.new "Debug no device id #{@submission.device_id}"
+      end
+      model_params.merge!(device_id: [@submission.device_id])
       @imaging_event_create_params = model_params
 
     when 'processing_event'
@@ -524,7 +542,7 @@ class SubmissionsController < ApplicationController
 
   def attachment_fields
     {
-      'imaging_event' => ['ie_description', 'ie_reference'],
+      'imaging_event_resource' => ['ie_description', 'ie_reference'],
       'processing_event' => ['pe_description'],
       'media' => ['agreement']
     }
@@ -684,6 +702,7 @@ class SubmissionsController < ApplicationController
     @biological_specimen_form = Hyrax::WorkFormService.build(BiologicalSpecimen.new, current_ability, self)
     @cho_form = Hyrax::WorkFormService.build(CulturalHeritageObject.new, current_ability, self)
     @imaging_event_form = Hyrax::WorkFormService.build(ImagingEvent.new, current_ability, self)
+    @imaging_event_resource_form = Hyrax::FormFactory.new.build(ImagingEventResource.new, current_ability, self)
     @processing_event_form = Hyrax::WorkFormService.build(ProcessingEvent.new, current_ability, self)
     @organization_form = Hyrax::WorkFormService.build(Organization.new, current_ability, self)
     @media_form = Hyrax::WorkFormService.build(Media.new, current_ability, self)

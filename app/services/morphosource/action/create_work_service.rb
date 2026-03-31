@@ -75,6 +75,8 @@ module Morphosource
           'taxonomy_change_set.create_work'
         when 'DeviceResource'
           'device_change_set.create_work'
+        when 'ImagingEventResource'
+          'change_set.create_work'
         else
           raise "Unpermitted work type #{model_class.to_s}"
         end
@@ -93,6 +95,11 @@ module Morphosource
             'device_change_set.set_organization_id' => { organization_id: @organization_id },
             'change_set.set_user_as_depositor' => { user: user },
             'work_resource.change_depositor' => { user: ::User.find_by_user_key(form.on_behalf_of) },
+            'work_resource.save_acl' => { permissions_params: permissions_params }
+          }
+        when 'ImagingEventResource'
+          {
+            'change_set.set_user_as_depositor' => { user: user },
             'work_resource.save_acl' => { permissions_params: permissions_params }
           }
         else

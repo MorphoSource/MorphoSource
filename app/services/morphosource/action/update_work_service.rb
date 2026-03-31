@@ -67,6 +67,8 @@ module Morphosource
           'taxonomy_change_set.update_work'
         when 'DeviceResource'
           'device_change_set.update_work'
+        when 'ImagingEventResource'
+          'change_set.update_work'
         else
           raise "Unpermitted work type #{work.class}"
         end
@@ -81,6 +83,10 @@ module Morphosource
         when 'DeviceResource'
           {
             'device_change_set.set_organization_id' => { organization_id: @organization_id },
+            'work_resource.save_acl' => { permissions_params: permissions_params }
+          }
+        when 'ImagingEventResource'
+          {
             'work_resource.save_acl' => { permissions_params: permissions_params }
           }
         else

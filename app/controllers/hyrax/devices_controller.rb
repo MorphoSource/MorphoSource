@@ -17,15 +17,27 @@ module Hyrax
     # Use a Valkyrie aware form service to generate Valkyrie::ChangeSet style
     # forms.
     self.work_form_service = Hyrax::FormFactory.new
-    
+
     with_themed_layout :decide_layout
 
     # Use this line if you want to use a custom presenter
     self.show_presenter = Hyrax::DevicePresenter
 
-    # Override default Valkyrie create work transaction
-    # registered in config/initializers/transactions.rb
-    self.create_valkyrie_work_action.transaction_name = "device_change_set.create_work"
+    # Subclass of Hyrax::Action::CreateValkyrieWork that injects organization_id
+    # as an explicit step arg rather than reading it from request params inside the step.
+    class DeviceCreateValkyrieWork < Hyrax::Action::CreateValkyrieWork
+      def initialize(organization_id: nil, **kwargs)
+        super(**kwargs)
+        @organization_id = organization_id
+      end
+
+      def step_args
+        super.merge('device_change_set.set_organization_id' => { organization_id: @organization_id })
+      end
+    end
+
+    self.create_valkyrie_work_action = DeviceCreateValkyrieWork
+    DeviceCreateValkyrieWork.transaction_name = "device_change_set.create_work"
 
     configure_blacklight do |config|
       config.max_per_page = 1000000
@@ -71,12 +83,35 @@ module Hyrax
 
     private
 
+    # Override default Valkyrie create work to pass organization_id as a step arg.
+    def create_valkyrie_work
+      form = build_form
+      action = create_valkyrie_work_action.new(
+        form: form,
+        transactions: transactions,
+        user: current_user,
+        params: params,
+        work_attributes_key: hash_key_for_curation_concern,
+        organization_id: @organization&.id
+      )
+
+      return after_create_error(form_err_msg(action.form), action.work_attributes) unless action.validate
+
+      result = action.perform
+      @curation_concern = result.value_or { return after_create_error(transaction_err_msg(result)) }
+      after_create_response
+    end
+
     # Override default Valkyrie update work transaction
     def update_valkyrie_work
       form = build_form
       return after_update_error(form_err_msg(form)) unless form.validate(params[hash_key_for_curation_concern])
 
-      result = transactions['device_change_set.update_work'].call(form)
+      result = transactions['device_change_set.update_work']
+                 .with_step_args(
+                   'device_change_set.set_organization_id' => { organization_id: @organization&.id },
+                   'work_resource.save_acl' => { permissions_params: params[:permissions] || [] }
+                 ).call(form)
       @curation_concern = result.value_or { return after_update_error(transaction_err_msg(result)) }
       after_update_response
     end

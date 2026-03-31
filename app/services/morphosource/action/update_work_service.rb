@@ -31,6 +31,7 @@ module Morphosource
         uploaded_file_ids = params.fetch(:uploaded_files, [])
         @files = Hyrax::UploadedFile.find(uploaded_file_ids) if uploaded_file_ids.present?
         @permissions_params = params.fetch(:permissions, [])
+        @organization_id = params.fetch(:organization_id, nil)
         @form = Hyrax::FormFactory.new.build(work, nil, nil)
         form.skip_index_related_works = true if skip_index_related_works
       end
@@ -79,6 +80,7 @@ module Morphosource
           }
         when 'DeviceResource'
           {
+            'device_change_set.set_organization_id' => { organization_id: @organization_id },
             'work_resource.save_acl' => { permissions_params: permissions_params }
           }
         else

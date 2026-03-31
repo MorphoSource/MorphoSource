@@ -4,6 +4,11 @@ module Morphosource
     module Steps
       ##
       # Ensures organization edit groups are synced with organization_id on a change set.
+      #
+      # @note This transaction step mutates the underlying change_set.resource model
+      #   prior to calling change_set.apply, which is not usually done. In cases where
+      #   organization_id has been updated, this allows us to get the previous and new
+      #   IDs, which are necessary for setting up edit groups.
       class UpdateOrganizationAccess
         include Dry::Monads[:result]
 

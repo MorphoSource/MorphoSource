@@ -34,6 +34,7 @@ module Morphosource
         uploaded_file_ids = params.fetch(:uploaded_files, [])
         @files = Hyrax::UploadedFile.find(uploaded_file_ids) if uploaded_file_ids.present?
         @permissions_params = params.fetch(:permissions, [])
+        @organization_id = params.fetch(:organization_id, nil)
         work = model_class.new
         @form = Hyrax::FormFactory.new.build(work, nil, nil)
         form.skip_index_related_works = true if skip_index_related_works
@@ -72,6 +73,8 @@ module Morphosource
         case model_class.to_s
         when 'TaxonomyResource'
           'taxonomy_change_set.create_work'
+        when 'DeviceResource'
+          'device_change_set.create_work'
         else
           raise "Unpermitted work type #{model_class.to_s}"
         end
@@ -81,6 +84,13 @@ module Morphosource
         case model_class.to_s
         when 'TaxonomyResource'
           {
+            'change_set.set_user_as_depositor' => { user: user },
+            'work_resource.change_depositor' => { user: ::User.find_by_user_key(form.on_behalf_of) },
+            'work_resource.save_acl' => { permissions_params: permissions_params }
+          }
+        when 'DeviceResource'
+          {
+            'device_change_set.set_organization_id' => { organization_id: @organization_id },
             'change_set.set_user_as_depositor' => { user: user },
             'work_resource.change_depositor' => { user: ::User.find_by_user_key(form.on_behalf_of) },
             'work_resource.save_acl' => { permissions_params: permissions_params }

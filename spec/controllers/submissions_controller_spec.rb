@@ -307,8 +307,8 @@ RSpec.describe SubmissionsController, type: :controller do
         { work: 'cultural_heritage_object', params:
           { cultural_heritage_object: { title: ['Test Title'] } }
         },
-        { work: 'imaging_event', params:
-          { imaging_event: { title: ['Test Title'] },
+        { work: 'imaging_event_resource', params:
+          { imaging_event_resource: { title: ['Test Title'] },
             submission: {
               biological_specimen_or_cultural_heritage_object: 'bso',
               biological_specimen_id: '012345678',
@@ -357,6 +357,80 @@ RSpec.describe SubmissionsController, type: :controller do
     it 'calls reindex_catalog_works' do
       expect(subject).to receive(:reindex_catalog_works)
       post :create, params: {}
+    end
+  end
+
+  describe '#finalize_model_params' do
+    before do
+      session[:submission] = {}
+      subject.instance_variable_set(:@submission, submission)
+    end
+
+    context 'imaging_event_resource with biological specimen' do
+      let(:submission) { Submission.new(
+        biological_specimen_or_cultural_heritage_object: 'bso',
+        biological_specimen_id: 'bso123',
+        device_id: 'dev456'
+      ) }
+
+      it 'merges physical_object_id from biological_specimen_id and device_id' do
+        result = subject.send(:finalize_model_params, 'imaging_event_resource', { title: ['Test'] })
+        expect(result[:physical_object_id]).to eq(['bso123'])
+        expect(result[:device_id]).to eq(['dev456'])
+      end
+    end
+
+    context 'imaging_event_resource with cultural heritage object' do
+      let(:submission) { Submission.new(
+        biological_specimen_or_cultural_heritage_object: 'cho',
+        cultural_heritage_object_id: 'cho789',
+        device_id: 'dev456'
+      ) }
+
+      it 'merges physical_object_id from cultural_heritage_object_id and device_id' do
+        result = subject.send(:finalize_model_params, 'imaging_event_resource', { title: ['Test'] })
+        expect(result[:physical_object_id]).to eq(['cho789'])
+        expect(result[:device_id]).to eq(['dev456'])
+      end
+    end
+
+    context 'imaging_event_resource missing biological_specimen_id' do
+      let(:submission) { Submission.new(
+        biological_specimen_or_cultural_heritage_object: 'bso',
+        biological_specimen_id: nil,
+        device_id: 'dev456'
+      ) }
+
+      it 'raises an error' do
+        expect {
+          subject.send(:finalize_model_params, 'imaging_event_resource', { title: ['Test'] })
+        }.to raise_error(StandardError, /no biological specimen id/)
+      end
+    end
+
+    context 'imaging_event_resource missing device_id' do
+      let(:submission) { Submission.new(
+        biological_specimen_or_cultural_heritage_object: 'bso',
+        biological_specimen_id: 'bso123',
+        device_id: nil
+      ) }
+
+      it 'raises an error' do
+        expect {
+          subject.send(:finalize_model_params, 'imaging_event_resource', { title: ['Test'] })
+        }.to raise_error(StandardError, /no device id/)
+      end
+    end
+  end
+
+  describe '#to_id' do
+    it 'strips _resource suffix and appends _id' do
+      expect(subject.send(:to_id, 'imaging_event_resource')).to eq('imaging_event_id')
+    end
+
+    it 'appends _id for non-resource works' do
+      expect(subject.send(:to_id, 'media')).to eq('media_id')
+      expect(subject.send(:to_id, 'biological_specimen')).to eq('biological_specimen_id')
     end
   end
 

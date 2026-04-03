@@ -188,37 +188,35 @@ RSpec.describe Hyrax::DevicesController do
       end
 
       describe 'destroying a device resource' do
-        let(:device_id) { Valkyrie::ID.new('device-id-1') }
         let(:device_resource) do
-          double(
-            'DeviceResource',
-            id: device_id,
-            ark: ['ark:/99999/fk4/123'],
-            title: ['Device A']
-          )
+          FactoryBot.valkyrie_create(:device_resource,
+                                     depositor: depositor.ms_id,
+                                     ark: ['ark:/99999/fk4/123'])
         end
         let(:transaction_result) { Dry::Monads::Success(device_resource) }
-        let(:publisher) { Hyrax.publisher }
 
         before do
+          ActiveJob::Base.queue_adapter = :test
+
           allow(controller).to receive(:curation_concern).and_return(device_resource)
           allow(controller).to receive(:after_destroy_response)
-          allow(device_resource).to receive(:is_a?).with(ActiveFedora::Base).and_return(false)
+
+          callable = instance_double('Callable')
+          allow(callable).to receive(:call) do |_resource|
+            Hyrax.publisher.publish('object.deleted',
+                                    object: device_resource,
+                                    id: device_resource.id.to_s,
+                                    user: nil,
+                                    deleted_ark: Array(device_resource.ark).first)
+            transaction_result
+          end
           allow(controller).to receive(:transactions)
-            .and_return('device_work_resource.destroy' => instance_double('Transaction', with_step_args: instance_double('Callable', call: transaction_result)))
-          allow(publisher).to receive(:publish)
+            .and_return('work_resource.destroy' => instance_double('Transaction', with_step_args: callable))
         end
 
-        it 'publishes object.deleted with deleted_ark payload' do
-          controller.destroy
-
-          expect(publisher).to have_received(:publish).with(
-            'object.deleted',
-            hash_including(
-              object: device_resource,
-              deleted_ark: 'ark:/99999/fk4/123'
-            )
-          )
+        it 'enqueues DeleteReservedArkJob for a device with a reserved ark' do
+          expect { controller.destroy }
+            .to have_enqueued_job(DeleteReservedArkJob).with('ark:/99999/fk4/123')
         end
       end
     end

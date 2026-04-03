@@ -11,8 +11,7 @@ module Morphosource
           ##
           # @param change_set [#organization_id=] the change set to update
           # @param organization_id [String, nil] the organization ID to assign. When nil or blank,
-          #   the step succeeds without modification if the change_set already has an organization_id,
-          #   otherwise fails with :organization_id_required.
+          #   the step succeeds without modification (organization is optional).
           #
           # @return [Dry::Monads::Result]
           def call(change_set, organization_id: nil)
@@ -21,8 +20,7 @@ module Morphosource
             ids = Array(organization_id).map(&:presence).compact
 
             if ids.empty?
-              return Success(change_set) if Array(change_set.organization_id).any?(&:present?)
-              return Failure[:organization_id_required, change_set]
+              return Success(change_set)
             end
 
             return Failure["Cannot associate device with more than one organization", change_set] if ids.size > 1

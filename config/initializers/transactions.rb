@@ -35,9 +35,9 @@ class ApplicationContainerOverrides
     end
   end
 
-  namespace 'device_work_resource' do |ops|
-    ops.register 'destroy' do
-      Morphosource::Transactions::Device::WorkDestroy.new
+  namespace 'work_resource' do |ops|
+    ops.register 'delete' do
+      Morphosource::Transactions::Steps::DeleteResource.new
     end
   end
 

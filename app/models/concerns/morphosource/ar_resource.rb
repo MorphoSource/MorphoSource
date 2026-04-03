@@ -5,6 +5,22 @@ module Morphosource
   module ArResource
     extend ActiveSupport::Concern
 
+    # Overrides Hyrax::ArResource#destroy to include deleted_ark in the
+    # object.deleted event payload, enabling ARK reservation cleanup on destroy.
+    # Does not call super to avoid double-publishing the event.
+    def destroy(persister: Hyrax.persister, index_adapter: Hyrax.index_adapter, user: ::User.system_user)
+      return false unless persisted?
+      deleted_ark = respond_to?(:ark) ? Array(ark).first : nil
+      persister.delete(resource: self)
+      index_adapter.delete(resource: self)
+      Hyrax.publisher.publish('object.deleted', object: self, user: user, deleted_ark: deleted_ark)
+      true
+    end
+
+    def destroy!(**opts)
+      raise Valkyrie::Persistence::ObjectNotFoundError unless destroy(**opts)
+    end
+
     class_methods do
       # Determine whether a record exists, mirroring ActiveRecord::Base.exists?.
       #

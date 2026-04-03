@@ -64,23 +64,6 @@ module Hyrax
       super
     end
 
-    def destroy
-      return super if curation_concern.is_a?(ActiveFedora::Base)
-      deleted_ark = Array(curation_concern.ark).first
-
-      transactions['device_work_resource.destroy']
-        .with_step_args(
-          'work_resource.delete' => { user: current_user }
-        ).call(curation_concern).value!
-      Hyrax.publisher.publish('object.deleted',
-                              object: curation_concern,
-                              user: current_user,
-                              deleted_ark: deleted_ark)
-
-      title = Array(curation_concern.title).first
-      after_destroy_response(title)
-    end
-
     private
 
     # Override default Valkyrie create work to pass organization_id as a step arg.

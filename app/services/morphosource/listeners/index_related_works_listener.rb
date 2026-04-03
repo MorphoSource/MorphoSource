@@ -35,6 +35,9 @@ module Morphosource
           index_all(object.media)
         when DeviceResource
           index_all(object.media)
+        when ImagingEventResource
+          index_all(object.media)
+          index_all(object.objects)
         end
 
       end
@@ -42,8 +45,9 @@ module Morphosource
       private
 
       def log_non_resource(event)
+        payload = event.respond_to?(:payload) ? event.payload : {}
         Hyrax.logger.info('Skipping related work reindex because the object ' \
-                          "#{event[:object]} was not a Valkyrie::Resource.")
+                          "#{payload[:object]} was not a Valkyrie::Resource.")
       end
 
       def log_skip_reindex(event)

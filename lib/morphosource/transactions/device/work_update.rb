@@ -13,7 +13,6 @@ module Morphosource
           'work_resource.update_work_members'
         ].freeze
 
-
         ##
         # @see Hyrax::Transactions::Transaction
         def initialize(container: Hyrax::Transactions::Container, steps: DEFAULT_STEPS)

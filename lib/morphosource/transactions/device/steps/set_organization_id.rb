@@ -23,12 +23,12 @@ module Morphosource
               return Success(change_set)
             end
 
-            return Failure["Cannot associate device with more than one organization", change_set] if ids.size > 1
+            return Failure[:multiple_organizations, change_set] if ids.size > 1
 
             change_set.organization_id = ids
             Success(change_set)
           rescue StandardError => e
-            Failure([:set_organization_id_failed, change_set, e.message])
+            Failure[:set_organization_id_failed, change_set]
           end
         end
       end

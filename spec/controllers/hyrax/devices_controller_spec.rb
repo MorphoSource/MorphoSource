@@ -195,9 +195,15 @@ RSpec.describe Hyrax::DevicesController do
         end
         let(:transaction_result) { Dry::Monads::Success(device_resource) }
 
-        before do
+        around do |example|
+          original_adapter = ActiveJob::Base.queue_adapter
           ActiveJob::Base.queue_adapter = :test
+          example.run
+        ensure
+          ActiveJob::Base.queue_adapter = original_adapter
+        end
 
+        before do
           allow(controller).to receive(:curation_concern).and_return(device_resource)
           allow(controller).to receive(:after_destroy_response)
 

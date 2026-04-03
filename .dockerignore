@@ -10,6 +10,3 @@ coverage
 log/*
 tmp/*
 *.log
-
-spec/cassettes
-spec/fixtures/*.xlsx

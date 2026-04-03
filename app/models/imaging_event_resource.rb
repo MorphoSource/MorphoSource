@@ -91,6 +91,10 @@ class ImagingEventResource < Hyrax::Work
     true
   end
 
+  def media?
+    false
+  end
+
   def physical_object?
     false
   end

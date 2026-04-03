@@ -747,7 +747,7 @@ module Hyrax
       @has_absentee_parent ||= begin
         all_parent_works.present? &&
         all_parent_works.count >= 2 &&
-        all_parent_works[0]&.has_model&.first == "ImagingEvent" &&
+        ["ImagingEvent", "ImagingEventResource"].include?(all_parent_works[0]&.has_model&.first) &&
         all_parent_works[1]&.has_model&.first == "ProcessingEvent"
       end
     end

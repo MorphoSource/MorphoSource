@@ -45,7 +45,7 @@ module Morphosource
                                     reference_attachment_url].freeze
 
       def imaging_event?
-        self['has_model_ssim'] == ['ImagingEvent']
+        (self['has_model_ssim'] & ['ImagingEvent', 'ImagingEventResource']).present?
       end
     end
   end

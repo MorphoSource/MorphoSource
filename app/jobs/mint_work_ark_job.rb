@@ -6,7 +6,7 @@ class MintWorkArkJob < Hyrax::ApplicationJob
   # @param work_id [String]
   def perform(work_id)
     resource = find_resource(work_id)
-    resource.is_a?(Valkyrie::Resource) ? mint_resource_ark(resource) : mint_active_fedora_ark(work_id)
+    resource.is_a?(Hyrax::Work) ? mint_resource_ark(resource) : mint_active_fedora_ark(work_id)
   end
 
   private

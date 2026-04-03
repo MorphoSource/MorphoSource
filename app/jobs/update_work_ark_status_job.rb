@@ -8,7 +8,7 @@ class UpdateWorkArkStatusJob < Hyrax::ApplicationJob
   # @param work_id [String]
   def perform(work_id)
     resource = find_resource(work_id)
-    return unless resource.is_a?(Valkyrie::Resource)
+    return unless resource.is_a?(Hyrax::Work)
     return if resource.ark.blank?
 
     resource.update_ark_status

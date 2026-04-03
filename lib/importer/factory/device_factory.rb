@@ -4,7 +4,6 @@ module Importer
       include WithAssociatedCollection
 
       self.klass = Device
-      self.valkyrie_klass = DeviceResource
 
     end
   end

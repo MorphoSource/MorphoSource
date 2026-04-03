@@ -2,7 +2,7 @@ module Qa::Authorities
   class FindDevices < Qa::Authorities::FindWorks
     include MorphosourceHelper
 
-    self.search_builder_class = Morphosource::Qa::FindDevicesSearchBuilder
+    self.search_builder_class = Morphosource::FindDevicesSearchBuilder
 
     def search(_q, controller)
       # The My::FindWorksSearchBuilder expects a current_user

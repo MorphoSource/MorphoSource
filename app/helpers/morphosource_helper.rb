@@ -281,7 +281,7 @@ module MorphosourceHelper
   end
 
   def find_device_autocomplete_url
-    Rails.application.routes.url_helpers.qa_path + '/search/find_devices?type[]=Device&id=NA&q='
+    Rails.application.routes.url_helpers.qa_path + '/search/find_devices?id=NA&q='
   end
 
   def find_biological_specimen_autocomplete_url

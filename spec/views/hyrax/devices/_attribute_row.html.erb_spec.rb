@@ -3,15 +3,16 @@ require 'rails_helper'
 RSpec.describe 'hyrax/devices/_attribute_rows.html.erb', type: :view do
 	let(:url) { "http://example.com" }
 	let(:ability) { double }
-	let(:work) do
-		Device.new({
-        title: ['XTekCT 100'],
-        creator: ['Nikon'],
-        modality: ['MicroNanoXRayComputedTomography'],
-        description: ['A sample description']
-    })
-	end
-	let(:solr_document) { SolrDocument.new(work.to_solr) }
+	let(:resource) do
+    FactoryBot.build(
+      :device_resource,
+      title: ['XTekCT 100'],
+      creator: ['Nikon'],
+      modality: ['MicroNanoXRayComputedTomography'],
+      description: ['A sample description']
+    )
+  end
+	let(:solr_document) { SolrDocument.new(DeviceResourceIndexer.new(resource: resource).to_solr) }
   let(:presenter) { Hyrax::DevicePresenter.new(solr_document, ability) }
 
   let(:page) do

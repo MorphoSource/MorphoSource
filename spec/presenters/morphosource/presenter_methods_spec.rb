@@ -26,8 +26,8 @@ RSpec.describe Hyrax::MediaPresenter do
 
   describe '#in_work_presenters' do
     describe 'nested work' do
-      let(:device) { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-      let(:parent) { ImagingEvent.new(title: ["Example Parent Imaging Event Work"], device_id: [device.id], ie_modality: device.modality) }
+    let(:device) { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
+    let(:parent) { ImagingEvent.new(title: ["Example Parent Imaging Event Work"], device_id: [device.id.to_s], ie_modality: device.modality) }
       let(:child) { Media.create(title: ["Example Child Media Work"]) }
       subject { described_class.new(SolrDocument.find(child.id), ability, request) }
 
@@ -48,9 +48,9 @@ end
 RSpec.describe Hyrax::BiologicalSpecimenPresenter do
   let!(:user)           { FactoryBot.build(:user) }
   let!(:specimen)       { BiologicalSpecimen.create(title: ['specimen'], vouchered: ['Yes'] )}
-  let!(:device)         { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-  let!(:imaging_event)  { ImagingEvent.create(title: ['imaging event'], physical_object_id: [specimen.id], visibility: 'open', ie_modality: device.modality, device_id: [device.id]) }
-  let!(:imaging_event2) { ImagingEvent.create(title: ['imaging event 2'], physical_object_id: [specimen.id], visibility: 'open', ie_modality: device.modality, device_id: [device.id]) }
+  let!(:device)         { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
+  let!(:imaging_event)  { ImagingEvent.create(title: ['imaging event'], physical_object_id: [specimen.id], visibility: 'open', ie_modality: device.modality, device_id: [device.id.to_s]) }
+  let!(:imaging_event2) { ImagingEvent.create(title: ['imaging event 2'], physical_object_id: [specimen.id], visibility: 'open', ie_modality: device.modality, device_id: [device.id.to_s]) }
   let!(:media)          { Media.create(title: ['media'], visibility: 'open') }
   let!(:media2)         { Media.create(title: ['media2'], visibility: 'restricted') }
   let!(:solr_document)  { SolrDocument.find(specimen.id) }

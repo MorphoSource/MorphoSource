@@ -4,7 +4,8 @@ RSpec.describe Hyrax::Actors::ImagingEventActor do
 
   subject { described_class.new(next_actor) }
 
-  let!(:device)     { Device.create(title: ['Model'], modality: ['Photogrammetry'], creator: ['Manufacturer'], description: ['Description']) }
+  let(:device)     { instance_double('DeviceResource', title: ['Model'], creator: ['Manufacturer']) }
+  let(:device_id)  { 'device-1' }
 
   let(:next_actor)  { double(create: true, update: true) }
   let(:work)        { ImagingEvent.new }
@@ -13,9 +14,15 @@ RSpec.describe Hyrax::Actors::ImagingEventActor do
 
   # <device manufacturer> <device name> <modality> Imaging Event (<date created>)
   describe 'generated_title' do
+    let(:query_service) { instance_double('Hyrax::QueryService') }
+
+    before do
+      allow(Hyrax).to receive(:query_service).and_return(query_service)
+      allow(query_service).to receive(:find_by).with(id: device_id).and_return(device)
+    end
     let(:attrs) { { 'title' => ['Title'],
                     'ie_modality' => ['Photogrammetry'],
-                    'device_id' => [device.id],
+                    'device_id' => [device_id],
                     'date_created' => ['2020-12-15'] } }
     context 'all attributes are present' do
       let(:title) { "Manufacturer Model Photogrammetry Imaging Event (2020-12-15)" }

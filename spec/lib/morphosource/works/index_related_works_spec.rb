@@ -14,16 +14,16 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
 
   let(:specimen)                { BiologicalSpecimen.create(title: ['specimen'], vouchered: ['Yes'], organization_id: [organization.id], taxonomy_id: [taxonomy.id]) }
   let(:cho)                     { CulturalHeritageObject.create(title: ['cho'], vouchered: ['No'], organization_id: [organization.id]) }
-  let(:device)                  { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-  let(:device2)                 { Device.create(title: ['device 2'], modality: ['Photography']) }
+  let(:device)                  { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
+  let(:device2)                 { FactoryBot.valkyrie_create(:device_resource, title: ['device 2'], modality: ['Photography']) }
 
-  let(:imaging_event1)          { ImagingEvent.create(title: ['imaging event 1'], device_id: [device.id], physical_object_id: [specimen.id], ie_modality: device.modality) }
+  let(:imaging_event1)          { ImagingEvent.create(title: ['imaging event 1'], device_id: [device.id.to_s], physical_object_id: [specimen.id], ie_modality: device.modality) }
   let(:media1a)                 { Media.create(title: ['media 1a']) }
 
   let(:processing_event1)       { ProcessingEvent.create(title: ['processing event 1']) }
   let(:media1b)                 { Media.create(title: ['media 1b']) }
 
-  let(:imaging_event2)          { ImagingEvent.create(title: ['imaging event 2'], device_id: [device.id], physical_object_id: [cho.id], ie_modality: device.modality) }
+  let(:imaging_event2)          { ImagingEvent.create(title: ['imaging event 2'], device_id: [device.id.to_s], physical_object_id: [cho.id], ie_modality: device.modality) }
   let(:media2a)                 { Media.create(title: ['media 2a']) }
   let(:processing_event2)       { ProcessingEvent.create(title: ['processing event 2']) }
   let(:media2b)                 { Media.create(title: ['media 2b']) }
@@ -99,7 +99,7 @@ RSpec.describe Morphosource::Works::IndexRelatedWorks do
         skip if !Hyrax.config.index_related_works
         expect(imaging_event1).to receive(:index_related).with(contain_exactly(media1a, media1b)).and_call_original
         expect(imaging_event1).to receive(:index_related).with(contain_exactly(media1a, media1b, cho, specimen))
-        imaging_event1.device_id = [device2.id]
+        imaging_event1.device_id = [device2.id.to_s]
         imaging_event1.ie_modality = ['Photography']
         imaging_event1.physical_object_id = [cho.id]
         imaging_event1.save

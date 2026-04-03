@@ -18,9 +18,9 @@ RSpec.describe SequentialSectionListIndexer do
   describe 'custom fields' do
     context 'list has media' do
       let(:media)         { FactoryBot.create(:media) }
-      let(:device)        { FactoryBot.create(:device) }
+      let(:device)        { FactoryBot.create(:device_resource, modality: ['SequentialSectionScan']) }
       let(:organization)  { FactoryBot.create(:organization) }
-      let(:imaging_event) { FactoryBot.create(:imaging_event, ie_modality: ['SequentialSectionScan'], device_id: [device.id], physical_object_id: [object.id]) }
+      let(:imaging_event) { FactoryBot.create(:imaging_event, ie_modality: ['SequentialSectionScan'], device_id: [device.id.to_s], physical_object_id: [object.id]) }
 
       before do
         imaging_event.ordered_members << media

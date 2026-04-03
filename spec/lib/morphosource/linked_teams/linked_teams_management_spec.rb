@@ -10,9 +10,9 @@ RSpec.describe Morphosource::LinkedTeams::LinkedTeamsManagement do
     let(:old_organization)      { Organization.create(title: ['old organization'], team_id: [old_team.id]) }
     let(:specimen)              { BiologicalSpecimen.create(title: ['new specimen'], vouchered: ["Yes"], organization_id: [organization.id]) }
     let(:old_specimen)          { BiologicalSpecimen.create(title: ['old_specimen'], vouchered: ["Yes"], organization_id: [old_organization.id]) }
-    let(:device)                { Device.create(title: ['title'], modality: ['Photogrammetry'])}
-    let(:imaging_event)         { ImagingEvent.create(title: ['new imaging event'], device_id: [device.id], physical_object_id: [specimen.id], ie_modality: device.modality) }
-    let(:old_imaging_event)     { ImagingEvent.create(title: ['old imaging event'], device_id: [device.id], physical_object_id: [old_specimen.id], ie_modality: device.modality) }
+    let(:device)                { FactoryBot.valkyrie_create(:device_resource, title: ['title'], modality: ['Photogrammetry'])}
+    let(:imaging_event)         { ImagingEvent.create(title: ['new imaging event'], device_id: [device.id.to_s], physical_object_id: [specimen.id], ie_modality: device.modality) }
+    let(:old_imaging_event)     { ImagingEvent.create(title: ['old imaging event'], device_id: [device.id.to_s], physical_object_id: [old_specimen.id], ie_modality: device.modality) }
     let(:processing_event)      { ProcessingEvent.create(title: ['new processing event']) }
     let(:child_processing_event){ ProcessingEvent.create(title: ['child processing event']) }
     let(:media)                 { Media.create(title: ['media'], media_type: ['Image']) }

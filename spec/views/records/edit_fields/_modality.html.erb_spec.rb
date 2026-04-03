@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe 'records/edit_fields/_modality.html.erb', type: :view do
-  let(:work) { Device.new }
-  let(:form) { Hyrax::DeviceForm.new(work, nil, controller) }
+  let(:work) { FactoryBot.build(:device_resource) }
+  let(:form) { DeviceResourceForm.new(work) }
   let(:form_template) do
     %(
       <%= simple_form_for [main_app, @form] do |f| %>

@@ -175,8 +175,8 @@ class MediaIndexer < Morphosource::WorkIndexer
       device_title = "#{device&.creator&.first} #{device&.title&.first}"
       solr_doc['media_device_tesim'] = device_title
       solr_doc['media_device_ssim'] = device_title
-      solr_doc['media_device_id_tesim'] = device&.id
-      solr_doc['media_device_id_ssim'] = device&.id
+      solr_doc['media_device_id_tesim'] = device&.id.to_s
+      solr_doc['media_device_id_ssim'] = device&.id.to_s
       facility_org = device&.organization
       facility_org_title = facility_org&.title&.first
       solr_doc['media_device_facility_organization_tesim'] = facility_org_title

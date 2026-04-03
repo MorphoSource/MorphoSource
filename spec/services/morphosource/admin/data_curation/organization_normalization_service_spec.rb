@@ -9,8 +9,8 @@ RSpec.describe Morphosource::DataCuration::OrganizationNormalizationService do
   let(:project)                 { FactoryBot.create(:project, depositor: user.ms_id) }
   let!(:org_data_manager)       { FactoryBot.create(:contributor) }
   let(:specimen)                { FactoryBot.create(:biological_specimen, organization_id: [organization.id]) }
-  let(:device)                  { FactoryBot.create(:device, modality: ['Photogrammetry']) }
-  let(:imaging_event)           { FactoryBot.create(:imaging_event, ie_modality: device.modality, device_id: [device.id], physical_object_id: [specimen.id]) }
+  let(:device)                  { FactoryBot.create(:device_resource, modality: ['Photogrammetry']) }
+  let(:imaging_event)           { FactoryBot.create(:imaging_event, ie_modality: device.modality, device_id: [device.id.to_s], physical_object_id: [specimen.id]) }
 
   let(:media1)                  { FactoryBot.create(:media, depositor: depositor.ms_id) }
   let(:media2)                  { FactoryBot.create(:media, depositor: depositor.ms_id) }

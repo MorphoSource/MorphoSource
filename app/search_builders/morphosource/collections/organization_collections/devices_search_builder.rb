@@ -13,7 +13,7 @@ module Morphosource
 
         def return_selected_fields(solr_parameters)
           if !@blacklight_params[:return_all_fields]
-            solr_parameters[:fl] = 'id,modality_tesim,title_ssi,creator_tesim,description_tesim,date_uploaded_dtsi,ark_tesim'
+            solr_parameters[:fl] = 'id,modality_tesim,title_tesim,creator_tesim,description_tesim,date_uploaded_dtsi,ark_tesim'
           end
         end
 

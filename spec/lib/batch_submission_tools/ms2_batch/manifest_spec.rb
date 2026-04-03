@@ -8,7 +8,7 @@ RSpec.describe BatchSubmissionTools::Ms2Batch::Manifest do
   let(:contributors)   		      { Role.create(name: 'contributor') }
   let(:input_path)              { fixture_path + '/batch_submission_manifest_object_test.xlsx'}
   let(:media_path)              { fixture_path }
-  let(:device)                  { Device.create(title: ['device'], modality: ['Photogrammetry'])}
+  let(:device)                  { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry'])}
   let(:organization)            { Organization.create(title: ['Organization'] ) }
   let(:owner)                   { FactoryBot.create(:organization_collection, depositor: depositor.ms_id).id }
   let(:media_ownership_fields)  { { "visibility"=>"restricted",
@@ -34,7 +34,7 @@ RSpec.describe BatchSubmissionTools::Ms2Batch::Manifest do
       depositor: depositor,
       owner: owner,
       organization_id: organization.id,
-      device_id: device.id,
+      device_id: device.id.to_s,
       media_ownership_fields: media_ownership_fields,
       modality: modality
     }

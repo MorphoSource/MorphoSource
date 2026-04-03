@@ -10,7 +10,10 @@ module Morphosource
   module Listeners
     extend ActiveSupport::Autoload
 
+    autoload :DeleteReservedArkListener
     autoload :DestroyProxyDepositRequestsListener
     autoload :IndexRelatedWorksListener
+    autoload :MintArkListener
+    autoload :UpdateArkStatusListener
   end
 end

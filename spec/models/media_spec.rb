@@ -118,8 +118,8 @@ RSpec.describe Media do
     end
 
     describe '#modality' do
-      let(:device)         { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-      let!(:imaging_event) { ImagingEvent.new(ie_modality: device.modality, device_id: [device.id]) }
+      let(:device)         { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
+      let!(:imaging_event) { ImagingEvent.new(ie_modality: device.modality, device_id: [device.id.to_s]) }
       let(:modality_values) { {
         "MicroNanoXRayComputedTomography" => "X-Ray Computed Tomography (CT/microCT)",
         "MagneticResonanceImaging" => "Magnetic Resonance Imaging (MRI)",
@@ -332,8 +332,8 @@ RSpec.describe Media do
       let(:organization)  { Organization.create(title: ['organization'])}
       let(:specimen)      { BiologicalSpecimen.create(title: ['specimen'], vouchered: ['Yes'], organization_id: [organization.id])}
       let(:cho)           { CulturalHeritageObject.create(title: ['cho'], vouchered: ['Yes'], organization_id: [organization.id])}
-      let(:device)        { Device.create(title: ['device'], modality: ['Photogrammetry'])}
-      let(:imaging_event) { ImagingEvent.create(title: ['imaging event'], device_id: [device.id], ie_modality: device.modality)}
+      let(:device)        { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry'])}
+      let(:imaging_event) { ImagingEvent.create(title: ['imaging event'], device_id: [device.id.to_s], ie_modality: device.modality)}
 
       context 'object is a specimen' do
         let(:works) {[imaging_event, media]}
@@ -386,8 +386,8 @@ RSpec.describe Media do
       let(:specimen)                { BiologicalSpecimen.create(title: ['Specimen'], vouchered: ['Yes']) }
       let(:media1)                   { Media.create(title: ['title'], media_type: ['Image'], keyword: ['red', 'blue', 'yellow'], visibility: 'open') }
       let(:media2)                   { Media.create(title: ['title'], media_type: ['Image'], keyword: ['red', 'blue', 'yellow'], visibility: 'open') }
-      let(:device)                  { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-      let(:imaging_event)           { ImagingEvent.create(title: ['title'], device_id: [device.id], physical_object_id: [specimen.id], ie_modality: device.modality) }
+      let(:device)                  { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
+      let(:imaging_event)           { ImagingEvent.create(title: ['title'], device_id: [device.id.to_s], physical_object_id: [specimen.id], ie_modality: device.modality) }
       let!(:processing_event1)       { ProcessingEvent.create(title: ['processing_event']) }
       let!(:processing_event2)       { ProcessingEvent.create(title: ['processing_event']) }
       let!(:works)                  { [ imaging_event, processing_event1, processing_event2 ] }
@@ -446,10 +446,10 @@ RSpec.describe Media do
     describe 'record_original_objects, reindex_physical_objects' do
       let(:specimen)                { BiologicalSpecimen.create(title: ['Specimen'], vouchered: ['Yes']) }
       let(:media)                   { Media.create(title: ['title'], media_type: ['Image'], keyword: ['red', 'blue', 'yellow'], visibility: 'open') }
-      let(:device)                  { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-      let(:imaging_event)           { ImagingEvent.create(title: ['title'], device_id: [device.id], physical_object_id: [specimen.id], ie_modality: device.modality) }
+      let(:device)                  { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
+      let(:imaging_event)           { ImagingEvent.create(title: ['title'], device_id: [device.id.to_s], physical_object_id: [specimen.id], ie_modality: device.modality) }
       let!(:processing_event)       { ProcessingEvent.create(title: ['processing_event']) }
-      let!(:works)                  { [ device, imaging_event, processing_event, media, specimen ] }
+      let!(:works)                  { [ imaging_event, processing_event, media, specimen ] }
 
       before do
         imaging_event.ordered_members << processing_event

@@ -1,5 +1,6 @@
 # Generated via
 #  `rails generate hyrax:work Device`
+# @deprecated Use DeviceResourceIndexer instead
 class DeviceIndexer < Morphosource::WorkIndexer
   # This indexes the default metadata. You can remove it if you want to
   # provide your own metadata and indexing.

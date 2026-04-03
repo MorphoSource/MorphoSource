@@ -1,5 +1,6 @@
 # Generated via
 #  `rails generate hyrax:work Device`
+# @deprecated Use DeviceResourceForm instead.
 module Hyrax
   # Generated form for Device
   class DeviceForm < Hyrax::Forms::WorkForm

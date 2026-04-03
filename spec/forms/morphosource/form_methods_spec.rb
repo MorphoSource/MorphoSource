@@ -21,4 +21,17 @@ RSpec.describe Morphosource::FormMethods do
     it { is_expected.to include("Example Parent Work") }
 
   end
+
+  describe '#build_permitted_params' do
+    it 'returns extended params even when no super is defined' do
+      dummy_class = Class.new do
+        include Morphosource::FormMethods
+      end
+      params = dummy_class.new.build_permitted_params
+
+      expect(params).to include(:on_behalf_of, :version, :add_works_to_collection, :organization_institution)
+      expect(params).to include(hash_including(work_parents_attributes: [:id, :_destroy]))
+    end
+  end
+
 end

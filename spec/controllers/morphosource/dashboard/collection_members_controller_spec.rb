@@ -347,16 +347,16 @@ RSpec.describe Morphosource::Dashboard::CollectionMembersController, type: :cont
     let!(:specimen2) { FactoryBot.create(:biological_specimen, id: '456') }
 
     let!(:media1)          { FactoryBot.create(:media) }
-    let!(:device)   { FactoryBot.create(:device) }
-    let!(:imaging_event1)  { FactoryBot.create(:imaging_event, physical_object_id: [specimen_id], device_id: [device.id]) }
+    let!(:device)   { FactoryBot.create(:device_resource, modality: ['Photogrammetry']) }
+    let!(:imaging_event1)  { FactoryBot.create(:imaging_event, physical_object_id: [specimen_id], device_id: [device.id.to_s], ie_modality: device.modality) }
     let!(:processing_event1)  { FactoryBot.create(:processing_event) }
 
     let!(:media2)          { FactoryBot.create(:media) }
-    let!(:imaging_event2)  { FactoryBot.create(:imaging_event, physical_object_id: ['456'], device_id: [device.id]) }
+    let!(:imaging_event2)  { FactoryBot.create(:imaging_event, physical_object_id: ['456'], device_id: [device.id.to_s], ie_modality: device.modality) }
     let!(:processing_event2)  { FactoryBot.create(:processing_event) }  
 
     let!(:media3)          { FactoryBot.create(:media) }
-    let!(:imaging_event3)  { FactoryBot.create(:imaging_event, physical_object_id: [specimen_id], device_id: [device.id]) }
+    let!(:imaging_event3)  { FactoryBot.create(:imaging_event, physical_object_id: [specimen_id], device_id: [device.id.to_s], ie_modality: device.modality) }
     let!(:processing_event3)  { FactoryBot.create(:processing_event) }
 
     before do

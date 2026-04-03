@@ -229,8 +229,8 @@ RSpec.describe Morphosource::CollectionsControllerExportBehavior, type: :control
     let(:project)                 { FactoryBot.create(:project, depositor: admin.ms_id) }
     let(:organization)            { FactoryBot.create(:organization_collection, depositor: admin.ms_id) }
     let(:object)                  { FactoryBot.create(:biological_specimen) }
-    let(:device)                  { FactoryBot.create(:device) }
-    let(:imaging_event)           { FactoryBot.create(:imaging_event, ie_modality: device.modality, device_id: [device.id], physical_object_id: [object.id]) }
+    let(:device)                  { FactoryBot.create(:device_resource) }
+    let(:imaging_event)           { FactoryBot.create(:imaging_event, ie_modality: device.modality, device_id: [device.id.to_s], physical_object_id: [object.id]) }
     let(:media)                   { FactoryBot.create(:media, visibility: 'open') }
     let!(:cart_item)              { CartItem.create(work_id: media.id, user_id: admin.ms_id, date_downloaded: Date.yesterday, date_requested: Date.yesterday) }
     let(:relation)                { CartItem.where(work_id: media.id) }
@@ -314,7 +314,7 @@ RSpec.describe Morphosource::CollectionsControllerExportBehavior, type: :control
       end
 
       context 'collection is empty' do
-        let!(:device) { FactoryBot.create(:device) }
+        let!(:device) { FactoryBot.create(:device_resource) }
 
         it 'returns an empty csv' do
           # objects_export
@@ -342,9 +342,24 @@ RSpec.describe Morphosource::CollectionsControllerExportBehavior, type: :control
       end
 
       context 'collection is not empty' do
-        let!(:device) { FactoryBot.create(:device, organization_id: [organization.id]) }
+        let!(:device) { FactoryBot.create(:device_resource, organization_id: [organization.id]) }
 
         before do
+          model_field = ActiveFedora.index_field_mapper.solr_name('has_model', :symbol)
+          ActiveFedora::SolrService.add(
+            {
+              id: device.id.to_s,
+              model_field => ['DeviceResource'],
+              'device_organization_id_ssim' => [organization.id],
+              'device_organization_id_tesim' => [organization.id],
+              'read_access_group_ssim' => ['public'],
+              'edit_access_group_ssim' => ["#{organization.id}_managers"],
+              'title_tesim' => device.title,
+              'modality_tesim' => device.modality
+            },
+            softCommit: true
+          )
+          ActiveFedora::SolrService.commit
           media.member_of_collections << project
           media.save!
         end

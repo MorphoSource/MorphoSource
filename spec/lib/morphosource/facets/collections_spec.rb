@@ -12,9 +12,9 @@ RSpec.describe Morphosource::Facets::Collections do
   let(:private_media)           { Media.create(title: ['private media'], visibility: 'restricted')}
   let(:specimen)                { BiologicalSpecimen.create(title: ['specimen'], visibility: 'open', vouchered: ['Yes'])}
   let(:cho)                     { CulturalHeritageObject.create(title: ['cho'], visibility: 'open', vouchered: ['Yes'])}
-  let(:device)                  { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-  let(:imaging_event1)          { ImagingEvent.create(title: ['imaging event 1'], device_id: [device.id], physical_object_id: [specimen.id], ie_modality: device.modality) }
-  let(:imaging_event2)          { ImagingEvent.create(title: ['imaging event 2'], device_id: [device.id], physical_object_id: [cho.id], ie_modality: device.modality) }
+  let(:device)                  { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
+  let(:imaging_event1)          { ImagingEvent.create(title: ['imaging event 1'], device_id: [device.id.to_s], physical_object_id: [specimen.id], ie_modality: device.modality) }
+  let(:imaging_event2)          { ImagingEvent.create(title: ['imaging event 2'], device_id: [device.id.to_s], physical_object_id: [cho.id], ie_modality: device.modality) }
 
   let(:works)                   { [open_media, open_media2, private_media, specimen, cho, imaging_event1, imaging_event2] }
   let(:media)                   { [open_media, open_media2, private_media]}

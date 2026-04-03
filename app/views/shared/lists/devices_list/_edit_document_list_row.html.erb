@@ -1,7 +1,7 @@
 <tr id="document_<%= document.id %>">
   <td><%= link_to document.id, hyrax_device_path(document.id) %></td>
   <td class="break-all"><%= document['creator_tesim']&.first %></td>
-  <td class="break-all"><%= document['title_ssi'] %></td>
+  <td class="break-all"><%= document['title_tesim']&.first %></td>
   <td class="break-all"><%= device_modalities(document['modality_tesim']) %></td>
   <td class="break-all"><%= document['description_tesim']&.first %></td>
   <% device_media_count, device_imaging_event_count = device_media_and_imaging_event_counts(document.id) %>

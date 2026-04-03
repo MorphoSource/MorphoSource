@@ -814,8 +814,8 @@ module BatchSubmissionTools
 
         if device_cache[device_id].present?
           device_cache[device_id]
-        elsif Device.exists?(device_id)
-          device_cache[device_id] = Device.find(device_id)
+        elsif DeviceResource.exists?(device_id)
+          device_cache[device_id] = DeviceResource.find(device_id)
           device_cache[device_id]
         end
       end

@@ -630,6 +630,20 @@ RSpec.describe Hyrax::MediaPresenter do
       end
     end
 
+    context "with no present media parents, but absentee parent (ImagingEventResource)" do
+      let(:ie_resource) { SolrDocument.new({ id: "ie3", has_model_ssim: ["ImagingEventResource"] }) }
+      let(:hierarchy) { [ie_resource, pe] }
+      before do
+        allow(subject).to receive(:parent_works).and_return(hierarchy)
+      end
+
+      context "#has_absentee_parent" do
+        it "returns true when first parent is ImagingEventResource" do
+          expect(subject.has_absentee_parent).to eq(true)
+        end
+      end
+    end
+
     context "raw media" do
       let(:hierarchy) { [ie] }
       before do

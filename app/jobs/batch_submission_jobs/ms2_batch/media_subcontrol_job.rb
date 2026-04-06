@@ -119,6 +119,8 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
     jobs_complete = true
 
     background_job_manifest['media_ie_pe_ingests'].each do |i|
+      next if i['completed'] == true
+
       job_id = i['job_id']
       next if !job_id.present?
 

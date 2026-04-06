@@ -186,6 +186,43 @@ RSpec.describe ImagingEventResource do
     end
   end
 
+  describe '#imaging_event?' do
+    it 'returns true' do
+      expect(work.imaging_event?).to be true
+    end
+  end
+
+  describe '#media?' do
+    it 'returns false' do
+      expect(work.media?).to be false
+    end
+  end
+
+  describe '#needs_id_title_prefix?' do
+    it 'returns true when title lacks IE prefix' do
+      work.title = ['My Event']
+      expect(work.needs_id_title_prefix?).to be true
+    end
+
+    context 'with a saved resource whose title already has the prefix' do
+      let(:saved) { ImagingEventResource.new(title: ['My Event']).save }
+
+      it 'returns false' do
+        expect(saved.needs_id_title_prefix?).to be false
+      end
+    end
+  end
+
+  describe '#apply_id_title_prefix' do
+    let(:ie) { Hyrax.persister.save(resource: ImagingEventResource.new(title: ['My Event'])) }
+
+    it 'sets the title to IE<id>: <original title>' do
+      ie.title = ['My Event']
+      ie.apply_id_title_prefix
+      expect(ie.title.first).to eq("IE#{ie.id}: My Event")
+    end
+  end
+
   describe '#device' do
     let(:device) { Device.create(title: ['device'], modality: ['Photogrammetry']) }
     let(:ie) { ImagingEventResource.new(device_id: [device.id]) }

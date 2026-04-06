@@ -72,13 +72,13 @@ module Morphosource
       end
 
       def ancestors
-        @ancestors = member_of
+        @ancestors = all_parents_of(self)
         get_all_parents(@ancestors)
         @ancestors.flatten.uniq
       end
 
       def ancestor_find(cond_method)
-        objects = member_of
+        objects = all_parents_of(self)
         return find_parent(objects, cond_method)
       end
 
@@ -214,12 +214,32 @@ module Morphosource
 
       def get_all_parents(objects)
         objects.flatten.each do |object|
-          next if object.member_of.blank?
+          parents = all_parents_of(object)
+          next if parents.blank?
 
-          parents = object.member_of
           @ancestors << parents
           get_all_parents(parents)
         end
+      end
+
+      # Returns both AF parents (via Fedora in_works) and Valkyrie parents
+      # (via Postgres member_ids inverse references) for the given object.
+      # This allows ancestor traversal to work across the AF/Valkyrie boundary,
+      # e.g. when a Media (AF) has an ImagingEventResource (Valkyrie) parent.
+      def all_parents_of(object)
+        af_parents = begin
+          object.respond_to?(:member_of) ? object.member_of : []
+        rescue StandardError
+          []
+        end
+        valkyrie_parents = begin
+          Hyrax.query_service.postgres_service.find_inverse_references_by(
+            id: Valkyrie::ID.new(object.id.to_s), property: :member_ids
+          ).to_a
+        rescue StandardError
+          []
+        end
+        (af_parents + valkyrie_parents).uniq { |p| p.id.to_s }
       end
 
       def find_parent(objects, cond_method)
@@ -227,7 +247,7 @@ module Morphosource
           if object.send(cond_method)
             return object
           else
-            parent_result = find_parent(object.member_of, cond_method)
+            parent_result = find_parent(all_parents_of(object), cond_method)
             return parent_result if parent_result.present?
           end
         end

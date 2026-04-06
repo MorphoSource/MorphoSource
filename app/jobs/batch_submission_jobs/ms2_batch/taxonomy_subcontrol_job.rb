@@ -41,6 +41,7 @@ class BatchSubmissionJobs::Ms2Batch::TaxonomySubcontrolJob < Morphosource::Appli
     # Check for exceptions and raise if present
     exceptions = []
     background_job_manifest['taxonomy_ingests'].each_with_index do |t, index|
+      next if t['id'].present?
       if t['job_exception'].present?
         exceptions << "Taxonomy ingest #{index} failed. Exception: \"#{t['job_exception']}\". Supplied attributes were: \"#{t['attrs']}\""
       end

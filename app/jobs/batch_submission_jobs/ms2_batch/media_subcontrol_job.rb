@@ -42,6 +42,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
     # Report errors
     exceptions = []
     background_job_manifest['media_ie_pe_ingests'].each_with_index do |i, index|
+      next if i['completed'] == true
       if i['job_exception'].present?
         exceptions << "Media ingest #{index} failed. Exception: \"#{i['job_exception']}\"."
       end

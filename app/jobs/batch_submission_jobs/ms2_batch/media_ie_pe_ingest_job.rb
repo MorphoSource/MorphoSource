@@ -66,7 +66,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
           next
         end
 
-        parent_media_key = "media_#{idx}"
+        parent_media_key = "parent_media_#{idx}"
         if created_objects[parent_media_key].present?
           parent_media = Media.find(created_objects[parent_media_key])
           all_media << parent_media
@@ -146,7 +146,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
     if direct_parent.present?
       ingest['children'].each do |idx, child|
         child_pe_key = "child_pe_#{idx}"
-        child_media_key = "media_#{idx}"
+        child_media_key = "child_media_#{idx}"
 
         if child['pe'].present?
           if created_objects[child_pe_key].present?

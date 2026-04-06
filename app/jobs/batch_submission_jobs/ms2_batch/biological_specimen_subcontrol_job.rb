@@ -44,6 +44,7 @@ class BatchSubmissionJobs::Ms2Batch::BiologicalSpecimenSubcontrolJob < Morphosou
     # Report errors
     exceptions = []
     background_job_manifest['biological_specimen_ingests'].each_with_index do |b, index|
+      next if b['id'].present?
       if b['job_exception'].present?
         exceptions << "Biological Specimen ingest #{index} failed. Exception: \"#{b['job_exception']}\". Supplied attributes were: \"#{b['attrs']}\""
       end

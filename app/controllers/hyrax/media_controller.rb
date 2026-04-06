@@ -229,7 +229,12 @@ module Hyrax
     def after_destroy(works_to_index, works_to_delete)
       UpdateRelatedWorksIndexJob.perform_later(works_to_index.compact.map { |w| w.id })
       works_to_delete&.each do |w|
-        w.delete if w.present?
+        next unless w.present?
+        if w.is_a?(Valkyrie::Resource)
+          Hyrax.persister.delete(resource: w)
+        else
+          w.delete
+        end
       end
       respond_to do |format|
         format.js {render :js => "location.reload()"}
@@ -256,14 +261,17 @@ module Hyrax
       # If the media has a direct or indirect IE parent and that IE parent has no other children, it should also be deleted
       processing_event = curation_concern.parent_works.select { |w| w.class == ProcessingEvent }&.first
       if processing_event.present?
-        imaging_event = processing_event.parent_works.select { |w| w.class == ImagingEvent }&.first
+        imaging_event = processing_event.parent_works.select { |w| w.respond_to?(:imaging_event?) && w.imaging_event? }&.first
       else
-        imaging_event = curation_concern.parent_works.select { |w| w.class == ImagingEvent }&.first
+        imaging_event = curation_concern.parent_works.select { |w| w.respond_to?(:imaging_event?) && w.imaging_event? }&.first
       end
       if imaging_event.present?
-        if imaging_event.descendants.select { |d| d.class == Media && d.id != curation_concern.id}.present?
-          imaging_event = nil
+        other_media = if imaging_event.is_a?(Valkyrie::Resource)
+          imaging_event.media.select { |m| m.id.to_s != curation_concern.id }
+        else
+          imaging_event.descendants.select { |d| d.class == Media && d.id != curation_concern.id }
         end
+        imaging_event = nil if other_media.present?
       end
       works_to_delete = [processing_event, imaging_event].compact
       works_to_index = (curation_concern.related_media + curation_concern.physical_objects).compact

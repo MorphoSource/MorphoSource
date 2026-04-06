@@ -77,6 +77,9 @@ class ImagingEventResource < Hyrax::Work
   include Morphosource::ValkyrieWorkBehavior
   include ActiveModel::Validations
 
+  delegate :download_groups, :download_groups=,
+           :download_users,  :download_users=, to: :permission_manager
+
   # ToDoValk: Morphosource::ParentChildValidator uses record.works and
   # record.valid_child_concerns which are not available on Valkyrie resources.
   validates_with ImagingEventResourceParentDeviceModalityValidator
@@ -232,10 +235,18 @@ class ImagingEventResource < Hyrax::Work
     result
   end
 
+  def needs_id_title_prefix?
+    !title.first.to_s.start_with?("IE#{id}: ")
+  end
+
+  def apply_id_title_prefix
+    self.title = ["IE#{id}: #{title.first.to_s}"]
+  end
+
   private
 
     def add_id_to_title
-      self.title = ["IE#{id}: #{title.first.to_s}"]
+      apply_id_title_prefix
     end
 
     def controlled_value_filter

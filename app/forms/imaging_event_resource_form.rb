@@ -58,6 +58,20 @@ class ImagingEventResourceForm < Hyrax::Forms::PcdmObjectForm(ImagingEventResour
     ]
   end
 
+  # Pre-assign the resource ID so the IE title prefix can be applied before
+  # the persister save. The Valkyrie Postgres persister honours a pre-assigned
+  # Valkyrie::ID as the primary key rather than generating a new one, so the
+  # resource is stored with the correct title on the first (and only) save.
+  # This is necessary because CreateWorkService uses the persister directly
+  # (bypassing ImagingEventResource#save) and the ID is nil until that first
+  # persister save.
+  def sync
+    result = super
+    result.id = Valkyrie::ID.new(SecureRandom.uuid) if result.id.nil?
+    result.apply_id_title_prefix if result.needs_id_title_prefix?
+    result
+  end
+
   # Fields shown for all imaging events regardless of modality (left column).
   def universal_terms
     primary_terms[..4]

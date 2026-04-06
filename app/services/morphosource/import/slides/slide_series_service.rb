@@ -121,7 +121,7 @@ module Morphosource
 
         def create_new_imaging_event
           attributes = { aperture_value: @slide.aperture_value,
-                         creator: @slide.creator,
+                         creator: @slide.creator.presence || [manager.user_key],
                          date_created: @slide.date_created,
                          depositor: manager.user_key,
                          device_id: [device.id.to_s],

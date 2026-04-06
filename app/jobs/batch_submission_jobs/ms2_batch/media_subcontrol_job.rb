@@ -11,6 +11,10 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
 
     # Submit jobs for new works to be created
     background_job_manifest['media_ie_pe_ingests'].each_with_index do |i, ingest_index|
+      next if i['completed'] == true
+
+      i['job_exception'] = nil
+      i['job_status'] = nil
       ensure_imaging_event_present(i)
       ensure_single_parent(i)
 
@@ -38,6 +42,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
     # Report errors
     exceptions = []
     background_job_manifest['media_ie_pe_ingests'].each_with_index do |i, index|
+      next if i['completed'] == true
       if i['job_exception'].present?
         exceptions << "Media ingest #{index} failed. Exception: \"#{i['job_exception']}\"."
       end
@@ -115,6 +120,8 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
     jobs_complete = true
 
     background_job_manifest['media_ie_pe_ingests'].each do |i|
+      next if i['completed'] == true
+
       job_id = i['job_id']
       next if !job_id.present?
 
@@ -126,6 +133,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
       elsif job_status[:status] == :failed
         i['job_exception'] = "Job MediaIePeIngestJob with ID #{job_id} failed. Exception: #{job_status[:exception].to_s}"
       elsif job_status[:status] == :completed
+        i['completed'] = true
         next
       else
         i['job_exception'] = "Job MediaIePeIngestJob with ID #{job_id} produced unexpected status: #{job_status[:status].to_s}"

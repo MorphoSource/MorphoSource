@@ -23,21 +23,27 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
 
     all_media = []
     organization_permissions_fields = {}
-    created_objects = {}
+    created_objects = background_job.created_objects
 
     imaging_event = nil
     # ingest imaging event
     if ingest['imaging_event'].present?
-      imaging_event = BatchSubmissionsImporter::BatchObjectImporter.call(
-        'ImagingEvent',
-        ingest['imaging_event'].first[1]['attrs'].merge(
-          'physical_object_id' => [ingest['physical_object_id']]
-        ).symbolize_keys,
-        nil,
-        false
-      )
-      created_objects["ie"] = imaging_event.id
-      background_job.update_created_objects(created_objects)
+      ie_row_index = ingest['imaging_event'].first[0]
+      ie_key = "ie_#{ie_row_index}"
+      if created_objects[ie_key].present?
+        imaging_event = OpenStruct.new(id: created_objects[ie_key])
+      else
+        imaging_event = BatchSubmissionsImporter::BatchObjectImporter.call(
+          'ImagingEvent',
+          ingest['imaging_event'].first[1]['attrs'].merge(
+            'physical_object_id' => [ingest['physical_object_id']]
+          ).symbolize_keys,
+          nil,
+          false
+        )
+        created_objects[ie_key] = imaging_event.id
+        background_job.update_created_objects(created_objects)
+      end
     else
       raise "Imaging event not present for ingest. Ingest: #{ingest}"
     end
@@ -59,11 +65,22 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
           parent_media = Media.find(pad(parent['media']['id']))
           next
         end
+
+        parent_media_key = "parent_media_#{idx}"
+        if created_objects[parent_media_key].present?
+          parent_media = Media.find(created_objects[parent_media_key])
+          all_media << parent_media
+          next
+        end
+
         if parent['media']['initial_attrs']['raw_or_derived']&.first.downcase == "raw"
           is_raw = true
         else
           is_raw = false
-          if parent['pe'].present?
+          parent_pe_key = "parent_pe_#{idx}"
+          if created_objects[parent_pe_key].present?
+            parent_pe = OpenStruct.new(id: created_objects[parent_pe_key])
+          elsif parent['pe'].present?
             parent_pe = BatchSubmissionsImporter::BatchObjectImporter.call(
               'ProcessingEvent',
               parent['pe']['attrs'].merge(
@@ -72,7 +89,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
               nil,
               false
             )
-            created_objects["parent_pe_"+idx] = parent_pe.id
+            created_objects[parent_pe_key] = parent_pe.id
             background_job.update_created_objects(created_objects)
           else
             raise "Required processing event not present for parent media ingest. Ingest: #{parent}"
@@ -109,8 +126,10 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
             )
           end
 
-          media_file = parent['media']['initial_attrs']['media_file'].first
-          created_objects[media_file] = parent_media.id
+          created_objects[parent_media_key] = parent_media.id
+          # Also write filename key so check_and_wait_for_parent_media can find this media
+          parent_media_file = parent['media']['initial_attrs']['media_file']&.first
+          created_objects[parent_media_file] = parent_media.id if parent_media_file.present?
           Rails.logger.debug "iN MediaIePeIngestJob: parent media created: #{parent_media.id} "
           Rails.logger.debug "iN MediaIePeIngestJob: updating background job #{background_job_id} with created_objects #{created_objects}"
           background_job.update_created_objects(created_objects)
@@ -126,46 +145,56 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
     direct_parent = parent_media.presence || imaging_event.presence
     if direct_parent.present?
       ingest['children'].each do |idx, child|
+        child_pe_key = "child_pe_#{idx}"
+        child_media_key = "child_media_#{idx}"
+
         if child['pe'].present?
-          # associate with the direct parent
-          child_pe = BatchSubmissionsImporter::BatchObjectImporter.call(
-            'ProcessingEvent',
-            child['pe']['attrs'].merge(
-              'parent_id' => [direct_parent.id]
-            ).symbolize_keys,
-            nil,
-            false
-          )
-          created_objects["child_pe_"+idx] = child_pe.id
-          background_job.update_created_objects(created_objects)
+          if created_objects[child_pe_key].present?
+            child_pe = OpenStruct.new(id: created_objects[child_pe_key])
+          else
+            # associate with the direct parent
+            child_pe = BatchSubmissionsImporter::BatchObjectImporter.call(
+              'ProcessingEvent',
+              child['pe']['attrs'].merge(
+                'parent_id' => [direct_parent.id]
+              ).symbolize_keys,
+              nil,
+              false
+            )
+            created_objects[child_pe_key] = child_pe.id
+            background_job.update_created_objects(created_objects)
+          end
         else
           raise "Required processing event not present for child media ingest. Ingest: #{child}"
         end
 
         if child['media'].present?
-          if child['media']['initial_attrs']['preview_file'].present? &&
-              child['media']['media_path'].present?
-            # this is where preview_file is set
-            preview_file = child['media']['media_path'] + child['media']['initial_attrs']['preview_file'].first
+          if created_objects[child_media_key].present?
+            child_media = Media.find(created_objects[child_media_key])
+          else
+            if child['media']['initial_attrs']['preview_file'].present? &&
+                child['media']['media_path'].present?
+              # this is where preview_file is set
+              preview_file = child['media']['media_path'] + child['media']['initial_attrs']['preview_file'].first
+            end
+
+            Rails.logger.debug "iN MediaIePeIngestJob: creating child media... "
+
+            child_media = BatchSubmissionsImporter::BatchObjectImporter.call(
+              'Media',
+              child['media']['attrs'].merge(
+                'parent_id' => [child_pe.id]
+              ).symbolize_keys,
+              nil,
+              false,
+              preview_file
+            )
+
+            created_objects[child_media_key] = child_media.id
+            Rails.logger.debug "iN MediaIePeIngestJob: child media created: #{child_media.id} "
+            Rails.logger.debug "iN MediaIePeIngestJob: updating background job #{@background_job_id} with created_objects #{created_objects}"
+            background_job.update_created_objects(created_objects)
           end
-
-          Rails.logger.debug "iN MediaIePeIngestJob: creating child media... "
-
-          child_media = BatchSubmissionsImporter::BatchObjectImporter.call(
-            'Media',
-            child['media']['attrs'].merge(
-              'parent_id' => [child_pe.id]
-            ).symbolize_keys,
-            nil,
-            false,
-            preview_file
-          )
-
-          media_file = child['media']['initial_attrs']['media_file'].first
-          created_objects[media_file] = child_media.id
-          Rails.logger.debug "iN MediaIePeIngestJob: child media created: #{child_media.id} "
-          Rails.logger.debug "iN MediaIePeIngestJob: updating background job #{@background_job_id} with created_objects #{created_objects}"
-          background_job.update_created_objects(created_objects)
 
           all_media << child_media
         else

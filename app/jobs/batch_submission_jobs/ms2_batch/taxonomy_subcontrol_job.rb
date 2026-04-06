@@ -9,14 +9,26 @@ class BatchSubmissionJobs::Ms2Batch::TaxonomySubcontrolJob < Morphosource::Appli
     @background_job_id = background_job_id
 
     # Submit jobs for new works to be created
-    background_job_manifest['taxonomy_ingests'].each do |t|
+    background_job_manifest['taxonomy_ingests'].each_with_index do |t, index|
+      co_key = "taxonomy_#{index}"
+
+      # Crash recovery: object created in prior run but manifest id not written
+      if !t['id'].present? && background_job.created_objects[co_key].present?
+        t['id'] = background_job.created_objects[co_key]
+        update_background_job_manifest('taxonomy_ingests', background_job_manifest['taxonomy_ingests'])
+      end
+
       next if t['id'].present?
 
+      t['job_exception'] = nil
+      t['job_status'] = nil
       t['job_id'] = ::BatchObjectImportJob.perform_later(
         'Taxonomy',
         t['attrs'].symbolize_keys,
         nil,
-        false
+        false,
+        @background_job_id,
+        co_key
       ).job_id
     end
 
@@ -42,6 +54,8 @@ class BatchSubmissionJobs::Ms2Batch::TaxonomySubcontrolJob < Morphosource::Appli
     jobs_complete = true
 
     background_job_manifest['taxonomy_ingests'].each do |t|
+      next if t['id'].present?
+
       job_id = t['job_id']
       next if !job_id.present?
 

@@ -63,7 +63,6 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
 
     # check job status
     if job_status[:status] == :failed
-      delete_created_works
       exception = "Job #{job.class} failed. Exception: #{job_status[:exception].to_s}"
       raise exception
     elsif job_status[:status] == :queued || job_status[:status] == :working
@@ -71,50 +70,10 @@ class BatchSubmissionJobs::Ms2Batch::ControlJob < Morphosource::ApplicationJobWi
     elsif job_status[:status] == :completed
       return true
     else
-      delete_created_works
       exception = "Job #{job.class} produced unexpected status: #{job_status[:status].to_s}"
       raise exception
     end
     update_background_job
   end
 
-  # if ingest fails, need to delete mid-stream works
-  def delete_created_works
-    status.update(work_deletion: :working)
-
-    related_ids = []
-
-    background_job.created_objects.each do |key, id|
-      related_ids.concat delete_work_if_needed(id)
-    end
-
-    final_related_ids = related_ids
-      .uniq
-      .select { |id| id if ActiveFedora::Base.exists?(id) }
-      .compact
-    UpdateRelatedWorksIndexJob.perform_later(final_related_ids)
-
-    # clear the created_objects list
-    background_job.clear_created_objects
-
-    status.update(work_deletion: :completed)
-  end
-
-  def delete_work_if_needed(id)
-    related_work_ids = []
-    if ActiveFedora::Base.exists?(id)
-      work = ActiveFedora::Base.find(id)
-      case work.class
-      when ImagingEvent
-        related_work_ids.concat(work.objects) if work.objects.present?
-      when ProcessingEvent
-        related_work_ids << work.imaging_event if work.imaging_event.present?
-      when Media
-        related_work_ids << work.processing_event if work.processing_event.present?
-      end
-      work.destroy
-    end
-
-    return related_work_ids
-  end
 end

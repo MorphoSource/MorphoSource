@@ -24,20 +24,11 @@ class ImagingEventResourceParentDeviceModalityValidator < ActiveModel::Validator
   def validate_device_id_valid
     return if @device_errors.present?
 
-    # Use postgres_service + explicit AF fallback rather than
-    # Hyrax.query_service.find_by, because Wings does not reliably find AF
-    # objects for models not registered in Wings::ModelRegistry (e.g. Device).
-    # This mirrors the pattern in Morphosource::ArResourceMembership#members.
     device_found = begin
-      Hyrax.query_service.postgres_service.find_by(id: Valkyrie::ID.new(@device_id))
+      Hyrax.query_service.find_by(id: @device_id)
       true
     rescue Valkyrie::Persistence::ObjectNotFoundError
-      begin
-        ActiveFedora::Base.find(@device_id)
-        true
-      rescue ::ActiveFedora::ObjectNotFoundError, Ldp::Gone
-        false
-      end
+      false
     end
 
     unless device_found
@@ -184,14 +175,8 @@ class ImagingEventResource < Hyrax::Work
     @reference_attachment_formats ||= Morphosource.reference_attachment_formats
   end
 
-  # Use postgres_service + explicit AF fallback rather than
-  # Hyrax.query_service.find_by, because Wings does not reliably find AF
-  # objects for models not registered in Wings::ModelRegistry (e.g. Device).
-  # This mirrors the pattern in Morphosource::ArResourceMembership#members.
   def device
-    Hyrax.query_service.postgres_service.find_by(id: Valkyrie::ID.new(device_id.first))
-  rescue Valkyrie::Persistence::ObjectNotFoundError
-    ActiveFedora::Base.find(device_id.first)
+    Hyrax.query_service.find_by(id: device_id.first)
   end
 
   # ToDoValk: only checks direct members; should recurse into descendants like

@@ -7,7 +7,8 @@ RSpec.describe Morphosource::Listeners::IndexRelatedWorksListener do
 
   def make_event(object, extra = {})
     event = double('event')
-    allow(event).to receive(:[]) { |k| ({ object: object }.merge(extra))[k] }
+    payload = { object: object }.merge(extra)
+    allow(event).to receive(:payload).and_return(payload)
     event
   end
 

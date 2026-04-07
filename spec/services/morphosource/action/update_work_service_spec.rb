@@ -54,22 +54,25 @@ RSpec.describe Morphosource::Action::UpdateWorkService do
     end
   end
 
-  let(:device) { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-  let(:ie) do
-    Hyrax.persister.save(resource: ImagingEventResource.new(
-      title: ['Test IE'],
-      device_id: [device.id],
-      ie_modality: device.modality,
-      physical_object_id: ['000']
-    ))
-  end
-  let(:form) { double('form', validate: true, errors: double(messages: {})) }
-
-  before do
-    allow(Hyrax::FormFactory).to receive_message_chain(:new, :build).and_return(form)
-  end
-
   describe 'ImagingEventResource' do
+    let(:device) do
+      FactoryBot.valkyrie_create(:device_resource, with_index: false,
+        title: ['device'], modality: ['Photogrammetry'])
+    end
+    let(:ie) do
+      Hyrax.persister.save(resource: ImagingEventResource.new(
+        title: ['Test IE'],
+        device_id: [device.id.to_s],
+        ie_modality: device.modality,
+        physical_object_id: ['000']
+      ))
+    end
+    let(:form) { double('form', validate: true, errors: double(messages: {})) }
+
+    before do
+      allow(Hyrax::FormFactory).to receive_message_chain(:new, :build).and_return(form)
+    end
+
     subject do
       described_class.new(
         work: ie,

@@ -265,7 +265,11 @@ class Media < Morphosource::Works::Base
 
   def related_media
     return [] unless imaging_event.present?
-    imaging_event.descendants.select { |d| d.class == Media && d.id != self.id}
+    if imaging_event.is_a?(Valkyrie::Resource)
+      imaging_event.media.select { |m| m.id.to_s != self.id.to_s }
+    else
+      imaging_event.descendants.select { |d| d.class == Media && d.id != self.id }
+    end
   end
 
   def related_media_ids

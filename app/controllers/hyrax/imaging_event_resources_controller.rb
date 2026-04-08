@@ -23,6 +23,14 @@ module Hyrax
     # forms.
     self.work_form_service = Hyrax::FormFactory.new
 
+    def create
+      # ImagingEventResource titles are auto-generated (IE<id>: <description>).
+      # Inject a placeholder so basic_metadata title validation passes.
+      params[:imaging_event_resource] ||= {}
+      params[:imaging_event_resource][:title] ||= ['new imaging event']
+      super
+    end
+
     def update
       # If the physical object association changed, re-record originals so
       # update_media_team_access can diff old vs new organizations.
@@ -96,6 +104,11 @@ module Hyrax
         update_media_team_access
         super
       end
+
+      # FailedSubmissionFormWrapper requires permitted_params/build_permitted_params,
+      # which Valkyrie change sets don't provide. Hyrax documents rebuild_form as
+      # "Required for ActiveFedora::Base objects only", so skip it here.
+      def rebuild_form(_original_input_params = nil); end
 
       # Guard against nil when the imaging_event_resource params key is absent
       # (e.g. a minimal update that doesn't include the work hash).

@@ -72,6 +72,29 @@ class ImagingEventResourceForm < Hyrax::Forms::PcdmObjectForm(ImagingEventResour
     result
   end
 
+  # Required by Hyrax::Forms::FailedSubmissionFormWrapper when create fails and
+  # the form is rebuilt for re-display. Returns the fields that can be
+  # re-populated from the submitted params.
+  def self.build_permitted_params
+    [
+      :on_behalf_of, :visibility, :agreement_accepted, :admin_set_id,
+      :ie_modality, :description, :software, :date_created,
+      :device_id, :physical_object_id,
+      :exposure_time, :flux_normalization, :pixel_spacing_calibration,
+      :shading_correction, :frame_averaging, :projections, :voltage, :power,
+      :amperage, :surrounding_material, :xray_tube_type, :target_type,
+      :detector_type, :detector_pixels_x, :detector_pixel_size_x,
+      :detector_pixels_y, :detector_pixel_size_y, :detector_configuration,
+      :source_object_distance, :source_detector_distance, :target_material,
+      :rotation_number, :phase_contrast, :optical_magnification,
+      :acquisition_type, :focal_length_type, :background_removal,
+      :lens_make, :lens_model, :light_source, :slide_type, :aperture_value,
+      { title: [] }, { creator: [] }, { ie_filter: [] },
+      { member_of_collection_ids: [] },
+      { work_parents_attributes: [:id, :_destroy] }
+    ]
+  end
+
   # Fields shown for all imaging events regardless of modality (left column).
   def universal_terms
     primary_terms[..4]

@@ -2,6 +2,94 @@ require 'rails_helper'
 
 RSpec.describe MorphosourceHelper, type: :helper do
 
+  describe 'MorphosourceHelper::RemoteFileInfo' do
+    let(:url) { 'https://deepblue.lib.umich.edu/data/downloads/abc123' }
+
+    # Builds a real Net::HTTPResponse with the given headers so the initialize
+    # logic (ETag stripping, content_length, file_ext) can be exercised without
+    # making real HTTP calls. get_headers is stubbed to return this response.
+    def build_response(code, headers = {})
+      klass = Net::HTTPResponse::CODE_TO_OBJ[code.to_s] || Net::HTTPOK
+      response = klass.new('1.1', code.to_s, '')
+      headers.each { |k, v| response[k] = v }
+      response
+    end
+
+    context 'when the server returns 200 with ETag and Content-Length' do
+      let(:response) do
+        build_response(200,
+          'Content-Type'   => 'image/tiff',
+          'ETag'           => 'W"627f625f9b359d37fea302a108d963feb0f41504"',
+          'Content-Length' => '5981184'
+        )
+      end
+
+      before do
+        allow_any_instance_of(MorphosourceHelper::RemoteFileInfo)
+          .to receive(:get_headers).and_return(response)
+      end
+
+      subject { MorphosourceHelper::RemoteFileInfo.new(url) }
+
+      it { expect(subject.status).to eq('success') }
+      it { expect(subject.http_code).to eq(200) }
+      it { expect(subject.file_ext).to eq('.tif') }
+      it { expect(subject.content_length).to eq('5981184') }
+
+      it 'strips the weak ETag prefix and quotes' do
+        expect(subject.e_tag).to eq('627f625f9b359d37fea302a108d963feb0f41504')
+      end
+    end
+
+    context 'ETag stripping' do
+      {
+        'W"abc123"'  => 'abc123',  # DeepBlue non-standard weak ETag (no slash)
+        'W/"abc123"' => 'abc123',  # RFC 7232 standard weak ETag
+        '"abc123"'   => 'abc123'   # strong ETag
+      }.each do |raw_etag, expected|
+        context "with ETag #{raw_etag}" do
+          before do
+            response = build_response(200, 'Content-Type' => 'image/tiff', 'ETag' => raw_etag)
+            allow_any_instance_of(MorphosourceHelper::RemoteFileInfo)
+              .to receive(:get_headers).and_return(response)
+          end
+
+          it { expect(MorphosourceHelper::RemoteFileInfo.new(url).e_tag).to eq(expected) }
+        end
+      end
+    end
+
+    context 'when get_headers raises a Net::HTTPClientException (e.g. 404)' do
+      before do
+        error_response = build_response(404)
+        allow_any_instance_of(MorphosourceHelper::RemoteFileInfo)
+          .to receive(:get_headers)
+          .and_raise(Net::HTTPClientException.new('404 Not Found', error_response))
+      end
+
+      subject { MorphosourceHelper::RemoteFileInfo.new(url) }
+
+      it { expect(subject.status).to eq('error') }
+      it { expect(subject.http_code).to eq(404) }
+      it { expect(subject.e_tag).to eq('') }
+      it { expect(subject.content_length).to eq('') }
+    end
+
+    context 'when a connection error occurs' do
+      before do
+        allow_any_instance_of(MorphosourceHelper::RemoteFileInfo)
+          .to receive(:get_headers)
+          .and_raise(SocketError.new('connection failed'))
+      end
+
+      subject { MorphosourceHelper::RemoteFileInfo.new(url) }
+
+      it { expect(subject.status).to eq('fail') }
+      it { expect(subject.http_code).to eq('') }
+      it { expect(subject.message).to eq('connection failed') }
+    end
+  end
+
   describe 'render_extra(extras, id, variable)' do
     let(:id) {'abc'}
     let(:extras) { [{'id' => id, 'source_of_result' => 'team_project', 'team_project_title' => 'test title'}] }

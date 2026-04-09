@@ -208,10 +208,10 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
       raise "Required direct parent not present for child media ingest(s). Ingest: #{ingest}"
     end
 
-    add_media_to_collections(all_media, collection_ids)
-    add_media_to_fund_code(all_media, fund_code_id)
+    add_media_to_collections(newly_created_media, collection_ids)
+    add_media_to_fund_code(newly_created_media, fund_code_id)
     transfer_media_to_organization(newly_created_media, organization_transfer_immediately)
-    add_org_attachment_to_media(all_media, @organization_id) if @organization_id.present?
+    add_org_attachment_to_media(newly_created_media, @organization_id) if @organization_id.present?
 
     UpdateWorkIndexJob.perform_later(ingest['physical_object_id'])
     # update index for each media here since they are not indexed properly after Hyrax 3 update
@@ -224,9 +224,9 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
 
   def add_media_to_collections(media, collection_ids)
     return unless media.present? && collection_ids.present?
+    media_ids = Array(media).map { |m| m.id }
     Array(collection_ids).each do |collection_id|
-      c = Collection.find(collection_id)
-      c.add_member_objects Array(media).map { |m| m.id }
+      AddCollectionMembersJob.perform_later(collection_id, media_ids)
     end
   end
 

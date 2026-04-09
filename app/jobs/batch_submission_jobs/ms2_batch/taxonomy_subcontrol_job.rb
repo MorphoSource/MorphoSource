@@ -84,6 +84,7 @@ class BatchSubmissionJobs::Ms2Batch::TaxonomySubcontrolJob < Morphosource::Appli
     return jobs_complete
   end
 
+  # Todovalk: Dev branch currently has TaxonomyResource.exists? which will be cleaner, todo replace
   def taxonomy_exists?(id)
     return false unless id.present?
     @taxonomy_works_cache ||= {}

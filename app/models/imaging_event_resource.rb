@@ -81,6 +81,12 @@ class ImagingEventResource < Hyrax::Work
     [Media, ProcessingEvent]
   end
 
+  # Mirrors ImagingEvent.valid_parent_concerns (which returns []); used by
+  # valid_work_types_list helper in the form relationships view.
+  def self.valid_parent_concerns
+    []
+  end
+
   def imaging_event?
     true
   end

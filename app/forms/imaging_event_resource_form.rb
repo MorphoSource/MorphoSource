@@ -8,6 +8,7 @@
 class ImagingEventResourceForm < Hyrax::Forms::PcdmObjectForm(ImagingEventResource)
   include Hyrax::FormFields(:basic_metadata)
   include Hyrax::FormFields(:imaging_event_resource)
+  include Morphosource::FormMethods
   include Morphosource::ValkyrieFormBehavior
 
   # Mirrors Hyrax::ImagingEventForm#primary_terms. device_id and physical_object_id

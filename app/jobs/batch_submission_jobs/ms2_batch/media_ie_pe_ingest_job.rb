@@ -191,6 +191,9 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
             )
 
             created_objects[child_media_key] = child_media.id
+            # Also write filename key so check_and_wait_for_parent_media can find this media
+            child_media_file = child['media']['initial_attrs']['media_file']&.first
+            created_objects[child_media_file] = child_media.id if child_media_file.present?
             Rails.logger.debug "iN MediaIePeIngestJob: child media created: #{child_media.id} "
             Rails.logger.debug "iN MediaIePeIngestJob: updating background job #{@background_job_id} with created_objects #{created_objects}"
             background_job.update_created_objects(created_objects)

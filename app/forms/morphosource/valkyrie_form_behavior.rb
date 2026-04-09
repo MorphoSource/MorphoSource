@@ -7,5 +7,47 @@ module Morphosource
       property :id
       property :skip_index_related_works
     end
+
+    # Valkyrie-aware replacement for Morphosource::FormMethods#member_of_works_json.
+    # Queries Valkyrie parents via find_inverse_references_by, and also falls back
+    # to AF in_works if the model supports it (for transitional mixed environments).
+    def member_of_works_json(work_type = nil)
+      valkyrie_parents = if model.persisted?
+        Hyrax.query_service
+             .find_inverse_references_by(resource: model, property: :member_ids)
+             .select { |r| r.respond_to?(:work?) ? r.work? : true }
+      else
+        []
+      end
+
+      af_parents = model.respond_to?(:in_works) ? model.in_works : []
+
+      parent_works = valkyrie_parents + af_parents
+
+      if @controller&.params&.[](:parent_id).present?
+        id = @controller.params[:parent_id]
+        begin
+          parent_works += [Hyrax.query_service.find_by(id: Valkyrie::ID.new(id))]
+        rescue Valkyrie::Persistence::ObjectNotFoundError
+          begin
+            parent_works += [ActiveFedora::Base.find(id)]
+          rescue ActiveFedora::ObjectNotFoundError, Ldp::Gone
+            nil
+          end
+        end
+      end
+
+      if work_type.present?
+        parent_works = parent_works.select { |item| item.class.to_s == work_type }
+      end
+
+      parent_works.map do |parent|
+        {
+          id: parent.id.to_s,
+          label: parent.to_s,
+          path: @controller.url_for(parent)
+        }
+      end.to_json
+    end
   end
 end

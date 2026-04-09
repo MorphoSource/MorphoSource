@@ -30,7 +30,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
     if ingest['imaging_event'].present?
       ie_row_index = ingest['imaging_event'].first[0]
       ie_key = "ie_#{ie_row_index}"
-      if created_objects[ie_key].present?
+      if created_objects[ie_key].present? && imaging_event_exists?(created_objects[ie_key])
         imaging_event = OpenStruct.new(id: created_objects[ie_key])
       else
         imaging_event = BatchSubmissionsImporter::BatchObjectImporter.call(
@@ -61,13 +61,13 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
         end
 
         if parent['media']['id'].present?
-          # parent media is existing.  get the obj and skip (no need to create)
+          # parent media is existing.  get the work and skip (no need to create)
           parent_media = Media.find(pad(parent['media']['id']))
           next
         end
 
         parent_media_key = "parent_media_#{idx}"
-        if created_objects[parent_media_key].present?
+        if created_objects[parent_media_key].present? && media_exists?(created_objects[parent_media_key])
           parent_media = Media.find(created_objects[parent_media_key])
           all_media << parent_media
           next
@@ -78,7 +78,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
         else
           is_raw = false
           parent_pe_key = "parent_pe_#{idx}"
-          if created_objects[parent_pe_key].present?
+          if created_objects[parent_pe_key].present? && processing_event_exists?(created_objects[parent_pe_key])
             parent_pe = OpenStruct.new(id: created_objects[parent_pe_key])
           elsif parent['pe'].present?
             parent_pe = BatchSubmissionsImporter::BatchObjectImporter.call(
@@ -149,7 +149,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
         child_media_key = "child_media_#{idx}"
 
         if child['pe'].present?
-          if created_objects[child_pe_key].present?
+          if created_objects[child_pe_key].present? && processing_event_exists?(created_objects[child_pe_key])
             child_pe = OpenStruct.new(id: created_objects[child_pe_key])
           else
             # associate with the direct parent
@@ -169,7 +169,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
         end
 
         if child['media'].present?
-          if created_objects[child_media_key].present?
+          if created_objects[child_media_key].present? && media_exists?(created_objects[child_media_key])
             child_media = Media.find(created_objects[child_media_key])
           else
             if child['media']['initial_attrs']['preview_file'].present? &&
@@ -272,4 +272,18 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
     end
   end
 
+  def imaging_event_exists?(id)
+    @imaging_event_works_cache ||= {}
+    id.present? && (@imaging_event_works_cache[id] ||= ImagingEvent.exists?(id))
+  end
+
+  def processing_event_exists?(id)
+    @processing_event_works_cache ||= {}
+    id.present? && (@processing_event_works_cache[id] ||= ProcessingEvent.exists?(id))
+  end
+
+  def media_exists?(id)
+    @media_works_cache ||= {}
+    id.present? && (@media_works_cache[id] ||= Media.exists?(id))
+  end
 end

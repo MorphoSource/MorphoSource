@@ -13,12 +13,12 @@ class BatchSubmissionJobs::Ms2Batch::TaxonomySubcontrolJob < Morphosource::Appli
       co_key = "taxonomy_#{index}"
 
       # Crash recovery: object created in prior run but manifest id not written
-      if !t['id'].present? && background_job.created_objects[co_key].present?
+      if !t['id'].present? && background_job.created_objects[co_key].present? && taxonomy_exists?(background_job.created_objects[co_key])
         t['id'] = background_job.created_objects[co_key]
         update_background_job_manifest('taxonomy_ingests', background_job_manifest['taxonomy_ingests'])
       end
 
-      next if t['id'].present?
+      next if taxonomy_exists?(t['id'])
 
       t['job_exception'] = nil
       t['job_status'] = nil
@@ -41,7 +41,7 @@ class BatchSubmissionJobs::Ms2Batch::TaxonomySubcontrolJob < Morphosource::Appli
     # Check for exceptions and raise if present
     exceptions = []
     background_job_manifest['taxonomy_ingests'].each_with_index do |t, index|
-      next if t['id'].present?
+      next if taxonomy_exists?(t['id'])
       if t['job_exception'].present?
         exceptions << "Taxonomy ingest #{index} failed. Exception: \"#{t['job_exception']}\". Supplied attributes were: \"#{t['attrs']}\""
       end
@@ -55,7 +55,7 @@ class BatchSubmissionJobs::Ms2Batch::TaxonomySubcontrolJob < Morphosource::Appli
     jobs_complete = true
 
     background_job_manifest['taxonomy_ingests'].each do |t|
-      next if t['id'].present?
+      next if taxonomy_exists?(t['id'])
 
       job_id = t['job_id']
       next if !job_id.present?
@@ -82,5 +82,12 @@ class BatchSubmissionJobs::Ms2Batch::TaxonomySubcontrolJob < Morphosource::Appli
     update_background_job_manifest('taxonomy_ingests', background_job_manifest['taxonomy_ingests'])
 
     return jobs_complete
+  end
+
+  def taxonomy_exists?(id)
+    @taxonomy_works_cache ||= {}
+    id.present? && !!(@taxonomy_works_cache[id] ||= Hyrax.query_service.find_by(id: id))
+  rescue Valkyrie::Persistence::ObjectNotFoundError
+    false
   end
 end

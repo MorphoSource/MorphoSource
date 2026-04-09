@@ -11,8 +11,6 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
 
     # Submit jobs for new works to be created
     background_job_manifest['media_ie_pe_ingests'].each_with_index do |i, ingest_index|
-      next if i['completed'] == true
-
       i['job_exception'] = nil
       i['job_status'] = nil
       ensure_imaging_event_present(i)
@@ -42,7 +40,6 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
     # Report errors
     exceptions = []
     background_job_manifest['media_ie_pe_ingests'].each_with_index do |i, index|
-      next if i['completed'] == true
       if i['job_exception'].present?
         exceptions << "Media ingest #{index} failed. Exception: \"#{i['job_exception']}\"."
       end
@@ -105,7 +102,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
   def created_parent_id(parent_file, wait_started)
     duration = Time.now - wait_started
     Rails.logger.debug "iN created_parent_id: looking for #{parent_file} in job #{background_job_id}... (#{duration} seconds)"
-    if background_job.created_objects[parent_file].present?
+    if background_job.created_objects[parent_file].present? && media_exists?(background_job.created_objects[parent_file])
       return background_job.created_objects[parent_file]
     else
       if duration > 3600 # 1 hr
@@ -120,8 +117,6 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
     jobs_complete = true
 
     background_job_manifest['media_ie_pe_ingests'].each do |i|
-      next if i['completed'] == true
-
       job_id = i['job_id']
       next if !job_id.present?
 
@@ -133,7 +128,6 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
       elsif job_status[:status] == :failed
         i['job_exception'] = "Job MediaIePeIngestJob with ID #{job_id} failed. Exception: #{job_status[:exception].to_s}"
       elsif job_status[:status] == :completed
-        i['completed'] = true
         next
       else
         i['job_exception'] = "Job MediaIePeIngestJob with ID #{job_id} produced unexpected status: #{job_status[:status].to_s}"
@@ -148,5 +142,12 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
 
   def update_background_job(status_str=nil, exceptions=nil)
     background_job.update_status(status_str, exceptions)
+  end
+
+  def media_exists?(id)
+    return false unless id.present?
+    @media_works_cache ||= {}
+    @media_works_cache[id] = Media.exists?(id) unless @media_works_cache.key?(id)
+    @media_works_cache[id]
   end
 end

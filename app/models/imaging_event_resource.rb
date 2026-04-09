@@ -75,6 +75,10 @@ class ImagingEventResource < Hyrax::Work
   # record.valid_child_concerns which are not available on Valkyrie resources.
   validates_with ImagingEventResourceParentDeviceModalityValidator
 
+  # Mirrors ImagingEvent class attributes from Morphosource::Works::Base.
+  # AF uses class_attribute which provides both class and instance accessors
+  # automatically; Valkyrie resources must define them explicitly.
+
   # Mirrors ImagingEvent.valid_child_concerns; used by Hyrax::ChildWorkRedirect.
   # ToDoValk: update when Media and ProcessingEvent are valkyrized.
   def self.valid_child_concerns
@@ -85,16 +89,23 @@ class ImagingEventResource < Hyrax::Work
     self.class.valid_child_concerns
   end
 
-  # Mirrors ImagingEvent.valid_parent_concerns (which returns []); used by
+  # Mirrors ImagingEvent.valid_parent_concerns (returns []); used by
   # valid_work_types_list helper in the form relationships view.
-  # Both class and instance methods needed — AF uses class_attribute which provides
-  # both automatically; Valkyrie resources must define them explicitly.
   def self.valid_parent_concerns
     []
   end
 
   def valid_parent_concerns
     self.class.valid_parent_concerns
+  end
+
+  # Mirrors ImagingEvent.work_requires_files (false); used by files_required? helper.
+  def self.work_requires_files?
+    false
+  end
+
+  def work_requires_files?
+    self.class.work_requires_files?
   end
 
   def imaging_event?

@@ -17,6 +17,15 @@ module Morphosource
       model.id.present? ? [model.id] : nil
     end
 
+    # Rails calls convert_to_model(form) which invokes form.to_model. The default
+    # implementation on Hyrax forms returns the underlying Valkyrie resource, which
+    # still has to_key = [nil], causing dom_id to produce "new_imaging_event_resource_"
+    # (trailing underscore). Returning self here ensures dom_id uses the form's
+    # corrected to_key = nil, generating the correct "new_imaging_event_resource".
+    def to_model
+      self
+    end
+
     # Queries Valkyrie parents via find_inverse_references_by, and also falls back
     # to AF in_works if the model supports it (for transitional mixed environments).
     def member_of_works_json(work_type = nil)

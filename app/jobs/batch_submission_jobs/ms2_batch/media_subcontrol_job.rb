@@ -145,7 +145,9 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
   end
 
   def media_exists?(id)
+    return false unless id.present?
     @media_works_cache ||= {}
-    id.present? && (@media_works_cache[id] ||= Media.exists?(id))
+    @media_works_cache[id] = Media.exists?(id) unless @media_works_cache.key?(id)
+    @media_works_cache[id]
   end
 end

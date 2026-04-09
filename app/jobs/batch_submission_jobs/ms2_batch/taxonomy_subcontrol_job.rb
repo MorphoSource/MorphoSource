@@ -85,9 +85,15 @@ class BatchSubmissionJobs::Ms2Batch::TaxonomySubcontrolJob < Morphosource::Appli
   end
 
   def taxonomy_exists?(id)
+    return false unless id.present?
     @taxonomy_works_cache ||= {}
-    id.present? && !!(@taxonomy_works_cache[id] ||= Hyrax.query_service.find_by(id: id))
-  rescue Valkyrie::Persistence::ObjectNotFoundError
-    false
+    unless @taxonomy_works_cache.key?(id)
+      @taxonomy_works_cache[id] = begin
+        !!Hyrax.query_service.find_by(id: id)
+      rescue Valkyrie::Persistence::ObjectNotFoundError
+        false
+      end
+    end
+    @taxonomy_works_cache[id]
   end
 end

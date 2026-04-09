@@ -103,7 +103,9 @@ class BatchSubmissionJobs::Ms2Batch::BiologicalSpecimenSubcontrolJob < Morphosou
   end
 
   def object_exists?(id)
+    return false unless id.present?
     @object_works_cache ||= {}
-    id.present? && (@object_works_cache[id] ||= BiologicalSpecimen.exists?(id))
+    @object_works_cache[id] = BiologicalSpecimen.exists?(id) unless @object_works_cache.key?(id)
+    @object_works_cache[id]
   end
 end

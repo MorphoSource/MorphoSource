@@ -22,6 +22,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
     end
 
     all_media = []
+    newly_created_media = []
     organization_permissions_fields = {}
     created_objects = background_job.created_objects
 
@@ -135,6 +136,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
           background_job.update_created_objects(created_objects)
 
           all_media << parent_media
+          newly_created_media << parent_media
         else
           raise "Required parent media not present for parent media ingest. Ingest: #{parent}"
         end
@@ -194,6 +196,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
             Rails.logger.debug "iN MediaIePeIngestJob: child media created: #{child_media.id} "
             Rails.logger.debug "iN MediaIePeIngestJob: updating background job #{@background_job_id} with created_objects #{created_objects}"
             background_job.update_created_objects(created_objects)
+            newly_created_media << child_media
           end
 
           all_media << child_media
@@ -207,7 +210,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
 
     add_media_to_collections(all_media, collection_ids)
     add_media_to_fund_code(all_media, fund_code_id)
-    transfer_media_to_organization(all_media, organization_transfer_immediately)
+    transfer_media_to_organization(newly_created_media, organization_transfer_immediately)
     add_org_attachment_to_media(all_media, @organization_id) if @organization_id.present?
 
     UpdateWorkIndexJob.perform_later(ingest['physical_object_id'])
@@ -273,17 +276,23 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
   end
 
   def imaging_event_exists?(id)
+    return false unless id.present?
     @imaging_event_works_cache ||= {}
-    id.present? && (@imaging_event_works_cache[id] ||= ImagingEvent.exists?(id))
+    @imaging_event_works_cache[id] = ImagingEvent.exists?(id) unless @imaging_event_works_cache.key?(id)
+    @imaging_event_works_cache[id]
   end
 
   def processing_event_exists?(id)
+    return false unless id.present?
     @processing_event_works_cache ||= {}
-    id.present? && (@processing_event_works_cache[id] ||= ProcessingEvent.exists?(id))
+    @processing_event_works_cache[id] = ProcessingEvent.exists?(id) unless @processing_event_works_cache.key?(id)
+    @processing_event_works_cache[id]
   end
 
   def media_exists?(id)
+    return false unless id.present?
     @media_works_cache ||= {}
-    id.present? && (@media_works_cache[id] ||= Media.exists?(id))
+    @media_works_cache[id] = Media.exists?(id) unless @media_works_cache.key?(id)
+    @media_works_cache[id]
   end
 end

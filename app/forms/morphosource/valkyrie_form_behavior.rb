@@ -9,6 +9,14 @@ module Morphosource
     end
 
     # Valkyrie-aware replacement for Morphosource::FormMethods#member_of_works_json.
+    # Valkyrie::Resource#to_key always returns [id], even [nil] for new records.
+    # Rails dom_id treats a non-nil to_key as a persisted record, generating
+    # "imaging_event_resource_" instead of "new_imaging_event_resource".
+    # Return nil when unpersisted so dom_id generates the correct "new_" prefix.
+    def to_key
+      model.id.present? ? [model.id] : nil
+    end
+
     # Queries Valkyrie parents via find_inverse_references_by, and also falls back
     # to AF in_works if the model supports it (for transitional mixed environments).
     def member_of_works_json(work_type = nil)

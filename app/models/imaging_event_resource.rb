@@ -81,10 +81,20 @@ class ImagingEventResource < Hyrax::Work
     [Media, ProcessingEvent]
   end
 
+  def valid_child_concerns
+    self.class.valid_child_concerns
+  end
+
   # Mirrors ImagingEvent.valid_parent_concerns (which returns []); used by
   # valid_work_types_list helper in the form relationships view.
+  # Both class and instance methods needed — AF uses class_attribute which provides
+  # both automatically; Valkyrie resources must define them explicitly.
   def self.valid_parent_concerns
     []
+  end
+
+  def valid_parent_concerns
+    self.class.valid_parent_concerns
   end
 
   def imaging_event?

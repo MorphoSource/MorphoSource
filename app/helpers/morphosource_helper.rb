@@ -1,3 +1,5 @@
+require 'net/http'
+
 module MorphosourceHelper
 
   include ActionView::Helpers::UrlHelper
@@ -14,28 +16,58 @@ module MorphosourceHelper
       @content_length = ""
       @e_tag = ""
       begin
-        head = RestClient::Request.execute(
-          method: :head,
-          url: url,
-          timeout: 15,
-          headers: Hyrax.config.remote_request_headers
-        )
-        @http_code = head.code
-        @file_ext = file_extension_from_content_type(head.headers[:content_type])
+        # Uses GET instead of HEAD because DeepBlue data is behind Cloudflare,
+        # which intercepts HEAD requests with bot-protection and returns an HTML
+        # page (HTTP 200, content-type text/html) with no ETag or Content-Length.
+        # GET requests pass through normally. The response body is never read;
+        # only the headers are captured before the connection closes.
+        response = get_headers(url)
+        @http_code = response.code.to_i
+        @file_ext = file_extension_from_content_type(response['Content-Type'])
         @status = "success"
-      rescue RestClient::Exception => e
-        @message = "#{e.message}"
-        @http_code = e.http_code
-      rescue Exception => e
-        @message = "#{e.message}"
+        @content_length = response['Content-Length']
+        # Strip weak ETag prefix (W" or W/") and surrounding quotes so the value
+        # is comparable to the hash stored at ingest time. DeepBlue returns ETags
+        # in the non-standard weak format W"<hash>" (no slash).
+        @e_tag = response['ETag']&.gsub(/^W\/?|"/, '')
+      rescue Net::HTTPClientException, Net::HTTPServerException => e
+        @message = e.message
+        @http_code = e.response.code.to_i
+        @status = "error"
+      rescue => e
+        @message = e.message
         @http_code = ""
+        @status = "fail"
       end
-      if @status == "success"
-        @content_length = head.headers[:content_length]
-        @e_tag = head.headers[:etag]&.gsub(/^\"|\"?$/, '')
-      else
-        @status = @http_code.present? ? "error" : "fail"
+    end
+
+    private
+
+    # Makes a GET request and returns the response with headers, without reading
+    # the body. Follows redirects up to +limit+ times, preserving custom headers.
+    def get_headers(url, limit = 5)
+      raise "Too many redirects" if limit <= 0
+      uri = URI.parse(url)
+      http = Net::HTTP.new(uri.host, uri.port)
+      http.use_ssl = uri.scheme == 'https'
+      http.read_timeout = 15
+      http.open_timeout = 15
+      request = Net::HTTP::Get.new(uri.request_uri)
+      Hyrax.config.remote_request_headers.each { |k, v| request[k] = v }
+      captured = nil
+      http.start do |h|
+        h.request(request) do |response|
+          case response
+          when Net::HTTPRedirection
+            captured = get_headers(response['location'], limit - 1)
+          when Net::HTTPSuccess
+            captured = response
+          else
+            raise Net::HTTPClientException.new("#{response.code} #{response.message}", response)
+          end
+        end
       end
+      captured
     end
 
     def file_extension_from_content_type(content_type)

@@ -22,7 +22,6 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
     end
 
     all_media = []
-    newly_created_media = []
     organization_permissions_fields = {}
     created_objects = background_job.created_objects
 
@@ -136,7 +135,6 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
           background_job.update_created_objects(created_objects)
 
           all_media << parent_media
-          newly_created_media << parent_media
         else
           raise "Required parent media not present for parent media ingest. Ingest: #{parent}"
         end
@@ -196,7 +194,6 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
             Rails.logger.debug "iN MediaIePeIngestJob: child media created: #{child_media.id} "
             Rails.logger.debug "iN MediaIePeIngestJob: updating background job #{@background_job_id} with created_objects #{created_objects}"
             background_job.update_created_objects(created_objects)
-            newly_created_media << child_media
           end
 
           all_media << child_media
@@ -208,10 +205,10 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
       raise "Required direct parent not present for child media ingest(s). Ingest: #{ingest}"
     end
 
-    add_media_to_collections(newly_created_media, collection_ids)
-    add_media_to_fund_code(newly_created_media, fund_code_id)
-    transfer_media_to_organization(newly_created_media, organization_transfer_immediately)
-    add_org_attachment_to_media(newly_created_media, @organization_id) if @organization_id.present?
+    add_media_to_collections(all_media, collection_ids)
+    add_media_to_fund_code(all_media, fund_code_id)
+    transfer_media_to_organization(all_media, organization_transfer_immediately)
+    add_org_attachment_to_media(all_media, @organization_id) if @organization_id.present?
 
     UpdateWorkIndexJob.perform_later(ingest['physical_object_id'])
     # update index for each media here since they are not indexed properly after Hyrax 3 update
@@ -224,15 +221,18 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
 
   def add_media_to_collections(media, collection_ids)
     return unless media.present? && collection_ids.present?
-    media_ids = Array(media).map { |m| m.id }
     Array(collection_ids).each do |collection_id|
-      AddCollectionMembersJob.perform_later(collection_id, media_ids)
+      media_ids = Array(media)
+        .reject { |m| m.member_of_collection_ids.map(&:to_s).include?(collection_id.to_s) }
+        .map { |m| m.id }
+      AddCollectionMembersJob.perform_later(collection_id, media_ids) if media_ids.present?
     end
   end
 
   def add_media_to_fund_code(media, fund_code_id)
     return unless media.present? && fund_code_id.present? && (fc = FundCode.find(fund_code_id))
     media.each do |m|
+      next if m.fund_codes.where(id: fc.id).present?
       m.new_fund_code_association(fc)
     end
   end
@@ -246,6 +246,10 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
     end
 
     media.each do |m|
+      if ProxyDepositRequest.where(work_id: m.id, organization_transfer: true).exists?
+        Rails.logger.info "iN MediaIePeIngestJob: skipping transfer for media #{m.id} - org transfer already initiated or completed"
+        next
+      end
       Rails.logger.info "iN MediaIePeIngestJob: enqueuing TransferToOrganizationJob for media #{m.id} "
       TransferToOrganizationJob.perform_later(m.id)
     end
@@ -270,6 +274,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
 
     if org.present? && org.agreement_attachment_url.present?
       media.each do |m|
+        next if m.agreement_attachment_url.present?
         CopyOrganizationAgreementAttachmentJob.perform_later(m.id, org.id)
       end
     end

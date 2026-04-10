@@ -76,7 +76,7 @@ module Morphosource
         when 'DeviceResource'
           'device_change_set.create_work'
         when 'ImagingEventResource'
-          'change_set.create_work'
+          'imaging_event_change_set.create_work'
         else
           raise "Unpermitted work type #{model_class.to_s}"
         end
@@ -99,7 +99,7 @@ module Morphosource
           }
         when 'ImagingEventResource'
           {
-            'change_set.set_user_as_depositor' => { user: user },
+            'imaging_event_change_set.set_user_as_depositor' => { user: user },
             'work_resource.save_acl' => { permissions_params: permissions_params }
           }
         else

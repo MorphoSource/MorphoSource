@@ -68,7 +68,7 @@ module Morphosource
         when 'DeviceResource'
           'device_change_set.update_work'
         when 'ImagingEventResource'
-          'change_set.update_work'
+          'imaging_event_change_set.update_work'
         else
           raise "Unpermitted work type #{work.class}"
         end

@@ -23,6 +23,8 @@ module Hyrax
     # forms.
     self.work_form_service = Hyrax::FormFactory.new
 
+    self.create_valkyrie_work_action.transaction_name = "imaging_event_change_set.create_work"
+
     def create
       # ImagingEventResource titles are auto-generated (IE<id>: <description>).
       # Inject a placeholder so basic_metadata title validation passes.
@@ -81,6 +83,19 @@ module Hyrax
     end
 
     private
+
+      # Use the custom imaging event update transaction instead of the Hyrax default.
+      def update_valkyrie_work
+        form = build_form
+        return after_update_error(form_err_msg(form)) unless form.validate(params[hash_key_for_curation_concern])
+
+        result =
+          transactions['imaging_event_change_set.update_work']
+          .with_step_args('work_resource.save_acl' => { permissions_params: form.input_params["permissions"] })
+          .call(form)
+        @curation_concern = result.value_or { return after_update_error(transaction_err_msg(result)) }
+        after_update_response
+      end
 
       # Override LinkedTeamsManagement#record_original_objects to use the
       # mixed Fedora/Valkyrie lookup provided by ImagingEventResource#objects.

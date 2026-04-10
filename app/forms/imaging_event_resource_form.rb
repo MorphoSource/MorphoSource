@@ -60,6 +60,18 @@ class ImagingEventResourceForm < Hyrax::Forms::PcdmObjectForm(ImagingEventResour
     ]
   end
 
+  # title is required by core_metadata form validation but is auto-generated
+  # in sync(). Inject ie_modality as a placeholder so the presence validator
+  # passes when no explicit title is submitted (the normal case).
+  def validate(params)
+    params = (params || {}).to_h
+    unless params['title']&.any?(&:present?)
+      modality = Array(params['ie_modality']).first.to_s
+      params = params.merge('title' => [modality])
+    end
+    super(params)
+  end
+
   # Pre-assign the resource ID so the IE title prefix can be applied before
   # the persister save. The Valkyrie Postgres persister honours a pre-assigned
   # Valkyrie::ID as the primary key rather than generating a new one, so the

@@ -218,17 +218,18 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
     all_media.each do |m|
       UpdateWorkIndexJob.perform_later(m.id)
     end
+    # re-index parent media if it was created in a separate ingest (not included in all_media)
+    if parent_media.present? && !all_media.include?(parent_media)
+      UpdateWorkIndexJob.perform_later(parent_media.id)
+    end
   end
 
   # post-media creation methods
 
   def add_media_to_collections(media, collection_ids)
     return unless media.present? && collection_ids.present?
-    Array(collection_ids).each do |collection_id|
-      media_ids = Array(media)
-        .reject { |m| m.member_of_collection_ids.map(&:to_s).include?(collection_id.to_s) }
-        .map { |m| m.id }
-      AddCollectionMembersJob.perform_later(collection_id, media_ids) if media_ids.present?
+    Array(media).each do |m|
+      ModifyCollectionMembershipJob.perform_later(media_id: m.id, add_to_collection_ids: Array(collection_ids))
     end
   end
 

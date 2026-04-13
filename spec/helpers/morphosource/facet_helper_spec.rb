@@ -45,4 +45,35 @@ RSpec.describe Morphosource::FacetHelper, type: :helper do
     end
   end
 
+  describe 'user_name_by_id' do
+    context 'user with ms_id exists' do
+      let(:user) { FactoryBot.create(:user, ms_id: 'abc123') }
+      it 'returns the user name' do
+        expect(user_name_by_id(user.ms_id)).to eq(user.name)
+      end
+    end
+
+    context 'OrganizationCollection with id exists' do
+      let(:org) { FactoryBot.create(:organization_collection_document) }
+      it 'returns the collection title' do
+        expect(user_name_by_id(org.id)).to eq(org.title.first)
+      end
+    end
+
+    context 'no user or collection with id exists' do
+      context 'another solr document with id exists' do
+        let(:media) { FactoryBot.create(:media_document) }
+        it 'returns the collection title' do
+          expect(user_name_by_id(media.id)).to eq("Unknown User #{media.id.upcase}")
+        end
+      end
+      context 'no solr document with id exists' do
+        let(:id) { 'nonexistent' }
+        it 'returns unknown user with id' do
+          expect(user_name_by_id(id)).to eq("Unknown User #{id.upcase}")
+        end
+      end
+    end
+  end
+
 end

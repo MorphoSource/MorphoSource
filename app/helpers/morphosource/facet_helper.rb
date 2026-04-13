@@ -25,8 +25,16 @@ module Morphosource
       id
     end
 
+    # Find a user by ms_id and return their name,
+    # or Find an OrganizationCollection and return the title,
+    # or return "Unknown User" if neither is found
     def user_name_by_id(id)
-      User.find_by(ms_id: id).name
+      User.find_by(ms_id: id)&.name ||
+      begin
+        doc = SolrDocument.find(id)
+        raise unless doc.organization_collection?
+        doc['title_tesim']&.first
+      end
     rescue
       "Unknown User #{id.to_s.upcase}"
     end

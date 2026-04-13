@@ -98,7 +98,7 @@ module Hydra::Works
           .select { |f| file_type_priorities.include?(File.extname(f).downcase) }
 
         representative_file_name = matching_files
-          .sort_by { |f| file_type_priorities.index(File.extname(f).downcase)}
+          .sort_by { |f| [file_type_priorities.index(File.extname(f).downcase), f.count('/'), f] }
           .first
         recognized_file_count = matching_files.count
       end

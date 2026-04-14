@@ -628,6 +628,9 @@ Rails.application.routes.draw do
     # user managed collections
     get 'teams_projects/managed_by/:user', to: 'collections_catalog#index', as: 'managed_collections_search'
 
+    # user managed organizations
+    get 'organizations/managed_by/:user', to: 'organizations_catalog#index', as: 'managed_organizations_search'
+
     # send to all_catalog controller in order to restrict access to admins only
     resource :catalog, only: [:index], as: 'catalog', path: '/', controller: 'all_catalog' do
       concerns :searchable

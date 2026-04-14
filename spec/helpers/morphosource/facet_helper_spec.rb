@@ -63,7 +63,7 @@ RSpec.describe Morphosource::FacetHelper, type: :helper do
     context 'no user or collection with id exists' do
       context 'another solr document with id exists' do
         let(:media) { FactoryBot.create(:media_document) }
-        it 'returns the collection title' do
+        it 'returns unknown user with id' do
           expect(user_name_by_id(media.id)).to eq("Unknown User #{media.id.upcase}")
         end
       end

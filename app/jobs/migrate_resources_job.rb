@@ -34,6 +34,10 @@ class MigrateResourcesJob < ApplicationJob
       resource.skip_index_related_works = true
     end
 
+    # Devices without a creator would fail form validation during migration.
+    # Set a default so the record can be migrated; it can be corrected afterwards.
+    resource.creator = ["unknown"] if resource.is_a?(DeviceResource) && resource.creator.blank?
+
     result = MigrateResourceService.new(resource: resource).call
     errors << result unless result.success?
     result

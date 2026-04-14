@@ -52,7 +52,10 @@ module FreyjaWithWings
             ActiveFedora::Base.exists?(new_resource.id.to_s)
           )
             af_object = ActiveFedora::Base.find(new_resource.id.to_s)
-            af_object.member_of.select { |p| p.is_a?(ActiveFedora::Base) }.each do |parent|
+            # Guard with respond_to?(:valkyrie_member_ids=): some AF parent types (e.g. Organization,
+            # OrganizationCollection) do not include ValkyrieAssociation and have no valkyrie_member_ids
+            # property. Calling it on those would raise NoMethodError during Device migration.
+            af_object.member_of.select { |p| p.is_a?(ActiveFedora::Base) && p.respond_to?(:valkyrie_member_ids=) }.each do |parent|
               parent.ordered_members.delete(af_object)
               parent.members.delete(af_object)
               parent.valkyrie_member_ids = (parent.valkyrie_member_ids.to_a + [new_resource.id.to_s]).uniq

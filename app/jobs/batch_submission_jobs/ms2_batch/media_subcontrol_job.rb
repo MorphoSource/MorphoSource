@@ -11,6 +11,8 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
 
     # Submit jobs for new works to be created
     background_job_manifest['media_ie_pe_ingests'].each_with_index do |i, ingest_index|
+      i['job_exception'] = nil
+      i['job_status'] = nil
       ensure_imaging_event_present(i)
       ensure_single_parent(i)
 
@@ -100,7 +102,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
   def created_parent_id(parent_file, wait_started)
     duration = Time.now - wait_started
     Rails.logger.debug "iN created_parent_id: looking for #{parent_file} in job #{background_job_id}... (#{duration} seconds)"
-    if background_job.created_objects[parent_file].present?
+    if background_job.created_objects[parent_file].present? && media_exists?(background_job.created_objects[parent_file])
       return background_job.created_objects[parent_file]
     else
       if duration > 3600 # 1 hr
@@ -140,5 +142,12 @@ class BatchSubmissionJobs::Ms2Batch::MediaSubcontrolJob < Morphosource::Applicat
 
   def update_background_job(status_str=nil, exceptions=nil)
     background_job.update_status(status_str, exceptions)
+  end
+
+  def media_exists?(id)
+    return false unless id.present?
+    @media_works_cache ||= {}
+    @media_works_cache[id] = Media.exists?(id) unless @media_works_cache.key?(id)
+    @media_works_cache[id]
   end
 end

@@ -3,6 +3,7 @@ class BackgroundJob < ApplicationRecord
 
   def update_created_objects(params)
 		# merge the existing params with the passed params
+		self.reload
 		self.created_objects.merge!(params)
   	self.save
     Rails.logger.debug "In BackgroundJob #{job_id}: saving #{self.created_objects}"

@@ -102,7 +102,7 @@ module Morphosource::Derivatives::Processors
       extracted_files = Morphosource::Files::ArchiveService.new(source_path).extract_archive(tmp_dir_path)
       new_sources = extracted_files.select { |f| File.file?(f) && MESH_FORMATS.include?(File.extname(f).downcase) }
       if new_sources.present?
-        @source_path = new_sources.sort_by { |f| MESH_FORMATS.index(File.extname(f).downcase) }.first
+        @source_path = new_sources.sort_by { |f| [MESH_FORMATS.index(File.extname(f).downcase), f.count('/'), f] }.first
       else
         raise "Mesh archive does not contain a recognizable mesh file"
       end

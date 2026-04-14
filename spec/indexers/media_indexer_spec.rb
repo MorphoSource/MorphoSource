@@ -348,6 +348,86 @@ RSpec.describe MediaIndexer do
     end
   end
 
+  describe 'file metadata fields' do
+    let(:media) { FactoryBot.create(:media) }
+    subject     { described_class.new(media).generate_solr_document }
+
+    context 'when media has a file set with file metadata' do
+      let(:file_set_doc) do
+        SolrDocument.new(
+          'id' => 'fileset-id-1',
+          'label_tesim' => ['specimen_scan.stl'],
+          'file_size_lts' => 54321,
+          'mime_type_ssi' => 'model/stl'
+        )
+      end
+
+      before do
+        allow(media).to receive(:file_set_ids).and_return(['fileset-id-1'])
+        allow(SolrDocument).to receive(:where).and_return([file_set_doc])
+        allow(Morphosource::DerivativePath).to receive(:derivatives_for_reference).and_return([])
+      end
+
+      it 'indexes file name from file set' do
+        expect(subject['media_file_name_tesim']).to eq(['specimen_scan.stl'])
+      end
+
+      it 'indexes binary file size from file set' do
+        expect(subject['media_file_size_lts']).to eq(54321)
+      end
+
+      it 'indexes mime type from file set' do
+        expect(subject['media_mime_type_ssim']).to eq(['model/stl'])
+      end
+    end
+
+    context 'when media has multiple file sets' do
+      let(:file_set_docs) do
+        [
+          SolrDocument.new('id' => 'fileset-id-1', 'label_tesim' => ['scan_a.zip'], 'file_size_lts' => 10000, 'mime_type_ssi' => 'application/zip'),
+          SolrDocument.new('id' => 'fileset-id-2', 'label_tesim' => ['scan_b.zip'], 'file_size_lts' => 20000, 'mime_type_ssi' => 'application/zip')
+        ]
+      end
+
+      before do
+        allow(media).to receive(:file_set_ids).and_return(['fileset-id-1', 'fileset-id-2'])
+        allow(SolrDocument).to receive(:where).and_return(file_set_docs)
+        allow(Morphosource::DerivativePath).to receive(:derivatives_for_reference).and_return([])
+      end
+
+      it 'indexes all file names' do
+        expect(subject['media_file_name_tesim']).to match_array(['scan_a.zip', 'scan_b.zip'])
+      end
+
+      it 'indexes summed binary file size' do
+        expect(subject['media_file_size_lts']).to eq(30000)
+      end
+
+      it 'indexes all mime types' do
+        expect(subject['media_mime_type_ssim']).to match_array(['application/zip', 'application/zip'])
+      end
+    end
+
+    context 'when media has no file sets' do
+      before do
+        allow(media).to receive(:file_set_ids).and_return([])
+        allow(Morphosource::DerivativePath).to receive(:derivatives_for_reference).and_return([])
+      end
+
+      it 'indexes empty file name array' do
+        expect(subject['media_file_name_tesim']).to eq([])
+      end
+
+      it 'indexes zero file size' do
+        expect(subject['media_file_size_lts']).to eq(0)
+      end
+
+      it 'indexes empty mime type array' do
+        expect(subject['media_mime_type_ssim']).to eq([])
+      end
+    end
+  end
+
   # helper method
   def add_ordered_members(parent, child)
     parent.ordered_members << child

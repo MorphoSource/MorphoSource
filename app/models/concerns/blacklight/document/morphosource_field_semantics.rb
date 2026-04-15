@@ -90,6 +90,9 @@ module Blacklight
           data_sponsor: "active_fund_code_title_ssim",
           file_thumbnail_url: "thumbnail_path_ss",
           file_size_all: "all_files_file_size_lts",
+          file_name: "media_file_name_tesim",
+          file_size: "media_file_size_lts",
+          mime_type: "media_mime_type_ssim",
         }
       end
 

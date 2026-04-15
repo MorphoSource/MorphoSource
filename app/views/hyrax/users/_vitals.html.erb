@@ -12,6 +12,14 @@
 
 <div class="list-group-item d-flex" style="gap: 5px;">
   <span class="mr-auto">
+    <i class="fas fa-landmark" aria-hidden="true"></i>
+    <%= link_to('Organizations Managed', main_app.managed_organizations_search_path(user.ms_id)) %>
+  </span>
+  <span class="badge badge-bootstrap-default badge-pill badge-secondary"><%= @presenter.managed_organization_count %></span>
+</div>
+
+<div class="list-group-item d-flex" style="gap: 5px;">
+  <span class="mr-auto">
     <i class="far fa-arrow-alt-circle-up" aria-hidden="true"></i>
     <%= link_to('Media Deposited', main_app.media_search_path({"f"=>{"depositor"=>["#{user.ms_id}"]}})) %>
   </span>

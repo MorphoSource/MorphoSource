@@ -2,6 +2,8 @@
 class OrganizationsCatalogController < CatalogController
   include CatalogControllerRestApiBehavior
 
+  before_action :search_managed_organizations, only: :index
+
   configure_blacklight do |config|
     config.search_builder_class = Morphosource::Catalog::OrganizationsCatalogSearchBuilder
     # disable thumbnails
@@ -71,5 +73,17 @@ class OrganizationsCatalogController < CatalogController
 
   def document_type
     'organization'
+  end
+
+  private
+
+  # Used for links to a user's managed organizations
+  # E.g. /catalog/organizations/managed_by/1?locale=en
+  def search_managed_organizations
+    return unless request.path.include? "/managed_by/"
+
+    @user = User.find_by(ms_id: params["user"])
+    blacklight_config.user = @user
+    blacklight_config.search_builder_class = Morphosource::Users::ManagedOrganizationsSearchBuilder
   end
 end

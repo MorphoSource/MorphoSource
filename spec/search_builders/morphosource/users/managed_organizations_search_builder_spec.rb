@@ -11,7 +11,7 @@ RSpec.describe Morphosource::Users::ManagedOrganizationsSearchBuilder do
 
   describe '#models' do
     it 'is OrganizationCollection' do
-      expect(subject.models).to match_array([OrganizationCollection])
+      expect(subject.send(:models)).to match_array([OrganizationCollection])
     end
   end
 

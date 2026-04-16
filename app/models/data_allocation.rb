@@ -7,10 +7,6 @@ class DataAllocation < ApplicationRecord
 
   after_initialize :set_storage_defaults, if: :new_record?
 
-  def owner
-    fund_code? ? fund_code : users
-  end
-
   private
 
   def set_storage_defaults

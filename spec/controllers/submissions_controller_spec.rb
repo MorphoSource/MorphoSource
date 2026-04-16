@@ -373,9 +373,9 @@ RSpec.describe SubmissionsController, type: :controller do
     let(:old_s_solr)    { SolrDocument.find(specimen.id) }
     let(:new_s_solr)    { SolrDocument.find(specimen.id) }
 
-    let(:device)        { Device.create(title: ['test device'], modality: ['Photogrammetry']) }
+    let(:device)        { FactoryBot.valkyrie_create(:device_resource, title: ['test device'], modality: ['Photogrammetry']) }
 
-    let(:imaging_event) { ImagingEvent.create(title: ['Imaging Event'], device_id: [device.id], physical_object_id: [specimen.id], ie_modality: device.modality) }
+    let(:imaging_event) { ImagingEvent.create(title: ['Imaging Event'], device_id: [device.id.to_s], physical_object_id: [specimen.id], ie_modality: device.modality) }
 
     let(:old_solr_docs) { [old_m_solr, old_s_solr] }
 

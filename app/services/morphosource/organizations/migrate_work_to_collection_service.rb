@@ -280,8 +280,8 @@ module Morphosource
         # Gather devices based on parent/child and ID relationships
         devices = (
           organization_work.devices +
-          Device.where(organization_id: organization_work.id)
-        ).uniq { |device| device.id }
+          DeviceResource.where(organization_id: organization_work.id)
+        ).uniq { |device| device.id.to_s }
 
         # Get media IDs associated with devices for later reindexing
         device_ids = devices.map(&:id)

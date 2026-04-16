@@ -37,8 +37,20 @@ RSpec.describe MorphosourceHelper, type: :helper do
   describe '#devices' do
     describe 'there are devices' do
       let!(:devices) do
-        [ Device.create(title: [ 'Foo' ]),
-          Device.create(title: [ 'Bar' ]) ]
+        [
+          { id: 'device-resource-1', title_ssi: 'Foo', has_model: 'DeviceResource' },
+          { id: 'device-1', title_ssi: 'Bar', has_model: 'Device' }
+        ]
+      end
+      before do
+        model_field = ActiveFedora.index_field_mapper.solr_name('has_model', :symbol)
+        devices.each do |device|
+          ActiveFedora::SolrService.add(
+            device.except(:has_model).merge(model_field => [device[:has_model]]),
+            softCommit: true
+          )
+        end
+        ActiveFedora::SolrService.commit
       end
       it 'returns the appropriate array' do
         results = helper.devices
@@ -50,6 +62,28 @@ RSpec.describe MorphosourceHelper, type: :helper do
       it 'returns an empty array' do
         expect(helper.organizations).to match([])
       end
+    end
+  end
+
+  describe '#organization_devices' do
+    it 'queries for Device or DeviceResource records for the organization' do
+      id = 'org-1'
+      solr_service = instance_double(Morphosource::SolrService)
+      doc = {
+        'id' => 'device-1',
+        'title_tesim' => ['Title'],
+        'creator_tesim' => ['Creator'],
+        'modality_tesim' => ['Modality'],
+        'description_tesim' => ['Description']
+      }
+      allow(Morphosource::SolrService).to receive(:new).and_return(solr_service)
+      expect(solr_service).to receive(:get_docs)
+        .with("device_organization_id_ssim:#{id}",
+              fq: ["has_model_ssim:(Device OR DeviceResource)"])
+        .and_return([doc])
+
+      results = helper.organization_devices(id)
+      expect(results.first[:id]).to eq('device-1')
     end
   end
 
@@ -180,7 +214,7 @@ RSpec.describe MorphosourceHelper, type: :helper do
                                     valid_child_concerns: valid_child_models,
                                     valid_parent_concerns: valid_parent_models) }
     let(:valid_child_models) { [ Media, ProcessingEvent ] }
-    let(:valid_parent_models) { [ BiologicalSpecimen, Device ] }
+    let(:valid_parent_models) { [ BiologicalSpecimen, DeviceResource ] }
     before do
       allow(curation_concern).to receive(:valid_child_concerns) { valid_child_models }
       allow(curation_concern).to receive(:valid_parent_concerns) { valid_parent_models }
@@ -196,7 +230,7 @@ RSpec.describe MorphosourceHelper, type: :helper do
         end
       end
       describe 'for parent relationship' do
-        let(:expected_query_string) { '?type[]=BiologicalSpecimen&type[]=Device&id=NA' }
+        let(:expected_query_string) { '?type[]=BiologicalSpecimen&type[]=DeviceResource&id=NA' }
         it 'searches for appropriate parent work types' do
           expect(helper.find_works_autocomplete_url(curation_concern, :parent)).to eq(autocomplete_url)
         end
@@ -212,7 +246,8 @@ RSpec.describe MorphosourceHelper, type: :helper do
       end
       describe 'parent' do
         it 'is a string containing the expected elements' do
-          expect(helper.valid_work_types_list(curation_concern, :parent)).to eq('Biological Specimen, Device')
+          expected_types = [BiologicalSpecimen, DeviceResource].map(&:human_readable_type).sort.join(', ')
+          expect(helper.valid_work_types_list(curation_concern, :parent)).to eq(expected_types)
         end
       end
     end
@@ -413,8 +448,8 @@ RSpec.describe MorphosourceHelper, type: :helper do
       let(:organization)            { FactoryBot.create(:organization_collection, title: ['organization']) }
       let(:facility)                { FactoryBot.create(:organization_collection, title: ['facility']) }
       let(:specimen)                { FactoryBot.create(:biological_specimen, organization_id: [organization.id]) }
-      let(:device)                  { FactoryBot.create(:device, organization_id: [facility.id], modality: ['Photogrammetry']) }
-      let(:imaging_event)           { FactoryBot.create(:imaging_event, ie_modality: device.modality, device_id: [device.id], physical_object_id: [specimen.id]) }
+      let(:device)                  { FactoryBot.create(:device_resource, organization_id: [facility.id], modality: ['Photogrammetry']) }
+      let(:imaging_event)           { FactoryBot.create(:imaging_event, ie_modality: device.modality, device_id: [device.id.to_s], physical_object_id: [specimen.id]) }
 
       let(:collections)             { [project, organization, facility] }
 

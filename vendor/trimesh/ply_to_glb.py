@@ -79,6 +79,13 @@ def apply_color_correction(mesh, ply_path):
     mesh.visual.vertex_colors = srgb_uint8_to_linear_uint8(colors)
 
 
+def apply_color_correction_to_pointcloud(cloud, ply_path):
+    """Apply sRGB->linear conversion to PointCloud vertex colors if the PLY used uchar colors."""
+    if cloud.colors is None or len(cloud.colors) == 0:
+        return
+    cloud.colors = srgb_uint8_to_linear_uint8(cloud.colors)
+
+
 def convert(ply_path, glb_path):
     import trimesh
 
@@ -90,11 +97,17 @@ def convert(ply_path, glb_path):
             for geom in mesh.geometry.values():
                 if isinstance(geom, trimesh.Trimesh):
                     apply_color_correction(geom, ply_path)
+                elif isinstance(geom, trimesh.points.PointCloud):
+                    apply_color_correction_to_pointcloud(geom, ply_path)
         mesh.export(glb_path)
     elif isinstance(mesh, trimesh.Trimesh):
         if correct_colors:
             apply_color_correction(mesh, ply_path)
         trimesh.Scene(geometry={'mesh': mesh}).export(glb_path)
+    elif isinstance(mesh, trimesh.points.PointCloud):
+        if correct_colors:
+            apply_color_correction_to_pointcloud(mesh, ply_path)
+        trimesh.Scene(geometry={'pointcloud': mesh}).export(glb_path)
     else:
         raise ValueError(f"Unsupported trimesh type for PLY input: {type(mesh)}")
 

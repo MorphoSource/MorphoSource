@@ -1,3 +1,4 @@
+# syntax=docker/dockerfile:1.4
 ### MORPHOSOURCE-BUILD STAGES (BUILDS APP FILES FOR LATER COPYING) ###
 
 ### MORPHOSOURCE-BUILD-DEV STAGE ####
@@ -8,18 +9,17 @@ ARG APP_PATH=.
 
 USER app
 
-COPY --chown=1001:0 $APP_PATH/Gemfile $RAILS_ROOT/Gemfile
-COPY --chown=1001:0 $APP_PATH/Gemfile.lock $RAILS_ROOT/Gemfile.lock
-RUN bundle install --jobs "$(nproc)"
+COPY --chmod=0775 --chown=1001:0 $APP_PATH/Gemfile $RAILS_ROOT/Gemfile
+COPY --chmod=0775 --chown=1001:0 $APP_PATH/Gemfile.lock $RAILS_ROOT/Gemfile.lock
+RUN --mount=type=cache,uid=1001,gid=0,target=/tmp/bundler-cache \
+    BUNDLE_USER_CACHE=/tmp/bundler-cache bundle install --jobs "$(nproc)"
 
-COPY --chown=1001:0 $APP_PATH/package.json $RAILS_ROOT/package.json
-COPY --chown=1001:0 $APP_PATH/yarn.lock $RAILS_ROOT/yarn.lock
-RUN yarn install
+COPY --chmod=0775 --chown=1001:0 $APP_PATH/package.json $RAILS_ROOT/package.json
+COPY --chmod=0775 --chown=1001:0 $APP_PATH/yarn.lock $RAILS_ROOT/yarn.lock
+RUN --mount=type=cache,uid=1001,gid=0,target=/tmp/yarn-cache \
+    yarn install --cache-folder /tmp/yarn-cache
 
-COPY --chown=1001:0 $APP_PATH $RAILS_ROOT
-
-# Set directories as executable for writeability
-RUN chmod -R g+rwX $RAILS_ROOT
+COPY --chmod=0775 --chown=1001:0 $APP_PATH $RAILS_ROOT
 
 
 
@@ -32,20 +32,19 @@ ARG SECRET_KEY_BASE
 
 USER app
 
-COPY --chown=1001:0 $APP_PATH/Gemfile $RAILS_ROOT/Gemfile
-COPY --chown=1001:0 $APP_PATH/Gemfile.lock $RAILS_ROOT/Gemfile.lock
-RUN bundle install --jobs "$(nproc)" --without development
+COPY --chmod=0775 --chown=1001:0 $APP_PATH/Gemfile $RAILS_ROOT/Gemfile
+COPY --chmod=0775 --chown=1001:0 $APP_PATH/Gemfile.lock $RAILS_ROOT/Gemfile.lock
+RUN --mount=type=cache,uid=1001,gid=0,target=/tmp/bundler-cache \
+    BUNDLE_USER_CACHE=/tmp/bundler-cache bundle install --jobs "$(nproc)" --without development
 
-COPY --chown=1001:0 $APP_PATH/package.json $RAILS_ROOT/package.json
-COPY --chown=1001:0 $APP_PATH/yarn.lock $RAILS_ROOT/yarn.lock
-RUN yarn install
+COPY --chmod=0775 --chown=1001:0 $APP_PATH/package.json $RAILS_ROOT/package.json
+COPY --chmod=0775 --chown=1001:0 $APP_PATH/yarn.lock $RAILS_ROOT/yarn.lock
+RUN --mount=type=cache,uid=1001,gid=0,target=/tmp/yarn-cache \
+    yarn install --cache-folder /tmp/yarn-cache
 
-COPY --chown=1001:0 $APP_PATH $RAILS_ROOT
+COPY --chmod=0775 --chown=1001:0 $APP_PATH $RAILS_ROOT
 
 RUN NODE_OPTIONS=--openssl-legacy-provider RAILS_ENV=development bundle exec rails assets:precompile
-
-# Set directories as executable for writeability
-RUN chmod -R g+rwX $RAILS_ROOT
 
 
 

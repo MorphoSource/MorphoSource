@@ -38,10 +38,10 @@ RSpec.describe Hyrax::Actors::MediaActor do
         end
       end
       context 'media is created through the submission process' do
-        let(:device)              { Device.create(title: ['device'], modality: ['Photogrammetry']) }
+        let(:device)              { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
         let(:taxonomy)            { valkyrie_create(:taxonomy_resource, title: ['taxonomy']) }
         let(:biological_specimen) { BiologicalSpecimen.create(title: ['title'], vouchered: [ "Yes" ], taxonomy_id: [taxonomy.id]) }
-        let(:imaging_event)       { ImagingEvent.create(title: ['imaging_event'], ie_modality: device.modality, device_id: [device.id], physical_object_id: [biological_specimen.id]) }
+        let(:imaging_event)       { ImagingEvent.create(title: ['imaging_event'], ie_modality: device.modality, device_id: [device.id.to_s], physical_object_id: [biological_specimen.id]) }
         let(:processing_event)    { ProcessingEvent.create(title: ['processing event']) }
 
 
@@ -112,9 +112,9 @@ RSpec.describe Hyrax::Actors::MediaActor do
       end
 
       context 'media is created through the submission process for CHO' do
-        let(:device)              { Device.create(title: ['device'], modality: ['Photogrammetry']) }
+        let(:device)              { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
         let(:cho)                 { CulturalHeritageObject.create(title: ['private cho'], visibility: 'restricted', vouchered: ['Yes']) }
-        let(:imaging_event)       { ImagingEvent.create(title: ['imaging_event'], ie_modality: device.modality, device_id: [device.id], physical_object_id: [cho.id]) }
+        let(:imaging_event)       { ImagingEvent.create(title: ['imaging_event'], ie_modality: device.modality, device_id: [device.id.to_s], physical_object_id: [cho.id]) }
         let(:processing_event)    { ProcessingEvent.create(title: ['processing event']) }
 
         before do
@@ -216,8 +216,8 @@ RSpec.describe Hyrax::Actors::MediaActor do
     let(:user) { FactoryBot.build(:user) }
     let(:ability) { Ability.new(user) }
     let(:work) { Media.new }
-    let(:device1) { Device.create(title: ['device1'], modality: ['MagneticResonanceImaging']) }
-    let(:device2) { Device.create(title: ['device2'], modality: ['ScanningElectronMicroscopy']) }
+    let(:device1) { FactoryBot.valkyrie_create(:device_resource, title: ['device1'], modality: ['MagneticResonanceImaging']) }
+    let(:device2) { FactoryBot.valkyrie_create(:device_resource, title: ['device2'], modality: ['ScanningElectronMicroscopy']) }
     # let(:modality_attr) { [ device1.modality.first, device2.modality.first ] }
     let(:modality_labels) { [ 'MRI', 'SEM' ] }
     let(:part_attr) { [ 'leg', 'arm' ] }
@@ -226,8 +226,8 @@ RSpec.describe Hyrax::Actors::MediaActor do
     let(:env) { Hyrax::Actors::Environment.new(work, ability, attrs) }
 
     before do
-      ImagingEvent.create(title: ["Test ImagingEvent 1"], id: "parentIE1", ie_modality: device1.modality, device_id: [device1.id])
-      ImagingEvent.create(title: ["Test ImagingEvent 2"], id: "parentIE2", ie_modality: device2.modality, device_id: [device2.id])
+      ImagingEvent.create(title: ["Test ImagingEvent 1"], id: "parentIE1", ie_modality: device1.modality, device_id: [device1.id.to_s])
+      ImagingEvent.create(title: ["Test ImagingEvent 2"], id: "parentIE2", ie_modality: device2.modality, device_id: [device2.id.to_s])
     end
 
     describe 'one modality' do

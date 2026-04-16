@@ -7,8 +7,8 @@ RSpec.describe SubmissionsController, type: :controller do
   let(:depositor)           { FactoryBot.create(:contributor) }
   let(:submission)          { Submission.new( { form_data: {}, work_data: {} } ) }
   let(:specimen)            { FactoryBot.create(:biological_specimen, organization_id: [organization.id]) }
-  let(:device)              { FactoryBot.create(:device, modality: ['Photogrammetry']) }
-  let!(:imaging_event)      { FactoryBot.create(:imaging_event, device_id: [device.id], ie_modality: device.modality, physical_object_id: [specimen.id]) }
+  let(:device)              { FactoryBot.create(:device_resource, modality: ['Photogrammetry']) }
+  let!(:imaging_event)      { FactoryBot.create(:imaging_event, device_id: [device.id.to_s], ie_modality: device.modality, physical_object_id: [specimen.id]) }
   let(:media)               { Media.last }
   let(:visibility)          { '' }
   let(:transfer_management) { '' }

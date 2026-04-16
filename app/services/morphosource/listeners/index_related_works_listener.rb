@@ -23,13 +23,18 @@ module Morphosource
       #
       # @param event [Dry::Event]
       def on_object_metadata_updated(event)
-        log_non_resource(event) && return unless event[:object].is_a?(Valkyrie::Resource)
-        log_skip_reindex(event) && return if event[:skip_index_related_works]
+        payload = event.respond_to?(:payload) ? event.payload : {}
+        object = payload[:object]
 
-        case event[:object]
+        log_non_resource(event) && return unless object.is_a?(Valkyrie::Resource)
+        log_skip_reindex(event) && return if payload[:skip_index_related_works]
+
+        case object
         when TaxonomyResource
-          index_all(event[:object].objects)
-          index_all(event[:object].media)
+          index_all(object.objects)
+          index_all(object.media)
+        when DeviceResource
+          index_all(object.media)
         end
 
       end

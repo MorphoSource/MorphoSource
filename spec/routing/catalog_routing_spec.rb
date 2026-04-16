@@ -30,6 +30,11 @@ RSpec.describe 'catalog routing', type: :routing do
     expect(get: 'catalog/organizations').to route_to(route)
   end
 
+  it 'has a route for searching managed organizations by user' do
+    route = { controller: 'organizations_catalog', action: 'index', user: '42' }
+    expect(get: 'catalog/organizations/managed_by/42').to route_to(route)
+  end
+
   it 'has a route for faceting organizations' do
     route = { controller: 'organizations_catalog', action: 'facet', id: 'id' }
     expect(get: 'organizations_catalog/facet/id').to route_to(route)

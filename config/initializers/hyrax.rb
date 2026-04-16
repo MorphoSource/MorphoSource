@@ -19,6 +19,8 @@ Hyrax.config do |config|
   config.register_curation_concern :taxonomy
   # Injected via `rails g hyrax:work_resource TaxonomyResource`
   config.register_curation_concern :taxonomy_resource
+  # Injected via `rails g hyrax:work_resource DeviceResource`
+  config.register_curation_concern :device_resource
 
   # Register roles that are expected by your implementation.
   # @see Hyrax::RoleRegistry for additional details.

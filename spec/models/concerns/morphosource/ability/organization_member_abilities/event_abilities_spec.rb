@@ -19,8 +19,8 @@ RSpec.describe 'Morphosource::Ability', type: :model do
   let(:org_read_members)      { [org_manager, org_editor, org_downloader, org_viewer] }
 
   let(:specimen)              { FactoryBot.create(:biological_specimen, organization_id: [organization.id]) }
-  let(:device)                { FactoryBot.create(:device) }
-  let(:imaging_event)         { FactoryBot.create(:imaging_event, physical_object_id: [specimen.id], device_id: [device.id], ie_modality: ['Photogrammetry'], visibility: 'restricted') }
+  let(:device)                { FactoryBot.create(:device_resource, modality: ['Photogrammetry']) }
+  let(:imaging_event)         { FactoryBot.create(:imaging_event, physical_object_id: [specimen.id], device_id: [device.id.to_s], ie_modality: ['Photogrammetry'], visibility: 'restricted') }
   let(:processing_event)      { FactoryBot.create(:processing_event, visibility: 'restricted') }
   let(:top_media)             { FactoryBot.create(:media) }
   let(:file_set)              { FactoryBot.create(:file_set) }

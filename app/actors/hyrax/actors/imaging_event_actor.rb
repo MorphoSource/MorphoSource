@@ -20,7 +20,7 @@ module Hyrax
         attrs = env.attributes
         device_info = ''
         if attrs['device_id'].present?
-          device = Device.find(attrs['device_id'].first)
+          device = Hyrax.query_service.find_by(id: attrs['device_id'].first)
           if device.creator.present?
             device_info += "#{device.creator.first} "
           end

@@ -39,7 +39,20 @@ RSpec.describe Morphosource::FacetHelper, type: :helper do
   end
 
   describe 'device_title_by_id' do
-    let(:device)  { FactoryBot.create(:device, title: ['device model'], creator: ['device make']) }
+    let(:device) { FactoryBot.create(:device_resource, title: ['device model'], creator: ['device make']) }
+
+    before do
+      ActiveFedora::SolrService.add(
+        {
+          id: device.id.to_s,
+          'creator_ssim' => device.creator,
+          'title_tesim' => device.title
+        },
+        softCommit: true
+      )
+      ActiveFedora::SolrService.commit
+    end
+
     it 'returns the device title' do
       expect(device_title_by_id(device.id)).to eq("#{device.creator.first} #{device.title.first}")
     end

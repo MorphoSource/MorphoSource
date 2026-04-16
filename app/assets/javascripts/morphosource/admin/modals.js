@@ -5,44 +5,37 @@ $(document).ready(function() {
   if (!document.body.classList.contains("modal-config")) return;
 
   const testModal = document.getElementById("test-modal");
-  // const testModal = $('#test-modal')
   const guiltTripModal = document.getElementById("test-guilt-trip-modal");
-  // const guiltTripModal = $('#test-guilt-trip-modal')
+  const testModalBtn = document.querySelector('[data-target="#test-modal"]');
 
-  function openModal(modal) {
-    if (modal) {
-      // Create overlay
-      const overlay = document.createElement("div");
+  if (testModalBtn) {
+    testModalBtn.addEventListener("click", () => openModal(testModal));
+  }
+
+  function ensureOverlay() {
+    let overlay = document.getElementById("modal-overlay");
+    if (!overlay) {
+      overlay = document.createElement("div");
       overlay.classList.add("modal-overlay");
       overlay.id = "modal-overlay";
       document.body.appendChild(overlay);
-
-      modal.style.display = "block";
-      modal.setAttribute("aria-hidden", "false");
-      modal.classList.add("in");
-      document.querySelectorAll(modal.id + ' *').forEach((el) => {
-        if (el.style.display === 'none') {
-          el.style.removeProperty('display');
-        }
-      });
     }
+    return overlay;
+  }
+
+  function openModal(modal) {
+    if (!modal) return;
+    ensureOverlay();
+    modal.removeAttribute("hidden");
+    modal.style.display = "block";
+    modal.setAttribute("aria-hidden", "false");
   }
 
   function closeModal(modal) {
-    if (modal) {
-      document.activeElement.blur();
-      modal.style.display = "none";
-      modal.setAttribute("aria-hidden", "true");
-      modal.classList.remove("in");
-      document.body.classList.remove("modal-open", "no-scroll");
-
-      // Remove overlay if it exists
-      const overlay = document.getElementById("modal-overlay");
-      if (overlay) overlay.remove();
-
-      // Remove any leftover overlays
-      document.querySelectorAll(".modal-backdrop, .overlay").forEach((el) => el.remove());
-    }
+    if (!modal) return;
+    modal.style.display = "none";
+    modal.setAttribute("aria-hidden", "true");
+    document.querySelectorAll(".modal-overlay").forEach(el => el.remove());
   }
 
   // Populate the example modal with initial form values
@@ -56,7 +49,7 @@ $(document).ready(function() {
   var initialValue = $('[id*="_guilt_trip_template"]').val();
   if (initialValue.length) {
     $("." + initialValue + "2").show();
-    var clonedElement = $("." + initialValue).clone();
+    var clonedElement = $("." + initialValue + "2").clone();
     clonedElement.show();
     outerHTML = clonedElement[0].outerHTML;
     $('#test-guilt-trip-modal').empty().append(outerHTML);
@@ -82,7 +75,7 @@ $(document).ready(function() {
       $('#test-guilt-trip-modal').empty();
       return;
     } else {
-      var clonedElement = $("." + selectedValue).clone();
+      var clonedElement = $("." + selectedValue + "2").clone();
       clonedElement.show();
       outerHTML = clonedElement[0].outerHTML;
       $('#test-guilt-trip-modal').empty().append(outerHTML);
@@ -125,6 +118,7 @@ $(document).ready(function() {
     testModal.addEventListener("click", (e) => {
       const target = e.target;
       if (target.matches(".no-thanks")) {
+        e.preventDefault();
         closeModal(testModal);
         if ($('[id*="_guilt_trip_template"]').val().length) {
           openModal(guiltTripModal);

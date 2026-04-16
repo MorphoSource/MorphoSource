@@ -51,16 +51,16 @@ module Morphosource
 
           return if @organization.devices.map { |d| d.title.first }.include? device_name
 
-          device = Device.new
-
-          attributes = { title: [device_name],
-                         modality: ['SequentialSectionScan'],
-                         visibility: 'open' }
-
-          Hyrax::CurationConcern.actor.create(Hyrax::Actors::Environment.new(device, ::Ability.new(admin), attributes))
-
-          @organization.ordered_members << device
-          @organization.save!
+          Morphosource::Action::CreateWorkService.new(
+            model: DeviceResource,
+            params: {
+              device_resource: { title: [device_name],
+                                 modality: ['SequentialSectionScan'],
+                                 visibility: 'open' },
+              organization_id: @organization.id
+            },
+            user: admin
+          ).call
         end
 
         def create_manager

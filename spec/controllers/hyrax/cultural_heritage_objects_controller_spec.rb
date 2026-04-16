@@ -81,8 +81,8 @@ RSpec.describe Hyrax::CulturalHeritageObjectsController do
       context "when the cho's params include parents" do
         let(:media)                 { Media.create(title: ['media']) }
         let(:media2)                { Media.create(title: ['media2']) }
-        let(:device)                { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-        let(:imaging_event)         { ImagingEvent.create(title: ['imaging event'], device_id: [device.id], physical_object_id: [cho.id], ie_modality: device.modality) }
+        let(:device)                { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
+        let(:imaging_event)         { ImagingEvent.create(title: ['imaging event'], device_id: [device.id.to_s], physical_object_id: [cho.id], ie_modality: device.modality) }
         let(:processing_event)      { ProcessingEvent.create(title: ['processing event']) }
         let(:old_organization)      { Organization.create(title: ['old org'], team_id: [old_team.id]) }
         let(:old_team)              { Collection.create(title: ['Old Team'], collection_type_gid: team_collection_type.to_global_id, depositor: user.ms_id) }

@@ -90,7 +90,7 @@ module Morphosource
       if validity_status == "success"
         warn_msg = validity_data[:warn_messages].flat_map do |row, msgs|
           Array(msgs).reject(&:blank?).map { |msg| " Row #{row}: #{msg} " }
-        end.join("; ")        
+        end.join("; ")
         return create_background_jobs, warn_msg
       else
         puts "Batch file was invalid. See validity results: #{validity_data}\n\n"
@@ -112,7 +112,7 @@ module Morphosource
 
         row_attributes = build_row_attributes(headers, data_row)
         parent_ms_id = pad_id(row_attributes[:"media.parent_ms_id"]&.first)
-        bso_ms_id = pad_id(row_attributes[:"biological_specimen.ms_id"]&.first) 
+        bso_ms_id = pad_id(row_attributes[:"biological_specimen.ms_id"]&.first)
         # if parent_ms_id is present, get the device id from the parent media
         if parent_ms_id.present? && (parent_media_solr = SolrDocument.find(parent_ms_id)).present?
           device_id = parent_media_solr["media_device_id_ssim"]&.first
@@ -131,7 +131,7 @@ module Morphosource
 
         raise "Organization ID missing for row #{row_index}" unless organization_id.present?
         raise "Device ID missing for row #{row_index}" unless device_id.present?
-        
+
         combo_key = [organization_id, device_id]
 
         grouped_rows[combo_key] << row_attributes
@@ -210,8 +210,8 @@ module Morphosource
 
       organization_id = org_device_group[:organization_id]
       device_id = org_device_group[:device_id]
-      device = Device.where(id: device_id).first
-      if device.modality.count == 1
+      device = DeviceResource.find_by(id: device_id)&.first
+      if device && device.modality.count == 1
         # override modality from device if only one modality
         modality = device.modality.first.to_s
       else

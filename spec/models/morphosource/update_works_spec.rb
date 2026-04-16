@@ -9,8 +9,8 @@ RSpec.describe Morphosource::Works::Base do
   let(:organization)              { Organization.create(title: ['old title']) }
   let(:taxonomy)                  { valkyrie_create(:taxonomy_resource, title: ['old title']) }
   let(:specimen)                  { BiologicalSpecimen.create(title: ['old title'], vouchered: ['Yes'], organization_id: [organization.id], taxonomy_id: [taxonomy.id]) }
-  let(:device)                    { Device.create(title: ['device'], modality: ["MagneticResonanceImaging"])}
-  let(:imaging_event)             { ImagingEvent.create(title: ['old title'], ie_modality: device.modality, device_id: [device.id], physical_object_id: [specimen.id]) }
+  let(:device)                    { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ["MagneticResonanceImaging"])}
+  let(:imaging_event)             { ImagingEvent.create(title: ['old title'], ie_modality: device.modality, device_id: [device.id.to_s], physical_object_id: [specimen.id]) }
   let(:media1)                    { Media.create(title: ['old title']) }
   let(:processing_event)          { ProcessingEvent.create(title: ['old title']) }
   let(:media2)                    { Media.create(title: ['old title']) }
@@ -137,8 +137,8 @@ RSpec.describe Morphosource::Works::Base do
   end
 
   describe 'adding a new imaging event' do
-    let(:device)                  { Device.create(title: ['device'], modality: ['Photogrammetry'])}
-    let!(:imaging_event2)         { ImagingEvent.create(title: ['imaging event 2'], device_id: [device.id], ie_modality: device.modality) }
+    let(:device)                  { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry'])}
+    let!(:imaging_event2)         { ImagingEvent.create(title: ['imaging event 2'], device_id: [device.id.to_s], ie_modality: device.modality) }
     let(:old_imaging_event2_doc)  { SolrDocument.find(imaging_event2.id) }
     let(:new_imaging_event2_doc)  { SolrDocument.find(imaging_event2.id) }
 

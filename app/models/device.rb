@@ -1,3 +1,4 @@
+# @deprecated Use DeviceResource instead.
 # Generated via
 #  `rails generate hyrax:work Device`
 class Device < Morphosource::Works::Base

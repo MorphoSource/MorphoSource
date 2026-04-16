@@ -67,7 +67,7 @@ module Morphosource
           end
 
           def device
-            @device ||= Device.find(device_id)
+            @device ||= Hyrax.query_service.find_by(id: device_id)
           end
 
           # {"http://rs.tdwg.org/dwc/terms/preparations"=>"{\"embedding material\":\"paraffin\",\"section stain\":\"Bodian and Cresyl Violet\",\"section thickness\":\"15\"}"}

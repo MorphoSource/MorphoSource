@@ -38,8 +38,8 @@ RSpec.describe Morphosource::CollectionsControllerBehavior, type: :controller do
 
     let(:org)                               { Organization.create(title: ['org']) }
     let(:specimen)                          { BiologicalSpecimen.create(title: ['specimen'], vouchered: ['Yes'], organization_id: [org.id])}
-    let(:device)                            { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-    let(:imaging_event)                     { ImagingEvent.create(title: ['imaging_event'], ie_modality: device.modality, device_id: [device.id], physical_object_id: [specimen.id]) }
+    let(:device)                            { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
+    let(:imaging_event)                     { ImagingEvent.create(title: ['imaging_event'], ie_modality: device.modality, device_id: [device.id.to_s], physical_object_id: [specimen.id]) }
     let(:org_media)                         { Media.create(title: ['org_media'], visibility: 'restricted') }
 
     let(:all_media)                         { [public_media, private_media, deposited_media, individual_edit_access_media, individual_download_access_media, individual_read_access_media, group_edit_access_media, group_download_access_media, group_read_access_media, org_media] }

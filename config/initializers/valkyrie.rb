@@ -8,7 +8,8 @@ require 'freyja_with_wings/persister'
 if Hyrax.config.valkyrie_transition?
   Rails.application.config.after_initialize do
     [ # List AF work models
-      Taxonomy
+      Taxonomy,
+      Device
     ].each do |klass|
       Wings::ModelRegistry.register("#{klass}Resource".constantize, klass)
       # we register itself so we can pre-translate the class in Freyja instead of having to translate in each query_service
@@ -30,11 +31,12 @@ if Hyrax.config.valkyrie_transition?
     Valkyrie.config.metadata_adapter = :freyja
     Hyrax.config.query_index_from_valkyrie = true
 
-    # Register custom query strategies for find_first/last_of_model
+    # Register custom query strategies for find_first/last_of_model and find_all_by_metadata_properties
     Freyja::CustomQueryContainer.known_custom_queries_and_their_strategies =
       Freyja::CustomQueryContainer.known_custom_queries_and_their_strategies.merge(
         find_first_of_model: :find_single_or_nil,
-        find_last_of_model: :find_single_or_nil
+        find_last_of_model: :find_single_or_nil,
+        find_all_by_metadata_properties: :find_multiple
       )
 
     Valkyrie::StorageAdapter.register(
@@ -58,6 +60,7 @@ if Hyrax.config.valkyrie_transition?
       klass_name = klass_name.gsub(/Resource$/, '')
       if %w[
         Taxonomy
+        Device
       ].include?(klass_name)
         "#{klass_name}Resource".constantize
       elsif 'AdminSet' == klass_name

@@ -1,5 +1,8 @@
 # NOTE: This is a modified version of simple_form's default config file.
-#       The only changes were to move the inputs to after the hints and errors.
+#       Changes from the original:
+#       - Move the inputs to after the hints and errors.
+#       - Use 'text-danger' instead of 'text-muted' on all :error components so that
+#         inline field validation errors are styled in red rather than plain grey text.
 
 # Use this setup block to configure all options available in SimpleForm.
 
@@ -47,7 +50,7 @@ SimpleForm.setup do |config|
     b.optional :min_max
     b.optional :readonly
     b.use :label, class: 'col-form-label'
-    b.use :error, wrap_with: { tag: 'span', class: 'form-text text-muted' }
+    b.use :error, wrap_with: { tag: 'span', class: 'form-text text-danger' }
     b.use :hint,  wrap_with: { tag: 'p', class: 'form-text text-muted' }
     b.use :input, class: 'form-control'
   end
@@ -58,7 +61,7 @@ SimpleForm.setup do |config|
     b.optional :maxlength
     b.optional :readonly
     b.use :label, class: 'col-form-label'
-    b.use :error, wrap_with: { tag: 'span', class: 'form-text text-muted' }
+    b.use :error, wrap_with: { tag: 'span', class: 'form-text text-danger' }
     b.use :hint,  wrap_with: { tag: 'p', class: 'form-text text-muted' }
     b.use :input
   end
@@ -71,7 +74,7 @@ SimpleForm.setup do |config|
       ba.use :label_input
     end
 
-    b.use :error, wrap_with: { tag: 'span', class: 'form-text text-muted' }
+    b.use :error, wrap_with: { tag: 'span', class: 'form-text text-danger' }
     b.use :hint,  wrap_with: { tag: 'p', class: 'form-text text-muted' }
   end
 
@@ -79,7 +82,7 @@ SimpleForm.setup do |config|
     b.use :html5
     b.optional :readonly
     b.use :label, class: 'col-form-label'
-    b.use :error, wrap_with: { tag: 'span', class: 'form-text text-muted' }
+    b.use :error, wrap_with: { tag: 'span', class: 'form-text text-danger' }
     b.use :hint,  wrap_with: { tag: 'p', class: 'form-text text-muted' }
     b.use :input
   end
@@ -94,7 +97,7 @@ SimpleForm.setup do |config|
     b.use :label, class: 'col-sm-3 col-form-label'
 
     b.wrapper tag: 'div', class: 'col-sm-9' do |ba|
-      ba.use :error, wrap_with: { tag: 'span', class: 'form-text text-muted' }
+      ba.use :error, wrap_with: { tag: 'span', class: 'form-text text-danger' }
       ba.use :hint,  wrap_with: { tag: 'p', class: 'form-text text-muted' }
       ba.use :input, class: 'form-control'
     end
@@ -108,7 +111,7 @@ SimpleForm.setup do |config|
     b.use :label, class: 'col-sm-3 col-form-label'
 
     b.wrapper tag: 'div', class: 'col-sm-9' do |ba|
-      ba.use :error, wrap_with: { tag: 'span', class: 'form-text text-muted' }
+      ba.use :error, wrap_with: { tag: 'span', class: 'form-text text-danger' }
       ba.use :hint,  wrap_with: { tag: 'p', class: 'form-text text-muted' }
       ba.use :input
     end
@@ -123,7 +126,7 @@ SimpleForm.setup do |config|
         ba.use :label_input
       end
 
-      wr.use :error, wrap_with: { tag: 'span', class: 'form-text text-muted' }
+      wr.use :error, wrap_with: { tag: 'span', class: 'form-text text-danger' }
       wr.use :hint,  wrap_with: { tag: 'p', class: 'form-text text-muted' }
     end
   end
@@ -135,7 +138,7 @@ SimpleForm.setup do |config|
     b.use :label, class: 'col-sm-3 col-form-label'
 
     b.wrapper tag: 'div', class: 'col-sm-9' do |ba|
-      ba.use :error, wrap_with: { tag: 'span', class: 'form-text text-muted' }
+      ba.use :error, wrap_with: { tag: 'span', class: 'form-text text-danger' }
       ba.use :hint,  wrap_with: { tag: 'p', class: 'form-text text-muted' }
       ba.use :input
     end
@@ -149,7 +152,7 @@ SimpleForm.setup do |config|
     b.optional :min_max
     b.optional :readonly
     b.use :label, class: 'sr-only'
-    b.use :error, wrap_with: { tag: 'span', class: 'form-text text-muted' }
+    b.use :error, wrap_with: { tag: 'span', class: 'form-text text-danger' }
     b.use :hint,  wrap_with: { tag: 'p', class: 'form-text text-muted' }
     b.use :input, class: 'form-control'
   end
@@ -159,7 +162,7 @@ SimpleForm.setup do |config|
     b.optional :readonly
     b.use :label, class: 'col-form-label'
     b.wrapper tag: 'div', class: 'form-inline' do |ba|
-      ba.use :error, wrap_with: { tag: 'span', class: 'form-text text-muted' }
+      ba.use :error, wrap_with: { tag: 'span', class: 'form-text text-danger' }
       ba.use :hint,  wrap_with: { tag: 'p', class: 'form-text text-muted' }
       ba.use :input, class: 'form-control'
     end

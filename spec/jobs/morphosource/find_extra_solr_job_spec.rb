@@ -29,8 +29,8 @@ RSpec.describe Morphosource::FindExtraSolrJob do
       let!(:taxonomy)             { valkyrie_create(:taxonomy_resource, title: ['taxonomy']) }
       let!(:cho)                  { CulturalHeritageObject.create(title: ['cho'], vouchered: ['Yes']) }
       let!(:organization)         { Organization.create(title: ['organization']) }
-      let!(:device)               { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-      let!(:imaging_event)        { ImagingEvent.create(title: ['imaging event'], device_id: [device.id], ie_modality: device.modality) }
+      let!(:device)               { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
+      let!(:imaging_event)        { ImagingEvent.create(title: ['imaging event'], device_id: [device.id.to_s], ie_modality: device.modality) }
       let!(:processing_event)     { ProcessingEvent.create(title: ['processing event']) }
 
       let!(:media_id)             { media.id }
@@ -38,7 +38,6 @@ RSpec.describe Morphosource::FindExtraSolrJob do
       let!(:taxonomy_id)          { taxonomy.id }
       let!(:cho_id)               { cho.id }
       let!(:organization_id)      { organization.id }
-      let!(:device_id)            { device.id }
       let!(:imaging_event_id)     { imaging_event.id }
       let!(:processing_event_id)  { processing_event.id }
 
@@ -50,7 +49,6 @@ RSpec.describe Morphosource::FindExtraSolrJob do
                                       taxonomy_id.to_s => "Taxonomy",
                                       cho_id => "CulturalHeritageObject",
                                       organization_id => "Organization",
-                                      device_id => "Device",
                                       imaging_event_id => "ImagingEvent",
                                       processing_event_id => "ProcessingEvent" }
                                     }

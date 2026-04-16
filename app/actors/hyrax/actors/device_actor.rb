@@ -1,5 +1,6 @@
 # Generated via
 #  `rails generate hyrax:work Device`
+# @deprecated Use DeviceResource with Transactions.
 module Hyrax
   module Actors
     class DeviceActor < Hyrax::Actors::BaseActor

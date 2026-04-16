@@ -175,8 +175,8 @@ class MediaIndexer < Morphosource::WorkIndexer
       device_title = "#{device&.creator&.first} #{device&.title&.first}"
       solr_doc['media_device_tesim'] = device_title
       solr_doc['media_device_ssim'] = device_title
-      solr_doc['media_device_id_tesim'] = device&.id
-      solr_doc['media_device_id_ssim'] = device&.id
+      solr_doc['media_device_id_tesim'] = device&.id.to_s
+      solr_doc['media_device_id_ssim'] = device&.id.to_s
       facility_org = device&.organization
       facility_org_title = facility_org&.title&.first
       solr_doc['media_device_facility_organization_tesim'] = facility_org_title
@@ -205,27 +205,32 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['publisher_ssim'] = object.publisher
 
       # file sizes
-      file_sets = object.file_set_ids.present? ? 
+      file_sets = object.file_set_ids.present? ?
         SolrDocument.where(
-          { 'id' => object.file_set_ids.join(' OR '), 'has_model_ssim' => 'FileSet' }, 
-          opts: { fl: [ 'id', 'file_size_lts' ] }
+          { 'id' => object.file_set_ids.join(' OR '), 'has_model_ssim' => 'FileSet' },
+          opts: { fl: [ 'id', 'file_size_lts', 'label_tesim', 'mime_type_ssi' ] }
         ) : []
 
       # Add file size for fileset binary and derivatives
-      all_files_file_size = file_sets.reduce(0) do |sum, fs| 
-        fs_deriv_size = Morphosource::DerivativePath.derivatives_for_reference(fs['id']).map { |p| 
-          File.size?(p) 
+      all_files_file_size = file_sets.reduce(0) do |sum, fs|
+        fs_deriv_size = Morphosource::DerivativePath.derivatives_for_reference(fs['id']).map { |p|
+          File.size?(p)
         }.compact.sum
 
         sum + ( fs['file_size_lts'] || 0 ) + fs_deriv_size
       end
 
       # Add file size for media derivatives
-      all_files_file_size += Morphosource::DerivativePath.derivatives_for_reference(object.id).map { |p| 
-        File.size?(p) 
+      all_files_file_size += Morphosource::DerivativePath.derivatives_for_reference(object.id).map { |p|
+        File.size?(p)
       }.compact.sum
 
       solr_doc['all_files_file_size_lts'] = all_files_file_size
+
+      # File name, binary file size, and mime type
+      solr_doc['media_file_name_tesim'] = file_sets.flat_map { |fs| Array(fs['label_tesim']) }
+      solr_doc['media_file_size_lts'] = file_sets.sum { |fs| fs['file_size_lts'] || 0 }
+      solr_doc['media_mime_type_ssim'] = file_sets.map { |fs| fs['mime_type_ssi'] }.compact
 
     end
   end

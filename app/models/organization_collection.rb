@@ -121,15 +121,13 @@ class OrganizationCollection < Collection
   def devices_solr
     return [] if id.nil?
 
-    qry = "organization_id_ssim:#{self.id} AND has_model_ssim:Device"
-    ActiveFedora::SolrService.query(qry, rows: 999999)
+    qry = "organization_id_ssim:#{self.id}"
+    ActiveFedora::SolrService.query(qry, fq: ["has_model_ssim:(Device OR DeviceResource)"], rows: 999999)
   end
 
   def devices
-    ds = devices_solr
-    return [] if ds.blank?
-    ids = ds.map(&:id).select { |id| Device.exists?(id) }
-    Device.find(ids)
+    return [] if id.blank?
+    DeviceResource.where(organization_id: id)
   end
 
   # Create manager and viewer roles for each Organization collection

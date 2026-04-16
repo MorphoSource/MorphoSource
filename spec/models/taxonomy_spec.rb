@@ -131,8 +131,8 @@ RSpec.describe Taxonomy do
   describe 'media' do
     let(:taxonomy)      { Taxonomy.create(title: ['title']) }
     let(:specimen)      { BiologicalSpecimen.create(title: ['specimen'], vouchered: ['Yes'], taxonomy_id: [taxonomy.id]) }
-    let(:device)        { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-    let(:imaging_event) { ImagingEvent.create(title: ['ie'], ie_modality: device.modality, device_id: [device.id], physical_object_id: [specimen.id]) }
+    let(:device)        { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
+    let(:imaging_event) { ImagingEvent.create(title: ['ie'], ie_modality: device.modality, device_id: [device.id.to_s], physical_object_id: [specimen.id]) }
     let(:pe1)           { ProcessingEvent.create(title: ['pe1']) }
     let(:media1)        { Media.create(title: ['media1']) }
     let(:pe2)           { ProcessingEvent.create(title: ['pe2']) }

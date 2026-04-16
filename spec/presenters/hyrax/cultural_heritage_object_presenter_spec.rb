@@ -16,8 +16,8 @@ RSpec.describe Hyrax::CulturalHeritageObjectPresenter do
 
   describe 'total_viewable_media' do
     let!(:object)           { CulturalHeritageObject.create(title: ['cho'], vouchered: ['Yes']) }
-    let!(:device)           { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-    let!(:imaging_event)    { ImagingEvent.create(title: ['imaging event'], device_id: [device.id], physical_object_id: [object.id], ie_modality: device.modality) }
+    let!(:device)           { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
+    let!(:imaging_event)    { ImagingEvent.create(title: ['imaging event'], device_id: [device.id.to_s], physical_object_id: [object.id], ie_modality: device.modality) }
     let!(:processing_event) { ProcessingEvent.create(title: ['processing_event']) }
     let!(:media1)           { Media.create(title: ['media1'], visibility: 'restricted') }
     let!(:media2)           { Media.create(title: ['media2'], visibility: 'open') }

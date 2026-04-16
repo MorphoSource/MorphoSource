@@ -4,7 +4,7 @@ class FundCode < ApplicationRecord
   has_many :members, :through => :fund_code_memberships, :source => :user
   has_many :fund_code_media_associations
   has_many :charges, class_name: "FundCodeCharge"
-  has_many :data_allocations
+  has_one :data_allocation
 
   mount_uploaders :attachments, FundCodeAttachmentUploader
 
@@ -50,8 +50,8 @@ class FundCode < ApplicationRecord
   end
 
   def create_data_allocation_if_needed
-    return if data_allocations.exists?
-    data_allocations.create!(
+    return if data_allocation.present?
+    create_data_allocation!(
       allocation_type: :fund_code,
       storage_total_gb: storage_total_gb
     )
@@ -59,7 +59,7 @@ class FundCode < ApplicationRecord
 
   def sync_data_allocation_storage_total
     return unless saved_change_to_storage_total_gb?
-    data_allocations.update_all(storage_total_gb: storage_total_gb)
+    data_allocation&.update!(storage_total_gb: storage_total_gb)
   end
 
   def set_total_and_remaining

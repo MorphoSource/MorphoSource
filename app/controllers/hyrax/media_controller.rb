@@ -462,7 +462,7 @@ module Hyrax
 
       # Prevent changing visibility to private if media has a published DOI
       def check_for_published_doi
-        return if current_user.admin?
+        return if current_user&.admin?
         if (curation_concern.doi.present? &&
             @new_publication_status == "private")
           curation_concern.errors.add(:base, "Media has been assigned a DOI and published. Visibility cannot be changed to private.")

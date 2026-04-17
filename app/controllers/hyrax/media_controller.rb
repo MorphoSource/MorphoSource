@@ -113,6 +113,7 @@ module Hyrax
       @countries_service = Morphosource::CountriesService.new
       @new_processing_event_submit_submissions_url = '/submissions/new_processing_event_submit'
       @new_processing_event_form = Hyrax::WorkFormService.build(::ProcessingEvent.new, current_ability, self)
+      set_doi_edit_flash
       set_flash
       render '/hyrax/media/edit', presenter: @presenter
     end
@@ -371,6 +372,13 @@ module Hyrax
     end
 
     private
+
+      def set_doi_edit_flash
+        return if current_user&.admin?
+        return unless @presenter.doi.present?
+        key = @presenter.is_published? ? :doi_edit_warning : :doi_edit_warning_private
+        flash.now[:alert] = I18n.t("morphosource.media.alert.#{key}")
+      end
 
       # Checks that uploaded files are the correct format for selected media type.
       def validate_file_formats

@@ -485,6 +485,31 @@ RSpec.describe Hyrax::MediaController, type: :controller do
       subject.send(:check_for_published_doi)
     end
 
+    context 'when user is an admin and media has a DOI' do
+      let(:doi) { ["10.1234/test"] }
+
+      before do
+        allow(subject.current_user).to receive(:admin?).and_return(true)
+        subject.send(:check_for_published_doi)
+      end
+
+      context 'and new status is "private"' do
+        let(:params) { { "media" => { "visibility" => "private" } } }
+
+        it 'does not add an error' do
+          expect(work.errors[:base]).to be_empty
+        end
+      end
+
+      context 'and new status is "restricted" (mapped to private)' do
+        let(:params) { { "media" => { "visibility" => "restricted" } } }
+
+        it 'does not add an error' do
+          expect(work.errors[:base]).to be_empty
+        end
+      end
+    end
+
     context 'when media has no DOI' do
       let(:params) { { "media" => { "visibility" => "private" } } }
 

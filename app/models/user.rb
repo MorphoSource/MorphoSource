@@ -11,6 +11,8 @@ class User < ApplicationRecord
   has_many :owned_fund_codes, class_name: 'FundCode', foreign_key: :user_id
   has_many :fund_code_memberships
   has_many :fund_codes, :through => :fund_code_memberships
+  has_many :data_allocation_users
+  has_many :data_allocations, through: :data_allocation_users
   has_many :proxy_deposit_requests, as: :receiving_user
   has_many :proxy_deposit_requests, as: :sending_user
   has_many :temporary_media_access_links

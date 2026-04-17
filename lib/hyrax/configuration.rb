@@ -1698,6 +1698,11 @@ module Hyrax
       @github_access_token ||= nil
     end
 
+    attr_writer :default_storage_total_gb
+    def default_storage_total_gb
+      @default_storage_total_gb ||= nil
+    end
+
     # Fund code reporting fields (if not using fund code reporting features, these fields are unnecessary)
     attr_writer :subsidizing_fund_code_id
     def subsidizing_fund_code_id

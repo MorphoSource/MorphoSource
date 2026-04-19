@@ -4,7 +4,7 @@ class FundCode < ApplicationRecord
   has_many :members, :through => :fund_code_memberships, :source => :user
   has_many :fund_code_media_associations
   has_many :charges, class_name: "FundCodeCharge"
-  has_one :data_allocation
+  has_one :data_allocation, dependent: :destroy
 
   mount_uploaders :attachments, FundCodeAttachmentUploader
 

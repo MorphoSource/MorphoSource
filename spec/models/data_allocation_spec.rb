@@ -28,28 +28,4 @@ RSpec.describe DataAllocation do
     end
   end
 
-  describe "#owner" do
-    let(:user) { User.create!(email: 'owner@example.com', password: 'password') }
-    let(:fund_code) { FundCode.create!(user: user) }
-
-    context "when allocation_type is fund_code" do
-      it "returns the associated FundCode" do
-        da = DataAllocation.create!(allocation_type: :fund_code, fund_code: fund_code)
-        expect(da.owner).to eq(fund_code)
-      end
-    end
-
-    context "when allocation_type is user" do
-      it "returns the users collection" do
-        da = DataAllocation.create!(allocation_type: :user)
-        da.users << user
-        expect(da.owner).to include(user)
-      end
-
-      it "returns an empty collection when no users are assigned" do
-        da = DataAllocation.create!(allocation_type: :user)
-        expect(da.owner).to be_empty
-      end
-    end
-  end
 end

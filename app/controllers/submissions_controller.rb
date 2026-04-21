@@ -336,8 +336,11 @@ class SubmissionsController < ApplicationController
   def create_model_params(work, params)
     # Valkyrie or AF?
     if work.include?('_resource')
-      # WorkCreateService handles for Valkyrie what form.model_attributes(params) handled for AF
-      finalize_model_params(work, params[work])
+      # WorkCreateService handles for Valkyrie what form.model_attributes(params) handled for AF.
+      # Convert ActionController::Parameters to a plain hash so Reform's validate() doesn't choke.
+      work_params = params[work]
+      work_params = work_params.to_unsafe_h if work_params.respond_to?(:to_unsafe_h)
+      finalize_model_params(work, work_params)
     else
       # AF
       model_params = to_form(work).model_attributes(params[work])
@@ -426,16 +429,20 @@ class SubmissionsController < ApplicationController
       @imaging_event_create_params = model_params
 
     when 'processing_event'
-      parents = []
       if @submission.parent_media_not_in_ms.presence
-        # absentee parent media
-        parents = [@submission.imaging_event_id]
+        # absentee parent: may be an AF ImagingEvent or a Valkyrie ImagingEventResource
+        imaging_event_id = @submission.imaging_event_id
+        if valkyrie_imaging_event?(imaging_event_id)
+          model_params.merge!(imaging_event_resource_id: imaging_event_id)
+        else
+          model_params = assign_model_params_parents(model_params, [imaging_event_id])
+        end
       else
         parents = @submission.parent_media_list&.split(',')
-      end
-      # in some cases, parents are provided through another route (ajax manually adds to params)
-      if parents.present?
-        model_params = assign_model_params_parents(model_params, parents)
+        # in some cases, parents are provided through another route (ajax manually adds to params)
+        if parents.present?
+          model_params = assign_model_params_parents(model_params, parents)
+        end
       end
       @processing_event_create_params = model_params
     when 'media'
@@ -574,6 +581,15 @@ class SubmissionsController < ApplicationController
 
   def create_organization_transfer_request(work)
     TransferToOrganizationJob.perform_later(work.id)
+  end
+
+  # Returns true if the given ID belongs to a Valkyrie ImagingEventResource
+  # (Postgres-backed), as opposed to an AF ImagingEvent (Fedora-backed).
+  def valkyrie_imaging_event?(id)
+    return false unless id.present?
+    Hyrax.query_service.find_by(id: Valkyrie::ID.new(id)).is_a?(ImagingEventResource)
+  rescue Valkyrie::Persistence::ObjectNotFoundError
+    false
   end
 
   # Utility functions

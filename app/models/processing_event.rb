@@ -59,7 +59,15 @@ class ProcessingEvent < Morphosource::Works::Base
   end
 
   def imaging_event
-    ancestors.find(&:imaging_event?)
+    if imaging_event_resource_id.present?
+      begin
+        Hyrax.query_service.find_by(id: Valkyrie::ID.new(imaging_event_resource_id))
+      rescue Valkyrie::Persistence::ObjectNotFoundError
+        nil
+      end
+    else
+      ancestors.find(&:imaging_event?)
+    end
   end
 
   def media
@@ -67,7 +75,9 @@ class ProcessingEvent < Morphosource::Works::Base
   end
 
   def objects
-    ancestors.select(&:imaging_event?).map(&:objects).flatten
+    ie = imaging_event
+    return [] unless ie.present?
+    Array(ie.objects).flatten
   end
 
   private

@@ -217,7 +217,9 @@ class Media < Morphosource::Works::Base
   end
 
   def physical_objects
-    ancestors.select(&:imaging_event?).map(&:objects).flatten
+    ie = imaging_event
+    return [] unless ie.present?
+    Array(ie.objects).flatten
   end
   alias objects physical_objects
 
@@ -232,7 +234,19 @@ class Media < Morphosource::Works::Base
   end
 
   def imaging_event
-    ancestors.find(&:imaging_event?)
+    # AF path: traverse AF ancestors for an AF ImagingEvent
+    ie = ancestors.find(&:imaging_event?)
+    return ie if ie.present?
+
+    # Valkyrie path: check if an AF ProcessingEvent ancestor links to an ImagingEventResource
+    parent_pe = ancestors.find { |a| a.is_a?(ProcessingEvent) && a.imaging_event_resource_id.present? }
+    return unless parent_pe.present?
+
+    begin
+      Hyrax.query_service.find_by(id: Valkyrie::ID.new(parent_pe.imaging_event_resource_id))
+    rescue Valkyrie::Persistence::ObjectNotFoundError
+      nil
+    end
   end
 
   def processing_event

@@ -99,7 +99,7 @@ module Morphosource
           }
         when 'ImagingEventResource'
           {
-            'imaging_event_change_set.set_user_as_depositor' => { user: user },
+            'change_set.set_user_as_depositor' => { user: user },
             'work_resource.save_acl' => { permissions_params: permissions_params }
           }
         else

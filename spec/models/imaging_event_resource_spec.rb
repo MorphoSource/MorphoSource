@@ -198,31 +198,6 @@ RSpec.describe ImagingEventResource do
     end
   end
 
-  describe '#needs_id_title_prefix?' do
-    it 'returns true when title lacks IE prefix' do
-      work.title = ['My Event']
-      expect(work.needs_id_title_prefix?).to be true
-    end
-
-    context 'with a saved resource whose title already has the prefix' do
-      let(:saved) { ImagingEventResource.new(title: ['My Event']).save }
-
-      it 'returns false' do
-        expect(saved.needs_id_title_prefix?).to be false
-      end
-    end
-  end
-
-  describe '#apply_id_title_prefix' do
-    let(:ie) { Hyrax.persister.save(resource: ImagingEventResource.new(title: ['My Event'])) }
-
-    it 'sets the title to IE<id>: <original title>' do
-      ie.title = ['My Event']
-      ie.apply_id_title_prefix
-      expect(ie.title.first).to eq("IE#{ie.id}: My Event")
-    end
-  end
-
   describe '#device' do
     let(:device) { Device.create(title: ['device'], modality: ['Photogrammetry']) }
     let(:ie) { ImagingEventResource.new(device_id: [device.id]) }
@@ -252,32 +227,6 @@ RSpec.describe ImagingEventResource do
 
     it 'returns physical objects by physical_object_id' do
       expect(ie.objects.map { |o| o.id.to_s }).to include(specimen.id)
-    end
-  end
-
-  describe '#save' do
-    describe 'add_id_to_title' do
-      let(:ie) { ImagingEventResource.new(title: ['My Imaging Event']) }
-
-      it 'prefixes title with IE<id> on first save' do
-        result = ie.save
-        expect(result.title.first).to match(/^IE.+: My Imaging Event$/)
-      end
-
-      it 'does not double-prefix on subsequent saves' do
-        ie.save
-        result = ie.save
-        expect(result.title.length).to eq(1)
-        expect(result.title.first.scan('IE').length).to eq(1)
-      end
-    end
-
-    describe 'date_filter' do
-      it 'normalizes date_created to YYYY-MM-DD format' do
-        ie = ImagingEventResource.new(title: ['test'], date_created: ['5/6/2019'])
-        result = ie.save
-        expect(result.date_created.first).to eq('2019-05-06')
-      end
     end
   end
 

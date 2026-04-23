@@ -20,8 +20,8 @@ RSpec.describe Morphosource::Action::CreateWorkService do
     end
 
     describe '#transaction_name' do
-      it 'uses change_set.create_work' do
-        expect(subject.send(:transaction_name)).to eq('change_set.create_work')
+      it 'uses imaging_event_change_set.create_work' do
+        expect(subject.send(:transaction_name)).to eq('imaging_event_change_set.create_work')
       end
     end
 
@@ -40,13 +40,13 @@ RSpec.describe Morphosource::Action::CreateWorkService do
 
       before do
         allow(Hyrax::Transactions::Container).to receive(:[])
-          .with('change_set.create_work')
+          .with('imaging_event_change_set.create_work')
           .and_return(transaction)
         allow(transaction).to receive(:with_step_args).and_return(transaction)
         allow(transaction).to receive(:call).and_return(Dry::Monads::Success(double('work')))
       end
 
-      it 'dispatches to change_set.create_work' do
+      it 'dispatches to imaging_event_change_set.create_work' do
         expect(transaction).to receive(:call).with(form)
         subject.call
       end

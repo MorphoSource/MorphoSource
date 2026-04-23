@@ -18,6 +18,24 @@ $( document ).ready(function() {
   if ($('form[id*="edit_media_list"]').length) { return }
   if ($('form[id*="new_media_list"]').length) { return }
 
+  // Lock metadata fields for non-admin users on DOI media.
+  // Share tab remains fully interactive.
+  if ($('[data-doi-locked]').length) {
+    $('#media-details')
+      .find('input, textarea, select')
+      .not('#media_download_permission')
+      .prop('disabled', true);
+    $('#media-details button').prop('disabled', true);
+
+    // If already published, also lock the visibility dropdown so it cannot be changed back to private.
+    // The hidden input stays enabled so the current value is still submitted.
+    if ($('#media_download_permission').val() !== 'private') {
+      $('#media-details .dropdown-toggle')
+        .addClass('disabled')
+        .css('pointer-events', 'none');
+    }
+  }
+
   if ( $('form[id*="edit_media"]').length ||
        $('form[id*="new_media"]').length ) {
 

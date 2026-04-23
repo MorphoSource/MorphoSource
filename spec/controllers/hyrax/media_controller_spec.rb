@@ -475,56 +475,91 @@ RSpec.describe Hyrax::MediaController, type: :controller do
   end
 
   describe '#check_for_published_doi' do
-    let(:doi)  { nil }
-    let(:work) { Media.new(title: ["Test Media Work"], doi: doi) }
+    let(:doi)        { nil }
+    let(:old_status) { nil }
+    let(:work)       { Media.new(title: ["Test Media Work"], doi: doi, fileset_accessibility: [old_status].compact) }
 
     before do
       allow(subject).to receive(:curation_concern).and_return(work)
       allow(subject).to receive(:params).and_return(params)
       subject.send(:save_publication_status)
-      subject.send(:check_for_published_doi)
     end
 
     context 'when media has no DOI' do
       let(:params) { { "media" => { "visibility" => "private" } } }
 
-      it 'does not add an error' do
-        expect(work.errors[:base]).to be_empty
+      it 'does not redirect' do
+        subject.send(:check_for_published_doi)
+        expect(response).not_to be_redirect
       end
     end
 
     context 'when media has a DOI' do
       let(:doi) { ["10.1234/test"] }
 
-      context 'and new status is "open"' do
-        let(:params) { { "media" => { "visibility" => "open" } } }
+      context 'and was previously private' do
+        let(:old_status) { "private" }
 
-        it 'does not add an error' do
-          expect(work.errors[:base]).to be_empty
+        context 'and new status is "private"' do
+          let(:params) { { "media" => { "visibility" => "private" } } }
+
+          it 'does not redirect (allowed to keep private)' do
+            subject.send(:check_for_published_doi)
+            expect(response).not_to be_redirect
+          end
+        end
+
+        context 'and new status is "open"' do
+          let(:params) { { "media" => { "visibility" => "open" } } }
+
+          it 'does not redirect (allowed to publish)' do
+            subject.send(:check_for_published_doi)
+            expect(response).not_to be_redirect
+          end
         end
       end
 
-      context 'and new status is "restricted_download"' do
-        let(:params) { { "media" => { "visibility" => "restricted_download" } } }
+      context 'and was previously published' do
+        let(:old_status) { "open" }
 
-        it 'does not add an error' do
-          expect(work.errors[:base]).to be_empty
+        context 'and new status is "open"' do
+          let(:params) { { "media" => { "visibility" => "open" } } }
+
+          it 'does not redirect' do
+            subject.send(:check_for_published_doi)
+            expect(response).not_to be_redirect
+          end
         end
-      end
 
-      context 'and new status is "private"' do
-        let(:params) { { "media" => { "visibility" => "private" } } }
+        context 'and new status is "restricted_download"' do
+          let(:params) { { "media" => { "visibility" => "restricted_download" } } }
 
-        it 'adds a DOI visibility error' do
-          expect(work.errors[:base]).to include("Media has been assigned a DOI and published. Visibility cannot be changed to private.")
+          it 'does not redirect' do
+            subject.send(:check_for_published_doi)
+            expect(response).not_to be_redirect
+          end
         end
-      end
 
-      context 'and new status is "restricted" (mapped to private)' do
-        let(:params) { { "media" => { "visibility" => "restricted" } } }
+        context 'and new status is "private"' do
+          let(:params) { ActionController::Parameters.new("id" => "test-media-id", "media" => { "visibility" => "private" }) }
 
-        it 'adds a DOI visibility error' do
-          expect(work.errors[:base]).to include("Media has been assigned a DOI and published. Visibility cannot be changed to private.")
+          it 'redirects with an error flash' do
+            allow(subject).to receive(:redirect_to)
+            subject.send(:check_for_published_doi)
+            expect(subject).to have_received(:redirect_to)
+            expect(flash[:error]).to include("Visibility cannot be changed to private")
+          end
+        end
+
+        context 'and new status is "restricted" (mapped to private)' do
+          let(:params) { ActionController::Parameters.new("id" => "test-media-id", "media" => { "visibility" => "restricted" }) }
+
+          it 'redirects with an error flash' do
+            allow(subject).to receive(:redirect_to)
+            subject.send(:check_for_published_doi)
+            expect(subject).to have_received(:redirect_to)
+            expect(flash[:error]).to include("Visibility cannot be changed to private")
+          end
         end
       end
     end
@@ -532,7 +567,7 @@ RSpec.describe Hyrax::MediaController, type: :controller do
 
   describe '#check_for_published_doi as admin' do
     let(:doi)  { ["10.1234/test"] }
-    let(:work) { Media.new(title: ["Test Media Work"], doi: doi) }
+    let(:work) { Media.new(title: ["Test Media Work"], doi: doi, fileset_accessibility: ["open"]) }
 
     before do
       sign_in depositor
@@ -546,16 +581,115 @@ RSpec.describe Hyrax::MediaController, type: :controller do
     context 'and new status is "private"' do
       let(:params) { { "media" => { "visibility" => "private" } } }
 
-      it 'does not add an error' do
-        expect(work.errors[:base]).to be_empty
+      it 'does not redirect' do
+        expect(response).not_to be_redirect
       end
     end
 
     context 'and new status is "restricted" (mapped to private)' do
       let(:params) { { "media" => { "visibility" => "restricted" } } }
 
-      it 'does not add an error' do
+      it 'does not redirect' do
+        expect(response).not_to be_redirect
+      end
+    end
+  end
+
+  describe '#strip_doi_protected_fields' do
+    let(:doi)  { nil }
+    let(:work) { Media.new(title: ["Test Media Work"], doi: doi) }
+    let(:params) do
+      ActionController::Parameters.new({
+        "media" => {
+          "title" => ["New Title"],
+          "description" => ["Updated description"],
+          "visibility" => "open",
+          "permissions_attributes" => { "0" => { "access" => "read" } }
+        }
+      })
+    end
+
+    before do
+      allow(subject).to receive(:curation_concern).and_return(work)
+      allow(subject).to receive(:params).and_return(params)
+    end
+
+    context 'when media has no DOI' do
+      it 'does not strip any params' do
+        subject.send(:strip_doi_protected_fields)
+        expect(params["media"].keys).to include("title", "description", "visibility", "permissions_attributes")
+      end
+    end
+
+    context 'when media has a DOI' do
+      let(:doi) { ["10.1234/test"] }
+
+      context 'and user is admin' do
+        before do
+          sign_in depositor
+          allow(subject.current_user).to receive(:admin?).and_return(true)
+        end
+
+        it 'does not strip any params' do
+          subject.send(:strip_doi_protected_fields)
+          expect(params["media"].keys).to include("title", "description", "visibility", "permissions_attributes")
+        end
+      end
+
+      context 'and user is not admin' do
+        before do
+          sign_in depositor
+          allow(subject.current_user).to receive(:admin?).and_return(false)
+        end
+
+        it 'strips metadata params' do
+          subject.send(:strip_doi_protected_fields)
+          expect(params["media"].keys).not_to include("title", "description")
+        end
+
+        it 'keeps allowed params' do
+          subject.send(:strip_doi_protected_fields)
+          expect(params["media"].keys).to include("visibility", "permissions_attributes")
+        end
+      end
+    end
+  end
+
+  describe "#file_formats_valid? for DOI media" do
+    let(:doi)  { ["10.1234/test"] }
+    let(:work) { Media.new(title: ["Test Media Work"], doi: doi) }
+
+    before do
+      allow(subject).to receive(:curation_concern).and_return(work)
+      # attributes_for_actor has no media_type, simulating stripped params
+      allow(subject).to receive(:attributes_for_actor).and_return({ "media_type" => nil })
+      allow(subject).to receive(:params).and_return({ "commit" => "Save" })
+      sign_in depositor
+    end
+
+    context 'when user is not admin' do
+      before do
+        allow(subject.current_user).to receive(:admin?).and_return(false)
+      end
+
+      it 'returns true without running file format validation' do
+        expect(subject.send(:file_formats_valid?)).to be(true)
+      end
+
+      it 'does not add file format errors' do
+        subject.send(:file_formats_valid?)
         expect(work.errors[:base]).to be_empty
+      end
+    end
+
+    context 'when user is admin' do
+      before do
+        allow(subject.current_user).to receive(:admin?).and_return(true)
+        allow(subject).to receive(:attributes_for_actor).and_return({ "media_type" => ["Image"] })
+      end
+
+      it 'runs file format validation normally' do
+        expect(subject.send(:file_formats_valid?)).to be(true)
       end
     end
   end

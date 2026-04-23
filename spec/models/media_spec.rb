@@ -327,6 +327,66 @@ RSpec.describe Media do
       end
     end
 
+    describe '#imaging_event' do
+      context 'when an AF ImagingEvent ancestor exists' do
+        let(:af_ie) { instance_double(ImagingEvent, imaging_event?: true) }
+
+        before { allow(subject).to receive(:ancestors).and_return([af_ie]) }
+
+        it 'returns the AF imaging event' do
+          expect(subject.imaging_event).to eq(af_ie)
+        end
+      end
+
+      context 'when a Valkyrie ImagingEventResource is a direct ancestor' do
+        let(:ie_resource) { instance_double(ImagingEventResource, imaging_event?: true) }
+
+        before { allow(subject).to receive(:ancestors).and_return([ie_resource]) }
+
+        it 'returns the ImagingEventResource directly' do
+          expect(subject.imaging_event).to eq(ie_resource)
+        end
+      end
+
+      context 'when no AF ancestor imaging event exists but a parent ProcessingEvent has imaging_event_resource_id' do
+        let(:ie_resource) { instance_double(ImagingEventResource) }
+        let(:pe) { ProcessingEvent.new(imaging_event_resource_id: 'ie-resource-id') }
+
+        before do
+          allow(subject).to receive(:ancestors).and_return([pe])
+          allow(Hyrax.query_service).to receive(:find_by)
+            .with(id: Valkyrie::ID.new('ie-resource-id'))
+            .and_return(ie_resource)
+        end
+
+        it 'returns the Valkyrie ImagingEventResource' do
+          expect(subject.imaging_event).to eq(ie_resource)
+        end
+      end
+
+      context 'when the ImagingEventResource is not found' do
+        let(:pe) { ProcessingEvent.new(imaging_event_resource_id: 'gone-id') }
+
+        before do
+          allow(subject).to receive(:ancestors).and_return([pe])
+          allow(Hyrax.query_service).to receive(:find_by)
+            .and_raise(Valkyrie::Persistence::ObjectNotFoundError)
+        end
+
+        it 'returns nil' do
+          expect(subject.imaging_event).to be_nil
+        end
+      end
+
+      context 'when there are no relevant ancestors' do
+        before { allow(subject).to receive(:ancestors).and_return([]) }
+
+        it 'returns nil' do
+          expect(subject.imaging_event).to be_nil
+        end
+      end
+    end
+
     describe 'ancestor physical objects' do
       let(:media)         { Media.create(title: ['title'], media_type: ['Image'])}
       let(:organization)  { Organization.create(title: ['organization'])}

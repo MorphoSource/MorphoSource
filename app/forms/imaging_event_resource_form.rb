@@ -94,11 +94,26 @@ class ImagingEventResourceForm < Hyrax::Forms::PcdmObjectForm(ImagingEventResour
 
   # Fields shown for all imaging events regardless of modality (left column).
   def universal_terms
-    primary_terms[..4]
+    [:ie_modality, :description, :creator, :software, :date_created]
   end
 
   # Fields specific to a modality (right column).
   def modality_specific_terms
-    primary_terms[5..]
+    [
+      # X-ray CT metadata
+      :exposure_time, :flux_normalization, :pixel_spacing_calibration,
+      :shading_correction, :ie_filter, :frame_averaging, :projections,
+      :voltage, :power, :amperage, :surrounding_material, :xray_tube_type,
+      :target_type, :detector_type, :detector_pixels_x, :detector_pixel_size_x,
+      :detector_pixels_y, :detector_pixel_size_y, :detector_configuration,
+      :source_object_distance, :source_detector_distance, :target_material,
+      :rotation_number, :phase_contrast, :optical_magnification, :acquisition_type,
+      # Photogrammetry properties
+      :focal_length_type, :background_removal,
+      # Photogrammetry and Photography properties
+      :lens_make, :lens_model, :light_source,
+      # Slide scan properties
+      :slide_type
+    ]
   end
 end

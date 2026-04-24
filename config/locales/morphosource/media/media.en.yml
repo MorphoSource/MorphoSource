@@ -19,7 +19,7 @@ en:
         thumbnail_added: New thumbnail is being added and will be available shortly.
         permissions_update: "Media record has been successfully updated. File permissions may take some time to update in the background."
         doi_edit_warning: "This media has a DOI. Metadata fields are locked and can only be changed by an administrator. You can still update sharing permissions in the Share tab."
-        doi_edit_warning_private: "This media has a DOI and its metadata cannot be edited. You can change the visibility to publish it. If you need to make changes, please ask administrators."
+        doi_edit_warning_private: "This media has a DOI and its metadata cannot be edited. You can change the visibility to publish the media. If you need to make changes, please ask MorphoSource administrators."
       organization_transfer:
         transfer_message: This is an organization media transfer from the original media contributor to the receiving organization data manager. For more details, see our <a href="https://duke.atlassian.net/wiki/spaces/MD/pages/35423461/Organization+Ownership+Transfers">documentation</a>.
       annotations:

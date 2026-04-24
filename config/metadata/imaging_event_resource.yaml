@@ -71,6 +71,17 @@ attributes:
       primary: true
       multiple: false
     predicate: https://www.morphosource.org/terms/photogrammetryBackgroundRemoval
+  description:
+    type: string
+    multiple: false
+    index_keys:
+      - "description_sim"
+      - "description_tesim"
+    form:
+      required: false
+      primary: true
+      multiple: false
+    predicate: http://purl.org/dc/elements/1.1/description
   description_attachment_url:
     type: string
     multiple: true

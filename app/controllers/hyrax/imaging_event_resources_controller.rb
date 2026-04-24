@@ -57,10 +57,20 @@ module Hyrax
 
     # Authorizes a media owner to trigger an update on this imaging event
     # (e.g. to propagate team access changes from a media edit form).
+    #
+    # Uses Media#imaging_event to traverse the ancestor chain (IE → PE → Media),
+    # since ImagingEventResource#media only returns direct member_ids and Media is
+    # typically a grandchild (through ProcessingEvent), not a direct member.
     def media_owner_update
+      media = begin
+        ::Media.find(params["media_id"]) if params["media_id"].present?
+      rescue ::ActiveFedora::ObjectNotFoundError, Ldp::Gone
+        nil
+      end
+
       if (
-        params["media_id"].present? &&
-        curation_concern.media.map { |m| m.id.to_s }.include?(params["media_id"]) &&
+        media.present? &&
+        media.imaging_event&.id.to_s == curation_concern.id.to_s &&
         current_user.can?(:edit, params["media_id"])
       )
         update
@@ -115,9 +125,16 @@ module Hyrax
       # update_valkyrie_work (from Hyrax::WorksControllerBehavior) calls
       # after_update_response on success; we hook in here rather than duplicating
       # update_valkyrie_work's transaction logic.
+      #
+      # Override the JSON response to avoid hyrax/base/show.json.jbuilder, which
+      # attempts a Wings::ActiveFedoraConverter conversion that fails for
+      # ImagingEventResource (not registered in Wings).
       def after_update_response
         update_media_team_access
-        super
+        respond_to do |wants|
+          wants.html { redirect_to [main_app, curation_concern], notice: "Work \"#{curation_concern}\" successfully updated." }
+          wants.json { render json: { id: curation_concern.id.to_s }, status: :ok }
+        end
       end
 
       # FailedSubmissionFormWrapper requires permitted_params/build_permitted_params,

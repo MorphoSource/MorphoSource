@@ -20,7 +20,7 @@ module Morphosource
             DATE_ATTRIBUTES.each do |attr|
               next unless obj.respond_to?(attr) && obj.respond_to?(:"#{attr}=")
 
-              str = obj.send(attr)&.first
+              str = Array.wrap(obj.send(attr)).first
               obj.send(:"#{attr}=", [normalize_date(str)])
             end
 

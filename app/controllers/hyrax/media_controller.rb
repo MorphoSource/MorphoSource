@@ -260,10 +260,10 @@ module Hyrax
       # delete the PE parent of that media
       # If the media has a direct or indirect IE parent and that IE parent has no other children, it should also be deleted
       processing_event = curation_concern.parent_works.select { |w| w.class == ProcessingEvent }&.first
-      if processing_event.present?
-        imaging_event = processing_event.parent_works.select { |w| w.respond_to?(:imaging_event?) && w.imaging_event? }&.first
+      imaging_event = if processing_event.present?
+        processing_event.imaging_event
       else
-        imaging_event = curation_concern.parent_works.select { |w| w.respond_to?(:imaging_event?) && w.imaging_event? }&.first
+        curation_concern.imaging_event
       end
       if imaging_event.present?
         other_media = if imaging_event.is_a?(Valkyrie::Resource)

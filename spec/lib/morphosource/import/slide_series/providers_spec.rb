@@ -48,7 +48,7 @@ RSpec.describe Morphosource::Import::SlideSeries::Providers do
 
   describe 'instance methods' do
     let(:publishing_key)  { 'b4640710-8e03-11d8-b956-b8a03c50a862' }
-    let(:provider)        { providers.detect { |p| p['id'] == '000357979' } }
+    let(:provider)        { providers.detect { |p| p['id'] == '000839463' } }
     before do
       allow(subject).to receive(:publishing_key).and_return(publishing_key)
     end

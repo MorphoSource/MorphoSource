@@ -291,7 +291,7 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
       expect(event).to be_a(ImagingEventResource)
       expect(event.depositor).to eq(manager.ms_id)
       expect(manager.can? :edit, event).to be(true)
-      expect(event.title.first).to match(/\AIE.+: new imaging event\z/)
+      expect(event.title.first).to match(/\AIE.+: #{device_name} SequentialSectionScan Imaging Event \(2023-03-20\)\z/)
     end
   end
 

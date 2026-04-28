@@ -4,8 +4,9 @@ module Morphosource
       include Morphosource::Jsend
       include SolrHelper
 
-      attr_reader :fund_code, :billing_rate, :billing_unit, :save_charge, :media_ids, 
-        :filesets_to_media, :fileset_ids, :units_consumed, :solr
+      attr_reader :fund_code, :billing_rate, :billing_unit, :save_charge, :media_ids,
+        :filesets_to_media, :fileset_ids, :units_consumed, :solr,
+        :media_docs # Media Solr documents cached from query_media_fileset_ids for use in query_media_sizes
       attr_accessor :start_date, :end_date, :media_sizes
 
       # Generates (and only optionally saves) fund code charge objects
@@ -79,11 +80,16 @@ module Morphosource
           ],
           fl: [
             'id',
-            solrize('file_set_ids', :symbol)
+            solrize('file_set_ids', :symbol),
+            # Total size in bytes of all FileSet binaries + FileSet derivatives, indexed by MediaIndexer
+            'all_files_file_size_lts'
           ]
         }
 
         docs = solr.get_docs(nil, solr_params)
+
+        # Cache docs so query_media_sizes can read all_files_file_size_lts without a second Solr round-trip
+        @media_docs = docs
 
         @filesets_to_media = docs
           .select { |d| d['file_set_ids_ssim'].present? }
@@ -99,29 +105,12 @@ module Morphosource
       end
 
       def query_media_sizes
-        fileset_docs = query_fileset_docs
-        media_to_fs_size = fileset_docs.map { |d| [ filesets_to_media[d['id']] , d['file_size_lts'] ] }.to_h
-        (media_ids - media_to_fs_size.keys).each { |m_id| media_to_fs_size[m_id] = nil }
-        return media_to_fs_size
-      end
-
-      def query_fileset_docs
-        return [] if !fileset_ids.present?
-
-        solr_params = {
-          fq: [
-            "#{solrize('has_model', :symbol)}:FileSet",
-            assemble_or_query('id', fileset_ids),
-            "date_uploaded_dtsi:[* TO \"#{solrize_date(end_date)}\"]"
-          ],
-          fl: [
-            'id',
-            'file_size_lts',
-            'digest_ssim'
-          ]
-        }
-
-        solr.get_docs(nil, solr_params)
+        # Prefer all_files_file_size_lts from the Media Solr doc — covers binary + all FileSet derivatives.
+        # Falls back to nil when the media hasn't been indexed with this field yet;
+        # query_bytes_consumed will call query_media_filesize for any nil entries.
+        media_to_size = (media_docs || []).map { |d| [d['id'], d['all_files_file_size_lts']] }.to_h
+        (media_ids - media_to_size.keys).each { |m_id| media_to_size[m_id] = nil }
+        return media_to_size
       end
 
       def query_bytes_consumed
@@ -136,15 +125,21 @@ module Morphosource
         return indexed_bytes_consumed + unindexed_bytes_consumed
       end
 
+      # Fallback for media whose all_files_file_size_lts is not yet indexed in Solr.
+      # Computes size as primary binary + FileSet derivatives (e.g. GLB viewer, thumbnail, MP4).
+      # All MorphoSource derivatives are written under the FileSet ID path by MsFileSetDerivativesService.
       def query_media_filesize(media_id)
-        if (
-          (m = Media.find_by(id: media_id)).present? &&
-          (fs = m.file_sets.first).present? &&
-          (of = fs.original_file).present?
-        )
-          media_sizes[media_id] = of.size
-          return of.size
-        end
+        return unless (m = Media.find_by(id: media_id)).present?
+        return unless (fs = m.file_sets.first).present?
+
+        binary_size = fs.original_file&.size || 0
+        # Glob all derivative files stored under the FileSet's ID path in Hyrax.config.derivatives_path
+        fs_deriv_size = Morphosource::DerivativePath.derivatives_for_reference(fs.id)
+          .map { |p| File.size?(p) }.compact.sum
+
+        total = binary_size + fs_deriv_size
+        media_sizes[media_id] = total
+        return total
       end
 
       def generate_charges

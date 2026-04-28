@@ -38,11 +38,56 @@ RSpec.describe Morphosource::Listeners::IndexRelatedWorksListener do
         Hyrax.persister.save(resource: ie)
       end
 
-      it 'enqueues reindex jobs for related media and objects' do
-        allow(ie).to receive(:media).and_return([])
-        allow(ie).to receive(:objects).and_return([specimen])
-        expect(UpdateRelatedWorksIndexJob).to receive(:perform_later).once
-        listener.on_object_metadata_updated(make_event(ie))
+      context 'when there are no media or objects' do
+        it 'does not enqueue a reindex job' do
+          allow(ie).to receive(:media).and_return([])
+          allow(ie).to receive(:objects).and_return([])
+          expect(UpdateRelatedWorksIndexJob).not_to receive(:perform_later)
+          listener.on_object_metadata_updated(make_event(ie))
+        end
+      end
+
+      context 'when there are objects but no media' do
+        it 'enqueues a reindex job for objects' do
+          allow(ie).to receive(:media).and_return([])
+          allow(ie).to receive(:objects).and_return([specimen])
+          expect(UpdateRelatedWorksIndexJob).to receive(:perform_later).once
+          listener.on_object_metadata_updated(make_event(ie))
+        end
+      end
+
+      context 'when there are media and objects' do
+        let(:media_double) { double('media', id: 'media-id-1', collection?: false) }
+
+        before do
+          allow(BiologicalSpecimen).to receive(:where).and_return([])
+          allow(CulturalHeritageObject).to receive(:where).and_return([])
+        end
+
+        it 'enqueues a single combined reindex job' do
+          allow(ie).to receive(:media).and_return([media_double])
+          allow(ie).to receive(:objects).and_return([specimen])
+          expect(UpdateRelatedWorksIndexJob).to receive(:perform_later).once
+          listener.on_object_metadata_updated(make_event(ie))
+        end
+      end
+
+      context 'when physical_object_id has changed and previously linked objects remain indexed' do
+        let(:old_specimen) { BiologicalSpecimen.create(title: ['old specimen'], vouchered: ['Yes']) }
+        let(:media_double) { double('media', id: 'media-id-1', collection?: false) }
+
+        before do
+          allow(BiologicalSpecimen).to receive(:where).and_return([old_specimen])
+          allow(CulturalHeritageObject).to receive(:where).and_return([])
+        end
+
+        it 'includes old objects in the reindex job' do
+          allow(ie).to receive(:media).and_return([media_double])
+          allow(ie).to receive(:objects).and_return([specimen])
+          expect(UpdateRelatedWorksIndexJob).to receive(:perform_later)
+            .with(array_including('media-id-1', specimen.id, old_specimen.id))
+          listener.on_object_metadata_updated(make_event(ie))
+        end
       end
     end
 

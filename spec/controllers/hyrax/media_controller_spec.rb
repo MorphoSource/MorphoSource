@@ -604,7 +604,8 @@ RSpec.describe Hyrax::MediaController, type: :controller do
           "title" => ["New Title"],
           "description" => ["Updated description"],
           "visibility" => "open",
-          "permissions_attributes" => { "0" => { "access" => "read" } }
+          "permissions_attributes" => { "0" => { "access" => "read" } },
+          "aleph_scene" => '{"annotations":[]}'
         }
       })
     end
@@ -650,6 +651,11 @@ RSpec.describe Hyrax::MediaController, type: :controller do
         it 'keeps allowed params' do
           subject.send(:strip_doi_protected_fields)
           expect(params["media"].keys).to include("visibility", "permissions_attributes")
+        end
+
+        it 'keeps aleph_scene so annotations can still be saved' do
+          subject.send(:strip_doi_protected_fields)
+          expect(params["media"].keys).to include("aleph_scene")
         end
       end
     end

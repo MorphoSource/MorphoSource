@@ -18,15 +18,16 @@ $( document ).ready(function() {
   if ($('form[id*="edit_media_list"]').length) { return }
   if ($('form[id*="new_media_list"]').length) { return }
 
-  // Lock all form fields for non-admin users on DOI media except the Share tab.
+  // Lock all form fields for non-admin users on DOI media except the Share and
+  // Preview Settings tabs. Preview Settings (annotations) may still be saved.
   if ($('[data-doi-locked]').length) {
-    // Lock all tab panes except Share. Keep the hidden visibility input enabled
-    // so the current value is still submitted when the user publishes.
-    $('.tab-pane').not('#share')
+    // Lock all tab panes except Share and Preview Settings. Keep the hidden
+    // visibility input enabled so the current value is still submitted.
+    $('.tab-pane').not('#share, #preview-settings')
       .find('input, textarea, select')
       .not('#media_download_permission')
       .prop('disabled', true);
-    $('.tab-pane').not('#share').find('button').prop('disabled', true);
+    $('.tab-pane').not('#share, #preview-settings').find('button').prop('disabled', true);
 
     // Lock related forms outside the main tab pane (IE, PE, Device, Parent Media, Object).
     // Use pointer-events + opacity rather than disabling DOM elements to avoid

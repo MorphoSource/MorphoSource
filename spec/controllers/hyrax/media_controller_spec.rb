@@ -694,6 +694,59 @@ RSpec.describe Hyrax::MediaController, type: :controller do
     end
   end
 
+  describe '#set_doi_edit_flash' do
+    let(:doi)       { nil }
+    let(:published) { false }
+    let(:presenter) { double('presenter', doi: doi, is_published?: published) }
+
+    before do
+      sign_in depositor
+      subject.instance_variable_set(:@presenter, presenter)
+    end
+
+    context 'when media has no DOI' do
+      it 'does not set a flash alert' do
+        subject.send(:set_doi_edit_flash)
+        expect(flash[:alert]).to be_nil
+      end
+    end
+
+    context 'when media has a DOI' do
+      let(:doi) { ['10.1234/test'] }
+
+      context 'and user is admin' do
+        before { allow(subject.current_user).to receive(:admin?).and_return(true) }
+
+        it 'does not set a flash alert' do
+          subject.send(:set_doi_edit_flash)
+          expect(flash[:alert]).to be_nil
+        end
+      end
+
+      context 'and user is not admin' do
+        before { allow(subject.current_user).to receive(:admin?).and_return(false) }
+
+        context 'and media is published' do
+          let(:published) { true }
+
+          it 'sets the doi_edit_warning alert' do
+            subject.send(:set_doi_edit_flash)
+            expect(flash[:alert]).to include('Metadata fields are locked')
+          end
+        end
+
+        context 'and media is private' do
+          let(:published) { false }
+
+          it 'sets the doi_edit_warning_private alert' do
+            subject.send(:set_doi_edit_flash)
+            expect(flash[:alert]).to include('cannot be edited')
+          end
+        end
+      end
+    end
+  end
+
   describe '#update' do
     let(:curation_concern)  { Media.create(title: ["title"]) }
     let(:actor)             { double(update: true) }

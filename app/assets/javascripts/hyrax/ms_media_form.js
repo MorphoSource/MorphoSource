@@ -18,14 +18,21 @@ $( document ).ready(function() {
   if ($('form[id*="edit_media_list"]').length) { return }
   if ($('form[id*="new_media_list"]').length) { return }
 
-  // Lock metadata fields for non-admin users on DOI media.
-  // Share tab remains fully interactive.
+  // Lock all form fields for non-admin users on DOI media except the Share tab.
   if ($('[data-doi-locked]').length) {
-    $('#media-details')
+    // Lock all tab panes except Share. Keep the hidden visibility input enabled
+    // so the current value is still submitted when the user publishes.
+    $('.tab-pane').not('#share')
       .find('input, textarea, select')
       .not('#media_download_permission')
       .prop('disabled', true);
-    $('#media-details button').prop('disabled', true);
+    $('.tab-pane').not('#share').find('button').prop('disabled', true);
+
+    // Lock related forms outside the main tab pane (IE, PE, Device, Parent Media, Object).
+    // Use pointer-events + opacity rather than disabling DOM elements to avoid
+    // breaking Select2 widgets (select2('data') returns null on disabled inputs).
+    $('.related_form').not('.share')
+      .css({ 'pointer-events': 'none', 'opacity': '0.65' });
 
     // If already published, also lock the visibility dropdown so it cannot be changed back to private.
     // The hidden input stays enabled so the current value is still submitted.

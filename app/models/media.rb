@@ -217,9 +217,9 @@ class Media < Morphosource::Works::Base
   end
 
   def physical_objects
-    ie = imaging_event
-    return [] unless ie.present?
-    Array(ie.objects).flatten
+    imaging_events = ancestors.select(&:imaging_event?)
+    return [] if imaging_events.blank?
+    imaging_events.flat_map { |ie| Array(ie.objects) }
   end
   alias objects physical_objects
 

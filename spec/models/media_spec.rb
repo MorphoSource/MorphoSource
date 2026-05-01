@@ -464,6 +464,19 @@ RSpec.describe Media do
       it 'returns related media ids' do
         expect(media1.related_media_ids).to include(media2.id)
       end
+
+      context 'when media share a Valkyrie ImagingEventResource' do
+        let(:imaging_event_resource) { ImagingEventResource.new(title: ['ie']) }
+
+        before do
+          allow(media1).to receive(:imaging_event).and_return(imaging_event_resource)
+          allow(imaging_event_resource).to receive(:media).and_return([media1, media2])
+        end
+
+        it 'returns sibling media through the shared ImagingEventResource' do
+          expect(media1.related_media).to contain_exactly(media2)
+        end
+      end
     end
 
     describe 'fund code associations' do

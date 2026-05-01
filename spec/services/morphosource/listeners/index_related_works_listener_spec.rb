@@ -72,6 +72,32 @@ RSpec.describe Morphosource::Listeners::IndexRelatedWorksListener do
         end
       end
 
+      context 'when media are descendants through ProcessingEvent and Media chains' do
+        let(:processing_event) { ProcessingEvent.create(title: ['processing event']) }
+        let(:media) { Media.create(title: ['media']) }
+
+        before do
+          allow(BiologicalSpecimen).to receive(:where).and_return([])
+          allow(CulturalHeritageObject).to receive(:where).and_return([])
+          allow(ie).to receive(:child_works_for) do |object|
+            case object.id.to_s
+            when ie.id.to_s
+              [processing_event]
+            when processing_event.id.to_s
+              [media]
+            else
+              []
+            end
+          end
+        end
+
+        it 'enqueues descendant media for reindexing' do
+          expect(UpdateRelatedWorksIndexJob).to receive(:perform_later)
+            .with(array_including(media.id))
+          listener.on_object_metadata_updated(make_event(ie))
+        end
+      end
+
       context 'when physical_object_id has changed and previously linked objects remain indexed' do
         let(:old_specimen) { BiologicalSpecimen.create(title: ['old specimen'], vouchered: ['Yes']) }
         let(:media_double) { double('media', id: 'media-id-1', collection?: false) }

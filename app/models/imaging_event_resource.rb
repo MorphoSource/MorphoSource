@@ -206,11 +206,8 @@ class ImagingEventResource < Hyrax::Work
     Hyrax.query_service.find_by(id: device_id.first)
   end
 
-  # ToDoValk: only checks direct members; should recurse into descendants like
-  # ImagingEvent#media does. Update when descendant traversal is supported for
-  # Valkyrie resources.
   def media
-    members.select { |m| m.is_a?(Media) || ('MediaResource'.safe_constantize && m.is_a?('MediaResource'.safe_constantize)) }
+    media_descendants(self)
   end
 
   # Use postgres_service + explicit AF fallback rather than
@@ -229,5 +226,25 @@ class ImagingEventResource < Hyrax::Work
     end
   end
 
+  private
+
+    def media_descendants(object)
+      child_works_for(object).flat_map do |child|
+        child_media = child.is_a?(Media) ? [child] : []
+        child_media + media_descendants(child)
+      end.uniq { |work| work.id.to_s }
+    end
+
+    def child_works_for(object)
+      if object.respond_to?(:members)
+        object.members
+      elsif object.respond_to?(:member_ids) && object.member_ids.present?
+        ActiveFedora::Base.find(object.member_ids)
+      else
+        []
+      end
+    rescue ::ActiveFedora::ObjectNotFoundError, Ldp::Gone, Valkyrie::Persistence::ObjectNotFoundError
+      []
+    end
 
 end

@@ -219,6 +219,58 @@ RSpec.describe ImagingEventResource do
     it 'returns Media members' do
       expect(ie.media.map { |m| m.id.to_s }).to include(media1.id)
     end
+
+    it 'returns Media descendants through ProcessingEvent and Media chains' do
+      pe1 = ProcessingEvent.create(title: ['pe1'])
+      pe2 = ProcessingEvent.create(title: ['pe2'])
+      media2 = Media.create(title: ['media2'])
+
+      allow(ie).to receive(:child_works_for) do |object|
+        case object.id.to_s
+        when ie.id.to_s
+          [pe1]
+        when pe1.id.to_s
+          [media1]
+        when media1.id.to_s
+          [pe2]
+        when pe2.id.to_s
+          [media2]
+        else
+          []
+        end
+      end
+
+      expect(ie.media.map { |m| m.id.to_s }).to contain_exactly(media1.id, media2.id)
+    end
+
+    it 'returns Media descendants through a deep ProcessingEvent and Media chain' do
+      pe1 = ProcessingEvent.create(title: ['pe1'])
+      pe2 = ProcessingEvent.create(title: ['pe2'])
+      pe3 = ProcessingEvent.create(title: ['pe3'])
+      media2 = Media.create(title: ['media2'])
+      media3 = Media.create(title: ['media3'])
+
+      allow(ie).to receive(:child_works_for) do |object|
+        case object.id.to_s
+        when ie.id.to_s
+          [pe1]
+        when pe1.id.to_s
+          [media1]
+        when media1.id.to_s
+          [pe2]
+        when pe2.id.to_s
+          [media2]
+        when media2.id.to_s
+          [pe3]
+        when pe3.id.to_s
+          [media3]
+        else
+          []
+        end
+      end
+
+      expect(ie.media.map { |m| m.id.to_s }).to contain_exactly(media1.id, media2.id, media3.id)
+    end
   end
 
   describe '#objects' do

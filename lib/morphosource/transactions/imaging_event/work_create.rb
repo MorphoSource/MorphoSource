@@ -24,6 +24,14 @@ module Morphosource
         def initialize(container: Hyrax::Transactions::Container, steps: DEFAULT_STEPS)
           super
         end
+
+        ##
+        # The parent WorksController behavior may pass legacy step args for
+        # parent/file-set handling. This transaction deliberately excludes those
+        # steps, so ignore those args rather than failing on unknown step names.
+        def with_step_args(**args)
+          super(**args.except(*IGNORED_STEP_ARGS))
+        end
       end
     end
   end

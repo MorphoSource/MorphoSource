@@ -100,6 +100,7 @@ module Morphosource
         when 'ImagingEventResource'
           {
             'change_set.set_user_as_depositor' => { user: user },
+            'work_resource.change_depositor' => { user: ::User.find_by_user_key(form.on_behalf_of) },
             'work_resource.save_acl' => { permissions_params: permissions_params }
           }
         else

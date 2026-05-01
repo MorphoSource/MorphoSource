@@ -4,7 +4,8 @@ require 'rails_helper'
 
 RSpec.describe Morphosource::Action::CreateWorkService do
   let(:user) { User.create(email: 'create_svc@test.com', password: 'password') }
-  let(:form) { double('form', validate: true, errors: double(messages: {})) }
+  let(:on_behalf_of) { User.create(email: 'create_svc_proxy@test.com', password: 'password') }
+  let(:form) { double('form', validate: true, errors: double(messages: {}), on_behalf_of: on_behalf_of.user_key) }
 
   before do
     allow(Hyrax::FormFactory).to receive_message_chain(:new, :build).and_return(form)
@@ -28,6 +29,10 @@ RSpec.describe Morphosource::Action::CreateWorkService do
     describe '#step_args' do
       it 'includes set_user_as_depositor with the user' do
         expect(subject.send(:step_args)['change_set.set_user_as_depositor']).to eq({ user: user })
+      end
+
+      it 'includes change_depositor with the on_behalf_of user' do
+        expect(subject.send(:step_args)['work_resource.change_depositor']).to eq({ user: on_behalf_of })
       end
 
       it 'includes save_acl' do

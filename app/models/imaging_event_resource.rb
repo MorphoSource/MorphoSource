@@ -203,6 +203,7 @@ class ImagingEventResource < Hyrax::Work
   end
 
   def device
+    return nil unless device_id.first.present?
     Hyrax.query_service.find_by(id: device_id.first)
   end
 

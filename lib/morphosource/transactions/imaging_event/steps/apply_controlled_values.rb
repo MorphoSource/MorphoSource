@@ -33,6 +33,7 @@ module Morphosource
 
             Success(obj)
           rescue StandardError => e
+            Rails.logger.error("ApplyControlledValues failed: #{e.message}")
             Failure([:apply_controlled_values_failed, obj])
           end
         end

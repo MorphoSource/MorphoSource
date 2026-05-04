@@ -26,6 +26,7 @@ module Morphosource
 
             Success(obj)
           rescue StandardError => e
+            Rails.logger.error("ApplyDateFilter failed: #{e.message}")
             Failure([:apply_date_filter_failed, obj])
           end
 

@@ -229,14 +229,16 @@ module Morphosource
       def all_parents_of(object)
         af_parents = begin
           object.respond_to?(:member_of) ? object.member_of : []
-        rescue StandardError
+        rescue StandardError => e
+          Rails.logger.error("all_parents_of AF lookup failed for #{object.id}: #{e.message}")
           []
         end
         valkyrie_parents = begin
           Hyrax.query_service.postgres_service.find_inverse_references_by(
             id: Valkyrie::ID.new(object.id.to_s), property: :member_ids
           ).to_a
-        rescue StandardError
+        rescue StandardError => e
+          Rails.logger.error("all_parents_of Valkyrie lookup failed for #{object.id}: #{e.message}")
           []
         end
         (af_parents + valkyrie_parents).uniq { |p| p.id.to_s }

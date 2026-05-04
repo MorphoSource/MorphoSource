@@ -13,6 +13,7 @@ en:
         expires_at: Expiration
         storage_total_gb: Stor. Tot. (GB)
         storage_remaining_gb: Stor. Rem. (GB)
+        storage_current_gb: Stor. Curr. (GB)
         total: Tot. ($)
         remaining: Rem. ($)
         external_user: Ext.

@@ -55,6 +55,7 @@ class CharacterizeJob < HeavyJob
       Morphosource::Works::FileSetCharacterizationParentUpdateService.run(file_set)
     end
 
+    UpdateFileSetDataAllocationJob.perform_later(file_set)
     CreateDerivativesJob.perform_later(file_set, file_id, filepath)
   end
 

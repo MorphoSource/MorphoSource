@@ -282,6 +282,19 @@ RSpec.describe ImagingEventResource do
     end
   end
 
+  describe 'metadata predicates' do
+    let(:metadata_config) do
+      YAML.load_file(Rails.root.join('config/metadata/imaging_event_resource.yaml')).fetch('attributes')
+    end
+
+    it 'matches legacy ImagingEvent predicates for migrated attributes' do
+      expect(metadata_config.fetch('device_id').fetch('predicate')).to eq('https://www.morphosource.org/terms/deviceID')
+      expect(metadata_config.fetch('physical_object_id').fetch('predicate')).to eq('https://www.morphosource.org/terms/objectID')
+      expect(metadata_config.fetch('description_attachment_url').fetch('predicate')).to eq('https://www.morphosource.org/terms/descriptionAttachmentUrl')
+      expect(metadata_config.fetch('reference_attachment_url').fetch('predicate')).to eq('https://www.morphosource.org/terms/referenceAttachmentUrl')
+    end
+  end
+
   context 'includes schema defined metadata' do
     it { is_expected.to respond_to(:acquisition_type) }
     it { is_expected.to respond_to(:amperage) }

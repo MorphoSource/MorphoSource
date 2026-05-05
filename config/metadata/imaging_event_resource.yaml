@@ -81,7 +81,7 @@ attributes:
       required: false
       primary: false
       multiple: true
-    predicate: https://www.morphosource.org/terms/descriptionAttachmentURL
+    predicate: https://www.morphosource.org/terms/descriptionAttachmentUrl
   detector_configuration:
     type: string
     multiple: true
@@ -164,7 +164,7 @@ attributes:
       required: true
       primary: true
       multiple: false
-    predicate: https://www.morphosource.org/terms/deviceId
+    predicate: https://www.morphosource.org/terms/deviceID
   exposure_time:
     type: string
     multiple: true
@@ -330,7 +330,7 @@ attributes:
       required: false
       primary: true
       multiple: false
-    predicate: https://www.morphosource.org/terms/physicalObjectId
+    predicate: https://www.morphosource.org/terms/objectID
   pixel_spacing_calibration:
     type: string
     multiple: true

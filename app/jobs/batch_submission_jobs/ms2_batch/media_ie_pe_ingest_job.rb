@@ -287,7 +287,9 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
   def imaging_event_exists?(id)
     return false unless id.present?
     @imaging_event_works_cache ||= {}
-    @imaging_event_works_cache[id] = ImagingEvent.exists?(id) unless @imaging_event_works_cache.key?(id)
+    unless @imaging_event_works_cache.key?(id)
+      @imaging_event_works_cache[id] = ImagingEventResource.exists?(id)
+    end
     @imaging_event_works_cache[id]
   end
 

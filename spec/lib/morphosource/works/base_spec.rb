@@ -25,11 +25,7 @@ RSpec.describe Morphosource::Works::Base do
 
     context 'with a Valkyrie ImagingEventResource as direct parent of Media' do
       let(:child_id) { SecureRandom.uuid }
-      let(:ie_resource) do
-        Hyrax.persister.save(resource: ImagingEventResource.new(
-          title: ['ie'], member_ids: [Valkyrie::ID.new(child_id)]
-        ))
-      end
+      let(:ie_resource) { FactoryBot.valkyrie_create(:imaging_event_resource, title: ['ie'], member_ids: [Valkyrie::ID.new(child_id)], with_index: false) }
 
       before { ie_resource }
 
@@ -44,11 +40,7 @@ RSpec.describe Morphosource::Works::Base do
 
     context 'with a multi-level chain: ProcessingEvent (AF) -> Media (AF) -> ImagingEventResource (Valkyrie)' do
       let(:media_id) { SecureRandom.uuid }
-      let(:ie_resource) do
-        Hyrax.persister.save(resource: ImagingEventResource.new(
-          title: ['ie'], member_ids: [Valkyrie::ID.new(media_id)]
-        ))
-      end
+      let(:ie_resource) { FactoryBot.valkyrie_create(:imaging_event_resource, title: ['ie'], member_ids: [Valkyrie::ID.new(media_id)], with_index: false) }
 
       before { ie_resource }
 

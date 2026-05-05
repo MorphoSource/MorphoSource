@@ -7,14 +7,7 @@ RSpec.describe Hyrax::ImagingEventResourcesController do
   let(:old_organization) { Organization.create(title: ['old org'], team_id: [old_team.id]) }
   let(:old_specimen)     { BiologicalSpecimen.create(title: ['old specimen'], vouchered: ['Yes'], organization_id: [old_organization.id]) }
   let(:device)           { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-  let!(:ie) do
-    Hyrax.persister.save(resource: ImagingEventResource.new(
-      title: ['imaging event'],
-      device_id: [device.id],
-      physical_object_id: [old_specimen.id],
-      ie_modality: device.modality
-    ))
-  end
+  let!(:ie) { FactoryBot.valkyrie_create(:imaging_event_resource, title: ['imaging event'], device: device, physical_object_id: [old_specimen.id], ie_modality: device.modality) }
   let(:user) { User.create(email: 'email@email.com', password: 'password', ms_id: 'user') }
 
   before do

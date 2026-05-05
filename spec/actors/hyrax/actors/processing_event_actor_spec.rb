@@ -73,7 +73,7 @@ RSpec.describe Hyrax::Actors::ProcessingEventActor do
     end
 
     context 'with an ImagingEventResource (Valkyrie) parent' do
-      let(:imaging_event) { Hyrax.persister.save(resource: ImagingEventResource.new(title: ['test ie'])) }
+      let(:imaging_event) { FactoryBot.valkyrie_create(:imaging_event_resource, title: ['test ie'], with_index: false) }
       let(:env) do
         Hyrax::Actors::Environment.new(work, ability, {
           'date_created' => [date_created],

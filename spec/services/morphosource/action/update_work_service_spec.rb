@@ -59,14 +59,7 @@ RSpec.describe Morphosource::Action::UpdateWorkService do
       FactoryBot.valkyrie_create(:device_resource, with_index: false,
         title: ['device'], modality: ['Photogrammetry'])
     end
-    let(:ie) do
-      Hyrax.persister.save(resource: ImagingEventResource.new(
-        title: ['Test IE'],
-        device_id: [device.id.to_s],
-        ie_modality: device.modality,
-        physical_object_id: ['000']
-      ))
-    end
+    let(:ie) { FactoryBot.valkyrie_create(:imaging_event_resource, title: ['Test IE'], device: device, physical_object_id: ['000'], with_index: false) }
     let(:form) { double('form', validate: true, errors: double(messages: {})) }
 
     before do

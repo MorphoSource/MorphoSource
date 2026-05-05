@@ -67,7 +67,7 @@ RSpec.describe ImagingEventResource do
   end
 
   describe 'description attachment methods' do
-    let(:imaging_event) { Hyrax.persister.save(resource: ImagingEventResource.new(title: ['test'])) }
+    let(:imaging_event) { FactoryBot.valkyrie_create(:imaging_event_resource, title: ['test'], with_index: false) }
     let(:valid_file) { Rack::Test::UploadedFile.new('spec/fixtures/text/text.txt', 'text/plain') }
     let(:invalid_file) { Rack::Test::UploadedFile.new('spec/fixtures/images/ms.jpg', 'application/jpeg') }
     let(:uploader) { imaging_event.description_uploader }
@@ -127,7 +127,7 @@ RSpec.describe ImagingEventResource do
   end
 
   describe 'reference attachment methods' do
-    let(:imaging_event) { Hyrax.persister.save(resource: ImagingEventResource.new(title: ['test'])) }
+    let(:imaging_event) { FactoryBot.valkyrie_create(:imaging_event_resource, title: ['test'], with_index: false) }
     let(:valid_file) { Rack::Test::UploadedFile.new('spec/fixtures/images/ms.jpg', 'application/jpeg') }
     let(:invalid_file) { Rack::Test::UploadedFile.new('spec/fixtures/text/text.txt', 'text/plain') }
     let(:uploader) { imaging_event.reference_uploader }
@@ -208,7 +208,7 @@ RSpec.describe ImagingEventResource do
   end
 
   describe '#media' do
-    let(:ie) { Hyrax.persister.save(resource: ImagingEventResource.new(title: ['ie'])) }
+    let(:ie) { FactoryBot.valkyrie_create(:imaging_event_resource, title: ['ie'], with_index: false) }
     let(:media1) { Media.create(title: ['media1']) }
 
     before do
@@ -292,6 +292,16 @@ RSpec.describe ImagingEventResource do
       expect(metadata_config.fetch('physical_object_id').fetch('predicate')).to eq('https://www.morphosource.org/terms/objectID')
       expect(metadata_config.fetch('description_attachment_url').fetch('predicate')).to eq('https://www.morphosource.org/terms/descriptionAttachmentUrl')
       expect(metadata_config.fetch('reference_attachment_url').fetch('predicate')).to eq('https://www.morphosource.org/terms/referenceAttachmentUrl')
+    end
+  end
+
+  describe 'factory' do
+    it 'creates a persisted imaging event resource with required device metadata' do
+      imaging_event = FactoryBot.valkyrie_create(:imaging_event_resource, with_index: false)
+
+      expect(imaging_event).to be_persisted
+      expect(imaging_event.device_id).to be_present
+      expect(imaging_event.ie_modality).to be_present
     end
   end
 

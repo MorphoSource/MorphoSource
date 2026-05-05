@@ -23,7 +23,7 @@ RSpec.describe Morphosource::Listeners::IndexRelatedWorksListener do
     end
 
     context 'when skip_index_related_works flag is set' do
-      let(:ie) { Hyrax.persister.save(resource: ImagingEventResource.new(title: ['ie'])) }
+      let(:ie) { FactoryBot.valkyrie_create(:imaging_event_resource, title: ['ie'], with_index: false) }
 
       it 'skips reindexing and logs' do
         expect(UpdateRelatedWorksIndexJob).not_to receive(:perform_later)
@@ -33,10 +33,7 @@ RSpec.describe Morphosource::Listeners::IndexRelatedWorksListener do
 
     context 'when the object is an ImagingEventResource' do
       let(:specimen) { BiologicalSpecimen.create(title: ['specimen'], vouchered: ['Yes']) }
-      let(:ie) do
-        ie = ImagingEventResource.new(title: ['ie'], physical_object_id: [specimen.id])
-        Hyrax.persister.save(resource: ie)
-      end
+      let(:ie) { FactoryBot.valkyrie_create(:imaging_event_resource, title: ['ie'], physical_object_id: [specimen.id], with_index: false) }
 
       context 'when there are no media or objects' do
         it 'does not enqueue a reindex job' do

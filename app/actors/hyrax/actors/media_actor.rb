@@ -74,13 +74,13 @@ module Hyrax
           # Adding or changing parents
           attrs['work_parents_attributes'].each do |key, wp|
             work_parent = begin
-              Hyrax.query_service.postgres_service.find_by(id: Valkyrie::ID.new(wp['id']))
+              Hyrax.query_service.find_by(id: Valkyrie::ID.new(wp['id']))
             rescue Valkyrie::Persistence::ObjectNotFoundError
               Morphosource::Works::Base.find(wp['id'])
             end
             if work_parent.imaging_event?
               ie_modality << work_parent.ie_modality&.first
-            elsif work_parent.class.to_s == 'ProcessingEvent'
+            elsif work_parent.processing_event?
               ie = work_parent.imaging_event
               ie_modality << ie.ie_modality&.first if ie.present?
             end
@@ -116,7 +116,7 @@ module Hyrax
       def find_parent(env)
         parent_id = env.attributes[:work_parents_attributes].values.first['id']
         @parent = begin
-          Hyrax.query_service.postgres_service.find_by(id: Valkyrie::ID.new(parent_id))
+          Hyrax.query_service.find_by(id: Valkyrie::ID.new(parent_id))
         rescue Valkyrie::Persistence::ObjectNotFoundError
           ActiveFedora::Base.find(parent_id)
         end

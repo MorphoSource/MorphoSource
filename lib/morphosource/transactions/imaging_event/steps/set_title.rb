@@ -26,7 +26,7 @@ module Morphosource
             device_info = ''
             if Array(obj.device_id).first.present?
               begin
-                device = Hyrax.query_service.find_by(id: Array(obj.device_id).first)
+                device = DeviceResource.find(Array(obj.device_id).first)
                 device_info += "#{device.creator.first} " if device.creator.present?
                 device_info += "#{device.title.first} " if device.title.present?
               rescue Valkyrie::Persistence::ObjectNotFoundError

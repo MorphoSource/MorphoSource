@@ -29,14 +29,14 @@ module Hyrax
       end
       if params[:ie_description].present?
         curation_concern.description_attachment = params[:ie_description]
-      end
+      end      
 
       if params[:ie_reference_delete] == 'delete'
         curation_concern.reference_attachment = nil
       end
       if params[:ie_reference].present?
         curation_concern.reference_attachment = params[:ie_reference]
-      end
+      end      
 
       if actor.update(actor_environment)
         update_media_team_access

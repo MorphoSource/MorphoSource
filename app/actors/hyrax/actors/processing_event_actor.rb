@@ -22,7 +22,7 @@ module Hyrax
         if attrs['work_parents_attributes'].present?
           attrs['work_parents_attributes'].each do |key, wp|
             work_parent = begin
-              Hyrax.query_service.postgres_service.find_by(id: Valkyrie::ID.new(wp['id']))
+              Hyrax.query_service.find_by(id: Valkyrie::ID.new(wp['id']))
             rescue Valkyrie::Persistence::ObjectNotFoundError
               Morphosource::Works::Base.find(wp['id'])
             end

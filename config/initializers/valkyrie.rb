@@ -9,7 +9,8 @@ if Hyrax.config.valkyrie_transition?
   Rails.application.config.after_initialize do
     [ # List AF work models
       Taxonomy,
-      Device
+      Device,
+      ImagingEvent
     ].each do |klass|
       Wings::ModelRegistry.register("#{klass}Resource".constantize, klass)
       # we register itself so we can pre-translate the class in Freyja instead of having to translate in each query_service
@@ -57,21 +58,12 @@ if Hyrax.config.valkyrie_transition?
     Valkyrie.config.resource_class_resolver = lambda do |resource_klass_name|
       # TODO: Can we use some kind of lookup.
 
-      # Valkyrie-only resources (no Wings/AF counterpart) must be resolved
-      # directly before the suffix-stripping logic below, otherwise
-      # "ImagingEventResource" would be stripped to "ImagingEvent" and resolved
-      # to the AF ImagingEvent class instead of ImagingEventResource.
-      # Do NOT add these to the Taxonomy list below — that list also applies to
-      # Wings-loaded AF objects (e.g. "Wings(ImagingEvent)"), which should
-      # remain as AF objects and not be translated to their Resource counterpart.
-      valkyrie_only_resources = %w[ImagingEventResource]
-      return resource_klass_name.constantize if valkyrie_only_resources.include?(resource_klass_name)
-
       klass_name = resource_klass_name.gsub(/^Wings\((.+)\)$/, '\1')
       klass_name = klass_name.gsub(/Resource$/, '')
       if %w[
         Taxonomy
         Device
+        ImagingEvent
       ].include?(klass_name)
         "#{klass_name}Resource".constantize
       elsif 'AdminSet' == klass_name

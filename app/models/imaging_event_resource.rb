@@ -25,7 +25,7 @@ class ImagingEventResourceParentDeviceModalityValidator < ActiveModel::Validator
     return if @device_errors.present?
 
     device_found = begin
-      Hyrax.query_service.find_by(id: @device_id)
+      DeviceResource.find(@device_id)
       true
     rescue Valkyrie::Persistence::ObjectNotFoundError
       false
@@ -204,7 +204,7 @@ class ImagingEventResource < Hyrax::Work
 
   def device
     return nil unless device_id.first.present?
-    Hyrax.query_service.find_by(id: device_id.first)
+    DeviceResource.find(device_id.first)
   end
 
   def media

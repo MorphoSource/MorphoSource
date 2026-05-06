@@ -217,9 +217,11 @@ class Media < Morphosource::Works::Base
   end
 
   def physical_objects
-    imaging_events = ancestors.select(&:imaging_event?)
-    return [] if imaging_events.blank?
-    imaging_events.flat_map { |ie| Array(ie.objects) }
+    # Delegates to imaging_event rather than ancestors.select(&:imaging_event?) because IER is
+    # Postgres-backed and not reachable via the AF ancestor chain; imaging_event handles both paths.
+    ie = imaging_event
+    return [] if ie.blank?
+    Array(ie.objects)
   end
   alias objects physical_objects
 

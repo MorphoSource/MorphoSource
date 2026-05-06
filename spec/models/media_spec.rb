@@ -431,6 +431,31 @@ RSpec.describe Media do
           expect(media.organization_titles).to match_array(organization.title)
         end
       end
+
+      context 'when the imaging event is a Valkyrie ImagingEventResource found via a PE ancestor' do
+        let(:specimen) { instance_double(BiologicalSpecimen, id: 'specimen-id') }
+        let(:ie_resource) { instance_double(ImagingEventResource, objects: [specimen]) }
+        let(:pe) { ProcessingEvent.new(imaging_event_id: 'ie-resource-id') }
+
+        before do
+          allow(subject).to receive(:ancestors).and_return([pe])
+          allow(Hyrax.query_service).to receive(:find_by)
+            .with(id: Valkyrie::ID.new('ie-resource-id'))
+            .and_return(ie_resource)
+        end
+
+        it 'returns physical objects from the ImagingEventResource' do
+          expect(subject.physical_objects).to match_array([specimen])
+        end
+      end
+
+      context 'when there is no imaging event' do
+        before { allow(subject).to receive(:ancestors).and_return([]) }
+
+        it 'returns an empty array' do
+          expect(subject.physical_objects).to eq([])
+        end
+      end
     end
 
     describe 'related media ids' do

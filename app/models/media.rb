@@ -297,7 +297,9 @@ class Media < Morphosource::Works::Base
   def related_media_solr
     return [] if !imaging_event.present? || !imaging_event&.id.present?
 
-    qry = "#{ActiveFedora.index_field_mapper.solr_name('imaging_event_id', :stored_searchable)}:#{imaging_event.id} AND has_model_ssim:Media"
+    # TODO: Drop the _tesim fallback after all Media documents are reindexed with imaging_event_id_ssim.
+    qry = "has_model_ssim:Media AND " \
+      "(imaging_event_id_ssim:\"#{imaging_event.id}\" OR imaging_event_id_tesim:\"#{imaging_event.id}\")"
     ::Morphosource::SolrService.new().get_docs(qry, args: { fl: 'id' } )
   end
 

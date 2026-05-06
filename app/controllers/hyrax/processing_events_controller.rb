@@ -94,7 +94,10 @@ module Hyrax
         # reindex current media first (which is needed before reindexing the related media)
         # then reindex the related media
         UpdateWorkIndexJob.perform_later(media_id)
-        qry = "#{ActiveFedora.index_field_mapper.solr_name('imaging_event_id', :stored_searchable)}:#{@curation_concern.imaging_event.id} AND has_model_ssim:Media"
+        # TODO: Drop the _tesim fallback after all Media documents are reindexed with imaging_event_id_ssim.
+        qry = "has_model_ssim:Media AND " \
+          "(imaging_event_id_ssim:\"#{@curation_concern.imaging_event.id}\" OR " \
+          "imaging_event_id_tesim:\"#{@curation_concern.imaging_event.id}\")"
         related_media_solr = ::Morphosource::SolrService.new().get_docs(qry, args: { fl: 'id' } )
         related_media_ids = related_media_solr.map { |d| d['id'] }.reject { |id| id == media_id }
         related_media_ids.each do |id|

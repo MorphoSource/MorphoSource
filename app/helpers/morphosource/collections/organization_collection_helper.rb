@@ -25,9 +25,12 @@ module Morphosource
 
       # count of imaging events for media viewable by current user
       # prevents users seeing a confusing discrepancy if there are lots of private media
-      # uses imaging_event_id facet to get the number of unique imaging events
       def total_viewable_device_imaging_events(media_search)
-        Hash[*media_search.facet_fields['imaging_event_id_tesim'].flatten].keys.count
+        media_search.response['docs'].flat_map do |doc|
+          # TODO: Drop the _tesim fallback after all Media documents are reindexed with imaging_event_id_ssim.
+          ids = Array(doc['imaging_event_id_ssim']).presence || Array(doc['imaging_event_id_tesim'])
+          ids.compact
+        end.uniq.count
       end
     end
   end

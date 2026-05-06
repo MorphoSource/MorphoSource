@@ -465,6 +465,21 @@ RSpec.describe Media do
         expect(media1.related_media_ids).to include(media2.id)
       end
 
+      it 'queries both current and legacy imaging event id fields' do
+        service = instance_double(Morphosource::SolrService)
+
+        allow(media1).to receive(:imaging_event).and_return(double(id: 'ie-id'))
+        allow(Morphosource::SolrService).to receive(:new).and_return(service)
+        expect(service).to receive(:get_docs) do |query, options|
+          expect(query).to include('imaging_event_id_ssim:"ie-id"')
+          expect(query).to include('imaging_event_id_tesim:"ie-id"')
+          expect(options).to eq(args: { fl: 'id' })
+          []
+        end
+
+        media1.related_media_solr
+      end
+
       context 'when media share a Valkyrie ImagingEventResource' do
         let(:imaging_event_resource) { ImagingEventResource.new(title: ['ie']) }
 

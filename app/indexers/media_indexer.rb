@@ -170,6 +170,7 @@ class MediaIndexer < Morphosource::WorkIndexer
 
       ie = object.imaging_event
       solr_doc['imaging_event_id_tesim'] = ie&.id&.to_s
+      solr_doc['imaging_event_id_ssim'] = ie&.id&.to_s
 
       device = ie&.device
       device_title = "#{device&.creator&.first} #{device&.title&.first}"

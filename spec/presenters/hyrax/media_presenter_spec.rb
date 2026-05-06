@@ -792,6 +792,16 @@ RSpec.describe Hyrax::MediaPresenter do
       it "returns all related media" do
         expect(subject.related_media.map(&:id).sort).to eq([media1, media2, media3, parent_media, child_media].map(&:id).sort)
       end
+
+      it "queries both current and legacy imaging event id fields" do
+        expect(::SolrDocument).to receive(:where) do |query|
+          expect(query).to include('imaging_event_id_ssim:')
+          expect(query).to include('imaging_event_id_tesim:')
+          []
+        end
+
+        subject.related_media
+      end
     end
 
     context "#viewable_related_media" do

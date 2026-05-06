@@ -155,26 +155,28 @@ RSpec.describe Organization do
         let(:media2)          { Media.create(title: ['title']) }
         let(:media3)          { Media.create(title: ['title']) }
         let(:device)          { FactoryBot.valkyrie_create(:device_resource, title: ['title'], modality: ['Photogrammetry']) }
-        let(:imagingEvent)    { ImagingEvent.create(title: ['title'], device_id: [device.id.to_s], physical_object_id: [specimen1.id], ie_modality: device.modality) }
-        let(:imagingEvent2)   { ImagingEvent.create(title: ['title'], device_id: [device.id.to_s], physical_object_id: [specimen2.id], ie_modality: device.modality) }
+        let(:imagingEvent)    { FactoryBot.valkyrie_create(:imaging_event_resource, title: ['title'], device: device, ie_modality: device.modality, physical_object_id: [specimen1.id], with_index: false) }
+        let(:imagingEvent2)   { FactoryBot.valkyrie_create(:imaging_event_resource, title: ['title'], device: device, ie_modality: device.modality, physical_object_id: [specimen2.id], with_index: false) }
         let(:processingEvent) { ProcessingEvent.new(title: ['title']) }
 
         before do
-          imagingEvent.ordered_members << media1
-          imagingEvent.save
+          imagingEvent.member_ids += [Valkyrie::ID.new(media1.id)]
+          Hyrax.persister.save(resource: imagingEvent)
           media1.ordered_members << processingEvent
           media1.save
           processingEvent.ordered_members << media2
           processingEvent.save
           media2.save
 
-          imagingEvent2.ordered_members << media3
-          imagingEvent2.save
+          imagingEvent2.member_ids += [Valkyrie::ID.new(media3.id)]
+          Hyrax.persister.save(resource: imagingEvent2)
 
           media3.member_of_collections << team
           media3.save
           team.save
-          [media1, media2, media3].each(&:reload)
+          [media1, media2, media3].each do |media|
+            media.reload.update_index
+          end
         end
 
         it '#media returns all descendant media' do

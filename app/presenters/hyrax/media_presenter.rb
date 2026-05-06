@@ -694,11 +694,13 @@ module Hyrax
     #
     def related_media
       return [] unless imaging_event_id&.first.present?
-      ::SolrDocument.where({
-        "imaging_event_id_tesim" => imaging_event_id&.first,
-        "has_model_ssim" => "Media",
-        "-id" => id
-      })
+
+      # TODO: Drop the _tesim fallback after all Media documents are reindexed with imaging_event_id_ssim.
+      ::SolrDocument.where(
+        "has_model_ssim:Media AND " \
+        "(imaging_event_id_ssim:\"#{imaging_event_id.first}\" OR imaging_event_id_tesim:\"#{imaging_event_id.first}\") " \
+        "AND -id:\"#{id}\""
+      )
     end
 
     #

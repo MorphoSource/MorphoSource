@@ -208,7 +208,23 @@ class ImagingEventResource < Hyrax::Work
   end
 
   def media
-    media_descendants(self)
+    ie_id = id.to_s
+    pe_docs = Morphosource::SolrService.new.get_docs(
+      nil,
+      fq: ["has_model_ssim:ProcessingEvent", "imaging_event_id_tesim:\"#{ie_id}\" OR imaging_event_id_ssim:\"#{ie_id}\""]
+    )
+    pe_media = pe_docs.flat_map do |pe_doc|
+      begin
+        media_descendants(ProcessingEvent.find(pe_doc['id']))
+      rescue ::ActiveFedora::ObjectNotFoundError, Ldp::Gone
+        []
+      end
+    end
+
+    # Also check direct Valkyrie members in case any Media are ever linked that way
+    direct_media = members.select { |m| m.is_a?(Media) }
+
+    (direct_media + pe_media).uniq { |m| m.id.to_s }
   end
 
   # Use postgres_service + explicit AF fallback rather than

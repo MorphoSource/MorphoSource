@@ -24,6 +24,7 @@ module Morphosource
           has_organizational_access_to_physical_object? obj
         end
 
+        # TODO: Remove ::ImagingEvent from array when all ImagingEvents have been migrated to ImagingEventResource
         can :read, [::ImagingEvent, ::ImagingEventResource, ::ProcessingEvent] do |obj|
           has_organizational_access_to_event? obj
         end
@@ -36,6 +37,7 @@ module Morphosource
             has_organizational_access_to_fileset? obj
           when 'BiologicalSpecimen', 'CulturalHeritageObject'
             has_organizational_access_to_physical_object? obj
+          # TODO: Remove 'ImagingEvent' from when clause when all ImagingEvents have been migrated to ImagingEventResource
           when 'ImagingEvent', 'ImagingEventResource', 'ProcessingEvent'
             has_organizational_access_to_event? obj
           else
@@ -90,6 +92,7 @@ module Morphosource
           has_organizational_edit_access_to_physical_object? obj
         end
 
+        # TODO: Remove ::ImagingEvent from array when all ImagingEvents have been migrated to ImagingEventResource
         can [:edit, :update], [::ImagingEvent, ::ImagingEventResource, ::ProcessingEvent] do |obj|
           has_organizational_edit_access_to_event? obj
         end
@@ -102,6 +105,7 @@ module Morphosource
             has_organizational_edit_access_to_fileset? obj
           when 'BiologicalSpecimen', 'CulturalHeritageObject'
             has_organizational_edit_access_to_physical_object? obj
+          # TODO: Remove 'ImagingEvent' from when clause when all ImagingEvents have been migrated to ImagingEventResource
           when 'ImagingEvent', 'ImagingEventResource', 'ProcessingEvent'
             has_organizational_edit_access_to_event? obj
           else

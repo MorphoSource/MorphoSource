@@ -342,6 +342,7 @@ class SubmissionsController < ApplicationController
       work_params = work_params.to_unsafe_h if work_params.respond_to?(:to_unsafe_h)
       finalize_model_params(work, work_params)
     else
+      # TODO: Remove AF branch when all ImagingEvents have been migrated to ImagingEventResource
       # AF
       model_params = to_form(work).model_attributes(params[work])
       if work == 'media'
@@ -391,6 +392,7 @@ class SubmissionsController < ApplicationController
       end
       @device_create_params = model_params
 
+    # TODO: Remove 'imaging_event' case when all ImagingEvents have been migrated to ImagingEventResource
     when 'imaging_event'
 
       if @submission.biological_specimen_or_cultural_heritage_object == 'bso'
@@ -432,6 +434,7 @@ class SubmissionsController < ApplicationController
       if @submission.parent_media_not_in_ms.presence
         # absentee parent: may be an AF ImagingEvent or a Valkyrie ImagingEventResource
         imaging_event_id = @submission.imaging_event_id
+        # TODO: Remove valkyrie_imaging_event? guard (always use imaging_event_resource_id path) when all ImagingEvents have been migrated to ImagingEventResource
         if valkyrie_imaging_event?(imaging_event_id)
           model_params.merge!(imaging_event_resource_id: imaging_event_id)
         else
@@ -583,6 +586,7 @@ class SubmissionsController < ApplicationController
     TransferToOrganizationJob.perform_later(work.id)
   end
 
+  # TODO: Remove this method when all ImagingEvents have been migrated to ImagingEventResource
   # Returns true if the given ID belongs to a Valkyrie ImagingEventResource
   # (Postgres-backed), as opposed to an AF ImagingEvent (Fedora-backed).
   def valkyrie_imaging_event?(id)

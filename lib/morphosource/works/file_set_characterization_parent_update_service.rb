@@ -32,6 +32,7 @@ module Morphosource
       end
 
       def find_imaging_event_for_media(media_work)
+        # TODO: Remove ImagingEvent from Solr query and AF fallback when all ImagingEvents have been migrated to ImagingEventResource
         ie_docs = Morphosource::SolrService.new.get_docs(
           nil,
           fq: ["member_ids_ssim:#{media_work.id}",
@@ -97,6 +98,7 @@ module Morphosource
             work.send(work_field.to_s + "=", transformed_value)
           end
         end
+        # TODO: Remove AF branch (work.save!) when all ImagingEvents have been migrated to ImagingEventResource
         work.is_a?(Hyrax::Resource) ? work.save : work.save!
       end
 

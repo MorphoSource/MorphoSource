@@ -234,6 +234,7 @@ class Media < Morphosource::Works::Base
   end
 
   def imaging_event
+    # TODO: Remove AF path when all ImagingEvents have been migrated to ImagingEventResource
     # AF path: traverse AF ancestors for an AF ImagingEvent
     ie = ancestors.find(&:imaging_event?)
     return ie if ie.present?
@@ -282,6 +283,7 @@ class Media < Morphosource::Works::Base
     if imaging_event.is_a?(Valkyrie::Resource)
       imaging_event.media.select { |m| m.id.to_s != self.id.to_s }
     else
+      # TODO: Remove AF branch when all ImagingEvents have been migrated to ImagingEventResource
       imaging_event.descendants.select { |d| d.class == Media && d.id != self.id }
     end
   end

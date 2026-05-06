@@ -30,6 +30,7 @@ class BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob < Morphosource::Applicat
     if ingest['imaging_event'].present?
       ie_row_index = ingest['imaging_event'].first[0]
       ie_key = "ie_#{ie_row_index}"
+      # TODO: Remove ImagingEvent path (factory will use ImagingEventResource directly) when all ImagingEvents have been migrated to ImagingEventResource
       if created_objects[ie_key].present? && imaging_event_exists?(created_objects[ie_key])
         imaging_event = OpenStruct.new(id: created_objects[ie_key])
       else

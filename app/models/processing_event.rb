@@ -59,9 +59,9 @@ class ProcessingEvent < Morphosource::Works::Base
   end
 
   def imaging_event
-    if imaging_event_resource_id.present?
+    if imaging_event_id.present?
       begin
-        Hyrax.query_service.find_by(id: Valkyrie::ID.new(imaging_event_resource_id))
+        Hyrax.query_service.find_by(id: Valkyrie::ID.new(imaging_event_id))
       rescue Valkyrie::Persistence::ObjectNotFoundError
         nil
       end

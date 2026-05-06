@@ -240,11 +240,11 @@ class Media < Morphosource::Works::Base
     return ie if ie.present?
 
     # Valkyrie path: check if an AF ProcessingEvent ancestor links to an ImagingEventResource
-    parent_pe = ancestors.find { |a| a.is_a?(ProcessingEvent) && a.imaging_event_resource_id.present? }
+    parent_pe = ancestors.find { |a| a.is_a?(ProcessingEvent) && a.imaging_event_id.present? }
     return unless parent_pe.present?
 
     begin
-      Hyrax.query_service.find_by(id: Valkyrie::ID.new(parent_pe.imaging_event_resource_id))
+      Hyrax.query_service.find_by(id: Valkyrie::ID.new(parent_pe.imaging_event_id))
     rescue Valkyrie::Persistence::ObjectNotFoundError
       nil
     end

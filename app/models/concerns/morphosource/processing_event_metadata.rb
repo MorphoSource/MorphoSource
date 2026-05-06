@@ -30,7 +30,7 @@ module Morphosource
         index.as :stored_searchable
       end
 
-      property :imaging_event_resource_id, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/imagingEventResourceId"), multiple: false do |index|
+      property :imaging_event_id, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/imagingEventId"), multiple: false do |index|
         index.as :stored_searchable
       end
 

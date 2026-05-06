@@ -434,9 +434,9 @@ class SubmissionsController < ApplicationController
       if @submission.parent_media_not_in_ms.presence
         # absentee parent: may be an AF ImagingEvent or a Valkyrie ImagingEventResource
         imaging_event_id = @submission.imaging_event_id
-        # TODO: Remove valkyrie_imaging_event? guard (always use imaging_event_resource_id path) when all ImagingEvents have been migrated to ImagingEventResource
+        # TODO: Remove valkyrie_imaging_event? guard (always use imaging_event_id path) when all ImagingEvents have been migrated to ImagingEventResource
         if valkyrie_imaging_event?(imaging_event_id)
-          model_params.merge!(imaging_event_resource_id: imaging_event_id)
+          model_params.merge!(imaging_event_id: imaging_event_id)
         else
           model_params = assign_model_params_parents(model_params, [imaging_event_id])
         end

@@ -80,9 +80,9 @@ RSpec.describe ProcessingEvent do
   end
 
   describe '#imaging_event' do
-    context 'when imaging_event_resource_id is present' do
+    context 'when imaging_event_id is present' do
       let(:ie_resource) { instance_double(ImagingEventResource) }
-      let(:pe) { ProcessingEvent.new(imaging_event_resource_id: 'ie-resource-id') }
+      let(:pe) { ProcessingEvent.new(imaging_event_id: 'ie-resource-id') }
 
       before do
         allow(Hyrax.query_service).to receive(:find_by)
@@ -95,8 +95,8 @@ RSpec.describe ProcessingEvent do
       end
     end
 
-    context 'when imaging_event_resource_id is present but the resource is not found' do
-      let(:pe) { ProcessingEvent.new(imaging_event_resource_id: 'nonexistent-id') }
+    context 'when imaging_event_id is present but the resource is not found' do
+      let(:pe) { ProcessingEvent.new(imaging_event_id: 'nonexistent-id') }
 
       before do
         allow(Hyrax.query_service).to receive(:find_by)
@@ -108,7 +108,7 @@ RSpec.describe ProcessingEvent do
       end
     end
 
-    context 'when imaging_event_resource_id is absent' do
+    context 'when imaging_event_id is absent' do
       let(:pe) { ProcessingEvent.new }
       let(:af_imaging_event) { instance_double(ImagingEvent, imaging_event?: true) }
 

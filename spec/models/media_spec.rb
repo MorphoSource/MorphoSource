@@ -348,9 +348,9 @@ RSpec.describe Media do
         end
       end
 
-      context 'when no AF ancestor imaging event exists but a parent ProcessingEvent has imaging_event_resource_id' do
+      context 'when no AF ancestor imaging event exists but a parent ProcessingEvent has imaging_event_id' do
         let(:ie_resource) { instance_double(ImagingEventResource) }
-        let(:pe) { ProcessingEvent.new(imaging_event_resource_id: 'ie-resource-id') }
+        let(:pe) { ProcessingEvent.new(imaging_event_id: 'ie-resource-id') }
 
         before do
           allow(subject).to receive(:ancestors).and_return([pe])
@@ -365,7 +365,7 @@ RSpec.describe Media do
       end
 
       context 'when the ImagingEventResource is not found' do
-        let(:pe) { ProcessingEvent.new(imaging_event_resource_id: 'gone-id') }
+        let(:pe) { ProcessingEvent.new(imaging_event_id: 'gone-id') }
 
         before do
           allow(subject).to receive(:ancestors).and_return([pe])

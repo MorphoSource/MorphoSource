@@ -113,12 +113,8 @@ module Hyrax
         @original_objects = curation_concern.objects
       end
 
-      # Override LinkedTeamsManagement#find_all_media to use members (direct
-      # children) instead of descendants, which is not available on Valkyrie
-      # resources. ToDoValk: update when descendant traversal is supported.
       def find_all_media
-        works = curation_concern.members << curation_concern
-        @media = select_media(works)
+        @media = curation_concern.media
       end
 
       # Inject update_media_team_access into the Valkyrie update success path.

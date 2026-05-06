@@ -432,9 +432,9 @@ RSpec.describe SubmissionsController, type: :controller do
         allow(subject).to receive(:valkyrie_imaging_event?).with('ie-resource-id').and_return(true)
       end
 
-      it 'sets imaging_event_resource_id on the params' do
+      it 'sets imaging_event_id on the params' do
         result = subject.send(:finalize_model_params, 'processing_event', { title: ['Test'] })
-        expect(result[:imaging_event_resource_id]).to eq('ie-resource-id')
+        expect(result[:imaging_event_id]).to eq('ie-resource-id')
       end
 
       it 'does not call assign_model_params_parents' do

@@ -209,67 +209,97 @@ RSpec.describe ImagingEventResource do
 
   describe '#media' do
     let(:ie) { FactoryBot.valkyrie_create(:imaging_event_resource, title: ['ie'], with_index: false) }
-    let(:media1) { Media.create(title: ['media1']) }
+    let(:solr_service) { instance_double(Morphosource::SolrService) }
 
     before do
-      ie.member_ids = ie.member_ids + [Valkyrie::ID.new(media1.id)]
-      Hyrax.persister.save(resource: ie)
+      allow(Morphosource::SolrService).to receive(:new).and_return(solr_service)
+      allow(solr_service).to receive(:get_docs).and_return([])
     end
 
-    it 'returns Media members' do
-      expect(ie.media.map { |m| m.id.to_s }).to include(media1.id)
+    it 'returns an empty array when there are no linked ProcessingEvents or direct members' do
+      expect(ie.media).to eq([])
     end
 
-    it 'returns Media descendants through ProcessingEvent and Media chains' do
-      pe1 = ProcessingEvent.create(title: ['pe1'])
-      pe2 = ProcessingEvent.create(title: ['pe2'])
-      media2 = Media.create(title: ['media2'])
+    it 'queries Solr for ProcessingEvents using both imaging_event_id_tesim and imaging_event_id_ssim' do
+      ie_id = ie.id.to_s
+      expect(solr_service).to receive(:get_docs) do |_query, options|
+        ie_fq = options[:fq].find { |f| f.include?('imaging_event_id') }
+        expect(options[:fq]).to include('has_model_ssim:ProcessingEvent')
+        expect(ie_fq).to include(%(imaging_event_id_tesim:"#{ie_id}"))
+        expect(ie_fq).to include(%(imaging_event_id_ssim:"#{ie_id}"))
+        []
+      end
+      ie.media
+    end
 
-      allow(ie).to receive(:child_works_for) do |object|
-        case object.id.to_s
-        when ie.id.to_s
-          [pe1]
-        when pe1.id.to_s
-          [media1]
-        when media1.id.to_s
-          [pe2]
-        when pe2.id.to_s
-          [media2]
-        else
-          []
-        end
+    context 'with direct Media in member_ids' do
+      let(:media1) { Media.create(title: ['media1']) }
+
+      before do
+        ie.member_ids = ie.member_ids + [Valkyrie::ID.new(media1.id)]
+        Hyrax.persister.save(resource: ie)
       end
 
-      expect(ie.media.map { |m| m.id.to_s }).to contain_exactly(media1.id, media2.id)
+      it 'returns direct Media members' do
+        expect(ie.media.map { |m| m.id.to_s }).to include(media1.id)
+      end
     end
 
-    it 'returns Media descendants through a deep ProcessingEvent and Media chain' do
-      pe1 = ProcessingEvent.create(title: ['pe1'])
-      pe2 = ProcessingEvent.create(title: ['pe2'])
-      pe3 = ProcessingEvent.create(title: ['pe3'])
-      media2 = Media.create(title: ['media2'])
-      media3 = Media.create(title: ['media3'])
+    context 'with ProcessingEvents linked via imaging_event_id' do
+      let(:pe)     { ProcessingEvent.create(title: ['pe']) }
+      let(:media1) { Media.create(title: ['media1']) }
+      let(:media2) { Media.create(title: ['media2']) }
 
-      allow(ie).to receive(:child_works_for) do |object|
-        case object.id.to_s
-        when ie.id.to_s
-          [pe1]
-        when pe1.id.to_s
-          [media1]
-        when media1.id.to_s
-          [pe2]
-        when pe2.id.to_s
-          [media2]
-        when media2.id.to_s
-          [pe3]
-        when pe3.id.to_s
-          [media3]
-        else
-          []
-        end
+      before do
+        allow(solr_service).to receive(:get_docs).and_return([{ 'id' => pe.id }])
+        allow(ProcessingEvent).to receive(:find).with(pe.id).and_return(pe)
       end
 
-      expect(ie.media.map { |m| m.id.to_s }).to contain_exactly(media1.id, media2.id, media3.id)
+      it 'returns Media found as descendants of the linked ProcessingEvent' do
+        allow(ie).to receive(:child_works_for).with(pe).and_return([media1])
+        allow(ie).to receive(:child_works_for).with(media1).and_return([])
+        expect(ie.media.map { |m| m.id.to_s }).to contain_exactly(media1.id)
+      end
+
+      it 'traverses a PE → Media → PE → Media chain' do
+        pe2 = ProcessingEvent.create(title: ['pe2'])
+        allow(ie).to receive(:child_works_for).with(pe).and_return([media1])
+        allow(ie).to receive(:child_works_for).with(media1).and_return([pe2])
+        allow(ie).to receive(:child_works_for).with(pe2).and_return([media2])
+        allow(ie).to receive(:child_works_for).with(media2).and_return([])
+        expect(ie.media.map { |m| m.id.to_s }).to contain_exactly(media1.id, media2.id)
+      end
+
+      it 'traverses a deeply nested PE and Media chain' do
+        pe2    = ProcessingEvent.create(title: ['pe2'])
+        pe3    = ProcessingEvent.create(title: ['pe3'])
+        media3 = Media.create(title: ['media3'])
+        allow(ie).to receive(:child_works_for).with(pe).and_return([media1, pe2])
+        allow(ie).to receive(:child_works_for).with(media1).and_return([])
+        allow(ie).to receive(:child_works_for).with(pe2).and_return([media2, pe3])
+        allow(ie).to receive(:child_works_for).with(media2).and_return([])
+        allow(ie).to receive(:child_works_for).with(pe3).and_return([media3])
+        allow(ie).to receive(:child_works_for).with(media3).and_return([])
+        expect(ie.media.map { |m| m.id.to_s }).to contain_exactly(media1.id, media2.id, media3.id)
+      end
+
+      it 'deduplicates Media appearing via both PE descendants and direct members' do
+        ie.member_ids = ie.member_ids + [Valkyrie::ID.new(media1.id)]
+        Hyrax.persister.save(resource: ie)
+        allow(ie).to receive(:child_works_for).with(pe).and_return([media1])
+        allow(ie).to receive(:child_works_for).with(media1).and_return([])
+        expect(ie.media.map { |m| m.id.to_s }).to contain_exactly(media1.id)
+      end
+
+      context 'when a linked ProcessingEvent no longer exists in Fedora' do
+        before do
+          allow(ProcessingEvent).to receive(:find).with(pe.id).and_raise(ActiveFedora::ObjectNotFoundError)
+        end
+
+        it 'skips the missing ProcessingEvent and returns an empty array' do
+          expect(ie.media).to eq([])
+        end
+      end
     end
   end
 

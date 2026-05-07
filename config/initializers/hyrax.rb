@@ -1,4 +1,10 @@
 require 'wings' # fix issue with Hyrax::ValkyrieLazyMigration invoking Wings
+require Rails.root.join('lib/morphosource/qa/authorities/getty/tgn')
+require Rails.root.join('lib/morphosource/qa/authorities/getty/aat')
+require Rails.root.join('lib/morphosource/qa/authorities/getty/aat/attributes')
+require Rails.root.join('lib/morphosource/qa/authorities/getty/aat/materials')
+require Rails.root.join('lib/morphosource/qa/authorities/getty/aat/periods')
+require Rails.root.join('lib/morphosource/qa/authorities/getty/aat/types')
 
 Hyrax.config do |config|
   # Injected via `rails g hyrax:work Media`

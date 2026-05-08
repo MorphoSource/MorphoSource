@@ -770,6 +770,7 @@ RSpec.describe CollectionRolesController, type: :controller do
       before do
         allow(subject).to receive(:users_are_eligible?).and_return(true)
         allow(subject).to receive(:update_subcollections).and_return(true)
+        allow(subject).to receive(:removing_last_manager?).and_return(false)
         Timecop.freeze(Time.local(1999, 9, 9, 9))
       end
 

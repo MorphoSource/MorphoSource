@@ -301,7 +301,7 @@ module Morphosource
           end
 
           def organization
-            @organization ||= (Organization.find_by(id: provider['id']) || OrganizationCollection.find_by(id: provider['id']))
+            @organization ||= OrganizationCollection.find_by(id: provider['id'])
           end
 
           def org_manager_email

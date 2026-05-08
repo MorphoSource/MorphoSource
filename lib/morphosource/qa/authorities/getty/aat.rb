@@ -3,10 +3,12 @@ module Morphosource
     module Authorities
       module Getty
         class AAT < ::Qa::Authorities::Getty::AAT
+          SPARQL_ENDPOINT = "https://vocab.getty.edu/sparql.json"
+          SPARQL_PARAMS = "_implicit=false&implicit=true&_equivalent=false&_form=%2Fsparql"
 
           # Getty redirects http:// to https:// with a 301; Faraday doesn't follow redirects.
           def build_query_url(q)
-            "https://vocab.getty.edu/sparql.json?query=#{ERB::Util.url_encode(sparql(q))}&_implicit=false&implicit=true&_equivalent=false&_form=%2Fsparql"
+            "#{SPARQL_ENDPOINT}?query=#{ERB::Util.url_encode(sparql(q))}&#{SPARQL_PARAMS}"
           end
 
           def find_url(id)

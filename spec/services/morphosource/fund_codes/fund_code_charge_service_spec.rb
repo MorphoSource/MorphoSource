@@ -39,6 +39,31 @@ RSpec.describe Morphosource::FundCodes::FundCodeChargeService do
     allow(service).to receive(:solr).and_return(solr_double)
   end
 
+  describe '#query_media_fileset_ids' do
+    context 'when the fund code has active media' do
+      let(:media_solr_docs) do
+        [{ 'id' => media_id, 'file_set_ids_ssim' => [fileset_id], 'all_files_file_size_lts' => 5_000_000 }]
+      end
+
+      it 'caches media_docs with all_files_file_size_lts so query_media_sizes avoids a second Solr round-trip' do
+        service.query_media_fileset_ids
+        expect(service.media_docs.first['all_files_file_size_lts']).to eq(5_000_000)
+      end
+    end
+
+    context 'when the fund code has no active media' do
+      before { allow(fund_code).to receive(:media_ids).and_return([]) }
+
+      let(:media_solr_docs) { [] }
+
+      it 'sets filesets_to_media to an empty hash and media_ids to an empty array' do
+        service.query_media_fileset_ids
+        expect(service.filesets_to_media).to eq({})
+        expect(service.media_ids).to eq([])
+      end
+    end
+  end
+
   describe '#query_media_sizes' do
     context 'when all_files_file_size_lts is present on the media Solr doc' do
       let(:media_solr_docs) do
@@ -134,6 +159,14 @@ RSpec.describe Morphosource::FundCodes::FundCodeChargeService do
     it 'caches the computed total in media_sizes for use in query_bytes_consumed' do
       service.query_media_filesize(media_id)
       expect(service.media_sizes[media_id]).to eq(2_250_000)
+    end
+
+    context 'when the media record is not found in the database' do
+      before { allow(Media).to receive(:find_by).with(id: media_id).and_return(nil) }
+
+      it 'returns nil without raising' do
+        expect(service.query_media_filesize(media_id)).to be_nil
+      end
     end
   end
 

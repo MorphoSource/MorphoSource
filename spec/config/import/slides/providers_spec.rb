@@ -9,10 +9,10 @@ RSpec.describe 'providers.yml' do
   it { expect(providers.count).to eq(1) }
 
   describe 'MCZ Special Collections' do
-    let(:mcz) { providers.detect { |p| p['id'] == '000357979' } }
+    let(:mcz) { providers.detect { |p| p['id'] == '000839463' } }
 
     it 'has the correct values' do
-      expect(mcz['id']).to eq('000357979')
+      expect(mcz['id']).to eq('000839463')
       expect(mcz['publishing_org_key']).to eq('b4640710-8e03-11d8-b956-b8a03c50a862')
       expect(mcz['label']).to eq('MCZ Special Collections')
       expect(mcz['agreement_uri']).to eq(['https://mcz.harvard.edu/permissions-copyright'])

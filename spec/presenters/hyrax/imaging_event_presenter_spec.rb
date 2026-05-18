@@ -6,13 +6,13 @@ RSpec.describe Hyrax::ImagingEventPresenter do
 
     subject(:presenter) { described_class.new(SolrDocument.new(work.to_solr), nil) }
 
-    let(:device)  { Device.create(title:['device'], modality: ['Photogrammetry']) }
+    let(:device)  { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
 
     let(:description)  {['test']}
     let(:creator)  {['test']}
     let(:title)  {['test']}
     let(:software)  {['test']}
-    let(:device_id) { [device.id] }
+    let(:device_id) { [device.id.to_s] }
     let(:ie_modality)  { device.modality }
     # X-ray CT metadata
     let(:exposure_time)  {['test']}

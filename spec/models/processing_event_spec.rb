@@ -55,8 +55,8 @@ RSpec.describe ProcessingEvent do
 
   describe 'media and objects' do
     let(:cho)           { CulturalHeritageObject.create(title: ['cho'], vouchered: ['Yes']) }
-    let(:device)        { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-    let(:imaging_event) { ImagingEvent.create(title: ['ie'], ie_modality: device.modality, device_id: [device.id], physical_object_id: [cho.id]) }
+    let(:device)        { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
+    let(:imaging_event) { ImagingEvent.create(title: ['ie'], ie_modality: device.modality, device_id: [device.id.to_s], physical_object_id: [cho.id]) }
     let(:pe1)           { ProcessingEvent.create(title: ['pe1']) }
     let(:media1)        { Media.create(title: ['media1']) }
     let(:pe2)           { ProcessingEvent.create(title: ['pe2']) }

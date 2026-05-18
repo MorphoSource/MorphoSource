@@ -3,8 +3,10 @@
 
 docker_files
 node_modules
+vendor/bundle
+.bundle
+coverage
 
 log/*
 tmp/*
-
-fits.log
+*.log

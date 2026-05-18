@@ -66,16 +66,17 @@ RSpec.describe ::SolrDocument, type: :model do
   end
 
   describe "device metadata field index mapping methods" do
-    let(:work) do
-      Device.new({
+    let(:resource) do
+      FactoryBot.build(
+        :device_resource,
         title: ['XTekCT 100'],
         creator: ['Nikon'],
         modality: ['MicroNanoXRayComputedTomography'],
         description: ['A sample description']
-      })
+      )
     end
 
-    subject { SolrDocument.new(work.to_solr) }
+    subject { SolrDocument.new(DeviceResourceIndexer.new(resource: resource).to_solr) }
 
     it "return modality" do
       expect(subject.modality.first).to eq('MicroNanoXRayComputedTomography')

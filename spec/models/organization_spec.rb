@@ -56,10 +56,6 @@ RSpec.describe Organization do
     it "has no valid parents" do
       expect(subject.valid_parent_concerns).to match_array([])
     end
-
-    it "has Device, BiologicalSpecimen, and CulturalHeritageObject as valid children" do
-      expect(subject.valid_child_concerns).to match_array([Device])
-    end
   end
 
   describe "instance" do
@@ -119,10 +115,6 @@ RSpec.describe Organization do
       it "has no valid parents" do
         expect(subject.valid_parent_concerns).to match_array([])
       end
-
-      it "has Device, BiologicalSpecimen, and CulturalHeritageObject as valid children" do
-        expect(subject.valid_child_concerns).to match_array([Device])
-      end
     end
 
     describe 'team-related instance methods' do
@@ -162,9 +154,9 @@ RSpec.describe Organization do
         let(:media1)          { Media.create(title: ['title']) }
         let(:media2)          { Media.create(title: ['title']) }
         let(:media3)          { Media.create(title: ['title']) }
-        let(:device)          { Device.create(title: ['title'], modality: ['Photogrammetry']) }
-        let(:imagingEvent)    { ImagingEvent.create(title: ['title'], device_id: [device.id], physical_object_id: [specimen1.id], ie_modality: device.modality) }
-        let(:imagingEvent2)   { ImagingEvent.create(title: ['title'], device_id: [device.id], physical_object_id: [specimen2.id], ie_modality: device.modality) }
+        let(:device)          { FactoryBot.valkyrie_create(:device_resource, title: ['title'], modality: ['Photogrammetry']) }
+        let(:imagingEvent)    { ImagingEvent.create(title: ['title'], device_id: [device.id.to_s], physical_object_id: [specimen1.id], ie_modality: device.modality) }
+        let(:imagingEvent2)   { ImagingEvent.create(title: ['title'], device_id: [device.id.to_s], physical_object_id: [specimen2.id], ie_modality: device.modality) }
         let(:processingEvent) { ProcessingEvent.new(title: ['title']) }
 
         before do
@@ -192,6 +184,34 @@ RSpec.describe Organization do
         it '#outside_media returns specimens not owned by team' do
           expect(subject.outside_media).to match_array([media1, media2])
         end
+      end
+    end
+
+    describe '#devices' do
+      let!(:device) { FactoryBot.valkyrie_create(:device_resource, organization_id: [subject.id]) }
+      let(:custom_queries) { double('custom_queries') } # rubocop:disable RSpec/VerifiedDoubles
+      let(:query_service) { instance_double('Hyrax::QueryService', custom_queries: custom_queries) }
+
+      before do
+        allow(Hyrax).to receive(:query_service).and_return(query_service)
+        allow(custom_queries).to receive(:find_all_by_metadata_properties)
+          .with(properties: { organization_id: subject.id }, model: DeviceResource)
+          .and_return([device])
+      end
+
+      it 'returns devices linked by organization id' do
+        expect(subject.devices).to eq([device])
+      end
+    end
+
+    describe 'device assignment' do
+      it 'assigns device to organization via organization_id' do
+        device = FactoryBot.valkyrie_create(:device_resource)
+        device.organization_id = [subject.id]
+        Hyrax.persister.save(resource: device)
+
+        reloaded = Hyrax.query_service.find_by(id: device.id)
+        expect(reloaded.organization_id).to eq([subject.id])
       end
     end
   end

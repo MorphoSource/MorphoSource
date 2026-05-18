@@ -107,6 +107,10 @@ class CollectionRolesController < ApplicationController
 
   def update_user_access
     if @new_group || @remove
+      if removing_last_manager? && !current_user.admin?
+        update_notice('last_manager')
+        return
+      end
       if @new_group
         change_groups(user)
       elsif @remove
@@ -122,6 +126,11 @@ class CollectionRolesController < ApplicationController
         update_notice('success') if @group.save
       end
     end
+  end
+
+  def removing_last_manager?
+    managers_group = collection.managers_group
+    managers_group.present? && @group == managers_group && managers_group.users.count < 2
   end
 
   def change_groups(user)
@@ -219,6 +228,8 @@ class CollectionRolesController < ApplicationController
       access = params[:collection_roles][:access]
       roles = t("morphosource.dashboard.collections.#{@collection.collection_type.machine_id}.members.roles.non-contributor")
       flash[:error] = translate('morphosource.dashboard.collections.form.non_contributor_errors', user: user, emails: emails, access: access, roles: roles)
+    when 'last_manager'
+      flash[:error] = "Cannot remove the last manager from this collection."
     when 'duplicate'
       flash[:error] = "#{@user.name} is already a member of #{@collection.title.first}"
     end

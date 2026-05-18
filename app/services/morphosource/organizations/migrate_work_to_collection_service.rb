@@ -146,7 +146,9 @@ module Morphosource
         if org_data_manager.present?
           data_manager_media = Media.where("media_organization_id_ssim": organization_work.id, "user_with_ownership_ssi": org_data_manager.user_key)
           data_manager_media.each do |media|
-            ContentDepositorChangeEventJob.perform_later(media, organization_collection.id, false, org_data_manager.id)
+            ContentDepositorChangeEventJob.set(
+              queue: Hyrax.config.update_medium_queue_name
+            ).perform_later(media, organization_collection.id, false, org_data_manager.id)
           end
         end
 
@@ -278,8 +280,8 @@ module Morphosource
         # Gather devices based on parent/child and ID relationships
         devices = (
           organization_work.devices +
-          Device.where(organization_id: organization_work.id)
-        ).uniq { |device| device.id }
+          DeviceResource.where(organization_id: organization_work.id)
+        ).uniq { |device| device.id.to_s }
 
         # Get media IDs associated with devices for later reindexing
         device_ids = devices.map(&:id)
@@ -308,9 +310,9 @@ module Morphosource
 
         # Get BSO and BSO media IDs for later reindexing
         biological_specimen_ids = biological_specimens.map { |doc| doc['id'] }
-        if biological_specimen_ids.present?
+        biological_specimen_ids.each_slice(250) do |id_batch|
           all_media_ids.concat Morphosource::SolrService.new.get_docs(
-            "has_model_ssim:Media && physical_object_id_ssim:(#{biological_specimen_ids.join(' OR ')})", {rows: 999999, fl: ["id"]}
+            "has_model_ssim:Media && physical_object_id_ssim:(#{id_batch.join(' OR ')})", {rows: 999999, fl: ["id"]}
           ).map { |doc| doc['id'] }
         end
 
@@ -333,9 +335,9 @@ module Morphosource
 
         # Get CHO and CHO media IDs for later reindexing
         cultural_heritage_object_ids = cultural_heritage_objects.map { |doc| doc['id'] }
-        if cultural_heritage_object_ids.present?
+        cultural_heritage_object_ids.each_slice(250) do |id_batch|
           all_media_ids.concat Morphosource::SolrService.new.get_docs(
-            "has_model_ssim:Media && physical_object_id_ssim:(#{cultural_heritage_object_ids.join(' OR ')})", {rows: 999999, fl: ["id"]}
+            "has_model_ssim:Media && physical_object_id_ssim:(#{id_batch.join(' OR ')})", {rows: 999999, fl: ["id"]}
           ).map { |doc| doc['id'] }
         end
 
@@ -349,7 +351,7 @@ module Morphosource
           )
         end
 
-        # As a last check to find any media missed, query all media associated with the organization work
+        # As a last check to find any media missed, query all media associated with the organization work or collection
         org_media_ids = ActiveFedora::SolrService.query(
           "has_model_ssim:Media && media_organization_id_ssim:#{organization_work.id}", rows: 999999, fl: ["id"]
         ).map { |doc| doc['id'] }
@@ -362,8 +364,13 @@ module Morphosource
         Rails.logger.info "STEP 10. Update any organization transfers"
 
         if org_data_manager.present?
+          # We already have org work media IDs, let's check for org coll media IDs in case this is a re-run
+          org_coll_media_ids = ActiveFedora::SolrService.query(
+            "has_model_ssim:Media && media_organization_id_ssim:#{organization_collection.id}", rows: 999999, fl: ["id"]
+          ).map { |doc| doc['id'] }
+          org_work_coll_media_ids = (org_media_ids + org_coll_media_ids).compact.uniq
           # Find org transfers for media associated with org where receiving user is legacy data manager and is org transfer
-          org_transfers = ProxyDepositRequest.where(work_id: org_media_ids, receiving_user_id: org_data_manager.id, organization_transfer: true)
+          org_transfers = ProxyDepositRequest.where(work_id: org_work_coll_media_ids, receiving_user_id: org_data_manager.id, organization_transfer: true)
           org_transfers.each do |transfer|
             # Update without saving due to not wanting to send messages
             transfer.update_column :receiving_user_id, organization_collection.id

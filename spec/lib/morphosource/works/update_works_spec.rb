@@ -7,8 +7,8 @@ RSpec.describe Hyrax::ImagingEventsController, :type => :controller do
   let(:organization)              { Organization.create(title: ['old title']) }
   let(:taxonomy)                  { valkyrie_create(:taxonomy_resource, title: ['old title']) }
   let(:specimen)                  { BiologicalSpecimen.create(title: ['old title'], vouchered: ['Yes'], organization_id: [organization.id], taxonomy_id: [taxonomy.id]) }
-  let(:device)                    { Device.create(title: ['device'], modality: ["MagneticResonanceImaging"])}
-  let(:imaging_event)             { ImagingEvent.create(title: ['old title'], ie_modality: device.modality, device_id: [device.id], physical_object_id: [specimen.id]) }
+  let(:device)                    { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ["MagneticResonanceImaging"])}
+  let(:imaging_event)             { ImagingEvent.create(title: ['old title'], ie_modality: device.modality, device_id: [device.id.to_s], physical_object_id: [specimen.id]) }
   let(:media1)                    { Media.create(title: ['old title']) }
   let(:processing_event)          { ProcessingEvent.create(title: ['old title']) }
   let(:media2)                    { Media.create(title: ['old title']) }
@@ -44,8 +44,8 @@ RSpec.describe Hyrax::ImagingEventsController, :type => :controller do
   end
 
   describe 'creating an imaging event as a child of a specimen' do
-    let!(:device)  { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-    let(:params)  { { "imaging_event"=> { "device_id" => device.id, "ie_modality" => device.modality.first, "physical_object_id" => [specimen.id] } } }
+    let!(:device)  { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
+    let(:params)  { { "imaging_event"=> { "device_id" => device.id.to_s, "ie_modality" => device.modality.first, "physical_object_id" => [specimen.id] } } }
 
     it 'updates no objects not created' do
       expect { post :create, params: params

@@ -4,7 +4,7 @@ RSpec.describe Morphosource::DataCuration::RelationshipRepairService do
 
   include TestHelpers
 
-  let!(:device)   { FactoryBot.create(:device, id: '000200000') }
+  let!(:device)   { FactoryBot.create(:device_resource, id: '000200000', modality: ['MagneticResonanceImaging']) }
   let!(:specimen) { FactoryBot.create(:biological_specimen, id: '000200001') }
   let(:params)    { { } }
 
@@ -22,7 +22,7 @@ RSpec.describe Morphosource::DataCuration::RelationshipRepairService do
     end
 
     context 'raw media' do
-      let!(:imaging_event)  { FactoryBot.create(:imaging_event, id: '000200002', physical_object_id: [specimen.id], device_id: [device.id]) }
+      let!(:imaging_event)  { FactoryBot.create(:imaging_event, id: '000200002', physical_object_id: [specimen.id], device_id: [device.id.to_s]) }
       let!(:media)          { FactoryBot.create(:media, id: '000200003') }
       let(:params)          { { media_id: media.id } }
 
@@ -58,7 +58,7 @@ RSpec.describe Morphosource::DataCuration::RelationshipRepairService do
     end
 
     context 'derived media' do
-      let!(:imaging_event)    { FactoryBot.create(:imaging_event, id: '000200002', physical_object_id: [specimen.id], device_id: [device.id]) }
+      let!(:imaging_event)    { FactoryBot.create(:imaging_event, id: '000200002', physical_object_id: [specimen.id], device_id: [device.id.to_s]) }
       let!(:processing_event) { FactoryBot.create(:processing_event, id: '000200003') }
       let!(:media)            { FactoryBot.create(:media, id: '000200004') }
       let(:params)            { { media_id: media.id } }
@@ -97,16 +97,16 @@ RSpec.describe Morphosource::DataCuration::RelationshipRepairService do
     end
 
     context 'unexpected works in works_list' do
-      let!(:imaging_event)            { FactoryBot.create(:imaging_event, id: '000200002', physical_object_id: [specimen.id], device_id: [device.id]) }
+      let!(:imaging_event)            { FactoryBot.create(:imaging_event, id: '000200002', physical_object_id: [specimen.id], device_id: [device.id.to_s]) }
       let!(:cultural_heritage_object) { FactoryBot.create(:cultural_heritage_object, id: '000200003') }
-      let!(:device2)                  { FactoryBot.create(:device, id: '000200004')}
+      let!(:device2)                  { FactoryBot.create(:device_resource, id: '000200004') }
       let!(:media)                    { FactoryBot.create(:media, id: '000200005') }
       let(:params)                    { { media_id: media.id } }
 
       before do
         allow(ImagingEvent).to receive(:find).with(imaging_event.id).and_return(imaging_event)
         allow(CulturalHeritageObject).to receive(:find).with(cultural_heritage_object.id).and_return(cultural_heritage_object)
-        allow(Device).to receive(:find).with(device2.id).and_return(device2)
+        allow(DeviceResource).to receive(:find).with(device2.id).and_return(device2)
         allow(Media).to receive(:find).with(media.id).and_return(media)
       end
 
@@ -120,7 +120,7 @@ RSpec.describe Morphosource::DataCuration::RelationshipRepairService do
     end
 
     context 'processing event has ordered members' do
-      let!(:imaging_event)    { FactoryBot.create(:imaging_event, id: '000200002', physical_object_id: [specimen.id], device_id: [device.id]) }
+      let!(:imaging_event)    { FactoryBot.create(:imaging_event, id: '000200002', physical_object_id: [specimen.id], device_id: [device.id.to_s]) }
       let!(:processing_event) { FactoryBot.create(:processing_event, id: '000200003') }
       let!(:media)            { FactoryBot.create(:media, id: '000200004') }
       let!(:another_media)    { FactoryBot.create(:media, id: '000200005')}
@@ -144,7 +144,7 @@ RSpec.describe Morphosource::DataCuration::RelationshipRepairService do
     end
 
     context 'LDP gone' do
-      let!(:imaging_event)    { FactoryBot.create(:imaging_event, id: '000200002', physical_object_id: [specimen.id], device_id: [device.id]) }
+      let!(:imaging_event)    { FactoryBot.create(:imaging_event, id: '000200002', physical_object_id: [specimen.id], device_id: [device.id.to_s]) }
       let!(:processing_event) { FactoryBot.create(:processing_event, id: '000200003') }
       let!(:media)            { FactoryBot.create(:media, id: '000200004') }
       let(:params)            { { media_id: media.id } }

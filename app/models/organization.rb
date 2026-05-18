@@ -31,7 +31,8 @@ class Organization < Morphosource::Works::Base
   end
 
   def devices
-    members.select { |m| m.device? }
+    return [] if id.blank?
+    DeviceResource.where(organization_id: id)
   end
 
   # Specimens that belong to the organization, but are not part of the liked team's items.

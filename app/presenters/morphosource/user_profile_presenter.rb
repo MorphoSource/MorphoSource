@@ -11,6 +11,12 @@ module Morphosource
       repository.search(search_builder.query).response["numFound"]
     end
 
+    # returns the number of organizations managed by @user viewable by @current_user
+    def managed_organization_count
+      search_builder = Morphosource::Users::ManagedOrganizationsSearchBuilder.new(self)
+      repository.search(search_builder.query).response["numFound"]
+    end
+
     # returns the number of media deposited by @user viewable by @current_user
     def deposited_media_count
       deposited_media_query_response["numFound"]

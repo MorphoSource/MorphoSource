@@ -1,5 +1,6 @@
 # Generated via
 #  `rails generate hyrax:work Device`
+# Modified to use DeviceResource
 module Hyrax
   # Generated controller for Device
   class DevicesController < ApplicationController
@@ -12,11 +13,31 @@ module Hyrax
 
     skip_authorize_resource only: :show
 
-    self.curation_concern_type = ::Device
+    self.curation_concern_type = ::DeviceResource
+    # Use a Valkyrie aware form service to generate Valkyrie::ChangeSet style
+    # forms.
+    self.work_form_service = Hyrax::FormFactory.new
+
     with_themed_layout :decide_layout
 
     # Use this line if you want to use a custom presenter
     self.show_presenter = Hyrax::DevicePresenter
+
+    # Subclass of Hyrax::Action::CreateValkyrieWork that injects organization_id
+    # as an explicit step arg rather than reading it from request params inside the step.
+    class DeviceCreateValkyrieWork < Hyrax::Action::CreateValkyrieWork
+      def initialize(organization_id: nil, **kwargs)
+        super(**kwargs)
+        @organization_id = organization_id
+      end
+
+      def step_args
+        super.merge('device_change_set.set_organization_id' => { organization_id: @organization_id })
+      end
+    end
+
+    self.create_valkyrie_work_action = DeviceCreateValkyrieWork
+    DeviceCreateValkyrieWork.transaction_name = "device_change_set.create_work"
 
     configure_blacklight do |config|
       config.max_per_page = 1000000
@@ -45,6 +66,39 @@ module Hyrax
 
     private
 
+    # Override default Valkyrie create work to pass organization_id as a step arg.
+    def create_valkyrie_work
+      form = build_form
+      action = create_valkyrie_work_action.new(
+        form: form,
+        transactions: transactions,
+        user: current_user,
+        params: params,
+        work_attributes_key: hash_key_for_curation_concern,
+        organization_id: @organization&.id
+      )
+
+      return after_create_error(form_err_msg(action.form), action.work_attributes) unless action.validate
+
+      result = action.perform
+      @curation_concern = result.value_or { return after_create_error(transaction_err_msg(result)) }
+      after_create_response
+    end
+
+    # Override default Valkyrie update work transaction
+    def update_valkyrie_work
+      form = build_form
+      return after_update_error(form_err_msg(form)) unless form.validate(params[hash_key_for_curation_concern])
+
+      result = transactions['device_change_set.update_work']
+                 .with_step_args(
+                   'device_change_set.set_organization_id' => { organization_id: @organization&.id },
+                   'work_resource.save_acl' => { permissions_params: params[:permissions] || [] }
+                 ).call(form)
+      @curation_concern = result.value_or { return after_update_error(transaction_err_msg(result)) }
+      after_update_response
+    end
+
     def viewable_device_media_ids
       device_media = Morphosource::DeviceMediaSearchService.new(self, params['id']).search_results
       return [] unless device_media.present?
@@ -60,6 +114,8 @@ module Hyrax
     def find_organization
       organization_id = (
         params["organization_id"] ||
+        params.dig("device_resource", "work_parents_attributes")&.permit!&.to_h&.values&.first&.dig("id") ||
+        params.dig("device_resource", "organization_id")&.first ||
         params.dig("device","work_parents_attributes")&.permit!&.to_h&.values&.first&.dig("id") ||
         params.dig("device", "organization_id")&.first ||
         ::SolrDocument.where({"id" => params['id']})&.first&.to_h&.dig("organization_id_ssim")&.first
@@ -73,13 +129,24 @@ module Hyrax
       @organization.present? ? [@organization.id] : []
     end
 
+    # Override Hyrax's default form_err_msg which only uses attribute names (e.g. "Title").
+    # This version looks up the SimpleForm locale label (e.g. "Model", "Manufacturer") so
+    # the flash error message reflects the labels shown in the form rather than raw attribute names.
+    def form_err_msg(form)
+      form.errors.messages.map do |k, vs|
+        label = I18n.t("simple_form.labels.device_resource.#{k}", default: k.to_s.humanize)
+        vs.map { |v| "#{label} #{v}" }
+      end.flatten.to_sentence
+    end
+
     def after_create_response
-      curation_concern.update_index if curation_concern.id.present?
       respond_to do |wants|
         wants.html do
           flash[:notice] = t('hyrax.devices.create.after_create_html', device_name: "#{curation_concern.creator.first} #{curation_concern.title.first}")
           if @organization.present? && @organization.organization_collection?
             redirect_to main_app.organization_devices_path(@organization)
+          elsif params["from_org_id"].present? # coming from organization page, redirect back there
+            redirect_to main_app.organization_devices_path(params["from_org_id"])
           else
             redirect_to [main_app, curation_concern]
           end

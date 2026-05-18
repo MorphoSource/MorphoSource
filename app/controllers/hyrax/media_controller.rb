@@ -30,6 +30,7 @@ module Hyrax
     before_action :save_publication_status, only: [:update]
     before_action :map_publication_status_to_visibility, only: [:create, :update]
     before_action :check_for_published_doi, only: [:update]
+    before_action :strip_doi_protected_fields, only: [:update]
 
     before_action :save_preview_fields, only: [:update]
     before_action :authorize_media_with_temporary_link, only: [:showcase]
@@ -113,6 +114,7 @@ module Hyrax
       @countries_service = Morphosource::CountriesService.new
       @new_processing_event_submit_submissions_url = '/submissions/new_processing_event_submit'
       @new_processing_event_form = Hyrax::WorkFormService.build(::ProcessingEvent.new, current_ability, self)
+      set_doi_edit_flash
       set_flash
       render '/hyrax/media/edit', presenter: @presenter
     end
@@ -372,6 +374,13 @@ module Hyrax
 
     private
 
+      def set_doi_edit_flash
+        return if current_user&.admin?
+        return unless @presenter.doi.present?
+        key = @presenter.is_published? ? :doi_edit_warning : :doi_edit_warning_private
+        flash.now[:alert] = I18n.t("morphosource.media.alert.#{key}")
+      end
+
       # Checks that uploaded files are the correct format for selected media type.
       def validate_file_formats
         files = []
@@ -411,6 +420,7 @@ module Hyrax
 
       def file_formats_valid?
         return true if params["commit"] == "Update Embargo" || params["commit"] == "Update Lease"
+        return true if !current_user&.admin? && curation_concern.doi.present?
         validate_file_formats
         curation_concern.errors.empty?
       end
@@ -460,12 +470,23 @@ module Hyrax
         params["media"]["fileset_accessibility"] = [@new_publication_status]
       end
 
-      # Prevent changing visibility to private if media has a published DOI
+      # Params non-admin users may submit on DOI media — everything else is stripped.
+      # aleph_scene is included so annotations (Preview Settings tab) can still be saved.
+      DOI_LOCKED_ALLOWED_PARAMS = %w[visibility fileset_accessibility permissions_attributes admin_set_id version aleph_scene].freeze
+
       def check_for_published_doi
-        if (curation_concern.doi.present? &&
-            @new_publication_status == "private")
-          curation_concern.errors.add(:base, "Media has been assigned a DOI and published. Visibility cannot be changed to private.")
-        end
+        return if current_user&.admin?
+        return unless curation_concern.doi.present?
+        return unless @old_publication_status != "private" && @new_publication_status == "private"
+        flash[:error] = "Media has been assigned a DOI and is published. Visibility cannot be changed to private."
+        redirect_to main_app.media_showcase_edit_path(id: params[:id])
+      end
+
+      def strip_doi_protected_fields
+        return if current_user&.admin?
+        return unless curation_concern.doi.present?
+        return unless params[:media].present?
+        params[:media].slice!(*DOI_LOCKED_ALLOWED_PARAMS)
       end
 
       def update_thumbnail

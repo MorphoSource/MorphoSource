@@ -125,11 +125,11 @@ module Morphosource
                          creator: @slide.creator,
                          date_created: @slide.date_created,
                          depositor: manager.user_key,
-                         device_id: [device.id],
+                         device_id: [device.id.to_s],
                          focal_length: @slide.focal_length,
                          ie_modality: ['SequentialSectionScan'],
                          optical_magnification: @slide.magnification,
-                         physical_object_id: [@specimen.id],
+                         physical_object_id: [@specimen.id.to_s],
                          slide_type: ['Histological'],
                          software: @slide.scanning_software,
                          description: @slide.imaging_description,
@@ -301,7 +301,7 @@ module Morphosource
           end
 
           def organization
-            @organization ||= (Organization.find_by(id: provider['id']) || OrganizationCollection.find_by(id: provider['id']))
+            @organization ||= OrganizationCollection.find_by(id: provider['id'])
           end
 
           def org_manager_email

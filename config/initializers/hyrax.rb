@@ -19,6 +19,8 @@ Hyrax.config do |config|
   config.register_curation_concern :taxonomy
   # Injected via `rails g hyrax:work_resource TaxonomyResource`
   config.register_curation_concern :taxonomy_resource
+  # Injected via `rails g hyrax:work_resource DeviceResource`
+  config.register_curation_concern :device_resource
 
   # Register roles that are expected by your implementation.
   # @see Hyrax::RoleRegistry for additional details.
@@ -470,6 +472,9 @@ Hyrax.config do |config|
   config.whitelisted_ingest_dirs = ENV.fetch('WHITELISTED_INGEST_DIRS', '').split(':').presence || ['/nas/morphosource_globus/', '/app/samvera/hyrax-webapp/tmp/', '/app/samvera/hyrax-webapp/spec/fixtures/images/', '/app/samvera/hyrax-webapp/spec/fixtures/bunny/', '/app/samvera/hyrax-webapp/spec/fixtures/dcm_stack/']
 
   config.index_related_works = true
+
+  # Default storage allocation in gigabytes for new DataAllocations
+  config.default_storage_total_gb = 15
 
   # Fund code reporting fields (if not using fund code reporting features, these fields are unnecessary)
   config.subsidizing_fund_code_id = ENV.fetch('SUBSIDIZING_FUND_CODE_ID', Rails.env.production? ? 4 : nil)

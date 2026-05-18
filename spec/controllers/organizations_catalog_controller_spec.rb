@@ -2,6 +2,43 @@ require 'rails_helper'
 
 RSpec.describe OrganizationsCatalogController, :type => :controller do
 
+  describe '#search_managed_organizations' do
+    let(:user) { User.create(email: 'manager@example.com', password: 'password') }
+
+    context 'when path does not include /managed_by/' do
+      before do
+        allow(controller).to receive(:request).and_return(double(path: '/catalog/organizations'))
+      end
+
+      it 'does not change the search builder class' do
+        controller.send(:search_managed_organizations)
+        expect(controller.blacklight_config.search_builder_class).to eq(Morphosource::Catalog::OrganizationsCatalogSearchBuilder)
+      end
+    end
+
+    context 'when path includes /managed_by/' do
+      before do
+        allow(controller).to receive(:request).and_return(double(path: "/catalog/organizations/managed_by/#{user.ms_id}"))
+        allow(controller).to receive(:params).and_return(ActionController::Parameters.new('user' => user.ms_id.to_s))
+      end
+
+      it 'switches search_builder_class to ManagedOrganizationsSearchBuilder' do
+        controller.send(:search_managed_organizations)
+        expect(controller.blacklight_config.search_builder_class).to eq(Morphosource::Users::ManagedOrganizationsSearchBuilder)
+      end
+
+      it 'assigns @user from the ms_id param' do
+        controller.send(:search_managed_organizations)
+        expect(controller.instance_variable_get(:@user)).to eq(user)
+      end
+
+      it 'sets the user on blacklight_config' do
+        controller.send(:search_managed_organizations)
+        expect(controller.blacklight_config.user).to eq(user)
+      end
+    end
+  end
+
   describe 'Blacklight Configuration' do
     let(:config) { described_class.new.blacklight_config }
 

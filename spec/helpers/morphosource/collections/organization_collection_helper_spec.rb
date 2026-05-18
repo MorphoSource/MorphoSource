@@ -18,8 +18,8 @@ RSpec.describe Morphosource::Collections::OrganizationCollectionHelper, type: :h
   describe 'total_viewable_device_media' do
     let(:user)          { FactoryBot.create(:registered_user)}
     let(:specimen)      { FactoryBot.create(:biological_specimen) }
-    let(:device)        { FactoryBot.create(:device) }
-    let(:imaging_event) { FactoryBot.create(:imaging_event, device_id: [device.id], ie_modality: [device.modality.first], physical_object_id: [specimen.id]) }
+    let(:device)        { FactoryBot.create(:device_resource) }
+    let(:imaging_event) { FactoryBot.create(:imaging_event, device_id: [device.id.to_s], ie_modality: [device.modality.first], physical_object_id: [specimen.id]) }
     let(:media)         { FactoryBot.create(:public_media) }
 
     subject { Morphosource::Collections::OrganizationCollections::DevicesController.new }
@@ -32,7 +32,7 @@ RSpec.describe Morphosource::Collections::OrganizationCollectionHelper, type: :h
     end
 
     it 'returns the correct counts of media and imaging events' do
-      expect(subject.device_media_and_imaging_event_counts(device.id)).to match_array([1, 1])
+      expect(subject.device_media_and_imaging_event_counts(device.id.to_s)).to match_array([1, 1])
     end
   end
 end

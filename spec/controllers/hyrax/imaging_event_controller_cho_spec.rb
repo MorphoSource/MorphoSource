@@ -6,8 +6,8 @@ RSpec.describe Hyrax::ImagingEventsController do
   let(:old_team)              { Collection.create(title: ['Old Team'], collection_type_gid: team_collection_type.to_global_id, depositor: user.ms_id) }
   let(:old_organization)      { Organization.create(title: ['old org'], team_id: [old_team.id]) }
   let(:old_cho)               { CulturalHeritageObject.create(title: ['private cho 1'], visibility: 'restricted', vouchered: ['Yes'], organization_id: [old_organization.id]) }
-  let(:device)                { Device.create(title: ['device'], modality: ['Photogrammetry'])}
-  let!(:imaging_event)        { ImagingEvent.create(title: ['imaging event'], device_id: [device.id], physical_object_id: [old_cho.id], ie_modality: device.modality) }
+  let(:device)                { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry'])}
+  let!(:imaging_event)        { ImagingEvent.create(title: ['imaging event'], device_id: [device.id.to_s], physical_object_id: [old_cho.id], ie_modality: device.modality) }
   let(:user)                  { User.create(email: 'email@email.com', password: 'password', ms_id: 'user') }
 
   before do

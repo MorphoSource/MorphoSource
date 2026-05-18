@@ -33,8 +33,8 @@ RSpec.describe Morphosource::BrowseService do
                   media_type: ["xyz"]
                   )
   }
-  let!(:device)           { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-  let!(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: user.ms_id, ie_modality: device.modality, device_id: [device.id], physical_object_id: [specimen.id]) }
+  let!(:device)           { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
+  let!(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: user.ms_id, ie_modality: device.modality, device_id: [device.id.to_s], physical_object_id: [specimen.id]) }
 
   before do
     imagingEvent.ordered_members << media1

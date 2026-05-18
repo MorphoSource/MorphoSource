@@ -9,14 +9,26 @@ class BatchSubmissionJobs::Ms2Batch::TaxonomySubcontrolJob < Morphosource::Appli
     @background_job_id = background_job_id
 
     # Submit jobs for new works to be created
-    background_job_manifest['taxonomy_ingests'].each do |t|
-      next if t['id'].present?
+    background_job_manifest['taxonomy_ingests'].each_with_index do |t, index|
+      co_key = "taxonomy_#{index}"
 
+      # Crash recovery: object created in prior run but manifest id not written
+      if !t['id'].present? && background_job.created_objects[co_key].present? && taxonomy_exists?(background_job.created_objects[co_key])
+        t['id'] = background_job.created_objects[co_key]
+        update_background_job_manifest('taxonomy_ingests', background_job_manifest['taxonomy_ingests'])
+      end
+
+      next if taxonomy_exists?(t['id'])
+
+      t['job_exception'] = nil
+      t['job_status'] = nil
       t['job_id'] = ::BatchObjectImportJob.perform_later(
         'Taxonomy',
         t['attrs'].symbolize_keys,
         nil,
-        false
+        false,
+        @background_job_id,
+        co_key
       ).job_id
     end
 
@@ -29,6 +41,7 @@ class BatchSubmissionJobs::Ms2Batch::TaxonomySubcontrolJob < Morphosource::Appli
     # Check for exceptions and raise if present
     exceptions = []
     background_job_manifest['taxonomy_ingests'].each_with_index do |t, index|
+      next if taxonomy_exists?(t['id'])
       if t['job_exception'].present?
         exceptions << "Taxonomy ingest #{index} failed. Exception: \"#{t['job_exception']}\". Supplied attributes were: \"#{t['attrs']}\""
       end
@@ -42,6 +55,8 @@ class BatchSubmissionJobs::Ms2Batch::TaxonomySubcontrolJob < Morphosource::Appli
     jobs_complete = true
 
     background_job_manifest['taxonomy_ingests'].each do |t|
+      next if taxonomy_exists?(t['id'])
+
       job_id = t['job_id']
       next if !job_id.present?
 
@@ -67,5 +82,19 @@ class BatchSubmissionJobs::Ms2Batch::TaxonomySubcontrolJob < Morphosource::Appli
     update_background_job_manifest('taxonomy_ingests', background_job_manifest['taxonomy_ingests'])
 
     return jobs_complete
+  end
+
+  # Todovalk: Dev branch currently has TaxonomyResource.exists? which will be cleaner, todo replace
+  def taxonomy_exists?(id)
+    return false unless id.present?
+    @taxonomy_works_cache ||= {}
+    unless @taxonomy_works_cache.key?(id)
+      @taxonomy_works_cache[id] = begin
+        !!Hyrax.query_service.find_by(id: id)
+      rescue Valkyrie::Persistence::ObjectNotFoundError
+        false
+      end
+    end
+    @taxonomy_works_cache[id]
   end
 end

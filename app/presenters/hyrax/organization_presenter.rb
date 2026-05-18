@@ -25,12 +25,11 @@ module Hyrax
     end
 
     def organization_collection_device_count
-      ActiveFedora::SolrService.count(%{
-          has_model_ssim:Device AND 
-          device_organization_id_ssim:#{id}
-          #{member_ids.present? ? "AND -id:(#{member_ids.join(' OR ')})" : ""} 
-        }
-      )
+      query = %{
+        device_organization_id_ssim:#{id}
+        #{member_ids.present? ? "AND -id:(#{member_ids.join(' OR ')})" : ""}
+      }
+      ActiveFedora::SolrService.count(query, fq: ["has_model_ssim:(Device OR DeviceResource)"])
     end
 
     def total_media

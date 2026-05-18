@@ -10,8 +10,18 @@ class BatchSubmissionJobs::Ms2Batch::BiologicalSpecimenSubcontrolJob < Morphosou
 
     # Submit jobs for new works to be created
     background_job_manifest['biological_specimen_ingests'].each_with_index do |b, index|
-      next if b['id'].present?
+      co_key = "bso_#{index}"
 
+      # Crash recovery: object created in prior run but manifest id not written
+      if !b['id'].present? && background_job.created_objects[co_key].present? && object_exists?(background_job.created_objects[co_key])
+        b['id'] = background_job.created_objects[co_key]
+        update_background_job_manifest('biological_specimen_ingests', background_job_manifest['biological_specimen_ingests'])
+      end
+
+      next if object_exists?(b['id'])
+
+      b['job_exception'] = nil
+      b['job_status'] = nil
       taxonomy_ids = taxonomy_ids_for_ingest(index)
       b['attrs'].merge!('taxonomy_id' => taxonomy_ids)
 
@@ -19,7 +29,9 @@ class BatchSubmissionJobs::Ms2Batch::BiologicalSpecimenSubcontrolJob < Morphosou
         'BiologicalSpecimen',
         b['attrs'].symbolize_keys,
         nil,
-        false
+        false,
+        @background_job_id,
+        co_key
       ).job_id
     end
 
@@ -32,6 +44,7 @@ class BatchSubmissionJobs::Ms2Batch::BiologicalSpecimenSubcontrolJob < Morphosou
     # Report errors
     exceptions = []
     background_job_manifest['biological_specimen_ingests'].each_with_index do |b, index|
+      next if object_exists?(b['id'])
       if b['job_exception'].present?
         exceptions << "Biological Specimen ingest #{index} failed. Exception: \"#{b['job_exception']}\". Supplied attributes were: \"#{b['attrs']}\""
       end
@@ -60,6 +73,8 @@ class BatchSubmissionJobs::Ms2Batch::BiologicalSpecimenSubcontrolJob < Morphosou
     jobs_complete = true
 
     background_job_manifest['biological_specimen_ingests'].each do |i|
+      next if object_exists?(i['id'])
+
       job_id = i['job_id']
       next if !job_id.present?
 
@@ -85,5 +100,12 @@ class BatchSubmissionJobs::Ms2Batch::BiologicalSpecimenSubcontrolJob < Morphosou
     update_background_job_manifest('biological_specimen_ingests', background_job_manifest['biological_specimen_ingests'])
 
     return jobs_complete
+  end
+
+  def object_exists?(id)
+    return false unless id.present?
+    @object_works_cache ||= {}
+    @object_works_cache[id] = BiologicalSpecimen.exists?(id) unless @object_works_cache.key?(id)
+    @object_works_cache[id]
   end
 end

@@ -26,8 +26,8 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
 
     context 'the current user is an admin' do
       let(:specimen)         { BiologicalSpecimen.create(title: ['specimen'], vouchered: ["Yes"], depositor: admin.ms_id, organization_id: [org1.id]) }
-      let(:device)           { Device.create(title: ['device'], modality: ['Photogrammetry']) }
-      let(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: admin.ms_id, device_id: [device.id], physical_object_id: [specimen.id], ie_modality: device.modality) }
+      let(:device)           { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
+      let(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: admin.ms_id, device_id: [device.id.to_s], physical_object_id: [specimen.id], ie_modality: device.modality) }
       let(:media)            { Media.create(title: ['new media'], depositor: admin.ms_id) }
       let(:file_set)         { FileSet.create }
       let(:team_manager)     { User.create(email: 'manager@test.com', password: 'password') }

@@ -57,9 +57,9 @@ RSpec.describe Morphosource::Import::Slides::GetNewSlidesService do
         let(:admin)         { FactoryBot.create(:admin) }
         # specimen occurrence_id == occurrence_id1
         let(:specimen)      { FactoryBot.create(:biological_specimen, occurrence_id: [occurrence_id1]) }
-        let(:device)        { FactoryBot.create(:device) }
+        let(:device)        { FactoryBot.create(:device_resource, modality: ['SequentialSectionScan']) }
         let(:media)         { FactoryBot.create(:media) }
-        let(:imaging_event) { FactoryBot.create(:imaging_event, ie_modality: ['SequentialSectionScan'], device_id: [device.id], physical_object_id: [specimen.id]) }
+        let(:imaging_event) { FactoryBot.create(:imaging_event, ie_modality: ['SequentialSectionScan'], device_id: [device.id.to_s], physical_object_id: [specimen.id]) }
         let(:list)          { FactoryBot.create(:sequential_section_list, depositor: admin.ms_id) }
 
         before do

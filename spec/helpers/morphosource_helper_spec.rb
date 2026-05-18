@@ -2,6 +2,118 @@ require 'rails_helper'
 
 RSpec.describe MorphosourceHelper, type: :helper do
 
+  describe 'MorphosourceHelper::RemoteFileInfo' do
+    let(:url) { 'https://deepblue.lib.umich.edu/data/downloads/abc123' }
+
+    # Builds a real Net::HTTPResponse with the given headers so the initialize
+    # logic (ETag stripping, content_length, file_ext) can be exercised without
+    # making real HTTP calls. get_headers is stubbed to return this response.
+    def build_response(code, headers = {})
+      klass = Net::HTTPResponse::CODE_TO_OBJ[code.to_s] || Net::HTTPOK
+      response = klass.new('1.1', code.to_s, '')
+      headers.each { |k, v| response[k] = v }
+      response
+    end
+
+    context 'when HEAD succeeds with ETag and Content-Length' do
+      let(:response) do
+        build_response(200,
+          'Content-Type'   => 'image/tiff',
+          'ETag'           => 'W"627f625f9b359d37fea302a108d963feb0f41504"',
+          'Content-Length' => '5981184'
+        )
+      end
+
+      before do
+        allow_any_instance_of(MorphosourceHelper::RemoteFileInfo)
+          .to receive(:fetch_headers).with(url, method: :head).and_return(response)
+      end
+
+      subject { MorphosourceHelper::RemoteFileInfo.new(url) }
+
+      it { expect(subject.status).to eq('success') }
+      it { expect(subject.http_code).to eq(200) }
+      it { expect(subject.file_ext).to eq('.tif') }
+      it { expect(subject.content_length).to eq('5981184') }
+
+      it 'strips the weak ETag prefix and quotes' do
+        expect(subject.e_tag).to eq('627f625f9b359d37fea302a108d963feb0f41504')
+      end
+    end
+
+    context 'when HEAD returns text/html (e.g. Cloudflare bot challenge)' do
+      let(:html_response) { build_response(200, 'Content-Type' => 'text/html') }
+      let(:file_response) do
+        build_response(200,
+          'Content-Type'   => 'image/tiff',
+          'ETag'           => 'W"abc123"',
+          'Content-Length' => '8000126'
+        )
+      end
+
+      before do
+        rfi = MorphosourceHelper::RemoteFileInfo
+        allow_any_instance_of(rfi).to receive(:fetch_headers).with(url, method: :head).and_return(html_response)
+        allow_any_instance_of(rfi).to receive(:fetch_headers).with(url, method: :get).and_return(file_response)
+      end
+
+      subject { MorphosourceHelper::RemoteFileInfo.new(url) }
+
+      it { expect(subject.status).to eq('success') }
+      it { expect(subject.file_ext).to eq('.tif') }
+      it { expect(subject.content_length).to eq('8000126') }
+      it { expect(subject.e_tag).to eq('abc123') }
+    end
+
+    context 'ETag stripping' do
+      {
+        'W"abc123"'  => 'abc123',  # DeepBlue non-standard weak ETag (no slash)
+        'W/"abc123"' => 'abc123',  # RFC 7232 standard weak ETag
+        '"abc123"'   => 'abc123'   # strong ETag
+      }.each do |raw_etag, expected|
+        context "with ETag #{raw_etag}" do
+          before do
+            response = build_response(200, 'Content-Type' => 'image/tiff', 'ETag' => raw_etag)
+            allow_any_instance_of(MorphosourceHelper::RemoteFileInfo)
+              .to receive(:fetch_headers).with(url, method: :head).and_return(response)
+          end
+
+          it { expect(MorphosourceHelper::RemoteFileInfo.new(url).e_tag).to eq(expected) }
+        end
+      end
+    end
+
+    context 'when fetch_headers raises a Net::HTTPClientException (e.g. 404)' do
+      before do
+        error_response = build_response(404)
+        allow_any_instance_of(MorphosourceHelper::RemoteFileInfo)
+          .to receive(:fetch_headers)
+          .and_raise(Net::HTTPClientException.new('404 Not Found', error_response))
+      end
+
+      subject { MorphosourceHelper::RemoteFileInfo.new(url) }
+
+      it { expect(subject.status).to eq('error') }
+      it { expect(subject.http_code).to eq(404) }
+      it { expect(subject.e_tag).to eq('') }
+      it { expect(subject.content_length).to eq('') }
+    end
+
+    context 'when a connection error occurs' do
+      before do
+        allow_any_instance_of(MorphosourceHelper::RemoteFileInfo)
+          .to receive(:fetch_headers)
+          .and_raise(SocketError.new('connection failed'))
+      end
+
+      subject { MorphosourceHelper::RemoteFileInfo.new(url) }
+
+      it { expect(subject.status).to eq('fail') }
+      it { expect(subject.http_code).to eq('') }
+      it { expect(subject.message).to eq('connection failed') }
+    end
+  end
+
   describe 'render_extra(extras, id, variable)' do
     let(:id) {'abc'}
     let(:extras) { [{'id' => id, 'source_of_result' => 'team_project', 'team_project_title' => 'test title'}] }
@@ -37,8 +149,20 @@ RSpec.describe MorphosourceHelper, type: :helper do
   describe '#devices' do
     describe 'there are devices' do
       let!(:devices) do
-        [ Device.create(title: [ 'Foo' ]),
-          Device.create(title: [ 'Bar' ]) ]
+        [
+          { id: 'device-resource-1', title_ssi: 'Foo', has_model: 'DeviceResource' },
+          { id: 'device-1', title_ssi: 'Bar', has_model: 'Device' }
+        ]
+      end
+      before do
+        model_field = ActiveFedora.index_field_mapper.solr_name('has_model', :symbol)
+        devices.each do |device|
+          ActiveFedora::SolrService.add(
+            device.except(:has_model).merge(model_field => [device[:has_model]]),
+            softCommit: true
+          )
+        end
+        ActiveFedora::SolrService.commit
       end
       it 'returns the appropriate array' do
         results = helper.devices
@@ -50,6 +174,28 @@ RSpec.describe MorphosourceHelper, type: :helper do
       it 'returns an empty array' do
         expect(helper.organizations).to match([])
       end
+    end
+  end
+
+  describe '#organization_devices' do
+    it 'queries for Device or DeviceResource records for the organization' do
+      id = 'org-1'
+      solr_service = instance_double(Morphosource::SolrService)
+      doc = {
+        'id' => 'device-1',
+        'title_tesim' => ['Title'],
+        'creator_tesim' => ['Creator'],
+        'modality_tesim' => ['Modality'],
+        'description_tesim' => ['Description']
+      }
+      allow(Morphosource::SolrService).to receive(:new).and_return(solr_service)
+      expect(solr_service).to receive(:get_docs)
+        .with("device_organization_id_ssim:#{id}",
+              fq: ["has_model_ssim:(Device OR DeviceResource)"])
+        .and_return([doc])
+
+      results = helper.organization_devices(id)
+      expect(results.first[:id]).to eq('device-1')
     end
   end
 
@@ -180,7 +326,7 @@ RSpec.describe MorphosourceHelper, type: :helper do
                                     valid_child_concerns: valid_child_models,
                                     valid_parent_concerns: valid_parent_models) }
     let(:valid_child_models) { [ Media, ProcessingEvent ] }
-    let(:valid_parent_models) { [ BiologicalSpecimen, Device ] }
+    let(:valid_parent_models) { [ BiologicalSpecimen, DeviceResource ] }
     before do
       allow(curation_concern).to receive(:valid_child_concerns) { valid_child_models }
       allow(curation_concern).to receive(:valid_parent_concerns) { valid_parent_models }
@@ -196,7 +342,7 @@ RSpec.describe MorphosourceHelper, type: :helper do
         end
       end
       describe 'for parent relationship' do
-        let(:expected_query_string) { '?type[]=BiologicalSpecimen&type[]=Device&id=NA' }
+        let(:expected_query_string) { '?type[]=BiologicalSpecimen&type[]=DeviceResource&id=NA' }
         it 'searches for appropriate parent work types' do
           expect(helper.find_works_autocomplete_url(curation_concern, :parent)).to eq(autocomplete_url)
         end
@@ -212,7 +358,8 @@ RSpec.describe MorphosourceHelper, type: :helper do
       end
       describe 'parent' do
         it 'is a string containing the expected elements' do
-          expect(helper.valid_work_types_list(curation_concern, :parent)).to eq('Biological Specimen, Device')
+          expected_types = [BiologicalSpecimen, DeviceResource].map(&:human_readable_type).sort.join(', ')
+          expect(helper.valid_work_types_list(curation_concern, :parent)).to eq(expected_types)
         end
       end
     end
@@ -413,8 +560,8 @@ RSpec.describe MorphosourceHelper, type: :helper do
       let(:organization)            { FactoryBot.create(:organization_collection, title: ['organization']) }
       let(:facility)                { FactoryBot.create(:organization_collection, title: ['facility']) }
       let(:specimen)                { FactoryBot.create(:biological_specimen, organization_id: [organization.id]) }
-      let(:device)                  { FactoryBot.create(:device, organization_id: [facility.id], modality: ['Photogrammetry']) }
-      let(:imaging_event)           { FactoryBot.create(:imaging_event, ie_modality: device.modality, device_id: [device.id], physical_object_id: [specimen.id]) }
+      let(:device)                  { FactoryBot.create(:device_resource, organization_id: [facility.id], modality: ['Photogrammetry']) }
+      let(:imaging_event)           { FactoryBot.create(:imaging_event, ie_modality: device.modality, device_id: [device.id.to_s], physical_object_id: [specimen.id]) }
 
       let(:collections)             { [project, organization, facility] }
 

@@ -129,8 +129,8 @@ module Morphosource
     # Collects the new FileSet ID for the batch work save and sets representative/thumbnail.
     def append_to_work(file_set)
       @new_member_ids << file_set.id.to_s
-      work.representative_id = file_set.id.to_s if work.respond_to?(:representative_id) && work.representative_id.blank?
-      work.thumbnail_id = file_set.id.to_s if work.respond_to?(:thumbnail_id) && work.thumbnail_id.blank?
+      work.representative_id = file_set.id if work.respond_to?(:representative_id) && work.representative_id.blank?
+      work.thumbnail_id = file_set.id if work.respond_to?(:thumbnail_id) && work.thumbnail_id.blank?
     end
 
     # Restricted fileset_visibility on the work takes precedence; otherwise falls

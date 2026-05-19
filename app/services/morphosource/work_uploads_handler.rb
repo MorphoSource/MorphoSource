@@ -56,13 +56,13 @@ module Morphosource
       return true if Array.wrap(files).empty? && Array.wrap(remote_files).empty?
 
       acquire_lock_for(work.id) do
+        work.reload unless work.new_record?
         @new_member_ids = []
         event_payloads = if remote_files
           remote_files.map { |rf| make_remote_file_set(rf) }
         else
           files.map { |file| make_file_set_and_ingest(file) }
         end
-        work.reload unless work.new_record?
         work.valkyrie_member_ids = (work.valkyrie_member_ids.to_a + @new_member_ids).uniq
         work.save!
         event_payloads.each do |payload|

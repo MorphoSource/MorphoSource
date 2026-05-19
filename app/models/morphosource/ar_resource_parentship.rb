@@ -21,5 +21,9 @@ module Morphosource
 
       return parents
     end
+
+    def parent(include_af_works: true)
+      member_of(include_af_works: include_af_works)&.first
+    end
   end
 end

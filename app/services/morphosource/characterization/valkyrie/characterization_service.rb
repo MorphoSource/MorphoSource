@@ -1,3 +1,7 @@
+require 'hydra/file_characterization/characterizers/blender'
+require 'hydra/file_characterization/characterizers/gltf_inspect'
+require 'hydra/file_characterization/characterizers/pymeshlab'
+
 module Morphosource
   module Characterization
     module Valkyrie

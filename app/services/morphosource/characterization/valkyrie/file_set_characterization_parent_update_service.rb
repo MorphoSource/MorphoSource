@@ -36,7 +36,7 @@ module Morphosource
 
         # todovalk imagine events are AF works for now, but eventually will need to be updated to save as Valkyrie objects
         def find_imaging_event_for_media(media_work)
-          ImagingEvent.where('member_ids_ssim' => work.id).first
+          ImagingEvent.where('member_ids_ssim' => media_work.id).first
         end
 
         def update_parent(work)

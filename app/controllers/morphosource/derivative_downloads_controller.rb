@@ -20,7 +20,7 @@ module Morphosource
         raise ActiveFedora::ObjectNotFoundError
       end
     end
-  
+
     private
       def load_file
         file_path = nil
@@ -36,9 +36,15 @@ module Morphosource
         @file_set ||= file_set_from_access_control_id(params[asset_param_key])
       end
 
+      # access_control_id comes from a URL query param, in newer Vaklyrie FileSet this is actually the ID
       def file_set_from_access_control_id(access_control_id)
         return nil unless access_control_id.present?
-        FileSet.where(accessControl_ssim: access_control_id)&.first
+        FileSet.where(accessControl_ssim: access_control_id)&.first ||
+          begin
+            Hyrax.query_service.find_by(id: Valkyrie::ID.new(access_control_id))
+          rescue Valkyrie::Persistence::ObjectNotFoundError
+            nil
+          end
       end
 
       def file
@@ -85,7 +91,7 @@ module Morphosource
       def send_file_not_found_image
         send_file default_image, :type => 'image/png', :disposition => 'inline', :status => 404
       end
-  
+
       def mime_type_for(file)
         case File.extname(file)
         when '.glb'

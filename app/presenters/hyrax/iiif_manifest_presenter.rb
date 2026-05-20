@@ -296,11 +296,15 @@ module Hyrax
         IIIFManifest::V3::DisplayContent.new(
           URI::join(
             hostname,
-            Rails.application.routes.url_helpers.download_path(model.access_control_id, file: download_file_suffix)
+            Rails.application.routes.url_helpers.download_path(file_set_identifier, file: download_file_suffix)
           ),
           format: format,
           type: type
         )
+      end
+
+      def file_set_identifier
+        model.access_control_id.presence || model.id
       end
 
       def image_format(channels)

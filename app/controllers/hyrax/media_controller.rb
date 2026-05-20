@@ -334,13 +334,13 @@ module Hyrax
           if !media_work.file_sets.first.present?
             flash[:error] = "Media has no FileSet. Characterization job not created."
           elsif JobIoWrapper.find_by(file_set_id: media_work.file_sets.first.id)&.path.present?
-            PrepareCharacterizeJob.perform_later(media_work.file_sets.first.id)
+            PrepareCharacterizeJob.perform_later(media_work.file_sets.first.id.to_s)
             flash[:notice] = "Media characterization job has been started"
           else
             flash[:error] = "Characterization job not created. Try deleting and uploading the file again."
           end
         elsif media_work.file_sets.first.present? && media_work.file_sets.first.original_file.present?
-          PrepareCharacterizeJob.perform_later(media_work.file_sets.first.id)
+          PrepareCharacterizeJob.perform_later(media_work.file_sets.first.id.to_s)
           flash[:notice] = "Media characterization job has been started"
         else
           flash[:error] = "Media has no FileSet or FileSet has no original file. Characterization job not created."
@@ -357,13 +357,13 @@ module Hyrax
           if !media_work.file_sets.first.present?
             flash[:error] = "Media has no FileSet. Create derivatives job not created."
           elsif JobIoWrapper.find_by(file_set_id: media_work.file_sets.first.id)&.path.present?
-            PrepareCreateDerivativesJob.perform_later(media_work.file_sets.first.id)
+            PrepareCreateDerivativesJob.perform_later(media_work.file_sets.first.id.to_s)
             flash[:notice] = "Media create derivatives job has been started"
           else
             flash[:error] = "Create derivatives job not created. Try deleting and uploading the file again."
           end
         elsif media_work.file_sets.first.present? && media_work.file_sets.first.original_file.present?
-          PrepareCreateDerivativesJob.perform_later(media_work.file_sets.first.id)
+          PrepareCreateDerivativesJob.perform_later(media_work.file_sets.first.id.to_s)
           flash[:notice] = "Media create derivatives job has been started"
         else
           flash[:error] = "Media has no FileSet or FileSet has no original file, create derivatives job not started"

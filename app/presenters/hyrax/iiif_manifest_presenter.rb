@@ -52,7 +52,7 @@ module Hyrax
     ##
     # @return [Boolean]
     def file_set?
-      model.try(:file_set?) || Array(model[:has_model_ssim]).include?('FileSet')
+      model.try(:file_set?) || (Array(model[:has_model_ssim]) & Hyrax::ModelRegistry.file_set_rdf_representations).any?
     end
 
     ##
@@ -88,20 +88,20 @@ module Hyrax
 
     def special_fields
       {
-        :title => -> do 
+        :title => -> do
           "<a href='#{Rails.application.routes.url_helpers.media_showcase_url(id, host: hostname)}'>MorphoSource Media #{id}: #{title&.first}</a>"
         end,
         :license => -> do
           if license.present?
             "<a href='#{license&.first}'>#{Hyrax::LicenseService.new.label(license&.first) {}}</a>"
-          else 
+          else
             "--"
           end
         end,
         :rights_statement => -> do
           if rights_statement.present?
             "<a href='#{rights_statement&.first}'>#{Hyrax::RightsStatementService.new.label(rights_statement&.first) {}}</a>"
-          else 
+          else
             "--"
           end
         end
@@ -119,7 +119,9 @@ module Hyrax
     ##
     # @return [Array<#to_s>]
     def member_ids
-      Hyrax::SolrDocument::OrderedMembers.decorate(model).ordered_member_ids
+      ordered = Hyrax::SolrDocument::OrderedMembers.decorate(model).ordered_member_ids
+      valkyrie = Array(model['valkyrie_member_ids_ssim'])
+      (ordered + valkyrie).uniq
     end
 
     ##
@@ -246,7 +248,7 @@ module Hyrax
 
       def generate_display_content
         return display_content_video if model.video?
-        
+
         # Some mime types overlap for mesh/volume, have to check parent media type
         if ( model.mesh? || model.volume? ) && model.id.present?
           return display_content_mesh if parent_work&.media_type&.first == 'Mesh'
@@ -318,7 +320,11 @@ module Hyrax
       end
 
       def parent_work
-        @parent_work ||= ::FileSet.exists?(model.id) && ::FileSet.find(id).parent
+        @parent_work ||= if Array(model[:has_model_ssim]).include?('FileSet')
+          ::FileSet.find(model.id).parent
+        else
+          Hyrax::FileSet.find(model.id).parent
+        end
       end
 
       ##

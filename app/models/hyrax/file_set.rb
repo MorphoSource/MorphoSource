@@ -277,14 +277,17 @@ module Hyrax
     # this method is called after CharacterizeJob and CreateDerivativesJob
     def set_final_attributes
       if is_remote_backed?
+        # characterization_proxy is a symbol (method name) on Valkyrie FileSets;
+        # call send() to get the actual Hyrax::FileMetadata object.
+        proxy = send(self.class.characterization_proxy)
         if (!self.mime_type_of_remote.present?) || (self.mime_type_of_remote.include? "message/external-body")
-          self.mime_type_of_remote = characterization_proxy.mime_type
-          characterization_proxy.mime_type = "message/external-body; access-type=URL; URL=\"#{import_url}\""
-          characterization_proxy.save
+          self.mime_type_of_remote = proxy.mime_type
+          proxy.mime_type = "message/external-body; access-type=URL; URL=\"#{import_url}\""
+          Hyrax.persister.save(resource: proxy)
           self.save
         end
         # set_remote_file_health after content_length is set
-        self.parent.set_remote_file_health
+        member_of.first&.set_remote_file_health
       end
     end
 

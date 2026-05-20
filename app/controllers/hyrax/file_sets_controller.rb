@@ -5,7 +5,7 @@ module Hyrax
     include Hyrax::Breadcrumbs
 
     before_action :authenticate_user!, except: [:show, :citation, :stats]
-    load_and_authorize_resource class: ::FileSet, except: :show
+    load_and_authorize_resource class: Hyrax.config.file_set_class, except: :show
     before_action :build_breadcrumbs, only: [:show, :edit, :stats]
 
     # provides the help_text view method
@@ -48,9 +48,9 @@ module Hyrax
 
     # DELETE /concern/file_sets/:id
     def destroy
-      parent = curation_concern.parent
-      actor.destroy
-      redirect_to [main_app, parent], notice: 'The file has been deleted.'
+      work = parent
+      delete(file_set: curation_concern)
+      redirect_to [main_app, work], notice: 'The file has been deleted.'
     end
 
     # PATCH /concern/file_sets/:id
@@ -136,8 +136,49 @@ module Hyrax
         Hyrax::FileSetSearchBuilder
       end
 
+      def delete(file_set:)
+        case file_set
+        when Hyrax::Resource
+          # remove_from_work transaction step uses find_parents (Valkyrie-only) and
+          # won't see AF parent works, so unlink from AF parents manually first.
+          unlink_valkyrie_file_set_from_af_work(file_set)
+          # Let the transaction handle ACL deletion, file metadata deletion, and FileSet deletion.
+          # The remove_from_work step is a no-op here (AF parents already unlinked above).
+          transactions['file_set.destroy']
+            .with_step_args('file_set.remove_from_work' => { user: current_user },
+                            'file_set.delete' => { user: current_user })
+            .call(curation_concern)
+            .value!
+        else
+          actor.destroy
+        end
+      end
+
+      # AF parents store FileSet membership via valkyrie_member_ids (not Valkyrie member_ids),
+      # so find_parents (pure Valkyrie) returns nothing. Use member_of from ArResourceParentship
+      # which searches Solr for AF parents.
+      def parent
+        @parent ||=
+          case file_set
+          when Hyrax::Resource
+            file_set.member_of.first
+          else
+            file_set.parent
+          end
+      end
+
+      def unlink_valkyrie_file_set_from_af_work(file_set)
+        fs_id = file_set.id.to_s
+        file_set.member_of.each do |work|
+          work.valkyrie_member_ids = work.valkyrie_member_ids.reject { |id| id.to_s == fs_id }
+          work.representative_id = nil if work.representative_id.to_s == fs_id
+          work.thumbnail_id = nil if work.thumbnail_id.to_s == fs_id
+          work.save!
+        end
+      end
+
       def initialize_edit_form
-        @parent = @file_set.in_objects.first
+        @parent = parent
         original = @file_set.original_file
         @version_list = Hyrax::VersionListPresenter.new(original ? original.versions.all : [])
         @groups = current_user.groups

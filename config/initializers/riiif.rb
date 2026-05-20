@@ -1,5 +1,12 @@
 ActiveSupport::Reloader.to_prepare do
-  Riiif::Image.file_resolver = Riiif::HTTPFileResolver.new
+  http_resolver = Riiif::HTTPFileResolver.new
+  http_resolver.id_to_uri = lambda do |id|
+    ActiveFedora::Base.id_to_uri(CGI.unescape(id)).tap do |url|
+      Rails.logger.info "Riiif resolved #{id} to #{url}"
+    end
+  end
+  Riiif::Image.file_resolver = Morphosource::Riiif::ValkyrieFileResolver.new(fallback_resolver: http_resolver)
+
   Riiif::Image.info_service = lambda do |id, _file|
     # id will look like a path to a pcdm:file
     # (e.g. rv042t299%2Ffiles%2F6d71677a-4f80-42f1-ae58-ed1063fd79c7)
@@ -11,12 +18,6 @@ ActiveSupport::Reloader.to_prepare do
     doc = resp['response']['docs'].first
     raise "Unable to find solr document with id:#{fs_id}" unless doc
     { height: doc['height_is'], width: doc['width_is'] }
-  end
-
-  Riiif::Image.file_resolver.id_to_uri = lambda do |id|
-    ActiveFedora::Base.id_to_uri(CGI.unescape(id)).tap do |url|
-      Rails.logger.info "Riiif resolved #{id} to #{url}"
-    end
   end
 
   Riiif::Image.authorization_service = Morphosource::IiifAuthorizationService

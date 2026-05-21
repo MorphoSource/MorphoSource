@@ -133,7 +133,18 @@ module Morphosource
 
       # Get Media from keys
       def media
-        @media ||= Media.where(accessControl_ssim: keys)
+        @media ||= begin
+          return [] if keys.empty?
+          docs = ActiveFedora::SolrService.query(
+            "*:*",
+            fq: ["has_model_ssim:Media", "{!terms f=accessControl_ssim}#{keys.join(',')}"],
+            rows: keys.length,
+            fl: ['id'],
+            method: :post
+          )
+          ids = docs.map { |d| d['id'] }
+          ids.empty? ? [] : Media.find(ids)
+        end
       end
 
       # Media access_control keys

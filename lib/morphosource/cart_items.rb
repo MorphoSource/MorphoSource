@@ -217,7 +217,8 @@ module Morphosource
         "*:*",
         rows: 999999,
         fq: ['has_model_ssim:Media', "id:(#{@work_ids.join(' OR ')})"],
-        fl: ['id', 'accessControl_ssim']
+        fl: ['id', 'accessControl_ssim'],
+        method: :post
       )
       return solr_docs.map { |d| d['accessControl_ssim']&.first }.compact
     end

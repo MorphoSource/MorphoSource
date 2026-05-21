@@ -22,10 +22,12 @@ module Morphosource
         get_work_ids_by_items
         usage = request.params['usage'].present? ? request.params['usage'] : ''
         usage_list = request.params['usage_list'].present? ? request.params['usage_list'] : ''
+        download_uuid = SecureRandom.uuid
+        session[:download_keys] ||= {}
+        session[:download_keys][download_uuid] = access_control_ids_from_work_ids
         redirect_to main_app.media_download_path(
-          key: access_control_ids_from_work_ids,
           token: current_user.token,
-          download: SecureRandom.uuid,
+          download: download_uuid,
           usage: usage,
           usage_list: usage_list
         )

@@ -5,7 +5,7 @@ class FileSetAttachedEventJob < ContentEventJob
   # Log the event to the fileset's and its container's streams
   def log_event(repo_object)
     repo_object.log_event(event)
-    curation_concern.log_event(event)
+    curation_concern&.log_event(event)
   end
 
   def action
@@ -19,6 +19,7 @@ class FileSetAttachedEventJob < ContentEventJob
   end
 
   def work_link
+    return '' unless curation_concern
     link_to work_title, polymorphic_path(curation_concern)
   end
 
@@ -27,7 +28,7 @@ class FileSetAttachedEventJob < ContentEventJob
   end
 
   def work_title
-    curation_concern.title.first
+    curation_concern&.title&.first
   end
 
   def curation_concern

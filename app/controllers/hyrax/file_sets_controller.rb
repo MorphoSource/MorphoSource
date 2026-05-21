@@ -170,9 +170,15 @@ module Hyrax
       def unlink_valkyrie_file_set_from_af_work(file_set)
         fs_id = file_set.id.to_s
         file_set.member_of.each do |work|
-          work.valkyrie_member_ids = work.valkyrie_member_ids.reject { |id| id.to_s == fs_id }
+          remaining_ids = work.valkyrie_member_ids.reject { |id| id.to_s == fs_id }
+          work.valkyrie_member_ids = remaining_ids
           work.representative_id = nil if work.representative_id.to_s == fs_id
           work.thumbnail_id = nil if work.thumbnail_id.to_s == fs_id
+          # Mirror AF actor behavior: clear remote URL fields when the last file set is removed
+          if remaining_ids.empty?
+            work.remote_origin_url = ""
+            work.remote_manifest_url = ""
+          end
           work.save!
         end
       end

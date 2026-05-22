@@ -16,6 +16,10 @@ module Morphosource
   class MediaDownloadsController < ApplicationController
     include Morphosource::CartItems
 
+    # Access-control keys are always UUIDs. Used to validate keys before interpolating
+    # them into Solr fq strings, guarding against query injection via params[:key].
+    ACCESS_KEY_PATTERN = /\A[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}\z/i
+
     before_action :validate_params, only: [:show]
     before_action :validate_download_hash, only: [:show]
     before_action :validate_user, only: [:show]
@@ -151,7 +155,9 @@ module Morphosource
       # Session-stored keys are used for batch cart downloads (avoids oversized redirect URLs).
       # Direct key[] params are used by the single-media download modal and controller specs.
       def keys
-        @keys ||= session.dig(:download_keys, params[:download]) || Array(params[:key])
+        entry = session.dig(:download_keys, params[:download])
+        raw = entry&.fetch(:keys, nil) || Array(params[:key])
+        @keys ||= raw.select { |k| k.to_s.match?(ACCESS_KEY_PATTERN) }
       end
 
       def download_hash

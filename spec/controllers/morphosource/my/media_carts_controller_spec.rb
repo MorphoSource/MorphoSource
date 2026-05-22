@@ -49,7 +49,7 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
   describe 'GET #download' do
     def download_keys_for_redirect
       uuid = Rack::Utils.parse_query(URI.parse(response.location).query)['download']
-      session[:download_keys][uuid]
+      session[:download_keys][uuid][:keys]
     end
 
     context 'the user uses the item download button to

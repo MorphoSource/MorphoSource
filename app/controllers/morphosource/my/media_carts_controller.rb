@@ -24,10 +24,11 @@ module Morphosource
         usage_list = request.params['usage_list'].present? ? request.params['usage_list'] : ''
         download_uuid = SecureRandom.uuid
         session[:download_keys] ||= {}
-        # Prune entries older than 12 hours. Abandoned downloads are never actively cleaned
-        # up, so this prevents unbounded session growth while keeping recent entries
-        # available for retries and range-request resumes.
+        # Prune entries older than 12 hours, then apply a hard cap as a safety valve.
+        # Abandoned downloads are never actively cleaned up, so this bounds session growth
+        # while keeping recent entries available for retries and range-request resumes.
         session[:download_keys].delete_if { |_, v| v[:at].to_i < 12.hours.ago.to_i }
+        session[:download_keys].shift while session[:download_keys].size >= 20
         session[:download_keys][download_uuid] = { keys: access_control_ids_from_work_ids, at: Time.current.to_i }
         redirect_to main_app.media_download_path(
           key: access_control_ids_from_work_ids,

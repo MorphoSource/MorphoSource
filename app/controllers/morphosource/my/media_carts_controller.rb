@@ -22,6 +22,13 @@ module Morphosource
         get_work_ids_by_items
         usage = request.params['usage'].present? ? request.params['usage'] : ''
         usage_list = request.params['usage_list'].present? ? request.params['usage_list'] : ''
+        download_uuid = SecureRandom.uuid
+        session[:download_keys] ||= {}
+        # Each download stores its keys under a UUID until reset_recaptcha cleans them up
+        # after a completed download. Abandoned downloads are never cleaned up, so cap the
+        # hash to prevent unbounded session growth from stale entries.
+        session[:download_keys].shift while session[:download_keys].size >= 5
+        session[:download_keys][download_uuid] = access_control_ids_from_work_ids
         redirect_to main_app.media_download_path(
           key: access_control_ids_from_work_ids,
           token: current_user.token,

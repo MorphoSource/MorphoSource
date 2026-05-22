@@ -136,8 +136,13 @@ module Morphosource
         # Glob all derivative files stored under the FileSet's ID path in Hyrax.config.derivatives_path
         fs_deriv_size = Morphosource::DerivativePath.derivatives_for_reference(fs.id)
           .map { |p| File.size?(p) }.compact.sum
+          
+        # Glob all derivative files stored under the Media's ID path in Hyrax.config.derivatives_path
+        # This mainly includes user-uploaded 2D thumbnail images
+        m_deriv_size = Morphosource::DerivativePath.derivatives_for_reference(m.id)
+          .map { |p| File.size?(p) }.compact.sum  
 
-        total = binary_size + fs_deriv_size
+        total = binary_size + fs_deriv_size + m_deriv_size
         media_sizes[media_id] = total
         return total
       end

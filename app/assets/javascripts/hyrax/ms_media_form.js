@@ -18,6 +18,32 @@ $( document ).ready(function() {
   if ($('form[id*="edit_media_list"]').length) { return }
   if ($('form[id*="new_media_list"]').length) { return }
 
+  // Lock all form fields for non-admin users on DOI media except the Share and
+  // Preview Settings tabs. Preview Settings (annotations) may still be saved.
+  if ($('[data-doi-locked]').length) {
+    // Lock all tab panes except Share and Preview Settings. Keep the hidden
+    // visibility input enabled so the current value is still submitted.
+    $('.tab-pane').not('#share, #preview-settings')
+      .find('input, textarea, select')
+      .not('#media_download_permission')
+      .prop('disabled', true);
+    $('.tab-pane').not('#share, #preview-settings').find('button').prop('disabled', true);
+
+    // Lock related forms outside the main tab pane (IE, PE, Device, Parent Media, Object).
+    // Use pointer-events + opacity rather than disabling DOM elements to avoid
+    // breaking Select2 widgets (select2('data') returns null on disabled inputs).
+    $('.related_form').not('.share')
+      .css({ 'pointer-events': 'none', 'opacity': '0.65' });
+
+    // If already published, also lock the visibility dropdown so it cannot be changed back to private.
+    // The hidden input stays enabled so the current value is still submitted.
+    if ($('#media_download_permission').val() !== 'private') {
+      $('#media-details .dropdown-toggle')
+        .addClass('disabled')
+        .css('pointer-events', 'none');
+    }
+  }
+
   if ( $('form[id*="edit_media"]').length ||
        $('form[id*="new_media"]').length ) {
 

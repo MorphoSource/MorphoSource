@@ -148,8 +148,10 @@ module Morphosource
         end
       end
 
+      # Session-stored keys are used for batch cart downloads (avoids oversized redirect URLs).
+      # Direct key[] params are used by the single-media download modal and controller specs.
       def keys
-        @keys ||= session.dig(:download_keys, params[:download]) || []
+        @keys ||= session.dig(:download_keys, params[:download]) || Array(params[:key])
       end
 
       def download_hash
@@ -180,6 +182,8 @@ module Morphosource
       def reset_recaptcha
         # this controller doesn't interact with recaptcha (yet!) but this is left in, just in case
         session.delete(:recaptcha_verfied_in_cart)
+        # Session download keys are evicted by the size cap in MediaCartsController, not here.
+        # Deleting on action completion would break download retries and range-request resumes.
       end
 
       # Controller HTTP response methods

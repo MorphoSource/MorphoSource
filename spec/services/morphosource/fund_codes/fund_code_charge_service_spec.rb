@@ -125,6 +125,7 @@ RSpec.describe Morphosource::FundCodes::FundCodeChargeService do
         # Simulate one FileSet derivative on disk (e.g. GLB viewer file)
         allow(Morphosource::DerivativePath).to receive(:derivatives_for_reference).with(fileset_id).and_return(['/derivatives/glb_file.glb'])
         allow(File).to receive(:size?).with('/derivatives/glb_file.glb').and_return(200_000)
+        allow(Morphosource::DerivativePath).to receive(:derivatives_for_reference).with(media_id).and_return([])
       end
 
       it 'falls back to binary + FileSet derivative sizes' do
@@ -150,6 +151,7 @@ RSpec.describe Morphosource::FundCodes::FundCodeChargeService do
       allow(Morphosource::DerivativePath).to receive(:derivatives_for_reference).with(fileset_id).and_return(['/derivatives/mesh.glb', '/derivatives/thumb.jpg'])
       allow(File).to receive(:size?).with('/derivatives/mesh.glb').and_return(100_000)
       allow(File).to receive(:size?).with('/derivatives/thumb.jpg').and_return(150_000)
+      allow(Morphosource::DerivativePath).to receive(:derivatives_for_reference).with(media_id).and_return([])
     end
 
     it 'returns binary + FileSet derivative sizes' do

@@ -156,7 +156,7 @@ module Morphosource
       # Direct key[] params are used by the single-media download modal and controller specs.
       def keys
         entry = session.dig(:download_keys, params[:download])
-        raw = entry&.fetch(:keys, nil) || Array(params[:key])
+        raw = entry&.fetch("keys", nil) || Array(params[:key])
         @keys ||= raw.select { |k| k.to_s.match?(ACCESS_KEY_PATTERN) }
       end
 

@@ -143,7 +143,7 @@ module Morphosource
           docs = ActiveFedora::SolrService.query(
             "*:*",
             fq: ["has_model_ssim:Media", "{!terms f=accessControl_ssim}#{keys.join(',')}"],
-            rows: keys.length,
+            rows: keys.uniq.length,
             fl: ['id'],
             method: :post
           )
@@ -165,8 +165,7 @@ module Morphosource
       end
 
       def validate_download_hash
-        uuid_regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i
-        return head(:bad_request) unless uuid_regex.match?(download_hash.to_s.downcase)
+        return head(:bad_request) unless ACCESS_KEY_PATTERN.match?(download_hash.to_s)
       end
 
       def validate_user

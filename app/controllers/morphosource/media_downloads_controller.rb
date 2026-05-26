@@ -137,7 +137,6 @@ module Morphosource
 
       # Get Media from keys
       def media
-        byebug
         @media ||= if keys.empty?
           []
         else

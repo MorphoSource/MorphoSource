@@ -178,6 +178,11 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
           expect(response).to redirect_to %r(\Ahttp://test.host/download?)
           expect(download_keys_for_redirect).to match_array(work_ids)
         end
+
+        it "does not include access-control keys in the redirect URL" do
+          redirect_params = Rack::Utils.parse_query(URI.parse(response.location).query)
+          expect(redirect_params.keys).not_to include('key', 'key[]')
+        end
       end
     end
   end

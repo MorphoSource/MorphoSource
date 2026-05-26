@@ -137,6 +137,7 @@ module Morphosource
 
       # Get Media from keys
       def media
+        byebug
         @media ||= if keys.empty?
           []
         else
@@ -188,8 +189,6 @@ module Morphosource
       def reset_recaptcha
         # this controller doesn't interact with recaptcha (yet!) but this is left in, just in case
         session.delete(:recaptcha_verfied_in_cart)
-        # Session download keys are evicted by the size cap in MediaCartsController, not here.
-        # Deleting on action completion would break download retries and range-request resumes.
       end
 
       # Controller HTTP response methods

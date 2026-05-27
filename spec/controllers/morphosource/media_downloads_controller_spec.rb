@@ -125,7 +125,7 @@ RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
             work.save
           end
           session[:download_keys] = {
-            download_hash => { keys: [work1.access_control_id, work2.access_control_id], at: Time.current.to_i }
+            download_hash => { "keys" => [work1.access_control_id, work2.access_control_id], "at" => Time.current.to_i }
           }
         end
 

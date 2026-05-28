@@ -7,7 +7,7 @@ module Morphosource
           new(file_metadata).update_parents
         end
 
-        attr_accessor :file_metadata, :file_set, :parents, :field_for_number_of_images, :value_for_number_of_images
+        attr_accessor :file_metadata, :file_set, :parents
 
         def initialize(file_metadata)
           @file_metadata = file_metadata
@@ -40,18 +40,13 @@ module Morphosource
         end
 
         def update_parent(work)
-          if is_dicom?
-            @field_for_number_of_images = :contents_accepted_file_count
-            @value_for_number_of_images = file_metadata.contents_accepted_file_count&.first
-          else
-            @field_for_number_of_images = :number_of_series_related_instances
-            @value_for_number_of_images = file_metadata.number_of_series_related_instances&.first
-          end
+          field_for_images = is_dicom? ? :contents_accepted_file_count : :number_of_series_related_instances
+          value_for_images = file_metadata.send(field_for_images)&.first
 
-          field_map.each do |work_field, file_metadata_field|
+          build_field_map(field_for_images).each do |work_field, file_metadata_field|
             field_value_found = file_metadata.send(file_metadata_field)&.first
             if field_value_found
-              transformed_value = field_transform[work_field]
+              transformed_value = build_field_transform(value_for_images)[work_field]
               work.send("#{work_field}=", transformed_value)
             end
           end
@@ -60,25 +55,25 @@ module Morphosource
           work.save!
         end
 
-        def field_map
+        def build_field_map(field_for_images)
           {
             x_spacing: :pixel_spacing,
             y_spacing: :pixel_spacing,
             z_spacing: :spacing_between_slices,
             unit: :pixel_spacing,
             slice_thickness: :slice_thickness,
-            number_of_images_in_set: @field_for_number_of_images
+            number_of_images_in_set: field_for_images
           }
         end
 
-        def field_transform
+        def build_field_transform(value_for_images)
           {
             x_spacing: [file_metadata.pixel_spacing&.first&.split("\\")&.last],
             y_spacing: [file_metadata.pixel_spacing&.first&.split("\\")&.first],
             z_spacing: [file_metadata.spacing_between_slices&.first],
             unit: ["Mm"],
             slice_thickness: [file_metadata.slice_thickness&.first],
-            number_of_images_in_set: @value_for_number_of_images.to_s
+            number_of_images_in_set: value_for_images.to_s
           }
         end
 

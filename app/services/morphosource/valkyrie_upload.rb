@@ -54,7 +54,7 @@ module Morphosource
 
       Hyrax.publisher.publish("file.uploaded", metadata: saved_metadata, skip_derivatives: skip_derivatives)
       Hyrax.publisher.publish('file.metadata.updated', metadata: saved_metadata, user: user,
-                                                        skip_derivatices: skip_derivatives)
+                                                        skip_derivatives: skip_derivatives)
 
       saved_metadata
     end

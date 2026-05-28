@@ -287,28 +287,33 @@ module Hyrax
           Hyrax.persister.save(resource: self) # self is a Valkyrie resource; self.save raises NoMethodError
         end
         # set_remote_file_health after content_length is set
-        member_of.first&.set_remote_file_health
+        parent&.set_remote_file_health
       end
     end
 
+    # Memoized parent so that is_remote_backed?, has_remote_manifest?,
+    # remote_manifest_url, and remote_origin_url all share a single
+    # Postgres + Solr round-trip per FileSet instance lifetime.
+    def parent
+      @parent ||= member_of.first
+    end
+
     def is_remote_backed?
-      parent = member_of.first
       return false unless parent.present?
       parent.is_remote_backed?
     end
 
     def has_remote_manifest?
-      parent = member_of.first
       return false unless parent.present?
       parent.has_remote_manifest?
     end
 
     def remote_manifest_url
-      member_of.first&.remote_manifest_url
+      parent&.remote_manifest_url
     end
 
     def remote_origin_url
-      member_of.first&.remote_origin_url
+      parent&.remote_origin_url
     end
   end
 end

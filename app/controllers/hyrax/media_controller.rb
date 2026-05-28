@@ -329,18 +329,23 @@ module Hyrax
     def characterize
       if current_user.admin?
         media_work = Media.find(params[:id])
+        file_set = find_media_file_set(media_work)
         # Note: For remote file, the original_file.content is empty, therefore original_file.present? returns false
         if media_work.is_remote_backed?
-          if !media_work.file_sets.first.present?
+          if file_set.nil?
             flash[:error] = "Media has no FileSet. Characterization job not created."
-          elsif JobIoWrapper.find_by(file_set_id: media_work.file_sets.first.id)&.path.present?
-            PrepareCharacterizeJob.perform_later(media_work.file_sets.first.id.to_s)
+          elsif file_set.is_a?(Valkyrie::Resource)
+            # Valkyrie FileSets don't use JobIoWrapper; enqueue directly.
+            PrepareCharacterizeJob.perform_later(file_set.id.to_s)
+            flash[:notice] = "Media characterization job has been started"
+          elsif JobIoWrapper.find_by(file_set_id: file_set.id)&.path.present?
+            PrepareCharacterizeJob.perform_later(file_set.id.to_s)
             flash[:notice] = "Media characterization job has been started"
           else
             flash[:error] = "Characterization job not created. Try deleting and uploading the file again."
           end
-        elsif media_work.file_sets.first.present? && media_work.file_sets.first.original_file.present?
-          PrepareCharacterizeJob.perform_later(media_work.file_sets.first.id.to_s)
+        elsif file_set.present? && (file_set.is_a?(Valkyrie::Resource) || file_set.original_file.present?)
+          PrepareCharacterizeJob.perform_later(file_set.id.to_s)
           flash[:notice] = "Media characterization job has been started"
         else
           flash[:error] = "Media has no FileSet or FileSet has no original file. Characterization job not created."
@@ -353,17 +358,22 @@ module Hyrax
     def create_derivatives
       if current_user.admin?
         media_work = Media.find(params[:id])
+        file_set = find_media_file_set(media_work)
         if media_work.is_remote_backed?
-          if !media_work.file_sets.first.present?
+          if file_set.nil?
             flash[:error] = "Media has no FileSet. Create derivatives job not created."
-          elsif JobIoWrapper.find_by(file_set_id: media_work.file_sets.first.id)&.path.present?
-            PrepareCreateDerivativesJob.perform_later(media_work.file_sets.first.id.to_s)
+          elsif file_set.is_a?(Valkyrie::Resource)
+            # Valkyrie FileSets don't use JobIoWrapper; enqueue directly.
+            PrepareCreateDerivativesJob.perform_later(file_set.id.to_s)
+            flash[:notice] = "Media create derivatives job has been started"
+          elsif JobIoWrapper.find_by(file_set_id: file_set.id)&.path.present?
+            PrepareCreateDerivativesJob.perform_later(file_set.id.to_s)
             flash[:notice] = "Media create derivatives job has been started"
           else
             flash[:error] = "Create derivatives job not created. Try deleting and uploading the file again."
           end
-        elsif media_work.file_sets.first.present? && media_work.file_sets.first.original_file.present?
-          PrepareCreateDerivativesJob.perform_later(media_work.file_sets.first.id.to_s)
+        elsif file_set.present? && (file_set.is_a?(Valkyrie::Resource) || file_set.original_file.present?)
+          PrepareCreateDerivativesJob.perform_later(file_set.id.to_s)
           flash[:notice] = "Media create derivatives job has been started"
         else
           flash[:error] = "Media has no FileSet or FileSet has no original file, create derivatives job not started"
@@ -373,6 +383,18 @@ module Hyrax
     end
 
     private
+
+      # Returns the first FileSet for a media work, checking AF file_sets first,
+      # then falling back to Valkyrie query for Valkyrie-backed FileSets.
+      def find_media_file_set(media_work)
+        media_work.file_sets.first ||
+          begin
+            id = media_work.valkyrie_member_ids.first
+            Hyrax.query_service.find_by(id: Valkyrie::ID.new(id)) if id.present?
+          rescue Valkyrie::Persistence::ObjectNotFoundError
+            nil
+          end
+      end
 
       def set_doi_edit_flash
         return if current_user&.admin?

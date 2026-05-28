@@ -1140,4 +1140,145 @@ RSpec.describe Hyrax::MediaController, type: :controller do
       end
     end
   end
+
+  describe '#characterize' do
+    routes { Rails.application.routes }
+
+    let(:admin_user) { FactoryBot.create(:admin) }
+
+    before { sign_in admin_user }
+
+    context 'with an AF-backed media (file_sets returns a FileSet)' do
+      let(:af_file_set) { double('af_file_set', id: 'af-fs-id', original_file: double('orig')) }
+      let(:media_work)  { double('media_work', file_sets: [af_file_set], is_remote_backed?: false, valkyrie_member_ids: []) }
+
+      before do
+        allow(Media).to receive(:find).with(params[:id] || anything).and_return(media_work)
+        allow(Media).to receive(:find).and_return(media_work)
+      end
+
+      it 'enqueues PrepareCharacterizeJob and sets flash notice' do
+        expect(PrepareCharacterizeJob).to receive(:perform_later).with('af-fs-id')
+        get :characterize, params: { id: 'media-1' }
+        expect(flash[:notice]).to eq('Media characterization job has been started')
+      end
+    end
+
+    context 'with a Valkyrie-backed media (file_sets is empty, valkyrie_member_ids present)' do
+      let(:val_file_set) { instance_double(Hyrax::FileSet, id: Valkyrie::ID.new('val-fs-id')) }
+      let(:media_work)   { double('media_work', file_sets: [], is_remote_backed?: false, valkyrie_member_ids: [Valkyrie::ID.new('val-fs-id')]) }
+
+      before do
+        allow(Media).to receive(:find).and_return(media_work)
+        allow(Hyrax.query_service).to receive(:find_by)
+          .with(id: Valkyrie::ID.new('val-fs-id'))
+          .and_return(val_file_set)
+      end
+
+      it 'enqueues PrepareCharacterizeJob via Valkyrie file set and sets flash notice' do
+        expect(PrepareCharacterizeJob).to receive(:perform_later).with('val-fs-id')
+        get :characterize, params: { id: 'media-1' }
+        expect(flash[:notice]).to eq('Media characterization job has been started')
+      end
+    end
+
+    context 'with a Valkyrie-backed remote media (is_remote_backed? true)' do
+      let(:val_file_set) { instance_double(Hyrax::FileSet, id: Valkyrie::ID.new('val-fs-id')) }
+      let(:media_work)   { double('media_work', file_sets: [], is_remote_backed?: true, valkyrie_member_ids: [Valkyrie::ID.new('val-fs-id')]) }
+
+      before do
+        allow(Media).to receive(:find).and_return(media_work)
+        allow(Hyrax.query_service).to receive(:find_by)
+          .with(id: Valkyrie::ID.new('val-fs-id'))
+          .and_return(val_file_set)
+      end
+
+      it 'enqueues PrepareCharacterizeJob directly (skips JobIoWrapper check) and sets flash notice' do
+        expect(PrepareCharacterizeJob).to receive(:perform_later).with('val-fs-id')
+        get :characterize, params: { id: 'media-1' }
+        expect(flash[:notice]).to eq('Media characterization job has been started')
+      end
+    end
+
+    context 'when no FileSet exists' do
+      let(:media_work) { double('media_work', file_sets: [], is_remote_backed?: false, valkyrie_member_ids: []) }
+
+      before { allow(Media).to receive(:find).and_return(media_work) }
+
+      it 'sets a flash error and does not enqueue' do
+        expect(PrepareCharacterizeJob).not_to receive(:perform_later)
+        get :characterize, params: { id: 'media-1' }
+        expect(flash[:error]).to be_present
+      end
+    end
+  end
+
+  describe '#create_derivatives' do
+    routes { Rails.application.routes }
+
+    let(:admin_user) { FactoryBot.create(:admin) }
+
+    before { sign_in admin_user }
+
+    context 'with an AF-backed media (file_sets returns a FileSet)' do
+      let(:af_file_set) { double('af_file_set', id: 'af-fs-id', original_file: double('orig')) }
+      let(:media_work)  { double('media_work', file_sets: [af_file_set], is_remote_backed?: false, valkyrie_member_ids: []) }
+
+      before { allow(Media).to receive(:find).and_return(media_work) }
+
+      it 'enqueues PrepareCreateDerivativesJob and sets flash notice' do
+        expect(PrepareCreateDerivativesJob).to receive(:perform_later).with('af-fs-id')
+        get :create_derivatives, params: { id: 'media-1' }
+        expect(flash[:notice]).to eq('Media create derivatives job has been started')
+      end
+    end
+
+    context 'with a Valkyrie-backed media (file_sets is empty, valkyrie_member_ids present)' do
+      let(:val_file_set) { instance_double(Hyrax::FileSet, id: Valkyrie::ID.new('val-fs-id')) }
+      let(:media_work)   { double('media_work', file_sets: [], is_remote_backed?: false, valkyrie_member_ids: [Valkyrie::ID.new('val-fs-id')]) }
+
+      before do
+        allow(Media).to receive(:find).and_return(media_work)
+        allow(Hyrax.query_service).to receive(:find_by)
+          .with(id: Valkyrie::ID.new('val-fs-id'))
+          .and_return(val_file_set)
+      end
+
+      it 'enqueues PrepareCreateDerivativesJob via Valkyrie file set and sets flash notice' do
+        expect(PrepareCreateDerivativesJob).to receive(:perform_later).with('val-fs-id')
+        get :create_derivatives, params: { id: 'media-1' }
+        expect(flash[:notice]).to eq('Media create derivatives job has been started')
+      end
+    end
+
+    context 'with a Valkyrie-backed remote media (is_remote_backed? true)' do
+      let(:val_file_set) { instance_double(Hyrax::FileSet, id: Valkyrie::ID.new('val-fs-id')) }
+      let(:media_work)   { double('media_work', file_sets: [], is_remote_backed?: true, valkyrie_member_ids: [Valkyrie::ID.new('val-fs-id')]) }
+
+      before do
+        allow(Media).to receive(:find).and_return(media_work)
+        allow(Hyrax.query_service).to receive(:find_by)
+          .with(id: Valkyrie::ID.new('val-fs-id'))
+          .and_return(val_file_set)
+      end
+
+      it 'enqueues PrepareCreateDerivativesJob directly (skips JobIoWrapper check) and sets flash notice' do
+        expect(PrepareCreateDerivativesJob).to receive(:perform_later).with('val-fs-id')
+        get :create_derivatives, params: { id: 'media-1' }
+        expect(flash[:notice]).to eq('Media create derivatives job has been started')
+      end
+    end
+
+    context 'when no FileSet exists' do
+      let(:media_work) { double('media_work', file_sets: [], is_remote_backed?: false, valkyrie_member_ids: []) }
+
+      before { allow(Media).to receive(:find).and_return(media_work) }
+
+      it 'sets a flash error and does not enqueue' do
+        expect(PrepareCreateDerivativesJob).not_to receive(:perform_later)
+        get :create_derivatives, params: { id: 'media-1' }
+        expect(flash[:error]).to be_present
+      end
+    end
+  end
 end

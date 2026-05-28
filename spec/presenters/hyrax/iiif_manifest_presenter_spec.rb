@@ -86,15 +86,21 @@ RSpec.describe Hyrax::IiifManifestPresenter do
       context 'with a Valkyrie FileSet (has_model_ssim: Hyrax::FileSet)' do
         let(:model) { SolrDocument.new('has_model_ssim' => ['Hyrax::FileSet'], 'id' => 'val-fs-id') }
         let(:parent_media) { instance_double(Media) }
+        let(:file_set)     { instance_double(Hyrax::FileSet, parent: parent_media) }
 
         before do
-          allow(Hyrax::FileSet).to receive(:find).with('val-fs-id').and_return(
-            instance_double(Hyrax::FileSet, parent: parent_media)
-          )
+          allow(Hyrax.query_service).to receive(:find_by)
+            .with(id: Valkyrie::ID.new('val-fs-id'))
+            .and_return(file_set)
         end
 
-        it 'returns parent via Hyrax::FileSet.find' do
+        it 'returns parent via Hyrax.query_service.find_by' do
           expect(presenter.parent_work).to eq(parent_media)
+        end
+
+        it 'does not call Hyrax::FileSet.find (which does not exist)' do
+          expect(Hyrax::FileSet).not_to receive(:find)
+          presenter.parent_work
         end
       end
     end

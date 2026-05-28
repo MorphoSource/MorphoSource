@@ -327,7 +327,9 @@ module Hyrax
         @parent_work ||= if Array(model[:has_model_ssim]).include?('FileSet')
           ::FileSet.find(model.id).parent
         else
-          Hyrax::FileSet.find(model.id).parent
+          # Hyrax::FileSet is a Valkyrie::Resource — no .find class method exists.
+          # Use the query service to locate the resource and delegate to ArResourceParentship#parent.
+          Hyrax.query_service.find_by(id: Valkyrie::ID.new(model.id)).parent
         end
       end
 

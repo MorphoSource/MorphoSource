@@ -19,7 +19,7 @@ module Morphosource
         parents.concat(ActiveFedora::Base.where(valkyrie_member_ids_ssim: id.to_s).to_a)
       end
 
-      return parents
+      parents.uniq { |p| p.id.to_s }
     end
 
     def parent(include_af_works: true)

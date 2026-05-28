@@ -47,5 +47,23 @@ RSpec.describe Morphosource::ArResourceParentship do
       expect(parent_ids).to include(af_parent.id)
       expect(parent_ids).to include(valkyrie_parent.id.to_s)
     end
+
+    it 'deduplicates parents that appear in both Postgres and Solr' do
+      # Simulate the hybrid migration window: the AF parent has been saved with
+      # valkyrie_member_ids (so it appears in Solr via valkyrie_member_ids_ssim)
+      # and also appears in the Postgres inverse-reference index.
+      af_parent.members = [valkyrie_child]
+      af_parent.save!
+
+      postgres_result = double('pg_parent', id: af_parent.id)
+      allow(Hyrax.query_service.postgres_service)
+        .to receive(:find_inverse_references_by)
+        .with(id: valkyrie_child.id.to_s, property: :member_ids)
+        .and_return([postgres_result])
+
+      # Both sources return the same parent ID; member_of must return it only once.
+      result = valkyrie_child.member_of
+      expect(result.map { |p| p.id.to_s }.tally.values).to all(eq(1))
+    end
   end
 end

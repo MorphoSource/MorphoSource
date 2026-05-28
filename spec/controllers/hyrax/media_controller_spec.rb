@@ -1146,16 +1146,18 @@ RSpec.describe Hyrax::MediaController, type: :controller do
 
     let(:admin_user) { FactoryBot.create(:admin) }
 
-    before { sign_in admin_user }
+    before do
+      sign_in admin_user
+      # load_and_authorize_resource runs for custom actions; stub authorize! so
+      # the double-based media_work passes CanCan without hitting the database.
+      allow(controller).to receive(:authorize!).and_return(true)
+    end
 
     context 'with an AF-backed media (file_sets returns a FileSet)' do
       let(:af_file_set) { double('af_file_set', id: 'af-fs-id', original_file: double('orig')) }
       let(:media_work)  { double('media_work', file_sets: [af_file_set], is_remote_backed?: false, valkyrie_member_ids: []) }
 
-      before do
-        allow(Media).to receive(:find).with(params[:id] || anything).and_return(media_work)
-        allow(Media).to receive(:find).and_return(media_work)
-      end
+      before { allow(Media).to receive(:find).and_return(media_work) }
 
       it 'enqueues PrepareCharacterizeJob and sets flash notice' do
         expect(PrepareCharacterizeJob).to receive(:perform_later).with('af-fs-id')
@@ -1165,10 +1167,12 @@ RSpec.describe Hyrax::MediaController, type: :controller do
     end
 
     context 'with a Valkyrie-backed media (file_sets is empty, valkyrie_member_ids present)' do
-      let(:val_file_set) { instance_double(Hyrax::FileSet, id: Valkyrie::ID.new('val-fs-id')) }
+      let(:val_file_set) { double('val_file_set', id: Valkyrie::ID.new('val-fs-id')) }
       let(:media_work)   { double('media_work', file_sets: [], is_remote_backed?: false, valkyrie_member_ids: [Valkyrie::ID.new('val-fs-id')]) }
 
       before do
+        allow(val_file_set).to receive(:is_a?).with(Valkyrie::Resource).and_return(true)
+        allow(val_file_set).to receive(:present?).and_return(true)
         allow(Media).to receive(:find).and_return(media_work)
         allow(Hyrax.query_service).to receive(:find_by)
           .with(id: Valkyrie::ID.new('val-fs-id'))
@@ -1183,10 +1187,12 @@ RSpec.describe Hyrax::MediaController, type: :controller do
     end
 
     context 'with a Valkyrie-backed remote media (is_remote_backed? true)' do
-      let(:val_file_set) { instance_double(Hyrax::FileSet, id: Valkyrie::ID.new('val-fs-id')) }
+      let(:val_file_set) { double('val_file_set', id: Valkyrie::ID.new('val-fs-id')) }
       let(:media_work)   { double('media_work', file_sets: [], is_remote_backed?: true, valkyrie_member_ids: [Valkyrie::ID.new('val-fs-id')]) }
 
       before do
+        allow(val_file_set).to receive(:is_a?).with(Valkyrie::Resource).and_return(true)
+        allow(val_file_set).to receive(:present?).and_return(true)
         allow(Media).to receive(:find).and_return(media_work)
         allow(Hyrax.query_service).to receive(:find_by)
           .with(id: Valkyrie::ID.new('val-fs-id'))
@@ -1218,7 +1224,10 @@ RSpec.describe Hyrax::MediaController, type: :controller do
 
     let(:admin_user) { FactoryBot.create(:admin) }
 
-    before { sign_in admin_user }
+    before do
+      sign_in admin_user
+      allow(controller).to receive(:authorize!).and_return(true)
+    end
 
     context 'with an AF-backed media (file_sets returns a FileSet)' do
       let(:af_file_set) { double('af_file_set', id: 'af-fs-id', original_file: double('orig')) }
@@ -1234,10 +1243,12 @@ RSpec.describe Hyrax::MediaController, type: :controller do
     end
 
     context 'with a Valkyrie-backed media (file_sets is empty, valkyrie_member_ids present)' do
-      let(:val_file_set) { instance_double(Hyrax::FileSet, id: Valkyrie::ID.new('val-fs-id')) }
+      let(:val_file_set) { double('val_file_set', id: Valkyrie::ID.new('val-fs-id')) }
       let(:media_work)   { double('media_work', file_sets: [], is_remote_backed?: false, valkyrie_member_ids: [Valkyrie::ID.new('val-fs-id')]) }
 
       before do
+        allow(val_file_set).to receive(:is_a?).with(Valkyrie::Resource).and_return(true)
+        allow(val_file_set).to receive(:present?).and_return(true)
         allow(Media).to receive(:find).and_return(media_work)
         allow(Hyrax.query_service).to receive(:find_by)
           .with(id: Valkyrie::ID.new('val-fs-id'))
@@ -1252,10 +1263,12 @@ RSpec.describe Hyrax::MediaController, type: :controller do
     end
 
     context 'with a Valkyrie-backed remote media (is_remote_backed? true)' do
-      let(:val_file_set) { instance_double(Hyrax::FileSet, id: Valkyrie::ID.new('val-fs-id')) }
+      let(:val_file_set) { double('val_file_set', id: Valkyrie::ID.new('val-fs-id')) }
       let(:media_work)   { double('media_work', file_sets: [], is_remote_backed?: true, valkyrie_member_ids: [Valkyrie::ID.new('val-fs-id')]) }
 
       before do
+        allow(val_file_set).to receive(:is_a?).with(Valkyrie::Resource).and_return(true)
+        allow(val_file_set).to receive(:present?).and_return(true)
         allow(Media).to receive(:find).and_return(media_work)
         allow(Hyrax.query_service).to receive(:find_by)
           .with(id: Valkyrie::ID.new('val-fs-id'))

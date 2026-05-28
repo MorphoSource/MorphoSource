@@ -424,7 +424,7 @@ module Hyrax
         # Previous uploads
         self.curation_concern.file_sets.each do |file_set|
           if file_set.original_file.present?
-            files << file_set.original_file.original_filename
+            files << file_set.original_file.original_name
           # if a recent upload hasn't been processed yet, use the title instead.
           elsif ( file_set.title.present? || file_set.label.present? )
             files << ( file_set.title&.first || file_set.label )

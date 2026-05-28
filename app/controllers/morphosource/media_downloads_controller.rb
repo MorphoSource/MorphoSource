@@ -219,7 +219,7 @@ module Morphosource
           file_set.file_size&.first.present? &&
           file_set.crc32&.first.present? &&
           file_set.original_file.uri.present? &&
-          file_set.original_file.original_filename.present?
+          file_set.original_file.original_name.present?
         ) 
           return file_set
         else
@@ -233,7 +233,7 @@ module Morphosource
           (original_file = file_set.original_file).present? &&
           file_set.file_size&.first.present? &&
           file_set.crc32&.first.present? &&
-          original_file.original_filename.present? &&
+          original_file.original_name.present? &&
           original_file.uri.present?
         ) 
           return file_set, original_file
@@ -524,7 +524,7 @@ module Morphosource
       end
 
       def output_filename(file_set, media_id)
-        file_name = file_set.original_file.original_filename
+        file_name = file_set.original_file.original_name
         if file_set.is_remote_backed? && !File.extname(file_name).present?
           file_name = file_set.label || ""
         end

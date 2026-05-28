@@ -69,6 +69,47 @@ RSpec.describe Hyrax::Actors::CreateWithRemoteFilesActor do
           middleware.public_send(mode, env)
         end
       end
+
+      # Guard: a Media work that already has a FileSet must not get a second one
+      # on re-save/update. Without this guard, editing and re-saving a remote-backed
+      # media would enqueue AttachRemoteFilesToWorkJob again.
+      context "when the work is media with an existing file set" do
+        before do
+          allow(work).to receive(:media?).and_return(true)
+          allow(work).to receive(:file_sets).and_return(double(count: 1))
+        end
+
+        it "does not enqueue the job and returns true" do
+          expect(AttachRemoteFilesToWorkJob).not_to receive(:perform_later)
+          expect(middleware.public_send(mode, env)).to be true
+        end
+      end
+
+      context "when the work is media with no existing file sets" do
+        before do
+          allow(work).to receive(:media?).and_return(true)
+          allow(work).to receive(:file_sets).and_return(double(count: 0))
+        end
+
+        it "enqueues the job" do
+          expect(AttachRemoteFilesToWorkJob).to receive(:perform_later)
+            .with(work, remote_files)
+          middleware.public_send(mode, env)
+        end
+      end
+
+      context "when the work is not a media (e.g. ProcessingEvent)" do
+        before do
+          allow(work).to receive(:media?).and_return(false)
+          allow(work).to receive(:file_sets).and_return(double(count: 1))
+        end
+
+        it "enqueues the job regardless of existing file sets" do
+          expect(AttachRemoteFilesToWorkJob).to receive(:perform_later)
+            .with(work, remote_files)
+          middleware.public_send(mode, env)
+        end
+      end
     end
   end
 end

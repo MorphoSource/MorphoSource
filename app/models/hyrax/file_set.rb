@@ -284,7 +284,7 @@ module Hyrax
           self.mime_type_of_remote = proxy.mime_type
           proxy.mime_type = "message/external-body; access-type=URL; URL=\"#{import_url}\""
           Hyrax.persister.save(resource: proxy)
-          self.save
+          Hyrax.persister.save(resource: self) # self is a Valkyrie resource; self.save raises NoMethodError
         end
         # set_remote_file_health after content_length is set
         member_of.first&.set_remote_file_health

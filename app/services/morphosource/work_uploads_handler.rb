@@ -65,6 +65,10 @@ module Morphosource
         end
         work.valkyrie_member_ids = (work.valkyrie_member_ids.to_a + @new_member_ids).uniq
         work.save!
+        # Explicitly re-index after save so valkyrie_member_ids_ssim is in Solr
+        # immediately. Without this, is_remote_backed? on the FileSet returns false
+        # because the AF Solr query in ArResourceParentship#member_of finds nothing.
+        work.update_index
         event_payloads.each do |payload|
           payload.delete(:job).enqueue
           Hyrax.publisher.publish('file.set.attached', payload)

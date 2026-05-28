@@ -50,6 +50,11 @@ module Hyrax
 
       def attach_files(env, remote_files)
         return true if remote_files.blank?
+        # Mirror the guard in CreateWithFilesActor: skip if the work already has a file set,
+        # preventing a duplicate on re-save/update.
+        if env.curation_concern.media? && env.curation_concern.file_sets.count > 0
+          return true
+        end
         AttachRemoteFilesToWorkJob.perform_later(env.curation_concern, remote_files)
         true
       end

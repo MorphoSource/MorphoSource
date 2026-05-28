@@ -22,9 +22,12 @@ class ValkyrieCharacterizationJob < HeavyJob
     return if skip_derivatives
 
     file_metadata = Hyrax.custom_queries.find_file_metadata_by(id: file_metadata_id)
-
-    # Todovalk: Working copy handling may be needed for S3 in future
-    # For now, storage adapter provides file access directly
+    file_set = Hyrax.query_service.find_by(id: file_metadata.file_set_id)
+    # Belt-and-suspenders: remote-manifest FileSets must not trigger characterization,
+    # which would call file_metadata.file -> LazyHTTPFile#disk_path -> ensure_downloaded!
+    # and download the large remote file. The skip_derivatives flag covers explicit
+    # callers, but the primary file.uploaded event path does not pass it.
+    return if file_set.has_remote_manifest?
 
     characterize(file_metadata)
   end

@@ -461,6 +461,28 @@ RSpec.describe ValkyrieCharacterizationJob do
       end
     end
 
+    context 'remote-manifest guard' do
+      let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file, fixture_path: 'bunny/bunny.ply') }
+      let(:file_metadata) { get_file_metadata(file_set) }
+
+      before do
+        allow_any_instance_of(Hyrax::FileSet).to receive(:has_remote_manifest?).and_return(true)
+      end
+
+      it 'skips characterization without accessing the storage adapter' do
+        expect(Hyrax.storage_adapter).not_to receive(:find_by)
+        described_class.perform_now(file_metadata.id.to_s)
+      end
+
+      it 'does not publish file.characterized' do
+        listener = Hyrax::Specs::AppendingSpyListener.new
+        Hyrax.publisher.subscribe(listener)
+        described_class.perform_now(file_metadata.id.to_s)
+        Hyrax.publisher.unsubscribe(listener)
+        expect(listener.file_characterized).to be_empty
+      end
+    end
+
     context 'event publishing' do
       let(:listener) { Hyrax::Specs::AppendingSpyListener.new }
       let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file, fixture_path: 'bunny/bunny.ply') }

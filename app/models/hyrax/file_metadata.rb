@@ -228,7 +228,7 @@ module Hyrax
       id
     end
 
-    def valid?
+    def file_content_valid?
       file.valid?(size: recorded_size.first, digests: { sha256: checksum&.first&.sha256 })
     end
 

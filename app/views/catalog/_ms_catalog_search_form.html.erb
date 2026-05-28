@@ -1,5 +1,5 @@
-<%= form_tag url_for(action: :index), method: :get, class: "form-horizontal search-form ms-catalog-search", id: "search-form-header", role: "search" do %>
-  <%= render_hash_as_hidden_fields(search_state.params_for_search.except(:q, :search_field, :qt, :page, :utf8)) %>
+<%= form_tag main_app.media_search_path, method: :get, class: "form-horizontal search-form ms-catalog-search", id: "search-form-header", role: "search" do %>
+  <%= render_hash_as_hidden_fields(search_state.params_for_search.except(:q, :search_field, :qt, :page, :utf8, :user)) %>
   <%= hidden_field_tag :search_field, 'all_fields' %>
   <div class="form-group">
 

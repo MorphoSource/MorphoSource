@@ -101,6 +101,8 @@
           <% if current_user.admin? %>
             <div class="content-block">
                 <h2>Admin Settings</h2>
+                <label class="col-form-label text" for="collection_visibility">Visibility</label>
+                <%= render 'form_visibility_component_for_collection', f: f %>
                 <%= link_to t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.label'),
                 hyrax.dashboard_collection_path(@presenter),
                 title: t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.label'),

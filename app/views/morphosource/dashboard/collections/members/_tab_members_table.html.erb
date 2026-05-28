@@ -33,7 +33,7 @@
             <td style="width:20%;"></td>
             <% else %>
             <%= form_with(method: :post, url: main_app.update_collection_groups_path(@collection), html: { id: 'user-participants-form' }) do |f| %>
-              <% if access == 'managers' && group.users.count < 2 %>
+              <% if access == 'managers' && group.users.count < 2 && !current_user.admin? %>
                 <td style="width:20%;">
                   <%= f.select 'collection_roles[new_access]', {}, { prompt: t('.select_a_role') }, disabled: true, class: 'form-control' %>
                 </td>

@@ -1,4 +1,4 @@
-<div class='edit_media'>
+<div class='edit_media'<% if @presenter.doi.present? && !current_user.admin? %> data-doi-locked="true"<% end %>>
 <%= simple_form_for [main_app, @form],
                     #builder: Hyrax::ShowcaseFormBuilder,
                     wrapper: :showcase_default,

@@ -75,7 +75,6 @@ class ValkyrieRemoteIngestJob < Hyrax::ApplicationJob
     @operation = Hyrax::Operation.create!(user: @user, operation_type: "Attach Remote File")
     @operation.performing!
 
-
     if @file_set.is_remote_backed? # If FileSet is remote backed, this is remote scenario 3 or 4
       # If FileSet label filename doesn't have extension, try to find one via Content-Type.
       # Save the label to DB so it persists after the find_by reload below.

@@ -140,6 +140,29 @@ RSpec.describe ValkyrieCreateDerivativesJob do
     end
 
     # -----------------------------------------------------------------------
+    # Remote-manifest guard: FileSets with a remote manifest must not trigger
+    # a file download via disk_path. The guard returns before any derivative
+    # creation so the storage adapter is never asked to fetch the file.
+    # -----------------------------------------------------------------------
+    describe 'remote-manifest guard' do
+      let(:file_set) do
+        FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file,
+                                   fixture_path: 'bunny/bunny.ply')
+      end
+      let(:file_metadata) { get_file_metadata(file_set) }
+
+      before do
+        set_mime_type(file_metadata, 'application/ply')
+        allow_any_instance_of(Hyrax::FileSet).to receive(:has_remote_manifest?).and_return(true)
+      end
+
+      it 'skips derivative creation without accessing the storage adapter' do
+        expect(Hyrax.storage_adapter).not_to receive(:find_by)
+        described_class.perform_now(file_set.id.to_s, file_metadata.id.to_s)
+      end
+    end
+
+    # -----------------------------------------------------------------------
     # Video: returns early when FFmpeg is disabled
     # -----------------------------------------------------------------------
     describe 'video with ffmpeg disabled' do

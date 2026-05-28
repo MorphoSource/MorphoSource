@@ -15,7 +15,12 @@ class ValkyrieCharacterizationJob < HeavyJob
   class_attribute :characterization_options
   self.characterization_options = Hyrax.config.characterization_options
 
-  def perform(file_metadata_id)
+  # @param skip_derivatives [Boolean] when true, skip characterization entirely;
+  #   propagated from ValkyrieUpload via the file.uploaded event, but must be
+  #   passed explicitly on re-enqueues or direct calls (e.g. MigrateExternalFilesToValkyrieJob)
+  def perform(file_metadata_id, skip_derivatives = false)
+    return if skip_derivatives
+
     file_metadata = Hyrax.custom_queries.find_file_metadata_by(id: file_metadata_id)
 
     # Todovalk: Working copy handling may be needed for S3 in future

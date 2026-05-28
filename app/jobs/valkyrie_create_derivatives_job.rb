@@ -15,6 +15,10 @@ class ValkyrieCreateDerivativesJob < HeavyJob
     return if file_metadata.video? && !Hyrax.config.enable_ffmpeg
 
     file_set = Hyrax.query_service.find_by(id: file_set_id)
+    # Belt-and-suspenders: remote-manifest FileSets must not have their large
+    # remote files downloaded; the slide-series service handles them separately.
+    return if file_set.has_remote_manifest?
+
     file = Hyrax.storage_adapter.find_by(id: file_metadata.file_identifier)
 
     Hyrax::DerivativeService

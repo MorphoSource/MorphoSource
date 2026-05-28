@@ -436,6 +436,31 @@ RSpec.describe ValkyrieCharacterizationJob do
       end
     end
 
+    context 'skip_derivatives flag' do
+      let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file, fixture_path: 'bunny/bunny.ply') }
+      let(:file_metadata) { get_file_metadata(file_set) }
+
+      it 'returns early without characterizing when skip_derivatives is true' do
+        expect(described_class.new).not_to receive(:characterize)
+        described_class.perform_now(file_metadata.id.to_s, true)
+      end
+
+      it 'does not publish file.characterized when skip_derivatives is true' do
+        listener = Hyrax::Specs::AppendingSpyListener.new
+        Hyrax.publisher.subscribe(listener)
+        described_class.perform_now(file_metadata.id.to_s, true)
+        Hyrax.publisher.unsubscribe(listener)
+        expect(listener.file_characterized).to be_empty
+      end
+
+      it 'runs normally when skip_derivatives is false (default)' do
+        # Verify the default path still works — characterization completes
+        expect { described_class.perform_now(file_metadata.id.to_s) }.not_to raise_error
+        updated = Hyrax.custom_queries.find_file_metadata_by(id: file_metadata.id)
+        expect(updated.point_count).to be_present
+      end
+    end
+
     context 'event publishing' do
       let(:listener) { Hyrax::Specs::AppendingSpyListener.new }
       let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file, fixture_path: 'bunny/bunny.ply') }

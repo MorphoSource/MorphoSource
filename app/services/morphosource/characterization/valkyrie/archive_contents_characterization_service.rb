@@ -159,7 +159,7 @@ module Morphosource
           extracted_files = Morphosource::Files::ArchiveService.new(source_file_path).extract_archive(tmp_dir_path)
           content_path = extracted_files.find { |f| f.include? file_name } # representative file in extracted files
           if content_path
-            return open(content_path)
+            return File.open(content_path)
           else
             raise "Previously identified representative file (#{file_name}) not found in archive when extracting files"
           end

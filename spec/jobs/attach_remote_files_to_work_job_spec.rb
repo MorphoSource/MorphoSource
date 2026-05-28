@@ -142,6 +142,19 @@ RSpec.describe AttachRemoteFilesToWorkJob do
       expect(work.file_sets.count).to eq 1
     end
 
+    it "passes is_remote_backed as a positional argument to FileSetActor (not a keyword)" do
+      # Ruby 3.2 raises ArgumentError: unknown keyword: use_valkyrie if the old
+      # `use_valkyrie: use_valkyrie` keyword form is used against a positional-only initializer.
+      expect(Hyrax::Actors::FileSetActor).to receive(:new) do |_fs, _user, is_remote_backed|
+        expect(is_remote_backed).to eq(false)
+        actor_double = instance_double(Hyrax::Actors::FileSetActor)
+        allow(actor_double).to receive(:create_metadata)
+        allow(actor_double).to receive(:attach_to_work)
+        actor_double
+      end
+      described_class.perform_now(work, remote_files)
+    end
+
     context "when deposited on behalf of another user (proxy)" do
       before do
         work.on_behalf_of = user2.user_key

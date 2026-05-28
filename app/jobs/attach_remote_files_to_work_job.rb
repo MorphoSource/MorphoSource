@@ -68,7 +68,7 @@ class AttachRemoteFilesToWorkJob < Hyrax::ApplicationJob
     else
       file_set = ::FileSet.new(import_url: import_url, label: file_name, mime_type_of_remote: mime_type_of_remote)
     end
-    actor = Hyrax::Actors::FileSetActor.new(file_set, user, use_valkyrie: use_valkyrie)
+    actor = Hyrax::Actors::FileSetActor.new(file_set, user, use_valkyrie)
     actor.create_metadata(visibility: work.visibility)
     actor.attach_to_work(work)
     file_set.save! if file_set.respond_to?(:save!)

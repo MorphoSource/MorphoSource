@@ -120,6 +120,7 @@ class ValkyrieRemoteIngestJob < Hyrax::ApplicationJob
     return if File.exist?(path)
     FileUtils.mkdir_p(File.dirname(path))
     request_headers = headers.merge(Hyrax.config.remote_request_headers)
+                             .merge(open_timeout: 30, read_timeout: 60)
     IO.copy_stream(URI.open(uri.to_s, request_headers), path)
   rescue StandardError => e
     send_error(e.message)

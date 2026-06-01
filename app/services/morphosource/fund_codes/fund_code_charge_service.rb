@@ -126,23 +126,18 @@ module Morphosource
       end
 
       # Fallback for media whose all_files_file_size_lts is not yet indexed in Solr.
-      # Computes size as primary binary + FileSet derivatives (e.g. GLB viewer, thumbnail, MP4).
-      # All MorphoSource derivatives are written under the FileSet ID path by MsFileSetDerivativesService.
+      # Reads FileSet binary + derivative sizes from FileSetSizeInfo rather than
+      # re-computing from source records or the filesystem.
       def query_media_filesize(media_id)
-        return unless (m = Media.find_by(id: media_id)).present?
-        return unless (fs = m.file_sets.first).present?
+        # FileSetSizeInfo.sum_file_size covers binary + all FileSet-level derivatives.
+        fs_total = FileSetSizeInfo.where(media_id: media_id).sum(:sum_file_size)
 
-        binary_size = fs.original_file&.size || 0
-        # Glob all derivative files stored under the FileSet's ID path in Hyrax.config.derivatives_path
-        fs_deriv_size = Morphosource::DerivativePath.derivatives_for_reference(fs.id)
+        # Media-level derivatives (e.g. user-uploaded 2D thumbnails stored under the
+        # Media ID path) are still globbed from disk and added on top.
+        m_deriv_size = Morphosource::DerivativePath.derivatives_for_reference(media_id)
           .map { |p| File.size?(p) }.compact.sum
-          
-        # Glob all derivative files stored under the Media's ID path in Hyrax.config.derivatives_path
-        # This mainly includes user-uploaded 2D thumbnail images
-        m_deriv_size = Morphosource::DerivativePath.derivatives_for_reference(m.id)
-          .map { |p| File.size?(p) }.compact.sum  
 
-        total = binary_size + fs_deriv_size + m_deriv_size
+        total = fs_total + m_deriv_size
         media_sizes[media_id] = total
         return total
       end

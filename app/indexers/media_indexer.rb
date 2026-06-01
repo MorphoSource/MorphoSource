@@ -204,33 +204,25 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['human_readable_type_ssi'] = object.human_readable_type
       solr_doc['publisher_ssim'] = object.publisher
 
-      # file sizes
+      # File sizes — read from FileSetSizeInfo rather than re-computing from Solr/filesystem.
+      # sum_file_size covers binary + all FileSet derivatives; media-level derivatives
+      # (e.g. user-uploaded thumbnails stored under the Media ID path) are still globbed
+      # from disk and added on top.
+      fs_size_infos = FileSetSizeInfo.where(media_id: object.id)
+      media_deriv_size = Morphosource::DerivativePath.derivatives_for_reference(object.id)
+                           .map { |p| File.size?(p) }.compact.sum
+      solr_doc['all_files_file_size_lts'] = fs_size_infos.sum(:sum_file_size) + media_deriv_size
+      solr_doc['media_file_size_lts']     = fs_size_infos.sum(:binary_file_size)
+
+      # File name and mime type still come from the FileSet Solr documents.
       file_sets = object.file_set_ids.present? ?
         SolrDocument.where(
           { 'id' => object.file_set_ids.join(' OR '), 'has_model_ssim' => 'FileSet' },
-          opts: { fl: [ 'id', 'file_size_lts', 'label_tesim', 'mime_type_ssi' ] }
+          opts: { fl: [ 'id', 'label_tesim', 'mime_type_ssi' ] }
         ) : []
 
-      # Add file size for fileset binary and derivatives
-      all_files_file_size = file_sets.reduce(0) do |sum, fs|
-        fs_deriv_size = Morphosource::DerivativePath.derivatives_for_reference(fs['id']).map { |p|
-          File.size?(p)
-        }.compact.sum
-
-        sum + ( fs['file_size_lts'] || 0 ) + fs_deriv_size
-      end
-
-      # Add file size for media derivatives
-      all_files_file_size += Morphosource::DerivativePath.derivatives_for_reference(object.id).map { |p|
-        File.size?(p)
-      }.compact.sum
-
-      solr_doc['all_files_file_size_lts'] = all_files_file_size
-
-      # File name, binary file size, and mime type
       solr_doc['media_file_name_tesim'] = file_sets.flat_map { |fs| Array(fs['label_tesim']) }
-      solr_doc['media_file_size_lts'] = file_sets.sum { |fs| fs['file_size_lts'] || 0 }
-      solr_doc['media_mime_type_ssim'] = file_sets.map { |fs| fs['mime_type_ssi'] }.compact
+      solr_doc['media_mime_type_ssim']  = file_sets.map { |fs| fs['mime_type_ssi'] }.compact
 
     end
   end

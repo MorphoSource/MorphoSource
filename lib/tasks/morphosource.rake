@@ -1003,4 +1003,67 @@ namespace :morphosource do
   task :clear_time_until_maintenance_in_minutes => :environment do
     Hyrax.config.redis_connection.del("morphosource:maintenance_time") if Hyrax.config.redis_connection
   end
+
+  desc "Verify FileSetSizeInfo rows against source records (Solr + filesystem). " \
+       "Logs discrepancies between stored and computed sizes. Safe to run in any environment."
+  task verify_file_set_size_infos: :environment do
+    solr         = Morphosource::SolrService.new
+    discrepancies = 0
+    checked       = 0
+    page          = 0
+    page_size     = 500
+
+    loop do
+      docs = solr.get_docs(
+        nil,
+        rows: page_size,
+        start: page * page_size,
+        fq: ['has_model_ssim:FileSet'],
+        fl: ['id', 'file_size_lts', 'label_tesim']
+      )
+      break if docs.empty?
+
+      docs.each do |doc|
+        fs_id = doc['id']
+        row   = FileSetSizeInfo.find_by(file_set_id: fs_id)
+
+        unless row
+          Rails.logger.warn "[verify_file_set_size_infos] MISSING FileSetSizeInfo for FileSet #{fs_id}"
+          discrepancies += 1
+          next
+        end
+
+        # Recompute binary size from Solr and derivative sizes from disk.
+        expected_binary = (doc['file_size_lts'] || 0).to_i
+        deriv_paths     = Morphosource::DerivativePath.derivatives_for_reference(fs_id)
+        expected_deriv  = deriv_paths.map { |p| File.size?(p) }.compact.sum
+        expected_total  = expected_binary + expected_deriv
+
+        if row.binary_file_size != expected_binary
+          Rails.logger.warn "[verify_file_set_size_infos] binary_file_size mismatch for FileSet #{fs_id}: " \
+                            "stored=#{row.binary_file_size} expected=#{expected_binary}"
+          discrepancies += 1
+        end
+
+        if row.summed_derivatives_file_size != expected_deriv
+          Rails.logger.warn "[verify_file_set_size_infos] summed_derivatives_file_size mismatch for FileSet #{fs_id}: " \
+                            "stored=#{row.summed_derivatives_file_size} expected=#{expected_deriv}"
+          discrepancies += 1
+        end
+
+        if row.sum_file_size != expected_total
+          Rails.logger.warn "[verify_file_set_size_infos] sum_file_size mismatch for FileSet #{fs_id}: " \
+                            "stored=#{row.sum_file_size} expected=#{expected_total}"
+          discrepancies += 1
+        end
+
+        checked += 1
+      end
+
+      page += 1
+    end
+
+    Rails.logger.info "[verify_file_set_size_infos] Done. Checked: #{checked}, discrepancies: #{discrepancies}."
+    puts "verify_file_set_size_infos complete. Checked: #{checked}, discrepancies: #{discrepancies}."
+  end
 end

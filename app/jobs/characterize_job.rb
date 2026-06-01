@@ -11,6 +11,16 @@ class CharacterizeJob < HeavyJob
     raise "#{file_set.class.characterization_proxy} was not found for FileSet #{file_set.id}" unless file_set.characterization_proxy?
     filepath = Hyrax::WorkingDirectory.find_or_retrieve(file_id, file_set.id) unless filepath && File.exist?(filepath)
 
+    # Provisional file size update (file.uploaded equivalent) — overwritten by
+    # the authoritative update below once characterization completes.
+    if File.exist?(filepath)
+      file_set.update_size_info(
+        media_id:         file_set.parent&.id,
+        binary_file_name: file_set.label || File.basename(filepath),
+        binary_file_size: File.size(filepath)
+      )
+    end rescue Rails.logger.error("FileSetSizeInfo provisional update failed for #{file_set.id}: #{$!.message}")
+
     # Calculate Crc32, needed for file download
     CharacterizeCrc32Job.perform_later(file_set, file_id, filepath)
 
@@ -55,11 +65,25 @@ class CharacterizeJob < HeavyJob
       Morphosource::Works::FileSetCharacterizationParentUpdateService.run(file_set)
     end
 
+    # Authoritative file size update (file.characterized equivalent) — uses the
+    # size reported by the characterization proxy after all tool passes complete.
+    begin
+      auth_size = file_set.characterization_proxy.file_size&.first&.to_i || 0
+      file_set.update_size_info(
+        media_id:         file_set.parent&.id,
+        binary_file_name: file_set.label || File.basename(filepath),
+        binary_file_size: auth_size
+      )
+    rescue => e
+      Rails.logger.error "FileSetSizeInfo authoritative update failed for #{file_set.id}: #{e.message}"
+    end
+
     # Enqueued before CreateDerivativesJob so derivative sizes may not yet be on disk when
     # UpdateDataAllocationStorageJob queries all_files_file_size_lts. This is an accepted
     # approximation: storage_current_gb is display-only and not used by the billing cycle,
     # which calculates storage independently from FileSet file_size_lts.
     UpdateFileSetDataAllocationJob.perform_later(file_set)
+
     CreateDerivativesJob.perform_later(file_set, file_id, filepath)
   end
 

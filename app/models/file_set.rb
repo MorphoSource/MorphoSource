@@ -9,6 +9,24 @@ class FileSet < ActiveFedora::Base
 
   include Morphosource::FileSetBehavior
 
+  # ── FileSetSizeInfo integration ────────────────────────────────────────────
+
+  # data_allocation_id is authoritative in FileSetSizeInfo; this reader avoids
+  # an extra Fedora property by going directly to the AR table.
+  def data_allocation_id
+    FileSetSizeInfo.find_by(file_set_id: id.to_s)&.data_allocation_id
+  end
+
+  # AR-backed method to create or update this FileSet's FileSetSizeInfo row.
+  def update_size_info(attrs = {})
+    FileSetSizeInfo.upsert_for_file_set(self, attrs)
+  end
+
+  # Transactional lifecycle: ensure the FileSetSizeInfo row exists whenever
+  # this FileSet is created, and is destroyed when the FileSet is destroyed.
+  after_create  :create_size_info_row
+  after_destroy :destroy_size_info_row
+
   # MS_CUSTOMIZATION : override FileSetIndexer
   #self.indexer = ::FileSetIndexer
   self.indexer = ::MsFileSetIndexer
@@ -118,6 +136,23 @@ class FileSet < ActiveFedora::Base
   def media?
     false
   end
+
+  private
+
+  def create_size_info_row
+    ActiveRecord::Base.transaction do
+      FileSetSizeInfo.find_or_create_by!(file_set_id: id.to_s)
+    end
+  rescue => e
+    Rails.logger.error "Failed to create FileSetSizeInfo for FileSet #{id}: #{e.message}"
+    raise
+  end
+
+  def destroy_size_info_row
+    FileSetSizeInfo.find_by(file_set_id: id.to_s)&.destroy
+  end
+
+  public
 
   def processing_event?
     false

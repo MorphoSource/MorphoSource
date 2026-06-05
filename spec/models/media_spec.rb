@@ -673,4 +673,31 @@ describe 'description attachment methods' do
       expect(media.agreement_attachment).to eq(media.agreement_attachment_url)
     end
   end
+
+  describe '#destroy_file_sets (after_destroy)' do
+    let(:fs1) { instance_double('FileSet', id: 'fs-destroy-1') }
+    let(:fs2) { instance_double('FileSet', id: 'fs-destroy-2') }
+    let(:media_instance) { Media.new }
+
+    before do
+      allow(media_instance).to receive(:file_set_ids).and_return(['fs-destroy-1', 'fs-destroy-2'])
+      allow(FileSet).to receive(:find).with('fs-destroy-1').and_return(fs1)
+      allow(FileSet).to receive(:find).with('fs-destroy-2').and_return(fs2)
+      allow(fs1).to receive(:destroy)
+      allow(fs2).to receive(:destroy)
+    end
+
+    it 'destroys each associated FileSet' do
+      expect(fs1).to receive(:destroy)
+      expect(fs2).to receive(:destroy)
+      media_instance.send(:destroy_file_sets)
+    end
+
+    it 'continues if one FileSet raises (logs error, does not propagate)' do
+      allow(fs1).to receive(:destroy).and_raise(StandardError, 'Fedora error')
+      expect(Rails.logger).to receive(:error).with(/fs-destroy-1/)
+      expect { media_instance.send(:destroy_file_sets) }.not_to raise_error
+      expect(fs2).to have_received(:destroy)
+    end
+  end
 end

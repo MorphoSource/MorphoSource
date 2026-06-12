@@ -8,38 +8,30 @@ RSpec.describe Morphosource::CrossrefDoiMinter do
 
 
   describe 'Media configuration methods' do
-    before do
-      subject.instance_variable_set(:@model, "Media")
-    end
-
     it 'returns correct required_params for Media' do
-      expect(Morphosource::CrossrefDoiMinter.required_params).to eq(%w[doi_batch_id title doi url resource_type timestamp publication_year])
+      expect(Morphosource::CrossrefDoiMinter.required_params("Media")).to eq(%w[doi_batch_id title doi url resource_type timestamp publication_year])
     end
 
     it 'returns correct template_path for Media' do
-      expect(Morphosource::CrossrefDoiMinter.template_path).to eq(Rails.root.join("data", "xmls", "doi.xml.erb"))
+      expect(Morphosource::CrossrefDoiMinter.template_path("Media")).to eq(Rails.root.join("data", "xmls", "doi.xml.erb"))
     end
 
     it 'returns correct type_letter for Media' do
-      expect(Morphosource::CrossrefDoiMinter.type_letter).to eq("M")
+      expect(Morphosource::CrossrefDoiMinter.type_letter("Media")).to eq("M")
     end
   end
 
   describe 'MediaList configuration methods' do
-    before do
-      subject.instance_variable_set(:@model, "MediaList")
-    end
-
     it 'returns correct required_params for MediaList' do
-      expect(Morphosource::CrossrefDoiMinter.required_params).to eq(%w[doi_batch_id title doi url timestamp publication_year])
+      expect(Morphosource::CrossrefDoiMinter.required_params("MediaList")).to eq(%w[doi_batch_id title doi url timestamp publication_year])
     end
 
     it 'returns correct template_path for MediaList' do
-      expect(Morphosource::CrossrefDoiMinter.template_path).to eq(Rails.root.join("data", "xmls", "list_doi.xml.erb"))
+      expect(Morphosource::CrossrefDoiMinter.template_path("MediaList")).to eq(Rails.root.join("data", "xmls", "list_doi.xml.erb"))
     end
 
     it 'returns correct type_letter for MediaList' do
-      expect(Morphosource::CrossrefDoiMinter.type_letter).to eq("L")
+      expect(Morphosource::CrossrefDoiMinter.type_letter("MediaList")).to eq("L")
     end
   end
 
@@ -53,7 +45,6 @@ RSpec.describe Morphosource::CrossrefDoiMinter do
     end
 
     it 'validates Media and MediaList deposits against their own Crossref schema versions' do
-      described_class.instance_variable_set(:@model, "Media")
       media_xml = described_class.generate_metadata_deposit_xml(
         '000123',
         {
@@ -63,10 +54,10 @@ RSpec.describe Morphosource::CrossrefDoiMinter do
           'organization' => 'MorphoSource',
           'timestamp' => 1_700_000_000,
           'publication_year' => 2024
-        }
+        },
+        model: "Media"
       )
 
-      described_class.instance_variable_set(:@model, "MediaList")
       media_list_xml = described_class.generate_metadata_deposit_xml(
         '000456',
         {
@@ -76,7 +67,8 @@ RSpec.describe Morphosource::CrossrefDoiMinter do
           'child_media' => [{ 'doi' => '10.1234/M123' }],
           'timestamp' => 1_700_000_001,
           'publication_year' => 2024
-        }
+        },
+        model: "MediaList"
       )
 
       expect(media_xml).to include('xmlns="http://www.crossref.org/schema/4.4.2"')

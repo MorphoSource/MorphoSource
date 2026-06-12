@@ -12,7 +12,7 @@ module Morphosource
 
       def filter_by_occurrence_id(solr_parameters)
         solr_parameters[:fq] ||= []
-        solr_parameters[:fq] << "occurrence_id_ssim:\"#{occurrence_id.gsub('"', '\\"')}\""
+        solr_parameters[:fq] << "occurrence_id_ssim:\"#{occurrence_id.gsub('\\', '\\\\').gsub('"', '\\"')}\""
       end
     end
   end

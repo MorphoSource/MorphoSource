@@ -9,7 +9,7 @@ class Morphosource::Catalog::MediaCatalogSearchBuilder < Morphosource::CatalogSe
   def add_object_occurrence_id_filter(solr_parameters)
     return unless (val = blacklight_params[:object_occurrence_id]).present?
     solr_parameters[:fq] ||= []
-    solr_parameters[:fq] << "occurrence_id_ssim:\"#{val.gsub('"', '\\"')}\""
+    solr_parameters[:fq] << "occurrence_id_ssim:\"#{val.gsub('\\', '\\\\').gsub('"', '\\"')}\""
   end
 
   private

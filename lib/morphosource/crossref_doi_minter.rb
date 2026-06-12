@@ -9,7 +9,7 @@ module Morphosource
     extend ActiveSupport::Autoload
 
     SUBMISSION_PATH = 'servlet/deposit'
-    @@xsd_schema = nil
+    @@xsd_schemas = {}
 
     # Used to transform params hash into binding for ERB template rendering
     class CrossrefMetadataTemplate < OpenStruct
@@ -37,8 +37,10 @@ module Morphosource
     # See: https://www.crossref.org/education/content-registration/crossrefs-metadata-deposit-schema/metadata-deposit-schema-4-4-2/
     def self.validate_metadata_deposit_xml(input_xml)
       # memoized XSD parsing, since parsing the XSD is somewhat time-consuming
-      @@xsd_schema ||= Nokogiri::XML::Schema(File.open(schema_path))
-      validation_errors = @@xsd_schema.validate(Nokogiri::XML(input_xml))
+      # Cache schemas by path because Media and MediaList deposits use different
+      # Crossref schema versions.
+      xsd_schema = (@@xsd_schemas[schema_path.to_s] ||= Nokogiri::XML::Schema(File.open(schema_path)))
+      validation_errors = xsd_schema.validate(Nokogiri::XML(input_xml))
       if validation_errors.empty?
         return input_xml
       else

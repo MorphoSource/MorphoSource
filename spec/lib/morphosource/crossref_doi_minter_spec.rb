@@ -2,6 +2,10 @@
 require 'rails_helper'
 
 RSpec.describe Morphosource::CrossrefDoiMinter do
+  before do
+    described_class.class_variable_set(:@@xsd_schemas, {})
+  end
+
 
   describe 'Media configuration methods' do
     before do
@@ -36,6 +40,47 @@ RSpec.describe Morphosource::CrossrefDoiMinter do
 
     it 'returns correct type_letter for MediaList' do
       expect(Morphosource::CrossrefDoiMinter.type_letter).to eq("L")
+    end
+  end
+
+  describe '.generate_metadata_deposit_xml' do
+    around do |example|
+      original_shoulder = ENV['CROSSREF_DOI_SHOULDER']
+      ENV['CROSSREF_DOI_SHOULDER'] = '10.1234'
+      example.run
+    ensure
+      ENV['CROSSREF_DOI_SHOULDER'] = original_shoulder
+    end
+
+    it 'validates Media and MediaList deposits against their own Crossref schema versions' do
+      described_class.instance_variable_set(:@model, "Media")
+      media_xml = described_class.generate_metadata_deposit_xml(
+        '000123',
+        {
+          'title' => 'Example media',
+          'url' => 'https://example.test/media/123',
+          'resource_type' => 'Dataset',
+          'organization' => 'MorphoSource',
+          'timestamp' => 1_700_000_000,
+          'publication_year' => 2024
+        }
+      )
+
+      described_class.instance_variable_set(:@model, "MediaList")
+      media_list_xml = described_class.generate_metadata_deposit_xml(
+        '000456',
+        {
+          'title' => 'Example media list',
+          'url' => 'https://example.test/media-lists/456',
+          'organization' => 'MorphoSource',
+          'child_media' => [{ 'doi' => '10.1234/M123' }],
+          'timestamp' => 1_700_000_001,
+          'publication_year' => 2024
+        }
+      )
+
+      expect(media_xml).to include('xmlns="http://www.crossref.org/schema/4.4.2"')
+      expect(media_list_xml).to include('xmlns="http://www.crossref.org/schema/5.4.0"')
     end
   end
 end

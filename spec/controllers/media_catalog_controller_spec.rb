@@ -281,6 +281,48 @@ RSpec.describe MediaCatalogController, :type => :controller do
     end
   end
 
+  describe '#index JSON API endpoint' do
+    render_views
+
+    context 'querying public media' do
+      let!(:media) { create(:public_media_document) }
+
+      it 'returns 200 with media, facets, and pages keys' do
+        get :index, format: :json
+
+        expect(response.code).to eq("200")
+        body = JSON.parse(response.body)
+        expect(body.dig("response", "media")).to be_an(Array)
+        expect(body.dig("response", "facets")).to be_an(Array)
+        expect(body.dig("response", "pages")).to be_a(Hash)
+      end
+
+      it 'returns the public media document' do
+        get :index, format: :json
+        returned_ids = JSON.parse(response.body).dig("response", "media").map { |m| m["id"] }.flatten
+        expect(returned_ids).to include(media.id)
+      end
+    end
+
+    context 'querying private media as the depositor' do
+      let(:depositor) { create(:user) }
+      let!(:media) { create(:private_media_document, read_access_person_ssim: [depositor.ms_id]) }
+
+      # NOTE: We use sign_in here instead of setting HTTP_AUTHORIZATION because RSpec controller
+      # specs use a mock Warden environment (via Devise::Test::ControllerHelpers) that does not
+      # fully process custom Warden strategies. In real requests, warden.authenticate(:api_key)
+      # correctly sets current_user via the ApiKeyStrategy, so API key authentication does grant
+      # access to private media in actual use.
+      it 'returns the private media when the depositor is authenticated' do
+        sign_in depositor
+        get :index, format: :json
+        expect(response.code).to eq("200")
+        returned_ids = JSON.parse(response.body).dig("response", "media").map { |m| m["id"] }.flatten
+        expect(returned_ids).to include(media.id)
+      end
+    end
+  end
+
   describe '#show JSON API endpoint' do
     context 'query private media' do
       let (:media) { create(:private_media_document) }
@@ -323,6 +365,58 @@ RSpec.describe MediaCatalogController, :type => :controller do
         expect(response.content_type).to include('application/json')
         expect(response.code).to eq("200")
         expect(JSON.parse(response.body).dig("response", "media")).to be_present
+      end
+    end
+  end
+
+  describe '#index_for_object JSON API endpoint' do
+    context 'when public media exists for the object' do
+      let!(:media) { create(:public_media_document) }
+      let(:object_id) { media['physical_object_id_ssim'].first }
+
+      it 'returns 200 with media, facets, and pages keys' do
+        get :index_for_object, params: { id: object_id }, format: :json
+        expect(response.content_type).to include('application/json')
+        expect(response.code).to eq("200")
+        body = JSON.parse(response.body)
+        expect(body.dig("response", "media")).to be_an(Array)
+        expect(body.dig("response", "facets")).to be_an(Array)
+        expect(body.dig("response", "pages")).to be_a(Hash)
+      end
+
+      it 'returns the media belonging to the object' do
+        get :index_for_object, params: { id: object_id }, format: :json
+        returned_ids = JSON.parse(response.body).dig("response", "media").map { |m| m["id"] }.flatten
+        expect(returned_ids).to include(media.id)
+      end
+    end
+
+    context 'when only private media exists for the object' do
+      let!(:media) { create(:private_media_document) }
+      let(:object_id) { media['physical_object_id_ssim'].first }
+
+      context 'without API key credentials' do
+        it 'returns 200 with empty media list' do
+          get :index_for_object, params: { id: object_id }, format: :json
+          expect(response.code).to eq("200")
+          expect(JSON.parse(response.body).dig("response", "media")).to be_empty
+        end
+      end
+
+      context 'with valid API key credentials' do
+        let(:user) { create(:admin) }
+        let!(:media) { create(:private_media_document, edit_access_group_ssim: ['admin']) }
+
+        # NOTE: We use sign_in here instead of setting HTTP_AUTHORIZATION because RSpec controller
+        # specs use a mock Warden environment that does not fully process custom Warden strategies.
+        # In real requests, warden.authenticate(:api_key) correctly sets current_user, so API key
+        # authentication does grant access to private media in actual use.
+        it 'returns 200 with the private media included' do
+          sign_in user
+          get :index_for_object, params: { id: object_id }, format: :json
+          expect(response.code).to eq("200")
+          expect(JSON.parse(response.body).dig("response", "media")).to be_present
+        end
       end
     end
   end

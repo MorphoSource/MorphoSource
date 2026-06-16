@@ -12,9 +12,7 @@ on:
 
 jobs:
   claude-review:
-    if: |
-      contains(github.event.pull_request.body, '@claude') ||
-      contains(join(github.event.pull_request.requested_reviewers.*.login, ','), 'claude')
+    if: false # disabled — re-enable when ready
     runs-on: ubuntu-latest
     permissions:
       contents: read

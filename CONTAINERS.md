@@ -14,7 +14,7 @@ You'll also need to set up `credentials.env`, and can optionally customize confi
 
 ### Credentials
 
-In the `vendor/docker` directory, there is a `credentials.env-example` file. Copy this file and rename it `credentials.env`. Your `vendor/docker/credentials.env` should look like this: 
+In the `vendor/docker` directory, there is a `credentials.env-example` file. Copy this file and rename it `credentials.env`. Your `vendor/docker/credentials.env` should look like this:
 
 ```
 # Postgres DB user and pass
@@ -34,7 +34,7 @@ RECAPTCHA_SITE_KEY=
 RECAPTCHA_SECRET_KEY=
 ```
 
-All of these fields should be completed to provide basic authentication credentials for your instance. Since the Docker instance will be creating a Postgres database, a Fedora/FCRepo repository, and the MorphoSource web application, the various usernames and passwords can be anything you choose. The `MS_INIT_USR` should be in the format of an email address, but even a fake email like `admin@email.com` can work. 
+All of these fields should be completed to provide basic authentication credentials for your instance. Since the Docker instance will be creating a Postgres database, a Fedora/FCRepo repository, and the MorphoSource web application, the various usernames and passwords can be anything you choose. The `MS_INIT_USR` should be in the format of an email address, but even a fake email like `admin@email.com` can work.
 
 You'll also need to create Recaptcha keys for your server hostname if you wish to download files from the repository instance. Julie can provide Recaptcha keys for "localhost" dev environments to MorphoSource team members. We are working to make this optional and not mandatory for MorphoSource in the near future, but for the moment it is required.
 
@@ -68,13 +68,6 @@ docker-compose up -d # Start containers
 docker-compose down  # Stop and remove containers
 ```
 
-There is also a deployment profile that uses an Apache reverse proxy to expose services using URL endpoints, which most closely matches the production deployment used by MorphoSource.org. In this profile, the main web app is accessed at http://<host_name>, Solr is accessed at http://<host_name>/solr, and Fedora is accessed at http://<host_name>/fcrepo. By default, the main web app is also still accessible at http://<host_name>:3000, and you should probably comment this out in `docker-compose.yml` if using the Apache profile. The Apache server can also be used to deploy MorphoSource with HTTPS/SSL, if you have certificates pre-configured for your host server (see below). Note: This profile is not currently functional for Macs using Apple Silicon, and is best suited for Linux deployments.
-
-```
-docker-compose --profile apache up -d # Start containers
-docker-compose --profile apache down  # Stop and remove containers
-```
-
 There is also a test profile used to run automated tests when doing development on the MorphoSource application. If you're doing development on MorphoSource using Docker, there is a separate documentation file with specific guides and tips for this purpose.
 
 Finally, accessing the interactive Rails console (for technical site administration) is straightforward:
@@ -90,12 +83,13 @@ bundle exec rails c
 * `app_worker` - Very similar to app container, except this container has third-party tools for file metadata characterization and web preview derivative generation downloaded and installed. If trying to diagnose or debug an issue with characterization or derivatives, attach to this container.
 * `app_test` - By default, this container will not be created or started. It is used by developers for running automated tests, and can be accessed by using the `test` container profile. This container is identical to app_worker in build.
 * `db_migrate` - Identical to app container in build. This container is used to create initial Postgres databases and seed Postgres/Fedora/Solr with necessary initial data, such as the default Hyrax admin set. It also creates the initial MorphoSource admin user. It waits for Postgres/Fedora/Solr to become accessible, carries out setup steps, and then exits. Because of this, it's normal for this to be the only container that has exited even while the rest of the server proceeds on. Further, These setup steps are idempotent, it does not matter how many times this container runs in the case of container restarts. If you update MorphoSource application code, this container will also take care of DB migrations.
+* `db_migrate_test` - Like `db_migrate`, but scoped to the test database. Only created when using the `test` profile.
+* `lightbox` - Runs the Lightbox 3D preview creator service used for creating 2D preview images of 3D model files.
 * `fcrepo`
 * `solr`
 * `postgres`
 * `memcached`
 * `redis`
-* `apache`
 
 #### Volumes
 
@@ -105,52 +99,13 @@ While a number of volumes will be created, most will not be synced with location
 * `./vendor/docker/fcrepo/fedora.xml:/var/lib/jetty/webapps/fedora.xml` - Fedora config XML
 * `./solr/conf:/core_config/conf` - Solr config files
 
-If using the Apache profile, there will be one or two additional synced volumes (1 for HTTP, 2 for HTTPS).
-
-* `./vendor/docker/apache/vhost.conf:/vhosts/vhost.conf:ro` - Apache virtual host
-* `./vendor/docker/apache/certs:/certs` - Optional SSL certs, must be named server.crt and server.key
-
-#### Configuring HTTPS/SSL
-
-To configure HTTPS with the Apache profile, there are a few configuration steps that must be followed. This assumes that you already have SSL certificate and private key files pre-configured for your host.
-
-1. Copy your SSL cert files to the following location. Please note they must be renamed to `server.crt` and `server.key`
-
-```
-cp path\to\your\certfile path\to\MorphoSource_SF\vendor\docker\apache\certs\server.crt
-cp path\to\your\keyfile  path\to\MorphoSource_SF\vendor\docker\apache\certs\server.key
-```
-
-2. In `docker-compose.yml` for the `apache` service, uncomment the certs volume and change the virtual host config file reference from `vhost.conf` to `ssl-vhost.conf`. Your service definition should look like the following example.
-
-```
- apache:
-    image: 'bitnami/apache:latest'
-    container_name: apache
-    user: root
-    ports:
-      - '80:80'
-      - '443:443'
-    env_file:
-      - ./vendor/docker/docker-compose.env
-    profiles:
-      - apache
-    volumes:
-    - ./vendor/docker/apache/ssl-vhost.conf:/vhosts/vhost.conf:ro
-    - ./vendor/docker/apache/certs:/certs
-    networks:
-      - morphosource
-```
-
 ## Built With
 
-* [MorphoSource 2.2.0](https://github.com/MorphoSource/MorphoSource_SF)
 * [Fedora FCRepo 4.7.5](https://github.com/orgs/samvera/packages/container/package/fcrepo4)
-* [Solr 7.7.3](https://hub.docker.com/_/solr)
-* [Postgres](https://hub.docker.com/_/postgres)
-* [Memcached](https://hub.docker.com/r/bitnami/memcached)
+* [Solr 8.11.2](https://hub.docker.com/_/solr)
+* [Postgres 16.9](https://hub.docker.com/_/postgres)
+* [Memcached](https://hub.docker.com/_/memcached)
 * [Redis](https://hub.docker.com/_/redis)
-* [Apache](https://hub.docker.com/r/bitnami/apache)
 
 ## Find Us
 

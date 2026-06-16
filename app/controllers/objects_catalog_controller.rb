@@ -2,6 +2,8 @@
 class ObjectsCatalogController < CatalogController
   include CatalogControllerRestApiBehavior
 
+  before_action :authenticate_api_key_optional, only: [:show_by_occurrence_id]
+
   configure_blacklight do |config|
     config.search_builder_class = Morphosource::Catalog::ObjectsCatalogSearchBuilder
     # disable thumbnails
@@ -83,6 +85,24 @@ class ObjectsCatalogController < CatalogController
         qf: "#{all_names} file_format_tesim all_text_timv id",
         pf: title_name.to_s
       }
+    end
+  end
+
+  def show_by_occurrence_id
+    @response, @document_list = search_service.search_results do |_|
+      Morphosource::Catalog::ObjectsByOccurrenceIdSearchBuilder.new(
+        scope: self,
+        occurrence_id: params[:occurrence_id]
+      ).rows(1)
+    end
+
+    return render_json_by_http_code(404) if @document_list.empty?
+
+    @document = @document_list.first
+    respond_to do |format|
+      format.json do
+        render json: { response: { @document.has_model.first.underscore => @document.to_semantic_values } }
+      end
     end
   end
 

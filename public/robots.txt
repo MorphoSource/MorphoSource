@@ -1,75 +1,16 @@
+# MorphoSource robots.txt
+# For the full automated-agent access policy, see /llms.txt.
+#
+# Web crawlers: only the public REST API (/api/) and IIIF Presentation
+# manifests (/manifests/) are available for programmatic access.
+# All other pages are blocked.
+#
+# Note: /download, /downloads, /uv, and /uv.html are accessible to
+# end-user applications and browsers but are not intended for crawlers.
+
 User-agent: *
-Disallow: /catalog/
-Disallow: /browse/taxonomies
-Disallow: /browse/projects
-Disallow: /browse/teams
-Disallow: /browse/organizations
-Disallow: /media_catalog/facet
-Disallow: /objects_catalog/facet
-Disallow: /*_paging
-Disallow: /sequential_section_lists
-#
-# The following pages are allowed but query parameters for search are disallowed
-#
-# All project pages
-#
-Allow: /projects/
-Disallow: /projects/*?*
-Allow: /projects/*?utf8=*&locale=
-Disallow: /projects/*?utf8=*&locale=*&*
-Allow: /projects/*?locale=
-Disallow: /projects/*?locale=*&*
-#
-# All team pages
-#
-Allow: /teams/
-Disallow: /teams/*?*
-Allow: /teams/*?utf8=*&locale=
-Disallow: /teams/*?utf8=*&locale=*&*
-Allow: /teams/*?locale=
-Disallow: /teams/*?locale=*&*
-#
-# All organization pages
-#
-Allow: /concern/organizations/
-Disallow: /concern/organizations/*?*
-Allow: /concern/organizations/*?utf8=*&locale=
-Disallow: /concern/organizations/*?utf8=*&locale=*&*
-Allow: /concern/organizations/*?locale=
-Disallow: /concern/organizations/*?locale=*&*
-#
-# All organization collection pages
-#
-Allow: /organizations/
-Disallow: /organizations/*?*
-Allow: /organizations/*?utf8=*&locale=
-Disallow: /organizations/*?utf8=*&locale=*&*
-Allow: /organizations/*?locale=
-Disallow: /organizations/*?locale=*&*
-# 
-# All media list pages
-# 
-Allow: /media-lists/
-Disallow: /media-lists/*?*
-Allow: /media-lists/*?utf8=*&locale=
-Disallow: /media-lists/*?utf8=*&locale=*&*
-Allow: /media-lists/*?locale=
-Disallow: /media-lists/*?locale=*&*
-#
-# All sequential section list pages
-# 
-Allow: /sequential-section-lists/
-Disallow: /sequential-section-lists/*?*
-Allow: /sequential-section-lists/*?utf8=*&locale=
-Disallow: /sequential-section-lists/*?utf8=*&locale=*&*
-Allow: /sequential-section-lists/*?locale=
-Disallow: /sequential-section-lists/*?locale=*&*
-#
-# All collection pages
-#
-Allow: /collections/
-Disallow: /collections/*?*
-Allow: /collections/*?utf8=*&locale=
-Disallow: /collections/*?utf8=*&locale=*&*
-Allow: /collections/*?locale=
-Disallow: /collections/*?locale=*&*
+Disallow: /
+Allow: /robots.txt
+Allow: /llms.txt
+Allow: /api/
+Allow: /manifests/

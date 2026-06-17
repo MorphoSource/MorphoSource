@@ -38,6 +38,26 @@ RSpec.describe FileSetSizeInfo do
       end
     end
 
+    context 'when a concurrent insert causes RecordNotUnique' do
+      it 'retries by finding and updating the winning row' do
+        # Simulate race: first save! raises RecordNotUnique, then find_by! returns the existing row
+        FileSetSizeInfo.create!(file_set_id: 'fs-race', binary_file_size: 100)
+        call_count = 0
+        allow_any_instance_of(FileSetSizeInfo).to receive(:save!).and_wrap_original do |method, *args|
+          call_count += 1
+          if call_count == 1
+            raise ActiveRecord::RecordNotUnique, 'Duplicate entry'
+          else
+            method.call(*args)
+          end
+        end
+
+        row = FileSetSizeInfo.upsert_for_file_set('fs-race', binary_file_size: 5000)
+        expect(row.binary_file_size).to eq(5000)
+        expect(FileSetSizeInfo.where(file_set_id: 'fs-race').count).to eq(1)
+      end
+    end
+
     context 'when file_set argument responds to id' do
       let(:file_set) { instance_double('FileSet', id: 'fs-002') }
 

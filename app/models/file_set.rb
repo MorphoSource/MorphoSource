@@ -142,8 +142,9 @@ class FileSet < ActiveFedora::Base
   def create_size_info_row
     FileSetSizeInfo.find_or_create_by!(file_set_id: id.to_s)
   rescue => e
+    # Do not re-raise — FileSet is already persisted in Fedora at this point.
+    # The listener's on_object_deposited provides a second chance to create the row.
     Rails.logger.error "Failed to create FileSetSizeInfo for FileSet #{id}: #{e.message}"
-    raise
   end
 
   def destroy_size_info_row

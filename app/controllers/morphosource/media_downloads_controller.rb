@@ -16,6 +16,10 @@ module Morphosource
   class MediaDownloadsController < ApplicationController
     include Morphosource::CartItems
 
+    # Access-control keys are always UUIDs. Used to validate keys before interpolating
+    # them into Solr fq strings, guarding against query injection via params[:key].
+    ACCESS_KEY_PATTERN = /\A[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}\z/i
+
     before_action :validate_params, only: [:show]
     before_action :validate_download_hash, only: [:show]
     before_action :validate_user, only: [:show]
@@ -65,14 +69,14 @@ module Morphosource
       zip = ZipTricks::Streamer.new(io)
       @all_files.each do |file|
         next unless file[:file].present?
-        
+
         # raw_file is written "as is" (STORED mode).
         # Write the local file header first..
         zip.add_stored_entry(filename: file[:name], size: file[:size], crc32: file[:crc32])
-        
+
         # local zip file header
         interval_sequence << io.to_segment_and_clear
-        
+
         # file data
         if file[:file].is_a?(File) || file[:file].is_a?(Tempfile)
           interval_sequence << IntervalResponse::LazyFile.new(file[:file])
@@ -88,7 +92,7 @@ module Morphosource
       interval_sequence << io.to_segment_and_clear
     end
 
-    def send_interval_response 
+    def send_interval_response
       zipname = zip_name
       interval_response = IntervalResponse.new(interval_sequence, request.env)
       rack_response = interval_response.to_rack_response_triplet
@@ -133,12 +137,27 @@ module Morphosource
 
       # Get Media from keys
       def media
-        @media ||= Media.where(accessControl_ssim: keys)
+        @media ||= if keys.empty?
+          []
+        else
+          docs = ActiveFedora::SolrService.query(
+            "*:*",
+            fq: ["has_model_ssim:Media", "{!terms f=accessControl_ssim}#{keys.join(',')}"],
+            rows: keys.uniq.length,
+            fl: ['id'],
+            method: :post
+          )
+          ids = docs.map { |d| d['id'] }
+          ids.empty? ? [] : Media.find(ids)
+        end
       end
 
-      # Media access_control keys
-      def keys 
-        @keys ||= Array(params[:key])
+      # Session-stored keys are used for batch cart downloads (avoids oversized redirect URLs).
+      # Direct key[] params are used by the single-media download modal and controller specs.
+      def keys
+        entry = session.dig(:download_keys, params[:download])
+        raw = entry&.fetch("keys", nil) || Array(params[:key])
+        @keys ||= raw.select { |k| k.to_s.match?(ACCESS_KEY_PATTERN) }
       end
 
       def download_hash
@@ -146,8 +165,7 @@ module Morphosource
       end
 
       def validate_download_hash
-        uuid_regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i
-        return head(:bad_request) unless uuid_regex.match?(download_hash.to_s.downcase)
+        return head(:bad_request) unless ACCESS_KEY_PATTERN.match?(download_hash.to_s)
       end
 
       def validate_user
@@ -194,10 +212,10 @@ module Morphosource
             return [] unless file_set.present? && original_file.present?
             file_uri = file_set.original_file.uri
           end
-          
+
           attrs = {
             name: File.join(
-              output_dirname(m), 
+              output_dirname(m),
               output_filename(file_set, m.id)
             ),
             size: file_set.file_size&.first.to_i,
@@ -220,7 +238,7 @@ module Morphosource
           file_set.crc32&.first.present? &&
           file_set.original_file.uri.present? &&
           file_set.original_file.original_name.present?
-        ) 
+        )
           return file_set
         else
           return nil
@@ -235,7 +253,7 @@ module Morphosource
           file_set.crc32&.first.present? &&
           original_file.original_name.present? &&
           original_file.uri.present?
-        ) 
+        )
           return file_set, original_file
         else
           return nil, nil
@@ -268,9 +286,9 @@ module Morphosource
             label = s[:type]
           else
             label = [
-              s[:type], 
-              s[:permits_commercial_use], 
-              s[:required_archival_of_published_derivatives], 
+              s[:type],
+              s[:permits_commercial_use],
+              s[:required_archival_of_published_derivatives],
               s[:permits_3d_use]
             ].join('_')
           end
@@ -286,11 +304,11 @@ module Morphosource
           else
             {
               type: 'std',
-              permits_commercial_use: 
+              permits_commercial_use:
                 permits_commercial_use(
                   m.permits_commercial_use&.first
                 ),
-              required_archival_of_published_derivatives: 
+              required_archival_of_published_derivatives:
                 required_archival_of_published_derivatives(
                   m.required_archival_of_published_derivatives&.first
                 ),
@@ -412,11 +430,11 @@ module Morphosource
           file: file
         }]
       end
-      
-      def xlsx_manifest 
+
+      def xlsx_manifest
         file_name = "#{manifest_filename}.xlsx"
         xlsx_path = File.join(temp_manifest_directory, file_name)
- 
+
         p = Axlsx::Package.new
         wb = p.workbook
         date_time_format = wb.styles.add_style :format_code => 'YYYY-MM-DD'
@@ -424,8 +442,8 @@ module Morphosource
         wb.add_worksheet(:name => "xlsx manifest") do |sheet|
           sheet.add_row manifest_headers
           media_hashes.each do |h|
-            sheet.add_row h.values.map{ |v| v.first }, 
-              :types => xlsx_column_types(manifest_headers), 
+            sheet.add_row h.values.map{ |v| v.first },
+              :types => xlsx_column_types(manifest_headers),
               :style => xlsx_column_styles(manifest_headers, date_time_format)
           end
         end
@@ -486,7 +504,7 @@ module Morphosource
                 media_list << {
                   :id => [m.id],
                   :title => [m.title.first],
-                  :file_name => [file_set.label], 
+                  :file_name => [file_set.label],
                   :file_size => file_set.file_size,
                   :media_type => m.media_type,
                   :mime_type => [m.is_remote_backed? ? file_set.mime_type_of_remote : file_set.mime_type]

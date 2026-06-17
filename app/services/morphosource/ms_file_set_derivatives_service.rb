@@ -10,7 +10,11 @@ module Morphosource
       when *file_set.class.archive_mime_types         then create_archive_derivatives(filename)
       end
     ensure
-      update_file_set_size_info_derivatives rescue nil
+      begin
+        update_file_set_size_info_derivatives
+      rescue => e
+        Rails.logger.error "FileSetSizeInfo derivative update failed for #{file_set.id}: #{e.message}"
+      end
     end
 
     private

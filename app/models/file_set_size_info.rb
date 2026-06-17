@@ -11,6 +11,11 @@ class FileSetSizeInfo < ApplicationRecord
     row.assign_attributes(attrs)
     row.save!
     row
+  rescue ActiveRecord::RecordNotUnique
+    # Concurrent insert won the race; reload and update the winning row
+    row = find_by!(file_set_id: fs_id)
+    row.update!(attrs)
+    row
   end
 
   private

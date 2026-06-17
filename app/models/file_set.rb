@@ -140,9 +140,7 @@ class FileSet < ActiveFedora::Base
   private
 
   def create_size_info_row
-    ActiveRecord::Base.transaction do
-      FileSetSizeInfo.find_or_create_by!(file_set_id: id.to_s)
-    end
+    FileSetSizeInfo.find_or_create_by!(file_set_id: id.to_s)
   rescue => e
     Rails.logger.error "Failed to create FileSetSizeInfo for FileSet #{id}: #{e.message}"
     raise

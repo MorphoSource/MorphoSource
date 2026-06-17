@@ -13,13 +13,17 @@ class CharacterizeJob < HeavyJob
 
     # Provisional file size update (file.uploaded equivalent) — overwritten by
     # the authoritative update below once characterization completes.
-    if File.exist?(filepath)
-      file_set.update_size_info(
-        media_id:         file_set.parent&.id,
-        binary_file_name: file_set.label || File.basename(filepath),
-        binary_file_size: File.size(filepath)
-      )
-    end rescue Rails.logger.error("FileSetSizeInfo provisional update failed for #{file_set.id}: #{$!.message}")
+    begin
+      if File.exist?(filepath)
+        file_set.update_size_info(
+          media_id:         file_set.parent&.id,
+          binary_file_name: file_set.label || File.basename(filepath),
+          binary_file_size: File.size(filepath)
+        )
+      end
+    rescue => e
+      Rails.logger.error "FileSetSizeInfo provisional update failed for #{file_set.id}: #{e.message}"
+    end
 
     # Calculate Crc32, needed for file download
     CharacterizeCrc32Job.perform_later(file_set, file_id, filepath)

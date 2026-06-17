@@ -451,6 +451,35 @@ RSpec.describe MediaIndexer do
       end
     end
 
+    context 'when media has media-level derivatives on disk' do
+      let(:file_set_doc) do
+        SolrDocument.new('id' => 'fileset-id-mderiv', 'label_tesim' => ['scan.ply'], 'mime_type_ssi' => 'application/ply')
+      end
+
+      before do
+        allow(media).to receive(:file_set_ids).and_return(['fileset-id-mderiv'])
+        allow(SolrDocument).to receive(:where).and_return([file_set_doc])
+        allow(Morphosource::DerivativePath).to receive(:derivatives_for_reference)
+          .and_return(['/derivatives/media_thumb.jpg'])
+        allow(File).to receive(:size?).with('/derivatives/media_thumb.jpg').and_return(15_000)
+        FileSetSizeInfo.create!(
+          file_set_id:                 'fileset-id-mderiv',
+          media_id:                    media.id,
+          binary_file_size:            50_000,
+          summed_derivatives_file_size: 10_000
+        )
+      end
+
+      it 'includes media-level derivative sizes in all_files_file_size_lts' do
+        # sum_file_size (50000 + 10000) + media-level deriv (15000) = 75000
+        expect(subject['all_files_file_size_lts']).to eq(75_000)
+      end
+
+      it 'does not include media-level derivatives in media_file_size_lts' do
+        expect(subject['media_file_size_lts']).to eq(50_000)
+      end
+    end
+
     context 'when media has no file sets' do
       before do
         allow(media).to receive(:file_set_ids).and_return([])

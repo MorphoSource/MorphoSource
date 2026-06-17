@@ -140,7 +140,7 @@ class FileSet < ActiveFedora::Base
   private
 
   def create_size_info_row
-    FileSetSizeInfo.find_or_create_by!(file_set_id: id.to_s)
+    FileSetSizeInfo.upsert_for_file_set(self)
   rescue => e
     # Do not re-raise — FileSet is already persisted in Fedora at this point.
     # The listener's on_object_deposited provides a second chance to create the row.

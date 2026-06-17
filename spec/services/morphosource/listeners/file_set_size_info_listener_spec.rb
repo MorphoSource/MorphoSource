@@ -16,7 +16,7 @@ RSpec.describe Morphosource::Listeners::FileSetSizeInfoListener do
       end
 
       it 'creates a FileSetSizeInfo row if one does not exist' do
-        expect(FileSetSizeInfo).to receive(:find_or_create_by!).with(file_set_id: 'fs-dep-001')
+        expect(FileSetSizeInfo).to receive(:upsert_for_file_set).with(file_set)
         listener.on_object_deposited(event_for.call(file_set))
       end
     end
@@ -29,7 +29,7 @@ RSpec.describe Morphosource::Listeners::FileSetSizeInfoListener do
       end
 
       it 'does not create a FileSetSizeInfo row' do
-        expect(FileSetSizeInfo).not_to receive(:find_or_create_by!)
+        expect(FileSetSizeInfo).not_to receive(:upsert_for_file_set)
         listener.on_object_deposited(event_for.call(media))
       end
     end
@@ -42,7 +42,7 @@ RSpec.describe Morphosource::Listeners::FileSetSizeInfoListener do
       end
 
       it 'logs the error without re-raising' do
-        allow(FileSetSizeInfo).to receive(:find_or_create_by!).and_raise(StandardError, 'DB error')
+        allow(FileSetSizeInfo).to receive(:upsert_for_file_set).and_raise(StandardError, 'DB error')
         expect(Rails.logger).to receive(:error).with(/fs-dep-002/)
         expect { listener.on_object_deposited(event_for.call(file_set)) }.not_to raise_error
       end

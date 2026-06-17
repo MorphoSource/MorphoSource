@@ -9,7 +9,7 @@ module Morphosource
       def on_object_deposited(event)
         object = event.respond_to?(:payload) ? event.payload[:object] : nil
         return unless object.is_a?(FileSet)
-        FileSetSizeInfo.find_or_create_by!(file_set_id: object.id.to_s)
+        FileSetSizeInfo.upsert_for_file_set(object)
       rescue => e
         Rails.logger.error "FileSetSizeInfoListener#on_object_deposited failed for #{object&.id}: #{e.message}"
       end

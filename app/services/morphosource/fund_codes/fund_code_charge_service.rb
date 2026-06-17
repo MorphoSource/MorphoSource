@@ -138,6 +138,8 @@ module Morphosource
           .map { |p| File.size?(p) }.compact.sum
 
         total = fs_total + m_deriv_size
+        # Cache in @media_sizes so query_bytes_consumed uses this value
+        # instead of the nil from the Solr lookup.
         media_sizes[media_id] = total
         return total
       end

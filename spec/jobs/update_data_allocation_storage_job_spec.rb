@@ -23,7 +23,7 @@ RSpec.describe UpdateDataAllocationStorageJob do
 
     context 'when fund code has no media' do
       it 'sets storage_current_gb to 0.0 without querying Solr' do
-        expect_any_instance_of(Morphosource::SolrService).not_to receive(:get_docs)
+        expect(Morphosource::SolrService).not_to receive(:new)
         described_class.perform_now(data_allocation)
         expect(data_allocation.reload.storage_current_gb).to eq(0.0)
       end
@@ -31,12 +31,12 @@ RSpec.describe UpdateDataAllocationStorageJob do
 
     context 'when fund code has media but no files characterized yet' do
       let(:media_id) { 'test000001' }
+      let(:solr_service) { double(get_docs: [{ 'id' => media_id, 'all_files_file_size_lts' => nil }]) }
 
       before do
         FundCodeMediaAssociation.create!(fund_code: fund_code, media: media_id, active: true)
         # Solr returns a doc with nil all_files_file_size_lts (not yet characterized)
-        allow_any_instance_of(Morphosource::SolrService).to receive(:get_docs)
-          .and_return([{ 'id' => media_id, 'all_files_file_size_lts' => nil }])
+        allow(Morphosource::SolrService).to receive(:new).and_return(solr_service)
       end
 
       it 'sets storage_current_gb to 0.0' do
@@ -50,15 +50,17 @@ RSpec.describe UpdateDataAllocationStorageJob do
       let(:media_id_2) { 'test000003' }
       # 1 GiB each → expect 2.0 binary GB total
       let(:one_gib) { 1_073_741_824 }
+      let(:solr_service) do
+        double(get_docs: [
+          { 'id' => media_id_1, 'all_files_file_size_lts' => one_gib },
+          { 'id' => media_id_2, 'all_files_file_size_lts' => one_gib }
+        ])
+      end
 
       before do
         FundCodeMediaAssociation.create!(fund_code: fund_code, media: media_id_1, active: true)
         FundCodeMediaAssociation.create!(fund_code: fund_code, media: media_id_2, active: true)
-        allow_any_instance_of(Morphosource::SolrService).to receive(:get_docs)
-          .and_return([
-            { 'id' => media_id_1, 'all_files_file_size_lts' => one_gib },
-            { 'id' => media_id_2, 'all_files_file_size_lts' => one_gib }
-          ])
+        allow(Morphosource::SolrService).to receive(:new).and_return(solr_service)
       end
 
       it 'sets storage_current_gb to the binary GB sum across all media' do

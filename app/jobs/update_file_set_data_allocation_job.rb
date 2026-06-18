@@ -1,4 +1,6 @@
 class UpdateFileSetDataAllocationJob < Hyrax::ApplicationJob
+  queue_as :default
+
   def perform(file_set)
     media = file_set.parent
     return unless media.is_a?(Media)

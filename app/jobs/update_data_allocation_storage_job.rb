@@ -1,4 +1,6 @@
 class UpdateDataAllocationStorageJob < Hyrax::ApplicationJob
+  queue_as :default
+
   def perform(data_allocation)
     raise "this type of data allocation is not yet supported" if data_allocation.user?
 

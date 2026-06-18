@@ -55,6 +55,10 @@ class CharacterizeJob < HeavyJob
       Morphosource::Works::FileSetCharacterizationParentUpdateService.run(file_set)
     end
 
+    # Enqueued before CreateDerivativesJob so derivative sizes may not yet be on disk when
+    # UpdateDataAllocationStorageJob queries all_files_file_size_lts. This is an accepted
+    # approximation: storage_current_gb is display-only and not used by the billing cycle,
+    # which calculates storage independently from FileSet file_size_lts.
     UpdateFileSetDataAllocationJob.perform_later(file_set)
     CreateDerivativesJob.perform_later(file_set, file_id, filepath)
   end

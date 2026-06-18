@@ -31,5 +31,23 @@ RSpec.describe UpdateFileSetDataAllocationJob do
         expect(UpdateDataAllocationStorageJob).not_to have_been_enqueued
       end
     end
+
+    context 'when the Media parent has an active fund code association with a data allocation' do
+      let(:user) { User.create!(email: 'fc_owner@example.com', password: 'password') }
+      let(:fund_code) { FundCode.create!(user: user, storage_total_gb: 100) }
+      let(:data_allocation) { fund_code.data_allocation }
+      let(:media) { Media.create(title: ['Test Media']) }
+      let(:file_set) { double('FileSet', parent: media) }
+
+      before do
+        FundCodeMediaAssociation.create!(fund_code: fund_code, media: media.id, active: true)
+      end
+
+      it 'enqueues UpdateDataAllocationStorageJob with the data allocation' do
+        expect { described_class.perform_now(file_set) }
+          .to have_enqueued_job(UpdateDataAllocationStorageJob)
+          .with(data_allocation)
+      end
+    end
   end
 end

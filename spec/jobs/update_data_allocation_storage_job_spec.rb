@@ -21,6 +21,15 @@ RSpec.describe UpdateDataAllocationStorageJob do
       end
     end
 
+    context 'when fund_code is nil (orphaned DataAllocation)' do
+      let(:orphaned_allocation) { DataAllocation.create!(allocation_type: :fund_code) }
+
+      it 'raises with a clear message' do
+        expect { described_class.perform_now(orphaned_allocation) }
+          .to raise_error(RuntimeError, /fund_code is nil/)
+      end
+    end
+
     context 'when fund code has no media' do
       it 'sets storage_current_gb to 0.0 without querying Solr' do
         expect(Morphosource::SolrService).not_to receive(:new)

@@ -9,6 +9,10 @@ class UpdateDataAllocationStorageJob < Hyrax::ApplicationJob
 
     total_bytes = if media_ids.any?
       solr = Morphosource::SolrService.new
+      # NOTE: Solr enforces a maxBooleanClauses limit (1024 by default in Solr ≤ 8.x).
+      # A fund code with more than 1024 active media IDs would cause this query to fail.
+      # This OR-clause pattern is used elsewhere in the codebase and is an existing limitation.
+      # If large fund codes are anticipated, this query should be batched.
       docs = solr.get_docs(nil, {
         fq: ["id:(#{media_ids.join(' OR ')})"],
         fl: ['id', 'all_files_file_size_lts']

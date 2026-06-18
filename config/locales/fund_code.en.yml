@@ -19,6 +19,8 @@ en:
         external_user: Ext.
         external_user_additional_rate_percent: Ext. %
         chargeable: Chrg.
+        can_add_media: Can Add Media
+        media: Media
     hints:
       fund_code:
         title: The specific code, title, or other designator for the fund code. 

@@ -45,6 +45,29 @@ RSpec.describe UpdateDataAllocationStorageJob do
       end
     end
 
+    context 'when fund code has some media characterized and some not' do
+      let(:media_id_1) { 'test000004' }
+      let(:media_id_2) { 'test000005' }
+      let(:one_gib) { 1_073_741_824 }
+      let(:solr_service) do
+        double(get_docs: [
+          { 'id' => media_id_1, 'all_files_file_size_lts' => one_gib },
+          { 'id' => media_id_2, 'all_files_file_size_lts' => nil }
+        ])
+      end
+
+      before do
+        FundCodeMediaAssociation.create!(fund_code: fund_code, media: media_id_1, active: true)
+        FundCodeMediaAssociation.create!(fund_code: fund_code, media: media_id_2, active: true)
+        allow(Morphosource::SolrService).to receive(:new).and_return(solr_service)
+      end
+
+      it 'sums only the characterized media, ignoring nil values' do
+        described_class.perform_now(data_allocation)
+        expect(data_allocation.reload.storage_current_gb).to eq(1.0)
+      end
+    end
+
     context 'when fund code has multiple media with characterized files' do
       let(:media_id_1) { 'test000002' }
       let(:media_id_2) { 'test000003' }

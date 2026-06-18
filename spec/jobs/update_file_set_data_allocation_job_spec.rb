@@ -32,6 +32,21 @@ RSpec.describe UpdateFileSetDataAllocationJob do
       end
     end
 
+    context 'when the active fund code association has a nil fund_code (orphaned FCMA)' do
+      let(:media) { Media.create(title: ['Test Media']) }
+      let(:file_set) { double('FileSet', parent: media) }
+      let(:fcma) { double('FundCodeMediaAssociation', fund_code: nil) }
+
+      before do
+        allow(FundCodeMediaAssociation).to receive(:where).and_return(double(first: fcma))
+      end
+
+      it 'exits silently without enqueuing UpdateDataAllocationStorageJob' do
+        expect { described_class.perform_now(file_set) }.not_to raise_error
+        expect(UpdateDataAllocationStorageJob).not_to have_been_enqueued
+      end
+    end
+
     context 'when the Media parent has an active fund code association with a data allocation' do
       let(:user) { User.create!(email: 'fc_owner@example.com', password: 'password') }
       let(:fund_code) { FundCode.create!(user: user, storage_total_gb: 100) }

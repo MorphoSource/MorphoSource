@@ -8,6 +8,7 @@ class UpdateFileSetDataAllocationJob < Hyrax::ApplicationJob
     fcma = FundCodeMediaAssociation.where(media: media.id, active: true).first
     return unless fcma
 
+    return unless fcma.fund_code
     data_allocation = fcma.fund_code.data_allocation
     return unless data_allocation
 

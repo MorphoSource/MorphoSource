@@ -10,7 +10,7 @@ module Morphosource
     def count_text(count)
       count.to_s.concat(count == 1 ? " Item" : " Items")
     end
-    
+
     # gets id(s) for either single button or batch
     def id_params
       params[:item_id] || params[:batch_document_ids] || params[:batch_download_ids]
@@ -215,9 +215,10 @@ module Morphosource
       return [] unless @work_ids.present?
       solr_docs = ActiveFedora::SolrService.query(
         "*:*",
-        rows: 999999,
-        fq: ['has_model_ssim:Media', "id:(#{@work_ids.join(' OR ')})"],
-        fl: ['id', 'accessControl_ssim']
+        fq: ['has_model_ssim:Media', "{!terms f=id}#{@work_ids.uniq.join(',')}"],
+        rows: @work_ids.uniq.length,
+        fl: ['id', 'accessControl_ssim'],
+        method: :post
       )
       return solr_docs.map { |d| d['accessControl_ssim']&.first }.compact
     end

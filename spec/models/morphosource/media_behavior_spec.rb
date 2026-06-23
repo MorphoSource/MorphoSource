@@ -101,6 +101,36 @@ RSpec.describe Morphosource::MediaBehavior do
           expect(restricted_media_solr.reviewer).to match_array([depositor.ms_id])
         end
       end
+      context 'media is owned by an organization' do
+        let(:org) { FactoryBot.create(:organization_collection) }
+
+        before do
+          restricted_media.owner = org.id
+          restricted_media.save!
+        end
+
+        context 'the organization has a download_reviewer set' do
+          before do
+            org.download_reviewer = [user.ms_id]
+            org.save!
+          end
+          it 'returns the organization download reviewer' do
+            expect(restricted_media.reviewer).to match_array([user.ms_id])
+            expect(restricted_media_solr.reviewer).to match_array([user.ms_id])
+          end
+        end
+
+        context 'the organization has no download_reviewer but has managers' do
+          before do
+            org.managers << user
+            org.managers_group.save!
+          end
+          it 'returns the organization manager ms_ids' do
+            expect(restricted_media.reviewer).to match_array([user.ms_id])
+            expect(restricted_media_solr.reviewer).to match_array([user.ms_id])
+          end
+        end
+      end
     end
     context 'media does have a download reviewer set' do
       before do

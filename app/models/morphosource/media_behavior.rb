@@ -36,9 +36,27 @@ module Morphosource
       visibility == "restricted"
     end
 
+    # Returns ms_ids of the users who should approve download requests for this media.
+    #
+    # Resolves the reviewer target in order:
+    #   1. media.download_reviewer, if present
+    #   2. media.user_with_ownership, otherwise
+    #
+    # The target is then expanded:
+    #   - An individual user target returns that user's ms_id.
+    #   - An organization target returns the organization's download_reviewers,
+    #     or its managers if no download_reviewers are configured.
     def reviewer
-      download_reviewers = User.where(ms_id: download_reviewer.to_a).map(&:ms_id)
-      download_reviewers.present? ? Array(download_reviewers) : Array(user_with_ownership)
+      if download_reviewer.present?
+        user_reviewers = User.where(ms_id: Array(download_reviewer)).pluck(:ms_id)
+        organization = OrganizationCollection.where(id: Array(download_reviewer)).first
+        organization_reviewers = organization.present? ? organization.media_download_reviewers : []
+        user_reviewers + organization_reviewers
+      elsif (organization = OrganizationCollection.find_by(id: user_with_ownership))
+        organization.media_download_reviewers
+      else
+        Array(user_with_ownership)
+      end
     end
   end
 end

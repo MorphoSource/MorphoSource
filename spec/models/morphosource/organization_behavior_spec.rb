@@ -128,6 +128,40 @@ RSpec.describe OrganizationCollection, type: :model do
       expect(organization.specimens).to eq([specimen])
     end
   end
+
+  describe '#media_download_reviewers' do
+    let(:user)  { FactoryBot.create(:registered_user) }
+    let(:user2) { FactoryBot.create(:registered_user) }
+
+    context 'the organization has a download_reviewer set' do
+      before do
+        organization.download_reviewer = [user.ms_id, user2.ms_id]
+        organization.save!
+      end
+      it 'returns the download_reviewer' do
+        expect(organization.media_download_reviewers).to match_array([user.ms_id, user2.ms_id])
+      end
+    end
+
+    context 'the organization has no download_reviewer' do
+      context 'the organization has managers' do
+        before do
+          organization.managers << user
+          organization.managers << user2
+          organization.managers_group.save!
+        end
+        it 'returns the ms_ids of the organization managers' do
+          expect(organization.media_download_reviewers).to match_array([user.ms_id, user2.ms_id])
+        end
+      end
+
+      context 'the organization has no managers' do
+        it 'returns an empty array' do
+          expect(organization.media_download_reviewers).to eq([])
+        end
+      end
+    end
+  end
 end
 
 describe 'agreement attachment methods' do

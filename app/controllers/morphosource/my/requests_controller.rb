@@ -73,6 +73,7 @@ module Morphosource
       end
 
       def send_request_message_to_reviewer(reviewer_id, items)
+
         # note: this method sends message to only 1 requestor and should be used in item.reviewers.each
         requestor = current_user
         reviewer = User.where(ms_id: reviewer_id).first

@@ -111,13 +111,6 @@ $( document ).ready(function() {
     $(document).on('change', '#media_media_type', function() {
       adjust_form_media_type();
       setCustomTitlePlaceholder();
-      updateMeshZipWarning();
-    });
-
-    $('#fileupload').on('fileuploadadd', function(e, data) {
-      if (data.files && data.files[0]) {
-        updateMeshZipWarning(data.files[0].name);
-      }
     });
 
     setMediaLocalRemoteEvent();
@@ -203,17 +196,6 @@ $( document ).ready(function() {
       $(scaleBarGroup).hide(); // hide the field label and add button
 
     } // /setupScaleBar
-
-    function updateMeshZipWarning(fileName) {
-      var isMesh = $('#media_media_type').val() === 'Mesh';
-      var name = fileName || '';
-      var isZipOrTar = /\.(zip|tar)$/i.test(name);
-      if (isMesh && isZipOrTar) {
-        $('#mesh-zip-warning').removeClass('hide');
-      } else {
-        $('#mesh-zip-warning').addClass('hide');
-      }
-    }
 
     function setCustomTitlePlaceholder() {
       var parts = $('input[name="media[part][]"]').map(function() {

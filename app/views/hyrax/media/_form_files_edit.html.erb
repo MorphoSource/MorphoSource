@@ -11,6 +11,10 @@
   <div class="fileupload-buttonbar" style="padding-top: 0;">
     <div class="row">
       <div class="col-12">
+        <% deposit_structure_link = Hyrax.config.docs.find { |d| d["label"] == "hyrax.controls.links.docs.deposit_structure" } %>
+        <% if deposit_structure_link %>
+          <p><%= link_to t("hyrax.controls.links.docs.deposit_structure"), deposit_structure_link["url"], target: "_blank" %></p>
+        <% end %>
         <div class="fileinput-button" id="add-files">
           <input id="upload-hash" type="hidden" name="upload_hash" value="<%= SecureRandom.uuid %>" />
           <input id="addfiles" type="file" style="display:none;"  name="files[]" multiple />
@@ -60,10 +64,6 @@
   <div class="dropzone">
     <%= t('hyrax.base.form_files.dropzone') %>
   </div>
-</div>
-
-<div id="mesh-zip-warning" class="alert alert-warning mt-2 hide" role="alert">
-  <strong>Note:</strong> Mesh ZIP files must contain only a single mesh file. If your ZIP contains multiple meshes, only one will be processed. Submit each mesh as a separate Media record.
 </div>
 
 <%= render 'hyrax/uploads/js_templates' %>

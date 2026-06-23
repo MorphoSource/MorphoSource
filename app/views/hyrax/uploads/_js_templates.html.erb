@@ -138,6 +138,11 @@
             </button>
         </td>
     </tr>
+    {% if (/\.(zip|tar)$/i.test(file.name)) { %}
+        <tr id="zip-warning">
+          <td colspan="4" class="alert-success"><strong>Note:</strong> Each ZIP or TAR archive should represent one asset — that is, one product of a single scanning event. Please do not combine multiple scans or unrelated files into a single archive.</td>
+        </tr>
+    {% } %}
     {% if (document.querySelectorAll('form[id*="edit_media"]').length) { %}
         <tr id="save-media-reminder">
           <td colspan="4" class="alert-success">Please make sure to save the media.  Newly uploaded file will be persisted when media is saved.</td>

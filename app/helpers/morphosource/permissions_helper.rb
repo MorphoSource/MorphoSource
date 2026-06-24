@@ -36,11 +36,17 @@ module Morphosource
 
     def reviewer_data(f)
       if f.object.model.id.present?
-        f.object.model.download_reviewer.map do |ms_id|
-          { id: ms_id.to_i, user_key: ms_id, text: (u = User.where(ms_id: ms_id)&.first).present? ? u.name_or_email : '' }
+        f.object.model.download_reviewer.map do |id|
+          if (user = User.find_by(ms_id: id))
+            { id: user.ms_id, user_key: user.ms_id, text: user.name_or_email }
+          elsif (org = OrganizationCollection.find_by(id: id))
+            { id: org.id, user_key: org.id, text: org.name }
+          else
+            { id: id, user_key: id, text: id }
+          end
         end
       else
-        { id: current_user.ms_id.to_i, user_key: current_user.ms_id, text: current_user.name_or_email }
+        { id: current_user.ms_id, user_key: current_user.ms_id, text: current_user.name_or_email }
       end.to_json
     end
 

@@ -315,11 +315,11 @@ $( document ).ready(function() {
           })
           reviewerSelect.data("reviewers", reviewers_array);
           // add search to download reviewer
-          reviewerSelect.userSearchMultiple(reviewerSelect.data('reviewers'));          
+          reviewerSelect.reviewerSearchMultiple(reviewerSelect.data('reviewers'));          
         } else {
           // remove the default reviewer
           reviewerSelect.data('reviewers', '');
-          reviewerSelect.select2('destroy').empty().userSearchMultiple('');
+          reviewerSelect.select2('destroy').empty().reviewerSearchMultiple('');
         }
         window.scrollTo(0,0);
       };
@@ -699,7 +699,7 @@ $( document ).ready(function() {
         "user_key": $(this).val(),
         "text": $("select[name='batch_submission[on_behalf_of]'] option:selected").text()
       }
-      $('#media_download_reviewer').userSearchMultiple(reviewer);
+      $('#media_download_reviewer').reviewerSearchMultiple(reviewer);
       // Unset org transfer settings and reset (in case on behalf of is chosen after org)
       batchSubmissionForm.setDefaultMediaPermissionFields();
     });

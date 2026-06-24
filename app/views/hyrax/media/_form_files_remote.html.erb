@@ -2,7 +2,7 @@
   <div class="form-group p-2">
     <% deposit_structure_link = Hyrax.config.docs.find { |d| d["label"] == "hyrax.controls.links.docs.deposit_structure" } %>
     <% if deposit_structure_link %>
-      <p class="p-0"><%= link_to t("hyrax.controls.links.docs.deposit_structure"), deposit_structure_link["url"], target: "_blank" %></p>
+      <p class="p-0"><%= link_to t("hyrax.controls.links.docs.deposit_structure_html"), deposit_structure_link["url"], target: "_blank" %></p>
     <% end %>
     <%= f.input :remote_origin_url, label: 'Remote Origin URL', input_html: { type: '' } %> <%# override type="url" %>
   </div>

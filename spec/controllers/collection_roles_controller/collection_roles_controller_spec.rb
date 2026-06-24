@@ -891,6 +891,96 @@ RSpec.describe CollectionRolesController, type: :controller do
 
       end
     end
+
+    describe 'maybe_update_org_cart_item_reviewers' do
+      let(:org) { FactoryBot.create(:organization_collection, title: ['Org'], depositor: manager.ms_id) }
+
+      before do
+        allow(subject).to receive(:users_are_eligible?).and_return(true)
+        allow(subject).to receive(:update_subcollections).and_return(true)
+        allow(subject).to receive(:removing_last_manager?).and_return(false)
+      end
+
+      context 'collection is an OrganizationCollection with no download_reviewer' do
+        before do
+          allow(subject).to receive(:can?).with(:edit, org).and_return(true)
+        end
+
+        context 'adding a user to the managers group' do
+          let(:params) { { collection_roles: { agent_type: 'user', remove: 'false', access: 'managers', agent_id: another_user.ms_id }, id: org.id } }
+
+          it 'enqueues UpdateOrgCartItemReviewersJob' do
+            expect(UpdateOrgCartItemReviewersJob).to receive(:perform_later).with(org)
+            post :update_collection_groups, params: params
+          end
+        end
+
+        context 'removing a user from the managers group' do
+          let(:params) { { collection_roles: { agent_type: 'user', new_access: 'remove', access: 'managers', agent_id: another_user.ms_id }, id: org.id } }
+
+          before do
+            org.managers << another_user
+            org.managers_group.save
+          end
+
+          it 'enqueues UpdateOrgCartItemReviewersJob' do
+            expect(UpdateOrgCartItemReviewersJob).to receive(:perform_later).with(org)
+            post :update_collection_groups, params: params
+          end
+        end
+
+        context 'moving a user from viewers to managers' do
+          let(:params) { { collection_roles: { agent_type: 'user', access: 'viewers', new_access: 'managers', agent_id: another_user.ms_id }, id: org.id } }
+
+          before do
+            org.viewers << another_user
+            org.viewers_group.save
+          end
+
+          it 'enqueues UpdateOrgCartItemReviewersJob' do
+            expect(UpdateOrgCartItemReviewersJob).to receive(:perform_later).with(org)
+            post :update_collection_groups, params: params
+          end
+        end
+
+        context 'adding a user to a non-managers group' do
+          let(:params) { { collection_roles: { agent_type: 'user', remove: 'false', access: 'viewers', agent_id: another_user.ms_id }, id: org.id } }
+
+          it 'does not enqueue UpdateOrgCartItemReviewersJob' do
+            expect(UpdateOrgCartItemReviewersJob).not_to receive(:perform_later)
+            post :update_collection_groups, params: params
+          end
+        end
+      end
+
+      context 'collection is an OrganizationCollection with download_reviewer configured' do
+        let(:params) { { collection_roles: { agent_type: 'user', remove: 'false', access: 'managers', agent_id: another_user.ms_id }, id: org.id } }
+
+        before do
+          allow(subject).to receive(:can?).with(:edit, org).and_return(true)
+          org.download_reviewer = [manager.ms_id]
+          org.save!
+        end
+
+        it 'does not enqueue UpdateOrgCartItemReviewersJob' do
+          expect(UpdateOrgCartItemReviewersJob).not_to receive(:perform_later)
+          post :update_collection_groups, params: params
+        end
+      end
+
+      context 'collection is not an OrganizationCollection' do
+        let(:params) { { collection_roles: { agent_type: 'user', remove: 'false', access: 'managers', agent_id: another_user.ms_id }, id: team.id } }
+
+        before do
+          allow(subject).to receive(:can?).with(:edit, team).and_return(true)
+        end
+
+        it 'does not enqueue UpdateOrgCartItemReviewersJob' do
+          expect(UpdateOrgCartItemReviewersJob).not_to receive(:perform_later)
+          post :update_collection_groups, params: params
+        end
+      end
+    end
   end
 
   # test helper methods

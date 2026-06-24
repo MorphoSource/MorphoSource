@@ -14,6 +14,7 @@ class OrganizationCollection < Collection
   after_create :create_organization_project
   after_update :update_ark_status
   after_update :index_related_works
+  after_update :update_media_cart_item_reviewers, if: :download_reviewer_changed?
   after_create :mint_ark
   after_destroy :delete_ark_if_reserved
 
@@ -146,6 +147,10 @@ class OrganizationCollection < Collection
   end
 
   private
+
+  def update_media_cart_item_reviewers
+    UpdateOrgCartItemReviewersJob.perform_later(self)
+  end
 
   def create_organization_project
     project = example_organization_project

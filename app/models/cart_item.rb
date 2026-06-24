@@ -2,6 +2,9 @@ class CartItem < ApplicationRecord
 
   belongs_to :user, foreign_key: :user_id, primary_key: :ms_id
 
+  before_update :refresh_reviewers_on_request,
+                if: -> { date_requested_changed? && date_requested.present? }
+
   def active_request?
     statuses = ["Approved","Requested","Cleared"]
     statuses.include?(request_status)
@@ -111,6 +114,12 @@ class CartItem < ApplicationRecord
 
   def reviewer_affiliations
     reviewer.map { |u| u.affiliation }.compact.reject { |a| a.empty? }.join(', ')
+  end
+
+  private
+
+  def refresh_reviewers_on_request
+    self.reviewers = work&.reviewer
   end
 
 end

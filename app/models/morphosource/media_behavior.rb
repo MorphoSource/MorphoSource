@@ -58,5 +58,11 @@ module Morphosource
         Array(user_with_ownership)
       end
     end
+
+    # Returns the Users or OrganizationCollections whose ms_ids or ids are stored in download_reviewer
+    def download_reviewer_objects
+      User.where(ms_id: Array(download_reviewer)) + OrganizationCollection.where(id: Array(download_reviewer))
+    end
+
   end
 end

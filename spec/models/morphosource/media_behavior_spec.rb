@@ -163,6 +163,32 @@ RSpec.describe Morphosource::MediaBehavior do
           expect(restricted_media_solr.reviewer).to match_array(expected_reviewers)
         end
       end
+
+      context 'when no configured reviewer exists' do
+        before do
+          restricted_media.owner = user.ms_id
+          restricted_media.download_reviewer = ['missing-reviewer']
+          restricted_media.save!
+        end
+
+        it 'falls back to the media owner' do
+          expect(restricted_media.reviewer).to match_array([user.ms_id])
+          expect(restricted_media_solr.reviewer).to match_array([user.ms_id])
+        end
+      end
+
+      context 'when at least one configured reviewer exists' do
+        before do
+          restricted_media.owner = depositor.ms_id
+          restricted_media.download_reviewer = [user.ms_id, 'missing-reviewer']
+          restricted_media.save!
+        end
+
+        it 'does not add the media owner' do
+          expect(restricted_media.reviewer).to match_array([user.ms_id])
+          expect(restricted_media_solr.reviewer).to match_array([user.ms_id])
+        end
+      end
     end
   end
 end

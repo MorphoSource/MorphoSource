@@ -46,13 +46,17 @@ module Morphosource
     #   - An individual user target returns that user's ms_id.
     #   - An organization target returns the organization's download_reviewers,
     #     or its managers if no download_reviewers are configured.
+    #   - If no configured target resolves, the media owner is used.
     def reviewer
       if download_reviewer.present?
-        user_reviewers = User.where(ms_id: Array(download_reviewer)).pluck(:ms_id)
+        user_reviewers = User.where(ms_id: Array(download_reviewer)).map(&:ms_id)
         organization_reviewers = OrganizationCollection.where(id: Array(download_reviewer))
                                                         .flat_map(&:media_download_reviewers)
-        (user_reviewers + organization_reviewers).uniq
-      elsif (organization = OrganizationCollection.find_by(id: user_with_ownership))
+        resolved_reviewers = (user_reviewers + organization_reviewers).uniq
+        return resolved_reviewers if resolved_reviewers.present?
+      end
+
+      if (organization = OrganizationCollection.find_by(id: Array(user_with_ownership)))
         organization.media_download_reviewers
       else
         Array(user_with_ownership)

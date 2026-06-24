@@ -8,13 +8,13 @@
   <% end %>
   <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
 
-  <div class="fileupload-buttonbar" style="padding-top: 0;">
+  <div class="fileupload-buttonbar pt-0 pl-2 pr-2">
+    <% deposit_structure_link = Hyrax.config.docs.find { |d| d["label"] == "hyrax.controls.links.docs.deposit_structure" } %>
+    <% if deposit_structure_link %>
+      <p class="p-0"><%= link_to t("hyrax.controls.links.docs.deposit_structure"), deposit_structure_link["url"], target: "_blank" %></p>
+    <% end %>
     <div class="row">
       <div class="col-12">
-        <% deposit_structure_link = Hyrax.config.docs.find { |d| d["label"] == "hyrax.controls.links.docs.deposit_structure" } %>
-        <% if deposit_structure_link %>
-          <p><%= link_to t("hyrax.controls.links.docs.deposit_structure"), deposit_structure_link["url"], target: "_blank" %></p>
-        <% end %>
         <div class="fileinput-button" id="add-files">
           <input id="upload-hash" type="hidden" name="upload_hash" value="<%= SecureRandom.uuid %>" />
           <input id="addfiles" type="file" style="display:none;"  name="files[]" multiple />

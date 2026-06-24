@@ -4,6 +4,8 @@ RSpec.describe Morphosource::MediaBehavior do
 
   let(:depositor)             { FactoryBot.create(:contributor) }
   let(:user)                  { FactoryBot.create(:registered_user) }
+  let(:user2)                 { FactoryBot.create(:registered_user) }
+  let(:user3)                 { FactoryBot.create(:registered_user) }
 
   let(:open_media)            { FactoryBot.create(:public_media, depositor: depositor.ms_id) }
   let(:private_media)         { FactoryBot.create(:private_media, depositor: depositor.ms_id) }
@@ -133,13 +135,33 @@ RSpec.describe Morphosource::MediaBehavior do
       end
     end
     context 'media does have a download reviewer set' do
-      before do
-        restricted_media.download_reviewer = [user.ms_id, depositor.ms_id]
-        restricted_media.save!
-      end
-      it 'returns the download reviewer(s)' do
-        expect(restricted_media.reviewer).to match_array([user.ms_id, depositor.ms_id])
+      context 'with individual users' do
+        before do
+          restricted_media.download_reviewer = [user.ms_id, depositor.ms_id]
+          restricted_media.save!
+        end
+
+        it 'returns the download reviewers' do
+          expect(restricted_media.reviewer).to match_array([user.ms_id, depositor.ms_id])
           expect(restricted_media_solr.reviewer).to match_array([user.ms_id, depositor.ms_id])
+        end
+      end
+
+      context 'with an individual user and multiple organizations' do
+        let(:org) { FactoryBot.create(:organization_collection, download_reviewer: [user2.ms_id]) }
+        let(:org2) { FactoryBot.create(:organization_collection, download_reviewer: [user3.ms_id]) }
+
+        before do
+          restricted_media.download_reviewer = [user.ms_id, org.id, org2.id]
+          restricted_media.save!
+        end
+
+        it 'returns the individual and every organization reviewer' do
+          expected_reviewers = [user.ms_id, user2.ms_id, user3.ms_id]
+
+          expect(restricted_media.reviewer).to match_array(expected_reviewers)
+          expect(restricted_media_solr.reviewer).to match_array(expected_reviewers)
+        end
       end
     end
   end

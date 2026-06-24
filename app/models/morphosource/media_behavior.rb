@@ -49,9 +49,9 @@ module Morphosource
     def reviewer
       if download_reviewer.present?
         user_reviewers = User.where(ms_id: Array(download_reviewer)).pluck(:ms_id)
-        organization = OrganizationCollection.where(id: Array(download_reviewer)).first
-        organization_reviewers = organization.present? ? organization.media_download_reviewers : []
-        user_reviewers + organization_reviewers
+        organization_reviewers = OrganizationCollection.where(id: Array(download_reviewer))
+                                                        .flat_map(&:media_download_reviewers)
+        (user_reviewers + organization_reviewers).uniq
       elsif (organization = OrganizationCollection.find_by(id: user_with_ownership))
         organization.media_download_reviewers
       else

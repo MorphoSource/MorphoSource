@@ -910,7 +910,7 @@ RSpec.describe CollectionRolesController, type: :controller do
           let(:params) { { collection_roles: { agent_type: 'user', remove: 'false', access: 'managers', agent_id: another_user.ms_id }, id: org.id } }
 
           it 'enqueues UpdateOrgCartItemReviewersJob' do
-            expect(UpdateOrgCartItemReviewersJob).to receive(:perform_later).with(org)
+            expect(UpdateOrgCartItemReviewersJob).to receive(:perform_later).with(org.id)
             post :update_collection_groups, params: params
           end
         end
@@ -924,7 +924,7 @@ RSpec.describe CollectionRolesController, type: :controller do
           end
 
           it 'enqueues UpdateOrgCartItemReviewersJob' do
-            expect(UpdateOrgCartItemReviewersJob).to receive(:perform_later).with(org)
+            expect(UpdateOrgCartItemReviewersJob).to receive(:perform_later).with(org.id)
             post :update_collection_groups, params: params
           end
         end
@@ -938,7 +938,7 @@ RSpec.describe CollectionRolesController, type: :controller do
           end
 
           it 'enqueues UpdateOrgCartItemReviewersJob' do
-            expect(UpdateOrgCartItemReviewersJob).to receive(:perform_later).with(org)
+            expect(UpdateOrgCartItemReviewersJob).to receive(:perform_later).with(org.id)
             post :update_collection_groups, params: params
           end
         end

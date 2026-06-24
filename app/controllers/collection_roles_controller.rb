@@ -261,6 +261,6 @@ class CollectionRolesController < ApplicationController
     return if collection.download_reviewer.present?
     managers = collection.managers_group
     return unless managers.present? && [@group, @new_group].include?(managers)
-    UpdateOrgCartItemReviewersJob.perform_later(collection)
+    UpdateOrgCartItemReviewersJob.perform_later(collection.id)
   end
 end

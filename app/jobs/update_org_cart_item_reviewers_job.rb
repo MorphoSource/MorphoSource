@@ -2,7 +2,9 @@ class UpdateOrgCartItemReviewersJob < Hyrax::ApplicationJob
 
   queue_as Hyrax.config.update_fast_queue_name
 
-  def perform(org)
+  def perform(org_id)
+    org = OrganizationCollection.find(org_id)
+
     affected_media_ids(org).each do |media_id|
       media_doc = SolrDocument.find(media_id)
       pending_cart_items(media_id).each do |item|

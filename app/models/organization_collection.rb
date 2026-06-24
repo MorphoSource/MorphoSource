@@ -149,7 +149,7 @@ class OrganizationCollection < Collection
   private
 
   def update_media_cart_item_reviewers
-    UpdateOrgCartItemReviewersJob.perform_later(self)
+    UpdateOrgCartItemReviewersJob.perform_later(id)
   end
 
   def create_organization_project

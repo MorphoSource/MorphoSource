@@ -46,7 +46,7 @@ module Morphosource
           end
         end
       else
-        { id: current_user.ms_id, user_key: current_user.ms_id, text: current_user.name_or_email }
+        [{ id: current_user.ms_id, user_key: current_user.ms_id, text: current_user.name_or_email }]
       end.to_json
     end
 

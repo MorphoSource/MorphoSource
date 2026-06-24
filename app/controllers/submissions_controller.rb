@@ -849,9 +849,11 @@ class SubmissionsController < ApplicationController
   end
 
   def format_reviewers_select2(reviewers)
-    reviewers.map do |ms_id|
-      if (u = User.where(ms_id: ms_id)&.first).present?
-        { id: u.id, user_key: u.user_key, text: u.email.present? ? u.email : '' }
+    reviewers.map do |id|
+      if (user = User.find_by(ms_id: id))
+        { id: user.ms_id, user_key: user.ms_id, text: user.email.present? ? user.email : user.name_or_email }
+      elsif (org = OrganizationCollection.find_by(id: id))
+        { id: org.id, user_key: org.id, text: org.name }
       end
     end.compact
   end

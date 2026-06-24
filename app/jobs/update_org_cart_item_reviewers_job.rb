@@ -16,13 +16,15 @@ class UpdateOrgCartItemReviewersJob < Hyrax::ApplicationJob
   private
 
   def affected_media_ids(org)
+    escaped_id = RSolr.solr_escape(org.id)
+
     org_as_reviewer = ActiveFedora::SolrService.query(
-      "has_model_ssim:Media AND download_reviewer_ssim:#{org.id}",
+      "has_model_ssim:Media AND download_reviewer_ssim:#{escaped_id}",
       fl: ['id'], rows: 999999
     ).map { |r| r['id'] }
 
     org_as_owner_without_reviewer = ActiveFedora::SolrService.query(
-      "has_model_ssim:Media AND user_with_ownership_ssi:#{org.id} AND -download_reviewer_ssim:[* TO *]",
+      "has_model_ssim:Media AND user_with_ownership_ssi:#{escaped_id} AND -download_reviewer_ssim:[* TO *]",
       fl: ['id'], rows: 999999
     ).map { |r| r['id'] }
 

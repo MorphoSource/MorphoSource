@@ -25,22 +25,26 @@ class UpdateOrgCartItemReviewersJob < Hyrax::ApplicationJob
       fl: ['id'], rows: 999999
     ).map { |r| r['id'] }
 
-    org_as_owner_without_reviewer = ActiveFedora::SolrService.query(
-      "has_model_ssim:Media AND user_with_ownership_ssi:#{escaped_id} AND -download_reviewer_ssim:[* TO *]",
+    org_as_owner = ActiveFedora::SolrService.query(
+      "has_model_ssim:Media AND user_with_ownership_ssi:#{escaped_id}",
       fl: ['id'], rows: 999999
     ).map { |r| r['id'] }
 
-    (org_as_reviewer + org_as_owner_without_reviewer).uniq
+    (org_as_reviewer + org_as_owner).uniq
   end
 
+  SOLR_BATCH_SIZE = 100
+
   def batch_reviewer_map(media_ids)
-    escaped_ids = media_ids.map { |id| RSolr.solr_escape(id) }.join(' OR ')
-    results = ActiveFedora::SolrService.query(
-      '*:*',
-      fq: ["id:(#{escaped_ids})"],
-      fl: ['id', 'download_reviewer_ssim', 'user_with_ownership_ssi'],
-      rows: media_ids.size
-    )
+    results = media_ids.each_slice(SOLR_BATCH_SIZE).flat_map do |batch|
+      escaped_ids = batch.map { |id| RSolr.solr_escape(id) }.join(' OR ')
+      ActiveFedora::SolrService.query(
+        '*:*',
+        fq: ["id:(#{escaped_ids})"],
+        fl: ['id', 'download_reviewer_ssim', 'user_with_ownership_ssi'],
+        rows: batch.size
+      )
+    end
 
     all_ids = results.flat_map { |doc|
       Array(doc['download_reviewer_ssim']) + Array(doc['user_with_ownership_ssi'])

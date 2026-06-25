@@ -18,10 +18,10 @@ RSpec.describe UpdateOrgCartItemReviewersJob do
   end
 
   describe 'reviewer resolution' do
-    let(:media_id)    { 'media-1' }
-    let(:requester)   { User.create!(email: 'requester@example.com', password: 'password') }
-    let(:manager)     { User.create!(email: 'manager@example.com', password: 'password') }
-    let!(:cart_item)  { CartItem.create!(user: requester, work_id: media_id, date_requested: Date.current) }
+    let(:media_id)     { 'media-1' }
+    let!(:requester)   { User.create!(email: 'requester@example.com', password: 'password') }
+    let!(:manager)     { User.create!(email: 'manager@example.com', password: 'password') }
+    let!(:cart_item)   { CartItem.create!(user: requester, work_id: media_id, date_requested: Date.current) }
     let(:reviewer_org) { instance_double(OrganizationCollection, id: org_id) }
 
     before do

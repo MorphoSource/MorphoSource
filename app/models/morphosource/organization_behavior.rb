@@ -121,10 +121,21 @@ module Morphosource
     end
 
     # Returns ms_ids of the users who should approve download requests for this organization.
-    # When an organization has download_reviewer configured, those users are returned.
-    # When an organization has no download_reviewer configured, the ms_ids of the organization managers are returned.
-    def media_download_reviewers
-      download_reviewer.present? ? Array(download_reviewer) : managers.map(&:ms_id)
+    # Org IDs in download_reviewer are resolved recursively to user ms_ids.
+    # visited guards against cycles (e.g. Org A → Org B → Org A).
+    def media_download_reviewers(visited = Set.new)
+      return [] if visited.include?(id)
+      visited << id
+
+      if download_reviewer.present?
+        reviewer_ids = Array(download_reviewer)
+        user_ids = User.where(ms_id: reviewer_ids).map(&:ms_id)
+        org_ids  = OrganizationCollection.where(id: reviewer_ids)
+                                         .flat_map { |org| org.media_download_reviewers(visited) }
+        (user_ids + org_ids).uniq
+      else
+        managers.map(&:ms_id)
+      end
     end
   end
 end

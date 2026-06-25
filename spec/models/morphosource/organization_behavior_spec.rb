@@ -143,6 +143,36 @@ RSpec.describe OrganizationCollection, type: :model do
       end
     end
 
+    context 'the organization has another organization as its download_reviewer' do
+      let(:nested_org) { FactoryBot.create(:organization_collection, title: ['Nested Org'], depositor: user.user_key) }
+
+      before do
+        nested_org.managers << user2
+        nested_org.managers_group.save!
+        organization.download_reviewer = [nested_org.id]
+        organization.save!
+      end
+
+      it 'resolves the nested org to its managers ms_ids' do
+        expect(organization.media_download_reviewers).to match_array([user2.ms_id])
+      end
+    end
+
+    context 'two organizations reference each other as download_reviewer (cycle)' do
+      let(:other_org) { FactoryBot.create(:organization_collection, title: ['Other Org'], depositor: user.user_key) }
+
+      before do
+        organization.download_reviewer = [other_org.id]
+        organization.save!
+        other_org.download_reviewer = [organization.id]
+        other_org.save!
+      end
+
+      it 'returns an empty array without looping' do
+        expect(organization.media_download_reviewers).to eq([])
+      end
+    end
+
     context 'the organization has no download_reviewer' do
       context 'the organization has managers' do
         before do

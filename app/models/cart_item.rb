@@ -118,6 +118,8 @@ class CartItem < ApplicationRecord
 
   private
 
+  # For previously requested items that are re-requested (expired, canceled, etc.),
+  # refresh the reviewers on the cart item to match the current reviewers on the work.
   def refresh_reviewers_on_request
     self.reviewers = work&.reviewer
   end

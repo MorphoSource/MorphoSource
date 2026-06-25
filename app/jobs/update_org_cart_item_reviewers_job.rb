@@ -38,12 +38,37 @@ class UpdateOrgCartItemReviewersJob < Hyrax::ApplicationJob
     results = ActiveFedora::SolrService.query(
       '*:*',
       fq: ["id:(#{escaped_ids})"],
-      fl: ['id', 'download_reviewer_ssim'],
+      fl: ['id', 'download_reviewer_ssim', 'user_with_ownership_ssi'],
       rows: media_ids.size
     )
+
+    all_ids = results.flat_map { |doc|
+      Array(doc['download_reviewer_ssim']) + Array(doc['user_with_ownership_ssi'])
+    }.uniq
+
+    user_ms_ids  = User.where(ms_id: all_ids).map(&:ms_id).to_set
+    org_reviewer_map = OrganizationCollection.where(id: all_ids)
+                                             .each_with_object({}) { |org, h| h[org.id] = org.media_download_reviewers }
+
     results.each_with_object({}) do |doc, hash|
-      hash[doc['id']] = doc['download_reviewer_ssim'] || []
+      hash[doc['id']] = resolve_reviewers(
+        Array(doc['download_reviewer_ssim']),
+        doc['user_with_ownership_ssi'],
+        user_ms_ids,
+        org_reviewer_map
+      )
     end
+  end
+
+  def resolve_reviewers(download_reviewer, ownership, user_ms_ids, org_reviewer_map)
+    if download_reviewer.present?
+      user_ids = download_reviewer.select { |id| user_ms_ids.include?(id) }
+      org_ids  = download_reviewer.flat_map { |id| org_reviewer_map[id] || [] }
+      resolved = (user_ids + org_ids).uniq
+      return resolved if resolved.present?
+    end
+
+    org_reviewer_map[ownership] || Array(ownership)
   end
 
   def pending_cart_items(work_id)

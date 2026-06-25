@@ -30,33 +30,6 @@ RSpec.describe Morphosource::PermissionsHelper, type: :helper do
     end
   end
 
-  describe 'reviewer_email' do
-    let!(:reviewer)  { User.create(email: 'email@email.com', password: 'password') }
-    let(:media)     { Media.new() }
-    let(:form)      { Hyrax::MediaForm.new(media, nil, nil) }
-
-    context 'A default reviewer exists' do
-      before do
-        media.download_reviewer = [reviewer.ms_id]
-      end
-      it 'returns the reviewer email' do
-        helper.simple_form_for form, url: '' do |f|
-          expect(helper.reviewer_email(f)).to eq(reviewer.email)
-        end
-      end
-    end
-    context 'A default reviewer does not exist' do
-      before do
-        media.download_reviewer = []
-      end
-      it 'returns the reviewer email' do
-        helper.simple_form_for form, url: '' do |f|
-          expect(helper.reviewer_email(f)).to eq('')
-        end
-      end
-    end
-  end
-
   describe 'default_present?' do
     let(:media) { Media.new() }
     let(:form)  { Hyrax::MediaForm.new(media, nil, nil) }

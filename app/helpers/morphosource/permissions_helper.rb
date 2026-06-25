@@ -19,12 +19,6 @@ module Morphosource
       "This value has been suggested by #{organization&.title&.first}"
     end
 
-    def reviewer_email(f)
-      ms_id = f.object.model.download_reviewer.first
-      user = User.where(ms_id: ms_id).first
-      user ? user.email : ''
-    end
-
     def manager_data(f)
       if f.object.model.id.present? && f.object.model.data_manager&.first.present?
         ms_id = f.object.model.data_manager&.first
@@ -38,7 +32,7 @@ module Morphosource
       if f.object.model.id.present?
         f.object.model.download_reviewer.map do |id|
           if (user = User.find_by(ms_id: id))
-            { id: user.ms_id, user_key: user.ms_id, text: user.name_or_email }
+            { id: user.ms_id, user_key: user.ms_id, text: user.email.present? ? user.email : user.name_or_email }
           elsif (org = OrganizationCollection.find_by(id: id))
             { id: org.id, user_key: org.id, text: org.name }
           else
@@ -46,7 +40,7 @@ module Morphosource
           end
         end
       else
-        [{ id: current_user.ms_id, user_key: current_user.ms_id, text: current_user.name_or_email }]
+        [{ id: current_user.ms_id, user_key: current_user.ms_id, text: current_user.email.present? ? current_user.email : current_user.name_or_email }]
       end.to_json
     end
 

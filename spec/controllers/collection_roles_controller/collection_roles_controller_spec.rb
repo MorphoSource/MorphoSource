@@ -943,6 +943,20 @@ RSpec.describe CollectionRolesController, type: :controller do
           end
         end
 
+        context 'moving a user from managers to viewers' do
+          let(:params) { { collection_roles: { agent_type: 'user', access: 'managers', new_access: 'viewers', agent_id: another_user.ms_id }, id: org.id } }
+
+          before do
+            org.managers << another_user
+            org.managers_group.save
+          end
+
+          it 'enqueues UpdateOrgCartItemReviewersJob' do
+            expect(UpdateOrgCartItemReviewersJob).to receive(:perform_later).with(org.id)
+            post :update_collection_groups, params: params
+          end
+        end
+
         context 'adding a user to a non-managers group' do
           let(:params) { { collection_roles: { agent_type: 'user', remove: 'false', access: 'viewers', agent_id: another_user.ms_id }, id: org.id } }
 

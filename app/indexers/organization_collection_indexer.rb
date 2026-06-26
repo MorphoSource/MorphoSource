@@ -11,6 +11,7 @@ class OrganizationCollectionIndexer < Hyrax::CollectionWithBasicMetadataIndexer
       solr_doc['ark_ssim'] = object.ark
       solr_doc['date_managed_dtsi'] = object.date_managed
       solr_doc['continent_ssim'] = object.continent # some countries have multiple continents
+      solr_doc['download_reviewer_ssim'] = object.download_reviewer
     end
   end
 end

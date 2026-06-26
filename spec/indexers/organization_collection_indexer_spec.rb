@@ -75,6 +75,7 @@ RSpec.describe OrganizationCollectionIndexer do
     expect(solr_document['description_tesim']).to match_array(organization.description)
     expect(solr_document['download_permission_tesim']).to match_array(organization.download_permission)
     expect(solr_document['download_reviewer_tesim']).to match_array(organization.download_reviewer)
+    expect(solr_document['download_reviewer_ssim']).to match_array(organization.download_reviewer)
     expect(solr_document['generic_type_sim']).to match_array(['Collection'])
     expect(solr_document['has_model_ssim']).to match_array(organization.class.to_s)
     expect(solr_document['institution_code_tesim']).to match_array(organization.institution_code)

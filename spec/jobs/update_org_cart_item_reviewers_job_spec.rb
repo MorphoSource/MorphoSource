@@ -22,7 +22,7 @@ RSpec.describe UpdateOrgCartItemReviewersJob do
     let(:grandparent_org_id) { 'grandparent-org-id' }
 
     def solr_org_query_for(id)
-      satisfy { |q| q.include?("OrganizationCollection") && q.include?(RSolr.solr_escape(id)) }
+      satisfy { |q| q.include?("has_model_ssim:OrganizationCollection") && q.include?("download_reviewer_ssim:#{RSolr.solr_escape(id)}") }
     end
 
     it 'returns ids of orgs that list the given org as a download_reviewer' do

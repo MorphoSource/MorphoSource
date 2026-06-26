@@ -17,6 +17,44 @@ RSpec.describe UpdateOrgCartItemReviewersJob do
     expect(OrganizationCollection).to have_received(:find).with(org_id)
   end
 
+  describe 'ancestor_org_ids' do
+    let(:parent_org_id) { 'parent-org-id' }
+    let(:grandparent_org_id) { 'grandparent-org-id' }
+
+    def solr_org_query_for(id)
+      satisfy { |q| q.include?("OrganizationCollection") && q.include?(RSolr.solr_escape(id)) }
+    end
+
+    it 'returns ids of orgs that list the given org as a download_reviewer' do
+      allow(ActiveFedora::SolrService).to receive(:query)
+        .with(solr_org_query_for(org_id), anything).and_return([{ 'id' => parent_org_id }])
+      allow(ActiveFedora::SolrService).to receive(:query)
+        .with(solr_org_query_for(parent_org_id), anything).and_return([])
+
+      expect(job.send(:ancestor_org_ids, org_id)).to eq([parent_org_id])
+    end
+
+    it 'discovers ancestors recursively' do
+      allow(ActiveFedora::SolrService).to receive(:query)
+        .with(solr_org_query_for(org_id), anything).and_return([{ 'id' => parent_org_id }])
+      allow(ActiveFedora::SolrService).to receive(:query)
+        .with(solr_org_query_for(parent_org_id), anything).and_return([{ 'id' => grandparent_org_id }])
+      allow(ActiveFedora::SolrService).to receive(:query)
+        .with(solr_org_query_for(grandparent_org_id), anything).and_return([])
+
+      expect(job.send(:ancestor_org_ids, org_id)).to contain_exactly(parent_org_id, grandparent_org_id)
+    end
+
+    it 'handles cycles without looping' do
+      allow(ActiveFedora::SolrService).to receive(:query)
+        .with(solr_org_query_for(org_id), anything).and_return([{ 'id' => parent_org_id }])
+      allow(ActiveFedora::SolrService).to receive(:query)
+        .with(solr_org_query_for(parent_org_id), anything).and_return([{ 'id' => org_id }])
+
+      expect { job.send(:ancestor_org_ids, org_id) }.not_to raise_error
+    end
+  end
+
   describe 'reviewer resolution' do
     let(:media_id)     { 'media-1' }
     let!(:requester)   { User.create!(email: 'requester@example.com', password: 'password') }

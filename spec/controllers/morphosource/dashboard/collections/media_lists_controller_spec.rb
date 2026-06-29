@@ -73,4 +73,196 @@ RSpec.describe Morphosource::Dashboard::Collections::MediaListsController, type:
       end
     end
   end
+
+  describe 'check_for_doi' do
+    let(:non_admin)           { FactoryBot.create(:user) }
+    let(:admin)               { FactoryBot.create(:admin) }
+    let(:media_list_with_doi) { FactoryBot.create(:media_list, doi: ['10.5072/FK2/EXAMPLE']) }
+
+    context 'when user is not admin and media list has a DOI' do
+      before do
+        sign_in non_admin
+        controller.instance_variable_set(:@collection, media_list_with_doi)
+      end
+
+      it 'redirects to edit path with doi_warning error flash' do
+        expect(controller).to receive(:redirect_to).with(media_list_edit_path(media_list_with_doi))
+        controller.send(:check_for_doi)
+        expect(controller.flash[:error]).to eq(I18n.t('morphosource.dashboard.collections.media_list.edit.doi_warning'))
+      end
+    end
+
+    context 'when user is admin and media list has a DOI' do
+      before do
+        sign_in admin
+        controller.instance_variable_set(:@collection, media_list_with_doi)
+      end
+
+      it 'does not redirect' do
+        expect(controller).not_to receive(:redirect_to)
+        controller.send(:check_for_doi)
+      end
+    end
+  end
+
+  describe 'check_visibility_direction' do
+    let(:non_admin) { FactoryBot.create(:user) }
+    let(:admin)     { FactoryBot.create(:admin) }
+
+    context 'when non-admin attempts to change visibility from open to restricted on a DOI list' do
+      let(:media_list_with_doi) { FactoryBot.create(:media_list, doi: ['10.5072/FK2/EXAMPLE'], visibility: 'open') }
+      before do
+        sign_in non_admin
+        controller.instance_variable_set(:@collection, media_list_with_doi)
+        allow(controller).to receive(:params).and_return(
+          ActionController::Parameters.new(media_list: { visibility: 'restricted' })
+        )
+      end
+
+      it 'redirects to edit path with doi_visibility_error flash' do
+        expect(controller).to receive(:redirect_to).with(media_list_edit_path(media_list_with_doi))
+        controller.send(:check_visibility_direction)
+        expect(controller.flash[:error]).to eq(I18n.t('morphosource.dashboard.collections.media_list.edit.doi_visibility_error'))
+      end
+    end
+
+    context 'when non-admin changes visibility from restricted to open on a DOI list' do
+      let(:media_list_with_doi) { FactoryBot.create(:media_list, doi: ['10.5072/FK2/EXAMPLE'], visibility: 'restricted') }
+      before do
+        sign_in non_admin
+        controller.instance_variable_set(:@collection, media_list_with_doi)
+        allow(controller).to receive(:params).and_return(
+          ActionController::Parameters.new(media_list: { visibility: 'open' })
+        )
+      end
+
+      it 'does not redirect' do
+        expect(controller).not_to receive(:redirect_to)
+        controller.send(:check_visibility_direction)
+      end
+    end
+
+    context 'when admin attempts to change visibility from open to restricted on a DOI list' do
+      let(:media_list_with_doi) { FactoryBot.create(:media_list, doi: ['10.5072/FK2/EXAMPLE'], visibility: 'open') }
+      before do
+        sign_in admin
+        controller.instance_variable_set(:@collection, media_list_with_doi)
+        allow(controller).to receive(:params).and_return(
+          ActionController::Parameters.new(media_list: { visibility: 'restricted' })
+        )
+      end
+
+      it 'does not redirect' do
+        expect(controller).not_to receive(:redirect_to)
+        controller.send(:check_visibility_direction)
+      end
+    end
+
+    context 'when non-admin attempts to change visibility on a list with no DOI' do
+      let(:media_list_no_doi) { FactoryBot.create(:media_list, visibility: 'open') }
+      before do
+        sign_in non_admin
+        controller.instance_variable_set(:@collection, media_list_no_doi)
+        allow(controller).to receive(:params).and_return(
+          ActionController::Parameters.new(media_list: { visibility: 'restricted' })
+        )
+      end
+
+      it 'does not redirect' do
+        expect(controller).not_to receive(:redirect_to)
+        controller.send(:check_visibility_direction)
+      end
+    end
+  end
+
+  describe 'strip_doi_protected_fields' do
+    let(:non_admin)           { FactoryBot.create(:user) }
+    let(:admin)               { FactoryBot.create(:admin) }
+    let(:media_list_with_doi) { FactoryBot.create(:media_list, doi: ['10.5072/FK2/EXAMPLE']) }
+    let(:media_list_no_doi)   { FactoryBot.create(:media_list) }
+    # Reuse the same params object so in-place slice! mutations are observable.
+    let(:ml_params) { ActionController::Parameters.new(media_list: { title: 'New Title', description: 'desc', visibility: 'open' }) }
+
+    context 'when non-admin submits extra fields on a DOI list' do
+      before do
+        sign_in non_admin
+        controller.instance_variable_set(:@collection, media_list_with_doi)
+        allow(controller).to receive(:params).and_return(ml_params)
+      end
+
+      it 'strips all params except visibility' do
+        controller.send(:strip_doi_protected_fields)
+        expect(ml_params[:media_list].keys).to eq(['visibility'])
+      end
+    end
+
+    context 'when admin submits extra fields on a DOI list' do
+      before do
+        sign_in admin
+        controller.instance_variable_set(:@collection, media_list_with_doi)
+        allow(controller).to receive(:params).and_return(ml_params)
+      end
+
+      it 'does not strip any params' do
+        controller.send(:strip_doi_protected_fields)
+        expect(ml_params[:media_list].keys).to include('title', 'description', 'visibility')
+      end
+    end
+
+    context 'when non-admin submits fields on a list with no DOI' do
+      before do
+        sign_in non_admin
+        controller.instance_variable_set(:@collection, media_list_no_doi)
+        allow(controller).to receive(:params).and_return(ml_params)
+      end
+
+      it 'does not strip any params' do
+        controller.send(:strip_doi_protected_fields)
+        expect(ml_params[:media_list].keys).to include('title', 'description', 'visibility')
+      end
+    end
+  end
+
+  describe 'add_doi_message' do
+    let(:non_admin)           { FactoryBot.create(:user) }
+    let(:admin)               { FactoryBot.create(:admin) }
+    let(:media_list_with_doi) { FactoryBot.create(:media_list, doi: ['10.5072/FK2/EXAMPLE']) }
+    let(:media_list_no_doi)   { FactoryBot.create(:media_list) }
+
+    context 'when non-admin edits a DOI list' do
+      before do
+        sign_in non_admin
+        controller.instance_variable_set(:@collection, media_list_with_doi)
+      end
+
+      it 'sets flash.now[:alert] with doi_message' do
+        controller.send(:add_doi_message)
+        expect(controller.flash.now[:alert]).to eq(I18n.t('morphosource.dashboard.collections.media_list.edit.doi_message'))
+      end
+    end
+
+    context 'when admin edits a DOI list' do
+      before do
+        sign_in admin
+        controller.instance_variable_set(:@collection, media_list_with_doi)
+      end
+
+      it 'does not set flash.now[:alert]' do
+        controller.send(:add_doi_message)
+        expect(controller.flash.now[:alert]).to be_nil
+      end
+    end
+
+    context 'when non-admin edits a list with no DOI' do
+      before do
+        sign_in non_admin
+        controller.instance_variable_set(:@collection, media_list_no_doi)
+      end
+
+      it 'does not set flash.now[:alert]' do
+        controller.send(:add_doi_message)
+        expect(controller.flash.now[:alert]).to be_nil
+      end
+    end
+  end
 end

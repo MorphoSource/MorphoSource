@@ -59,6 +59,10 @@ class CharacterizeJob < HeavyJob
     # UpdateDataAllocationStorageJob queries all_files_file_size_lts. This is an accepted
     # approximation: storage_current_gb is display-only and not used by the billing cycle,
     # which calculates storage independently from FileSet file_size_lts.
+    # TODOVALK: When FileSets are valkyrized this AF-based CharacterizeJob will be replaced.
+    # The valkyrize-fileset PR must provide an alternate route to enqueue
+    # UpdateFileSetDataAllocationJob, presumably via a Valkyrie event listener on
+    # the characterization complete event.
     UpdateFileSetDataAllocationJob.perform_later(file_set)
     CreateDerivativesJob.perform_later(file_set, file_id, filepath)
   end

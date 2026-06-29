@@ -15,13 +15,11 @@ class CreateDerivativesJob < HeavyJob
     # Reload from Fedora and reindex for thumbnail and extracted text
     file_set.reload
     file_set.update_index
-    file_set.parent.update_index if parent_needs_reindex?(file_set)
-  end
-
-  # If this file_set is the thumbnail for the parent work,
-  # then the parent also needs to be reindexed.
-  def parent_needs_reindex?(file_set)
-    return false unless file_set.parent
-    file_set.parent.thumbnail_id == file_set.id
+    # Always reindex the parent Media so that all_files_file_size_lts in Solr reflects
+    # current on-disk derivative sizes for all FileSets, not just the thumbnail. Previously
+    # this was conditional on parent_needs_reindex? (i.e. only when the FileSet is the
+    # thumbnail), which left derivative sizes permanently absent from the Media Solr doc
+    # for non-thumbnail FileSets.
+    file_set.parent&.update_index
   end
 end

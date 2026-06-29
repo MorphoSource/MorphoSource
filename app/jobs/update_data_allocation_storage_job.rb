@@ -1,25 +1,25 @@
 class UpdateDataAllocationStorageJob < Hyrax::ApplicationJob
   queue_as :default
 
+  # Stay safely below Solr's default maxBooleanClauses limit (1024 in Solr ≤ 8.x)
+  BATCH_SIZE = 1_000
+
   def perform(data_allocation)
     raise "this type of data allocation is not yet supported" if data_allocation.user?
     raise "fund_code is nil for fund_code-type DataAllocation #{data_allocation.id}" unless data_allocation.fund_code
 
     media_ids = data_allocation.fund_code.fund_code_media_associations.where(active: true).pluck(:media)
 
-    total_bytes = if media_ids.any?
+    total_bytes = 0
+    if media_ids.any?
       solr = Morphosource::SolrService.new
-      # NOTE: Solr enforces a maxBooleanClauses limit (1024 by default in Solr ≤ 8.x).
-      # A fund code with more than 1024 active media IDs would cause this query to fail.
-      # This OR-clause pattern is used elsewhere in the codebase and is an existing limitation.
-      # If large fund codes are anticipated, this query should be batched.
-      docs = solr.get_docs(nil, {
-        fq: ["id:(#{media_ids.join(' OR ')})"],
-        fl: ['id', 'all_files_file_size_lts']
-      })
-      docs.map { |doc| doc['all_files_file_size_lts'] }.compact.sum
-    else
-      0
+      media_ids.each_slice(BATCH_SIZE) do |batch|
+        docs = solr.get_docs(nil, {
+          fq: ["id:(#{batch.join(' OR ')})"],
+          fl: ['id', 'all_files_file_size_lts']
+        })
+        total_bytes += docs.map { |doc| doc['all_files_file_size_lts'] }.compact.sum
+      end
     end
 
     # Convert bytes to binary gigabytes (1 GiB = 2^30 bytes)

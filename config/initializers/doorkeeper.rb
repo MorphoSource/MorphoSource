@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
-return unless Hyrax.config.enable_identity_provider?
-
+# Always configure Doorkeeper so its ORM hooks (registered by doorkeeper-openid_connect
+# at gem load time) don't raise MissingConfiguration during app initialization.
+# Whether the OAuth/OIDC endpoints are actually exposed is controlled by
+# Hyrax.config.enable_identity_provider? in config/routes.rb.
 Doorkeeper.configure do
   orm :active_record
 

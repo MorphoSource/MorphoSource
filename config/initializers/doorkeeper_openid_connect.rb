@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
-return unless Hyrax.config.enable_identity_provider?
-
+# Always configure Doorkeeper::OpenidConnect — its ORM hook calls
+# Doorkeeper::OpenidConnect.configuration at startup regardless of feature flags,
+# raising MissingConfiguration if this block is skipped. Routes remain gated
+# by Hyrax.config.enable_identity_provider? in config/routes.rb.
 Doorkeeper::OpenidConnect.configure do
   # OIDC spec requires a full HTTPS URL as the issuer, not just a hostname.
   issuer "https://#{Hyrax.config.host_name}"

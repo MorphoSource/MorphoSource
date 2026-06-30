@@ -9,7 +9,7 @@ module Morphosource
     extend ActiveSupport::Autoload
 
     SUBMISSION_PATH = 'servlet/deposit'
-    @@xsd_schema = nil
+    @@xsd_schemas = {}
 
     # Used to transform params hash into binding for ERB template rendering
     class CrossrefMetadataTemplate < OpenStruct
@@ -35,10 +35,13 @@ module Morphosource
     end
 
     # See: https://www.crossref.org/education/content-registration/crossrefs-metadata-deposit-schema/metadata-deposit-schema-4-4-2/
-    def self.validate_metadata_deposit_xml(input_xml)
+    def self.validate_metadata_deposit_xml(input_xml, model:)
       # memoized XSD parsing, since parsing the XSD is somewhat time-consuming
-      @@xsd_schema ||= Nokogiri::XML::Schema(File.open(schema_path))
-      validation_errors = @@xsd_schema.validate(Nokogiri::XML(input_xml))
+      # Cache schemas by path because Media and MediaList deposits use different
+      # Crossref schema versions.
+      current_schema_path = schema_path(model)
+      xsd_schema = (@@xsd_schemas[current_schema_path.to_s] ||= Nokogiri::XML::Schema(File.open(current_schema_path)))
+      validation_errors = xsd_schema.validate(Nokogiri::XML(input_xml))
       if validation_errors.empty?
         return input_xml
       else
@@ -46,8 +49,8 @@ module Morphosource
       end
     end
 
-    def self.identifier_to_doi(identifier)
-      "#{ENV['CROSSREF_DOI_SHOULDER']}/#{type_letter}#{identifier.sub(/^0*/,'')}"
+    def self.identifier_to_doi(identifier, model:)
+      "#{ENV['CROSSREF_DOI_SHOULDER']}/#{type_letter(model)}#{identifier.sub(/^0*/,'')}"
     end
 
     # Required keys in params hash:
@@ -55,8 +58,8 @@ module Morphosource
     # - url
     # - resource_type
     # Also, either organization must be present OR both author_first and author_last must be present
-    def self.generate_metadata_deposit_xml(identifier, params={})
-      doi = identifier_to_doi(identifier)
+    def self.generate_metadata_deposit_xml(identifier, params={}, model:)
+      doi = identifier_to_doi(identifier, model: model)
 
       # clean params and add additional params as necessary
 
@@ -76,7 +79,7 @@ module Morphosource
       # always set doi_batch_id and doi
       params.merge!({'doi_batch_id' => SecureRandom.uuid, 'doi' => doi})
 
-      required_params.each do |required_param|
+      required_params(model).each do |required_param|
         if params[required_param].blank?
           raise "CrossrefDoiMinter.generate_metadata_deposit_xml call missing required parameter: #{required_param}"
         else
@@ -88,13 +91,13 @@ module Morphosource
         raise "CrossrefDoiMinter.generate_metadata_deposit_xml call missing required parameter: organization OR author_first and author_last"
       end
 
-      rendered_xml = CrossrefMetadataTemplate.new(params).render(File.new(template_path).read)
+      rendered_xml = CrossrefMetadataTemplate.new(params).render(File.new(template_path(model)).read)
       Rails.logger.info("CrossrefDoiMinter.generate_metadata_deposit_xml rendered deposit XML: #{rendered_xml}")
-      return validate_metadata_deposit_xml(rendered_xml)
+      return validate_metadata_deposit_xml(rendered_xml, model: model)
     end
 
     def self.mint_doi(identifier, metadata_params={})
-      @model = SolrDocument.find(identifier)["has_model_ssim"]&.first
+      model = SolrDocument.find(identifier)["has_model_ssim"]&.first
       %w{username password shoulder url}.each do |doi_param|
         environment_param = "CROSSREF_DOI_#{doi_param.upcase}"
         if ENV[environment_param].blank?
@@ -105,7 +108,7 @@ module Morphosource
       submission_url = "#{ENV['CROSSREF_DOI_URL']}/#{SUBMISSION_PATH}"
       login_id = ENV['CROSSREF_DOI_USERNAME']
       login_passwd = ENV['CROSSREF_DOI_PASSWORD']
-      deposit_xml = generate_metadata_deposit_xml(identifier, metadata_params)
+      deposit_xml = generate_metadata_deposit_xml(identifier, metadata_params, model: model)
       # See: https://www.crossref.org/education/member-setup/direct-deposit-xml/https-post/
       begin
         submission_response = RestClient.post(submission_url, multipart: true, fname: string_to_file(deposit_xml), login_id: login_id, login_passwd: login_passwd, headers: {content_type: "multipart/form-data"})
@@ -113,7 +116,7 @@ module Morphosource
       rescue RestClient::ExceptionWithResponse => exception
         exception
       end
-      identifier_to_doi(identifier)
+      identifier_to_doi(identifier, model: model)
     end
 
     # model type methods
@@ -133,26 +136,26 @@ module Morphosource
       }
     }.freeze
 
-    def self.type_config
-      TYPE_CONFIG.fetch(@model) do
-        raise "Unknown model type: #{@model.inspect}"
+    def self.type_config(model)
+      TYPE_CONFIG.fetch(model) do
+        raise "Unknown model type: #{model.inspect}"
       end
     end
 
-    def self.required_params
-      type_config[:required_params]
+    def self.required_params(model)
+      type_config(model)[:required_params]
     end
 
-    def self.schema_path
-      type_config[:schema_path]
+    def self.schema_path(model)
+      type_config(model)[:schema_path]
     end
 
-    def self.template_path
-      type_config[:template_path]
+    def self.template_path(model)
+      type_config(model)[:template_path]
     end
 
-    def self.type_letter
-      type_config[:type_letter]
+    def self.type_letter(model)
+      type_config(model)[:type_letter]
     end
   end
 end

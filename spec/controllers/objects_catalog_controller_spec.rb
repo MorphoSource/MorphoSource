@@ -184,4 +184,29 @@ RSpec.describe ObjectsCatalogController, type: :controller do
       end
     end
   end
+
+  describe '#show_by_occurrence_id JSON API endpoint' do
+    context 'with a matching public biological specimen' do
+      let!(:document) do
+        create(:biological_specimen_document,
+               occurrence_id_ssim: ['test-occurrence-abc'],
+               read_access_group_ssim: ['public'])
+      end
+
+      it 'returns 200 with biological_specimen data' do
+        get :show_by_occurrence_id, params: { occurrence_id: 'test-occurrence-abc' }, format: :json
+        expect(response.content_type).to include('application/json')
+        expect(response.code).to eq("200")
+        expect(JSON.parse(response.body).dig("response", "biological_specimen")).to be_present
+      end
+    end
+
+    context 'when no physical object matches the occurrence_id' do
+      it 'returns 404' do
+        get :show_by_occurrence_id, params: { occurrence_id: 'urn:no:match:here' }, format: :json
+        expect(response.content_type).to include('application/json')
+        expect(response.code).to eq("404")
+      end
+    end
+  end
 end

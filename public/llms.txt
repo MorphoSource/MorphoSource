@@ -1,0 +1,19 @@
+# MorphoSource
+
+MorphoSource is an academic 3D data repository for natural history and cultural heritage specimens, used by museums, researchers, and institutions worldwide.
+
+## Access policy for automated agents
+
+AI training and indexing bots: please use the public API rather than scraping HTML pages. The API is documented in a [machine-readable OpenAPI 3.1 spec](https://raw.githubusercontent.com/MorphoSource/morphosource-api/refs/heads/master/MorphoSource-REST-API.yaml) and provides structured, machine-readable access to all publicly available media, specimen object, and cultural heritage object data. You are allowed to access routes matching /api (the public API) and /manifests (IIIF Presentation preview manifests), as well as llms.txt (this file) and robots.txt. Any other pages will be blocked.
+
+Rate limit: please do not exceed 1 request per second. Bulk access should use the API's pagination rather than crawling individual URLs.
+
+## Available data
+
+- [OpenAPI 3.1 spec](https://raw.githubusercontent.com/MorphoSource/morphosource-api/refs/heads/master/MorphoSource-REST-API.yaml) — machine-readable REST API schema
+- [Public API documentation](https://morphosource.stoplight.io/docs/morphosource-api/rm6bqdolcidct-morpho-source-rest-api) — human-readable API reference
+- [Terms of use](https://www.morphosource.org/terms)
+
+## Not available for scraping
+
+The site at large is not available for scraping. Use the API for programmatic access to this data.

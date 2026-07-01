@@ -173,6 +173,23 @@ RSpec.describe Morphosource::Dashboard::Collections::MediaListsController, type:
         controller.send(:check_visibility_direction)
       end
     end
+
+    context 'when non-admin submits a non-public, non-restricted visibility (e.g. authenticated) on a public DOI list' do
+      let(:media_list_with_doi) { FactoryBot.create(:media_list, doi: ['10.5072/FK2/EXAMPLE'], visibility: 'open') }
+      before do
+        sign_in non_admin
+        controller.instance_variable_set(:@collection, media_list_with_doi)
+        allow(controller).to receive(:params).and_return(
+          ActionController::Parameters.new(media_list: { visibility: 'authenticated' })
+        )
+      end
+
+      it 'redirects to edit path with doi_visibility_error flash' do
+        expect(controller).to receive(:redirect_to).with(media_list_edit_path(media_list_with_doi))
+        controller.send(:check_visibility_direction)
+        expect(controller.flash[:error]).to eq(I18n.t('morphosource.dashboard.collections.media_list.edit.doi_visibility_error'))
+      end
+    end
   end
 
   describe 'strip_doi_protected_fields' do

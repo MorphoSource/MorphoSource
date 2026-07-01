@@ -55,11 +55,15 @@ module Morphosource
             end
           end
 
-          # Blocks non-admin users from changing visibility from public back to private on a DOI list.
+          # Blocks non-admin users from moving a public DOI list to any non-public visibility.
+          # Checks against VISIBILITY_TEXT_VALUE_PUBLIC ('open') rather than a specific target
+          # value so crafted requests with e.g. 'authenticated' are also rejected.
           def check_visibility_direction
             return if current_user.admin?
             return unless @collection.doi.present?
-            return unless @collection.visibility == 'open' && params.dig(:media_list, :visibility) == 'restricted'
+            public_value = Hydra::AccessControls::AccessRight::VISIBILITY_TEXT_VALUE_PUBLIC
+            return unless @collection.visibility == public_value &&
+                          params.dig(:media_list, :visibility) != public_value
             flash[:error] = t('morphosource.dashboard.collections.media_list.edit.doi_visibility_error')
             redirect_to media_list_edit_path(@collection)
           end

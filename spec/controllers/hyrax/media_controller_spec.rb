@@ -605,7 +605,8 @@ RSpec.describe Hyrax::MediaController, type: :controller do
           "description" => ["Updated description"],
           "visibility" => "open",
           "permissions_attributes" => { "0" => { "access" => "read" } },
-          "aleph_scene" => '{"annotations":[]}'
+          "aleph_scene" => '{"annotations":[]}',
+          "download_reviewer" => ["user@example.com"]
         }
       })
     end
@@ -656,6 +657,11 @@ RSpec.describe Hyrax::MediaController, type: :controller do
         it 'keeps aleph_scene so annotations can still be saved' do
           subject.send(:strip_doi_protected_fields)
           expect(params["media"].keys).to include("aleph_scene")
+        end
+
+        it 'keeps download_reviewer so it can still be changed' do
+          subject.send(:strip_doi_protected_fields)
+          expect(params["media"].keys).to include("download_reviewer")
         end
       end
     end

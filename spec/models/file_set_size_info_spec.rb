@@ -93,5 +93,46 @@ RSpec.describe FileSetSizeInfo do
       expect(row.summed_derivatives_file_size).to eq(500)
       expect(row.sum_file_size).to eq(2500)
     end
+
+    it 'includes media_derivatives_file_size in sum_file_size on create' do
+      row = FileSetSizeInfo.create!(
+        file_set_id:                 'fs-007',
+        binary_file_size:            1000,
+        summed_derivatives_file_size: 500,
+        media_derivatives_file_size: 200
+      )
+      expect(row.sum_file_size).to eq(1700)
+    end
+
+    it 'recomputes sum_file_size on update of media_derivatives_file_size' do
+      row = FileSetSizeInfo.create!(file_set_id: 'fs-008', binary_file_size: 1000, summed_derivatives_file_size: 200)
+      row.update!(media_derivatives_file_size: 300)
+      expect(row.sum_file_size).to eq(1500)
+    end
+  end
+
+  describe '.update_media_derivatives' do
+    let!(:row) do
+      FileSetSizeInfo.create!(
+        file_set_id:                 'fs-upd-001',
+        media_id:                    'media-upd-001',
+        binary_file_size:            5000,
+        summed_derivatives_file_size: 1000
+      )
+    end
+
+    it 'updates media_derivatives_file_size on matching rows' do
+      FileSetSizeInfo.update_media_derivatives('media-upd-001', 750)
+      expect(row.reload.media_derivatives_file_size).to eq(750)
+    end
+
+    it 'recomputes sum_file_size to include the new media derivative size' do
+      FileSetSizeInfo.update_media_derivatives('media-upd-001', 750)
+      expect(row.reload.sum_file_size).to eq(6750)
+    end
+
+    it 'is a no-op when no rows match media_id' do
+      expect { FileSetSizeInfo.update_media_derivatives('nonexistent', 999) }.not_to raise_error
+    end
   end
 end

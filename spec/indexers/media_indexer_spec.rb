@@ -363,8 +363,6 @@ RSpec.describe MediaIndexer do
       before do
         allow(media).to receive(:file_set_ids).and_return(['fileset-id-1'])
         allow(SolrDocument).to receive(:where).and_return([file_set_doc])
-        allow(Morphosource::DerivativePath).to receive(:derivatives_for_reference).and_return([])
-        # FileSetSizeInfo is the source of truth for sizes
         FileSetSizeInfo.create!(
           file_set_id:                 'fileset-id-1',
           media_id:                    media.id,
@@ -399,7 +397,6 @@ RSpec.describe MediaIndexer do
       before do
         allow(media).to receive(:file_set_ids).and_return(['fileset-id-deriv'])
         allow(SolrDocument).to receive(:where).and_return([file_set_doc])
-        allow(Morphosource::DerivativePath).to receive(:derivatives_for_reference).and_return([])
         FileSetSizeInfo.create!(
           file_set_id:                 'fileset-id-deriv',
           media_id:                    media.id,
@@ -429,7 +426,6 @@ RSpec.describe MediaIndexer do
       before do
         allow(media).to receive(:file_set_ids).and_return(['fileset-id-1', 'fileset-id-2'])
         allow(SolrDocument).to receive(:where).and_return(file_set_docs)
-        allow(Morphosource::DerivativePath).to receive(:derivatives_for_reference).and_return([])
         FileSetSizeInfo.create!(file_set_id: 'fileset-id-1', media_id: media.id, binary_file_size: 10_000, sum_file_size: 10_000)
         FileSetSizeInfo.create!(file_set_id: 'fileset-id-2', media_id: media.id, binary_file_size: 20_000, sum_file_size: 20_000)
       end
@@ -451,7 +447,7 @@ RSpec.describe MediaIndexer do
       end
     end
 
-    context 'when media has media-level derivatives on disk' do
+    context 'when FileSetSizeInfo has media-level derivatives tracked' do
       let(:file_set_doc) do
         SolrDocument.new('id' => 'fileset-id-mderiv', 'label_tesim' => ['scan.ply'], 'mime_type_ssi' => 'application/ply')
       end
@@ -459,19 +455,18 @@ RSpec.describe MediaIndexer do
       before do
         allow(media).to receive(:file_set_ids).and_return(['fileset-id-mderiv'])
         allow(SolrDocument).to receive(:where).and_return([file_set_doc])
-        allow(Morphosource::DerivativePath).to receive(:derivatives_for_reference)
-          .and_return(['/derivatives/media_thumb.jpg'])
-        allow(File).to receive(:size?).with('/derivatives/media_thumb.jpg').and_return(15_000)
+        # media_derivatives_file_size stored in DB — no disk glob at index time
         FileSetSizeInfo.create!(
-          file_set_id:                 'fileset-id-mderiv',
-          media_id:                    media.id,
-          binary_file_size:            50_000,
-          summed_derivatives_file_size: 10_000
+          file_set_id:                  'fileset-id-mderiv',
+          media_id:                     media.id,
+          binary_file_size:             50_000,
+          summed_derivatives_file_size:  10_000,
+          media_derivatives_file_size:   15_000
         )
       end
 
       it 'includes media-level derivative sizes in all_files_file_size_lts' do
-        # sum_file_size (50000 + 10000) + media-level deriv (15000) = 75000
+        # sum_file_size = binary(50000) + fileset_derivs(10000) + media_derivs(15000) = 75000
         expect(subject['all_files_file_size_lts']).to eq(75_000)
       end
 
@@ -483,7 +478,6 @@ RSpec.describe MediaIndexer do
     context 'when media has no file sets' do
       before do
         allow(media).to receive(:file_set_ids).and_return([])
-        allow(Morphosource::DerivativePath).to receive(:derivatives_for_reference).and_return([])
       end
 
       it 'indexes empty file name array' do

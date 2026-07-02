@@ -121,7 +121,6 @@ RSpec.describe Morphosource::FundCodes::FundCodeChargeService do
           media_id:         media_id,
           binary_file_size: 1_200_000
         )
-        allow(Morphosource::DerivativePath).to receive(:derivatives_for_reference).with(media_id).and_return([])
       end
 
       it 'falls back to FileSetSizeInfo sum_file_size' do
@@ -144,10 +143,9 @@ RSpec.describe Morphosource::FundCodes::FundCodeChargeService do
         binary_file_size:             2_000_000,
         summed_derivatives_file_size: 250_000
       )
-      allow(Morphosource::DerivativePath).to receive(:derivatives_for_reference).with(media_id).and_return([])
     end
 
-    it 'returns FileSetSizeInfo sum_file_size (binary + FileSet derivatives) plus media-level derivatives' do
+    it 'returns FileSetSizeInfo sum_file_size (binary + all derivatives)' do
       expect(service.query_media_filesize(media_id)).to eq(2_250_000)
     end
 
@@ -156,15 +154,13 @@ RSpec.describe Morphosource::FundCodes::FundCodeChargeService do
       expect(service.media_sizes[media_id]).to eq(2_250_000)
     end
 
-    context 'when media also has media-level derivatives on disk' do
+    context 'when FileSetSizeInfo has media-level derivatives tracked' do
       before do
-        allow(Morphosource::DerivativePath)
-          .to receive(:derivatives_for_reference).with(media_id)
-          .and_return(['/derivatives/media_thumb.jpg'])
-        allow(File).to receive(:size?).with('/derivatives/media_thumb.jpg').and_return(50_000)
+        FileSetSizeInfo.find_by(file_set_id: fileset_id)
+          .update!(media_derivatives_file_size: 50_000)
       end
 
-      it 'adds media-level derivative sizes on top of FileSetSizeInfo sum' do
+      it 'includes media-level derivative sizes in the total' do
         expect(service.query_media_filesize(media_id)).to eq(2_300_000)
       end
     end
@@ -172,7 +168,7 @@ RSpec.describe Morphosource::FundCodes::FundCodeChargeService do
     context 'when no FileSetSizeInfo rows exist for the media' do
       before { FileSetSizeInfo.where(media_id: media_id).destroy_all }
 
-      it 'returns only the media-level derivative size (0 when none on disk)' do
+      it 'returns 0' do
         expect(service.query_media_filesize(media_id)).to eq(0)
       end
     end

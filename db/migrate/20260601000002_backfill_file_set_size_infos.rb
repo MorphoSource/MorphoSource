@@ -111,6 +111,7 @@ class BackfillFileSetSizeInfos < ActiveRecord::Migration[6.1]
           summed_derivatives_file_size: summed_deriv_size,
           # Computed inline because this migration's stub model has no before_save callback.
           # Must match FileSetSizeInfo#compute_sum_file_size if the formula changes.
+          # media_derivatives_file_size is added by migration 20260601000004 (backfilled separately).
           sum_file_size:               binary_file_size + summed_deriv_size
         )
         row.save!

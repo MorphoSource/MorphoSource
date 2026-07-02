@@ -204,14 +204,11 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['human_readable_type_ssi'] = object.human_readable_type
       solr_doc['publisher_ssim'] = object.publisher
 
-      # File sizes — read from FileSetSizeInfo rather than re-computing from Solr/filesystem.
-      # sum_file_size covers binary + all FileSet derivatives; media-level derivatives
-      # (e.g. user-uploaded thumbnails stored under the Media ID path) are still globbed
-      # from disk and added on top.
+      # File sizes — read from FileSetSizeInfo, which is the authoritative source for all
+      # three size components: binary, FileSet-level derivatives, and media-level derivatives
+      # (e.g. custom thumbnails). sum_file_size covers all of them.
       fs_size_infos = FileSetSizeInfo.where(media_id: object.id)
-      media_deriv_size = Morphosource::DerivativePath.derivatives_for_reference(object.id)
-                           .map { |p| File.size?(p) }.compact.sum
-      solr_doc['all_files_file_size_lts'] = fs_size_infos.sum(:sum_file_size) + media_deriv_size
+      solr_doc['all_files_file_size_lts'] = fs_size_infos.sum(:sum_file_size)
       solr_doc['media_file_size_lts']     = fs_size_infos.sum(:binary_file_size)
 
       # File name and mime type still come from the FileSet Solr documents.

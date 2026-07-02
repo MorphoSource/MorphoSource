@@ -29,6 +29,7 @@ module Morphosource
         end
         FileSetSizeInfo.upsert_for_file_set(
           file_set,
+          media_id:                     file_set.parent&.id&.to_s,
           derivatives:                  deriv_sizes,
           summed_derivatives_file_size: deriv_sizes.values.sum
         )

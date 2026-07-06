@@ -16,7 +16,7 @@ class CharacterizeJob < HeavyJob
     begin
       if File.exist?(filepath)
         file_set.update_size_info(
-          media_id:         file_set.parent&.id,
+          media_id:         file_set.parent&.id&.to_s,
           binary_file_name: file_set.label || File.basename(filepath),
           binary_file_size: File.size(filepath)
         )
@@ -74,7 +74,7 @@ class CharacterizeJob < HeavyJob
     begin
       auth_size = file_set.characterization_proxy.file_size&.first&.to_i || 0
       file_set.update_size_info(
-        media_id:         file_set.parent&.id,
+        media_id:         file_set.parent&.id&.to_s,
         binary_file_name: file_set.label || File.basename(filepath),
         binary_file_size: auth_size
       )

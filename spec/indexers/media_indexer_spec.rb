@@ -415,6 +415,8 @@ RSpec.describe MediaIndexer do
       end
     end
 
+    # Two FileSets are used here to test that label and mime-type fields aggregate
+    # across all FileSet Solr documents. In production, Media has exactly one FileSet.
     context 'when media has multiple file sets' do
       let(:file_set_docs) do
         [

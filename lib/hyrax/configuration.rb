@@ -265,6 +265,12 @@ module Hyrax
       @derivatives_path ||= Rails.root.join('tmp', 'derivatives')
     end
 
+    # Path on the local file system where Valkyrie-managed files will be stored
+    attr_writer :valkyrie_disk_storage_path
+    def valkyrie_disk_storage_path
+      @valkyrie_disk_storage_path ||= Rails.root.join("storage", "files")
+    end
+
     attr_writer :derivatives_tmp_path
     def derivatives_tmp_path
       @derivatives_tmp_path ||= Rails.root.join("tmp")

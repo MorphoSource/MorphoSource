@@ -42,7 +42,7 @@ if Hyrax.config.valkyrie_transition?
     Valkyrie::StorageAdapter.register(
       Valkyrie::Storage::Hoard.new(services: [
         Valkyrie::Storage::VersionedDisk.new(
-          base_path: Rails.root.join("storage", "files"),
+          base_path: Hyrax.config.valkyrie_disk_storage_path,
           file_mover: FileUtils.method(:cp)
         ),
         Valkyrie::Storage::ExternalUrl.new

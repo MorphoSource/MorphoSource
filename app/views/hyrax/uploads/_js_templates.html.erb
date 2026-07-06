@@ -140,7 +140,7 @@
     </tr>
     {% if (/\.(zip|tar)$/i.test(file.name)) { %}
         <tr id="zip-warning" class="upload-warning">
-          <td colspan="4" class="alert-success"><strong>Note:</strong> Each ZIP or TAR archive should represent one asset — that is, one product of a single scanning event. Please do not combine multiple scans or unrelated files into a single archive.</td>
+          <td colspan="4" class="alert-success"><strong>Note:</strong> Each ZIP or TAR archive should represent one asset or image series — that is, one product of a single scanning event. Please do not combine multiple scans or unrelated files into a single archive. For image series, the archive should contain all images for that series.</td>
         </tr>
     {% } %}
     {% if (document.querySelectorAll('form[id*="edit_media"]').length) { %}

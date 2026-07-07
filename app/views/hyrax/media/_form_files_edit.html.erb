@@ -9,10 +9,7 @@
   <!-- The fileupload-buttonbar contains buttons to add/delete files and start/cancel the upload -->
 
   <div class="fileupload-buttonbar pt-0 pl-2 pr-2">
-    <% deposit_structure_link = Hyrax.config.docs.find { |d| d["label"] == "hyrax.controls.links.docs.deposit_structure" } %>
-    <% if deposit_structure_link %>
-      <p class="p-0"><%= link_to t("hyrax.controls.links.docs.deposit_structure_html"), deposit_structure_link["url"], target: "_blank" %></p>
-    <% end %>
+    <%= render 'hyrax/media/deposit_structure_link' %>
     <div class="row">
       <div class="col-12">
         <div class="fileinput-button" id="add-files">

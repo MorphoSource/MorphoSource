@@ -132,7 +132,11 @@ module Morphosource
       if included_media.present? && ( included_media.count == 1 )
         m = "id-#{included_media&.first&.id}"
       elsif included_media.present? && ( included_media.count > 1 )
-        m = "#{included_media.count}-items"
+        m = if included_media.count == media.count
+              "#{included_media.count}-items"
+            else
+              "#{included_media.count}-of-#{media.count}-items"
+            end
       end
 
       "morphosource_media-#{m}_download-#{download_hash[0..7]}.zip"

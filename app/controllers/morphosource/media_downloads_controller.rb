@@ -44,7 +44,7 @@ module Morphosource
         @media = [@media]
       end
       @temp_files = []
-      @all_files ||= files + standard_agreement_files + media_agreement_files + xlsx_manifest + csv_manifest
+      @all_files ||= files + standard_agreement_files + media_agreement_files + xlsx_manifest + csv_manifest + unavailable_media_notice_file
     end
 
     # Media ids skipped by prepare_files because their file could not be validated.
@@ -57,6 +57,32 @@ module Morphosource
       "The following item(s) could not be included in this download because a file is currently unavailable: " \
       "#{unavailable_media_ids.join(', ')}. They remain in your cart untouched — please try again later, or " \
       "remove them if the issue persists. If it continues, contact us (morphosource@duke.edu)."
+    end
+
+    # Bundles a plain-text notice into the zip itself when some media were skipped, so the
+    # message is visible the moment the user opens the download - no reliance on a flash
+    # message surfacing on some later page load.
+    def unavailable_media_notice_file
+      return [] unless unavailable_media_ids.present?
+
+      file_name = "unavailable_items.txt"
+      file_path = File.join(temp_manifest_directory, "#{SecureRandom.uuid}-#{file_name}")
+      File.write(file_path, unavailable_media_notice_text)
+      file = File.open(file_path)
+      crc32 = crc32_from_io(file)
+      [{
+        name: file_name,
+        size: file.size,
+        crc32: crc32,
+        file: file
+      }]
+    end
+
+    def unavailable_media_notice_text
+      "The following item(s) could not be included in this download because a file is currently unavailable:\n\n" \
+      "#{unavailable_media_ids.join("\n")}\n\n" \
+      "They remain in your cart untouched. Please try again later, or remove them if the issue persists.\n" \
+      "If it continues, contact us (morphosource@duke.edu)."
     end
 
     def create_or_update_cart_items_for_download

@@ -30,6 +30,7 @@ module Morphosource
       if @files.present? && @all_files.present?
         create_or_update_cart_items_for_download
         create_interval_sequence
+        flash[:notice] = unavailable_media_flash_message if unavailable_media_ids.present?
         send_interval_response
       else
         flash[:error] = "There is an issue with one of the media you have attempted to download, and it is not available right now. Please try again later. If the issue persists, contact us (morphosource@duke.edu)."
@@ -46,8 +47,22 @@ module Morphosource
       @all_files ||= files + standard_agreement_files + media_agreement_files + xlsx_manifest + csv_manifest
     end
 
+    # Media ids skipped by prepare_files because their file could not be validated.
+    # Populated as a side effect of calling `files`/`prepare_files`.
+    def unavailable_media_ids
+      @unavailable_media_ids ||= []
+    end
+
+    def unavailable_media_flash_message
+      "The following item(s) could not be included in this download because a file is currently unavailable: " \
+      "#{unavailable_media_ids.join(', ')}. They remain in your cart untouched — please try again later, or " \
+      "remove them if the issue persists. If it continues, contact us (morphosource@duke.edu)."
+    end
+
     def create_or_update_cart_items_for_download
       media.each do |m|
+        next if unavailable_media_ids.include?(m.id)
+
         if (item = find_downloaded_downloadable_item(m.id, download_hash)).present?
           # CartItem for media with DL hash exists, can increment DL attempts and update DL date
           add_subsequent_download(item, "UI")
@@ -109,11 +124,15 @@ module Morphosource
     end
 
     def zip_name
+      # Reflect what's actually in the zip, not what was originally requested -
+      # unavailable media are skipped by prepare_files and never make it in.
+      included_media = media.reject { |m| unavailable_media_ids.include?(m.id) }
+
       m = ""
-      if media.present? && ( media.count == 1 )
-        m = "id-#{media&.first&.id}"
-      elsif media.present? && ( media.count > 1 )
-        m = "#{media.count}-items"
+      if included_media.present? && ( included_media.count == 1 )
+        m = "id-#{included_media&.first&.id}"
+      elsif included_media.present? && ( included_media.count > 1 )
+        m = "#{included_media.count}-items"
       end
 
       "morphosource_media-#{m}_download-#{download_hash[0..7]}.zip"
@@ -205,11 +224,17 @@ module Morphosource
         media.map do |m|
           if m.is_remote_backed?
             file_set = get_and_validate_fileset_for_remote(m)
-            return [] unless file_set.present?
+            unless file_set.present?
+              unavailable_media_ids << m.id
+              next nil
+            end
             file_uri = file_set.import_url
           else
             file_set, original_file = get_and_validate_fileset(m)
-            return [] unless file_set.present? && original_file.present?
+            unless file_set.present? && original_file.present?
+              unavailable_media_ids << m.id
+              next nil
+            end
             file_uri = file_set.original_file.uri
           end
 
@@ -226,6 +251,7 @@ module Morphosource
           if attrs.values.all? { |v| v.present? }
             attrs
           else
+            unavailable_media_ids << m.id
             nil
           end
         end.compact
@@ -515,13 +541,15 @@ module Morphosource
                   :uv_coordinates => file_set.has_uv_space,
                   :bounding_box_x => file_set.bounding_box_x,
                   :bounding_box_y => file_set.bounding_box_y,
-                  :bounding_box_z => file_set.bounding_box_z
+                  :bounding_box_z => file_set.bounding_box_z,
+                  :status => ['Included']
                 })
               else
                 media_list << {
                   :id => [m.id],
                   :title => [m.title.first],
-                  :media_type => m.media_type
+                  :media_type => m.media_type,
+                  :status => ['Not included - file unavailable']
                 }
               end
             end

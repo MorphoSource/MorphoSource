@@ -54,7 +54,7 @@ module Morphosource
     end
 
     def unavailable_media_flash_message
-      "The following item(s) could not be included in this download because a file is currently unavailable: " \
+      "The following item(s) could not be downloaded because a file is currently unavailable: " \
       "#{unavailable_media_ids.join(', ')}. They remain in your cart untouched — please try again later, or " \
       "remove them if the issue persists. If it continues, contact us (morphosource@duke.edu)."
     end
@@ -79,7 +79,7 @@ module Morphosource
     end
 
     def unavailable_media_notice_text
-      "The following item(s) could not be included in this download because a file is currently unavailable:\n\n" \
+      "The following item(s) could not be downloaded because a file is currently unavailable:\n\n" \
       "#{unavailable_media_ids.join("\n")}\n\n" \
       "They remain in your cart untouched. Please try again later, or remove them if the issue persists.\n" \
       "If it continues, contact us (morphosource@duke.edu)."

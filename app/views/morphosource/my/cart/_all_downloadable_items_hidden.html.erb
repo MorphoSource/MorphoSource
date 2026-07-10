@@ -1,0 +1,18 @@
+<%# Hidden per-item agreement data for downloadable cart items NOT on the current page,
+    so "Download All" can build an itemized agreement summary for the whole cart rather
+    than whatever page happens to be rendered. No checkboxes here - "Download All" submits
+    a separate form with no item ids (see _download_all.html.erb), so nothing here needs to
+    be selectable, and the page-scoped "select all" checkbox is unaffected. %>
+<table class="hide" id="all-downloadable-items-hidden">
+  <tbody>
+  <% (@unrestricted_items - @paginated_unrestricted_items.to_a).each do |item| %>
+    <% document = solr_doc_find(item.work_id) %>
+    <% if document.present? %>
+      <% presenter = Hyrax::MediaPresenter.new(document, current_ability) %>
+      <tr>
+        <%= render 'morphosource/my/cart/download_agreements_container', presenter: presenter, item_id: item.id %>
+      </tr>
+    <% end %>
+  <% end %>
+  </tbody>
+</table>

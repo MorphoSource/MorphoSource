@@ -77,20 +77,21 @@ $( document ).ready(function() {
 
   if ( isCartPage ) {
     
-    $(downloadForm).find('input[type="submit"]').bind('click', function(e) { 
+    $(downloadForm).find('input[type="submit"]').bind('click', function(e) {
       // download selected button clicked
       e.preventDefault();
+      $('form#download-form').data('mode', 'selected');
       sendSelectedItemsToModal();
       showAgreementModal();
     });
 
-    $('#download-all').bind('click', function(e) { 
-      // download all clicked
+    $('#download-all').bind('click', function(e) {
+      // download all clicked - no item ids are enumerated client-side; the separate
+      // #download-all-form (no item ids) gets submitted directly once the agreement
+      // modal is confirmed, so this works regardless of pagination or cart size.
       e.preventDefault();
-      uncheckAllDownloadable();
-      $("#check_all_unrestricted").prop('checked', false);
-      $("#check_all_unrestricted").trigger('click');
-      sendSelectedItemsToModal();
+      $('form#download-form').data('mode', 'all');
+      setAgreementsForAll();
       showAgreementModal();
     });
 
@@ -197,8 +198,15 @@ $( document ).ready(function() {
       if ( $('#modal-agree').prop('checked') &&
         usage.length >= 50 && usageList() != "" )  {
 
-        formType =$(this).attr('class');        
-        if (formType == 'download-selected') {
+        var mode = $(this).data('mode');
+        formType =$(this).attr('class');
+        if (mode == 'all') {
+          console.log('downloading all items in cart');
+          $('#download_all_usage').val(usage);
+          $('#download_all_usage_list').val(usageList());
+          $('#download_all_recaptcha_response').val($('#g-recaptcha-response').val());
+          $('#download-all-form')[0].submit();
+        } else if (formType == 'download-selected') {
           console.log('downloading selected in cart');
           $('#batch_usage').val(usage);
           $('#batch_usage_list').val(usageList());
@@ -263,6 +271,31 @@ function showAgreementModal() {
     $("#check_all_unrestricted").prop('checked', false);
     $("input#download-selected").prop('disabled', true);
   });
+}
+
+function setAgreementsForAll() {
+  // Itemized agreement summary for every downloadable item in the cart, not just the
+  // current page. Reads directly from .agreements blocks (visible page rows plus the
+  // hidden off-page ones rendered by _all_downloadable_items_hidden.html.erb) rather
+  // than filtering by :checked, since "Download All" doesn't select/enumerate items -
+  // it submits a separate form with no item ids (see download-all-form).
+  var agreements = new Array();
+  var customLinks = new Array();
+  $('input[name="ids[]"]').val('ALL');
+  $('input#modal-download').attr('data-download-item-id', 'ALL');
+  $('.agreements').each(function() {
+    var wrapper = $(this);
+    var mediaId = wrapper.find('[data-field="media_doc_id"]').attr('data-value');
+    var agreementLink = wrapper.find('[data-field="agreement_description"]').html();
+    agreements.push(agreementLink);
+    var customLink = wrapper.find('[data-field="agreement_uri"] .showcase-link').html();
+    if (customLink) {
+      customLinks.push('Media ' + mediaId + ': ' + customLink);
+    }
+  });
+  var agreementGroup = groupCounts(agreements);
+  var display = buildAgreements(agreementGroup, customLinks.sort());
+  $('.agreement-items-wrapper').empty().append(display);
 }
 
 function set_agreements(itemId, singleMediaId) {

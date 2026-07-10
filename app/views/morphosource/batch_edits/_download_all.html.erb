@@ -4,7 +4,12 @@
     <%= submit_tag("Clear Cart", class: 'btn btn-danger', id: 'clear-cart') %>
   <% end %>
 
-  <%= form_tag(main_app.download_items_path, method: :get, class: "button_to-inline") do -%>
+  <%# no item ids are submitted here - MediaCartsController#download falls back to every
+      downloadable item in the cart when none are given, regardless of pagination %>
+  <%= form_tag(main_app.download_items_path, method: :post, id: "download-all-form", class: "button_to-inline") do -%>
+    <%= hidden_field_tag 'usage', '', id: 'download_all_usage' %>
+    <%= hidden_field_tag 'usage_list', '', id: 'download_all_usage_list' %>
+    <%= hidden_field_tag 'g-recaptcha-response', '', id: 'download_all_recaptcha_response' %>
     <%= submit_tag("Download All", class: 'btn btn-info', id: 'download-all') %>
   <% end %>
 

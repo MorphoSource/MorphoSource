@@ -2,6 +2,12 @@ require 'rails_helper'
 
 RSpec.describe AllCatalogController, :type => :controller do
 
+  describe '#current_catalog_search_path' do
+    it 'returns the media search path (no All option in the dropdown)' do
+      expect(controller.current_catalog_search_path).to eq(media_search_path)
+    end
+  end
+
   describe 'Blacklight Configuration' do
     let(:config) { described_class.new.blacklight_config }
     describe 'search_builder_class' do

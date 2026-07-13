@@ -2,6 +2,12 @@ require 'rails_helper'
 
 RSpec.describe MediaListsCatalogController, :type => :controller do
 
+  describe '#current_catalog_search_path' do
+    it 'returns the media lists search path' do
+      expect(controller.current_catalog_search_path).to eq(media_list_search_path)
+    end
+  end
+
   describe 'Blacklight Configuration' do
     let(:config) { described_class.new.blacklight_config }
     describe 'search_builder_class' do

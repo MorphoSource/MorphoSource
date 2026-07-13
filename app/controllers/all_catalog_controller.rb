@@ -8,6 +8,13 @@ class AllCatalogController < CatalogController
     super
   end
 
+  # The header search dropdown has no "All" option, so falling back to the media
+  # search endpoint keeps the dropdown label resolvable and matches the non-admin
+  # redirect target above.
+  def current_catalog_search_path
+    main_app.media_search_path
+  end
+
   configure_blacklight do |config|
     # returns all work types
     config.search_builder_class = Morphosource::CatalogSearchBuilder

@@ -3,6 +3,12 @@ require 'rails_helper'
 
 RSpec.describe ObjectsCatalogController, type: :controller do
 
+  describe '#current_catalog_search_path' do
+    it 'returns the objects search path' do
+      expect(controller.current_catalog_search_path).to eq(object_search_path)
+    end
+  end
+
   describe 'Blacklight Configuration' do
     let(:config) { described_class.new.blacklight_config }
 

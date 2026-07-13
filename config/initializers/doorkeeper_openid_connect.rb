@@ -6,7 +6,7 @@
 # by Hyrax.config.enable_identity_provider? in config/routes.rb.
 Doorkeeper::OpenidConnect.configure do
   # OIDC spec requires a full HTTPS URL as the issuer, not just a hostname.
-  issuer "https://#{Hyrax.config.host_name}"
+  issuer (Rails.env.production? ? "https://#{Hyrax.config.host_name}" : "http://#{ENV.fetch('HOST_NAME', 'localhost')}:#{ENV.fetch('PORT', '3000')}")
 
   # The signing key for the JWT tokens.
   # In production, set OIDC_PRIVATE_KEY to a PEM-formatted RSA private key.

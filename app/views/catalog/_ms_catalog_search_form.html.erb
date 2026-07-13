@@ -18,6 +18,10 @@
         </button>
 
         <div class="dropdown-menu float-right">
+          <% if current_user&.admin? %>
+            <%= link_to t("morphosource.search.form.option.all.label"), "#", class: "dropdown-item",
+                data: { "search-option" => main_app.all_search_path, "search-label" => t("morphosource.search.form.option.all.label") } %>
+          <% end %>
           <%= link_to t("morphosource.search.form.option.media.label", application_name: application_name), "#", class: "dropdown-item",
               data: { "search-option" => main_app.media_search_path, "search-label" => t("morphosource.search.form.option.media.label") } %>
           <%= link_to t("morphosource.search.form.option.physical_objects.label_long"), "#", class: "dropdown-item",

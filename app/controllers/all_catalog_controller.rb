@@ -8,11 +8,14 @@ class AllCatalogController < CatalogController
     super
   end
 
-  # The header search dropdown has no "All" option, so falling back to the media
-  # search endpoint keeps the dropdown label resolvable and matches the non-admin
-  # redirect target above.
+  # Admins can search the full catalog; non-admins are redirected out of
+  # /catalog/all anyway (see #index), so their header search falls back to media.
   def current_catalog_search_path
-    main_app.media_search_path
+    if current_user && current_user.admin?
+      main_app.all_search_path
+    else
+      main_app.media_search_path
+    end
   end
 
   configure_blacklight do |config|

@@ -3,8 +3,21 @@ require 'rails_helper'
 RSpec.describe AllCatalogController, :type => :controller do
 
   describe '#current_catalog_search_path' do
-    it 'returns the media search path (no All option in the dropdown)' do
-      expect(controller.current_catalog_search_path).to eq(media_search_path)
+    context 'when the user is an admin' do
+      before do
+        admin = instance_double(User, admin?: true)
+        allow(controller).to receive(:current_user).and_return(admin)
+      end
+
+      it 'returns the all-catalog search path' do
+        expect(controller.current_catalog_search_path).to eq(all_search_path)
+      end
+    end
+
+    context 'when the user is not an admin' do
+      it 'falls back to the media search path' do
+        expect(controller.current_catalog_search_path).to eq(media_search_path)
+      end
     end
   end
 

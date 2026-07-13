@@ -3,9 +3,9 @@ require 'rails_helper'
 
 RSpec.describe ObjectsCatalogController, type: :controller do
 
-  describe '#current_catalog_search_path' do
+  describe '#catalog_search_form_action' do
     it 'returns the objects search path' do
-      expect(controller.current_catalog_search_path).to eq(object_search_path)
+      expect(controller.catalog_search_form_action).to eq(object_search_path)
     end
   end
 

@@ -4,18 +4,12 @@
 class AllCatalogController < CatalogController
 
   def index
-    redirect_to media_search_path unless current_user && current_user.admin?
+    return redirect_to media_search_path unless current_user&.admin?
     super
   end
 
-  # Admins can search the full catalog; non-admins are redirected out of
-  # /catalog/all anyway (see #index), so their header search falls back to media.
-  def current_catalog_search_path
-    if current_user && current_user.admin?
-      main_app.all_search_path
-    else
-      main_app.media_search_path
-    end
+  def catalog_search_form_action
+    main_app.all_search_path
   end
 
   configure_blacklight do |config|

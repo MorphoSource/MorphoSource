@@ -4,7 +4,7 @@ class OrganizationsCatalogController < CatalogController
 
   before_action :search_managed_organizations, only: :index
 
-  def current_catalog_search_path
+  def catalog_search_form_action
     main_app.organization_search_path
   end
 

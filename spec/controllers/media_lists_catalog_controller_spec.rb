@@ -2,9 +2,9 @@ require 'rails_helper'
 
 RSpec.describe MediaListsCatalogController, :type => :controller do
 
-  describe '#current_catalog_search_path' do
+  describe '#catalog_search_form_action' do
     it 'returns the media lists search path' do
-      expect(controller.current_catalog_search_path).to eq(media_list_search_path)
+      expect(controller.catalog_search_form_action).to eq(media_list_search_path)
     end
   end
 

@@ -11,14 +11,14 @@ class CatalogController < ApplicationController
   helper Morphosource::CatalogHelper
   helper Morphosource::FacetParamsHelper
 
-  # Subclasses must override #current_catalog_search_path to return the top-level
+  # Subclasses must override #catalog_search_form_action to return the top-level
   # search route for their catalog type. Used by the header search form
   # (see _ms_catalog_search_form.html.erb) so a plain text search stays within the
   # current record type instead of falling back to media.
-  helper_method :current_catalog_search_path
+  helper_method :catalog_search_form_action
 
-  def current_catalog_search_path
-    raise NotImplementedError, "#{self.class} must implement #current_catalog_search_path"
+  def catalog_search_form_action
+    raise NotImplementedError, "#{self.class} must implement #catalog_search_form_action"
   end
 
   with_themed_layout "morphosource_1_column"

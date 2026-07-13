@@ -3,7 +3,7 @@ class MediaListsCatalogController < CatalogController
   include CatalogControllerRestApiBehavior
   include Morphosource::CatalogHelper
 
-  def current_catalog_search_path
+  def catalog_search_form_action
     main_app.media_list_search_path
   end
 

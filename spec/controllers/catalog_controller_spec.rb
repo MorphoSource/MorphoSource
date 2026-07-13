@@ -9,9 +9,9 @@ RSpec.describe CatalogController, :type => :controller do
     end
   end
 
-  describe '#current_catalog_search_path' do
+  describe '#catalog_search_form_action' do
     it 'raises NotImplementedError so subclasses must declare their search path' do
-      expect { controller.current_catalog_search_path }.to raise_error(NotImplementedError)
+      expect { controller.catalog_search_form_action }.to raise_error(NotImplementedError)
     end
   end
 

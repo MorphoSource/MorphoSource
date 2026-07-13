@@ -1,4 +1,4 @@
-<%= form_tag current_catalog_search_path, method: :get, class: "form-horizontal search-form ms-catalog-search", id: "search-form-header", role: "search" do %>
+<%= form_tag catalog_search_form_action, method: :get, class: "form-horizontal search-form ms-catalog-search", id: "search-form-header", role: "search" do %>
   <%= render_hash_as_hidden_fields(search_state.params_for_search.except(:q, :search_field, :qt, :page, :utf8, :user)) %>
   <%= hidden_field_tag :search_field, 'all_fields' %>
   <div class="form-group">
@@ -18,7 +18,7 @@
         </button>
 
         <div class="dropdown-menu float-right">
-          <% if current_user&.admin? %>
+          <% if current_user&.admin? && controller.is_a?(AllCatalogController) %>
             <%= link_to t("morphosource.search.form.option.all.label"), "#", class: "dropdown-item",
                 data: { "search-option" => main_app.all_search_path, "search-label" => t("morphosource.search.form.option.all.label") } %>
           <% end %>

@@ -4,7 +4,7 @@ class CollectionsCatalogController < CatalogController
 
   before_action :search_managed_collections, only: :index
 
-  def current_catalog_search_path
+  def catalog_search_form_action
     main_app.collection_search_path
   end
 

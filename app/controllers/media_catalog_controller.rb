@@ -9,7 +9,7 @@ class MediaCatalogController < CatalogController
   # This filter applies the hydra access controls to media file details API endpoint
   before_action :authenticate_api_key_optional, :enforce_show_permissions, only: [:show, :show_file_metadata]
 
-  def current_catalog_search_path
+  def catalog_search_form_action
     main_app.media_search_path
   end
 

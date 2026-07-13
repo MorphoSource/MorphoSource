@@ -9,6 +9,9 @@ class MediaCatalogController < CatalogController
   # This filter applies the hydra access controls to media file details API endpoint
   before_action :authenticate_api_key_optional, :enforce_show_permissions, only: [:show, :show_file_metadata]
 
+  def catalog_search_form_action
+    main_app.media_search_path
+  end
 
   configure_blacklight do |config|
     config.search_builder_class = Morphosource::Catalog::MediaCatalogSearchBuilder

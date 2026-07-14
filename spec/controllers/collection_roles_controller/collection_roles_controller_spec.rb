@@ -892,7 +892,7 @@ RSpec.describe CollectionRolesController, type: :controller do
       end
     end
 
-    describe 'maybe_update_org_cart_item_reviewers' do
+    describe 'update_org_cart_item_reviewers_if_needed' do
       let(:org) { FactoryBot.create(:organization_collection, title: ['Org'], depositor: manager.ms_id) }
 
       before do

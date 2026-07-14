@@ -16,7 +16,7 @@ class CollectionRolesController < ApplicationController
       update_subcollections
       update_agent_access
       update_collection_managed_date
-      maybe_update_org_cart_item_reviewers
+      update_org_cart_item_reviewers_if_needed
     else
       update_notice('user_status')
     end
@@ -256,7 +256,7 @@ class CollectionRolesController < ApplicationController
 
   # When an org's managers group changes and the org has no download_reviewer configured,
   # managers serve as the effective reviewers, so pending cart item reviewers must be refreshed.
-  def maybe_update_org_cart_item_reviewers
+  def update_org_cart_item_reviewers_if_needed
     return unless collection.is_a?(OrganizationCollection)
     return if collection.download_reviewer.present?
     managers = collection.managers_group

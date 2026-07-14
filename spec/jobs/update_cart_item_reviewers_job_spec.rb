@@ -3,6 +3,8 @@
 require 'rails_helper'
 
 RSpec.describe UpdateCartItemReviewersJob do
+  subject(:job) { described_class.new }
+
   let!(:requester) { FactoryBot.create(:user) }
   let!(:reviewer)  { FactoryBot.create(:user) }
   let(:media_id)   { 'media-1' }
@@ -15,22 +17,26 @@ RSpec.describe UpdateCartItemReviewersJob do
   before do
     allow(Morphosource::DownloadReviewerResolverService)
       .to receive(:resolve_for_media).with(media).and_return([reviewer.ms_id])
+    allow(job).to receive(:cart_item_message_content).and_return('media details')
+    allow(job).to receive(:user_email_link).and_return('requestor link')
+    allow(job).to receive(:email_sender).and_return(instance_double(User))
+    allow(job).to receive(:deliver_message)
   end
 
   it 'sets the resolved reviewers on every cart item for the media' do
-    described_class.new.perform(media)
+    job.perform(media)
 
     expect(cart_item.reload.reviewers).to eq([reviewer.ms_id])
     expect(cart_item2.reload.reviewers).to eq([reviewer.ms_id])
   end
 
   it 'does not touch cart items for other media' do
-    expect { described_class.new.perform(media) }
+    expect { job.perform(media) }
       .not_to change { other_item.reload.reviewers }
   end
 
   it 'resolves the reviewers once for the media' do
-    described_class.new.perform(media)
+    job.perform(media)
 
     expect(Morphosource::DownloadReviewerResolverService)
       .to have_received(:resolve_for_media).once
@@ -46,9 +52,35 @@ RSpec.describe UpdateCartItemReviewersJob do
     end
 
     it 'resolves the media solr document and updates its cart items' do
-      described_class.new.perform(media_id)
+      job.perform(media_id)
 
       expect(cart_item.reload.reviewers).to eq([reviewer.ms_id])
+    end
+  end
+
+  describe 'reviewer messaging' do
+    it 'messages reviewers newly added to an outstanding request only' do
+      job.perform(media)
+
+      # cart_item2 also gains the reviewer but has no outstanding request
+      expect(job).to have_received(:deliver_message)
+        .with(anything, reviewer, anything, 'You have a download request to review').once
+    end
+
+    it 'does not message reviewers already on the request' do
+      cart_item.update!(reviewers: [reviewer.ms_id])
+
+      job.perform(media)
+
+      expect(job).not_to have_received(:deliver_message)
+    end
+
+    it 'does not message when reviewers are only removed' do
+      cart_item.update!(reviewers: [reviewer.ms_id, 'departing-reviewer'])
+
+      job.perform(media)
+
+      expect(job).not_to have_received(:deliver_message)
     end
   end
 end

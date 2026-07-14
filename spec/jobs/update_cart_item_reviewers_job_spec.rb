@@ -35,4 +35,20 @@ RSpec.describe UpdateCartItemReviewersJob do
     expect(Morphosource::DownloadReviewerResolverService)
       .to have_received(:resolve_for_media).once
   end
+
+  context 'when given a media id string' do
+    let(:media_doc) { double(id: media_id) }
+
+    before do
+      allow(SolrDocument).to receive(:find).with(media_id).and_return(media_doc)
+      allow(Morphosource::DownloadReviewerResolverService)
+        .to receive(:resolve_for_media).with(media_doc).and_return([reviewer.ms_id])
+    end
+
+    it 'resolves the media solr document and updates its cart items' do
+      described_class.new.perform(media_id)
+
+      expect(cart_item.reload.reviewers).to eq([reviewer.ms_id])
+    end
+  end
 end

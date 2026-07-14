@@ -55,50 +55,34 @@ RSpec.describe UpdateOrgCartItemReviewersJob do
     end
   end
 
-  describe 'reviewer resolution' do
-    let(:media_id)     { 'media-1' }
-    let!(:requester)   { User.create!(email: 'requester@example.com', password: 'password') }
-    let!(:manager)     { User.create!(email: 'manager@example.com', password: 'password') }
-    let!(:cart_item)   { CartItem.create!(user: requester, work_id: media_id, date_requested: Date.current) }
-    let(:reviewer_org) { instance_double(OrganizationCollection, id: org_id) }
-
+  describe 'fan-out' do
     before do
       allow(OrganizationCollection).to receive(:find).with(org_id).and_return(org)
-      allow(job).to receive(:affected_media_ids).with(org).and_return([media_id])
+      allow(job).to receive(:affected_media_ids).with(org).and_return(['media-1', 'media-2'])
+      allow(UpdateCartItemReviewersJob).to receive(:perform_later)
     end
 
-    context 'when the org is the explicit download_reviewer on the media' do
-      before do
-        allow(ActiveFedora::SolrService).to receive(:query).and_return([
-          { 'id' => media_id, 'download_reviewer_ssim' => ["org_collection:#{org_id}"], 'user_with_ownership_ssi' => nil }
-        ])
-        allow(User).to receive(:where).with(ms_id: []).and_return([])
-        allow(OrganizationCollection).to receive(:where).with(id: [org_id]).and_return([reviewer_org])
-        allow(reviewer_org).to receive(:media_download_reviewers).and_return([manager.ms_id])
-      end
+    it 'enqueues UpdateCartItemReviewersJob for each affected media' do
+      job.perform(org_id)
 
-      it 'sets cart_item reviewers to the resolved manager ms_ids' do
-        expect { job.perform(org_id) }
-          .to change { cart_item.reload.reviewers }
-          .to([manager.ms_id])
-      end
+      expect(UpdateCartItemReviewersJob).to have_received(:perform_later).with('media-1')
+      expect(UpdateCartItemReviewersJob).to have_received(:perform_later).with('media-2')
     end
+  end
 
-    context 'when the org is the media owner with no download_reviewer configured' do
-      before do
-        allow(ActiveFedora::SolrService).to receive(:query).and_return([
-          { 'id' => media_id, 'download_reviewer_ssim' => nil, 'user_with_ownership_ssi' => org_id }
-        ])
-        allow(User).to receive(:where).with(ms_id: [org_id]).and_return([])
-        allow(OrganizationCollection).to receive(:where).with(id: [org_id]).and_return([reviewer_org])
-        allow(reviewer_org).to receive(:media_download_reviewers).and_return([manager.ms_id])
-      end
+  describe 'affected_media_ids' do
+    let(:org_with_id) { instance_double(OrganizationCollection, id: org_id) }
 
-      it 'sets cart_item reviewers to the org manager ms_ids' do
-        expect { job.perform(org_id) }
-          .to change { cart_item.reload.reviewers }
-          .to([manager.ms_id])
-      end
+    it 'finds media referencing the org as download_reviewer or owner, without duplicates' do
+      allow(job).to receive(:ancestor_org_ids).with(org_id).and_return([])
+      allow(ActiveFedora::SolrService).to receive(:query)
+        .with(satisfy { |q| q.include?("download_reviewer_ssim:#{RSolr.solr_escape("org_collection:#{org_id}")}") }, anything)
+        .and_return([{ 'id' => 'media-1' }])
+      allow(ActiveFedora::SolrService).to receive(:query)
+        .with(satisfy { |q| q.include?("user_with_ownership_ssi:#{RSolr.solr_escape(org_id)}") }, anything)
+        .and_return([{ 'id' => 'media-1' }, { 'id' => 'media-2' }])
+
+      expect(job.send(:affected_media_ids, org_with_id)).to contain_exactly('media-1', 'media-2')
     end
   end
 end

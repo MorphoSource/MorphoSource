@@ -35,6 +35,17 @@ RSpec.describe UpdateCartItemReviewersJob do
       .not_to change { other_item.reload.reviewers }
   end
 
+  context 'when a cart item has a nil reviewers column' do
+    before { cart_item.update_column(:reviewers, nil) }
+
+    it 'still sets the resolved reviewers and treats them all as new' do
+      job.perform(media)
+
+      expect(cart_item.reload.reviewers).to eq([reviewer.ms_id])
+      expect(job).to have_received(:deliver_message).once
+    end
+  end
+
   it 'resolves the reviewers once for the media' do
     job.perform(media)
 

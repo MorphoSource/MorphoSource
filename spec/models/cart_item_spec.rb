@@ -322,4 +322,26 @@ RSpec.describe CartItem, type: :model do
       expect(cartItem1.reviewer).to eq([reviewer])
     end
   end
+
+  describe 'refresh_reviewers_on_request' do
+    # update_column skips callbacks, simulating a cart item whose stored
+    # reviewers have gone stale since it was created
+    before { cartItem1.update_column(:reviewers, ['stale']) }
+
+    it 'refreshes reviewers from the work when the item is requested' do
+      cartItem1.update(date_requested: Date.today)
+      expect(cartItem1.reload.reviewers).to eq([reviewer.ms_id])
+    end
+
+    it 'keeps the stored reviewers when the work solr document is missing' do
+      allow(cartItem1).to receive(:work).and_return(nil)
+      cartItem1.update(date_requested: Date.today)
+      expect(cartItem1.reload.reviewers).to eq(['stale'])
+    end
+
+    it 'does not refresh reviewers on updates that do not set date_requested' do
+      cartItem1.update(use: 'research')
+      expect(cartItem1.reload.reviewers).to eq(['stale'])
+    end
+  end
 end

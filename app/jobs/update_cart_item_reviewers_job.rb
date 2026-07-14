@@ -9,7 +9,7 @@ class UpdateCartItemReviewersJob < Hyrax::ApplicationJob
     media = SolrDocument.find(media) if media.is_a?(String)
     reviewers = Morphosource::DownloadReviewerResolverService.resolve_for_media(media)
     CartItem.where(work_id: media.id).each do |item|
-      previous_reviewers = item.reviewers
+      previous_reviewers = Array(item.reviewers)
       item.reviewers = reviewers
       item.save
       notify_new_reviewers(item, reviewers - previous_reviewers)

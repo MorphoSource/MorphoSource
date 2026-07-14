@@ -122,8 +122,9 @@ class CartItem < ApplicationRecord
 
   # For previously requested items that are re-requested (expired, canceled, etc.),
   # refresh the reviewers on the cart item to match the current reviewers on the work.
+  # Keep the stored reviewers when the work's solr document cannot be found.
   def refresh_reviewers_on_request
-    self.reviewers = work&.reviewers
+    self.reviewers = work.reviewers if work.present?
   end
 
 end

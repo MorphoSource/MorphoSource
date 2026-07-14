@@ -1,0 +1,26 @@
+<% if item.receiving_user_id.present? %>
+  <tr id="item_<%= item.id %>">
+    <td>
+      <% if item.pending? && !item.organization_transfer? && can?(:destroy, item) %>
+        <%= render 'morphosource/batch_select/add_button', item: item %>
+      <% end %>
+    </td>
+    <td><%= show_transfer_request_title(item) %></td>
+    <td class="date">
+      <relative-time datetime="<%= item.created_at.getutc.iso8601 %>" title="<%= item.created_at.to_formatted_s(:standard) %>">
+        <%= item.created_at.to_formatted_s(:long_ordinal) %>
+      </relative-time>
+    </td>
+    <td><%= link_to_transfer_participant(item.receiving_user_id) %></td>
+    <td><%= item.organization_transfer ? item.sender_comment.html_safe : item.sender_comment %></td>
+    <td>
+      <% if item.pending? && !item.organization_transfer? && can?(:destroy, item) %>
+        <%= button_to "Cancel", hyrax.transfer_path(item), method: :delete, class: 'btn btn-sm btn-danger', data: { confirm: "Are you sure you want to cancel this request?" }, style: "width: 100%" %>
+      <% else %>
+        <%= item.status.capitalize %>
+      <% end %>
+    </td>
+  </tr>
+<% else %>
+  <% Rails.logger.error "A proxy request has no receiver: #{item.inspect}" %>
+<% end %>

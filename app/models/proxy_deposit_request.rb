@@ -256,7 +256,7 @@ class ProxyDepositRequest < ActiveRecord::Base
   def transfers_dashboard_link
     link_to(
       "Ownership Transfers",
-      Hyrax::Engine.routes.url_helpers.transfers_url(host: host_name)
+      Rails.application.routes.url_helpers.transfers_received_url(host: host_name)
     )
   end
 

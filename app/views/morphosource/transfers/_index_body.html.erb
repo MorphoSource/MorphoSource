@@ -1,0 +1,25 @@
+<% provide :page_title, page_title %>
+
+<%= render 'search_container' %>
+
+<div class="card panel-default itemtable <%= controller.controller_name %>">
+  <%= render 'heading' %>
+  <div class="card-body showcase">
+    <% if page_description && !@search %>
+      <div class="card card-header">
+        <%= page_description %>
+      </div>
+    <% end %>
+
+    <%# list_actions and document_list share one form so batch-decide buttons can submit the checked row checkboxes.
+        The actual action is set by JS (transfer_batch_decide.js) from whichever batch-decide button is clicked. %>
+    <%= form_tag '#', method: :put, id: 'batch-transfer-decide' do %>
+      <%= render 'list_actions' %>
+      <%= render 'document_list' %>
+    <% end %>
+
+    <div class="showcase">
+      <%= render 'results_pagination' %>
+    </div>
+  </div>
+</div>

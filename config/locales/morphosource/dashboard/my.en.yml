@@ -69,6 +69,12 @@ en:
           page_title: 'Previous Requests'
         request_manager:
           page_title: Manage Requests
+        transfers_received:
+          page_title: 'Transfers Received'
+          page_description: 'Ownership transfer requests other users or organizations have sent you. New requests default to showing only Pending transfers so they don''t get lost among older decisions; use the status buttons above the table to see Accepted, Rejected, Canceled, or All transfers.'
+        transfers_sent:
+          page_title: 'Transfers Sent'
+          page_description: 'Ownership transfer requests you have sent to other users or organizations. New requests default to showing only Pending transfers; use the status buttons above the table to see Accepted, Rejected, Canceled, or All transfers.'
         requests:
           page_title: My Requests
           request_item:

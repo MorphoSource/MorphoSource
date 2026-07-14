@@ -1,0 +1,25 @@
+<%= render 'morphosource/transfers/quick_filters' %>
+
+<div class="mb-2">
+  <button class="select-all-transfers btn btn-outline-secondary btn-sm" type="button" title="Select all pending transfers on page">Select All</button>
+  <button class="select-no-transfers btn btn-outline-secondary btn-sm" type="button" title="Deselect all transfers on page">Select None</button>
+
+  <div class="btn-group batch-toggle" style="display: none;">
+    <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      Accept Selected <span class="caret"></span>
+    </button>
+    <ul class="dropdown-menu">
+      <li>
+        <%= link_to 'Allow depositors to retain edit access', '#', class: 'batch-decide', data: { url: main_app.transfers_received_batch_accept_path }, title: 'Accept the selected transfers and allow the original depositors to retain edit access' %>
+      </li>
+      <li>
+        <%= link_to 'Remove depositor access', '#', class: 'batch-decide', data: { url: main_app.transfers_received_batch_accept_path, reset: true }, title: 'Accept the selected transfers and remove access from the original depositors' %>
+      </li>
+      <li>
+        <%= link_to 'Authorize depositors as proxy', '#', class: 'batch-decide', data: { url: main_app.transfers_received_batch_accept_path, sticky: true }, title: 'Accept the selected transfers, allow the original depositors to retain access, and authorize them as proxies to deposit on your behalf' %>
+      </li>
+    </ul>
+  </div>
+
+  <%= link_to "Reject Selected", '#', class: 'btn btn-sm btn-danger batch-decide batch-toggle', style: 'display: none;', data: { url: main_app.transfers_received_batch_reject_path, confirm: "Are you sure you want to reject the selected transfers?" } %>
+</div>

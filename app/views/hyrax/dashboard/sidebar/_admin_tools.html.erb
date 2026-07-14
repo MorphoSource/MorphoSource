@@ -7,6 +7,7 @@
         open: [
           Rails.application.routes.url_helpers.admin_downloads_path,
           Rails.application.routes.url_helpers.admin_requests_path,
+          Rails.application.routes.url_helpers.admin_transfers_path,
           hyrax.dashboard_works_path,
           hyrax.my_works_path,
           hyrax.admin_stats_path,
@@ -23,6 +24,10 @@
 
         <%= menu.nav_link(Rails.application.routes.url_helpers.admin_requests_path, class: "nav-link") do %>
           <span class="fa fa-tasks" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.dashboard.sidebar.admin_tools.content.all_requests') %></span>
+        <% end %>
+
+        <%= menu.nav_link(Rails.application.routes.url_helpers.admin_transfers_path, class: "nav-link") do %>
+          <span class="fa fas fa-arrows-alt-h" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.dashboard.sidebar.admin_tools.content.all_transfers') %></span>
         <% end %>
 
         <%= menu.nav_link(hyrax.dashboard_works_path, class: "nav-link", also_active_for: hyrax.my_works_path) do %>

@@ -14,6 +14,9 @@ en:
       background_jobs:
         page_title: All Background Jobs
         page_description: This is a new page listing all tracked background jobs corresponding to Resque jobs. For now, only batch submissions are tracked with this system. You can optionally choose to include Resque data, adding new information and features to this page, but this will slow page loads when many Resque jobs are present or when many rows are viewed per page. You may want to search for your desired subset of background jobs prior to including Resque data.
+      transfers:
+        page_title: All Ownership Transfers
+        page_description: All ownership transfer requests site-wide, both received and sent. Defaults to showing only Pending transfers; use the status buttons above the table to see Accepted, Rejected, Canceled, or All transfers.
       contributor_petitions:
         page_title: 'Contributor Applications'
         page_description: ''

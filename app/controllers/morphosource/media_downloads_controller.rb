@@ -30,7 +30,6 @@ module Morphosource
       if @files.present? && @all_files.present?
         create_or_update_cart_items_for_download
         create_interval_sequence
-        flash[:notice] = unavailable_media_flash_message if unavailable_media_ids.present?
         send_interval_response
       else
         flash[:error] = "There is an issue with one of the media you have attempted to download, and it is not available right now. Please try again later. If the issue persists, contact us (morphosource@duke.edu)."
@@ -51,12 +50,6 @@ module Morphosource
     # Populated as a side effect of calling `files`/`prepare_files`.
     def unavailable_media_ids
       @unavailable_media_ids ||= []
-    end
-
-    def unavailable_media_flash_message
-      "The following item(s) could not be downloaded because a file is currently unavailable: " \
-      "#{unavailable_media_ids.join(', ')}. They remain in your cart untouched — please try again later, or " \
-      "remove them if the issue persists. If it continues, contact us (morphosource@duke.edu)."
     end
 
     # Bundles a plain-text notice into the zip itself when some media were skipped, so the

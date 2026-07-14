@@ -94,6 +94,68 @@ RSpec.describe Morphosource::Collections::OrganizationCollectionsControllerBehav
     end
   end
 
+  describe 'query_media_management_counts' do
+    let(:depositor)     { FactoryBot.create(:contributor) }
+    let!(:organization) { FactoryBot.create(:organization_collection, depositor: depositor.ms_id) }
+    let(:other_owner)   { FactoryBot.create(:contributor) }
+
+    let(:managed_media)           { FactoryBot.create(:media, title: ['managed']) }
+    let(:transfer_pending_media)  { FactoryBot.create(:media, title: ['transfer pending']) }
+    let(:awaiting_publish_media)  { FactoryBot.create(:media, title: ['awaiting publish']) }
+    let(:no_transfer_media)       { FactoryBot.create(:media, title: ['no transfer']) }
+
+    before do
+      ActiveFedora::SolrService.add(
+        {
+          id: managed_media.id,
+          'has_model_ssim' => ['Media'],
+          'media_organization_id_ssim' => [organization.id],
+          'owner_ssim' => [organization.id]
+        },
+        softCommit: true
+      )
+      ActiveFedora::SolrService.add(
+        {
+          id: transfer_pending_media.id,
+          'has_model_ssim' => ['Media'],
+          'media_organization_id_ssim' => [organization.id],
+          'owner_ssim' => [other_owner.ms_id],
+          'pending_org_transfer_bsi' => true
+        },
+        softCommit: true
+      )
+      ActiveFedora::SolrService.add(
+        {
+          id: awaiting_publish_media.id,
+          'has_model_ssim' => ['Media'],
+          'media_organization_id_ssim' => [organization.id],
+          'owner_ssim' => [other_owner.ms_id],
+          'organization_transfer_on_publish_bsi' => true
+        },
+        softCommit: true
+      )
+      ActiveFedora::SolrService.add(
+        {
+          id: no_transfer_media.id,
+          'has_model_ssim' => ['Media'],
+          'media_organization_id_ssim' => [organization.id],
+          'owner_ssim' => [other_owner.ms_id]
+        },
+        softCommit: true
+      )
+      ActiveFedora::SolrService.commit
+      subject.instance_variable_set(:@collection, organization)
+      subject.query_media_management_counts
+    end
+
+    it 'sets the correct media management count variables' do
+      expect(subject.instance_variable_get(:@managed_media_count)).to eq(1)
+      expect(subject.instance_variable_get(:@unmanaged_media_transfer_pending_count)).to eq(1)
+      expect(subject.instance_variable_get(:@unmanaged_media_awaiting_publish_count)).to eq(1)
+      expect(subject.instance_variable_get(:@unmanaged_media_no_transfer_count)).to eq(1)
+    end
+  end
+
   describe 'query_collection_counts' do
     let(:depositor)       { FactoryBot.create(:contributor) }
     let!(:organization)   { FactoryBot.create(:organization_collection, depositor: depositor.ms_id) }

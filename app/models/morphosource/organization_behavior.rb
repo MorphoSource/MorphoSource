@@ -120,22 +120,10 @@ module Morphosource
       Array(Morphosource::CountriesService.new.continent(self.country.first))
     end
 
-    # Returns ms_ids of the users who should approve download requests for this organization.
-    # Org IDs in download_reviewer are resolved recursively to user ms_ids.
-    # visited guards against cycles (e.g. Org A → Org B → Org A).
+    # Returns ms_ids of the users who should approve download requests for this organization:
+    # its download_reviewer resolved recursively, or its managers when none is configured
     def media_download_reviewers(visited = Set.new)
-      return [] if visited.include?(id)
-      visited << id
-
-      if download_reviewer.present?
-        user_ids, org_ids = Morphosource::DownloadReviewerResolverService.partition_values(download_reviewer)
-        user_ms_ids = User.where(ms_id: user_ids).map(&:ms_id)
-        org_ms_ids  = OrganizationCollection.where(id: org_ids)
-                                            .flat_map { |org| org.media_download_reviewers(visited) }
-        (user_ms_ids + org_ms_ids).uniq
-      else
-        managers.map(&:ms_id)
-      end
+      Morphosource::DownloadReviewerResolverService.resolve_organization(self, visited)
     end
   end
 end

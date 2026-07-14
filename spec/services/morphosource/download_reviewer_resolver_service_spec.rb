@@ -49,4 +49,105 @@ RSpec.describe Morphosource::DownloadReviewerResolverService do
       expect(described_class.partition_values(nil)).to eq([[], []])
     end
   end
+
+  describe 'resolution' do
+    let!(:user)     { FactoryBot.create(:user) }
+    let!(:user2)    { FactoryBot.create(:user) }
+    let!(:manager)  { FactoryBot.create(:user) }
+
+    describe '.resolve' do
+      it 'returns ms_ids of existing users and drops unknown ids' do
+        expect(described_class.resolve([user.ms_id, 'missing-id', user2.ms_id]))
+          .to match_array([user.ms_id, user2.ms_id])
+      end
+
+      context 'with a prefixed org value' do
+        let(:org) { FactoryBot.create(:organization_collection, download_reviewer: [user2.ms_id]) }
+
+        it 'expands the org to its reviewers alongside individual users' do
+          expect(described_class.resolve([user.ms_id, "org_collection:#{org.id}"]))
+            .to match_array([user.ms_id, user2.ms_id])
+        end
+      end
+    end
+
+    describe '.resolve_organization' do
+      let(:org) { FactoryBot.create(:organization_collection) }
+
+      context 'when the org has a download_reviewer' do
+        before do
+          org.download_reviewer = [user.ms_id]
+          org.save!
+        end
+
+        it 'resolves the configured reviewers' do
+          expect(described_class.resolve_organization(org)).to eq([user.ms_id])
+        end
+      end
+
+      context 'when the org has no download_reviewer' do
+        before do
+          org.managers << manager
+          org.managers_group.save!
+        end
+
+        it 'falls back to the org managers' do
+          expect(described_class.resolve_organization(org)).to eq([manager.ms_id])
+        end
+      end
+
+      context 'when orgs reference each other in a cycle' do
+        let(:other_org) { FactoryBot.create(:organization_collection) }
+
+        before do
+          org.download_reviewer = ["org_collection:#{other_org.id}"]
+          org.save!
+          other_org.download_reviewer = ["org_collection:#{org.id}"]
+          other_org.save!
+        end
+
+        it 'returns an empty array without looping' do
+          expect(described_class.resolve_organization(org)).to eq([])
+        end
+      end
+    end
+
+    describe '.resolve_for_media' do
+      let(:media) { double(download_reviewer: download_reviewer, user_with_ownership: [user.ms_id]) }
+
+      context 'when download_reviewer resolves to users' do
+        let(:download_reviewer) { [user2.ms_id] }
+
+        it 'returns the resolved reviewers' do
+          expect(described_class.resolve_for_media(media)).to eq([user2.ms_id])
+        end
+      end
+
+      context 'when download_reviewer is blank' do
+        let(:download_reviewer) { [] }
+
+        it 'falls back to the owner' do
+          expect(described_class.resolve_for_media(media)).to eq([user.ms_id])
+        end
+      end
+
+      context 'when download_reviewer resolves to no users' do
+        let(:download_reviewer) { ['missing-id'] }
+
+        it 'falls back to the owner' do
+          expect(described_class.resolve_for_media(media)).to eq([user.ms_id])
+        end
+      end
+
+      context 'when the owner is an organization' do
+        let(:download_reviewer) { [] }
+        let(:org) { FactoryBot.create(:organization_collection, download_reviewer: [user2.ms_id]) }
+        let(:media) { double(download_reviewer: download_reviewer, user_with_ownership: [org.id]) }
+
+        it 'resolves the owner org to its reviewers' do
+          expect(described_class.resolve_for_media(media)).to eq([user2.ms_id])
+        end
+      end
+    end
+  end
 end

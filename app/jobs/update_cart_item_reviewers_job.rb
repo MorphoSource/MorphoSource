@@ -4,9 +4,9 @@ class UpdateCartItemReviewersJob < Hyrax::ApplicationJob
 
   def perform(media=nil)
     # find all cart items with that media, then set the cart items' reviewers to the new reviewers
-    cart_items = CartItem.where(work_id: media.id)
-    cart_items.each do |item|
-      item.reviewers = media.reviewer
+    reviewers = Morphosource::DownloadReviewerResolverService.resolve_for_media(media)
+    CartItem.where(work_id: media.id).each do |item|
+      item.reviewers = reviewers
       item.save
     end
   end

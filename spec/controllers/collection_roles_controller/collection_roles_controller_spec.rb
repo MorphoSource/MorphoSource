@@ -982,6 +982,21 @@ RSpec.describe CollectionRolesController, type: :controller do
         end
       end
 
+      context 'collection is an OrganizationCollection listing itself as download_reviewer (managers checkbox)' do
+        let(:params) { { collection_roles: { agent_type: 'user', remove: 'false', access: 'managers', agent_id: another_user.ms_id }, id: org.id } }
+
+        before do
+          allow(subject).to receive(:can?).with(:edit, org).and_return(true)
+          org.download_reviewer = [Morphosource::DownloadReviewerResolverService.org_value(org.id)]
+          org.save!
+        end
+
+        it 'enqueues UpdateOrgCartItemReviewersJob' do
+          expect(UpdateOrgCartItemReviewersJob).to receive(:perform_later).with(org.id)
+          post :update_collection_groups, params: params
+        end
+      end
+
       context 'collection is not an OrganizationCollection' do
         let(:params) { { collection_roles: { agent_type: 'user', remove: 'false', access: 'managers', agent_id: another_user.ms_id }, id: team.id } }
 

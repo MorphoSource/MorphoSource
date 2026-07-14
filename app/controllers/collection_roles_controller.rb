@@ -254,13 +254,19 @@ class CollectionRolesController < ApplicationController
     organization.save! if organization.date_managed_changed?
   end
 
-  # When an org's managers group changes and the org has no download_reviewer configured,
-  # managers serve as the effective reviewers, so pending cart item reviewers must be refreshed.
+  # When an org's managers group changes and its managers serve as the effective
+  # reviewers (no download_reviewer configured, or the org lists itself via the
+  # "Current Organization Managers" checkbox), pending cart item reviewers must be refreshed.
   def update_org_cart_item_reviewers_if_needed
     return unless collection.is_a?(OrganizationCollection)
-    return if collection.download_reviewer.present?
+    return unless managers_are_effective_reviewers?
     managers = collection.managers_group
     return unless managers.present? && [@group, @new_group].include?(managers)
     UpdateOrgCartItemReviewersJob.perform_later(collection.id)
+  end
+
+  def managers_are_effective_reviewers?
+    collection.download_reviewer.blank? ||
+      collection.download_reviewer.include?(Morphosource::DownloadReviewerResolverService.org_value(collection.id))
   end
 end

@@ -714,12 +714,25 @@ namespace :morphosource do
       merge = false
     end
 
+    # Configurable so the report log can be pointed at a durable/shared mount (e.g. NFS)
+    # instead of the container's local, ephemeral filesystem -- defaults to the prior behavior.
+    log_dir = ENV.fetch('MORPHOSOURCE_REPORT_LOG_DIR', 'log')
+    FileUtils.mkdir_p(log_dir)
     if report_only == true
-      log_file = 'log/duplicate_specimens_report_' + Time.now.strftime("%m-%d-%Y_%H-%M") + '.log'
+      log_file = File.join(log_dir, 'duplicate_specimens_report_' + Time.now.strftime("%m-%d-%Y_%H-%M") + '.log')
     else
-      log_file = 'log/duplicate_specimens_merge_' + Time.now.strftime("%m-%d-%Y_%H-%M") + '.log'
+      log_file = File.join(log_dir, 'duplicate_specimens_merge_' + Time.now.strftime("%m-%d-%Y_%H-%M") + '.log')
     end
     log = Logger.new(log_file)
+
+    # Every line goes to both the run's own log file (for the emailed attachment) and
+    # STDOUT, tagged with a prefix so it's easy to grep/filter out of cluster log
+    # aggregation regardless of whether the local log file survives the pod.
+    log_prefix = "[dedupe_specimens]"
+    report = lambda do |msg, level = :info|
+      log.send(level, msg)
+      puts "#{log_prefix} #{msg}"
+    end
 
     ie_total = 0
     bso_list = []
@@ -727,37 +740,46 @@ namespace :morphosource do
     bso_list = ActiveFedora::SolrService.query(qry, rows: 999999)
     grouped = bso_list.group_by{|b| [ b["occurrence_id_tesim"], b["idigbio_uuid_tesim"] ]}
     filtered = grouped.values.select { |a| a.size > 1 }.flatten.group_by { |b| [ b["occurrence_id_tesim"], b["idigbio_uuid_tesim"] ] }
-    log.info "report_only: #{report_only}"
-    log.info "#{filtered.count} duplicate groups found"
+    report.call "report_only: #{report_only}"
+    report.call "#{filtered.count} duplicate groups found"
     filtered.each do |key, dups|
       # To minimize the merging time, sort the specimen by the media count, and keep the first specimen (with the most media)
       sorted_dups = dups.sort_by { |dup| -(dup['related_media_ids_ssim']&.count || 0) }
-      log.info "Duplicate group #{key} with specimens #{sorted_dups.map{|x| x['id'] }}"
+      report.call "Duplicate group #{key} with specimens #{sorted_dups.map{|x| x['id'] }}"
       if merge == true
         delete_dup = (report_only == false)
         merge_to = sorted_dups.first['id']
         sorted_dups.drop(1).each do |dup|
           merge_from = dup['id']
           media_list, ie_list = Morphosource::MergeBiologicalSpecimenService.call(merge_to, merge_from, delete_dup, report_only)
-          log.info " moved media #{media_list} from specimen #{merge_from} to specimen #{merge_to}"
+          report.call " moved media #{media_list} from specimen #{merge_from} to specimen #{merge_to}"
           ie_total += ie_list.count
         end
-        log.info " duplicate group #{key} merged -> remaining specimen #{merge_to}"
+        report.call " duplicate group #{key} merged -> remaining specimen #{merge_to}"
       end
     end
     if report_only
-      log.info "This is a report only. Total imaging event count: #{ie_total}"
+      report.call "This is a report only. Total imaging event count: #{ie_total}"
       action = "(report only) "
     else
       action = "(merge) "
     end
 
-    if args[:send_email] ==  "true" && Hyrax.config.system_report_recipients.present?
-      ApplicationMailer.send_email_with_attachment(
-        Hyrax.config.system_report_recipients,
-        "MS duplicate specimens report #{action}" + Time.now.strftime("%m-%d-%Y_%H-%M"),
-        "Duplicate specimens report #{action} attached.",
-         log_file).deliver_now
+    if args[:send_email] != "true"
+      report.call "email not sent -- send_email arg was #{args[:send_email].inspect}, expected the string \"true\""
+    elsif Hyrax.config.system_report_recipients.blank?
+      report.call "email not sent -- Hyrax.config.system_report_recipients is not configured"
+    else
+      begin
+        ApplicationMailer.send_email_with_attachment(
+          Hyrax.config.system_report_recipients,
+          "MS duplicate specimens report #{action}" + Time.now.strftime("%m-%d-%Y_%H-%M"),
+          "Duplicate specimens report #{action} attached.",
+           log_file).deliver_now
+        report.call "email sent to #{Hyrax.config.system_report_recipients} with attachment #{log_file}"
+      rescue => e
+        report.call "email FAILED -- #{e.class}: #{e.message}", :error
+      end
     end
   end
 

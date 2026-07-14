@@ -35,9 +35,9 @@ class UpdateCartItemReviewersJob < Hyrax::ApplicationJob
     end
   end
 
+  # A request awaiting review: requested and not yet approved, cleared,
+  # canceled, denied, or expired
   def outstanding_request?(item)
-    item.date_requested.present? &&
-      item.date_approved.nil? && item.date_canceled.nil? && item.date_denied.nil? &&
-      !item.expired?
+    item.request_status == "Requested"
   end
 end

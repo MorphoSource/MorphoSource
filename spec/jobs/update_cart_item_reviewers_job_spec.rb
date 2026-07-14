@@ -93,5 +93,21 @@ RSpec.describe UpdateCartItemReviewersJob do
 
       expect(job).not_to have_received(:deliver_message)
     end
+
+    it 'does not message reviewers added to a cleared request' do
+      cart_item.update!(date_cleared: Date.current)
+
+      job.perform(media)
+
+      expect(job).not_to have_received(:deliver_message)
+    end
+
+    it 'does not message reviewers added to an expired request' do
+      cart_item.update!(date_expired: Date.current - 1)
+
+      job.perform(media)
+
+      expect(job).not_to have_received(:deliver_message)
+    end
   end
 end

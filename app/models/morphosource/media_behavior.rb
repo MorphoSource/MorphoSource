@@ -38,7 +38,7 @@ module Morphosource
 
     # Returns ms_ids of the users who should approve download requests for this media:
     # download_reviewer if it resolves to any users, the owner otherwise
-    def reviewer
+    def reviewers
       Morphosource::DownloadReviewerResolverService.resolve_for_media(self)
     end
 

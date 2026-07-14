@@ -105,7 +105,7 @@ class CartItem < ApplicationRecord
   end
 
   def reviewer
-    User.where(ms_id: work.reviewer)
+    User.where(ms_id: work.reviewers)
   end
 
   def reviewer_names
@@ -121,7 +121,7 @@ class CartItem < ApplicationRecord
   # For previously requested items that are re-requested (expired, canceled, etc.),
   # refresh the reviewers on the cart item to match the current reviewers on the work.
   def refresh_reviewers_on_request
-    self.reviewers = work&.reviewer
+    self.reviewers = work&.reviewers
   end
 
 end

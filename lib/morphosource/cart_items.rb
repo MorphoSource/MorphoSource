@@ -134,14 +134,14 @@ module Morphosource
     def create_cart_item(work)
       work = SolrDocument.find(work) if work.is_a? String
       if work.public? || (current_user.can? :download, work.id)
-        CartItem.create( { user_id: current_user.ms_id, work_id: work.id, reviewers: work.reviewer } )
+        CartItem.create( { user_id: current_user.ms_id, work_id: work.id, reviewers: work.reviewers } )
       else
         nil
       end
     end
 
     def create_cart_item_for_api(work)
-      CartItem.create( { user_id: current_user.ms_id, work_id: work.id, reviewers: work.reviewer, download_hash: download_hash, download_attempts: 0, in_cart: false, download_method: "API" } )
+      CartItem.create( { user_id: current_user.ms_id, work_id: work.id, reviewers: work.reviewers, download_hash: download_hash, download_attempts: 0, in_cart: false, download_method: "API" } )
     end
 
     # Add first or subsequent download event after download from API

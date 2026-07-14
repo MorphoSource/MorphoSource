@@ -54,7 +54,7 @@ module Morphosource
         @media.download_reviewer = (@media.download_reviewer + @organization.download_reviewer).uniq
       else
         # if media is restricted download, include the default reviewer (regardless of whether one has been explicitly desginated) along with the organization download reviewers
-        @media.download_reviewer = (@media.reviewer + @organization.download_reviewer.to_a).uniq
+        @media.download_reviewer = (@media.reviewers + @organization.download_reviewer.to_a).uniq
       end
     end
 

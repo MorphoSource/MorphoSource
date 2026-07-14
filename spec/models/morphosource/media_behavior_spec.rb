@@ -85,7 +85,7 @@ RSpec.describe Morphosource::MediaBehavior do
     end
   end
 
-  describe 'reviewer' do
+  describe 'reviewers' do
     context 'media does not have a download reviewer set' do
       context 'media has an owner' do
         before do
@@ -93,14 +93,14 @@ RSpec.describe Morphosource::MediaBehavior do
           restricted_media.save!
         end
         it 'returns the media owner' do
-          expect(restricted_media.reviewer).to match_array([user.ms_id])
-          expect(restricted_media_solr.reviewer).to match_array([user.ms_id])
+          expect(restricted_media.reviewers).to match_array([user.ms_id])
+          expect(restricted_media_solr.reviewers).to match_array([user.ms_id])
         end
       end
       context 'media does not have an owner' do
         it 'returns the media depositor' do
-          expect(restricted_media.reviewer).to match_array([depositor.ms_id])
-          expect(restricted_media_solr.reviewer).to match_array([depositor.ms_id])
+          expect(restricted_media.reviewers).to match_array([depositor.ms_id])
+          expect(restricted_media_solr.reviewers).to match_array([depositor.ms_id])
         end
       end
       context 'media is owned by an organization' do
@@ -117,8 +117,8 @@ RSpec.describe Morphosource::MediaBehavior do
             org.save!
           end
           it 'returns the organization download reviewer' do
-            expect(restricted_media.reviewer).to match_array([user.ms_id])
-            expect(restricted_media_solr.reviewer).to match_array([user.ms_id])
+            expect(restricted_media.reviewers).to match_array([user.ms_id])
+            expect(restricted_media_solr.reviewers).to match_array([user.ms_id])
           end
         end
 
@@ -128,8 +128,8 @@ RSpec.describe Morphosource::MediaBehavior do
             org.managers_group.save!
           end
           it 'returns the organization manager ms_ids' do
-            expect(restricted_media.reviewer).to match_array([user.ms_id])
-            expect(restricted_media_solr.reviewer).to match_array([user.ms_id])
+            expect(restricted_media.reviewers).to match_array([user.ms_id])
+            expect(restricted_media_solr.reviewers).to match_array([user.ms_id])
           end
         end
       end
@@ -142,8 +142,8 @@ RSpec.describe Morphosource::MediaBehavior do
         end
 
         it 'returns the download reviewers' do
-          expect(restricted_media.reviewer).to match_array([user.ms_id, depositor.ms_id])
-          expect(restricted_media_solr.reviewer).to match_array([user.ms_id, depositor.ms_id])
+          expect(restricted_media.reviewers).to match_array([user.ms_id, depositor.ms_id])
+          expect(restricted_media_solr.reviewers).to match_array([user.ms_id, depositor.ms_id])
         end
       end
 
@@ -159,8 +159,8 @@ RSpec.describe Morphosource::MediaBehavior do
         it 'returns the individual and every organization reviewer' do
           expected_reviewers = [user.ms_id, user2.ms_id, user3.ms_id]
 
-          expect(restricted_media.reviewer).to match_array(expected_reviewers)
-          expect(restricted_media_solr.reviewer).to match_array(expected_reviewers)
+          expect(restricted_media.reviewers).to match_array(expected_reviewers)
+          expect(restricted_media_solr.reviewers).to match_array(expected_reviewers)
         end
       end
 
@@ -172,8 +172,8 @@ RSpec.describe Morphosource::MediaBehavior do
         end
 
         it 'falls back to the media owner' do
-          expect(restricted_media.reviewer).to match_array([user.ms_id])
-          expect(restricted_media_solr.reviewer).to match_array([user.ms_id])
+          expect(restricted_media.reviewers).to match_array([user.ms_id])
+          expect(restricted_media_solr.reviewers).to match_array([user.ms_id])
         end
       end
 
@@ -185,8 +185,8 @@ RSpec.describe Morphosource::MediaBehavior do
         end
 
         it 'does not add the media owner' do
-          expect(restricted_media.reviewer).to match_array([user.ms_id])
-          expect(restricted_media_solr.reviewer).to match_array([user.ms_id])
+          expect(restricted_media.reviewers).to match_array([user.ms_id])
+          expect(restricted_media_solr.reviewers).to match_array([user.ms_id])
         end
       end
     end

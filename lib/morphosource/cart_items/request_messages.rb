@@ -47,13 +47,13 @@ module Morphosource
             end
             content += " for intended use: <i>\"" + item.use + "\"</i>" if item.use.present?
             reviewers = []
-            Array(work.reviewer).each do |r|
+            Array(work.reviewers).each do |r|
               if User.where(ms_id:r).present?
                 # todo: check and skip if current reviewer?
                 reviewers << User.where(ms_id:r).first
               end
             end
-            if message_for == "reviewer" && Array(work.reviewer).count > 1
+            if message_for == "reviewer" && Array(work.reviewers).count > 1
               content += "<br/><small>(This request has been sent to multiple reviewers: #{user_email_link(reviewers)} who are all able to approve, deny, or clear this request.  Please coordinate your response if appropriate.)</small>"
             elsif message_for == "requestor"
               content += "<br/><small>(This request has been sent to: #{user_or_org_email_link(reviewer_display_names(work, reviewers))})</small>"

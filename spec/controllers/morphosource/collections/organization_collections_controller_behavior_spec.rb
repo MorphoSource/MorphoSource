@@ -110,7 +110,8 @@ RSpec.describe Morphosource::Collections::OrganizationCollectionsControllerBehav
           id: managed_media.id,
           'has_model_ssim' => ['Media'],
           'media_organization_id_ssim' => [organization.id],
-          'owner_ssim' => [organization.id]
+          'owner_ssim' => [organization.id],
+          'user_with_ownership_ssi' => organization.id
         },
         softCommit: true
       )

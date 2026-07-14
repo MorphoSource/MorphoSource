@@ -104,8 +104,10 @@ class CartItem < ApplicationRecord
     reviewer.include?(user) || user_id == work.user_with_ownership.first
   end
 
+  # Reviewers are stored on the cart item when it is created or requested and
+  # kept current by UpdateCartItemReviewersJob, so no solr lookup is needed here
   def reviewer
-    User.where(ms_id: work.reviewers)
+    User.where(ms_id: reviewers)
   end
 
   def reviewer_names

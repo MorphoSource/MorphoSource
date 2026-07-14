@@ -499,7 +499,7 @@ namespace :morphosource do
         begin
           media = Media.find(item.work_id)
           if media.present?
-            item.reviewers = media.reviewer
+            item.reviewers = media.reviewers
             item.save
             puts("CartItem #{item.id} updated")
           end

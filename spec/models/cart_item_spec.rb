@@ -10,8 +10,8 @@ RSpec.describe CartItem, type: :model do
 
   let(:work2)         { Media.create(id: "bbb", title: ["Test Media Work"], depositor: depositor.ms_id, download_reviewer: [], visibility: 'open', fileset_accessibility: ['open'])}
 
-  let!(:cartItem1)    { CartItem.create(user: user, work_id: work1.id) }
-  let!(:cartItem2)    { CartItem.create(user: user, work_id: work2.id) }
+  let!(:cartItem1)    { CartItem.create(user: user, work_id: work1.id, reviewers: work1.reviewers) }
+  let!(:cartItem2)    { CartItem.create(user: user, work_id: work2.id, reviewers: work2.reviewers) }
 
   before do
     Timecop.freeze(Time.local(1999, 9, 9, 9))
@@ -263,9 +263,7 @@ RSpec.describe CartItem, type: :model do
       end
       context 'user is the work download reviewer' do
         before do
-          work1.download_reviewer = [user.ms_id]
-          work1.save!
-          allow(SolrDocument).to receive(:find).with(work1.id).and_return(SolrDocument.find(work1.id))
+          cartItem1.update(reviewers: [user.ms_id])
         end
         it { expect(subject).to be(true) }
       end
@@ -295,9 +293,7 @@ RSpec.describe CartItem, type: :model do
     end
     context 'user is the reviewer' do
       before do
-        work1.download_reviewer = [user.ms_id]
-        work1.save!
-        allow(SolrDocument).to receive(:find).with(work1.id).and_return(SolrDocument.find(work1.id))
+        cartItem1.update(reviewers: [user.ms_id])
       end
       it { expect(subject).to be(true) }
     end
@@ -320,5 +316,10 @@ RSpec.describe CartItem, type: :model do
   describe '#reviewer' do
     it { expect(cartItem1.reviewer).to eq([reviewer]) }
     it { expect(cartItem2.reviewer).to eq([depositor]) }
+
+    it 'reads the reviewers column without querying the work solr document' do
+      expect(SolrDocument).not_to receive(:find)
+      expect(cartItem1.reviewer).to eq([reviewer])
+    end
   end
 end

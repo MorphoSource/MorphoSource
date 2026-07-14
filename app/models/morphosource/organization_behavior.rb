@@ -119,11 +119,5 @@ module Morphosource
 
       Array(Morphosource::CountriesService.new.continent(self.country.first))
     end
-
-    # Returns ms_ids of the users who should approve download requests for this organization:
-    # its download_reviewer resolved recursively, or its managers when none is configured
-    def media_download_reviewers(visited = Set.new)
-      Morphosource::DownloadReviewerResolverService.resolve_organization(self, visited)
-    end
   end
 end

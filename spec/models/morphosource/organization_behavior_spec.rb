@@ -129,69 +129,6 @@ RSpec.describe OrganizationCollection, type: :model do
     end
   end
 
-  describe '#media_download_reviewers' do
-    let(:user)  { FactoryBot.create(:registered_user) }
-    let(:user2) { FactoryBot.create(:registered_user) }
-
-    context 'the organization has a download_reviewer set' do
-      before do
-        organization.download_reviewer = [user.ms_id, user2.ms_id]
-        organization.save!
-      end
-      it 'returns the download_reviewer' do
-        expect(organization.media_download_reviewers).to match_array([user.ms_id, user2.ms_id])
-      end
-    end
-
-    context 'the organization has another organization as its download_reviewer' do
-      let(:nested_org) { FactoryBot.create(:organization_collection, title: ['Nested Org'], depositor: user.user_key) }
-
-      before do
-        nested_org.managers << user2
-        nested_org.managers_group.save!
-        organization.download_reviewer = ["org_collection:#{nested_org.id}"]
-        organization.save!
-      end
-
-      it 'resolves the nested org to its managers ms_ids' do
-        expect(organization.media_download_reviewers).to match_array([user2.ms_id])
-      end
-    end
-
-    context 'two organizations reference each other as download_reviewer (cycle)' do
-      let(:other_org) { FactoryBot.create(:organization_collection, title: ['Other Org'], depositor: user.user_key) }
-
-      before do
-        organization.download_reviewer = ["org_collection:#{other_org.id}"]
-        organization.save!
-        other_org.download_reviewer = ["org_collection:#{organization.id}"]
-        other_org.save!
-      end
-
-      it 'returns an empty array without looping' do
-        expect(organization.media_download_reviewers).to eq([])
-      end
-    end
-
-    context 'the organization has no download_reviewer' do
-      context 'the organization has managers' do
-        before do
-          organization.managers << user
-          organization.managers << user2
-          organization.managers_group.save!
-        end
-        it 'returns the ms_ids of the organization managers' do
-          expect(organization.media_download_reviewers).to match_array([user.ms_id, user2.ms_id])
-        end
-      end
-
-      context 'the organization has no managers' do
-        it 'returns an empty array' do
-          expect(organization.media_download_reviewers).to eq([])
-        end
-      end
-    end
-  end
 end
 
 describe 'agreement attachment methods' do

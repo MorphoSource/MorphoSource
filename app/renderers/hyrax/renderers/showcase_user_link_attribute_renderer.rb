@@ -23,6 +23,11 @@ module Hyrax
           markup = ''
           return markup if value.blank?
 
+          if Morphosource::DownloadReviewerResolverService.org_value?(value)
+            org = ::SolrDocument.where({"id" => Morphosource::DownloadReviewerResolverService.org_id(value)}).first
+            return org.present? ? user_link(org) : markup
+          end
+
           user = ::User.find_by_user_key(value) || ::SolrDocument.where({"id" => value}).first
           if user.present?
             link = user_link(user)

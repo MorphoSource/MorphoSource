@@ -16,8 +16,9 @@ module Morphosource
         download_reviewers = Array(work_doc['download_reviewer_ssim'])
 
         if download_reviewers.present?
-          resolved = User.where(ms_id: download_reviewers).to_a +
-                       OrganizationCollection.where(id: download_reviewers).to_a
+          user_ids, org_ids = Morphosource::DownloadReviewerResolverService.partition_values(download_reviewers)
+          resolved = User.where(ms_id: user_ids).to_a +
+                       OrganizationCollection.where(id: org_ids).to_a
           resolved.present? ? resolved : reviewers
         else
           org_owner = OrganizationCollection.find_by(id: work_doc["user_with_ownership_ssi"])

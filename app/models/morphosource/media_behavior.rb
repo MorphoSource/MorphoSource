@@ -49,8 +49,9 @@ module Morphosource
     #   - If no configured target resolves, the media owner is used.
     def reviewer
       if download_reviewer.present?
-        user_reviewers = User.where(ms_id: Array(download_reviewer)).map(&:ms_id)
-        organization_reviewers = OrganizationCollection.where(id: Array(download_reviewer))
+        user_ids, org_ids = Morphosource::DownloadReviewerResolverService.partition_values(download_reviewer)
+        user_reviewers = User.where(ms_id: user_ids).map(&:ms_id)
+        organization_reviewers = OrganizationCollection.where(id: org_ids)
                                                         .flat_map(&:media_download_reviewers)
         resolved_reviewers = (user_reviewers + organization_reviewers).uniq
         return resolved_reviewers if resolved_reviewers.present?
@@ -63,9 +64,10 @@ module Morphosource
       end
     end
 
-    # Returns the Users or OrganizationCollections whose ms_ids or ids are stored in download_reviewer
+    # Returns the Users or OrganizationCollections whose ms_ids or prefixed ids are stored in download_reviewer
     def download_reviewer_objects
-      User.where(ms_id: Array(download_reviewer)) + OrganizationCollection.where(id: Array(download_reviewer))
+      user_ids, org_ids = Morphosource::DownloadReviewerResolverService.partition_values(download_reviewer)
+      User.where(ms_id: user_ids) + OrganizationCollection.where(id: org_ids)
     end
 
   end

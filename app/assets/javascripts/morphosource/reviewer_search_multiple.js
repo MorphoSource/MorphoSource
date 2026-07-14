@@ -17,7 +17,7 @@
           url: "/data-managers",
           dataType: "json",
           data: function(term, page) {
-            return { uq: term };
+            return { uq: term, reviewer_field: true };
           },
           results: function(data, page) {
             return { results: data.users };

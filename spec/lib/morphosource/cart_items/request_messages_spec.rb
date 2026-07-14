@@ -20,14 +20,14 @@ RSpec.describe Morphosource::CartItems::RequestMessages do
       end
 
       context 'with an org id' do
-        let(:work_doc) { { 'download_reviewer_ssim' => [org.id], 'user_with_ownership_ssi' => user.ms_id } }
+        let(:work_doc) { { 'download_reviewer_ssim' => ["org_collection:#{org.id}"], 'user_with_ownership_ssi' => user.ms_id } }
         it 'returns the corresponding OrganizationCollection' do
           expect(subject.reviewer_display_names(work_doc, reviewers)).to match_array([org])
         end
       end
 
       context 'with a mix of user ms_ids and org ids' do
-        let(:work_doc) { { 'download_reviewer_ssim' => [user.ms_id, org.id], 'user_with_ownership_ssi' => user.ms_id } }
+        let(:work_doc) { { 'download_reviewer_ssim' => [user.ms_id, "org_collection:#{org.id}"], 'user_with_ownership_ssi' => user.ms_id } }
         it 'returns the corresponding User and OrganizationCollection objects' do
           expect(subject.reviewer_display_names(work_doc, reviewers)).to match_array([user, org])
         end

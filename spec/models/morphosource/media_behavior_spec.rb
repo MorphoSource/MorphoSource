@@ -152,7 +152,7 @@ RSpec.describe Morphosource::MediaBehavior do
         let(:org2) { FactoryBot.create(:organization_collection, download_reviewer: [user3.ms_id]) }
 
         before do
-          restricted_media.download_reviewer = [user.ms_id, org.id, org2.id]
+          restricted_media.download_reviewer = [user.ms_id, "org_collection:#{org.id}", "org_collection:#{org2.id}"]
           restricted_media.save!
         end
 

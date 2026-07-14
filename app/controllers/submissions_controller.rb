@@ -849,11 +849,12 @@ class SubmissionsController < ApplicationController
   end
 
   def format_reviewers_select2(reviewers)
-    reviewers.map do |id|
-      if (user = User.find_by(ms_id: id))
+    reviewers.map do |value|
+      if Morphosource::DownloadReviewerResolverService.org_value?(value)
+        org = OrganizationCollection.find_by(id: Morphosource::DownloadReviewerResolverService.org_id(value))
+        { id: value, user_key: value, text: org.name } if org.present?
+      elsif (user = User.find_by(ms_id: value))
         { id: user.ms_id, user_key: user.ms_id, text: user.email.present? ? user.email : user.name_or_email }
-      elsif (org = OrganizationCollection.find_by(id: id))
-        { id: org.id, user_key: org.id, text: org.name }
       end
     end.compact
   end

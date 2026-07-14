@@ -149,7 +149,7 @@ RSpec.describe OrganizationCollection, type: :model do
       before do
         nested_org.managers << user2
         nested_org.managers_group.save!
-        organization.download_reviewer = [nested_org.id]
+        organization.download_reviewer = ["org_collection:#{nested_org.id}"]
         organization.save!
       end
 
@@ -162,9 +162,9 @@ RSpec.describe OrganizationCollection, type: :model do
       let(:other_org) { FactoryBot.create(:organization_collection, title: ['Other Org'], depositor: user.user_key) }
 
       before do
-        organization.download_reviewer = [other_org.id]
+        organization.download_reviewer = ["org_collection:#{other_org.id}"]
         organization.save!
-        other_org.download_reviewer = [organization.id]
+        other_org.download_reviewer = ["org_collection:#{organization.id}"]
         other_org.save!
       end
 

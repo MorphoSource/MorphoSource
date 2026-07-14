@@ -22,7 +22,7 @@ RSpec.describe UpdateOrgCartItemReviewersJob do
     let(:grandparent_org_id) { 'grandparent-org-id' }
 
     def solr_org_query_for(id)
-      satisfy { |q| q.include?("has_model_ssim:OrganizationCollection") && q.include?("download_reviewer_ssim:#{RSolr.solr_escape(id)}") }
+      satisfy { |q| q.include?("has_model_ssim:OrganizationCollection") && q.include?("download_reviewer_ssim:#{RSolr.solr_escape("org_collection:#{id}")}") }
     end
 
     it 'returns ids of orgs that list the given org as a download_reviewer' do
@@ -70,9 +70,9 @@ RSpec.describe UpdateOrgCartItemReviewersJob do
     context 'when the org is the explicit download_reviewer on the media' do
       before do
         allow(ActiveFedora::SolrService).to receive(:query).and_return([
-          { 'id' => media_id, 'download_reviewer_ssim' => [org_id], 'user_with_ownership_ssi' => nil }
+          { 'id' => media_id, 'download_reviewer_ssim' => ["org_collection:#{org_id}"], 'user_with_ownership_ssi' => nil }
         ])
-        allow(User).to receive(:where).with(ms_id: [org_id]).and_return([])
+        allow(User).to receive(:where).with(ms_id: []).and_return([])
         allow(OrganizationCollection).to receive(:where).with(id: [org_id]).and_return([reviewer_org])
         allow(reviewer_org).to receive(:media_download_reviewers).and_return([manager.ms_id])
       end

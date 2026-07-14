@@ -128,11 +128,11 @@ module Morphosource
       visited << id
 
       if download_reviewer.present?
-        reviewer_ids = Array(download_reviewer)
-        user_ids = User.where(ms_id: reviewer_ids).map(&:ms_id)
-        org_ids  = OrganizationCollection.where(id: reviewer_ids)
-                                         .flat_map { |org| org.media_download_reviewers(visited) }
-        (user_ids + org_ids).uniq
+        user_ids, org_ids = Morphosource::DownloadReviewerResolverService.partition_values(download_reviewer)
+        user_ms_ids = User.where(ms_id: user_ids).map(&:ms_id)
+        org_ms_ids  = OrganizationCollection.where(id: org_ids)
+                                            .flat_map { |org| org.media_download_reviewers(visited) }
+        (user_ms_ids + org_ms_ids).uniq
       else
         managers.map(&:ms_id)
       end

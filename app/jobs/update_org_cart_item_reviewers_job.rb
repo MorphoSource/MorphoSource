@@ -19,10 +19,11 @@ class UpdateOrgCartItemReviewersJob < Hyrax::ApplicationJob
 
   def affected_media_ids(org)
     ([org.id] + ancestor_org_ids(org.id)).uniq.flat_map do |oid|
+      escaped_reviewer_value = RSolr.solr_escape(Morphosource::DownloadReviewerResolverService.org_value(oid))
       escaped = RSolr.solr_escape(oid)
 
       org_as_reviewer = ActiveFedora::SolrService.query(
-        "has_model_ssim:Media AND download_reviewer_ssim:#{escaped}",
+        "has_model_ssim:Media AND download_reviewer_ssim:#{escaped_reviewer_value}",
         fl: ['id'], rows: 999999
       ).map { |r| r['id'] }
 
@@ -39,9 +40,9 @@ class UpdateOrgCartItemReviewersJob < Hyrax::ApplicationJob
     return [] if visited.include?(org_id)
     visited << org_id
 
-    escaped = RSolr.solr_escape(org_id)
+    escaped_reviewer_value = RSolr.solr_escape(Morphosource::DownloadReviewerResolverService.org_value(org_id))
     parent_ids = ActiveFedora::SolrService.query(
-      "has_model_ssim:OrganizationCollection AND download_reviewer_ssim:#{escaped}",
+      "has_model_ssim:OrganizationCollection AND download_reviewer_ssim:#{escaped_reviewer_value}",
       fl: ['id'], rows: 999999
     ).map { |r| r['id'] }
 
@@ -61,12 +62,14 @@ class UpdateOrgCartItemReviewersJob < Hyrax::ApplicationJob
       )
     end
 
-    all_ids = results.flat_map { |doc|
-      Array(doc['download_reviewer_ssim']) + Array(doc['user_with_ownership_ssi'])
-    }.uniq
+    reviewer_user_ids, reviewer_org_ids = Morphosource::DownloadReviewerResolverService.partition_values(
+      results.flat_map { |doc| Array(doc['download_reviewer_ssim']) }
+    )
+    # ownership values are bare ids that may name either a user or an org
+    ownership_ids = results.map { |doc| doc['user_with_ownership_ssi'] }.compact.uniq
 
-    user_ms_ids  = User.where(ms_id: all_ids).map(&:ms_id).to_set
-    org_reviewer_map = OrganizationCollection.where(id: all_ids)
+    user_ms_ids  = User.where(ms_id: (reviewer_user_ids + ownership_ids).uniq).map(&:ms_id).to_set
+    org_reviewer_map = OrganizationCollection.where(id: (reviewer_org_ids + ownership_ids).uniq)
                                              .each_with_object({}) { |org, h| h[org.id] = org.media_download_reviewers }
 
     results.each_with_object({}) do |doc, hash|
@@ -81,9 +84,9 @@ class UpdateOrgCartItemReviewersJob < Hyrax::ApplicationJob
 
   def resolve_reviewers(download_reviewer, ownership, user_ms_ids, org_reviewer_map)
     if download_reviewer.present?
-      user_ids = download_reviewer.select { |id| user_ms_ids.include?(id) }
-      org_ids  = download_reviewer.flat_map { |id| org_reviewer_map[id] || [] }
-      resolved = (user_ids + org_ids).uniq
+      user_ids, org_ids = Morphosource::DownloadReviewerResolverService.partition_values(download_reviewer)
+      resolved = (user_ids.select { |id| user_ms_ids.include?(id) } +
+                  org_ids.flat_map { |id| org_reviewer_map[id] || [] }).uniq
       return resolved if resolved.present?
     end
 

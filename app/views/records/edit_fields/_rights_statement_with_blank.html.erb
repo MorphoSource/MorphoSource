@@ -4,7 +4,7 @@
     <label class="col-form-label select optional" for="organization_rights_statement">
       Copyright statement
     </label>
-    <i class="material-icons tooltip-icon" data-original-title="" title="" style="margin-left: -1px;">
+    <i class="material-icons tooltip-icon hint-tooltip" data-toggle="tooltip" style="margin-left: -1px;">
       <p class="hint hide"><%= t('simple_form.hints.defaults.rights_statement') %></p>
     </i>
   </div>
@@ -20,7 +20,7 @@
         <label class="boolean optional" for="organization_rights_statement_blank">
           <%= f.input_field :rights_statement_blank, as: :boolean, boolean_style: :inline %>
           <span>Value intentionally blank</span>
-          <i class="material-icons tooltip-icon" data-original-title="" title="" style="margin-left: -1px;">
+          <i class="material-icons tooltip-icon hint-tooltip" data-toggle="tooltip" style="margin-left: -1px;">
             <p class="hint hide"><%= t('simple_form.hints.organization.value_blank_check') %></p>
           </i>
         </label>

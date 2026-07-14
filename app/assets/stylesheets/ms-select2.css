@@ -8,3 +8,15 @@
   border-radius:  4px;
   padding-left:  4px !important;
 }
+
+/* Wrap long names (e.g. organization titles) instead of truncating them,
+   both in the dropdown results and in selected choice chips */
+.select2-results .select2-result-label {
+  white-space: normal;
+  word-break: break-word;
+}
+
+.select2-choices .select2-search-choice > div {
+  white-space: normal;
+  word-break: break-word;
+}

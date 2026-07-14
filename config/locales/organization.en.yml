@@ -96,6 +96,7 @@ en:
         country: The country where the organization is located
         device_media_count: Total number of media imaged by organization devices, you have view access to these
         description: A brief description or notes about the organization
+        download_reviewer_managers: When selected, download requests are sent to the organization's current managers. This list updates automatically as managers are added to or removed from the organization
         institution_code: The code used in the first part of the organization's Darwin Core triplet for specimens. Probably used by multiple organizations in an institution. Contact Morphosource admins at morphosource@duke.edu to change the institution code(s)
         institution_name: The name of the larger museum, university, or corporation this organization belongs to. Contact Morphosource admins at morphosource@duke.edu to change the institution name
         managed_media_count: Total number of media where organization is the media data manager, you have edit access to these

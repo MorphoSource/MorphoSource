@@ -1,3 +1,4 @@
+<% org_collection_form = form_model_name(f) == 'organization_collection' && f.object.model.id.present? %>
 <div class="form-group row string optional media_download_reviewer">
   <div class="col-6 showcase-label">
     <label class="col-form-label string optional" for="media_download_reviewer"><%= t('simple_form.labels.media.download_reviewer') %></label>
@@ -11,14 +12,52 @@
       'data-reviewers' => reviewer_data(f),
       class: 'form-control string optional multi-search-field'
     %>
+    <% if org_collection_form %>
+      <div class="checkbox org-managers-reviewer">
+        <label class="boolean optional" for="org_managers_reviewer">
+          <input type="checkbox" id="org_managers_reviewer"
+            data-managers="<%= org_managers_data(f) %>"
+            data-org-value="<%= org_managers_reviewer_value(f) %>"
+            data-input-name="<%= "#{f.object_name}[download_reviewer][]" %>"
+            <%= 'checked' if org_managers_reviewer_selected?(f) %> />
+          <span>Current Organization Managers</span>
+          <i class="material-icons tooltip-icon" data-toggle="tooltip" title="<%= t('simple_form.hints.organization.download_reviewer_managers') %>"></i>
+        </label>
+      </div>
+    <% end %>
   </div>
 </div>
 
 <script>
   $( document ).ready(function() {
-    reviewerSelect = $('#media_download_reviewer');
+    var reviewerSelect = $('#media_download_reviewer');
+    var managersCheckbox = $('#org_managers_reviewer');
 
-    // add search to download reviewer
-    reviewerSelect.reviewerSearchMultiple(reviewerSelect.data('reviewers'));
+    // org collection forms may only search users; orgs select themselves via the checkbox
+    reviewerSelect.reviewerSearchMultiple(reviewerSelect.data('reviewers'), { usersOnly: managersCheckbox.length > 0 });
+
+    if (managersCheckbox.length > 0) {
+      var applyManagersMode = function(selected) {
+        if (selected) {
+          // show the current managers read-only and submit the org itself as the reviewer
+          reviewerSelect.select2('data', managersCheckbox.data('managers'));
+          reviewerSelect.select2('enable', false);
+          $('<input>', {
+            type: 'hidden',
+            class: 'org-managers-reviewer-value',
+            name: managersCheckbox.data('input-name'),
+            value: managersCheckbox.data('org-value')
+          }).insertAfter(reviewerSelect);
+        } else {
+          $('.org-managers-reviewer-value').remove();
+          reviewerSelect.select2('enable', true);
+          reviewerSelect.select2('data', []);
+          reviewerSelect.val('');
+        }
+      };
+
+      managersCheckbox.on('change', function() { applyManagersMode(this.checked); });
+      if (managersCheckbox.is(':checked')) { applyManagersMode(true); }
+    }
   });
 </script>

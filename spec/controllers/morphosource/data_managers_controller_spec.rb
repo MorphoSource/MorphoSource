@@ -31,5 +31,10 @@ RSpec.describe Morphosource::DataManagersController, type: :controller do
       get :index, params: { uq: 'Institution' }, format: :json
       expect(controller.instance_variable_get(:@data_managers).map(&:id)).to match_array([aaa_organization.id, bbb_organization.id, ccc_organization.id])
     end
+
+    it 'returns only users when users_only is set' do
+      get :index, params: { uq: 'AAA', users_only: 'true' }, format: :json
+      expect(controller.instance_variable_get(:@data_managers).map(&:id)).to match_array([aaa_user.id])
+    end
   end
 end

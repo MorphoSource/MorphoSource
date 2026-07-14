@@ -96,6 +96,19 @@ RSpec.describe Morphosource::DownloadReviewerResolverService do
         end
       end
 
+      context 'when the org lists itself as download_reviewer (managers checkbox)' do
+        before do
+          org.managers << manager
+          org.managers_group.save!
+          org.download_reviewer = ["org_collection:#{org.id}"]
+          org.save!
+        end
+
+        it 'resolves to the current managers' do
+          expect(described_class.resolve_organization(org)).to eq([manager.ms_id])
+        end
+      end
+
       context 'when orgs reference each other in a cycle' do
         let(:other_org) { FactoryBot.create(:organization_collection) }
 

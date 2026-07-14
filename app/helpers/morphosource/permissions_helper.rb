@@ -69,6 +69,23 @@ module Morphosource
       form.model.send(field).reject(&:blank?).present?
     end
 
+    # "Current Organization Managers" checkbox on org collection forms:
+    # selecting it stores the org itself as its download_reviewer
+    def org_managers_reviewer_value(f)
+      Morphosource::DownloadReviewerResolverService.org_value(f.object.model.id)
+    end
+
+    def org_managers_reviewer_selected?(f)
+      Array(f.object.model.download_reviewer).include?(org_managers_reviewer_value(f))
+    end
+
+    # Current managers as select2 items, shown read-only when the checkbox is selected
+    def org_managers_data(f)
+      f.object.model.managers.map do |manager|
+        { id: manager.ms_id, user_key: manager.ms_id, text: manager.name_or_email }
+      end.to_json
+    end
+
     def form_model_name(f)
       f.object.model_name.singular
     end

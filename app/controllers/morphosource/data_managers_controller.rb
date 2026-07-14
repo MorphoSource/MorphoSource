@@ -8,7 +8,7 @@ module Morphosource
 
     def index
       users = search(params[:uq], false)
-      organizations = search_organizations(params[:uq])
+      organizations = params[:users_only].present? ? [] : search_organizations(params[:uq])
       @data_managers = (organizations + users).sort_by!{|x| x.display_name || '' }
     end
 

@@ -11,7 +11,8 @@ describe 'morphosource rake tasks' do
   let(:create_production_users)   { Rake::Task['morphosource:create_production_users'] }
   let(:update_media_ip_holder)    { Rake::Task['morphosource:update_media_ip_holder'] }
   let(:find_extra_solr_records)   { Rake::Task['morphosource:find_extra_solr_records'] }
-  let(:tasks)                     { [setup, create_admin_set, create_collection_types, create_admin_role, create_contributor_role, create_development_users, create_production_users, update_media_ip_holder, find_extra_solr_records] }
+  let(:find_and_merge_duplicate_specimens) { Rake::Task['morphosource:find_and_merge_duplicate_specimens'] }
+  let(:tasks)                     { [setup, create_admin_set, create_collection_types, create_admin_role, create_contributor_role, create_development_users, create_production_users, update_media_ip_holder, find_extra_solr_records, find_and_merge_duplicate_specimens] }
 
   before do
     Rails.application.load_tasks if Rake::Task.tasks.empty?
@@ -261,6 +262,74 @@ describe 'morphosource rake tasks' do
     it 'calls Morphosource::FindExtraSolrJob' do
       expect(Morphosource::FindExtraSolrJob).to receive(:perform_later)
       find_extra_solr_records.invoke
+    end
+  end
+
+  describe 'find_and_merge_duplicate_specimens', type: :task do
+    around do |example|
+      previous_recipients = Hyrax.config.system_report_recipients
+      example.run
+      Hyrax.config.system_report_recipients = previous_recipients
+    end
+
+    before do
+      ActionMailer::Base.deliveries.clear
+    end
+
+    context 'when the send_email arg is not the string "true"' do
+      before { Hyrax.config.system_report_recipients = 'test@example.com' }
+
+      it 'does not send an email' do
+        find_and_merge_duplicate_specimens.invoke('merge_report_only', 'false')
+        expect(ActionMailer::Base.deliveries).to be_empty
+      end
+    end
+
+    context 'when system_report_recipients is not configured' do
+      before { Hyrax.config.system_report_recipients = '' }
+
+      it 'does not send an email' do
+        find_and_merge_duplicate_specimens.invoke('merge_report_only', 'true')
+        expect(ActionMailer::Base.deliveries).to be_empty
+      end
+    end
+
+    context 'when send_email is "true" and recipients are configured' do
+      before { Hyrax.config.system_report_recipients = 'test@example.com' }
+
+      it 'sends an email with the report log attached' do
+        find_and_merge_duplicate_specimens.invoke('merge_report_only', 'true')
+        expect(ActionMailer::Base.deliveries.count).to eq(1)
+        expect(ActionMailer::Base.deliveries.first.to).to eq(['test@example.com'])
+        expect(ActionMailer::Base.deliveries.first.attachments).not_to be_empty
+      end
+    end
+
+    context 'when duplicate specimens exist and merge is requested' do
+      let!(:specimen) do
+        [
+          BiologicalSpecimen.create(title: ['dup a'], catalog_number: ['1'], institution_code: ['INST'],
+                                     collection_code: ['abc'], vouchered: ['Yes'],
+                                     occurrence_id: ['urn:catalog:dual-logger-spec:1'], idigbio_uuid: ['dual-logger-spec-uuid']),
+          BiologicalSpecimen.create(title: ['dup b'], catalog_number: ['2'], institution_code: ['INST'],
+                                     collection_code: ['abc'], vouchered: ['Yes'],
+                                     occurrence_id: ['urn:catalog:dual-logger-spec:1'], idigbio_uuid: ['dual-logger-spec-uuid'])
+        ]
+      end
+
+      before do
+        specimen.each(&:save)
+        specimen.each(&:reload)
+        ActiveFedora::SolrService.commit
+        Hyrax.config.system_report_recipients = ''
+      end
+
+      it 'invokes MergeBiologicalSpecimenService for the duplicate pair' do
+        expect(Morphosource::MergeBiologicalSpecimenService).to receive(:call)
+          .with(a_string_matching(/\A0*[a-z0-9]+\z/i), a_string_matching(/\A0*[a-z0-9]+\z/i), true, false, reporter: instance_of(Morphosource::DualLogger))
+          .and_return([[], []])
+        find_and_merge_duplicate_specimens.invoke('true', 'false')
+      end
     end
   end
 end

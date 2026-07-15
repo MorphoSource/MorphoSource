@@ -1,15 +1,16 @@
 module Morphosource
   class MergeBiologicalSpecimenService
 
-    def self.call(merge_to=nil, merge_from=nil, delete_dup=true, report_only=false)
-    	new(merge_to, merge_from, delete_dup, report_only).call
+    def self.call(merge_to=nil, merge_from=nil, delete_dup=true, report_only=false, reporter: nil)
+    	new(merge_to, merge_from, delete_dup, report_only, reporter: reporter).call
     end
 
-    def initialize(merge_to, merge_from, delete_dup, report_only)
+    def initialize(merge_to, merge_from, delete_dup, report_only, reporter: nil)
     	@merge_to = merge_to
     	@merge_from = merge_from
     	@delete_dup = delete_dup
     	@report_only = report_only
+    	@reporter = reporter || Morphosource::DualLogger.new
     end
 
     def call
@@ -26,7 +27,7 @@ module Morphosource
         ie.physical_object_id = [bso_to.id]
         if !@report_only && !ie.save
           failed_repoints << ie.id
-          puts " failed to repoint ImagingEvent #{ie.id} (media #{m.id}) from #{@merge_from} to #{@merge_to}"
+          @reporter.log " failed to repoint ImagingEvent #{ie.id} (media #{m.id}) from #{@merge_from} to #{@merge_to}", level: :warn
         end
 		  end
       if media_list.present? && !@report_only
@@ -35,12 +36,12 @@ module Morphosource
       end
 		  if @delete_dup && !@report_only
 		  	if failed_repoints.present?
-		  	  puts " specimen #{@merge_from} NOT destroyed -- #{failed_repoints.count} ImagingEvent(s) failed to repoint: #{failed_repoints.inspect}"
+		  	  @reporter.log " specimen #{@merge_from} NOT destroyed -- #{failed_repoints.count} ImagingEvent(s) failed to repoint: #{failed_repoints.inspect}", level: :warn
 		  	elsif media_still_referencing?(bso_from, media_list)
-		  	  puts " specimen #{@merge_from} NOT destroyed -- Solr still shows media referencing it beyond what this merge already handled"
+		  	  @reporter.log " specimen #{@merge_from} NOT destroyed -- Solr still shows media referencing it beyond what this merge already handled", level: :warn
 		  	else
 		  	  bso_from.destroy
-		  	  puts " specimen #{@merge_from} destroyed"
+		  	  @reporter.log " specimen #{@merge_from} destroyed"
 		  	end
 		  end
 		  return media_list, ie_list

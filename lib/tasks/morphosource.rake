@@ -727,12 +727,10 @@ namespace :morphosource do
 
     # Every line goes to both the run's own log file (for the emailed attachment) and
     # STDOUT, tagged with a prefix so it's easy to grep/filter out of cluster log
-    # aggregation regardless of whether the local log file survives the pod.
-    log_prefix = "[dedupe_specimens]"
-    report = lambda do |msg, level = :info|
-      log.send(level, msg)
-      puts "#{log_prefix} #{msg}"
-    end
+    # aggregation regardless of whether the local log file survives the pod. Passed into
+    # the merge service too, so its per-specimen outcome (destroyed vs blocked) lands in
+    # this same file instead of only the rake task's own summary lines.
+    reporter = Morphosource::DualLogger.new(log, prefix: "[dedupe_specimens]")
 
     ie_total = 0
     bso_list = []
@@ -740,35 +738,35 @@ namespace :morphosource do
     bso_list = ActiveFedora::SolrService.query(qry, rows: 999999)
     grouped = bso_list.group_by{|b| [ b["occurrence_id_tesim"], b["idigbio_uuid_tesim"] ]}
     filtered = grouped.values.select { |a| a.size > 1 }.flatten.group_by { |b| [ b["occurrence_id_tesim"], b["idigbio_uuid_tesim"] ] }
-    report.call "report_only: #{report_only}"
-    report.call "#{filtered.count} duplicate groups found"
+    reporter.log "report_only: #{report_only}"
+    reporter.log "#{filtered.count} duplicate groups found"
     filtered.each do |key, dups|
       # To minimize the merging time, sort the specimen by the media count, and keep the first specimen (with the most media)
       sorted_dups = dups.sort_by { |dup| -(dup['related_media_ids_ssim']&.count || 0) }
-      report.call "Duplicate group #{key} with specimens #{sorted_dups.map{|x| x['id'] }}"
+      reporter.log "Duplicate group #{key} with specimens #{sorted_dups.map{|x| x['id'] }}"
       if merge == true
         delete_dup = (report_only == false)
         merge_to = sorted_dups.first['id']
         sorted_dups.drop(1).each do |dup|
           merge_from = dup['id']
-          media_list, ie_list = Morphosource::MergeBiologicalSpecimenService.call(merge_to, merge_from, delete_dup, report_only)
-          report.call " moved media #{media_list} from specimen #{merge_from} to specimen #{merge_to}"
+          media_list, ie_list = Morphosource::MergeBiologicalSpecimenService.call(merge_to, merge_from, delete_dup, report_only, reporter: reporter)
+          reporter.log " considered media #{media_list} for move from specimen #{merge_from} to specimen #{merge_to}#{' (see outcome above)' unless report_only}"
           ie_total += ie_list.count
         end
-        report.call " duplicate group #{key} merged -> remaining specimen #{merge_to}"
+        reporter.log " duplicate group #{key} processed -> target specimen #{merge_to}"
       end
     end
     if report_only
-      report.call "This is a report only. Total imaging event count: #{ie_total}"
+      reporter.log "This is a report only. Total imaging event count: #{ie_total}"
       action = "(report only) "
     else
       action = "(merge) "
     end
 
     if args[:send_email] != "true"
-      report.call "email not sent -- send_email arg was #{args[:send_email].inspect}, expected the string \"true\""
+      reporter.log "email not sent -- send_email arg was #{args[:send_email].inspect}, expected the string \"true\""
     elsif Hyrax.config.system_report_recipients.blank?
-      report.call "email not sent -- Hyrax.config.system_report_recipients is not configured"
+      reporter.log "email not sent -- Hyrax.config.system_report_recipients is not configured"
     else
       begin
         ApplicationMailer.send_email_with_attachment(
@@ -776,9 +774,9 @@ namespace :morphosource do
           "MS duplicate specimens report #{action}" + Time.now.strftime("%m-%d-%Y_%H-%M"),
           "Duplicate specimens report #{action} attached.",
            log_file).deliver_now
-        report.call "email sent to #{Hyrax.config.system_report_recipients} with attachment #{log_file}"
+        reporter.log "email sent to #{Hyrax.config.system_report_recipients} with attachment #{log_file}"
       rescue => e
-        report.call "email FAILED -- #{e.class}: #{e.message}", :error
+        reporter.log "email FAILED -- #{e.class}: #{e.message}", level: :error
       end
     end
   end

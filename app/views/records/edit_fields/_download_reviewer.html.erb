@@ -16,7 +16,7 @@
       <div class="checkbox org-managers-reviewer">
         <label class="boolean optional" for="org_managers_reviewer">
           <input type="checkbox" id="org_managers_reviewer"
-            data-org-name="<%= f.object.model.name %>"
+            data-org-managers="<%= org_managers_reviewer_items(f) %>"
             data-org-value="<%= org_managers_reviewer_value(f) %>"
             data-input-name="<%= "#{f.object_name}[download_reviewer][]" %>"
             <%= 'checked' if org_managers_reviewer_selected?(f) %> />
@@ -37,27 +37,30 @@
     reviewerSelect.reviewerSearchMultiple(reviewerSelect.data('reviewers'), { usersOnly: managersCheckbox.length > 0 });
 
     if (managersCheckbox.length > 0) {
+      var orgValue = managersCheckbox.data('org-value');
+      var stashedSelection = [];
+
       var applyManagersMode = function(selected) {
         if (selected) {
-          // show the org name read-only and submit the org itself as the reviewer,
-          // matching how the stored value renders after save
-          reviewerSelect.select2('data', [{
-            id: managersCheckbox.data('org-value'),
-            user_key: managersCheckbox.data('org-value'),
-            text: managersCheckbox.data('org-name')
-          }]);
+          // stash any individually selected users so unchecking restores them,
+          // then show the current managers read-only and submit the org itself,
+          // which resolves to whoever manages the org when a request is reviewed
+          stashedSelection = (reviewerSelect.select2('data') || []).filter(function(item) {
+            return item.id !== orgValue;
+          });
+          reviewerSelect.select2('data', managersCheckbox.data('org-managers'));
           reviewerSelect.select2('enable', false);
           $('<input>', {
             type: 'hidden',
             class: 'org-managers-reviewer-value',
             name: managersCheckbox.data('input-name'),
-            value: managersCheckbox.data('org-value')
+            value: orgValue
           }).insertAfter(reviewerSelect);
         } else {
           $('.org-managers-reviewer-value').remove();
           reviewerSelect.select2('enable', true);
-          reviewerSelect.select2('data', []);
-          reviewerSelect.val('');
+          reviewerSelect.select2('data', stashedSelection);
+          stashedSelection = [];
         }
       };
 

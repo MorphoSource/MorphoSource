@@ -103,6 +103,17 @@ RSpec.describe Morphosource::PermissionsHelper, type: :helper do
         expect(helper.org_managers_reviewer_selected?(f)).to be true
       end
     end
+
+    it 'builds select2 items for the current managers' do
+      manager = FactoryBot.create(:user)
+      allow(organization).to receive(:managers).and_return([manager])
+
+      helper.simple_form_for form, url: '' do |f|
+        expect(JSON.parse(helper.org_managers_reviewer_items(f))).to eq(
+          [{ 'id' => manager.ms_id, 'user_key' => manager.ms_id, 'text' => manager.email }]
+        )
+      end
+    end
   end
 
   describe 'download_permission, badge_class, human_readable_publication_status' do

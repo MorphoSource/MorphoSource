@@ -90,6 +90,13 @@ module Morphosource
       Array(f.object.model.download_reviewer).include?(org_managers_reviewer_value(f))
     end
 
+    # Manager names shown read-only in the reviewer field while the checkbox is
+    # selected; the submitted value stays the org itself, which resolves to
+    # whoever manages the org when a request is reviewed
+    def org_managers_reviewer_items(f)
+      f.object.model.managers.map { |user| user_select2_item(user) }.to_json
+    end
+
     def form_model_name(f)
       f.object.model_name.singular
     end

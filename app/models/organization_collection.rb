@@ -8,6 +8,7 @@ class OrganizationCollection < Collection
   include Morphosource::Works::IndexRelatedWorks
 
   before_validation :normalize_download_reviewer
+  validate :download_reviewer_orgs_limited_to_self
   before_save :convert_media_ownership_transfer
   before_save :record_date_managed
   after_create :create_collection_groups
@@ -150,6 +151,15 @@ class OrganizationCollection < Collection
 
   def update_media_cart_item_reviewers
     UpdateOrgCartItemReviewersJob.perform_later(id)
+  end
+
+  # Organizations may only name individual users or themselves (the managers
+  # checkbox) as download reviewers; the form enforces this in the UI, this
+  # enforces it for all other save paths
+  def download_reviewer_orgs_limited_to_self
+    _user_ids, org_ids = Morphosource::DownloadReviewerResolverService.partition_values(download_reviewer)
+    return if (org_ids - [id]).empty?
+    errors.add(:download_reviewer, 'may only include individual users or this organization')
   end
 
   def create_organization_project

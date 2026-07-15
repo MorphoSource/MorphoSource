@@ -51,6 +51,27 @@ RSpec.describe OrganizationCollection, type: :model do
     expect(subject).to be_valid
   end
 
+  describe 'download_reviewer validation' do
+    let(:organization) { FactoryBot.create(:organization_collection, title: ['Org'], depositor: user.user_key) }
+    let(:other_org)    { FactoryBot.create(:organization_collection, title: ['Other Org'], depositor: user.user_key) }
+
+    it 'allows individual user ms_ids' do
+      organization.download_reviewer = [user.ms_id]
+      expect(organization).to be_valid
+    end
+
+    it 'allows the organization to name itself (managers checkbox)' do
+      organization.download_reviewer = [Morphosource::DownloadReviewerResolverService.org_value(organization.id)]
+      expect(organization).to be_valid
+    end
+
+    it 'rejects other organizations' do
+      organization.download_reviewer = [Morphosource::DownloadReviewerResolverService.org_value(other_org.id)]
+      expect(organization).not_to be_valid
+      expect(organization.errors[:download_reviewer]).to be_present
+    end
+  end
+
   describe 'collection_type' do
     it 'has the organization collection type' do
       expect(described_class.collection_type).to eq(organization_collection_type)

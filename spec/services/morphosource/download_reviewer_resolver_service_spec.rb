@@ -125,21 +125,18 @@ RSpec.describe Morphosource::DownloadReviewerResolverService do
         end
       end
 
-      context 'when orgs reference each other in a cycle' do
-        let(:other_org) { FactoryBot.create(:organization_collection) }
+      context 'when download_reviewer contains an org value other than the org itself' do
+        let(:other_org) { FactoryBot.create(:organization_collection, download_reviewer: [user2.ms_id]) }
 
-        # validation now prevents orgs from referencing other orgs, so build
-        # the cycle without validation to prove the guard still holds for
-        # legacy or manually written data
+        # validation prevents orgs from referencing other orgs; if such a
+        # value is ever written around validation, it is ignored
         before do
-          org.download_reviewer = ["org_collection:#{other_org.id}"]
+          org.download_reviewer = [user.ms_id, "org_collection:#{other_org.id}"]
           org.save(validate: false)
-          other_org.download_reviewer = ["org_collection:#{org.id}"]
-          other_org.save(validate: false)
         end
 
-        it 'returns an empty array without looping' do
-          expect(described_class.resolve_organization(org)).to eq([])
+        it 'ignores the other org' do
+          expect(described_class.resolve_organization(org)).to eq([user.ms_id])
         end
       end
     end

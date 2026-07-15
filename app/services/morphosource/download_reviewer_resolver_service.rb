@@ -58,21 +58,16 @@ module Morphosource
 
       # Resolves an organization's reviewers to user ms_ids: its
       # download_reviewer values when set, otherwise its managers.
-      # An org listing itself as a download_reviewer ("Current Organization
-      # Managers" on the org form) resolves to its managers.
-      # visited guards against cycles (e.g. Org A → Org B → Org A).
-      def resolve_organization(org, visited = Set.new)
-        return [] if visited.include?(org.id)
-        visited << org.id
-
+      # An org's download_reviewer may only contain user ms_ids and its own
+      # prefixed id ("Current Organization Managers" on the org form), which
+      # resolves to its managers — enforced by OrganizationCollection validation.
+      def resolve_organization(org)
         return org.managers.map(&:ms_id) if org.download_reviewer.blank?
 
         user_ids, org_ids = partition_values(org.download_reviewer)
         manager_ms_ids = org_ids.include?(org.id) ? org.managers.map(&:ms_id) : []
         user_ms_ids = User.where(ms_id: user_ids).map(&:ms_id)
-        nested_ms_ids = OrganizationCollection.where(id: org_ids - [org.id])
-                                              .flat_map { |nested| resolve_organization(nested, visited) }
-        (user_ms_ids + nested_ms_ids + manager_ms_ids).uniq
+        (user_ms_ids + manager_ms_ids).uniq
       end
 
       # Resolves a single download_reviewer value to its User or

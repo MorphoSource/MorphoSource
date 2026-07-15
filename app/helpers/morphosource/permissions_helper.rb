@@ -30,19 +30,30 @@ module Morphosource
 
     def reviewer_data(f)
       if f.object.model.id.present?
-        f.object.model.download_reviewer.map do |value|
-          if Morphosource::DownloadReviewerResolverService.org_value?(value)
-            org = OrganizationCollection.find_by(id: Morphosource::DownloadReviewerResolverService.org_id(value))
-            { id: value, user_key: value, text: org.present? ? org.name : value }
-          elsif (user = User.find_by(ms_id: value))
-            { id: user.ms_id, user_key: user.ms_id, text: user.email.present? ? user.email : user.name_or_email }
-          else
-            { id: value, user_key: value, text: value }
-          end
-        end
+        reviewer_select2_items(f.object.model.download_reviewer, keep_unknown: true)
       else
-        [{ id: current_user.ms_id, user_key: current_user.ms_id, text: current_user.email.present? ? current_user.email : current_user.name_or_email }]
+        [user_select2_item(current_user)]
       end.to_json
+    end
+
+    # Select2 items for download_reviewer values (users and org collections).
+    # keep_unknown: true renders unresolvable values as-is so they can be seen
+    # and removed on edit forms; false drops them
+    def reviewer_select2_items(values, keep_unknown: false)
+      Array(values).map do |value|
+        case (object = Morphosource::DownloadReviewerResolverService.resolve_object(value))
+        when User
+          user_select2_item(object)
+        when OrganizationCollection
+          { id: value, user_key: value, text: object.name }
+        else
+          { id: value, user_key: value, text: value } if keep_unknown
+        end
+      end.compact
+    end
+
+    def user_select2_item(user)
+      { id: user.ms_id, user_key: user.ms_id, text: user.email.present? ? user.email : user.name_or_email }
     end
 
     def contributor_data(f)

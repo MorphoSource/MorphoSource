@@ -41,12 +41,5 @@ module Morphosource
     def reviewers
       Morphosource::DownloadReviewerResolverService.resolve_for_media(self)
     end
-
-    # Returns the Users or OrganizationCollections whose ms_ids or prefixed ids are stored in download_reviewer
-    def download_reviewer_objects
-      user_ids, org_ids = Morphosource::DownloadReviewerResolverService.partition_values(download_reviewer)
-      User.where(ms_id: user_ids) + OrganizationCollection.where(id: org_ids)
-    end
-
   end
 end

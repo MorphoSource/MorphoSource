@@ -849,14 +849,7 @@ class SubmissionsController < ApplicationController
   end
 
   def format_reviewers_select2(reviewers)
-    reviewers.map do |value|
-      if Morphosource::DownloadReviewerResolverService.org_value?(value)
-        org = OrganizationCollection.find_by(id: Morphosource::DownloadReviewerResolverService.org_id(value))
-        { id: value, user_key: value, text: org.name } if org.present?
-      elsif (user = User.find_by(ms_id: value))
-        { id: user.ms_id, user_key: user.ms_id, text: user.email.present? ? user.email : user.name_or_email }
-      end
-    end.compact
+    helpers.reviewer_select2_items(reviewers)
   end
 
   # reindex works that have catalog facets depending on metadata from associated work types after all works have been linked with each other.

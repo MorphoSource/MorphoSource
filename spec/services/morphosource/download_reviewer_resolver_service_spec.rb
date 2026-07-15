@@ -71,6 +71,22 @@ RSpec.describe Morphosource::DownloadReviewerResolverService do
       end
     end
 
+    describe '.resolve_objects' do
+      let(:org) { FactoryBot.create(:organization_collection) }
+
+      it 'returns User and OrganizationCollection records in input order, dropping unknown values' do
+        values = ["org_collection:#{org.id}", 'missing-id', user.ms_id]
+        resolved = described_class.resolve_objects(values)
+        expect(resolved.map(&:id)).to eq([org.id, user.id])
+        expect(resolved.first).to be_a(OrganizationCollection)
+        expect(resolved.last).to be_a(User)
+      end
+
+      it 'returns an empty array for nil' do
+        expect(described_class.resolve_objects(nil)).to eq([])
+      end
+    end
+
     describe '.resolve_organization' do
       let(:org) { FactoryBot.create(:organization_collection) }
 
@@ -112,11 +128,14 @@ RSpec.describe Morphosource::DownloadReviewerResolverService do
       context 'when orgs reference each other in a cycle' do
         let(:other_org) { FactoryBot.create(:organization_collection) }
 
+        # validation now prevents orgs from referencing other orgs, so build
+        # the cycle without validation to prove the guard still holds for
+        # legacy or manually written data
         before do
           org.download_reviewer = ["org_collection:#{other_org.id}"]
-          org.save!
+          org.save(validate: false)
           other_org.download_reviewer = ["org_collection:#{org.id}"]
-          other_org.save!
+          other_org.save(validate: false)
         end
 
         it 'returns an empty array without looping' do

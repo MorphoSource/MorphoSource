@@ -75,6 +75,22 @@ module Morphosource
         (user_ms_ids + nested_ms_ids + manager_ms_ids).uniq
       end
 
+      # Resolves a single download_reviewer value to its User or
+      # OrganizationCollection record, or nil when it names neither
+      def resolve_object(value)
+        if org_value?(value)
+          OrganizationCollection.find_by(id: org_id(value))
+        else
+          User.find_by(ms_id: value)
+        end
+      end
+
+      # Resolves download_reviewer values to their User and OrganizationCollection
+      # records, preserving input order and omitting unknown values
+      def resolve_objects(values)
+        Array(values).map { |value| resolve_object(value) }.compact
+      end
+
       # Resolves an ownership value (a bare user ms_id or org id) to user ms_ids
       def resolve_owner(ownership)
         if (org = OrganizationCollection.find_by(id: Array(ownership)))

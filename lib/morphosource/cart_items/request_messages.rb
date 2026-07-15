@@ -7,18 +7,16 @@ module Morphosource
         @max_for_details ||= Hyrax.config.max_for_download_request_details
       end
 
-      # Returns the display targets for a download request notification.
-      # When download_reviewer contains org ids, those orgs are returned alongside
-      # any individual users, so the message shows the org rather than its members.
-      # When download_reviewer is empty and user_with_ownership is an org, that org
-      # is returned. Otherwise falls back to the resolved individual reviewers.
-      def reviewer_display_names(work_doc, reviewers)
+      # Returns the users and org collections to display as the recipients of a
+      # download request notification. When download_reviewer contains org ids,
+      # those orgs are shown rather than their members. When download_reviewer is
+      # empty and user_with_ownership is an org, that org is shown. Otherwise
+      # falls back to the resolved individual reviewers.
+      def reviewer_display_targets(work_doc, reviewers)
         download_reviewers = Array(work_doc['download_reviewer_ssim'])
 
         if download_reviewers.present?
-          user_ids, org_ids = Morphosource::DownloadReviewerResolverService.partition_values(download_reviewers)
-          resolved = User.where(ms_id: user_ids).to_a +
-                       OrganizationCollection.where(id: org_ids).to_a
+          resolved = Morphosource::DownloadReviewerResolverService.resolve_objects(download_reviewers)
           resolved.present? ? resolved : reviewers
         else
           org_owner = OrganizationCollection.find_by(id: work_doc["user_with_ownership_ssi"])
@@ -56,7 +54,7 @@ module Morphosource
             if message_for == "reviewer" && Array(work.reviewers).count > 1
               content += "<br/><small>(This request has been sent to multiple reviewers: #{user_email_link(reviewers)} who are all able to approve, deny, or clear this request.  Please coordinate your response if appropriate.)</small>"
             elsif message_for == "requestor"
-              content += "<br/><small>(This request has been sent to: #{user_or_org_email_link(reviewer_display_names(work, reviewers))})</small>"
+              content += "<br/><small>(This request has been sent to: #{user_or_org_email_link(reviewer_display_targets(work, reviewers))})</small>"
             end
             content += "</p>"
           end

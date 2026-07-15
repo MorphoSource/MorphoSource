@@ -10,26 +10,26 @@ RSpec.describe Morphosource::CartItems::RequestMessages do
   let(:org)       { FactoryBot.create(:organization_collection) }
   let(:reviewers) { [user, user2] }
 
-  describe '#reviewer_display_names' do
+  describe '#reviewer_display_targets' do
     context 'download_reviewer_ssim is present' do
       context 'with user ms_ids' do
         let(:work_doc) { { 'download_reviewer_ssim' => [user.ms_id, user2.ms_id], 'user_with_ownership_ssi' => user.ms_id } }
         it 'returns the corresponding User objects' do
-          expect(subject.reviewer_display_names(work_doc, reviewers)).to match_array([user, user2])
+          expect(subject.reviewer_display_targets(work_doc, reviewers)).to match_array([user, user2])
         end
       end
 
       context 'with an org id' do
         let(:work_doc) { { 'download_reviewer_ssim' => ["org_collection:#{org.id}"], 'user_with_ownership_ssi' => user.ms_id } }
         it 'returns the corresponding OrganizationCollection' do
-          expect(subject.reviewer_display_names(work_doc, reviewers)).to match_array([org])
+          expect(subject.reviewer_display_targets(work_doc, reviewers)).to match_array([org])
         end
       end
 
       context 'with a mix of user ms_ids and org ids' do
         let(:work_doc) { { 'download_reviewer_ssim' => [user.ms_id, "org_collection:#{org.id}"], 'user_with_ownership_ssi' => user.ms_id } }
         it 'returns the corresponding User and OrganizationCollection objects' do
-          expect(subject.reviewer_display_names(work_doc, reviewers)).to match_array([user, org])
+          expect(subject.reviewer_display_targets(work_doc, reviewers)).to match_array([user, org])
         end
       end
     end
@@ -38,14 +38,14 @@ RSpec.describe Morphosource::CartItems::RequestMessages do
       context 'user_with_ownership is an OrganizationCollection' do
         let(:work_doc) { { 'download_reviewer_ssim' => nil, 'user_with_ownership_ssi' => org.id } }
         it 'returns the organization' do
-          expect(subject.reviewer_display_names(work_doc, reviewers)).to eq(org)
+          expect(subject.reviewer_display_targets(work_doc, reviewers)).to eq(org)
         end
       end
 
       context 'user_with_ownership is an individual user' do
         let(:work_doc) { { 'download_reviewer_ssim' => nil, 'user_with_ownership_ssi' => user.ms_id } }
         it 'returns the individual reviewers' do
-          expect(subject.reviewer_display_names(work_doc, reviewers)).to eq(reviewers)
+          expect(subject.reviewer_display_targets(work_doc, reviewers)).to eq(reviewers)
         end
       end
     end

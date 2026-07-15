@@ -8,12 +8,20 @@ class UpdateOrgCartItemReviewersJob < Hyrax::ApplicationJob
   # The per-media resolution happens in UpdateCartItemReviewersJob.
   def perform(org_id)
     org = OrganizationCollection.find(org_id)
-    affected_media_ids(org).each do |media_id|
+    media_ids_with_cart_items(org).each do |media_id|
       UpdateCartItemReviewersJob.perform_later(media_id)
     end
   end
 
   private
+
+  # Most affected media have no cart items to refresh, so only fan out
+  # per-media jobs for the ones that do
+  def media_ids_with_cart_items(org)
+    affected_media_ids(org).each_slice(1000).flat_map do |batch|
+      CartItem.where(work_id: batch).distinct.pluck(:work_id)
+    end
+  end
 
   def affected_media_ids(org)
     escaped_reviewer_value = RSolr.solr_escape(Morphosource::DownloadReviewerResolverService.org_value(org.id))

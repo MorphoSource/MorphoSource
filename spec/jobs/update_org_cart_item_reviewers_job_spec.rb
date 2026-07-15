@@ -18,17 +18,28 @@ RSpec.describe UpdateOrgCartItemReviewersJob do
   end
 
   describe 'fan-out' do
+    let(:user) { FactoryBot.create(:user) }
+
     before do
       allow(OrganizationCollection).to receive(:find).with(org_id).and_return(org)
-      allow(job).to receive(:affected_media_ids).with(org).and_return(['media-1', 'media-2'])
+      allow(job).to receive(:affected_media_ids).with(org).and_return(['media-1', 'media-2', 'media-3'])
       allow(UpdateCartItemReviewersJob).to receive(:perform_later)
+      CartItem.create!(user: user, work_id: 'media-1')
+      CartItem.create!(user: user, work_id: 'media-2')
+      CartItem.create!(user: user, work_id: 'media-2')
     end
 
-    it 'enqueues UpdateCartItemReviewersJob for each affected media' do
+    it 'enqueues UpdateCartItemReviewersJob once per affected media that has cart items' do
       job.perform(org_id)
 
-      expect(UpdateCartItemReviewersJob).to have_received(:perform_later).with('media-1')
-      expect(UpdateCartItemReviewersJob).to have_received(:perform_later).with('media-2')
+      expect(UpdateCartItemReviewersJob).to have_received(:perform_later).with('media-1').once
+      expect(UpdateCartItemReviewersJob).to have_received(:perform_later).with('media-2').once
+    end
+
+    it 'skips affected media without cart items' do
+      job.perform(org_id)
+
+      expect(UpdateCartItemReviewersJob).not_to have_received(:perform_later).with('media-3')
     end
   end
 

@@ -63,6 +63,7 @@ RSpec.describe MediaIndexer do
                                       morphosource_use_agreement_type: ["Standard"],
                                       number_of_images_in_set: '5',
                                       organization_transfer_on_publish: false,
+                                      pending_org_transfer: true,
                                       orientation: ['Left'],
                                       owner: owner.ms_id,
                                       part: ['Toe'],
@@ -207,6 +208,7 @@ RSpec.describe MediaIndexer do
       expect(subject['occurrence_id_ssim']).to match_array(specimen.occurrence_id)
       expect(subject['occurrence_id_tesim']).to match_array(specimen.occurrence_id)
       expect(subject['organization_transfer_on_publish_bsi']).to eq(media.organization_transfer_on_publish)
+      expect(subject['pending_org_transfer_bsi']).to eq(media.pending_org_transfer)
       expect(subject['orientation_tesim']).to match_array(media.orientation)
       expect(subject['owner_ssim']).to match_array([media.owner])
       expect(subject['owner_type_ssi']).to eq(owner.class.to_s)

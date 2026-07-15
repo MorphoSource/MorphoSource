@@ -86,21 +86,13 @@ RSpec.describe Morphosource::PermissionsHelper, type: :helper do
   end
 
   describe 'organization managers reviewer helpers' do
-    let(:manager)      { FactoryBot.create(:user) }
     let(:organization) { FactoryBot.create(:organization_collection) }
     let(:form)         { Morphosource::Forms::Collections::OrganizationCollectionForm.new(organization, nil, nil) }
 
-    before do
-      organization.managers << manager
-      organization.managers_group.save!
-    end
-
-    it 'builds the stored value, selected state, and manager items' do
+    it 'builds the stored value and selected state' do
       helper.simple_form_for form, url: '' do |f|
         expect(helper.org_managers_reviewer_value(f)).to eq("org_collection:#{organization.id}")
         expect(helper.org_managers_reviewer_selected?(f)).to be false
-        expect(JSON.parse(helper.org_managers_data(f)))
-          .to eq([{ 'id' => manager.ms_id, 'user_key' => manager.ms_id, 'text' => manager.name_or_email }])
       end
     end
 

@@ -16,7 +16,7 @@
       <div class="checkbox org-managers-reviewer">
         <label class="boolean optional" for="org_managers_reviewer">
           <input type="checkbox" id="org_managers_reviewer"
-            data-managers="<%= org_managers_data(f) %>"
+            data-org-name="<%= f.object.model.name %>"
             data-org-value="<%= org_managers_reviewer_value(f) %>"
             data-input-name="<%= "#{f.object_name}[download_reviewer][]" %>"
             <%= 'checked' if org_managers_reviewer_selected?(f) %> />
@@ -39,8 +39,13 @@
     if (managersCheckbox.length > 0) {
       var applyManagersMode = function(selected) {
         if (selected) {
-          // show the current managers read-only and submit the org itself as the reviewer
-          reviewerSelect.select2('data', managersCheckbox.data('managers'));
+          // show the org name read-only and submit the org itself as the reviewer,
+          // matching how the stored value renders after save
+          reviewerSelect.select2('data', [{
+            id: managersCheckbox.data('org-value'),
+            user_key: managersCheckbox.data('org-value'),
+            text: managersCheckbox.data('org-name')
+          }]);
           reviewerSelect.select2('enable', false);
           $('<input>', {
             type: 'hidden',

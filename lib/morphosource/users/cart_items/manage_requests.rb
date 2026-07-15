@@ -14,12 +14,6 @@ module Morphosource
           @previous_requests ||= previously_requested_items
         end
 
-        # media works where user is reviewer
-        #def reviewed_media_ids_NOT_USED
-        #  @media ||= Morphosource::ReviewedMediaSearchService.call({ ms_id: ms_id }).map(&:id)
-        #end
-            #work_id: reviewed_media_ids,
-
         def newly_requested_items
           @new_requests ||= CartItem.where(":id = ANY(reviewers)", id: ms_id).where(
             date_downloaded: nil, 

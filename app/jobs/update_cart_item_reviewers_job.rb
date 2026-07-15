@@ -6,7 +6,8 @@ class UpdateCartItemReviewersJob < Hyrax::ApplicationJob
   # media may be a Media work or a media id (resolved via its solr document)
   def perform(media)
     # find all cart items with that media, then set the cart items' reviewers to the new reviewers
-    media = SolrDocument.find(media) if media.is_a?(String)
+    media = find_media(media) if media.is_a?(String)
+    return if media.blank?
     reviewers = Morphosource::DownloadReviewerResolverService.resolve_for_media(media)
     CartItem.where(work_id: media.id).each do |item|
       previous_reviewers = Array(item.reviewers)
@@ -17,6 +18,14 @@ class UpdateCartItemReviewersJob < Hyrax::ApplicationJob
   end
 
   private
+
+  # The media may be deleted between enqueue and execution; there is nothing
+  # to update for it then
+  def find_media(media_id)
+    SolrDocument.find(media_id)
+  rescue Blacklight::Exceptions::RecordNotFound
+    nil
+  end
 
   # Reviewers newly added to an outstanding request receive a download request
   # message; removed reviewers are not messaged.

@@ -67,6 +67,18 @@ RSpec.describe UpdateCartItemReviewersJob do
 
       expect(cart_item.reload.reviewers).to eq([reviewer.ms_id])
     end
+
+    context 'when the media has been deleted' do
+      before do
+        allow(SolrDocument).to receive(:find).with(media_id)
+          .and_raise(Blacklight::Exceptions::RecordNotFound)
+      end
+
+      it 'leaves the cart items alone without raising' do
+        expect { job.perform(media_id) }
+          .not_to change { cart_item.reload.reviewers }
+      end
+    end
   end
 
   describe 'reviewer messaging' do

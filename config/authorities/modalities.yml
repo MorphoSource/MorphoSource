@@ -89,3 +89,7 @@ terms:
     term: Video
     abbreviation: Video
     active: true
+  - id: DocumentScan
+    term: Document Scan
+    abbreviation: DocScan
+    active: true

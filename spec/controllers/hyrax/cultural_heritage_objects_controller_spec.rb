@@ -69,6 +69,38 @@ RSpec.describe Hyrax::CulturalHeritageObjectsController do
       end
     end
 
+    describe '#destroy' do
+      before do
+        allow(subject).to receive(:authorize!).with(:destroy, cho).and_return(true)
+      end
+
+      context 'when the cho has associated media' do
+        let(:device)        { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
+        let(:imaging_event) { ImagingEvent.create(title: ['imaging event'], device_id: [device.id.to_s], physical_object_id: [cho.id], ie_modality: device.modality) }
+        let(:media)         { Media.create(title: ['media']) }
+
+        before do
+          imaging_event.ordered_members << media
+          [cho, imaging_event, media].each(&:save)
+          [cho, imaging_event, media].each(&:reload)
+        end
+
+        it 'does not destroy the cho and redirects with an error instead of raising' do
+          delete :destroy, params: { id: cho.id }
+          expect(response).to have_http_status(:found)
+          expect(flash[:alert]).to be_present
+          expect(CulturalHeritageObject.exists?(cho.id)).to be true
+        end
+      end
+
+      context 'when the cho has no associated media' do
+        it 'destroys the cho normally' do
+          delete :destroy, params: { id: cho.id }
+          expect(CulturalHeritageObject.exists?(cho.id)).to be false
+        end
+      end
+    end
+
     describe '#update_media_team_access' do
       let(:params)  { { id: cho.id, 'cultural_heritage_object' => { 'identifier' => [cho.identifier.first] } } }
       context "when the cho's params don't include parent organization_id" do

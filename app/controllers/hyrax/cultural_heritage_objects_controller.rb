@@ -8,6 +8,7 @@ module Hyrax
     include Hyrax::WorksControllerBehavior
     include Hyrax::ChildWorkRedirect
     include Morphosource::LinkedTeams::LinkedTeamsManagement
+    prepend Morphosource::HaltedDestroyResponse
     self.curation_concern_type = ::CulturalHeritageObject
     # Use this line if you want to use a custom presenter
     self.show_presenter = Hyrax::CulturalHeritageObjectPresenter

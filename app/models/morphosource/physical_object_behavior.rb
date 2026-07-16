@@ -98,4 +98,20 @@ module Morphosource::PhysicalObjectBehavior
       end
     end
   end
+
+  private
+
+  # Blocks destroying this record while it still has associated media, regardless of
+  # caller (UI, console, rake task, background job). This is Solr-based (via #media), so
+  # it cannot catch a media whose real Fedora link was never indexed in Solr in the first
+  # place -- same known limitation as Morphosource::MergeBiologicalSpecimenService. Forcing
+  # a hard commit first narrows that window but does not eliminate it. No admin override --
+  # media must be detached/reassigned before the record can be deleted.
+  def prevent_destroy_with_media
+    ActiveFedora::SolrService.commit
+    return if media.blank?
+
+    errors.add(:base, "Cannot delete this record while it still has associated media (#{media.map(&:id).join(', ')}). Detach or reassign the media first.")
+    throw :abort
+  end
 end

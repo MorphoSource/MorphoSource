@@ -51,6 +51,38 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
       end
     end
 
+    describe '#destroy' do
+      before do
+        allow(subject).to receive(:authorize!).with(:destroy, specimen).and_return(true)
+      end
+
+      context 'when the specimen has associated media' do
+        let(:device)        { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
+        let(:imaging_event) { ImagingEvent.create(title: ['imaging event'], device_id: [device.id.to_s], physical_object_id: [specimen.id], ie_modality: device.modality) }
+        let(:media)         { Media.create(title: ['media']) }
+
+        before do
+          imaging_event.ordered_members << media
+          [specimen, imaging_event, media].each(&:save)
+          [specimen, imaging_event, media].each(&:reload)
+        end
+
+        it 'does not destroy the specimen and redirects with an error instead of raising' do
+          delete :destroy, params: { id: specimen.id }
+          expect(response).to have_http_status(:found)
+          expect(flash[:alert]).to be_present
+          expect(BiologicalSpecimen.exists?(specimen.id)).to be true
+        end
+      end
+
+      context 'when the specimen has no associated media' do
+        it 'destroys the specimen normally' do
+          delete :destroy, params: { id: specimen.id }
+          expect(BiologicalSpecimen.exists?(specimen.id)).to be false
+        end
+      end
+    end
+
     describe '#update_media_team_access' do
       context "when the specimen's params don't include parent organization_id" do
         it 'returns nil for organization_id_param' do

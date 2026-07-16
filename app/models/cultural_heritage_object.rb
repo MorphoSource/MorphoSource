@@ -5,6 +5,12 @@ class CulturalHeritageObject < Morphosource::Works::Base
   validates_with Morphosource::ParentChildValidator
   after_update :reindex_media, :update_ark_status
   after_create :mint_ark
+  # prepend: true -- must run before any other before_destroy callback (e.g.
+  # Hydra::AccessControls::Permissions destroys the record's access_control resource
+  # unconditionally in its own before_destroy, registered earlier via an earlier include).
+  # Without prepend, aborting here still lets earlier-registered callbacks' side effects
+  # through, since throw :abort only stops what hasn't run yet.
+  before_destroy :prevent_destroy_with_media, prepend: true
   after_destroy :delete_ark_if_reserved
 
   self.indexer = CulturalHeritageObjectIndexer

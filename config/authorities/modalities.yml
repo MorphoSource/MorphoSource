@@ -1,95 +1,98 @@
 # config/authorities/modalities.yml
 # URI for terms list: https://www.idigbio.org/wiki/index.php/3D_Scan_Modality_Subtypes
 terms:
-  - id: MicroNanoXRayComputedTomography
-    term: X-Ray Computed Tomography (CT/microCT)
-    abbreviation: CT
-    active: true
-  - id: MagneticResonanceImaging
-    term: Magnetic Resonance Imaging (MRI)
-    abbreviation: MRI
-    active: true
-  - id: PositronEmissionTomography
-    term: Positron Emission Tomography (PET)
-    abbreviation: PET
-    active: true
-  - id: SinglePhotonEmissionComputedTomography
-    term: Single Photon Emission Computed Tomography (SPECT)
-    abbreviation: SPECT
-    active: true
-  - id: NeutronComputedTomography
-    term: Neutron Computed Tomography (NCT)
-    abbreviation: NCT
-    active: true
-  - id: SynchrotronImaging
-    term: Synchrotron Imaging
-    abbreviation: Synchro
-    active: true
-  - id: NeutrinoImaging
-    term: Neutrino Imaging
-    abbreviation: Neutrino
-    active: true
-  - id: Photogrammetry
-    term: Photogrammetry
-    abbreviation: Photogram
-    active: true
-  - id: SequentialSectionScan
-    term: Sequential Section Scan
-    abbreviation: Section
-    active: true
-  - id: StructuredLight
-    term: Structured Light
-    abbreviation: StrLight
-    active: true
-  - id: LaserScan
-    term: Laser Scan
-    abbreviation: Laser
+  - id: BornDigital
+    term: Born Digital
+    abbreviation: BD
     active: true
   - id: ConfocalImageStacking
     term: Confocal Image Stacking
     abbreviation: Confocal
     active: true
-  - id: LightSheetFluorescenceMicroscopy
-    term: Light Sheet Fluorescence Microscopy
-    abbreviation: LSFM
+  - id: DocumentScan
+    term: Document Scan
+    abbreviation: DocScan
     active: true
   - id: Infrared
     term: Infrared
     abbreviation: Infrared
     active: true
-  - id: ReflectanceTransformationImaging
-    term: Reflectance Transformation Imaging
-    abbreviation: RTI
+  - id: LaserAidedProfiling
+    term: Laser Aided Profiling
+    abbreviation: LAP
+    active: true
+  - id: LaserScan
+    term: Laser Scan
+    abbreviation: Laser
+    active: true
+  - id: LightSheetFluorescenceMicroscopy
+    term: Light Sheet Fluorescence Microscopy
+    abbreviation: LSFM
+    active: true
+  - id: MagneticResonanceImaging
+    term: Magnetic Resonance Imaging (MRI)
+    abbreviation: MRI
+    active: true
+  - id: NeutrinoImaging
+    term: Neutrino Imaging
+    abbreviation: Neutrino
+    active: true
+  - id: NeutronComputedTomography
+    term: Neutron Computed Tomography (NCT)
+    abbreviation: NCT
+    active: true
+  - id: Photogrammetry
+    term: Photogrammetry
+    abbreviation: Photogram
     active: true
   - id: Photography
     term: Photography
     abbreviation: Photo
     active: true
+  - id: PositronEmissionTomography
+    term: Positron Emission Tomography (PET)
+    abbreviation: PET
+    active: true
+  - id: ReflectanceTransformationImaging
+    term: Reflectance Transformation Imaging
+    abbreviation: RTI
+    active: true
   - id: ScanningElectronMicroscopy
     term: Scanning Electron Microscopy
     abbreviation: SEM
+    active: true
+  - id: SequentialSectionScan
+    term: Sequential Section Scan
+    abbreviation: Section
+    active: true
+  - id: SinglePhotonEmissionComputedTomography
+    term: Single Photon Emission Computed Tomography (SPECT)
+    abbreviation: SPECT
+    active: true
+  - id: StructuredLight
+    term: Structured Light
+    abbreviation: StrLight
+    active: true
+  - id: SynchrotronImaging
+    term: Synchrotron Imaging
+    abbreviation: Synchro
     active: true
   - id: TransmissionElectronMicroscopy
     term: Transmission Electron Microscopy
     abbreviation: TEM
     active: true
-  - id: BornDigital
-    term: Born Digital
-    abbreviation: BD
+  - id: Video
+    term: Video
+    abbreviation: Video
     active: true
   - id: XRay
     term: X-Ray
     abbreviation: XRay
     active: true
-  - id: LaserAidedProfiling
-    term: Laser Aided Profiling
-    abbreviation: LAP
+  - id: MicroNanoXRayComputedTomography
+    term: X-Ray Computed Tomography (CT/microCT)
+    abbreviation: CT
     active: true
-  - id: Video
-    term: Video
-    abbreviation: Video
-    active: true
-  - id: DocumentScan
-    term: Document Scan
-    abbreviation: DocScan
-    active: true
+
+
+

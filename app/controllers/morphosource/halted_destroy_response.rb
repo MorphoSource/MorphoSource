@@ -29,7 +29,7 @@ module Morphosource
 
         if curation_concern.respond_to?(:media) && curation_concern.media.present?
           message = "Cannot delete this record while it still has associated media " \
-                     "(#{curation_concern.media.map(&:id).join(', ')}). Detach or reassign the media first."
+                     "(#{curation_concern.media.map(&:id).join(', ')}), which may not be public. Detach or reassign the media first."
           return respond_to do |wants|
             wants.html { redirect_to [main_app, curation_concern], alert: message }
             wants.json { render_json_response(response_type: :unprocessable_entity, options: { errors: { base: [message] } }) }

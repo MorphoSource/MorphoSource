@@ -111,7 +111,7 @@ module Morphosource::PhysicalObjectBehavior
     ActiveFedora::SolrService.commit
     return if media.blank?
 
-    errors.add(:base, "Cannot delete this record while it still has associated media (#{media.map(&:id).join(', ')}). Detach or reassign the media first.")
+    errors.add(:base, "Cannot delete this record while it still has associated media (#{media.map(&:id).join(', ')}), which may not be public. Detach or reassign the media first.")
     throw :abort
   end
 end

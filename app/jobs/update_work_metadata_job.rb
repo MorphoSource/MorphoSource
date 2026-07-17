@@ -21,26 +21,32 @@ class UpdateWorkMetadataJob < Hyrax::ApplicationJob
 
   protected
 
-    # The id may arrive bare (e.g. "abc123") or wrapped in an array
-    # (e.g. ["abc123"]); accept either form.
-    def find_record(attributes)
-      id = Array.wrap(attributes[:id]).first
-      return nil unless id && ::ActiveFedora::Base.exists?(id)
-      ::ActiveFedora::Base.find(id)
-    end
+  # The id may arrive bare (e.g. "abc123") or wrapped in an array
+  # (e.g. ["abc123"]); accept either form.
+  def find_record(attributes)
+    id = Array.wrap(attributes[:id]).first
+    return nil unless id && ::ActiveFedora::Base.exists?(id)
+    ::ActiveFedora::Base.find(id)
+  end
 
-    def assign_attributes(record, attributes, allow_blank_values: false)
-      assignable_properties(record).each do |property|
-        next unless attributes.key?(property)
-        value = attributes[property]
-        next unless allow_blank_values || value.present?
-        next if record.public_send(property) == value
-        record.public_send("#{property}=", value)
-      end
+  def assign_attributes(record, attributes, allow_blank_values: false)
+    assignable_properties(record).each do |property|
+      next unless attributes.key?(property)
+      value = attributes[property]
+      next if !allow_blank_values && blank_value?(value)
+      next if record.public_send(property) == value
+      record.public_send("#{property}=", value)
     end
+  end
 
-    def assignable_properties(record)
-      record.attributes.keys.map(&:to_sym) - self.class::PROTECTED_PROPERTIES.map(&:to_sym)
-    end
+  # false is a legitimate value for boolean attributes and must not be
+  # treated as blank the way nil/""/[] are (false.present? is false).
+  def blank_value?(value)
+    value != false && value.blank?
+  end
+
+  def assignable_properties(record)
+    record.attributes.keys.map(&:to_sym) - self.class::PROTECTED_PROPERTIES.map(&:to_sym)
+  end
 
 end

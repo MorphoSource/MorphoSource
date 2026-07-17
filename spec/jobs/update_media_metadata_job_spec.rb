@@ -50,6 +50,14 @@ RSpec.describe UpdateMediaMetadataJob do
       expect(media.pending_org_transfer).to eq(true)
     end
 
+    it 'allows flipping a boolean attribute to false without allow_blank_values' do
+      media.update!(organization_transfer_on_publish: true)
+
+      described_class.perform_now({ id: media.id, organization_transfer_on_publish: false })
+
+      expect(media.reload.organization_transfer_on_publish).to eq(false)
+    end
+
     it 'allows visibility, depositor, on_behalf_of, and owner to be assigned' do
       described_class.perform_now(
         {

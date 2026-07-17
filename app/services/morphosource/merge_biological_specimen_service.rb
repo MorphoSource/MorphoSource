@@ -18,6 +18,15 @@ module Morphosource
 		  ie_list = []
 		  media_list = []
 		  outcome = nil
+		  # No rollback on a mid-loop failure below: if e.g. the 3rd of 5 media's ImagingEvent
+		  # fails to save, the raise stops the run and correctly leaves bso_from un-destroyed,
+		  # but the 2 IEs that already saved successfully are NOT reverted -- they keep pointing
+		  # at bso_to while the rest still point at bso_from. This is a safe, resumable partial
+		  # state (not a corrupted one): the already-reassigned media are correctly on bso_to,
+		  # bso_from is untouched and still owns its remaining media, and a retry naturally
+		  # picks up just what's left. Deliberately not rolling back -- doing so would add
+		  # complexity and its own failure mode (the rollback's own ie.save calls could fail
+		  # too, e.g. if the original failure was systemic, potentially leaving things worse).
 		  bso_from.media.each do |m|
         # detach media's IE, add IE under target bso, reindex bso (reindex media and related media should be triggered after)
         media_list << m.id

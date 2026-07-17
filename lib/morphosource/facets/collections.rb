@@ -1,6 +1,7 @@
 module Morphosource
   module Facets
     module Collections
+      include Morphosource::Facets::SolrTitleLookup
 
       ID_HELPER_METHODS = [
         :collection_title_by_id,
@@ -39,49 +40,6 @@ module Morphosource
         Morphosource::Facets::Collections::ID_HELPER_METHODS.include? @facet&.helper_method
       end
 
-      # Query Solr to fetch IDs by matching title and model
-      def fetch_ids_by_title(title, facet_key)
-        # Perform a lookup on the Solr title field to find matching IDs
-        solr_fq = nil
-        case facet_key
-        when 'team'
-          query = 'has_model_ssim:Collection AND human_readable_type_tesim:Team'
-        when 'project'
-          query = 'has_model_ssim:Collection AND human_readable_type_tesim:Project'
-        when 'media_list'
-          query = 'has_model_ssim:MediaList'
-        when 'seq_section_list'
-          query = 'has_model_ssim:SequentialSectionList'
-        when 'object'
-          object_classes = ['BiologicalSpecimen', 'CulturalHeritageObject']
-          query = "has_model_ssim:(#{object_classes.join(' OR ')})"
-        when 'organization'
-          organization_classes = ['Organization', 'OrganizationCollection']
-          query = "has_model_ssim:(#{organization_classes.join(' OR ')})"
-        when 'device'
-          query = "title_tesim:\"#{title}\""
-          solr_fq = ['has_model_ssim:(Device OR DeviceResource)']
-        else
-          query = 'has_model_ssim:unknown'
-          Rails.logger.warn("Unknown model for facet key: #{facet_config.key}")
-        end
-
-        full_query = facet_key == 'device' ? query : "#{query} AND title_tesim:\"#{title}\""
-        params = {
-          q: full_query,
-          fl: 'id, has_model_ssim, title_tesim',
-          rows: 999999
-        }
-        params[:fq] = solr_fq if solr_fq.present?
-
-        solr_service = Blacklight.default_index.connection
-        solr_service.get('select', params: params)
-      end
-
-      def fetch_ms_ids_by_name(name)
-        User.where('display_name ILIKE ?', "%#{name}%").pluck(:ms_id).map(&:to_s)
-      end
-
       # modifies blacklight behavior to retrieve all values for a collection id facet instead of only the values for one page.
       # can then sort all of the collections by title, and then return the section of the sorted array that corresponds to the requested page
       def id_helper_facet(facet_type: nil, contains_title: nil)
@@ -93,12 +51,19 @@ module Morphosource
 
         @response = facet_search_response
 
-        if @facet.helper_method == :user_name_by_id
-          matching_ids = fetch_ms_ids_by_name(contains_title)
-        else
-          title_search_response = fetch_ids_by_title(contains_title, @facet.key)
-          matching_ids = title_search_response['response']['docs'].map { |doc| doc['id'] }
-        end
+        # nil when there is no search term, so no lookup is performed and
+        # set_display_facet_items paginates every value
+        matching_ids =
+          case @facet.key
+          when 'owner'
+            # owners can be users or organizations
+            fetch_owner_ids_by_name(contains_title)
+          when 'depositor'
+            # depositors are always users
+            fetch_user_ids_by_name(contains_title)
+          else
+            fetch_ids_by_title(contains_title, @facet.key)
+          end
         if params["facet.sort"] == "index"
           if @facet.helper_method == :user_name_by_id
             # sort all the facet items by user display name
@@ -137,12 +102,14 @@ module Morphosource
         options = @display_facet.instance_variable_get(:@options)
         options[:offset] = offset
         options[:limit] = limit
-        if (filtered_values).present?
-          filtered_items = @display_facet.items.select { |item| filtered_values.include?(item.value) }
-          @display_facet.instance_variable_set(:@items, filtered_items[offset, limit])
-        else
+        # nil means no filtering was requested; [] means a search matched
+        # nothing and must show no items
+        if filtered_values.nil?
           # remove items not from the page
-          @display_facet.instance_variable_set(:@items,@display_facet.items[offset,limit])
+          @display_facet.instance_variable_set(:@items, @display_facet.items[offset, limit] || [])
+        else
+          filtered_items = @display_facet.items.select { |item| filtered_values.include?(item.value) }
+          @display_facet.instance_variable_set(:@items, filtered_items[offset, limit] || [])
         end
         # reset page params
         params["facet.page"] = params.delete("az_facet.page")
@@ -156,11 +123,10 @@ module Morphosource
       # returns a hash of record ids and titles:
       # ex: {"000202905"=>"Collection Title 1", "000200071"=>"Collection Title 2"}
       def record_titles
-        record_ids = @response.aggregations[@facet.field].items.map { |i| i.value }
         service = Morphosource::SolrService.new
         fl, title = sort_title(@facet.key)
         # batch requests to avoid solr limit
-        record_ids.each_slice(500).flat_map do |batch|
+        facet_item_ids.each_slice(500).flat_map do |batch|
           fq = "id:(#{batch.join(' OR ')})"
           service.get_docs(nil, fl: fl, fq: [fq]).map { |h| [h["id"], title[h]] }
         end.to_h
@@ -179,17 +145,45 @@ module Morphosource
       end
 
       def sort_records_by_name
-        @response.aggregations[@facet.field].items.sort_by! { |i| filtered_record_name_by_id(i.value).split.last.downcase }
+        @response.aggregations[@facet.field].items.sort_by! do |i|
+          name = filtered_record_name_by_id(i.value).downcase
+          # users sort by last name, organizations by full title
+          organization_names.key?(i.value) ? name : name.split.last || name
+        end
       end
 
       def filtered_record_name_by_id(id)
-        @record_names ||= record_names
-        @record_names[id] || "User #{id} Not Found"
+        record_names[id] || "User #{id} Not Found"
       end
 
       def record_names
-        record_ids = @response.aggregations[@facet.field].items.map { |i| i.value }
-        User.where(ms_id: record_ids).pluck(:ms_id, :display_name).to_h
+        @record_names ||= user_names.merge(organization_names)
+      end
+
+      def user_names
+        @user_names ||= User.where(ms_id: facet_item_ids).pluck(:ms_id, :display_name).to_h
+      end
+
+      # owner facet values can also be OrganizationCollection ids, which
+      # user_name_by_id renders as the collection title, so resolve their
+      # titles here too for sorting
+      def organization_names
+        @organization_names ||= organization_titles(facet_item_ids - user_names.keys)
+      end
+
+      def facet_item_ids
+        @response.aggregations[@facet.field].items.map { |i| i.value }
+      end
+
+      def organization_titles(record_ids)
+        return {} if record_ids.blank?
+
+        service = Morphosource::SolrService.new
+        # batch requests to avoid solr limit
+        record_ids.each_slice(500).flat_map do |batch|
+          fq = ["id:(#{batch.join(' OR ')})", 'has_model_ssim:OrganizationCollection']
+          service.get_docs(nil, fl: 'id,title_tesim', fq: fq).map { |h| [h['id'], h['title_tesim']&.first] }
+        end.to_h
       end
     end
   end

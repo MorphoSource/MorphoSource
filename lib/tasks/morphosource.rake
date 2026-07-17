@@ -728,18 +728,19 @@ namespace :morphosource do
 
     # Sends the outcome email (or logs why it didn't), reusable for both the normal
     # completion path and the fatal-error path below.
-    send_report_email = lambda do |action, extra_note = nil|
+    send_report_email = lambda do |action, extra_note = nil, attention: false|
       if args[:send_email] != "true"
         puts "#{log_prefix} email not sent -- send_email arg was #{args[:send_email].inspect}, expected the string \"true\""
       elsif Hyrax.config.system_report_recipients.blank?
         puts "#{log_prefix} email not sent -- Hyrax.config.system_report_recipients is not configured"
       else
         begin
+          subject_prefix = attention ? "[ATTENTION] " : ""
           body = "Duplicate specimens report #{action} attached."
           body += " #{extra_note}" if extra_note
           ApplicationMailer.send_email_with_attachment(
             Hyrax.config.system_report_recipients,
-            "MS duplicate specimens report #{action}" + Time.now.strftime("%m-%d-%Y_%H-%M"),
+            "#{subject_prefix}MS duplicate specimens report #{action}" + Time.now.strftime("%m-%d-%Y_%H-%M"),
             body,
              log_file).deliver_now
           puts "#{log_prefix} email sent to #{Hyrax.config.system_report_recipients} with attachment #{log_file}"
@@ -750,6 +751,7 @@ namespace :morphosource do
     end
 
     ie_total = 0
+    blocked_count = 0
     begin
       bso_list = []
       qry = "has_model_ssim:BiologicalSpecimen AND occurrence_id_tesim:[* TO *] AND idigbio_uuid_tesim:[* TO *]"
@@ -775,7 +777,9 @@ namespace :morphosource do
             media_list, ie_list, outcome = Morphosource::MergeBiologicalSpecimenService.call(merge_to, merge_from, delete_dup, report_only)
             outcome_text = case outcome
                            when :destroyed then "specimen #{merge_from} destroyed"
-                           when :not_destroyed_media_referencing then "specimen #{merge_from} NOT destroyed -- Solr still shows media referencing it"
+                           when :not_destroyed_media_referencing
+                             blocked_count += 1
+                             "specimen #{merge_from} NOT destroyed -- Solr still shows media referencing it"
                            else "specimen #{merge_from} not attempted (report_only)"
                            end
             msg = " #{outcome_text} -- considered media #{media_list} for move from specimen #{merge_from} to specimen #{merge_to}"
@@ -792,7 +796,7 @@ namespace :morphosource do
       fatal_msg = "FATAL -- #{e.class}: #{e.message} -- aborting the rest of this run"
       puts "#{log_prefix} #{fatal_msg}"
       log.error fatal_msg
-      send_report_email.call("(FAILED) ", "Run aborted: #{e.message}")
+      send_report_email.call("(FAILED) ", "Run aborted: #{e.message}", attention: true)
       raise
     end
 
@@ -804,7 +808,12 @@ namespace :morphosource do
       action = "(merge) "
     end
 
-    send_report_email.call(action)
+    if blocked_count > 0
+      blocked_note = "#{blocked_count} specimen(s) NOT destroyed -- Solr still shows media referencing them, needs review."
+      send_report_email.call(action, blocked_note, attention: true)
+    else
+      send_report_email.call(action)
+    end
   end
 
   desc "Verify remote backed media files"

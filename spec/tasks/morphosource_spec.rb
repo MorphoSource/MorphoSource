@@ -326,7 +326,7 @@ describe 'morphosource rake tasks' do
 
       it 'invokes MergeBiologicalSpecimenService for the duplicate pair' do
         expect(Morphosource::MergeBiologicalSpecimenService).to receive(:call)
-          .with(a_string_matching(/\A0*[a-z0-9]+\z/i), a_string_matching(/\A0*[a-z0-9]+\z/i), true, false, reporter: instance_of(Morphosource::DualLogger))
+          .with(a_string_matching(/\A0*[a-z0-9]+\z/i), a_string_matching(/\A0*[a-z0-9]+\z/i), true, false)
           .and_return([[], []])
         find_and_merge_duplicate_specimens.invoke('true', 'false')
       end

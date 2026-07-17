@@ -1,16 +1,15 @@
 module Morphosource
   class MergeBiologicalSpecimenService
 
-    def self.call(merge_to=nil, merge_from=nil, delete_dup=true, report_only=false, reporter: nil)
-    	new(merge_to, merge_from, delete_dup, report_only, reporter: reporter).call
+    def self.call(merge_to=nil, merge_from=nil, delete_dup=true, report_only=false)
+    	new(merge_to, merge_from, delete_dup, report_only).call
     end
 
-    def initialize(merge_to, merge_from, delete_dup, report_only, reporter: nil)
+    def initialize(merge_to, merge_from, delete_dup, report_only)
     	@merge_to = merge_to
     	@merge_from = merge_from
     	@delete_dup = delete_dup
     	@report_only = report_only
-    	@reporter = reporter || Morphosource::DualLogger.new
     end
 
     def call
@@ -19,6 +18,7 @@ module Morphosource
 		  ie_list = []
 		  media_list = []
 		  failed_repoints = []
+		  outcome = nil
 		  bso_from.media.each do |m|
         # detach media's IE, add IE under target bso, reindex bso (reindex media and related media should be triggered after)
         media_list << m.id
@@ -27,7 +27,7 @@ module Morphosource
         ie.physical_object_id = [bso_to.id]
         if !@report_only && !ie.save
           failed_repoints << ie.id
-          @reporter.log " failed to repoint ImagingEvent #{ie.id} (media #{m.id}) from #{@merge_from} to #{@merge_to}", level: :warn
+          puts " failed to repoint ImagingEvent #{ie.id} (media #{m.id}) from #{@merge_from} to #{@merge_to}"
         end
 		  end
       if media_list.present? && !@report_only
@@ -36,15 +36,18 @@ module Morphosource
       end
 		  if @delete_dup && !@report_only
 		  	if failed_repoints.present?
-		  	  @reporter.log " specimen #{@merge_from} NOT destroyed -- #{failed_repoints.count} ImagingEvent(s) failed to repoint: #{failed_repoints.inspect}", level: :warn
+		  	  outcome = :not_destroyed_failed_repoint
+		  	  puts " specimen #{@merge_from} NOT destroyed -- #{failed_repoints.count} ImagingEvent(s) failed to repoint: #{failed_repoints.inspect}"
 		  	elsif media_still_referencing?(bso_from, media_list)
-		  	  @reporter.log " specimen #{@merge_from} NOT destroyed -- Solr still shows media referencing it beyond what this merge already handled", level: :warn
+		  	  outcome = :not_destroyed_media_referencing
+		  	  puts " specimen #{@merge_from} NOT destroyed -- Solr still shows media referencing it beyond what this merge already handled"
 		  	else
 		  	  bso_from.destroy
-		  	  @reporter.log " specimen #{@merge_from} destroyed"
+		  	  outcome = :destroyed
+		  	  puts " specimen #{@merge_from} destroyed"
 		  	end
 		  end
-		  return media_list, ie_list
+		  return media_list, ie_list, outcome
     end
 
     private

@@ -330,6 +330,21 @@ describe 'morphosource rake tasks' do
           .and_return([[], []])
         find_and_merge_duplicate_specimens.invoke('true', 'false')
       end
+
+      context 'and the merge service raises (e.g. an ImagingEvent failed to reassign)' do
+        before { Hyrax.config.system_report_recipients = 'test@example.com' }
+
+        it 'sends a failure email and re-raises to fail the task' do
+          allow(Morphosource::MergeBiologicalSpecimenService).to receive(:call).and_raise('boom')
+
+          expect { find_and_merge_duplicate_specimens.invoke('true', 'true') }.to raise_error('boom')
+
+          expect(ActionMailer::Base.deliveries.count).to eq(1)
+          expect(ActionMailer::Base.deliveries.first.to).to eq(['test@example.com'])
+          expect(ActionMailer::Base.deliveries.first.subject).to include('FAILED')
+          expect(ActionMailer::Base.deliveries.first.attachments).not_to be_empty
+        end
+      end
     end
   end
 end

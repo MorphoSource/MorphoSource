@@ -17,7 +17,6 @@ module Morphosource
       bso_from = BiologicalSpecimen.find(@merge_from)
 		  ie_list = []
 		  media_list = []
-		  failed_repoints = []
 		  outcome = nil
 		  bso_from.media.each do |m|
         # detach media's IE, add IE under target bso, reindex bso (reindex media and related media should be triggered after)
@@ -26,8 +25,11 @@ module Morphosource
         ie_list << ie.id
         ie.physical_object_id = [bso_to.id]
         if !@report_only && !ie.save
-          failed_repoints << ie.id
-          puts " failed to repoint ImagingEvent #{ie.id} (media #{m.id}) from #{@merge_from} to #{@merge_to}"
+          # Deliberately fatal: raise instead of tracking-and-continuing, so the caller
+          # (the dedupe rake task) stops the whole run rather than silently skipping this
+          # specimen and moving on. The caller is responsible for catching this, emailing
+          # the log, and failing the process.
+          raise "Failed to reassign ImagingEvent #{ie.id} (media #{m.id}) from specimen #{@merge_from} to #{@merge_to}"
         end
 		  end
       if media_list.present? && !@report_only
@@ -35,10 +37,7 @@ module Morphosource
         UpdateWorkIndexJob.perform_later(@merge_to)
       end
 		  if @delete_dup && !@report_only
-		  	if failed_repoints.present?
-		  	  outcome = :not_destroyed_failed_repoint
-		  	  puts " specimen #{@merge_from} NOT destroyed -- #{failed_repoints.count} ImagingEvent(s) failed to repoint: #{failed_repoints.inspect}"
-		  	elsif media_still_referencing?(bso_from, media_list)
+		  	if media_still_referencing?(bso_from, media_list)
 		  	  outcome = :not_destroyed_media_referencing
 		  	  puts " specimen #{@merge_from} NOT destroyed -- Solr still shows media referencing it beyond what this merge already handled"
 		  	else
@@ -53,10 +52,10 @@ module Morphosource
     private
 
     # Re-checks, with a forced hard commit, whether Solr still reports any media under
-    # bso_from that this merge did NOT already find and repoint. This catches soft-commit
+    # bso_from that this merge did NOT already find and reassign. This catches soft-commit
     # lag (a legitimate reindex that ran but hadn't become searchable yet), but it cannot
     # catch media whose real (Fedora) link to bso_from was never indexed in the first place
-    # (e.g. an ImagingEvent repointed via skip_index_related_works, or any other path that
+    # (e.g. an ImagingEvent reassigned via skip_index_related_works, or any other path that
     # never queued a reindex job) -- Solr has no record of that relationship to find, no
     # matter when or how often it's queried. Closing that gap fully requires either an
     # authoritative (non-Solr) reverse lookup or a has-media guard at the model/actor level.

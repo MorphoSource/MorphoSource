@@ -70,18 +70,17 @@ RSpec.describe Morphosource::MergeBiologicalSpecimenService do
       expect(ActiveFedora::Base.exists?(specimen[1].id)).to be false
     end
 
-    it 'does not destroy the duplicate specimen when repointing an ImagingEvent fails' do
+    it 'raises and leaves the duplicate specimen intact when reassigning an ImagingEvent fails' do
       allow_any_instance_of(ImagingEvent).to receive(:save).and_return(false)
 
-      media_list, _ie_list = subject.call
-      expect(media_list.sort).to eq(media_set_1.map(&:id).sort)
+      expect { subject.call }.to raise_error(/Failed to reassign ImagingEvent/)
 
       expect(ActiveFedora::Base.exists?(specimen[1].id)).to be true
     end
 
     it 'does not destroy the duplicate specimen when Solr still shows media referencing it beyond what this merge processed' do
-      # media under its own separate ImagingEvent, so repointing the discovered
-      # media's (shared) IE doesn't incidentally repoint this one too
+      # media under its own separate ImagingEvent, so reassigning the discovered
+      # media's (shared) IE doesn't incidentally reassign this one too
       extra_ie = ImagingEvent.create(title: ['imaging event extra'], device_id: [device.id.to_s], physical_object_id: [specimen[1].id], ie_modality: ['Photogrammetry'])
       extra_processing_event = ProcessingEvent.create(title: ['processing event extra'])
       extra_media = Media.create(title: ['extra media'])

@@ -726,43 +726,76 @@ namespace :morphosource do
     end
     log = Logger.new(log_file)
 
-    ie_total = 0
-    bso_list = []
-    qry = "has_model_ssim:BiologicalSpecimen AND occurrence_id_tesim:[* TO *] AND idigbio_uuid_tesim:[* TO *]"
-    bso_list = ActiveFedora::SolrService.query(qry, rows: 999999)
-    grouped = bso_list.group_by{|b| [ b["occurrence_id_tesim"], b["idigbio_uuid_tesim"] ]}
-    filtered = grouped.values.select { |a| a.size > 1 }.flatten.group_by { |b| [ b["occurrence_id_tesim"], b["idigbio_uuid_tesim"] ] }
-    puts "#{log_prefix} report_only: #{report_only}"
-    log.info "report_only: #{report_only}"
-    puts "#{log_prefix} #{filtered.count} duplicate groups found"
-    log.info "#{filtered.count} duplicate groups found"
-    filtered.each do |key, dups|
-      # To minimize the merging time, sort the specimen by the media count, and keep the first specimen (with the most media)
-      sorted_dups = dups.sort_by { |dup| -(dup['related_media_ids_ssim']&.count || 0) }
-      puts "#{log_prefix} Duplicate group #{key} with specimens #{sorted_dups.map{|x| x['id'] }}"
-      log.info "Duplicate group #{key} with specimens #{sorted_dups.map{|x| x['id'] }}"
-      if merge == true
-        delete_dup = (report_only == false)
-        merge_to = sorted_dups.first['id']
-        sorted_dups.drop(1).each do |dup|
-          merge_from = dup['id']
-          media_list, ie_list, outcome = Morphosource::MergeBiologicalSpecimenService.call(merge_to, merge_from, delete_dup, report_only)
-          outcome_text = case outcome
-                         when :destroyed then "specimen #{merge_from} destroyed"
-                         when :not_destroyed_failed_repoint then "specimen #{merge_from} NOT destroyed -- failed to repoint one or more ImagingEvents"
-                         when :not_destroyed_media_referencing then "specimen #{merge_from} NOT destroyed -- Solr still shows media referencing it"
-                         else "specimen #{merge_from} not attempted (report_only)"
-                         end
-          msg = " #{outcome_text} -- considered media #{media_list} for move from specimen #{merge_from} to specimen #{merge_to}"
-          puts "#{log_prefix}#{msg}"
-          log.info msg
-          ie_total += ie_list.count
+    # Sends the outcome email (or logs why it didn't), reusable for both the normal
+    # completion path and the fatal-error path below.
+    send_report_email = lambda do |action, extra_note = nil|
+      if args[:send_email] != "true"
+        puts "#{log_prefix} email not sent -- send_email arg was #{args[:send_email].inspect}, expected the string \"true\""
+      elsif Hyrax.config.system_report_recipients.blank?
+        puts "#{log_prefix} email not sent -- Hyrax.config.system_report_recipients is not configured"
+      else
+        begin
+          body = "Duplicate specimens report #{action} attached."
+          body += " #{extra_note}" if extra_note
+          ApplicationMailer.send_email_with_attachment(
+            Hyrax.config.system_report_recipients,
+            "MS duplicate specimens report #{action}" + Time.now.strftime("%m-%d-%Y_%H-%M"),
+            body,
+             log_file).deliver_now
+          puts "#{log_prefix} email sent to #{Hyrax.config.system_report_recipients} with attachment #{log_file}"
+        rescue => e
+          puts "#{log_prefix} email FAILED -- #{e.class}: #{e.message}"
         end
-        msg = " duplicate group #{key} processed -> target specimen #{merge_to}"
-        puts "#{log_prefix}#{msg}"
-        log.info msg
       end
     end
+
+    ie_total = 0
+    begin
+      bso_list = []
+      qry = "has_model_ssim:BiologicalSpecimen AND occurrence_id_tesim:[* TO *] AND idigbio_uuid_tesim:[* TO *]"
+      bso_list = ActiveFedora::SolrService.query(qry, rows: 999999)
+      grouped = bso_list.group_by{|b| [ b["occurrence_id_tesim"], b["idigbio_uuid_tesim"] ]}
+      filtered = grouped.values.select { |a| a.size > 1 }.flatten.group_by { |b| [ b["occurrence_id_tesim"], b["idigbio_uuid_tesim"] ] }
+      puts "#{log_prefix} report_only: #{report_only}"
+      log.info "report_only: #{report_only}"
+      puts "#{log_prefix} #{filtered.count} duplicate groups found"
+      log.info "#{filtered.count} duplicate groups found"
+      filtered.each do |key, dups|
+        # To minimize the merging time, sort the specimen by the media count, and keep the first specimen (with the most media)
+        sorted_dups = dups.sort_by { |dup| -(dup['related_media_ids_ssim']&.count || 0) }
+        puts "#{log_prefix} Duplicate group #{key} with specimens #{sorted_dups.map{|x| x['id'] }}"
+        log.info "Duplicate group #{key} with specimens #{sorted_dups.map{|x| x['id'] }}"
+        if merge == true
+          delete_dup = (report_only == false)
+          merge_to = sorted_dups.first['id']
+          sorted_dups.drop(1).each do |dup|
+            merge_from = dup['id']
+            # Raises if an ImagingEvent fails to save (see MergeBiologicalSpecimenService)
+            # -- deliberately fatal, caught below, rather than skipped and continued.
+            media_list, ie_list, outcome = Morphosource::MergeBiologicalSpecimenService.call(merge_to, merge_from, delete_dup, report_only)
+            outcome_text = case outcome
+                           when :destroyed then "specimen #{merge_from} destroyed"
+                           when :not_destroyed_media_referencing then "specimen #{merge_from} NOT destroyed -- Solr still shows media referencing it"
+                           else "specimen #{merge_from} not attempted (report_only)"
+                           end
+            msg = " #{outcome_text} -- considered media #{media_list} for move from specimen #{merge_from} to specimen #{merge_to}"
+            puts "#{log_prefix}#{msg}"
+            log.info msg
+            ie_total += ie_list.count
+          end
+          msg = " duplicate group #{key} processed -> target specimen #{merge_to}"
+          puts "#{log_prefix}#{msg}"
+          log.info msg
+        end
+      end
+    rescue => e
+      fatal_msg = "FATAL -- #{e.class}: #{e.message} -- aborting the rest of this run"
+      puts "#{log_prefix} #{fatal_msg}"
+      log.error fatal_msg
+      send_report_email.call("(FAILED) ", "Run aborted: #{e.message}")
+      raise
+    end
+
     if report_only
       puts "#{log_prefix} This is a report only. Total imaging event count: #{ie_total}"
       log.info "This is a report only. Total imaging event count: #{ie_total}"
@@ -771,22 +804,7 @@ namespace :morphosource do
       action = "(merge) "
     end
 
-    if args[:send_email] != "true"
-      puts "#{log_prefix} email not sent -- send_email arg was #{args[:send_email].inspect}, expected the string \"true\""
-    elsif Hyrax.config.system_report_recipients.blank?
-      puts "#{log_prefix} email not sent -- Hyrax.config.system_report_recipients is not configured"
-    else
-      begin
-        ApplicationMailer.send_email_with_attachment(
-          Hyrax.config.system_report_recipients,
-          "MS duplicate specimens report #{action}" + Time.now.strftime("%m-%d-%Y_%H-%M"),
-          "Duplicate specimens report #{action} attached.",
-           log_file).deliver_now
-        puts "#{log_prefix} email sent to #{Hyrax.config.system_report_recipients} with attachment #{log_file}"
-      rescue => e
-        puts "#{log_prefix} email FAILED -- #{e.class}: #{e.message}"
-      end
-    end
+    send_report_email.call(action)
   end
 
   desc "Verify remote backed media files"

@@ -321,7 +321,7 @@ module Morphosource
             queue: Hyrax.config.update_slow_queue_name
           ).perform_later(
             { id: [biological_specimen.id], organization_id: [organization_collection.id] },
-            true # skip reindexing, we'll handle this manually
+            skip_index_related_works: true # skip reindexing, we'll handle this manually
           )
         end
 
@@ -347,7 +347,7 @@ module Morphosource
             queue: Hyrax.config.update_slow_queue_name
           ).perform_later(
             { id: [cultural_heritage_object.id], organization_id: [organization_collection.id] },
-            true # skip reindexing, we'll handle this manually
+            skip_index_related_works: true # skip reindexing, we'll handle this manually
           )
         end
 

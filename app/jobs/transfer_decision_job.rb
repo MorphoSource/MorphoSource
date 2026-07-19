@@ -1,6 +1,9 @@
-# Processes a single ProxyDepositRequest decision (accept/reject/cancel/force_cancel) out of band,
-# so batch decisions on the transfers dashboards don't block the request/response cycle on
-# ProxyDepositRequest#transfer!'s synchronous ContentDepositorChangeEventJob.perform_now call.
+# Applies a transfer decision (accept/reject/cancel/force_cancel) out of band. The transfers
+# dashboards only ever enqueue this for 'accept' -- reject/cancel/force_cancel have no slow side
+# effects, so Morphosource::TransfersControllerBehavior#process_batch_decisions applies those
+# synchronously in the controller instead and never enqueues them here. The other decision types
+# are kept working regardless, so a technician can trigger one directly from the Rails console
+# (e.g. TransferDecisionJob.perform_now(id, 'reject')) without going through the dashboards at all.
 class TransferDecisionJob < Hyrax::ApplicationJob
 
   queue_as Hyrax.config.update_fast_queue_name
@@ -11,26 +14,33 @@ class TransferDecisionJob < Hyrax::ApplicationJob
   # @param decision ['accept','reject','cancel','force_cancel']
   # @param acting_user_id [Integer, nil] id of the user who made the decision; only used for the
   #        "sticky proxy" side effect on accept
-  # @param reset [Boolean] forwarded to ProxyDepositRequest#transfer! when decision == 'accept'
+  # @param reset [Boolean] forwarded to ProxyDepositRequest#transfer!/#apply_accept_side_effects!
+  #        when decision == 'accept'
   # @param sticky [Boolean] if true and decision == 'accept', add sending_user to acting_user's
   #        can_receive_deposits_from list
   # @param comment [String, nil] forwarded to ProxyDepositRequest#reject!
-  def perform(proxy_deposit_request_id, decision, acting_user_id: nil, reset: false, sticky: false, comment: nil)
+  def perform(proxy_deposit_request_id, decision = 'accept', acting_user_id: nil, reset: false, sticky: false, comment: nil)
     return unless DECISIONS.include?(decision.to_s)
 
     request = ProxyDepositRequest.find_by(id: proxy_deposit_request_id)
-    return unless request&.pending? # already resolved (or gone); safe no-op
+    return unless request
 
     case decision.to_s
     when 'accept'
-      request.transfer!(reset)
+      if request.pending?
+        request.transfer!(reset) # console/manual use: record the decision and apply side effects in one step
+      elsif request.accepted?
+        request.apply_accept_side_effects!(reset: reset) # decision already recorded (see process_batch_decisions)
+      else
+        return # already resolved to something else, or gone stale; safe no-op
+      end
       apply_sticky(request, acting_user_id) if sticky
     when 'reject'
-      request.reject!(comment)
+      request.reject!(comment) if request.pending?
     when 'cancel'
-      request.cancel!
+      request.cancel! if request.pending?
     when 'force_cancel'
-      request.force_cancel!
+      request.force_cancel! if request.pending?
     end
   end
 

@@ -1,19 +1,44 @@
-<% current_status = params[:all_statuses] == 'true' ? 'all' : (params.dig(:filter_items, 'status') || 'pending') %>
+<% current_status = current_transfer_status %>
 <% current_org_transfer = params.dig(:filter_items, 'organization_transfer') %>
 
-<div class="itemtable-quick-filters mb-2">
-  <div class="btn-group mr-2 mb-1" role="group" aria-label="Filter transfers by status">
-    <% [['Pending', 'pending'], ['Accepted', 'accepted'], ['Rejected', 'rejected'], ['Canceled', 'canceled']].each do |label, status| %>
-      <%= link_to label, quick_filter_status_url(status), class: "btn btn-sm #{current_status == status ? 'btn-primary' : 'btn-outline-primary'}" %>
-    <% end %>
-    <%= link_to 'All', quick_filter_all_statuses_url, class: "btn btn-sm #{current_status == 'all' ? 'btn-primary' : 'btn-outline-primary'}" %>
+<% status_options = [
+     ['Pending', quick_filter_status_url('pending')],
+     ['Accepted', quick_filter_status_url('accepted')],
+     ['Rejected', quick_filter_status_url('rejected')],
+     ['Canceled', quick_filter_status_url('canceled')],
+     ['All', quick_filter_all_statuses_url]
+   ] %>
+<% status_url_map = { 'pending' => status_options[0][1], 'accepted' => status_options[1][1], 'rejected' => status_options[2][1], 'canceled' => status_options[3][1], 'all' => status_options[4][1] } %>
+
+<% org_options = [
+     ['All Types', quick_filter_organization_transfer_url(nil)],
+     ['Standard', quick_filter_organization_transfer_url('false')],
+     ['Organization', quick_filter_organization_transfer_url('true')]
+   ] %>
+<% org_url_map = { '' => org_options[0][1], 'false' => org_options[1][1], 'true' => org_options[2][1] } %>
+
+<div class="d-flex justify-content-between align-items-center flex-wrap mb-2">
+  <div class="mb-1">
+    <button class="select-all-transfers btn btn-outline-secondary btn-sm" type="button" title="Select all pending transfers on page">Select All</button>
+    <button class="select-no-transfers btn btn-outline-secondary btn-sm" type="button" title="Deselect all transfers on page">Select None</button>
+    <%= local_assigns[:decide_button] %>
   </div>
 
-  <% if @has_organization_transfers %>
-    <div class="btn-group mb-1" role="group" aria-label="Filter transfers by type">
-      <%= link_to 'All Types', quick_filter_organization_transfer_url(nil), class: "btn btn-sm #{current_org_transfer.blank? ? 'btn-primary' : 'btn-outline-primary'}" %>
-      <%= link_to 'Standard', quick_filter_organization_transfer_url('false'), class: "btn btn-sm #{current_org_transfer == 'false' ? 'btn-primary' : 'btn-outline-primary'}" %>
-      <%= link_to 'Organization', quick_filter_organization_transfer_url('true'), class: "btn btn-sm #{current_org_transfer == 'true' ? 'btn-primary' : 'btn-outline-primary'}" %>
-    </div>
-  <% end %>
+  <div class="mb-1 d-flex align-items-center flex-wrap">
+    <% if @has_organization_transfers %>
+      <label class="mr-1 mb-0" for="quick_filter_organization_transfer">Type</label>
+      <%= select_tag :quick_filter_organization_transfer,
+                     options_for_select(org_options, org_url_map[current_org_transfer.presence || '']),
+                     onchange: 'window.location.href = this.value;',
+                     class: 'form-control form-control-sm d-inline-block w-auto mr-3',
+                     'aria-label': 'Filter transfers by type' %>
+    <% end %>
+
+    <label class="mr-1 mb-0" for="quick_filter_status">Status</label>
+    <%= select_tag :quick_filter_status,
+                   options_for_select(status_options, status_url_map[current_status]),
+                   onchange: 'window.location.href = this.value;',
+                   class: 'form-control form-control-sm d-inline-block w-auto',
+                   'aria-label': 'Filter transfers by status' %>
+  </div>
 </div>

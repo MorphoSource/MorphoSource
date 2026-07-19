@@ -1,11 +1,29 @@
 <% provide :page_title, page_title %>
+<% content_for :body_css_classes do %>itemtable-page<% end %>
 
-<%= render 'search_container' %>
+<% provide :page_header do %>
+  <div class="col-12 title d-flex justify-content-between align-items-center flex-wrap no-horizontal-padding">
+    <h1><%= page_title %> (<%= @item_count %>)</h1>
+    <div class="mb-1">
+      <% unless @search %>
+        <%= link_to "Search #{page_title}", url_for(search: true), class: 'btn btn-primary' %>
+      <% end %>
+      <%= link_to 'Export CSV', url_for(format: :csv), class: 'btn btn-primary' %>
+    </div>
+  </div>
+<% end %>
+
+<%# Rendered as a sibling of (not nested inside) the itemtable card below: nesting it in the
+    card's own .card-body pulls in legacy .showcase/.card-body descendant rules (h2 border-bottom,
+    .panel-title background, .card-header background, .panel-default border removal) that were
+    written for the media/object showcase pages and clobber this panel's bordered-card look. %>
+<% if @search %>
+  <%= render 'search_form' %>
+<% end %>
 
 <div class="card panel-default itemtable <%= controller.controller_name %>">
-  <%= render 'heading' %>
   <div class="card-body showcase">
-    <% if page_description && !@search %>
+    <% if !@search && page_description %>
       <div class="card card-header">
         <%= page_description %>
       </div>
@@ -18,8 +36,15 @@
       <%= render 'document_list' %>
     <% end %>
 
-    <div class="showcase">
-      <%= render 'results_pagination' %>
-    </div>
+    <% if @items.present? %>
+      <div class="showcase">
+        <%= render 'results_pagination' %>
+      </div>
+    <% end %>
   </div>
 </div>
+
+<%# Rendered outside the card for the same reason as the search pane above: nesting it in
+    .card-body.showcase pulls in the legacy h2 border-bottom/etc. rules and clobbers the modal's
+    styling (see morphosource/my/modals/_page_modal for the equivalent convention). %>
+<%= render 'transfer_decide_modal' %>

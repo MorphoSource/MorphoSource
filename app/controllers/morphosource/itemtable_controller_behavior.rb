@@ -1,6 +1,28 @@
 # Methods to quickly bootstrap controllers that use JS datatable to list Rails DB objects
 module Morphosource
   module ItemtableControllerBehavior
+    extend ActiveSupport::Concern
+
+    included do
+      helper_method :entry_name, :empty_state_message
+    end
+
+    # Record name used for "No X found" / "Displaying X 1 - 20 of 42" pagination text (see
+    # morphosource/itemtable/_document_list and _results_pagination, both shared by every
+    # controller that includes this module, whether or not it inherits from ItemtableController).
+    # Override in a controller or concern; nil falls back to Kaminari's default (humanized model
+    # name).
+    def entry_name
+      nil
+    end
+
+    # Overridable message shown in the empty-state block (see morphosource/itemtable/_document_list)
+    # in place of the generic "No <entry_name(s)> found." text. nil (the default) falls back to
+    # that generic message.
+    def empty_state_message
+      nil
+    end
+
     # For custom param names, method returns real DB ordering clause and @sort_param is custom name
     def sort_param
       if params[:sort].present?

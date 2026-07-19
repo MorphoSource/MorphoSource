@@ -33,6 +33,10 @@ module Morphosource
 
       private
 
+      def entry_name
+        'request'
+      end
+
       def require_permissions
         authorize! :read, :admin_dashboard
       end

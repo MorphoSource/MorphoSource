@@ -53,12 +53,12 @@ module Hyrax
           current_user.can_receive_deposits_from << @proxy_deposit_request.sending_user
         end
       end
-      redirect_back fallback_location: main_app.transfers_received_path, notice: "Transfer has been accepted."
+      redirect_to redirect_target(main_app.transfers_received_path), notice: "Transfer has been accepted."
     end
 
     def reject
       @proxy_deposit_request.reject!
-      redirect_back fallback_location: main_app.transfers_received_path, notice: "Transfer has been rejected."
+      redirect_to redirect_target(main_app.transfers_received_path), notice: "Transfer has been rejected."
     end
 
     # Admins may cancel an organization transfer (a regular sender cannot; the model validation
@@ -69,10 +69,25 @@ module Hyrax
       else
         @proxy_deposit_request.cancel!
       end
-      redirect_back fallback_location: main_app.transfers_sent_path, notice: "Transfer has been canceled."
+      redirect_to redirect_target(main_app.transfers_sent_path), notice: "Transfer has been canceled."
     end
 
     private
+
+      # Per-row decide links carry the itemtable page's current filters as a return_to param (see
+      # morphosource/*/_list_item) rather than depending on the Referer header, which isn't always
+      # sent (browser privacy settings, extensions, some proxies) -- without this, deciding on
+      # transfers one at a time bounced the user back to the unfiltered index each time. Only
+      # same-app relative paths are accepted, so a crafted return_to can't be used as an open
+      # redirect.
+      def redirect_target(fallback)
+        return_to = params[:return_to]
+        if return_to.present? && return_to.start_with?('/') && !return_to.start_with?('//')
+          return_to
+        else
+          request.referer || fallback
+        end
+      end
 
       def authorize_depositor_by_id
         @id = params[:id]

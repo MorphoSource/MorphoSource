@@ -41,6 +41,14 @@ module Morphosource
     end
     helper_method :page_description
 
+    # Whether the search-filter panel above the table renders as a bordered card with a smaller
+    # title, matching the .panel-borders convention used elsewhere on the site (e.g.
+    # my/collections#index). Override to false in a controller or concern to opt out.
+    def bordered_search_panel?
+      true
+    end
+    helper_method :bordered_search_panel?
+
     def search_form_present?
       params[:search].present? || params[:commit] == 'Search' || params[:filter_items].present?
     end

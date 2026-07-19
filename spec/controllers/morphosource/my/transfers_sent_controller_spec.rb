@@ -36,16 +36,17 @@ RSpec.describe Morphosource::My::TransfersSentController, type: :controller do
   describe 'PUT #batch_cancel' do
     let!(:request1) { ProxyDepositRequest.create(work_id: work.id, sending_user_id: sending_user.id, receiving_user_id: receiving_user.id, status: 'pending') }
 
-    it 'enqueues a TransferDecisionJob for the selected request' do
-      expect(TransferDecisionJob).to receive(:perform_later).with(request1.id, 'cancel', acting_user_id: sending_user.id)
+    it 'cancels the selected request synchronously, with no job needed' do
+      expect(TransferDecisionJob).not_to receive(:perform_later)
       put :batch_cancel, params: { batch_document_ids: [request1.id] }
+      expect(request1.reload.status).to eq 'canceled'
       expect(response).to redirect_to(transfers_sent_path)
     end
 
-    it 'does not enqueue a job for an organization transfer, since a sender cannot destroy one' do
+    it 'does not force-cancel an organization transfer, since a sender cannot destroy one' do
       request1.update_column(:organization_transfer, true)
-      expect(TransferDecisionJob).not_to receive(:perform_later)
       put :batch_cancel, params: { batch_document_ids: [request1.id] }
+      expect(request1.reload.status).to eq 'pending'
     end
 
     it 'does not enqueue a job for another user''s request' do

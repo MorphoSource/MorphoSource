@@ -6,6 +6,7 @@
       <% end %>
     </td>
     <td><%= show_transfer_request_title(item) %></td>
+    <td><%= item.organization_transfer? ? 'Organization' : 'Standard' %></td>
     <td><%= link_to_transfer_participant(item.sending_user_id) %></td>
     <td class="date">
       <relative-time datetime="<%= item.created_at.getutc.iso8601 %>" title="<%= item.created_at.to_formatted_s(:standard) %>">
@@ -13,31 +14,26 @@
       </relative-time>
     </td>
     <td><%= item.organization_transfer ? item.sender_comment.html_safe : item.sender_comment %></td>
+    <td><%= item.status.capitalize %></td>
     <td>
       <% if item.pending? && can?(:accept, item) %>
-        <div class="row">
-          <div class="col-12">
-            <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="width: 100%; max-width: 100%">
-              Accept <span class="caret"></span>
-            </button>
-            <ul class="dropdown-menu">
-              <li>
-                <%= link_to 'Allow depositor to retain edit access', hyrax.accept_transfer_path(item), method: :put, class: 'accept-retain', title: 'Accept the file and allow the original depositor to retain access to edit the file and metadata' %>
-              </li>
-              <li>
-                <%= link_to 'Remove depositor access', hyrax.accept_transfer_path(item, reset: true), method: :put, class: 'accept-reset', title: 'Accept the file and remove access from the original depositor.' %>
-              </li>
-              <li>
-                <%= link_to 'Authorize depositor as proxy', hyrax.accept_transfer_path(item, sticky: true), method: :put, class: 'accept-stick', title: 'Accept the file and allow the original depositor to retain access and authorize the original depositor as a proxy to deposit files on your behalf.' %>
-              </li>
-            </ul>
-          </div>
-          <div class="col-12">
-            <%= link_to "Reject", hyrax.reject_transfer_path(item), method: :put, class: 'btn btn-sm btn-danger', data: { confirm: "Are you sure you want to reject this request?" }, style: "width: 100%" %>
-          </div>
+        <div class="btn-group mr-2 mb-1" role="group">
+          <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Accept <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-right">
+            <li>
+              <%= link_to 'Allow depositor to retain edit access', hyrax.accept_transfer_path(item, return_to: request.original_fullpath), method: :put, class: 'accept-retain', title: 'Accept the file and allow the original depositor to retain access to edit the file and metadata' %>
+            </li>
+            <li>
+              <%= link_to 'Remove depositor access', hyrax.accept_transfer_path(item, reset: true, return_to: request.original_fullpath), method: :put, class: 'accept-reset', title: 'Accept the file and remove access from the original depositor.' %>
+            </li>
+            <li>
+              <%= link_to 'Authorize depositor as proxy', hyrax.accept_transfer_path(item, sticky: true, return_to: request.original_fullpath), method: :put, class: 'accept-stick', title: 'Accept the file and allow the original depositor to retain access and authorize the original depositor as a proxy to deposit files on your behalf.' %>
+            </li>
+          </ul>
         </div>
-      <% else %>
-        <%= item.status.capitalize %>
+        <%= link_to "Reject", hyrax.reject_transfer_path(item, return_to: request.original_fullpath), method: :put, class: 'btn btn-sm btn-danger mb-1', data: { confirm: "Are you sure you want to reject this request?" } %>
       <% end %>
     </td>
   </tr>

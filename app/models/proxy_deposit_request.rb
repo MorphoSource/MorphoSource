@@ -278,34 +278,50 @@ class ProxyDepositRequest < ActiveRecord::Base
 
   # @param [TrueClass,FalseClass] reset (false)  if true, reset the access controls. This revokes edit access from the depositor
   def transfer!(reset = false)
-    if organization_transfer && receiving_user_type == "User"
-      work.add_to_organization_team
-    end
+    record_decision!(status: ACCEPTED)
+    apply_accept_side_effects!(reset: reset)
+  end
+
+  # The slow part of accepting a transfer, meant to run after record_decision! has already flipped
+  # status to accepted (synchronously for single-item accepts via #transfer!, or from
+  # TransferDecisionJob for batch accepts). Reverts back to pending on failure rather than leaving
+  # status=accepted when the ownership change never actually completed.
+  def apply_accept_side_effects!(reset: false)
     ContentDepositorChangeEventJob.perform_now(work, receiving_user_id, reset, sending_user_id)
-    fulfill!(status: ACCEPTED)
+  rescue => e
+    update_column(:status, PENDING) # bypass validations/callbacks -- this is a rollback, not a new decision
+    Rails.logger.error("ProxyDepositRequest##{id}: accept side effects failed, reverted to pending: #{e.message}")
+    raise
   end
 
   # @param [String, nil] comment - A given reason by the rejecting user
   def reject!(comment = nil)
-    fulfill!(status: REJECTED, comment: comment)
+    record_decision!(status: REJECTED, comment: comment)
   end
 
   def cancel!
-    fulfill!(status: CANCELED)
+    record_decision!(status: CANCELED)
   end
 
   def force_cancel!
     @force_update = true
-    fulfill!(status: CANCELED)
+    record_decision!(status: CANCELED)
+  end
+
+  # Fast, synchronous status flip with no side effects. #transfer! calls this then
+  # #apply_accept_side_effects! in sequence; batch decisions on the transfers dashboards (see
+  # Morphosource::TransfersControllerBehavior#process_batch_decisions) call this directly for accept
+  # so the decision is recorded immediately -- closing the window where a second decision on the
+  # same still-"pending"-looking request could be submitted before #apply_accept_side_effects!
+  # (which runs in a background job for batches) actually completes.
+  def record_decision!(status:, comment: nil)
+    self.receiver_comment = comment if comment
+    self.status = status
+    self.fulfillment_date = Time.current
+    save!
   end
 
   private
-    def fulfill!(status:, comment: nil)
-      self.receiver_comment = comment if comment
-      self.status = status
-      self.fulfillment_date = Time.current
-      save!
-    end
 
     def org_transfer_resolved?
       organization_transfer? && previous_changes.key?('status') && !pending?

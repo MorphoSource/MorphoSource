@@ -42,16 +42,17 @@ RSpec.describe Morphosource::Admin::TransfersController, type: :controller do
 
     let!(:standard_request) { ProxyDepositRequest.create(work_id: work.id, sending_user_id: sending_user.id, receiving_user_id: receiving_user.id, status: 'pending') }
 
-    it 'uses a plain cancel decision for a standard transfer' do
-      expect(TransferDecisionJob).to receive(:perform_later).with(standard_request.id, 'cancel', acting_user_id: admin.id)
+    it 'uses a plain cancel decision for a standard transfer, with no job needed' do
+      expect(TransferDecisionJob).not_to receive(:perform_later)
       put :batch_cancel, params: { batch_document_ids: [standard_request.id] }
+      expect(standard_request.reload.status).to eq 'canceled'
       expect(response).to redirect_to(admin_transfers_path)
     end
 
     it 'uses force_cancel for an organization transfer' do
       standard_request.update_column(:organization_transfer, true)
-      expect(TransferDecisionJob).to receive(:perform_later).with(standard_request.id, 'force_cancel', acting_user_id: admin.id)
       put :batch_cancel, params: { batch_document_ids: [standard_request.id] }
+      expect(standard_request.reload.status).to eq 'canceled'
     end
   end
 
@@ -60,9 +61,10 @@ RSpec.describe Morphosource::Admin::TransfersController, type: :controller do
 
     let!(:request1) { ProxyDepositRequest.create(work_id: work.id, sending_user_id: sending_user.id, receiving_user_id: receiving_user.id, status: 'pending') }
 
-    it 'enqueues a TransferDecisionJob for the selected request' do
+    it 'records the decision synchronously and enqueues a TransferDecisionJob for the side effects' do
       expect(TransferDecisionJob).to receive(:perform_later).with(request1.id, 'accept', acting_user_id: admin.id, reset: false, sticky: false)
       put :batch_accept, params: { batch_document_ids: [request1.id] }
+      expect(request1.reload.status).to eq 'accepted'
       expect(response).to redirect_to(admin_transfers_path)
     end
   end

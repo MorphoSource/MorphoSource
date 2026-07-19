@@ -66,9 +66,10 @@ RSpec.describe Morphosource::My::TransfersReceivedController, type: :controller 
   describe 'PUT #batch_accept' do
     let!(:request1) { ProxyDepositRequest.create(work_id: work.id, sending_user_id: sending_user.id, receiving_user_id: receiving_user.id, status: 'pending') }
 
-    it 'enqueues a TransferDecisionJob for the selected request' do
+    it 'records the decision synchronously and enqueues a TransferDecisionJob for the side effects' do
       expect(TransferDecisionJob).to receive(:perform_later).with(request1.id, 'accept', acting_user_id: receiving_user.id, reset: false, sticky: false)
       put :batch_accept, params: { batch_document_ids: [request1.id] }
+      expect(request1.reload.status).to eq 'accepted'
       expect(response).to redirect_to(transfers_received_path)
     end
 
@@ -93,9 +94,10 @@ RSpec.describe Morphosource::My::TransfersReceivedController, type: :controller 
   describe 'PUT #batch_reject' do
     let!(:request1) { ProxyDepositRequest.create(work_id: work.id, sending_user_id: sending_user.id, receiving_user_id: receiving_user.id, status: 'pending') }
 
-    it 'enqueues a TransferDecisionJob for the selected request' do
-      expect(TransferDecisionJob).to receive(:perform_later).with(request1.id, 'reject', acting_user_id: receiving_user.id)
+    it 'rejects the selected request synchronously, with no job needed' do
+      expect(TransferDecisionJob).not_to receive(:perform_later)
       put :batch_reject, params: { batch_document_ids: [request1.id] }
+      expect(request1.reload.status).to eq 'rejected'
       expect(response).to redirect_to(transfers_received_path)
     end
   end

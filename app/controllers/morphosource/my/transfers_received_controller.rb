@@ -1,7 +1,7 @@
 module Morphosource
   module My
     class TransfersReceivedController < Morphosource::ItemtableController
-      include Morphosource::TransfersItemtableBehavior
+      include Morphosource::TransfersControllerBehavior
 
       before_action :authenticate_user!
 
@@ -10,14 +10,16 @@ module Morphosource
 
       def batch_accept
         requests = pending_requests_for_batch(:accept)
-        enqueue_transfer_decisions(requests, 'accept', reset: params[:reset].present?, sticky: params[:sticky].present?)
-        redirect_to main_app.transfers_received_path, notice: "#{requests.size} transfer(s) are being processed."
+        process_batch_decisions(requests, 'accept', reset: params[:reset].present?, sticky: params[:sticky].present?)
+        redirect_with_batch_notice(requests, main_app.transfers_received_path,
+          success_message: "#{requests.size} transfer(s) accepted. Ownership changes are being applied in the background and should complete shortly.")
       end
 
       def batch_reject
         requests = pending_requests_for_batch(:reject)
-        enqueue_transfer_decisions(requests, 'reject')
-        redirect_to main_app.transfers_received_path, notice: "#{requests.size} transfer(s) are being processed."
+        process_batch_decisions(requests, 'reject')
+        redirect_with_batch_notice(requests, main_app.transfers_received_path,
+          success_message: "#{requests.size} transfer(s) rejected.")
       end
 
       private

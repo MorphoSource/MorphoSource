@@ -1,7 +1,7 @@
 module Morphosource
   module My
     class TransfersSentController < Morphosource::ItemtableController
-      include Morphosource::TransfersItemtableBehavior
+      include Morphosource::TransfersControllerBehavior
 
       before_action :authenticate_user!
 
@@ -10,8 +10,9 @@ module Morphosource
 
       def batch_cancel
         requests = pending_requests_for_batch(:destroy)
-        enqueue_transfer_decisions(requests, 'cancel')
-        redirect_to main_app.transfers_sent_path, notice: "#{requests.size} transfer(s) are being processed."
+        process_batch_decisions(requests, 'cancel')
+        redirect_with_batch_notice(requests, main_app.transfers_sent_path,
+          success_message: "#{requests.size} transfer(s) canceled.")
       end
 
       private

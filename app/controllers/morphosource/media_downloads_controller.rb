@@ -543,38 +543,35 @@ module Morphosource
           media_list = []
           media.each do |m|
             doc = SolrDocument.find(m.id)
-            if doc.present?
-              if m.is_remote_backed?
-                file_set = get_and_validate_fileset_for_remote(m)
-              else
-                file_set, original_file = get_and_validate_fileset(m)
-              end
-              if file_set.present?
-                media_list << {
-                  :id => [m.id],
-                  :title => [m.title.first],
-                  :file_name => [file_set.label],
-                  :file_size => file_set.file_size,
-                  :media_type => m.media_type,
-                  :mime_type => [m.is_remote_backed? ? file_set.mime_type_of_remote : file_set.mime_type]
-                }.merge(doc.to_semantic_values).merge({
-                  :points => file_set.point_count,
-                  :polygons => file_set.face_count,
-                  :vertex_color => file_set.vertex_color,
-                  :uv_coordinates => file_set.has_uv_space,
-                  :bounding_box_x => file_set.bounding_box_x,
-                  :bounding_box_y => file_set.bounding_box_y,
-                  :bounding_box_z => file_set.bounding_box_z,
-                  :status => ['Included']
-                })
-              else
-                media_list << {
-                  :id => [m.id],
-                  :title => [m.title.first],
-                  :media_type => m.media_type,
-                  :status => ['Not included - file unavailable']
-                }
-              end
+            next unless doc.present?
+
+            if unavailable_media_ids.include?(m.id)
+              media_list << {
+                :id => [m.id],
+                :title => [m.title.first],
+                :media_type => m.media_type,
+                :status => ['Not included - file unavailable']
+              }
+            else
+              # already validated by prepare_files - just fetch it for its metadata
+              file_set = m.file_sets&.first
+              media_list << {
+                :id => [m.id],
+                :title => [m.title.first],
+                :file_name => [file_set.label],
+                :file_size => file_set.file_size,
+                :media_type => m.media_type,
+                :mime_type => [m.is_remote_backed? ? file_set.mime_type_of_remote : file_set.mime_type]
+              }.merge(doc.to_semantic_values).merge({
+                :points => file_set.point_count,
+                :polygons => file_set.face_count,
+                :vertex_color => file_set.vertex_color,
+                :uv_coordinates => file_set.has_uv_space,
+                :bounding_box_x => file_set.bounding_box_x,
+                :bounding_box_y => file_set.bounding_box_y,
+                :bounding_box_z => file_set.bounding_box_z,
+                :status => ['Included']
+              })
             end
           end
           media_list

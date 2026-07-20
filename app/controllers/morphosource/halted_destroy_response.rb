@@ -15,8 +15,11 @@ module Morphosource
   #    already been removed by the time that happens -- a "zombie" record: still in
   #    Fedora, invisible everywhere Solr-based (search, browse, media lookups). A
   #    model-level callback cannot prevent this; it fires too late in this specific path.
-  #    So for any curation concern that responds to #media, check *before* even invoking
-  #    the actor stack, and skip it entirely if media are present.
+  #    So for any curation concern that responds to #blocking_media_message (see
+  #    Morphosource::PhysicalObjectBehavior), check *before* even invoking the actor
+  #    stack, and skip it entirely if media are present. That shared method forces a Solr
+  #    commit first, so this check can't be beaten by media attached moments earlier that
+  #    the model-level guard would otherwise catch after the Solr doc is already gone.
   #
   # Must be `prepend`ed: Ruby's `include` resolves later-included modules first, so a
   # plain `include` here would be shadowed by Hyrax::WorksControllerBehavior#destroy
@@ -27,9 +30,7 @@ module Morphosource
       when ActiveFedora::Base
         title = curation_concern.to_s
 
-        if curation_concern.respond_to?(:media) && curation_concern.media.present?
-          message = "Cannot delete this record while it still has associated media " \
-                     "(#{curation_concern.media.map(&:id).join(', ')}), which may not be public. Detach or reassign the media first."
+        if curation_concern.respond_to?(:blocking_media_message) && (message = curation_concern.blocking_media_message)
           return respond_to do |wants|
             wants.html { redirect_to [main_app, curation_concern], alert: message }
             wants.json { render_json_response(response_type: :unprocessable_entity, options: { errors: { base: [message] } }) }

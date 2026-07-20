@@ -99,6 +99,20 @@ module Morphosource::PhysicalObjectBehavior
     end
   end
 
+  # Forces a Solr commit then checks for associated media, returning a blocking message if
+  # any exist, or nil if the record is safe to destroy. The commit closes (though, per the
+  # note below, does not fully eliminate) the race where media attached just before a
+  # destroy call hasn't been indexed yet. Shared by the model's before_destroy guard
+  # (#prevent_destroy_with_media) and Morphosource::HaltedDestroyResponse's controller-level
+  # check, so both see the same up-to-date answer instead of duplicating (and drifting on)
+  # the same logic.
+  def blocking_media_message
+    ActiveFedora::SolrService.commit
+    return nil if media.blank?
+
+    "Cannot delete this record while it still has associated media (#{media.map(&:id).join(', ')}), which may not be public. Detach or reassign the media first."
+  end
+
   private
 
   # Blocks destroying this record while it still has associated media, regardless of
@@ -108,10 +122,10 @@ module Morphosource::PhysicalObjectBehavior
   # a hard commit first narrows that window but does not eliminate it. No admin override --
   # media must be detached/reassigned before the record can be deleted.
   def prevent_destroy_with_media
-    ActiveFedora::SolrService.commit
-    return if media.blank?
+    message = blocking_media_message
+    return if message.nil?
 
-    errors.add(:base, "Cannot delete this record while it still has associated media (#{media.map(&:id).join(', ')}), which may not be public. Detach or reassign the media first.")
+    errors.add(:base, message)
     throw :abort
   end
 end

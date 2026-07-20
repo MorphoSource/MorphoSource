@@ -107,10 +107,11 @@ $( document ).ready(function() {
       set_agreements_for_restricted();
     });
 
-    $('.btn-download-item').bind('click', function(e) { 
+    $('.btn-download-item').bind('click', function(e) {
       // download individual item clicked
       e.preventDefault();
       var itemId = $(this).attr('data-item-id');
+      $('form#download-form').data('mode', 'selected');
       uncheckAllDownloadable();
       $("input[id='batch_download_" + itemId + "']").trigger('click');
       sendSelectedItemsToModal();
@@ -266,7 +267,8 @@ function showAgreementModal() {
   // reset things on modal close
   $("#downloadAgreementsModal").on("hidden.bs.modal", function () {
     // remove selected items from modal
-    $('form#download-form .download-items-wrapper').html('');  
+    $('form#download-form .download-items-wrapper').html('');
+    $('form#download-form').removeData('mode');
     uncheckAllDownloadable();
     $("#check_all_unrestricted").prop('checked', false);
     $("input#download-selected").prop('disabled', true);

@@ -148,14 +148,10 @@ module Morphosource
       included_media = media.reject { |m| unavailable_media_ids.include?(m.id) }
 
       m = ""
-      if included_media.present? && ( included_media.count == 1 )
-        m = "id-#{included_media&.first&.id}"
-      elsif included_media.present? && ( included_media.count > 1 )
-        m = if included_media.count == media.count
-              "#{included_media.count}-items"
-            else
-              "#{included_media.count}-of-#{media.count}-items"
-            end
+      if included_media.present? && included_media.count == media.count
+        m = included_media.count == 1 ? "id-#{included_media.first.id}" : "#{included_media.count}-items"
+      elsif included_media.present?
+        m = "#{included_media.count}-of-#{media.count}-items"
       end
 
       "morphosource_media-#{m}_download-#{download_hash[0..7]}.zip"

@@ -4,6 +4,10 @@ class CollectionsCatalogController < CatalogController
 
   before_action :search_managed_collections, only: :index
 
+  def catalog_search_form_action
+    main_app.collection_search_path
+  end
+
   configure_blacklight do |config|
     config.search_builder_class = Morphosource::Catalog::CollectionsCatalogSearchBuilder
 

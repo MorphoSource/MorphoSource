@@ -81,6 +81,31 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
           expect(BiologicalSpecimen.exists?(specimen.id)).to be false
         end
       end
+
+      context 'when the controller pre-check misses media that the model-level guard catches' do
+        # Simulates the race the shared blocking_media_message check is meant to close: the
+        # controller's pre-check (1st call) sees no media, so it falls through to
+        # actor.destroy(env); the model's before_destroy callback (2nd call, same method)
+        # then blocks it. This exercises HaltedDestroyResponse's `unless actor.destroy(env)`
+        # fallback branch, which the other two contexts above never reach.
+        before do
+          allow_any_instance_of(BiologicalSpecimen)
+            .to receive(:blocking_media_message)
+            .and_return(nil, 'Cannot delete this record while it still has associated media (media-1), which may not be public. Detach or reassign the media first.')
+        end
+
+        it 'does not destroy the underlying record and redirects with an error instead of raising' do
+          delete :destroy, params: { id: specimen.id }
+          expect(response).to have_http_status(:found)
+          expect(flash[:alert]).to be_present
+          # Can't assert with `.exists?` here: it's Solr-backed, and CleanupFileSetsActor
+          # deletes the Solr doc unconditionally before actor.destroy(env) reaches the
+          # model-level guard (see the class comment above) -- so even a successfully
+          # blocked destroy looks gone via Solr. `.find` reads straight from Fedora, which
+          # is where the record actually still lives.
+          expect { BiologicalSpecimen.find(specimen.id) }.not_to raise_error
+        end
+      end
     end
 
     describe '#update_media_team_access' do

@@ -24,11 +24,11 @@
         escapeMarkup: function(m) { return m; },
         formatResult: function(object) {
           var text = $('<div>').text(object.text).html(); // escape the dynamic text itself
-          return object.type === 'organization' ? text + ' <span class="label label-info">Organization</span>' : text;
+          return object.type === 'organization' ? text + ' <span class="badge badge-info">Organization</span>' : text;
         },
         formatSelection: function(object) {
           var text = $('<div>').text(object.text).html();
-          return object.type === 'organization' ? text + ' <span class="label label-info">Organization</span>' : text;
+          return object.type === 'organization' ? text + ' <span class="badge badge-info">Organization</span>' : text;
         },
         ajax: { // Use the jQuery.ajax wrapper provided by Select2
           url: "/data-managers",

@@ -108,9 +108,10 @@ module Morphosource::PhysicalObjectBehavior
   # the same logic.
   def blocking_media_message
     ActiveFedora::SolrService.commit
-    return nil if media.blank?
+    current_media = media
+    return nil if current_media.blank?
 
-    "Cannot delete this record while it still has associated media (#{media.map(&:id).join(', ')}), which may not be public. Detach or reassign the media first."
+    "Cannot delete this record while it still has associated media (#{current_media.map(&:id).join(', ')}), which may not be public. Detach or reassign the media first."
   end
 
   private

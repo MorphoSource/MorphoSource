@@ -9,6 +9,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
     controlled_value_filter
     date_filter
   end
+  before_save :capture_original_organization_id
   after_update :reindex_media, :update_ark_status
   after_create :mint_ark
   before_destroy :prevent_destroy_with_media, prepend: true
@@ -35,6 +36,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
   # :occurrence_id_changed? may change to :will_save_change_to_occurrence_id?
   # if ActiveFedora updates to reflect the Rails 5.1+ ActiveRecord/ActiveModel API
   after_update :update_from_idigbio, if: :occurrence_id_changed?
+  after_update :check_for_media_organization_transfer, if: :organization_id_changed?
 
   def update_from_idigbio
     if occurrence_id.present?

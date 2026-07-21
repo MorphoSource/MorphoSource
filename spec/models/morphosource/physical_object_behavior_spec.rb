@@ -178,6 +178,73 @@ RSpec.describe Morphosource::PhysicalObjectBehavior do
       end
     end
 
+    describe '#check_for_media_organization_transfer' do
+      let(:old_org)      { FactoryBot.create(:organization_collection, title: ['old org'], media_ownership_transfer: true) }
+      let(:new_org)      { FactoryBot.create(:organization_collection, title: ['new org'], media_ownership_transfer: true) }
+      let(:organization) { old_org } # specimen/cho are initialized with organization_id: [organization.id]
+
+      before do
+        ActiveJob::Base.queue_adapter = :test
+        public_media.owner = old_org.id
+        private_media.owner = old_org.id
+        public_media.save!
+        private_media.save!
+      end
+
+      context 'new organization accepts data transfers and media is owned by the old organization' do
+        it 'enqueues a transfer job for each media owned by the old organization (specimen)' do
+          expect { specimen.update(organization_id: [new_org.id]) }
+            .to have_enqueued_job(TransferSpecimenMediaToOrganizationJob).with(public_media.id, new_org.id)
+          expect(TransferSpecimenMediaToOrganizationJob).to have_been_enqueued.with(private_media.id, new_org.id)
+        end
+
+        it 'enqueues a transfer job for each media owned by the old organization (cho)' do
+          expect { cho.update(organization_id: [new_org.id]) }
+            .to have_enqueued_job(TransferSpecimenMediaToOrganizationJob).with(public_media.id, new_org.id)
+          expect(TransferSpecimenMediaToOrganizationJob).to have_been_enqueued.with(private_media.id, new_org.id)
+        end
+      end
+
+      context 'new organization does not accept data transfers' do
+        let(:new_org) { FactoryBot.create(:organization_collection, title: ['new org'], media_ownership_transfer: false) }
+
+        it 'does not enqueue any transfer job' do
+          expect { specimen.update(organization_id: [new_org.id]) }
+            .not_to have_enqueued_job(TransferSpecimenMediaToOrganizationJob)
+        end
+      end
+
+      context 'media is not owned by the old organization' do
+        before do
+          public_media.owner = nil
+          private_media.owner = nil
+          public_media.save!
+          private_media.save!
+        end
+
+        it 'does not enqueue any transfer job' do
+          expect { specimen.update(organization_id: [new_org.id]) }
+            .not_to have_enqueued_job(TransferSpecimenMediaToOrganizationJob)
+        end
+      end
+
+      context 'organization_id is unchanged' do
+        it 'does not enqueue any transfer job' do
+          expect { specimen.update(title: ['renamed specimen']) }
+            .not_to have_enqueued_job(TransferSpecimenMediaToOrganizationJob)
+        end
+      end
+
+      context 'old organization is a legacy Organization work, not an OrganizationCollection' do
+        let(:old_org) { Organization.create(title: ['legacy org']) }
+
+        it 'does not enqueue any transfer job' do
+          expect { specimen.update(organization_id: [new_org.id]) }
+            .not_to have_enqueued_job(TransferSpecimenMediaToOrganizationJob)
+        end
+      end
+    end
+
   end
 
   describe '#destroy without associated media' do

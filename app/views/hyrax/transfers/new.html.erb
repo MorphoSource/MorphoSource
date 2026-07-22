@@ -6,7 +6,6 @@
 		             url: hyrax.work_transfers_path(@work) do |f| %>
 			<p><%= t('transfer.media.description') %></p>
 		  <%= f.input :transfer_to, label: t('transfer.media.transfer_to.label'), placeholder: t('transfer.media.transfer_to.placeholder') %>
-		  <div id="transfer-org-note" class="alert alert-info" style="display:none;"><%= t('transfer.media.transfer_to.organization_note') %></div>
 		  <%= f.input :sender_comment, label:  t('transfer.media.comment.label')%>
 
 		  <div class="form-actions">

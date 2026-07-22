@@ -4,12 +4,6 @@ document.addEventListener("share-tab-loaded", function(event) {
   var transferToSelect = $('#proxy_deposit_request_transfer_to');
   transferToSelect.dataManagerSearch(); // returns a list of users & organization collections
 
-  // Show a note explaining organization-transfer behavior when an organization is selected.
-  transferToSelect.on('change', function() {
-    var data = transferToSelect.select2('data');
-    $('#transfer-org-note').toggle(!!(data && data.type === 'organization'));
-  });
-
   $('#btn-transfer-submit').click(function() {
     if (transferToSelect.val().length == 0) {
       $.alert('Please select a user or organization');

@@ -17,19 +17,6 @@
           };
           callback(data);
         },
-        // Badge organization results so they're visually distinct from individual users,
-        // since transferring to an organization behaves differently (requires org
-        // acceptance, cannot be canceled by the sender). escapeMarkup is overridden
-        // (Select2's default escapes HTML) so the badge markup below actually renders.
-        escapeMarkup: function(m) { return m; },
-        formatResult: function(object) {
-          var text = $('<div>').text(object.text).html(); // escape the dynamic text itself
-          return object.type === 'organization' ? text + ' <span class="badge badge-success">Organization</span>' : text;
-        },
-        formatSelection: function(object) {
-          var text = $('<div>').text(object.text).html();
-          return object.type === 'organization' ? text + ' <span class="badge badge-success">Organization</span>' : text;
-        },
         ajax: { // Use the jQuery.ajax wrapper provided by Select2
           url: "/data-managers",
           dataType: "json",

@@ -1,8 +1,7 @@
 module Morphosource
   module Actors
     # Must run before Hyrax::Actors::CleanupFileSetsActor, which deletes the Solr doc
-    # unconditionally -- too late for a model-level before_destroy guard to prevent a
-    # "zombie" record (gone from Solr, still in Fedora).
+    # unconditionally -- too late for the model's before_destroy guard to prevent it.
     class HasMediaGuardActor < Hyrax::Actors::AbstractActor
       def destroy(env)
         curation_concern = env.curation_concern

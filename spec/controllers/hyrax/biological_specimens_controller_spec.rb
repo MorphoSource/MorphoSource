@@ -83,8 +83,7 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
 
       context 'when the actor-stack guard misses media that the model-level guard catches' do
         # Exercises the fallback: actor-stack guard (1st call) misses it, before_destroy
-        # (2nd call) blocks it -- but only after CleanupFileSetsActor already deleted the
-        # Solr doc, since the actor-stack guard is what's supposed to prevent reaching it.
+        # (2nd call) blocks it -- after CleanupFileSetsActor already deleted the Solr doc.
         before do
           allow_any_instance_of(BiologicalSpecimen)
             .to receive(:blocking_media_message)

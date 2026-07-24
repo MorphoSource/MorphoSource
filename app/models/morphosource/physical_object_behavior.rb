@@ -99,13 +99,8 @@ module Morphosource::PhysicalObjectBehavior
     end
   end
 
-  # Forces a Solr commit then checks for associated media, returning a blocking message if
-  # any exist, or nil if the record is safe to destroy. The commit closes (though, per the
-  # note below, does not fully eliminate) the race where media attached just before a
-  # destroy call hasn't been indexed yet. Shared by the model's before_destroy guard
-  # (#prevent_destroy_with_media) and Morphosource::HaltedDestroyResponse's controller-level
-  # check, so both see the same up-to-date answer instead of duplicating (and drifting on)
-  # the same logic.
+  # Forces a Solr commit first so a media attached moments ago isn't missed.
+  # @return [String, nil] error message if media is still attached, else nil
   def blocking_media_message
     ActiveFedora::SolrService.commit
     current_media = media
@@ -116,12 +111,6 @@ module Morphosource::PhysicalObjectBehavior
 
   private
 
-  # Blocks destroying this record while it still has associated media, regardless of
-  # caller (UI, console, rake task, background job). This is Solr-based (via #media), so
-  # it cannot catch a media whose real Fedora link was never indexed in Solr in the first
-  # place -- same known limitation as Morphosource::MergeBiologicalSpecimenService. Forcing
-  # a hard commit first narrows that window but does not eliminate it. No admin override --
-  # media must be detached/reassigned before the record can be deleted.
   def prevent_destroy_with_media
     message = blocking_media_message
     return if message.nil?

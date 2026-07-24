@@ -101,11 +101,8 @@ RSpec.describe Hyrax::CulturalHeritageObjectsController do
       end
 
       context 'when the controller pre-check misses media that the model-level guard catches' do
-        # Simulates the race the shared blocking_media_message check is meant to close: the
-        # controller's pre-check (1st call) sees no media, so it falls through to
-        # actor.destroy(env); the model's before_destroy callback (2nd call, same method)
-        # then blocks it. This exercises HaltedDestroyResponse's `unless actor.destroy(env)`
-        # fallback branch, which the other two contexts above never reach.
+        # Exercises the actor.destroy(env) fallback branch: pre-check (1st call) misses it,
+        # before_destroy (2nd call) blocks it.
         before do
           allow_any_instance_of(CulturalHeritageObject)
             .to receive(:blocking_media_message)
@@ -116,11 +113,8 @@ RSpec.describe Hyrax::CulturalHeritageObjectsController do
           delete :destroy, params: { id: cho.id }
           expect(response).to have_http_status(:found)
           expect(flash[:alert]).to be_present
-          # Can't assert with `.exists?` here: it's Solr-backed, and CleanupFileSetsActor
-          # deletes the Solr doc unconditionally before actor.destroy(env) reaches the
-          # model-level guard (see the class comment above) -- so even a successfully
-          # blocked destroy looks gone via Solr. `.find` reads straight from Fedora, which
-          # is where the record actually still lives.
+          # .exists? is Solr-backed; CleanupFileSetsActor deletes the Solr doc before the
+          # guard runs, so .find (reads Fedora directly) is what actually proves this.
           expect { CulturalHeritageObject.find(cho.id) }.not_to raise_error
         end
       end

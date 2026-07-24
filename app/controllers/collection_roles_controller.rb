@@ -107,7 +107,7 @@ class CollectionRolesController < ApplicationController
 
   def update_user_access
     if @new_group || @remove
-      if removing_last_manager? && !current_user.admin?
+      if removing_last_manager? && enforce_last_manager?
         update_notice('last_manager')
         return
       end
@@ -131,6 +131,13 @@ class CollectionRolesController < ApplicationController
   def removing_last_manager?
     managers_group = collection.managers_group
     managers_group.present? && @group == managers_group && managers_group.users.count < 2
+  end
+
+  # Organizations must always retain at least one manager (even admins cannot
+  # remove the last one) so org-mode download-reviewer resolution always has a
+  # target. Teams and Projects keep the existing admin override.
+  def enforce_last_manager?
+    collection.organization_collection? || !current_user.admin?
   end
 
   def change_groups(user)

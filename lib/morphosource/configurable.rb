@@ -25,6 +25,15 @@ module Morphosource
         ENV["MS_TEST_USR"] || "NOT_SET"
       end
 
+      # Email of the user seeded as the default manager for newly created
+      # organization collections. Guarantees every organization has at least
+      # one manager so org-mode download-reviewer resolution always has a
+      # target. Leave unset (NOT_SET) to create organizations without a
+      # default manager.
+      mattr_accessor :default_organization_manager do
+        ENV["DEFAULT_ORGANIZATION_MANAGER"] || "NOT_SET"
+      end
+
       # Allowed formats for uploads based on selected Media type
       mattr_accessor :all_formats do
         [".avi", ".bin", ".bmp", ".dcm", ".dicom", ".gif", ".glb", ".gltf", ".bin", ".jp2", ".jpeg", ".jpg", ".m4v", ".mov", ".mp4", ".mpg", ".mpeg", ".mtl", ".obj", ".pdf", ".ply", ".png", ".stl", ".svg", ".tif", ".tiff", ".wmv", ".wrl", ".x3d", ".zip", ".tar"]

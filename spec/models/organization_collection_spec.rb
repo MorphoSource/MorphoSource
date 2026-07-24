@@ -93,6 +93,53 @@ RSpec.describe OrganizationCollection, type: :model do
     it 'does not add the depositor as a manager' do
       expect(organization.managers).to eq([])
     end
+
+    context 'when a default organization manager is configured' do
+      let(:default_manager) { FactoryBot.create(:contributor) }
+
+      before do
+        allow(Morphosource).to receive(:default_organization_manager).and_return(default_manager.ms_id)
+      end
+
+      it 'seeds the configured user as a manager' do
+        org = FactoryBot.create(:organization_collection, depositor: user.ms_id)
+        expect(org.managers).to include(default_manager)
+      end
+    end
+
+    context 'when the configured default manager does not match a user' do
+      before do
+        allow(Morphosource).to receive(:default_organization_manager).and_return('no_such_ms_id')
+      end
+
+      it 'creates the organization without a manager' do
+        org = FactoryBot.create(:organization_collection, depositor: user.ms_id)
+        expect(org.managers).to eq([])
+      end
+
+      it 'warns that the configured user was not found' do
+        allow(Rails.logger).to receive(:warn)
+        expect(Rails.logger).to receive(:warn).with(/DEFAULT_ORGANIZATION_MANAGER 'no_such_ms_id' does not match any user/)
+        FactoryBot.create(:organization_collection, depositor: user.ms_id)
+      end
+    end
+
+    context 'when no default organization manager is configured' do
+      before do
+        allow(Morphosource).to receive(:default_organization_manager).and_return('')
+      end
+
+      it 'creates the organization without a manager' do
+        org = FactoryBot.create(:organization_collection, depositor: user.ms_id)
+        expect(org.managers).to eq([])
+      end
+
+      it 'does not warn, since an unconfigured default manager is expected' do
+        allow(Rails.logger).to receive(:warn)
+        expect(Rails.logger).not_to receive(:warn).with(/DEFAULT_ORGANIZATION_MANAGER/)
+        FactoryBot.create(:organization_collection, depositor: user.ms_id)
+      end
+    end
   end
 
   describe '#can_manage_devices?' do

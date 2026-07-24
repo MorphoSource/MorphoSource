@@ -130,14 +130,6 @@ class OrganizationCollection < Collection
     DeviceResource.where(organization_id: id)
   end
 
-  # Create manager and viewer roles for each Organization collection
-  def create_collection_groups
-    self.class::DEFAULT_GROUP_ROLES.each do |role|
-      name = id.concat("_#{role}")
-      Role.create(name: name) unless Role.find_by(name: name)
-    end
-  end
-
   # before_save callback to set date_managed if needed
   def record_date_managed
     return self.date_managed if self.managers.present? && self.date_managed.present?
@@ -146,6 +138,21 @@ class OrganizationCollection < Collection
   end
 
   private
+
+  # Organizations do not make their depositor a manager, so override the parent's
+  # choice with the configured DEFAULT_ORGANIZATION_MANAGER (an ms_id). Seeding a
+  # manager here guarantees every organization begins with at least one, closing
+  # the edge case where org-mode download-reviewer resolution would have no
+  # manager to resolve to. Returns nil, leaving the organization unmanaged, when
+  # the setting is unset (e.g. test) or names a user that does not exist.
+  def default_manager
+    ms_id = Morphosource.default_organization_manager
+    return if ms_id.blank? || ms_id == "NOT_SET"
+
+    User.find_by(ms_id: ms_id).tap do |user|
+      Rails.logger.warn("[OrganizationCollection] DEFAULT_ORGANIZATION_MANAGER '#{ms_id}' does not match any user; #{id} created without a manager") if user.blank?
+    end
+  end
 
   def create_organization_project
     project = example_organization_project

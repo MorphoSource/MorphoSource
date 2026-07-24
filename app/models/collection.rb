@@ -152,13 +152,16 @@ class Collection < ActiveFedora::Base
     organization.title
   end
 
-  # Create manager/depositor/viewer roles for each Team/Project collection
+  # Create a role per DEFAULT_GROUP_ROLES for the collection, then seed its
+  # initial manager. Subclasses customize both: MediaList narrows
+  # DEFAULT_GROUP_ROLES, and OrganizationCollection overrides #default_manager to
+  # use the configured user rather than the depositor.
   def create_collection_groups
     self.class::DEFAULT_GROUP_ROLES.each do |role|
-      name = id.concat("_#{role}")
+      name = "#{id}_#{role}"
       Role.create(name: name) unless Role.find_by(name: name)
     end
-    add_depositor_to_managers
+    add_default_manager
   end
 
   def copy_parent_membership(parent_id)
@@ -320,11 +323,25 @@ class Collection < ActiveFedora::Base
 
   private
 
-    def add_depositor_to_managers
-      user = User.find_by(ms_id: depositor)
+    # Seed the collection's initial manager. Subclasses choose who that is by
+    # overriding #default_manager; a nil return leaves the collection unmanaged,
+    # and it is that method's job to log if that is unexpected.
+    def add_default_manager
+      user = default_manager
+      return if user.blank?
+
       unless managers_group.users.include? user
         managers_group.users << user
         managers_group.save
+      end
+    end
+
+    # Teams and projects are managed by whoever deposited them.
+    def default_manager
+      return if depositor.blank?
+
+      User.find_by(ms_id: depositor).tap do |user|
+        Rails.logger.warn("[Collection] depositor '#{depositor}' does not match any user; #{id} created without a manager") if user.blank?
       end
     end
 

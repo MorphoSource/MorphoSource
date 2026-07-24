@@ -893,6 +893,66 @@ RSpec.describe CollectionRolesController, type: :controller do
     end
   end
 
+  describe 'removing the last manager' do
+    let(:admin) { FactoryBot.create(:admin) }
+
+    before do
+      allow(subject).to receive(:update_subcollections).and_return(true)
+    end
+
+    context 'from an organization collection' do
+      let(:organization) { FactoryBot.create(:organization_collection, title: ['Organization'], depositor: manager.ms_id) }
+      let(:params)       { { collection_roles: { agent_type: 'user', new_access: 'remove', access: 'managers', agent_id: another_user.ms_id }, id: organization.id } }
+
+      before do
+        organization.managers << another_user
+        organization.managers_group.save
+        allow(subject).to receive(:can?).with(:edit, organization).and_return(true)
+      end
+
+      context 'as a non-admin manager' do
+        it 'does not remove the last manager' do
+          post :update_collection_groups, params: params
+          expect(organization.managers).to include(another_user)
+        end
+      end
+
+      context 'as an admin' do
+        before { sign_in admin }
+
+        it 'does not remove the last manager' do
+          post :update_collection_groups, params: params
+          expect(organization.managers).to include(another_user)
+        end
+
+        it 'flashes an error' do
+          post :update_collection_groups, params: params
+          expect(flash[:error]).to match('Cannot remove the last manager')
+        end
+      end
+    end
+
+    context 'from a team' do
+      let(:params) { { collection_roles: { agent_type: 'user', new_access: 'remove', access: 'managers', agent_id: another_user.ms_id }, id: team.id } }
+
+      before do
+        team.create_collection_groups
+        team.managers_group.users = [another_user]
+        team.managers_group.save
+        allow(subject).to receive(:can?).with(:edit, team).and_return(true)
+      end
+
+      context 'as an admin' do
+        before { sign_in admin }
+
+        it 'still allows removing the last manager (existing behavior for non-organizations)' do
+          post :update_collection_groups, params: params
+          expect(team.managers).not_to include(another_user)
+        end
+      end
+    end
+  end
+
   # test helper methods
   def set_access_params(access)
     params[:collection_roles][:access] = access

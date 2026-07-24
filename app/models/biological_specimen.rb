@@ -11,7 +11,6 @@ class BiologicalSpecimen < Morphosource::Works::Base
   end
   after_update :reindex_media, :update_ark_status
   after_create :mint_ark
-  # prepend: true so this runs before Hydra::AccessControls::Permissions' before_destroy
   before_destroy :prevent_destroy_with_media, prepend: true
   after_destroy :delete_ark_if_reserved
 

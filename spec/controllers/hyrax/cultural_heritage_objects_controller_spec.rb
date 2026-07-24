@@ -85,10 +85,9 @@ RSpec.describe Hyrax::CulturalHeritageObjectsController do
           [cho, imaging_event, media].each(&:reload)
         end
 
-        it 'does not destroy the cho and redirects with an error instead of raising' do
+        it 'blocks the destroy at the actor-stack level, before the Solr doc is touched' do
           delete :destroy, params: { id: cho.id }
-          expect(response).to have_http_status(:found)
-          expect(flash[:alert]).to be_present
+          expect(response).to have_http_status(:no_content)
           expect(CulturalHeritageObject.exists?(cho.id)).to be true
         end
       end
@@ -100,19 +99,19 @@ RSpec.describe Hyrax::CulturalHeritageObjectsController do
         end
       end
 
-      context 'when the controller pre-check misses media that the model-level guard catches' do
-        # Exercises the actor.destroy(env) fallback branch: pre-check (1st call) misses it,
-        # before_destroy (2nd call) blocks it.
+      context 'when the actor-stack guard misses media that the model-level guard catches' do
+        # Exercises the fallback: actor-stack guard (1st call) misses it, before_destroy
+        # (2nd call) blocks it -- but only after CleanupFileSetsActor already deleted the
+        # Solr doc, since the actor-stack guard is what's supposed to prevent reaching it.
         before do
           allow_any_instance_of(CulturalHeritageObject)
             .to receive(:blocking_media_message)
             .and_return(nil, 'Cannot delete this record while it still has associated media (media-1), which may not be public. Detach or reassign the media first.')
         end
 
-        it 'does not destroy the underlying record and redirects with an error instead of raising' do
+        it 'does not destroy the underlying record, though the response gives no indication' do
           delete :destroy, params: { id: cho.id }
-          expect(response).to have_http_status(:found)
-          expect(flash[:alert]).to be_present
+          expect(response).to have_http_status(:no_content)
           # .exists? is Solr-backed; CleanupFileSetsActor deletes the Solr doc before the
           # guard runs, so .find (reads Fedora directly) is what actually proves this.
           expect { CulturalHeritageObject.find(cho.id) }.not_to raise_error

@@ -51,6 +51,54 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
       end
     end
 
+    describe '#destroy' do
+      before do
+        allow(subject).to receive(:authorize!).with(:destroy, specimen).and_return(true)
+      end
+
+      context 'when the destroy is not halted' do
+        it 'destroys the specimen' do
+          delete :destroy, params: { id: specimen.id }
+          expect(BiologicalSpecimen.exists?(specimen.id)).to be false
+        end
+      end
+
+      context 'when the destroy is halted and populates errors' do
+        before do
+          allow_any_instance_of(BiologicalSpecimen).to receive(:destroy) do |record|
+            record.errors.add(:base, 'boom')
+            false
+          end
+        end
+
+        it 'does not destroy the specimen and redirects with the error instead of a silent 204' do
+          delete :destroy, params: { id: specimen.id }
+          expect(response).to have_http_status(:found)
+          expect(flash[:alert]).to eq('boom')
+          # .exists? is Solr-backed; CleanupFileSetsActor deletes the Solr doc before
+          # the model-level destroy runs, so .find (reads Fedora directly) is what
+          # actually proves the record survived.
+          expect { BiologicalSpecimen.find(specimen.id) }.not_to raise_error
+        end
+
+        it 'renders an unprocessable_entity json response' do
+          delete :destroy, params: { id: specimen.id, format: :json }
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+      end
+
+      context 'when the destroy is halted without populating errors' do
+        before do
+          allow_any_instance_of(BiologicalSpecimen).to receive(:destroy).and_return(false)
+        end
+
+        it 'falls back to a generic unable-to-delete message' do
+          delete :destroy, params: { id: specimen.id }
+          expect(flash[:alert]).to match(/\AUnable to delete .*specimen\.\z/)
+        end
+      end
+    end
+
     describe '#update_media_team_access' do
       context "when the specimen's params don't include parent organization_id" do
         it 'returns nil for organization_id_param' do

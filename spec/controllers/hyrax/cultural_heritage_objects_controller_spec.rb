@@ -58,6 +58,54 @@ RSpec.describe Hyrax::CulturalHeritageObjectsController do
       sign_in user
     end
 
+    describe '#destroy' do
+      before do
+        allow(subject).to receive(:authorize!).with(:destroy, cho).and_return(true)
+      end
+
+      context 'when the destroy is not halted' do
+        it 'destroys the cho' do
+          delete :destroy, params: { id: cho.id }
+          expect(CulturalHeritageObject.exists?(cho.id)).to be false
+        end
+      end
+
+      context 'when the destroy is halted and populates errors' do
+        before do
+          allow_any_instance_of(CulturalHeritageObject).to receive(:destroy) do |record|
+            record.errors.add(:base, 'boom')
+            false
+          end
+        end
+
+        it 'does not destroy the cho and redirects with the error instead of a silent 204' do
+          delete :destroy, params: { id: cho.id }
+          expect(response).to have_http_status(:found)
+          expect(flash[:alert]).to eq('boom')
+          # .exists? is Solr-backed; CleanupFileSetsActor deletes the Solr doc before
+          # the model-level destroy runs, so .find (reads Fedora directly) is what
+          # actually proves the record survived.
+          expect { CulturalHeritageObject.find(cho.id) }.not_to raise_error
+        end
+
+        it 'renders an unprocessable_entity json response' do
+          delete :destroy, params: { id: cho.id, format: :json }
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+      end
+
+      context 'when the destroy is halted without populating errors' do
+        before do
+          allow_any_instance_of(CulturalHeritageObject).to receive(:destroy).and_return(false)
+        end
+
+        it 'falls back to a generic unable-to-delete message' do
+          delete :destroy, params: { id: cho.id }
+          expect(flash[:alert]).to match(/\AUnable to delete .*cho\.\z/)
+        end
+      end
+    end
+
     describe '#update' do
       let(:params)  { { id: cho.id, 'cultural_heritage_object' => { 'identifier' => [cho.identifier.first] } } }
       context 'when it successfully updates' do

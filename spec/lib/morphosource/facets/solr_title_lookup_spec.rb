@@ -20,7 +20,7 @@ RSpec.describe Morphosource::Facets::SolrTitleLookup do
         'seq_section_list' => 'has_model_ssim:SequentialSectionList',
         'object' => 'has_model_ssim:(BiologicalSpecimen OR CulturalHeritageObject)',
         'organization' => 'has_model_ssim:OrganizationCollection',
-        'device' => 'has_model_ssim:(DeviceResource)'
+        'device' => 'has_model_ssim:DeviceResource'
       }
 
       expected_filters.each do |facet_key, model_filter|

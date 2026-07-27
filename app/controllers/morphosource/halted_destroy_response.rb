@@ -5,6 +5,7 @@ module Morphosource
   # `include`d, or it's shadowed by Hyrax::WorksControllerBehavior#destroy.
   module HaltedDestroyResponse
     def destroy
+      # Non-AF (Valkyrie) concerns use super's transaction branch, which already raises on failure.
       return super unless curation_concern.is_a?(ActiveFedora::Base)
 
       title = curation_concern.to_s

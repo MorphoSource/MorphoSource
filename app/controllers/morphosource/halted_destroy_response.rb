@@ -1,15 +1,8 @@
 module Morphosource
-  # Prepend (not include) into a work controller whose curation_concern_type is an
-  # ActiveFedora::Base. Hyrax::WorksControllerBehavior#destroy does
-  # `return unless actor.destroy(env)` -- a halted destroy (a before_destroy callback
-  # throwing :abort, or any actor in the stack returning false) leaves the action with
-  # no explicit response, so Rails' implicit render falls back to an empty 204 instead
-  # of an error. Mirrors the failure handling #create/#update already have via
-  # after_create_error/after_update_error.
-  #
-  # Must be `prepend`ed: Ruby's `include` resolves later-included modules first, so a
-  # plain `include` here would be shadowed by Hyrax::WorksControllerBehavior#destroy
-  # regardless of include order.
+  # Hyrax::WorksControllerBehavior#destroy does `return unless actor.destroy(env)` --
+  # a halted destroy leaves no flash/error response, just a silent empty 204. Mirrors
+  # the failure handling #create/#update already have. Must be `prepend`ed, not
+  # `include`d, or it's shadowed by Hyrax::WorksControllerBehavior#destroy.
   module HaltedDestroyResponse
     def destroy
       return super unless curation_concern.is_a?(ActiveFedora::Base)

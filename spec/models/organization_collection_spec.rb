@@ -172,6 +172,14 @@ RSpec.describe OrganizationCollection, type: :model do
     end
   end
 
+  describe 'persisting the derived management date' do
+    it 'writes the date without re-entering the ark status callback' do
+      expect_any_instance_of(described_class).not_to receive(:update_ark_status)
+      org = FactoryBot.create(:organization_collection, depositor: user.ms_id)
+      expect(org.date_managed).to eq(Date.today)
+    end
+  end
+
   describe '#can_manage_devices?' do
     let!(:organization) { FactoryBot.create(:organization_collection, depositor: user.ms_id, organization_type: organization_type) }
 

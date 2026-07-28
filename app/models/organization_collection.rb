@@ -11,8 +11,11 @@ class OrganizationCollection < Collection
   before_save :convert_media_ownership_transfer
   before_save :record_date_managed
   after_create :create_collection_groups
+  # Must stay ahead of mint_ark. This issues a second write, and once an ark
+  # exists update_ark_status would otherwise reach EZID from inside it.
+  after_create :persist_date_managed
   after_create :create_organization_project
-  after_update :update_ark_status
+  after_update :update_ark_status, unless: :persisting_date_managed?
   after_update :index_related_works
   after_create :mint_ark
   after_destroy :delete_ark_if_reserved
@@ -134,14 +137,6 @@ class OrganizationCollection < Collection
     managers.any? { |manager| !manager.admin? }
   end
 
-  # Create the role groups, seed the initial manager, and persist the management
-  # date derived from that user's admin status.
-  def create_collection_groups
-    super
-    record_date_managed
-    save! if date_managed_changed?
-  end
-
   # Track when the organization first gains a non-admin manager. Admin managers
   # keep the organization operational but do not make it externally managed.
   def record_date_managed
@@ -151,6 +146,25 @@ class OrganizationCollection < Collection
   end
 
   private
+
+  # Managers cannot be seeded until the record has an id, so the management date
+  # derived from them needs a second write. Flag that write so update_ark_status
+  # cannot re-enter it regardless of where mint_ark sits in the callback chain.
+  def persist_date_managed
+    record_date_managed
+    return unless date_managed_changed?
+
+    @persisting_date_managed = true
+    begin
+      save!
+    ensure
+      @persisting_date_managed = false
+    end
+  end
+
+  def persisting_date_managed?
+    @persisting_date_managed.present?
+  end
 
   # Prefer the configured DEFAULT_ORGANIZATION_MANAGER (an ms_id), falling back
   # to the depositor when the setting is unset. Seeding a manager here guarantees

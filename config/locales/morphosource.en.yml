@@ -210,6 +210,8 @@ en:
         facet:
           placeholder: "Filter by text contained"
         option:
+          all:
+            label: "All"
           media:
             label: "Media"
           physical_objects:

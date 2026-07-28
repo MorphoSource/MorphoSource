@@ -5,6 +5,18 @@ terms:
     term: Image (*.tiff, *.png, *.dcm, etc.)
     short: Image
     active: true
+  - id: Mesh
+    term: Mesh or point cloud (*.stl, *.ply, .etc, with optional associated texture or color file)
+    short: Mesh
+    active: true
+  - id: PhotogrammetryImageSeries
+    term: Photogrammetry image series (multiple files of type *.tiff, *.png, etc.)
+    short: Photogrammetry Image Series
+    active: true
+  - id: SequentialSectionImageSeries
+    term: Sequential section image series (multiple files of type *.tiff, *.png, *.zip, etc.)
+    short: Sequential Section Image Series
+    active: true
   - id: Video
     term: Video (*.avi, *.mp4, *.mov, .etc.)
     short: Video
@@ -12,18 +24,6 @@ terms:
   - id: CTImageSeries
     term: Volumetric image series (CT, MRI, etc.; multiple files of type *.tiff, *.png, *.dcm, *.zip, etc.)
     short: Volumetric Image Series
-    active: true
-  - id: PhotogrammetryImageSeries
-    term: Photogrammetry image series (multiple files of type *.tiff, *.png, etc.)
-    short: Photogrammetry Image Series
-    active: true
-  - id: Mesh
-    term: Mesh or point cloud (*.stl, *.ply, .etc, with optional associated texture or color file)
-    short: Mesh
-    active: true
-  - id: SequentialSectionImageSeries
-    term: Sequential section image series (multiple files of type *.tiff, *.png, *.zip, etc.)
-    short: Sequential Section Image Series
     active: true
   - id: Other
     term: Other

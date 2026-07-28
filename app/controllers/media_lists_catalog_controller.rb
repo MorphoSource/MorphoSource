@@ -3,6 +3,10 @@ class MediaListsCatalogController < CatalogController
   include CatalogControllerRestApiBehavior
   include Morphosource::CatalogHelper
 
+  def catalog_search_form_action
+    main_app.media_list_search_path
+  end
+
   configure_blacklight do |config|
     config.search_builder_class = Morphosource::Catalog::MediaListsCatalogSearchBuilder
 

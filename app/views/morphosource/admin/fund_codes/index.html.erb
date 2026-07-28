@@ -76,7 +76,7 @@
               <th><%= t('.header.standard_members') %></th>
               <th><%= t('simple_form.abbreviated_labels.fund_code.expires_at') %></th>
               <th><%= t('simple_form.abbreviated_labels.fund_code.storage_total_gb') %></th>
-              <th><%= t('simple_form.abbreviated_labels.fund_code.storage_remaining_gb') %></th>
+              <th><%= t('simple_form.abbreviated_labels.fund_code.storage_current_gb') %></th>
               <th><%= t('simple_form.abbreviated_labels.fund_code.total') %></th>
               <th><%= t('simple_form.abbreviated_labels.fund_code.remaining') %></th>
               <th><%= t('simple_form.abbreviated_labels.fund_code.external_user') %></th>
@@ -121,7 +121,7 @@
                 <% end %>
                 <td data-sort="<%= fc.expires_at %>"><%= fc.expires_at.present? ? fc.expires_at.strftime("%m-%d-%Y") : "" %></td>
                 <td data-sort="<%= fc.storage_total_gb %>"><%= fc.storage_total_gb %></td>
-                <td data-sort="<%= number_with_precision(fc.storage_remaining_gb, precision: 3) %>"><%= number_with_precision(fc.storage_remaining_gb, precision: 3) %></td>
+                <td data-sort="<%= number_with_precision(fc.data_allocation&.storage_current_gb, precision: 3) %>"><%= number_with_precision(fc.data_allocation&.storage_current_gb, precision: 3) %></td>
                 <td data-sort="<%= number_with_precision(fc.total, precision: 2) %>"><%= number_with_precision(fc.total, precision: 2) %></td>
                 <td data-sort="<%= number_with_precision(fc.remaining, precision: 2) %>"><%= number_with_precision(fc.remaining, precision: 2) %></td>
                 <td data-sort="<%= fc.external_user %>"><%= fc.external_user ? "Yes" : "No" %></td>

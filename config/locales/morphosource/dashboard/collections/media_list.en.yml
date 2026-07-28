@@ -7,8 +7,9 @@ en:
             title: Media Lists
           edit:
             title: Details
-            doi_message: This Media List has been assigned a DOI and cannot be edited. User roles can still be modified on the Members tab.
-            doi_warning: This Media List has a DOI and cannot be edited.
+            doi_message: This Media List has a DOI. Metadata fields are locked. You may change the visibility from private to public. User roles can still be modified on the Members tab.
+            doi_warning: This Media List has a DOI and cannot be deleted.
+            doi_visibility_error: This Media List has a DOI and is published. Visibility cannot be changed back to private.
           new:
             header: 'New Media List'
           action:

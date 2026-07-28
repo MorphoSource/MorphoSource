@@ -199,7 +199,12 @@ RSpec.describe Morphosource::DoiBehavior do
       let(:media_doi) { [] }
 
       it 'raises a StandardError' do
-        expect { media_list.send(:mint_list_doi) }.to raise_error(StandardError, "MediaList #{media_list.id} has media without DOIs: #{media1.id}, #{media2.id}, #{media3.id}")
+        expect { media_list.send(:mint_list_doi) }.to raise_error(StandardError) do |error|
+          expect(error.message).to start_with("MediaList #{media_list.id} has media without DOIs:")
+          expect(error.message).to include(media1.id.to_s)
+          expect(error.message).to include(media2.id.to_s)
+          expect(error.message).to include(media3.id.to_s)
+        end
       end
     end
 

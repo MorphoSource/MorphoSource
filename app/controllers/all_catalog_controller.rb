@@ -4,8 +4,12 @@
 class AllCatalogController < CatalogController
 
   def index
-    redirect_to media_search_path unless current_user && current_user.admin?
+    return redirect_to media_search_path unless current_user&.admin?
     super
+  end
+
+  def catalog_search_form_action
+    main_app.all_search_path
   end
 
   configure_blacklight do |config|

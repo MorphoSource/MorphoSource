@@ -662,7 +662,9 @@ Rails.application.routes.draw do
 
     # Physical Objects
     get 'physical-objects', to: 'objects_catalog#index', as: 'physical_objects_search', defaults: { format: 'json' }
+    get 'physical-objects/occurrence/*occurrence_id', to: 'objects_catalog#show_by_occurrence_id', as: 'physical_object_show_by_occurrence_id', defaults: { format: 'json' }, format: false
     get 'physical-objects/:id', to: 'objects_catalog#show', as: 'physical_object_show', defaults: { format: 'json' }
+    get 'physical-objects/:id/media', to: 'media_catalog#index_for_object', as: 'physical_object_media', defaults: { format: 'json' }
 
     # Organizations
     get 'organizations', to: 'organizations_catalog#index', as: 'organizations_search', defaults: { format: 'json' }

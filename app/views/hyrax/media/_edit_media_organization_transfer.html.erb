@@ -1,4 +1,4 @@
-<% if @presenter.organization_transfer || @presenter.organization_transfer_on_publish %>
+<% if @presenter.organization_transfer || @presenter.organization_transfer_on_publish || @presenter.pending_org_transfer %>
   <% msg_verb = @presenter.organization_transfer ? 'was' : 'will be' %>
   <% transfer_trigger = @presenter.organization_transfer_on_publish ? 'publication' : 'media submission' %>
   <% if @presenter.organization_transfer %>

@@ -117,6 +117,25 @@ RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
         end
       end
 
+      context 'keys are provided via session (batch cart download path)' do
+        before do
+          works.each do |work|
+            work.visibility = 'open'
+            work.fileset_accessibility = ['open']
+            work.save
+          end
+          session[:download_keys] = {
+            download_hash => { "keys" => [work1.access_control_id, work2.access_control_id], "at" => Time.current.to_i }
+          }
+        end
+
+        it 'resolves media from session without key[] params and returns a zip' do
+          get :show, params: { token: user.token, download: download_hash }
+          expect(response.status).to eq(200)
+          expect(response.headers['Content-Type']).to eq('application/zip')
+        end
+      end
+
       context 'items are restricted' do
         before do
           works.each do |work|

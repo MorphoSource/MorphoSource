@@ -4,6 +4,10 @@ class OrganizationsCatalogController < CatalogController
 
   before_action :search_managed_organizations, only: :index
 
+  def catalog_search_form_action
+    main_app.organization_search_path
+  end
+
   configure_blacklight do |config|
     config.search_builder_class = Morphosource::Catalog::OrganizationsCatalogSearchBuilder
     # disable thumbnails

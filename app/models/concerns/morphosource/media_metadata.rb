@@ -95,7 +95,14 @@ module Morphosource
       # -- This is technical metadata and will be used by the repository ---
 
       # Should media management be transferred to the object organization when media is published?
+      # Acts as a one-time trigger: set at submission for publication-triggered transfers, cleared when the transfer job fires.
       property :organization_transfer_on_publish, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/organizationTransferOnPublish"), multiple: false do |index|
+        index.as :stored_sortable
+      end
+
+      # Is there a pending ProxyDepositRequest for org transfer? True for both immediate and publication-triggered transfers.
+      # Set when the transfer request is created; cleared when the request is accepted, rejected, or canceled.
+      property :pending_org_transfer, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/pendingOrgTransfer"), multiple: false do |index|
         index.as :stored_sortable
       end
 

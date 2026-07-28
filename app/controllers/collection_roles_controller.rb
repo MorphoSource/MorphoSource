@@ -13,9 +13,13 @@ class CollectionRolesController < ApplicationController
   def update_collection_groups
     return unless can? :edit, collection
     if users_are_eligible?
-      update_subcollections
-      update_agent_access
-      update_collection_managed_date
+      if last_manager_update_forbidden?
+        update_notice('last_manager')
+      else
+        update_subcollections
+        update_agent_access
+        update_collection_managed_date
+      end
     else
       update_notice('user_status')
     end
@@ -129,15 +133,46 @@ class CollectionRolesController < ApplicationController
   end
 
   def removing_last_manager?
-    managers_group = collection.managers_group
-    managers_group.present? && @group == managers_group && managers_group.users.count < 2
+    removing_last_manager_from?(collection)
   end
 
   # Organizations must always retain at least one manager (even admins cannot
   # remove the last one) so org-mode download-reviewer resolution always has a
   # target. Teams and Projects keep the existing admin override.
   def enforce_last_manager?
-    collection.organization_collection? || !current_user.admin?
+    enforce_last_manager_for?(collection)
+  end
+
+  # Preflight the parent and every affected subcollection before changing any
+  # role. This prevents a rejected parent update from partially changing its
+  # child projects.
+  def last_manager_update_forbidden?
+    return false unless manager_role_change?
+    return true if removing_last_manager? && enforce_last_manager?
+
+    subcollection_docs_for_role_update.any? do |doc|
+      child = Collection.find(doc['id'])
+      removing_last_manager_from?(child) && enforce_last_manager_for?(child)
+    end
+  end
+
+  def subcollection_docs_for_role_update
+    Morphosource::SolrService.new.get_docs("has_model_ssim:Collection AND member_of_collection_ids_ssim:#{collection.id}")
+  end
+
+  def manager_role_change?
+    params.dig(:collection_roles, :access) == 'managers' && (@remove || @new_group.present?)
+  end
+
+  def removing_last_manager_from?(candidate)
+    managers_group = candidate.managers_group
+    managers_group.present? &&
+      managers_group.users.include?(user) &&
+      managers_group.users.count < 2
+  end
+
+  def enforce_last_manager_for?(candidate)
+    candidate.organization_collection? || !current_user.admin?
   end
 
   def change_groups(user)

@@ -130,13 +130,15 @@ module Morphosource
             end
             organization_team.save!
           end
+        end
 
-          # special case: re-save data managed to org coll in some cases
-          organization_collection.reload
-          if organization_collection.managers.present? && organization_work.date_managed.present? && organization_collection.date_managed != organization_work.date_managed
-            organization_collection.date_managed = organization_work.date_managed
-            organization_collection.save!
-          end
+        # Preserve the legacy management date when a non-admin manager exists.
+        # Otherwise, OrganizationCollection derives (or clears) it from the
+        # newly assigned managers.
+        organization_collection.reload
+        if organization_collection.managed_by_non_admin? && organization_work.date_managed.present? && organization_collection.date_managed != organization_work.date_managed
+          organization_collection.date_managed = organization_work.date_managed
+          organization_collection.save!
         end
 
         ### STEP 4. All media associated with the org and owned by the data manager should be owned by the organization directly ###
@@ -413,8 +415,17 @@ module Morphosource
         ### STEP 1. Has organization metadata been copied? ###
         Rails.logger.info "STEP 1. Has organization metadata been copied?"
 
-        if !organization_metadata.all? { |field, value| organization_collection.send(field) == value }
+        copied_metadata = organization_metadata.except(:date_managed)
+        if !copied_metadata.all? { |field, value| organization_collection.send(field) == value }
           raise "STEP 1 FAILED. Metadata not validated."
+        end
+        if organization_collection.managed_by_non_admin? &&
+            organization_work.date_managed.present? &&
+            organization_collection.date_managed != organization_work.date_managed
+          raise "STEP 1 FAILED. Management date not validated."
+        end
+        if !organization_collection.managed_by_non_admin? && organization_collection.date_managed.present?
+          raise "STEP 1 FAILED. Management date not validated."
         end
 
         ### STEP 2. Have all media, devices, and objects been removed from organization work? ###

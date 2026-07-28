@@ -795,6 +795,12 @@ RSpec.describe CollectionRolesController, type: :controller do
         end
 
         context 'adding a manager for the first time' do
+          before do
+            organization.managers_group.users = []
+            organization.managers_group.save!
+            organization.date_managed = nil
+          end
+
           it 'updates the organization date_managed' do
             expect { post :update_collection_groups, params: params }.to change(organization, :date_managed).from(nil).to(Date.today)
           end
@@ -817,7 +823,7 @@ RSpec.describe CollectionRolesController, type: :controller do
           let(:params)  { { collection_roles: { agent_type: 'user', new_access: 'remove', access: 'managers', agent_id: another_user.ms_id }, id: organization.id } }
 
           before do
-            organization.managers << another_user
+            organization.managers_group.users = [another_user]
             organization.managers_group.save
             organization.date_managed = Date.yesterday
             organization.save
@@ -825,6 +831,41 @@ RSpec.describe CollectionRolesController, type: :controller do
 
           it 'sets date_managed as nil' do
             expect { post :update_collection_groups, params: params }.to change(organization, :date_managed).from(Date.yesterday).to(nil)
+          end
+        end
+
+        context 'when an admin is the initial manager' do
+          let(:admin) { FactoryBot.create(:admin) }
+          let(:organization) { FactoryBot.create(:organization_collection, title: ['Organization'], depositor: admin.ms_id) }
+
+          before do
+            sign_in admin
+            allow(subject).to receive(:can?).with(:edit, organization).and_return(true)
+          end
+
+          context 'adding the first non-admin manager' do
+            let(:params) { { collection_roles: { agent_type: 'user', remove: 'false', access: 'managers', agent_id: another_user.ms_id }, id: organization.id } }
+
+            it 'sets date_managed' do
+              expect(organization.date_managed).to be_nil
+              expect { post :update_collection_groups, params: params }.to change(organization, :date_managed).from(nil).to(Date.today)
+            end
+          end
+
+          context 'removing the last non-admin manager' do
+            let(:params) { { collection_roles: { agent_type: 'user', new_access: 'remove', access: 'managers', agent_id: another_user.ms_id }, id: organization.id } }
+
+            before do
+              organization.managers << another_user
+              organization.managers_group.save!
+              organization.date_managed = Date.yesterday
+              organization.save!
+            end
+
+            it 'clears date_managed while retaining the admin manager' do
+              expect { post :update_collection_groups, params: params }.to change(organization, :date_managed).from(Date.yesterday).to(nil)
+              expect(organization.managers).to contain_exactly(admin)
+            end
           end
         end
       end
@@ -896,16 +937,12 @@ RSpec.describe CollectionRolesController, type: :controller do
   describe 'removing the last manager' do
     let(:admin) { FactoryBot.create(:admin) }
 
-    before do
-      allow(subject).to receive(:update_subcollections).and_return(true)
-    end
-
     context 'from an organization collection' do
       let(:organization) { FactoryBot.create(:organization_collection, title: ['Organization'], depositor: manager.ms_id) }
       let(:params)       { { collection_roles: { agent_type: 'user', new_access: 'remove', access: 'managers', agent_id: another_user.ms_id }, id: organization.id } }
 
       before do
-        organization.managers << another_user
+        organization.managers_group.users = [another_user]
         organization.managers_group.save
         allow(subject).to receive(:can?).with(:edit, organization).and_return(true)
       end
@@ -928,6 +965,23 @@ RSpec.describe CollectionRolesController, type: :controller do
         it 'flashes an error' do
           post :update_collection_groups, params: params
           expect(flash[:error]).to match('Cannot remove the last manager')
+        end
+
+        context 'when the organization has a child project' do
+          let(:project) { FactoryBot.create(:project, title: ['Project'], depositor: manager.ms_id) }
+          let(:project_doc) { SolrDocument.new(project.to_solr) }
+
+          before do
+            project.create_collection_groups
+            project.managers << another_user
+            project.managers_group.save
+            allow(subject).to receive(:subcollection_docs_for_role_update).and_return([project_doc])
+          end
+
+          it 'does not partially remove the manager from the child project' do
+            post :update_collection_groups, params: params
+            expect(project.managers).to include(another_user)
+          end
         end
       end
     end

@@ -42,6 +42,42 @@ RSpec.describe Morphosource::Organizations::MigrateWorkToCollectionService do
       end
     end
 
+    context 'when the legacy organization has a management date' do
+      let(:legacy_date_managed) { Date.new(2020, 1, 2) }
+
+      before do
+        allow(organization_work).to receive(:date_managed).and_return(legacy_date_managed)
+      end
+
+      context 'with a non-admin data manager' do
+        let(:data_manager) { create(:contributor) }
+        let(:organization_work) { create(:organization, data_manager: [data_manager.user_key]) }
+
+        it 'preserves the date when assigning the manager' do
+          subject.migrate
+
+          expect(subject.organization_collection.managers).to include(data_manager)
+          expect(subject.organization_collection.date_managed).to eq(legacy_date_managed)
+        end
+      end
+
+      context 'without a non-admin manager' do
+        let(:default_manager) { create(:admin) }
+
+        before do
+          allow(Morphosource).to receive(:default_organization_manager).and_return(default_manager.ms_id)
+        end
+
+        it 'does not carry the date onto an admin-managed collection' do
+          subject.migrate
+
+          expect(subject.organization_collection).not_to be_managed_by_non_admin
+          expect(subject.organization_collection.date_managed).to be_nil
+          expect(subject.is_migrated?).to eq(true)
+        end
+      end
+    end
+
     describe '#is_migrated?' do
       before do
         subject.migrate

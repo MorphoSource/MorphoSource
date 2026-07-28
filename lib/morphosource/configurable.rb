@@ -25,11 +25,10 @@ module Morphosource
         ENV["MS_TEST_USR"] || "NOT_SET"
       end
 
-      # Email of the user seeded as the default manager for newly created
+      # ms_id of the user seeded as the default manager for newly created
       # organization collections. Guarantees every organization has at least
       # one manager so org-mode download-reviewer resolution always has a
-      # target. Leave unset (NOT_SET) to create organizations without a
-      # default manager.
+      # target. When unset (NOT_SET), the organization depositor is used.
       mattr_accessor :default_organization_manager do
         ENV["DEFAULT_ORGANIZATION_MANAGER"] || "NOT_SET"
       end

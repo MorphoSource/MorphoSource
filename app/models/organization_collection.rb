@@ -130,24 +130,35 @@ class OrganizationCollection < Collection
     DeviceResource.where(organization_id: id)
   end
 
-  # before_save callback to set date_managed if needed
-  def record_date_managed
-    return self.date_managed if self.managers.present? && self.date_managed.present?
+  def managed_by_non_admin?
+    managers.any? { |manager| !manager.admin? }
+  end
 
-    self.date_managed = self.managers.present? ? Date.today : nil
+  # Create the role groups, seed the initial manager, and persist the management
+  # date derived from that user's admin status.
+  def create_collection_groups
+    super
+    record_date_managed
+    save! if date_managed_changed?
+  end
+
+  # Track when the organization first gains a non-admin manager. Admin managers
+  # keep the organization operational but do not make it externally managed.
+  def record_date_managed
+    return self.date_managed if managed_by_non_admin? && self.date_managed.present?
+
+    self.date_managed = managed_by_non_admin? ? Date.today : nil
   end
 
   private
 
-  # Organizations do not make their depositor a manager, so override the parent's
-  # choice with the configured DEFAULT_ORGANIZATION_MANAGER (an ms_id). Seeding a
-  # manager here guarantees every organization begins with at least one, closing
-  # the edge case where org-mode download-reviewer resolution would have no
-  # manager to resolve to. Returns nil, leaving the organization unmanaged, when
-  # the setting is unset (e.g. test) or names a user that does not exist.
+  # Prefer the configured DEFAULT_ORGANIZATION_MANAGER (an ms_id), falling back
+  # to the depositor when the setting is unset. Seeding a manager here guarantees
+  # every normally-created organization begins with at least one, closing the
+  # edge case where org-mode download-reviewer resolution has no target.
   def default_manager
     ms_id = Morphosource.default_organization_manager
-    return if ms_id.blank? || ms_id == "NOT_SET"
+    return super if ms_id.blank? || ms_id == "NOT_SET"
 
     User.find_by(ms_id: ms_id).tap do |user|
       Rails.logger.warn("[OrganizationCollection] DEFAULT_ORGANIZATION_MANAGER '#{ms_id}' does not match any user; #{id} created without a manager") if user.blank?
@@ -157,6 +168,7 @@ class OrganizationCollection < Collection
   def create_organization_project
     project = example_organization_project
     project.create_collection_groups
+    project.copy_parent_membership(id)
     Morphosource::Collections::PermissionsCreateService.create_default(collection: project)
     project.member_of_collections << self
     project.save!

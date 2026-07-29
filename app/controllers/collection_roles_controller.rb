@@ -142,8 +142,12 @@ class CollectionRolesController < ApplicationController
     end
   end
 
+  # Only meaningful before the child walk reassigns @group, which is why the
+  # preflight is its sole caller. The presence check keeps a collection with no
+  # role groups from matching on nil == nil.
   def manager_role_change?
-    params.dig(:collection_roles, :access) == 'managers' && (@remove || @new_group.present?)
+    managers_group = collection.managers_group
+    managers_group.present? && @group == managers_group && (@remove || @new_group.present?)
   end
 
   def removing_last_manager_from?(candidate)

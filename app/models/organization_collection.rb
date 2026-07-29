@@ -179,9 +179,11 @@ class OrganizationCollection < Collection
     end
   end
 
+  # The starter project is managed by whoever manages the organization, not by
+  # the depositor, so it takes its members from the parent instead of seeding.
   def create_organization_project
     project = example_organization_project
-    project.create_collection_groups
+    project.create_collection_groups(seed_manager: false)
     project.copy_parent_membership(id)
     Morphosource::Collections::PermissionsCreateService.create_default(collection: project)
     project.member_of_collections << self

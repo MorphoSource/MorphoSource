@@ -90,6 +90,22 @@ RSpec.describe OrganizationCollection, type: :model do
         project = organization.send(:create_organization_project)
         expect(project.managers).to include(default_manager)
       end
+
+      it 'does not make the depositor a manager of the starter project' do
+        project = organization.send(:create_organization_project)
+        expect(project.managers).not_to include(user)
+      end
+    end
+
+    context 'when no default organization manager is configured' do
+      before do
+        allow(Morphosource).to receive(:default_organization_manager).and_return('')
+      end
+
+      it 'leaves the depositor managing the starter project, by way of the organization' do
+        project = organization.send(:create_organization_project)
+        expect(project.managers).to eq([user])
+      end
     end
   end
 

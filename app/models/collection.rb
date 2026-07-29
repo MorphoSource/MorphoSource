@@ -155,13 +155,15 @@ class Collection < ActiveFedora::Base
   # Create a role per DEFAULT_GROUP_ROLES for the collection, then seed its
   # initial manager. Subclasses customize both: MediaList narrows
   # DEFAULT_GROUP_ROLES, and OrganizationCollection overrides #default_manager to
-  # use the configured user rather than the depositor.
-  def create_collection_groups
+  # use the configured user rather than the depositor. Pass seed_manager: false
+  # when the caller supplies the managers itself, as the organization starter
+  # project does by copying them from its parent.
+  def create_collection_groups(seed_manager: true)
     self.class::DEFAULT_GROUP_ROLES.each do |role|
       name = "#{id}_#{role}"
       Role.create(name: name) unless Role.find_by(name: name)
     end
-    add_default_manager
+    add_default_manager if seed_manager
   end
 
   def copy_parent_membership(parent_id)

@@ -981,6 +981,25 @@ RSpec.describe CollectionRolesController, type: :controller do
         end
       end
 
+      # Nothing stops a user being added to a role group twice, and deleting the
+      # user drops every membership at once, so a duplicate must not read as a
+      # second manager.
+      context 'when the sole manager holds a duplicate membership' do
+        before do
+          organization.managers_group.users << another_user
+          organization.managers_group.save
+        end
+
+        it 'still counts one manager and refuses the removal' do
+          expect(organization.managers_group.users.count).to eq(2)
+
+          post :update_collection_groups, params: params
+
+          expect(flash[:error]).to match('Cannot remove the last manager')
+          expect(organization.managers).to include(another_user)
+        end
+      end
+
       context 'as an admin' do
         before { sign_in admin }
 

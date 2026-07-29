@@ -150,11 +150,14 @@ class CollectionRolesController < ApplicationController
     managers_group.present? && @group == managers_group && (@remove || @new_group.present?)
   end
 
+  # Counts people rather than memberships: nothing stops a user being added to a
+  # role group twice, and a duplicated sole manager would otherwise inflate the
+  # count past the guard and let the last manager be removed.
   def removing_last_manager_from?(candidate)
     managers_group = candidate.managers_group
     managers_group.present? &&
       managers_group.users.include?(user) &&
-      managers_group.users.count < 2
+      managers_group.users.distinct.count < 2
   end
 
   # Organizations must always retain at least one manager (even admins cannot

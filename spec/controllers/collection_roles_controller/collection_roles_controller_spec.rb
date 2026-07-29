@@ -975,7 +975,7 @@ RSpec.describe CollectionRolesController, type: :controller do
             project.create_collection_groups
             project.managers << another_user
             project.managers_group.save
-            allow(subject).to receive(:subcollection_docs_for_role_update).and_return([project_doc])
+            allow(subject).to receive(:subcollection_docs).and_return([project_doc])
           end
 
           it 'does not partially remove the manager from the child project' do

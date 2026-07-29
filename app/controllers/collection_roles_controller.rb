@@ -150,14 +150,10 @@ class CollectionRolesController < ApplicationController
     return false unless manager_role_change?
     return true if removing_last_manager? && enforce_last_manager?
 
-    subcollection_docs_for_role_update.any? do |doc|
+    subcollection_docs.any? do |doc|
       child = Collection.find(doc['id'])
       removing_last_manager_from?(child) && enforce_last_manager_for?(child)
     end
-  end
-
-  def subcollection_docs_for_role_update
-    Morphosource::SolrService.new.get_docs("has_model_ssim:Collection AND member_of_collection_ids_ssim:#{collection.id}")
   end
 
   def manager_role_change?
@@ -284,7 +280,14 @@ class CollectionRolesController < ApplicationController
   # CollectionsControllerBehavior methods
   def find_subcollections
     presenter
-    @subcollection_docs = Morphosource::SolrService.new.get_docs("has_model_ssim:Collection AND member_of_collection_ids_ssim:#{@collection.id}")
+    subcollection_docs
+  end
+
+  # The collection's immediate children. Memoized because the last-manager
+  # preflight and the child role update both need them within one request.
+  def subcollection_docs
+    @subcollection_docs ||=
+      Morphosource::SolrService.new.get_docs("has_model_ssim:Collection AND member_of_collection_ids_ssim:#{collection.id}")
   end
 
   def update_collection_managed_date

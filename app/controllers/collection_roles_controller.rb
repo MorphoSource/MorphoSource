@@ -134,11 +134,11 @@ class CollectionRolesController < ApplicationController
   # re-checks, so this must run before any role is written.
   def last_manager_update_forbidden?
     return false unless manager_role_change?
-    return true if removing_last_manager_from?(collection) && enforce_last_manager_for?(collection)
+    return true if removing_last_manager_from?(collection) && last_manager_locked?(collection)
 
     subcollection_docs.any? do |doc|
       child = Collection.find(doc['id'])
-      removing_last_manager_from?(child) && enforce_last_manager_for?(child)
+      removing_last_manager_from?(child) && last_manager_locked?(child)
     end
   end
 
@@ -160,7 +160,7 @@ class CollectionRolesController < ApplicationController
   # Organizations must always retain at least one manager (even admins cannot
   # remove the last one) so org-mode download-reviewer resolution always has a
   # target. Teams and Projects keep the existing admin override.
-  def enforce_last_manager_for?(candidate)
+  def last_manager_locked?(candidate)
     candidate.organization_collection? || !current_user.admin?
   end
 

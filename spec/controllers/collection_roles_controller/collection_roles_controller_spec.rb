@@ -996,20 +996,54 @@ RSpec.describe CollectionRolesController, type: :controller do
 
         context 'when the organization has a child project' do
           let(:project) { FactoryBot.create(:project, title: ['Project'], depositor: manager.ms_id) }
-          let(:project_doc) { SolrDocument.new(project.to_solr) }
 
           before do
             project.create_collection_groups
             project.managers << another_user
             project.managers_group.save
-            allow(subject).to receive(:subcollection_docs).and_return([project_doc])
+            project.member_of_collections << organization
+            project.save!
           end
 
-          it 'does not partially remove the manager from the child project' do
+          # The parent check rejects before the subcollection walk is reached,
+          # so this covers the no-partial-application guarantee, not the child
+          # check itself. See 'from a team with a child project' for that.
+          it 'leaves the child project untouched when the parent update is rejected' do
             post :update_collection_groups, params: params
             expect(project.managers).to include(another_user)
           end
         end
+      end
+    end
+
+    # The team keeps two managers so it survives its own check, letting the
+    # preflight reach the subcollection walk, where the child project fails.
+    context 'from a team with a child project' do
+      let(:project) { FactoryBot.create(:project, title: ['Child Project'], depositor: manager.ms_id) }
+      let(:params)  { { collection_roles: { agent_type: 'user', new_access: 'remove', access: 'managers', agent_id: another_user.ms_id }, id: team.id } }
+
+      before do
+        team.create_collection_groups
+        team.managers_group.users = [another_user, manager]
+        team.managers_group.save
+
+        project.create_collection_groups
+        project.managers_group.users = [another_user]
+        project.managers_group.save
+        project.member_of_collections << team
+        project.save!
+
+        allow(subject).to receive(:can?).with(:edit, team).and_return(true)
+      end
+
+      # The flash is what distinguishes a rejection from an update that simply
+      # did not happen, so it carries this example.
+      it 'rejects the update when the user is the sole manager of a child project' do
+        post :update_collection_groups, params: params
+
+        expect(flash[:error]).to match('Cannot remove the last manager')
+        expect(team.managers).to include(another_user)
+        expect(project.managers).to include(another_user)
       end
     end
 

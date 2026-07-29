@@ -153,8 +153,8 @@ class CollectionRolesController < ApplicationController
   # Counts people rather than memberships: nothing stops a user being added to a
   # role group twice, and a duplicated sole manager would otherwise inflate the
   # count past the guard and let the last manager be removed.
-  def removing_last_manager_from?(candidate)
-    managers_group = candidate.managers_group
+  def removing_last_manager_from?(collection)
+    managers_group = collection.managers_group
     managers_group.present? &&
       managers_group.users.include?(user) &&
       managers_group.users.distinct.count < 2
@@ -163,8 +163,8 @@ class CollectionRolesController < ApplicationController
   # Organizations must always retain at least one manager (even admins cannot
   # remove the last one) so org-mode download-reviewer resolution always has a
   # target. Teams and Projects keep the existing admin override.
-  def last_manager_locked?(candidate)
-    candidate.organization_collection? || !current_user.admin?
+  def last_manager_locked?(collection)
+    collection.organization_collection? || !current_user.admin?
   end
 
   def change_groups(user)

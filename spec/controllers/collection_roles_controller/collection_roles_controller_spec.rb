@@ -770,7 +770,7 @@ RSpec.describe CollectionRolesController, type: :controller do
       before do
         allow(subject).to receive(:users_are_eligible?).and_return(true)
         allow(subject).to receive(:update_subcollections).and_return(true)
-        allow(subject).to receive(:removing_last_manager?).and_return(false)
+        allow(subject).to receive(:last_manager_update_forbidden?).and_return(false)
         Timecop.freeze(Time.local(1999, 9, 9, 9))
       end
 
@@ -936,6 +936,33 @@ RSpec.describe CollectionRolesController, type: :controller do
 
   describe 'removing the last manager' do
     let(:admin) { FactoryBot.create(:admin) }
+
+    # The rule applies only to the managers group. Removing a sole manager from
+    # some other role must not be mistaken for removing them as manager.
+    context 'from a non-manager role held by the sole manager' do
+      let(:organization) { FactoryBot.create(:organization_collection, title: ['Organization'], depositor: manager.ms_id) }
+      let(:params)       { { collection_roles: { agent_type: 'user', new_access: 'remove', access: 'viewers', agent_id: another_user.ms_id }, id: organization.id } }
+
+      before do
+        organization.managers_group.users = [another_user]
+        organization.managers_group.save
+        organization.viewers_group.users = [another_user]
+        organization.viewers_group.save
+        allow(subject).to receive(:can?).with(:edit, organization).and_return(true)
+        allow(subject).to receive(:update_subcollections).and_return(true)
+      end
+
+      it 'removes them from that role and leaves them as manager' do
+        post :update_collection_groups, params: params
+        expect(organization.viewers).not_to include(another_user)
+        expect(organization.managers).to include(another_user)
+      end
+
+      it 'does not flash the last manager error' do
+        post :update_collection_groups, params: params
+        expect(flash[:error]).not_to match('Cannot remove the last manager')
+      end
+    end
 
     context 'from an organization collection' do
       let(:organization) { FactoryBot.create(:organization_collection, title: ['Organization'], depositor: manager.ms_id) }

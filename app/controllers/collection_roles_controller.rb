@@ -111,10 +111,6 @@ class CollectionRolesController < ApplicationController
 
   def update_user_access
     if @new_group || @remove
-      if removing_last_manager? && enforce_last_manager?
-        update_notice('last_manager')
-        return
-      end
       if @new_group
         change_groups(user)
       elsif @remove
@@ -132,23 +128,13 @@ class CollectionRolesController < ApplicationController
     end
   end
 
-  def removing_last_manager?
-    removing_last_manager_from?(collection)
-  end
-
-  # Organizations must always retain at least one manager (even admins cannot
-  # remove the last one) so org-mode download-reviewer resolution always has a
-  # target. Teams and Projects keep the existing admin override.
-  def enforce_last_manager?
-    enforce_last_manager_for?(collection)
-  end
-
-  # Preflight the parent and every affected subcollection before changing any
-  # role. This prevents a rejected parent update from partially changing its
-  # child projects.
+  # The single enforcement point for the last-manager rule: preflight the parent
+  # and every affected subcollection before changing any role, so a rejected
+  # parent update cannot partially change its child projects. Nothing downstream
+  # re-checks, so this must run before any role is written.
   def last_manager_update_forbidden?
     return false unless manager_role_change?
-    return true if removing_last_manager? && enforce_last_manager?
+    return true if removing_last_manager_from?(collection) && enforce_last_manager_for?(collection)
 
     subcollection_docs.any? do |doc|
       child = Collection.find(doc['id'])
@@ -167,6 +153,9 @@ class CollectionRolesController < ApplicationController
       managers_group.users.count < 2
   end
 
+  # Organizations must always retain at least one manager (even admins cannot
+  # remove the last one) so org-mode download-reviewer resolution always has a
+  # target. Teams and Projects keep the existing admin override.
   def enforce_last_manager_for?(candidate)
     candidate.organization_collection? || !current_user.admin?
   end

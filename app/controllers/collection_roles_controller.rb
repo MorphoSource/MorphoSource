@@ -288,11 +288,14 @@ class CollectionRolesController < ApplicationController
     subcollection_docs
   end
 
-  # The collection's immediate children. Memoized because the last-manager
-  # preflight and the child role update both need them within one request.
+  # The children of the collection this request is for. Keyed on params[:id]
+  # rather than #collection, which the child walk reassigns -- memoizing off a
+  # moving ivar would bind the memo to whichever collection happened to touch it
+  # first. Memoized because the last-manager preflight and the child role update
+  # both need these within one request.
   def subcollection_docs
     @subcollection_docs ||=
-      Morphosource::SolrService.new.get_docs("has_model_ssim:Collection AND member_of_collection_ids_ssim:#{collection.id}")
+      Morphosource::SolrService.new.get_docs("has_model_ssim:Collection AND member_of_collection_ids_ssim:#{params[:id]}")
   end
 
   def update_collection_managed_date

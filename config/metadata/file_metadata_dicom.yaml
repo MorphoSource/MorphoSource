@@ -1,0 +1,278 @@
+---
+attributes:
+  spacing_between_slices:
+    type: string
+    multiple: true
+    index_keys:
+      - "spacing_between_slices_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#SpacingBetweenSlices
+  modality:
+    type: string
+    multiple: true
+    index_keys:
+      - "modality_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#Modality
+  secondary_capture_device_manufacturer:
+    type: string
+    multiple: true
+    index_keys:
+      - "secondary_capture_device_manufacturer_tesim"
+    predicate: https://www.morphosource.org/terms/dicomSecondaryCaptureDeviceManufacturer
+  secondary_capture_device_software_vers:
+    type: string
+    multiple: true
+    index_keys:
+      - "secondary_capture_device_software_vers_tesim"
+    predicate: https://www.morphosource.org/terms/dicomSecondaryCaptureDeviceSoftwareVers
+  file_type_extension:
+    type: string
+    multiple: true
+    index_keys:
+      - "file_type_extension_tesim"
+    predicate: https://www.morphosource.org/terms/dicomFileTypeExtension
+  image_type:
+    type: string
+    multiple: true
+    index_keys:
+      - "image_type_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#ImageType
+  study_date:
+    type: string
+    multiple: true
+    index_keys:
+      - "study_date_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#StudyDate
+  series_date:
+    type: string
+    multiple: true
+    index_keys:
+      - "series_date_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#SeriesDate
+  content_date:
+    type: string
+    multiple: true
+    index_keys:
+      - "content_date_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#ContentDate
+  study_time:
+    type: string
+    multiple: true
+    index_keys:
+      - "study_time_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#StudyTime
+  series_time:
+    type: string
+    multiple: true
+    index_keys:
+      - "series_time_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#SeriesTime
+  content_time:
+    type: string
+    multiple: true
+    index_keys:
+      - "content_time_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#ContentTime
+  accession_number:
+    type: string
+    multiple: true
+    index_keys:
+      - "accession_number_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#AccessionNumber
+  instance_number:
+    type: string
+    multiple: true
+    index_keys:
+      - "instance_number_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#InstanceNumber
+  image_position_patient:
+    type: string
+    multiple: true
+    index_keys:
+      - "image_position_patient_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#ImagePositionPatient
+  image_orientation_patient:
+    type: string
+    multiple: true
+    index_keys:
+      - "image_orientation_patient_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#ImageOrientationPatient
+  samples_per_pixel:
+    type: string
+    multiple: true
+    index_keys:
+      - "samples_per_pixel_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#SamplesPerPixel
+  photometric_interpretation:
+    type: string
+    multiple: true
+    index_keys:
+      - "photometric_interpretation_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#PhotometricInterpretation
+  rows:
+    type: string
+    multiple: true
+    index_keys:
+      - "rows_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#Rows
+  columns:
+    type: string
+    multiple: true
+    index_keys:
+      - "columns_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#Columns
+  pixel_spacing:
+    type: string
+    multiple: true
+    index_keys:
+      - "pixel_spacing_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#PixelSpacing
+  slice_thickness:
+    type: string
+    multiple: true
+    index_keys:
+      - "slice_thickness_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#SliceThickness
+  bits_allocated:
+    type: string
+    multiple: true
+    index_keys:
+      - "bits_allocated_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#BitsAllocated
+  bits_stored:
+    type: string
+    multiple: true
+    index_keys:
+      - "bits_stored_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#BitsStored
+  high_bit:
+    type: string
+    multiple: true
+    index_keys:
+      - "high_bit_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#HighBit
+  pixel_representation:
+    type: string
+    multiple: true
+    index_keys:
+      - "pixel_representation_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#PixelRepresentation
+  window_center:
+    type: string
+    multiple: true
+    index_keys:
+      - "window_center_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#WindowCenter
+  window_width:
+    type: string
+    multiple: true
+    index_keys:
+      - "window_width_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#WindowWidth
+  rescale_intercept:
+    type: string
+    multiple: true
+    index_keys:
+      - "rescale_intercept_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#RescaleIntercept
+  rescale_slope:
+    type: string
+    multiple: true
+    index_keys:
+      - "rescale_slope_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#RescaleSlope
+  window_center_and_width_explanation:
+    type: string
+    multiple: true
+    index_keys:
+      - "window_center_and_width_explanation_tesim"
+    predicate: https://www.morphosource.org/terms/dicomWindowCenterAndWidthExplanation
+  exposure_time:
+    type: string
+    multiple: true
+    index_keys:
+      - "exposure_time_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#ExposureTime
+  pixel_spacing_calibration_type:
+    type: string
+    multiple: true
+    index_keys:
+      - "pixel_spacing_calibration_type_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#PixelSpacingCalibrationType
+  contrast_frame_averaging:
+    type: string
+    multiple: true
+    index_keys:
+      - "contrast_frame_averaging_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#ContrastFrameAveraging
+  images_in_acquisition:
+    type: string
+    multiple: true
+    index_keys:
+      - "images_in_acquisition_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#ImagesInAcquisition
+  KVP:
+    type: string
+    multiple: true
+    index_keys:
+      - "KVP_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#KVP
+  generator_power:
+    type: string
+    multiple: true
+    index_keys:
+      - "generator_power_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#GeneratorPower
+  x_ray_tube_current:
+    type: string
+    multiple: true
+    index_keys:
+      - "x_ray_tube_current_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#XRayTubeCurrent
+  container_description:
+    type: string
+    multiple: true
+    index_keys:
+      - "container_description_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#ContainerDescription
+  generator_id:
+    type: string
+    multiple: true
+    index_keys:
+      - "generator_id_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#GeneratorID
+  detector_description:
+    type: string
+    multiple: true
+    index_keys:
+      - "detector_description_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#DetectorDescription
+  distance_source_to_patient:
+    type: string
+    multiple: true
+    index_keys:
+      - "distance_source_to_patient_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#DistanceSourceToPatient
+  distance_source_to_detector:
+    type: string
+    multiple: true
+    index_keys:
+      - "distance_source_to_detector_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#DistanceSourceToDetector
+  anode_target_material:
+    type: string
+    multiple: true
+    index_keys:
+      - "anode_target_material_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#AnodeTargetMaterial
+  spiral_pitch_factor:
+    type: string
+    multiple: true
+    index_keys:
+      - "spiral_pitch_factor_tesim"
+    predicate: http://purl.org/healthcarevocab/v1#SpiralPitchFactor
+  number_of_series_related_instances:
+    type: string
+    multiple: true
+    index_keys:
+      - "number_of_series_related_instances_tesim"
+    predicate: https://www.morphosource.org/terms/dicomNumberOfSeriesRelatedInstances

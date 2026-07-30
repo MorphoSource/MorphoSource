@@ -154,10 +154,14 @@ module Morphosource::Derivatives::Processors
 
     # Backup slower FITS/Characterization-based way to query image dimensions, if imagemagick fails
     def image_dims_characterization(f)
-      cs = Hydra::Works::CharacterizationService.new(nil, f, {})
-      terms = cs.characterize_without_storing
-      w = Array(terms[:columns])&.first&.to_i || Array(terms[:width])&.first&.to_i
-      h = Array(terms[:rows])&.first&.to_i || Array(terms[:height])&.first&.to_i
+      file_metadata = Hyrax::FileMetadata.new()
+      cs = Hyrax.config.characterization_service.new(
+        metadata: file_metadata,
+        file: f,
+        **Hyrax.config.characterization_options
+      ).characterize
+      w = Array(file_metadata.columns)&.first&.to_i || Array(file_metadata.width)&.first&.to_i
+      h = Array(file_metadata.rows)&.first&.to_i || Array(file_metadata.height)&.first&.to_i
       return w, h
     end
 

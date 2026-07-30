@@ -3,6 +3,7 @@ class Media < Morphosource::Works::Base
   include Morphosource::MediaBehavior
   include Morphosource::PersistentIdentifiersBehavior
   include Morphosource::DoiBehavior
+  include Morphosource::Works::ValkyrieAssociation
 
   validates_with Morphosource::ParentChildValidator
   before_create :controlled_value_filter, :date_filter
@@ -28,7 +29,7 @@ class Media < Morphosource::Works::Base
   validates :title, presence: { message: 'Your work must have a title.' }
 
   attr_accessor :download_permission, :tags, :delete_thumbnail, :generated_thumbnail
-  after_destroy :delete_ark_if_reserved, :delete_fund_code_media_associations
+  after_destroy :delete_ark_if_reserved, :delete_fund_code_media_associations, :destroy_file_sets
 
   include Morphosource::MediaMetadata
   include Morphosource::PermissionsDefaultsMetadata
@@ -585,6 +586,22 @@ class Media < Morphosource::Works::Base
 
     def delete_fund_code_media_associations
       FundCodeMediaAssociation.where(media: self.id).each { |a| a.destroy! }
+    end
+
+    # Destroy each associated FileSet from Fedora when the Media is destroyed.
+    # Hyrax's default behavior orphans FileSets (severs member_of but does not
+    # call destroy), leaving them in Fedora with no parent. Explicitly destroying
+    # them here also triggers FileSet#after_destroy, which removes the
+    # corresponding FileSetSizeInfo row.
+    def destroy_file_sets
+      file_set_ids.each do |fs_id|
+        begin
+          fs = FileSet.find(fs_id)
+          fs.destroy
+        rescue => e
+          Rails.logger.error "Failed to destroy FileSet #{fs_id} during Media #{id} cleanup: #{e.message}"
+        end
+      end
     end
 
     def record_original_objects

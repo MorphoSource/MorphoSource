@@ -40,11 +40,16 @@ if Hyrax.config.valkyrie_transition?
       )
 
     Valkyrie::StorageAdapter.register(
-      Valkyrie::Storage::VersionedDisk.new(base_path: Rails.root.join("storage", "files"),
-        file_mover: FileUtils.method(:cp)),
-      :disk
+      Valkyrie::Storage::Hoard.new(services: [
+        Valkyrie::Storage::VersionedDisk.new(
+          base_path: Rails.root.join("storage", "files"),
+          file_mover: FileUtils.method(:cp)
+        ),
+        Valkyrie::Storage::ExternalUrl.new
+      ]),
+      :hoard
     )
-    Valkyrie.config.storage_adapter = :disk
+    Valkyrie.config.storage_adapter = :hoard
 
     Hyrax.config.index_adapter = :solr_index
   end

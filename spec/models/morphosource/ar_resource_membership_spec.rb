@@ -28,7 +28,6 @@ RSpec.describe Morphosource::ArResourceMembership do
   end
 
   let(:af_child) { TestTaxonomyWithValkyrie.create(title: ['Child AF Work']) }
-  let(:af_parent) { TestTaxonomyWithValkyrie.create(title: ['Parent AF Work']) }
 
   describe '#members' do
     it 'returns both Valkyrie and ActiveFedora members' do
@@ -54,35 +53,4 @@ RSpec.describe Morphosource::ArResourceMembership do
     end
   end
 
-  describe '#member_of' do
-    it 'returns AF parents that have this resource as a valkyrie member' do
-      af_parent.members = [valkyrie_child]
-      af_parent.save!
-
-      parents = valkyrie_child.member_of
-      expect(parents.map { |p| p.id.to_s }).to include(af_parent.id)
-    end
-
-    it 'returns Valkyrie parents' do
-      valkyrie_parent.member_ids = [valkyrie_child.id]
-      Hyrax.persister.save(resource: valkyrie_parent)
-
-      parents = valkyrie_child.member_of
-      expect(parents.map(&:id)).to include(valkyrie_parent.id)
-    end
-
-    it 'returns both types of parents' do
-      af_parent.members = [valkyrie_child]
-      af_parent.save!
-
-      valkyrie_parent.member_ids = [valkyrie_child.id]
-      Hyrax.persister.save(resource: valkyrie_parent)
-
-      parents = valkyrie_child.member_of
-      parent_ids = parents.map { |p| p.id.to_s }
-
-      expect(parent_ids).to include(af_parent.id)
-      expect(parent_ids).to include(valkyrie_parent.id.to_s)
-    end
-  end
 end

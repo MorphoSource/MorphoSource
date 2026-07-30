@@ -31,7 +31,7 @@ module Hyrax
       ##
       # Displays scene commenting annotations as list of prezi-like hashes if present
       #
-      # @return [Array<Hash>, nil] List of comment annotations or nil if not present 
+      # @return [Array<Hash>, nil] List of comment annotations or nil if not present
       def display_comments
         return nil unless model.mesh? || model.volume?
         return nil unless latest_file_id
@@ -68,7 +68,7 @@ module Hyrax
         IIIFManifest::V4::DisplayContent.new(
           URI::join(
             hostname,
-            Rails.application.routes.url_helpers.download_path(model.access_control_id, file: download_file_suffix)
+            Rails.application.routes.url_helpers.download_path(file_set_identifier, file: download_file_suffix)
           ),
           format: format,
           type: type
@@ -84,7 +84,7 @@ module Hyrax
 
         IIIFManifest::V4::DisplayContent.new(URI::join(
             hostname,
-            Rails.application.routes.url_helpers.download_path(model.access_control_id, file: download_file_suffix)
+            Rails.application.routes.url_helpers.download_path(file_set_identifier, file: download_file_suffix)
           ),
           format: format,
           type: type,
@@ -92,7 +92,7 @@ module Hyrax
         )
       end
 
-      
+
     end
   end
 end

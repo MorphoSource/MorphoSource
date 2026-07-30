@@ -134,20 +134,28 @@ class CollectionRolesController < ApplicationController
   # re-checks, so this must run before any role is written.
   #
   # This guards the mutation point rather than the data: Collection#remove_parent_membership
-  # and the console can still empty a managers group.
+  # and the console can still empty a managers group. It is also not atomic --
+  # two concurrent removals of different managers can each observe the other and
+  # both succeed.
   def last_manager_update_forbidden?
     return false unless manager_role_change?
-    return true if sole_manager_of?(collection.id) && last_manager_locked?(collection)
+    return true if last_manager_locked?(collection.id, organization: collection.organization_collection?)
 
-    subcollection_docs.any? { |doc| last_manager_locked_for_doc?(doc) && sole_manager_of?(doc['id']) }
+    subcollection_docs.any? { |doc| last_manager_locked?(doc['id']) }
   end
 
-  # Subcollections are checked from their search result: the managers group is
-  # named after the id and the model tells us whether the organization rule
-  # applies, so neither check has to load the record from Fedora. The lock is
-  # tested first because it is the cheaper of the two.
-  def last_manager_locked_for_doc?(doc)
-    Array(doc['has_model_ssim']).include?('OrganizationCollection') || !current_user.admin?
+  # Organizations must always retain at least one manager (even admins cannot
+  # remove the last one) so org-mode download-reviewer resolution always has a
+  # target. Teams and Projects keep the existing admin override.
+  #
+  # Keyed on an id so a subcollection can be checked straight from its search
+  # result, without loading the record from Fedora: a collection's role groups
+  # are named after its id. Subcollections never pass organization: true --
+  # organizations are always top-level, so #subcollection_docs cannot return one.
+  #
+  # The lock is tested before the manager count because it costs no queries.
+  def last_manager_locked?(collection_id, organization: false)
+    (organization || !current_user.admin?) && sole_manager_of?(collection_id)
   end
 
   # Counts people rather than memberships: nothing stops a user being added to a
@@ -166,13 +174,6 @@ class CollectionRolesController < ApplicationController
   def manager_role_change?
     managers_group = collection.managers_group
     managers_group.present? && @group == managers_group && (@remove || @new_group.present?)
-  end
-
-  # Organizations must always retain at least one manager (even admins cannot
-  # remove the last one) so org-mode download-reviewer resolution always has a
-  # target. Teams and Projects keep the existing admin override.
-  def last_manager_locked?(collection)
-    collection.organization_collection? || !current_user.admin?
   end
 
   def change_groups(user)

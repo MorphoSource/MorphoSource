@@ -72,18 +72,18 @@ module Morphosource
 
         def organization_media_in_project
           if @project_id == @organization.id
-            Morphosource::SolrService.new.get_docs("media_organization_id_ssim:#{@organization.id} AND user_with_ownership_ssi:#{@organization.id} NOT organization_transfer_on_publish_bsi:true", fl:"id")
+            Morphosource::SolrService.new.get_docs("media_organization_id_ssim:#{@organization.id} AND user_with_ownership_ssi:#{@organization.id} NOT organization_transfer_on_publish_bsi:true NOT pending_org_transfer_bsi:true", fl:"id")
           else
-            Morphosource::SolrService.new.get_docs("media_organization_id_ssim:#{@organization.id} AND member_of_collection_ids_ssim:#{@project_id} NOT organization_transfer_on_publish_bsi:true", fl:"id")
+            Morphosource::SolrService.new.get_docs("media_organization_id_ssim:#{@organization.id} AND member_of_collection_ids_ssim:#{@project_id} NOT organization_transfer_on_publish_bsi:true NOT pending_org_transfer_bsi:true", fl:"id")
           end
         end
 
         def organization_media_with_old_manager
-          Morphosource::SolrService.new.get_docs("media_organization_id_ssim:#{@organization.id} AND user_with_ownership_ssi:#{@old_manager.ms_id} NOT organization_transfer_on_publish_bsi:true", fl:"id")
+          Morphosource::SolrService.new.get_docs("media_organization_id_ssim:#{@organization.id} AND user_with_ownership_ssi:#{@old_manager.ms_id} NOT organization_transfer_on_publish_bsi:true NOT pending_org_transfer_bsi:true", fl:"id")
         end
 
         def organization_media_in_project_with_old_manager
-          Morphosource::SolrService.new.get_docs("media_organization_id_ssim:#{@organization.id} AND member_of_collection_ids_ssim:#{@project_id} AND user_with_ownership_ssi:#{@old_manager.ms_id} NOT organization_transfer_on_publish_bsi:true", fl:"id")
+          Morphosource::SolrService.new.get_docs("media_organization_id_ssim:#{@organization.id} AND member_of_collection_ids_ssim:#{@project_id} AND user_with_ownership_ssi:#{@old_manager.ms_id} NOT organization_transfer_on_publish_bsi:true NOT pending_org_transfer_bsi:true", fl:"id")
         end
 
         def select_organization

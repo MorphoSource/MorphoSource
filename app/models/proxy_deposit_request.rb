@@ -22,6 +22,8 @@ class ProxyDepositRequest < ActiveRecord::Base
   belongs_to :receiving_user, polymorphic: true
   belongs_to :sending_user, polymorphic: true
 
+  after_commit :clear_media_pending_org_transfer, if: :org_transfer_resolved?
+
   # @param [User] user - the person who needs to take action on the ownership transfer request
   # @param [number_of_days] - for pulling either all transfers, or just x number of days
   # @return [Enumerable] a set of requests that the given user can act upon to claim the ownership transfer
@@ -303,5 +305,16 @@ class ProxyDepositRequest < ActiveRecord::Base
       self.status = status
       self.fulfillment_date = Time.current
       save!
+    end
+
+    def org_transfer_resolved?
+      organization_transfer? && previous_changes.key?('status') && !pending?
+    end
+
+    def clear_media_pending_org_transfer
+      media = work
+      return unless media.respond_to?(:pending_org_transfer=)
+      media.pending_org_transfer = false
+      media.save
     end
 end

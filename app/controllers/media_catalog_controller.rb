@@ -5,8 +5,13 @@ class MediaCatalogController < CatalogController
   include CatalogControllerRestApiBehavior
   include Morphosource::CatalogHelper
 
+  before_action :authenticate_api_key_optional, only: [:index, :index_for_object]
   # This filter applies the hydra access controls to media file details API endpoint
-  before_action :enforce_show_permissions, only: [:show, :show_file_metadata]
+  before_action :authenticate_api_key_optional, :enforce_show_permissions, only: [:show, :show_file_metadata]
+
+  def catalog_search_form_action
+    main_app.media_search_path
+  end
 
   configure_blacklight do |config|
     config.search_builder_class = Morphosource::Catalog::MediaCatalogSearchBuilder
@@ -141,6 +146,33 @@ class MediaCatalogController < CatalogController
     respond_to do |format|
       format.json { render json: { response: response } }
       additional_export_formats(@document, format)
+    end
+  end
+
+  def index_for_object
+    @response, @document_list = search_service.search_results do |_|
+      Morphosource::PhysicalObjectMediaSearchBuilder.new(
+        scope: self,
+        object_id: params[:id]
+      ).with(search_state)
+    end
+
+    respond_to do |format|
+      format.json do
+        presenter = Morphosource::JsonPresenter.new(
+          @response,
+          @document_list.map(&:to_semantic_values),
+          facets_from_request(facet_field_names, @response).reject { |f| f.name == "generic_type_sim" },
+          blacklight_config
+        )
+        render json: {
+          response: {
+            'media' => presenter.documents,
+            'facets' => presenter.search_facets_as_json,
+            'pages' => presenter.pagination_info
+          }
+        }
+      end
     end
   end
 

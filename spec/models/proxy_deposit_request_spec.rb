@@ -708,4 +708,51 @@ RSpec.describe ProxyDepositRequest do
       end
     end
   end
+
+  describe 'clear_media_pending_org_transfer callback' do
+    let(:work)              { FactoryBot.create(:media, pending_org_transfer: true) }
+    let(:sending_user)      { FactoryBot.create(:contributor, email: "sender@email.com", display_name: "Sender") }
+    let(:org_manager)       { FactoryBot.create(:contributor, email: "org_manager@email.com", display_name: "Org Manager") }
+    let(:organization)      { FactoryBot.create(:organization_collection, depositor: org_manager.ms_id) }
+    let(:email_dispatch_user) { FactoryBot.create(:user) }
+
+    before do
+      allow_any_instance_of(described_class).to receive(:deliver_message).and_return(true)
+      allow_any_instance_of(described_class).to receive(:email_sender).and_return(email_dispatch_user)
+    end
+
+    context 'organization transfer request' do
+      subject { described_class.create(work_id: work.id, sending_user: sending_user, receiving_user: organization, organization_transfer: true) }
+
+      it 'does not clear pending_org_transfer while the request remains pending' do
+        subject
+        expect(work.reload.pending_org_transfer).to eq(true)
+      end
+
+      it 'clears pending_org_transfer when the request is accepted' do
+        subject.transfer!
+        expect(work.reload.pending_org_transfer).to eq(false)
+      end
+
+      it 'clears pending_org_transfer when the request is rejected' do
+        subject.reject!
+        expect(work.reload.pending_org_transfer).to eq(false)
+      end
+
+      it 'clears pending_org_transfer when the request is force-canceled' do
+        subject.force_cancel!
+        expect(work.reload.pending_org_transfer).to eq(false)
+      end
+    end
+
+    context 'standard (non-organization) transfer request' do
+      let(:receiving_user) { FactoryBot.create(:contributor, email: "receiver@email.com", display_name: "Receiver") }
+      subject { described_class.create(work_id: work.id, sending_user: sending_user, receiving_user: receiving_user) }
+
+      it 'does not clear pending_org_transfer when the request is accepted' do
+        subject.transfer!
+        expect(work.reload.pending_org_transfer).to eq(true)
+      end
+    end
+  end
 end

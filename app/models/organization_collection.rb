@@ -16,6 +16,8 @@ class OrganizationCollection < Collection
   after_create :persist_date_managed
   after_create :create_organization_project
   after_update :update_ark_status, unless: :persisting_date_managed?
+  # Needs no such guard: it returns early on an OrganizationCollection unless the
+  # title changed, and the reentrant write only ever dirties date_managed.
   after_update :index_related_works
   after_create :mint_ark
   after_destroy :delete_ark_if_reserved
@@ -140,9 +142,10 @@ class OrganizationCollection < Collection
   # Track when the organization first gains a non-admin manager. Admin managers
   # keep the organization operational but do not make it externally managed.
   def record_date_managed
-    return self.date_managed if managed_by_non_admin? && self.date_managed.present?
+    managed = managed_by_non_admin?
+    return self.date_managed if managed && self.date_managed.present?
 
-    self.date_managed = managed_by_non_admin? ? Date.today : nil
+    self.date_managed = managed ? Date.today : nil
   end
 
   private

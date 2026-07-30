@@ -167,16 +167,20 @@ class OrganizationCollection < Collection
   end
 
   # Prefer the configured DEFAULT_ORGANIZATION_MANAGER (an ms_id), falling back
-  # to the depositor when the setting is unset. Seeding a manager here guarantees
-  # every normally-created organization begins with at least one, closing the
-  # edge case where org-mode download-reviewer resolution has no target.
+  # to the depositor when the setting is unset or names no user. Seeding a manager
+  # here guarantees every normally-created organization begins with at least one,
+  # closing the edge case where org-mode download-reviewer resolution has no
+  # target. A misconfigured setting must not reopen it, so it degrades to the
+  # depositor rather than leaving the organization unmanaged.
   def default_manager
     ms_id = Morphosource.default_organization_manager
-    return super if ms_id.blank? || ms_id == "NOT_SET"
+    return super if ms_id.blank?
 
-    User.find_by(ms_id: ms_id).tap do |user|
-      Rails.logger.warn("[OrganizationCollection] DEFAULT_ORGANIZATION_MANAGER '#{ms_id}' does not match any user; #{id} created without a manager") if user.blank?
-    end
+    user = User.find_by(ms_id: ms_id)
+    return user if user.present?
+
+    Rails.logger.warn("[OrganizationCollection] DEFAULT_ORGANIZATION_MANAGER '#{ms_id}' does not match any user; falling back to the depositor for #{id}")
+    super
   end
 
   # The starter project is managed by whoever manages the organization, not by

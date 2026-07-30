@@ -99,7 +99,7 @@ RSpec.describe OrganizationCollection, type: :model do
 
     context 'when no default organization manager is configured' do
       before do
-        allow(Morphosource).to receive(:default_organization_manager).and_return('')
+        allow(Morphosource).to receive(:default_organization_manager).and_return(nil)
       end
 
       it 'leaves the depositor managing the starter project, by way of the organization' do
@@ -153,14 +153,17 @@ RSpec.describe OrganizationCollection, type: :model do
       end
     end
 
+    # A typo or a deleted user must not recreate the managerless organizations
+    # this seeding exists to prevent, so a broken setting degrades to the
+    # depositor instead of being treated as no setting at all.
     context 'when the configured default manager does not match a user' do
       before do
         allow(Morphosource).to receive(:default_organization_manager).and_return('no_such_ms_id')
       end
 
-      it 'creates the organization without a manager' do
+      it 'falls back to the depositor' do
         org = FactoryBot.create(:organization_collection, depositor: user.ms_id)
-        expect(org.managers).to eq([])
+        expect(org.managers).to eq([user])
       end
 
       it 'warns that the configured user was not found' do
@@ -172,7 +175,7 @@ RSpec.describe OrganizationCollection, type: :model do
 
     context 'when no default organization manager is configured' do
       before do
-        allow(Morphosource).to receive(:default_organization_manager).and_return('')
+        allow(Morphosource).to receive(:default_organization_manager).and_return(nil)
       end
 
       it 'uses the depositor as the manager' do

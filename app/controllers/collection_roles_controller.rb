@@ -208,7 +208,7 @@ class CollectionRolesController < ApplicationController
   end
 
   def update_subcollections_membership
-    ids = @subcollection_docs.map(&:id)
+    ids = subcollection_docs.map { |doc| doc['id'] }
     copy_team_members_to_subcollections(ids)
     reset_collection_role_values
   end

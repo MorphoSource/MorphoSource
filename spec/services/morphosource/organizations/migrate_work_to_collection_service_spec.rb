@@ -78,6 +78,28 @@ RSpec.describe Morphosource::Organizations::MigrateWorkToCollectionService do
       end
     end
 
+    # The batch user deposits the collection, so with no configured default it is
+    # the manager seeded at creation. Removing it as part of copying the team over
+    # is only safe once the team has supplied a manager of its own.
+    context 'with a legacy team that has no managers' do
+      let(:organization_team)  { create(:team) }
+      let(:organization_work)  { create(:organization, team_id: [organization_team.id]) }
+
+      before do
+        # The team factory stubs Collection.find for its own id, so the organization
+        # collection's own lookups need a passthrough default.
+        allow(Collection).to receive(:find).and_call_original
+        allow(Morphosource).to receive(:default_organization_manager).and_return(nil)
+      end
+
+      it 'keeps the seeded manager rather than migrating an unmanaged organization' do
+        subject.migrate
+
+        expect(subject.organization_collection.managers).to eq([User.batch_user])
+        expect(subject.is_migrated?).to eq(true)
+      end
+    end
+
     describe '#is_migrated?' do
       before do
         subject.migrate

@@ -118,8 +118,14 @@ module Morphosource
             end
           end
 
-          # Remove batch user as org collection manager
-          organization_collection.managers.delete(batch_user)
+          # Remove batch user as org collection manager, but only once the team has
+          # supplied another one. The batch user is the collection's depositor, so
+          # it is the manager seeded at creation; a legacy organization with no
+          # data manager and no team managers would otherwise finish the migration
+          # with none at all.
+          if organization_collection.managers.any? { |manager| manager != batch_user }
+            organization_collection.managers.delete(batch_user)
+          end
 
           # Copy team projects over
           if ( team_projects = Collection.where("member_of_collection_ids_ssim:#{organization_team.id}") ).present?
@@ -132,10 +138,19 @@ module Morphosource
           end
         end
 
+        organization_collection.reload
+
+        # Postcondition for the manager assignments above: everything downstream,
+        # including org-mode download-reviewer resolution, assumes an organization
+        # has somewhere to resolve to. Fail here rather than produce an unmanaged
+        # organization; the legacy work is untouched until #complete_migration.
+        if organization_collection.managers.blank?
+          raise "STEP 3 FAILED. Organization collection has no managers."
+        end
+
         # Preserve the legacy management date when a non-admin manager exists.
         # Otherwise, OrganizationCollection derives (or clears) it from the
         # newly assigned managers.
-        organization_collection.reload
         if organization_collection.managed_by_non_admin? && organization_work.date_managed.present? && organization_collection.date_managed != organization_work.date_managed
           organization_collection.date_managed = organization_work.date_managed
           organization_collection.save!

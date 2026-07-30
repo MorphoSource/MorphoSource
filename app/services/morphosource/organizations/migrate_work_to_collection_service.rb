@@ -130,16 +130,6 @@ module Morphosource
           if organization_collection.managers.any? { |manager| manager != batch_user }
             organization_collection.managers.delete(batch_user)
           end
-
-          # Copy team projects over
-          if ( team_projects = Collection.where("member_of_collection_ids_ssim:#{organization_team.id}") ).present?
-            team_projects.each do |project|
-              raise "Unexpected team project record" if !project.is_a?(Collection)
-              project.member_of_collections = [organization_collection]
-              project.save!
-            end
-            organization_team.save!
-          end
         end
 
         organization_collection.reload
@@ -147,7 +137,8 @@ module Morphosource
         # Postcondition for the manager assignments above: everything downstream,
         # including org-mode download-reviewer resolution, assumes an organization
         # has somewhere to resolve to. Fail here rather than produce an unmanaged
-        # organization; the legacy work is untouched until #complete_migration.
+        # organization. Checked before the team's projects are reparented below,
+        # so a failure leaves the legacy structure whole and the run repeatable.
         if organization_collection.managers.blank?
           raise "STEP 3 FAILED. Organization collection has no managers."
         end
@@ -158,6 +149,18 @@ module Morphosource
         if organization_collection.date_managed != expected_date_managed
           organization_collection.date_managed = expected_date_managed
           organization_collection.save!
+        end
+
+        if organization_team.present?
+          # Copy team projects over
+          if ( team_projects = Collection.where("member_of_collection_ids_ssim:#{organization_team.id}") ).present?
+            team_projects.each do |project|
+              raise "Unexpected team project record" if !project.is_a?(Collection)
+              project.member_of_collections = [organization_collection]
+              project.save!
+            end
+            organization_team.save!
+          end
         end
 
         ### STEP 4. All media associated with the org and owned by the data manager should be owned by the organization directly ###

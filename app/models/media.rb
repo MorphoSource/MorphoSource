@@ -434,45 +434,20 @@ class Media < Morphosource::Works::Base
   # Organization media transfer
   #
 
-  # TODO: Refactor when organization collections have been implemented on production.
   def transfer_media_to_organization
     org = organizations&.first
     case org
-    when Organization
-      transfer_media_to_organizational_team(org)
     when OrganizationCollection
       transfer_media_to_organization_collection(org)
+    when Organization
+      raise NotImplementedError, "Org teams are defunct; media organization must be an OrganizationCollection"
     end
   end
 
-  # TODO: Remove when organization collections have been implemented on production
-  # Create request to transfer ownership of media and/or move media to organization team or collection
-  # generally, don't use this for where media data manager == org data manager,
-  # but the method can handle this circumstance for use in developer console, etc
-  def transfer_media_to_organizational_team(org)
-    if (
-      org.present? &&
-      (new_manager_id = org&.data_manager&.first).present? &&
-      (new_manager = User.find_by_user_key(new_manager_id)).present?
-    )
-      # First, is media manager user the same as the new org data manager?
-      if ( new_manager.user_key == user_with_ownership || new_manager.user_key == on_behalf_of )
-        # don't create transfer, but add media to team and ensure no further transfers are created
-        add_to_organization_team
-        if self.organization_transfer_on_publish
-          self.organization_transfer_on_publish = false
-          self.save!
-        end
-      else
-        # create transfer, when accepted it will move media to team
-        create_new_organization_transfer_request(new_manager)
-      end
-    else
-      message = "Failed to transfer management of media #{id} to organization #{org&.id} with data manager #{org&.data_manager}"
-
-      Rails.logger.fatal message
-      raise message
-    end
+  # Org teams are defunct; all organizations now use OrganizationCollection.
+  # This method is kept as a tombstone so callers raise loudly rather than silently no-op.
+  def transfer_media_to_organizational_team(_org)
+    raise NotImplementedError, "Org teams are defunct; use transfer_media_to_organization_collection instead"
   end
 
   def transfer_media_to_organization_collection(org)
@@ -501,10 +476,10 @@ class Media < Morphosource::Works::Base
     end
   end
 
+  # Org teams are defunct; kept as a tombstone so any remaining legacy ProxyDepositRequests
+  # with receiving_user_type == "User" fail loudly instead of silently no-oping.
   def add_to_organization_team
-    if (org = organizations&.first).present? && (team = org.team).present?
-      AddCollectionMembersJob.perform_later(team.id, id)
-    end
+    raise NotImplementedError, "Org teams are defunct; organization transfers must use OrganizationCollection"
   end
 
   def create_new_organization_transfer_request(org_data_manager, force_update=false)
@@ -525,6 +500,8 @@ class Media < Morphosource::Works::Base
       sender_comment: message,
       organization_transfer: true
     )
+    # Flag that a transfer request is now pending; persisted by the calling method's save!
+    self.pending_org_transfer = true
   end
 
   # keeping external file methods for now, but these will be deleted once Simon's remote file changes are incorporated.

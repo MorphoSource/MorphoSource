@@ -51,6 +51,55 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
       end
     end
 
+    describe '#destroy' do
+      before do
+        allow(subject).to receive(:authorize!).with(:destroy, specimen).and_return(true)
+      end
+
+      context 'when the specimen has associated media' do
+        let(:device)        { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
+        let(:imaging_event) { ImagingEvent.create(title: ['imaging event'], device_id: [device.id.to_s], physical_object_id: [specimen.id], ie_modality: device.modality) }
+        let(:media)         { Media.create(title: ['media']) }
+
+        before do
+          imaging_event.ordered_members << media
+          [specimen, imaging_event, media].each(&:save)
+          [specimen, imaging_event, media].each(&:reload)
+        end
+
+        it 'blocks the destroy at the actor-stack level, before the Solr doc is touched' do
+          delete :destroy, params: { id: specimen.id }
+          expect(response).to have_http_status(:no_content)
+          expect(BiologicalSpecimen.exists?(specimen.id)).to be true
+        end
+      end
+
+      context 'when the specimen has no associated media' do
+        it 'destroys the specimen normally' do
+          delete :destroy, params: { id: specimen.id }
+          expect(BiologicalSpecimen.exists?(specimen.id)).to be false
+        end
+      end
+
+      context 'when the actor-stack guard misses media that the model-level guard catches' do
+        # Exercises the fallback: actor-stack guard (1st call) misses it, before_destroy
+        # (2nd call) blocks it -- after CleanupFileSetsActor already deleted the Solr doc.
+        before do
+          allow_any_instance_of(BiologicalSpecimen)
+            .to receive(:blocking_media_message)
+            .and_return(nil, 'Cannot delete this record while it still has associated media (media-1), which may not be public. Detach or reassign the media first.')
+        end
+
+        it 'does not destroy the underlying record, though the response gives no indication' do
+          delete :destroy, params: { id: specimen.id }
+          expect(response).to have_http_status(:no_content)
+          # .exists? is Solr-backed; CleanupFileSetsActor deletes the Solr doc before the
+          # guard runs, so .find (reads Fedora directly) is what actually proves this.
+          expect { BiologicalSpecimen.find(specimen.id) }.not_to raise_error
+        end
+      end
+    end
+
     describe '#update_media_team_access' do
       context "when the specimen's params don't include parent organization_id" do
         it 'returns nil for organization_id_param' do

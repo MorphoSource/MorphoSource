@@ -1,7 +1,7 @@
 {
   "devDependencies": {
     "@rails/webpacker": "^5.4.4",
-    "webpack-dev-server": "^5.2.1"
+    "webpack-dev-server": "^5.2.6"
   },
   "dependencies": {
     "@babel/plugin-proposal-private-methods": "^7.18.6",

@@ -7,10 +7,6 @@
   url: https://duke.atlassian.net/wiki/spaces/MD/overview?homepageId=35422252
   header: true
   footer: true
-- label: hyrax.controls.links.docs.guide
-  url: https://duke.atlassian.net/wiki/spaces/MD/pages/35422411/Standard+User+Docs
-  header: true
-  footer: false
 - label: hyrax.controls.links.docs.contributors
   url: https://duke.atlassian.net/wiki/spaces/MD/pages/35422310/Contributor+User+Docs
   header: true

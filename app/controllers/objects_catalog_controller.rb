@@ -4,6 +4,10 @@ class ObjectsCatalogController < CatalogController
 
   before_action :authenticate_api_key_optional, only: [:show_by_occurrence_id]
 
+  def catalog_search_form_action
+    main_app.object_search_path
+  end
+
   configure_blacklight do |config|
     config.search_builder_class = Morphosource::Catalog::ObjectsCatalogSearchBuilder
     # disable thumbnails

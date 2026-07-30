@@ -1,8 +1,8 @@
 module Morphosource
   # Hyrax::WorksControllerBehavior#destroy does `return unless actor.destroy(env)` --
   # a halted destroy leaves no flash/error response, just a silent empty 204. Mirrors
-  # the failure handling #create/#update already have. Must be `prepend`ed, not
-  # `include`d, or it's shadowed by Hyrax::WorksControllerBehavior#destroy.
+  # the failure handling #create/#update already have. Must be `include`d after
+  # Hyrax::WorksControllerBehavior, or this #destroy gets shadowed by it.
   module HaltedDestroyResponse
     def destroy
       # Non-AF (Valkyrie) concerns use super's transaction branch, which already raises on failure.

@@ -77,13 +77,13 @@ class CollectionRolesController < ApplicationController
 
   def update_subcollections
     find_subcollections
-    update_child_groups unless @subcollection_docs.empty?
+    update_child_groups if subcollection_docs.any?
     reset_collection_role_values
   end
 
   def update_child_groups
     @parent = @collection
-    child_ids = @subcollection_docs.map { |doc| doc['id'] }
+    child_ids = subcollection_docs.map { |doc| doc['id'] }
     child_ids.each do |id|
       update_child_collection(id)
     end
@@ -132,14 +132,32 @@ class CollectionRolesController < ApplicationController
   # and every affected subcollection before changing any role, so a rejected
   # parent update cannot partially change its child projects. Nothing downstream
   # re-checks, so this must run before any role is written.
+  #
+  # This guards the mutation point rather than the data: Collection#remove_parent_membership
+  # and the console can still empty a managers group.
   def last_manager_update_forbidden?
     return false unless manager_role_change?
-    return true if removing_last_manager_from?(collection) && last_manager_locked?(collection)
+    return true if sole_manager_of?(collection.id) && last_manager_locked?(collection)
 
-    subcollection_docs.any? do |doc|
-      child = Collection.find(doc['id'])
-      removing_last_manager_from?(child) && last_manager_locked?(child)
-    end
+    subcollection_docs.any? { |doc| last_manager_locked_for_doc?(doc) && sole_manager_of?(doc['id']) }
+  end
+
+  # Subcollections are checked from their search result: the managers group is
+  # named after the id and the model tells us whether the organization rule
+  # applies, so neither check has to load the record from Fedora. The lock is
+  # tested first because it is the cheaper of the two.
+  def last_manager_locked_for_doc?(doc)
+    Array(doc['has_model_ssim']).include?('OrganizationCollection') || !current_user.admin?
+  end
+
+  # Counts people rather than memberships: nothing stops a user being added to a
+  # role group twice, and a duplicated sole manager would otherwise inflate the
+  # count past the guard and let the last manager be removed.
+  def sole_manager_of?(collection_id)
+    managers_group = Collection.role_group(collection_id, :managers)
+    managers_group.present? &&
+      managers_group.users.include?(user) &&
+      managers_group.users.distinct.count < 2
   end
 
   # Only meaningful before the child walk reassigns @group, which is why the
@@ -148,16 +166,6 @@ class CollectionRolesController < ApplicationController
   def manager_role_change?
     managers_group = collection.managers_group
     managers_group.present? && @group == managers_group && (@remove || @new_group.present?)
-  end
-
-  # Counts people rather than memberships: nothing stops a user being added to a
-  # role group twice, and a duplicated sole manager would otherwise inflate the
-  # count past the guard and let the last manager be removed.
-  def removing_last_manager_from?(collection)
-    managers_group = collection.managers_group
-    managers_group.present? &&
-      managers_group.users.include?(user) &&
-      managers_group.users.distinct.count < 2
   end
 
   # Organizations must always retain at least one manager (even admins cannot
@@ -274,6 +282,7 @@ class CollectionRolesController < ApplicationController
   end
 
   # CollectionsControllerBehavior methods
+  # Primes the presenter and the subcollection memo for the rest of the request.
   def find_subcollections
     presenter
     subcollection_docs

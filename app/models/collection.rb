@@ -50,17 +50,23 @@ class Collection < ActiveFedora::Base
     team? || project?
   end
 
+  # A collection's role groups are named after its id, so they can be looked up
+  # from an id alone -- a search result, say -- without loading the record.
+  def self.role_group(collection_id, role)
+    Role.find_by(name: "#{collection_id}_#{role}")
+  end
+
   # managers_group, depositors_group, editors_group, downloaders_group, and viewers_group methods
   DEFAULT_GROUP_ROLES.each do |role|
     define_method("#{role}_group") do
-      Role.find_by(name: "#{id}_#{role}")
+      Collection.role_group(id, role)
     end
   end
 
   # managers, depositors, editors, downloaders, and viewers methods
   DEFAULT_GROUP_ROLES.each do |role|
     define_method(role) do
-      Role.find_by(name: "#{id}_#{role}")&.users || []
+      Collection.role_group(id, role)&.users || []
     end
   end
 
@@ -160,8 +166,7 @@ class Collection < ActiveFedora::Base
   # project does by copying them from its parent.
   def create_collection_groups(seed_manager: true)
     self.class::DEFAULT_GROUP_ROLES.each do |role|
-      name = "#{id}_#{role}"
-      Role.create(name: name) unless Role.find_by(name: name)
+      Role.create(name: "#{id}_#{role}") unless Collection.role_group(id, role)
     end
     add_default_manager if seed_manager
   end

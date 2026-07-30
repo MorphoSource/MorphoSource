@@ -50,8 +50,12 @@ class Collection < ActiveFedora::Base
     team? || project?
   end
 
-  # A collection's role groups are named after its id, so they can be looked up
-  # from an id alone -- a search result, say -- without loading the record.
+  # Role groups are named after the collection id, so they can be looked up without
+  # loading the record.
+  #
+  # @param [String] collection_id
+  # @param [String, Symbol] role One of DEFAULT_GROUP_ROLES
+  # @return [Role, nil] The role group, or nil if it does not exist
   def self.role_group(collection_id, role)
     Role.find_by(name: "#{collection_id}_#{role}")
   end
@@ -158,12 +162,10 @@ class Collection < ActiveFedora::Base
     organization.title
   end
 
-  # Create a role per DEFAULT_GROUP_ROLES for the collection, then seed its
-  # initial manager. Subclasses customize both: MediaList narrows
-  # DEFAULT_GROUP_ROLES, and OrganizationCollection overrides #default_manager to
-  # use the configured user rather than the depositor. Pass seed_manager: false
-  # when the caller supplies the managers itself, as the organization starter
-  # project does by copying them from its parent.
+  # Create a role per DEFAULT_GROUP_ROLES, then seed the collection's first manager.
+  #
+  # @param [Boolean] seed_manager Pass false when the caller supplies the managers
+  #   itself, as the organization starter project does by copying them from its parent.
   def create_collection_groups(seed_manager: true)
     self.class::DEFAULT_GROUP_ROLES.each do |role|
       Role.create(name: "#{id}_#{role}") unless Collection.role_group(id, role)
@@ -330,9 +332,7 @@ class Collection < ActiveFedora::Base
 
   private
 
-    # Seed the collection's initial manager. Subclasses choose who that is by
-    # overriding #default_manager; a nil return leaves the collection unmanaged,
-    # and it is that method's job to log if that is unexpected.
+    # Subclasses choose the initial manager by overriding #default_manager.
     def add_default_manager
       user = default_manager
       return if user.blank?

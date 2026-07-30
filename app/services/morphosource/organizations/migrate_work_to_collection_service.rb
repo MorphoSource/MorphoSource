@@ -68,10 +68,8 @@ module Morphosource
       end
 
       # For these attributes, value from org is primary.
-      # NB: date_managed is deliberately absent. OrganizationCollection derives it
-      # from its managers on save, so copying it here would be overwritten; the
-      # legacy value is applied afterwards, once the managers exist. See
-      # #migrated_management_date.
+      # NB: date_managed is deliberately absent -- it is derived from the managers
+      # and applied after they exist. See #migrated_management_date.
       def attributes_copied_from_organization
         ["title", "organization_type", "institution_code", "postal_code", "contact_person", "institution_name", "collection_code", "recordset_id", "permissions_enforcement_mode", "download_permission", "rights_holder_blank", "license_blank", "rights_statement_blank", "download_reviewer", "agreement_uri", "morphosource_use_agreement_type", "required_archival_of_published_derivatives", "permits_commercial_use", "permits_3d_use", "rights_holder", "preview_mode", "address", "city", "state_province", "country", "license", "rights_statement"]
       end
@@ -123,10 +121,7 @@ module Morphosource
           end
 
           # Remove batch user as org collection manager, but only once the team has
-          # supplied another one. The batch user is the collection's depositor, so
-          # it is the manager seeded at creation; a legacy organization with no
-          # data manager and no team managers would otherwise finish the migration
-          # with none at all.
+          # supplied another one -- as depositor, it is the manager seeded at creation.
           if organization_collection.managers.any? { |manager| manager != batch_user }
             organization_collection.managers.delete(batch_user)
           end
@@ -134,17 +129,13 @@ module Morphosource
 
         organization_collection.reload
 
-        # Postcondition for the manager assignments above: everything downstream,
-        # including org-mode download-reviewer resolution, assumes an organization
-        # has somewhere to resolve to. Fail here rather than produce an unmanaged
-        # organization. Checked before the team's projects are reparented below,
-        # so a failure leaves the legacy structure whole and the run repeatable.
+        # Fail rather than finish with an unmanaged organization. Checked before the
+        # projects are reparented, so a failure leaves the legacy structure repeatable.
         if organization_collection.managers.blank?
           raise "STEP 3 FAILED. Organization collection has no managers."
         end
 
-        # Apply the management date the collection should end up with, now that its
-        # managers are known.
+        # Apply the management date, now that the managers are known.
         date_managed = migrated_management_date
         if organization_collection.date_managed != date_managed
           organization_collection.date_managed = date_managed
@@ -629,25 +620,17 @@ module Morphosource
         @batch_user ||= User.batch_user
       end
 
-      # The management date to apply during migration. Only an externally managed
-      # organization keeps one, so an admin-managed collection gets none, which is
-      # what OrganizationCollection derives for itself on save. When the legacy
-      # work carried a date it wins; otherwise the derived date stands.
+      # The management date to apply during migration: none unless externally managed,
+      # otherwise the legacy work's date if it had one, else the derived date.
       def migrated_management_date
         return nil unless organization_collection.managed_by_non_admin?
 
         organization_work.date_managed.presence || organization_collection.date_managed
       end
 
-      # Validation counterpart to #migrated_management_date, which #is_migrated?
-      # deliberately does not call: that method's fallback arm reads the very
-      # field being checked, so comparing against it would assert x == x and
-      # detect no drift at all. #is_migrated? also runs in a later phase, by which
-      # point a date derived from Date.today is no longer reproducible.
-      #
-      # So assert only what is genuinely reproducible: no date unless the
-      # organization is externally managed, the legacy date when there was one,
-      # and otherwise that some date was derived.
+      # Validation counterpart to #migrated_management_date, which this deliberately
+      # does not call: its fallback arm reads the field under test, so comparing
+      # against it would assert x == x. Assert only what is reproducible.
       def management_date_migrated?
         actual = organization_collection.date_managed
         return actual.nil? unless organization_collection.managed_by_non_admin?

@@ -11,13 +11,10 @@ class OrganizationCollection < Collection
   before_save :convert_media_ownership_transfer
   before_save :record_date_managed
   after_create :create_collection_groups
-  # Must stay ahead of mint_ark. This issues a second write, and once an ark
-  # exists update_ark_status would otherwise reach EZID from inside it.
+  # Must stay ahead of mint_ark: with no ark yet, update_ark_status cannot reach EZID.
   after_create :persist_date_managed
   after_create :create_organization_project
   after_update :update_ark_status, unless: :persisting_date_managed?
-  # Needs no such guard: it returns early on an OrganizationCollection unless the
-  # title changed, and the reentrant write only ever dirties date_managed.
   after_update :index_related_works
   after_create :mint_ark
   after_destroy :delete_ark_if_reserved
@@ -135,12 +132,12 @@ class OrganizationCollection < Collection
     DeviceResource.where(organization_id: id)
   end
 
+  # @return [Boolean] true if any manager is not an admin
   def managed_by_non_admin?
     managers.any? { |manager| !manager.admin? }
   end
 
-  # Track when the organization first gains a non-admin manager. Admin managers
-  # keep the organization operational but do not make it externally managed.
+  # Track when the organization first gains a non-admin manager.
   def record_date_managed
     managed = managed_by_non_admin?
     return self.date_managed if managed && self.date_managed.present?
@@ -150,11 +147,8 @@ class OrganizationCollection < Collection
 
   private
 
-  # Managers cannot be seeded until the record has an id, so the management date
-  # derived from them needs a second write. Today that write cannot reach EZID
-  # anyway -- it runs before mint_ark, so update_ark_status returns on an empty
-  # ark -- but that holds only as long as the declared callback order does. Flag
-  # the write so a reordering cannot silently start calling EZID from inside it.
+  # Managers cannot be seeded until the record has an id, so the date derived from
+  # them needs a second write. Flagged so update_ark_status stays out of it.
   def persist_date_managed
     record_date_managed
     return unless date_managed_changed?
@@ -171,12 +165,8 @@ class OrganizationCollection < Collection
     @persisting_date_managed
   end
 
-  # Prefer the configured DEFAULT_ORGANIZATION_MANAGER (an ms_id), falling back
-  # to the depositor when the setting is unset or names no user. Seeding a manager
-  # here guarantees every normally-created organization begins with at least one,
-  # closing the edge case where org-mode download-reviewer resolution has no
-  # target. A misconfigured setting must not reopen it, so it degrades to the
-  # depositor rather than leaving the organization unmanaged.
+  # Prefer the configured manager (an ms_id), falling back to the depositor when it
+  # is unset or names no user, so a bad setting cannot leave an organization unmanaged.
   def default_manager
     ms_id = Morphosource.default_organization_manager
     return super if ms_id.blank?
@@ -188,8 +178,7 @@ class OrganizationCollection < Collection
     super
   end
 
-  # The starter project is managed by whoever manages the organization, not by
-  # the depositor, so it takes its members from the parent instead of seeding.
+  # Takes its managers from the organization rather than seeding the depositor.
   def create_organization_project
     project = example_organization_project
     project.create_collection_groups(seed_manager: false)

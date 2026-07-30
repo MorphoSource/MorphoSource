@@ -128,19 +128,11 @@ class CollectionRolesController < ApplicationController
     end
   end
 
-  # The single enforcement point for the last-manager rule: preflight the parent
-  # and every affected subcollection before changing any role, so a rejected
-  # parent update cannot partially change its child projects. Nothing downstream
-  # re-checks, so this must run before any role is written.
-  #
-  # Returns the title of the collection that blocks the update so the notice can
-  # name it, because the blocker is often a child project the user does not have
-  # open, and nil when nothing blocks.
-  #
-  # This guards the mutation point rather than the data: Collection#remove_parent_membership
-  # and the console can still empty a managers group. It is also not atomic --
-  # two concurrent removals of different managers can each observe the other and
-  # both succeed.
+  # Preflight the parent and its subcollections before any role is written, so a
+  # rejected parent update cannot partially change its child projects. Returns the
+  # blocking collection's title for the notice, or nil when nothing blocks.
+  # Guards this mutation point only -- remove_parent_membership and the console can
+  # still empty a managers group, and concurrent removals can race.
   def last_manager_blocker
     return @last_manager_blocker if defined?(@last_manager_blocker)
 
@@ -155,23 +147,15 @@ class CollectionRolesController < ApplicationController
     blocked && Array(blocked['title_tesim']).first
   end
 
-  # Organizations must always retain at least one manager (even admins cannot
-  # remove the last one) so org-mode download-reviewer resolution always has a
-  # target. Teams and Projects keep the existing admin override.
-  #
-  # Keyed on an id so a subcollection can be checked straight from its search
-  # result, without loading the record from Fedora: a collection's role groups
-  # are named after its id. Subcollections never pass organization: true --
-  # organizations are always top-level, so #subcollection_docs cannot return one.
-  #
-  # The lock is tested before the manager count because it costs no queries.
+  # Organizations must always retain a manager, so even admins are blocked; teams
+  # and projects keep the admin override. Keyed on an id so a subcollection can be
+  # checked from its search result without loading it from Fedora.
   def last_manager_locked?(collection_id, organization: false)
     (organization || !current_user.admin?) && sole_manager_of?(collection_id)
   end
 
-  # Counts people rather than memberships: nothing stops a user being added to a
-  # role group twice, and a duplicated sole manager would otherwise inflate the
-  # count past the guard and let the last manager be removed.
+  # Counts people, not memberships: a user can hold a role group twice, and a
+  # duplicated sole manager would otherwise read as two.
   def sole_manager_of?(collection_id)
     managers_group = Collection.role_group(collection_id, :managers)
     managers_group.present? &&
@@ -179,9 +163,8 @@ class CollectionRolesController < ApplicationController
       managers_group.users.distinct.count < 2
   end
 
-  # Only meaningful before the child walk reassigns @group, which is why the
-  # preflight is its sole caller. The presence check keeps a collection with no
-  # role groups from matching on nil == nil.
+  # Only valid before the child walk reassigns @group. The presence check stops a
+  # collection with no role groups from matching on nil == nil.
   def manager_role_change?
     managers_group = collection.managers_group
     managers_group.present? && @group == managers_group && (@remove || @new_group.present?)
@@ -300,11 +283,8 @@ class CollectionRolesController < ApplicationController
     subcollection_docs
   end
 
-  # The children of the collection this request is for. Keyed on params[:id]
-  # rather than #collection, which the child walk reassigns -- memoizing off a
-  # moving ivar would bind the memo to whichever collection happened to touch it
-  # first. Memoized because the last-manager preflight and the child role update
-  # both need these within one request.
+  # Keyed on params[:id] rather than #collection, which the child walk reassigns.
+  # Memoized: the preflight and the child role update both need these.
   def subcollection_docs
     @subcollection_docs ||=
       Morphosource::SolrService.new.get_docs("has_model_ssim:Collection AND member_of_collection_ids_ssim:#{params[:id]}")

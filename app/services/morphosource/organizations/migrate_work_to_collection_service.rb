@@ -67,9 +67,13 @@ module Morphosource
         ["creator", "contributor", "keyword",  "publisher", "subject", "language", "identifier", "based_near", "bibliographic_citation", "source", "can_submit_remote_files", "allowed_remote_source"]
       end
 
-      # For these attributes, value from org is primary
+      # For these attributes, value from org is primary.
+      # NB: date_managed is deliberately absent. OrganizationCollection derives it
+      # from its managers on save, so copying it here would be overwritten; the
+      # legacy value is applied afterwards, once the managers exist. See
+      # #expected_management_date.
       def attributes_copied_from_organization
-        ["title", "organization_type", "institution_code", "postal_code", "contact_person", "institution_name", "collection_code", "recordset_id", "permissions_enforcement_mode", "download_permission", "rights_holder_blank", "license_blank", "rights_statement_blank", "download_reviewer", "agreement_uri", "morphosource_use_agreement_type", "required_archival_of_published_derivatives", "permits_commercial_use", "permits_3d_use", "rights_holder", "preview_mode", "address", "city", "state_province", "country", "license", "rights_statement", "date_managed"]
+        ["title", "organization_type", "institution_code", "postal_code", "contact_person", "institution_name", "collection_code", "recordset_id", "permissions_enforcement_mode", "download_permission", "rights_holder_blank", "license_blank", "rights_statement_blank", "download_reviewer", "agreement_uri", "morphosource_use_agreement_type", "required_archival_of_published_derivatives", "permits_commercial_use", "permits_3d_use", "rights_holder", "preview_mode", "address", "city", "state_province", "country", "license", "rights_statement"]
       end
 
       # @!endgroup
@@ -148,11 +152,11 @@ module Morphosource
           raise "STEP 3 FAILED. Organization collection has no managers."
         end
 
-        # Preserve the legacy management date when a non-admin manager exists.
-        # Otherwise, OrganizationCollection derives (or clears) it from the
-        # newly assigned managers.
-        if organization_collection.managed_by_non_admin? && organization_work.date_managed.present? && organization_collection.date_managed != organization_work.date_managed
-          organization_collection.date_managed = organization_work.date_managed
+        # Apply the management date the collection should end up with, now that its
+        # managers are known. #is_migrated? validates against the same expectation.
+        expected_date_managed = expected_management_date
+        if organization_collection.date_managed != expected_date_managed
+          organization_collection.date_managed = expected_date_managed
           organization_collection.save!
         end
 
@@ -430,17 +434,11 @@ module Morphosource
         ### STEP 1. Has organization metadata been copied? ###
         Rails.logger.info "STEP 1. Has organization metadata been copied?"
 
-        copied_metadata = organization_metadata.except(:date_managed)
-        if !copied_metadata.all? { |field, value| organization_collection.send(field) == value }
+        if !organization_metadata.all? { |field, value| organization_collection.send(field) == value }
           raise "STEP 1 FAILED. Metadata not validated."
         end
-        if organization_collection.managed_by_non_admin? &&
-            organization_work.date_managed.present? &&
-            organization_collection.date_managed != organization_work.date_managed
-          raise "STEP 1 FAILED. Management date not validated."
-        end
-        if !organization_collection.managed_by_non_admin? && organization_collection.date_managed.present?
-          raise "STEP 1 FAILED. Management date not validated."
+        if organization_collection.date_managed != expected_management_date
+          raise "STEP 1 FAILED. Management date #{organization_collection.date_managed.inspect} is not the expected #{expected_management_date.inspect}."
         end
 
         ### STEP 2. Have all media, devices, and objects been removed from organization work? ###
@@ -626,6 +624,16 @@ module Morphosource
 
       def batch_user
         @batch_user ||= User.batch_user
+      end
+
+      # The management date the organization collection should end up with. Only an
+      # externally managed organization keeps one, so an admin-managed collection
+      # expects none, which is what OrganizationCollection derives for itself on
+      # save. Both the migration and its validation read this, so they cannot drift.
+      def expected_management_date
+        return nil unless organization_collection.managed_by_non_admin?
+
+        organization_work.date_managed.presence || organization_collection.date_managed
       end
 
       # @!endgroup

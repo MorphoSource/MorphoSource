@@ -148,8 +148,10 @@ class OrganizationCollection < Collection
   private
 
   # Managers cannot be seeded until the record has an id, so the management date
-  # derived from them needs a second write. Flag that write so update_ark_status
-  # cannot re-enter it regardless of where mint_ark sits in the callback chain.
+  # derived from them needs a second write. Today that write cannot reach EZID
+  # anyway -- it runs before mint_ark, so update_ark_status returns on an empty
+  # ark -- but that holds only as long as the declared callback order does. Flag
+  # the write so a reordering cannot silently start calling EZID from inside it.
   def persist_date_managed
     record_date_managed
     return unless date_managed_changed?
@@ -163,7 +165,7 @@ class OrganizationCollection < Collection
   end
 
   def persisting_date_managed?
-    @persisting_date_managed.present?
+    @persisting_date_managed
   end
 
   # Prefer the configured DEFAULT_ORGANIZATION_MANAGER (an ms_id), falling back

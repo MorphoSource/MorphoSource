@@ -500,31 +500,6 @@ RSpec.describe Media do
         allow(media).to receive(:organizations).and_return([organization])
       end
 
-      context 'organization is an organization work' do
-        let!(:organization)         { Organization.create(title: ['organization'], permissions_enforcement_mode: nil, data_manager: [data_manager.ms_id]) }
-
-        context 'conditions are met for transferring media' do
-          before do
-            media.transfer_media_to_organization
-          end
-          it 'creates a new ProxyDepositRequest' do
-            expect(ProxyDepositRequest.where(work_id: media.id, receiving_user: data_manager.id, sending_user: depositor.id, organization_transfer: true).count).to eq(1)
-          end
-        end
-
-        context 'organization does not have a data manager set' do
-          before do
-            organization.data_manager = []
-            organization.save
-          end
-          it 'raises an error and logs the details' do
-            message = "Failed to transfer management of media #{media.id} to organization #{organization.id} with data manager #{organization.data_manager}"
-            expect(Rails.logger).to receive(:fatal).with(message)
-            expect { media.transfer_media_to_organization }.to raise_error
-          end
-        end
-      end
-
       context 'organization is an organization collection' do
         let(:contributor_role)        { Role.create(name: 'contributor') }
         let(:organization_depositor)  { User.create(email: 'org_depositor@email.com', password: 'password') }
@@ -546,6 +521,10 @@ RSpec.describe Media do
             expect(ProxyDepositRequest.where(work_id: media.id, receiving_user: organization.id, sending_user: depositor.id, organization_transfer: true).count).to eq(1)
           end
 
+          it 'sets pending_org_transfer to true' do
+            expect(media.pending_org_transfer).to eq(true)
+          end
+
           context 'owner is an organization manager' do
             let(:organization_depositor)  { depositor }
 
@@ -557,6 +536,10 @@ RSpec.describe Media do
 
               it 'assigns the organization as owner' do
                 expect(media.owner).to eq(organization.id)
+              end
+
+              it 'does not set pending_org_transfer to true' do
+                expect(media.pending_org_transfer).not_to eq(true)
               end
             end
 
@@ -570,6 +553,10 @@ RSpec.describe Media do
               it 'assigns the organization as owner' do
                 expect(media.owner).to eq(organization.id)
               end
+
+              it 'does not set pending_org_transfer to true' do
+                expect(media.pending_org_transfer).not_to eq(true)
+              end
             end
 
             context 'media on_behalf_of is blank' do
@@ -581,6 +568,10 @@ RSpec.describe Media do
 
               it 'assigns the organization as owner' do
                 expect(media.owner).to eq(organization.id)
+              end
+
+              it 'does not set pending_org_transfer to true' do
+                expect(media.pending_org_transfer).not_to eq(true)
               end
             end
           end

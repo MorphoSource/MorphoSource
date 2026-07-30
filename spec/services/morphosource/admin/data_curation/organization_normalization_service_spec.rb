@@ -289,6 +289,18 @@ RSpec.describe Morphosource::DataCuration::OrganizationNormalizationService do
           end
         end
 
+        context 'media have pending_org_transfer set to true' do
+          before do
+            (old_data_manager_media + project_and_old_data_manager_media).each do |m|
+              m.pending_org_transfer = true
+              m.save!
+            end
+          end
+          it 'does not return the media' do
+            expect(subject.send(:media_ids)).to match_array([])
+          end
+        end
+
         context 'media have proxy deposit requests' do
           before do
             (old_data_manager_media + project_and_old_data_manager_media).each do |m|
@@ -313,6 +325,18 @@ RSpec.describe Morphosource::DataCuration::OrganizationNormalizationService do
             before do
               (project_media + project_and_old_data_manager_media).each do |m|
                 m.organization_transfer_on_publish = true
+                m.save!
+              end
+            end
+            it 'does not return the media' do
+              expect(subject.send(:media_ids)).to match_array([])
+            end
+          end
+
+          context 'media have pending_org_transfer set to true' do
+            before do
+              (project_media + project_and_old_data_manager_media).each do |m|
+                m.pending_org_transfer = true
                 m.save!
               end
             end
@@ -364,6 +388,18 @@ RSpec.describe Morphosource::DataCuration::OrganizationNormalizationService do
             end
           end
 
+          context 'media have pending_org_transfer set to true' do
+            before do
+              (project_media + project_and_old_data_manager_media).each do |m|
+                m.pending_org_transfer = true
+                m.save!
+              end
+            end
+            it 'does not return the media' do
+              expect(subject.send(:media_ids)).to match_array([])
+            end
+          end
+
           context 'media have proxy deposit requests' do
             before do
               Role.create(name: 'contributor')
@@ -392,6 +428,18 @@ RSpec.describe Morphosource::DataCuration::OrganizationNormalizationService do
           before do
             project_and_old_data_manager_media.each do |m|
               m.organization_transfer_on_publish = true
+              m.save!
+            end
+          end
+          it 'does not return the media' do
+            expect(subject.send(:media_ids)).to match_array([])
+          end
+        end
+
+        context 'media have pending_org_transfer set to true' do
+          before do
+            project_and_old_data_manager_media.each do |m|
+              m.pending_org_transfer = true
               m.save!
             end
           end

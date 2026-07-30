@@ -110,6 +110,30 @@ RSpec.describe Morphosource::Organizations::MigrateWorkToCollectionService do
       end
     end
 
+    # The legacy organization carries no date, so the migrated date is whatever
+    # the collection derived from its own managers. Validating by recomputing that
+    # fallback would compare the field against itself and pass on anything; an
+    # externally managed collection must still be caught if it loses its date.
+    context 'when an externally managed collection loses its management date' do
+      let(:default_manager) { create(:contributor) }
+
+      before do
+        allow(Morphosource).to receive(:default_organization_manager).and_return(default_manager.ms_id)
+        subject.migrate
+      end
+
+      it 'fails validation' do
+        expect(subject.organization_work.date_managed).to be_blank
+        expect(subject.organization_collection).to be_managed_by_non_admin
+        expect(subject.organization_collection.date_managed).to be_present
+        expect(subject.is_migrated?).to eq(true)
+
+        allow(subject.organization_collection).to receive(:date_managed).and_return(nil)
+
+        expect { subject.is_migrated? }.to raise_error(/STEP 1 FAILED. Management date/)
+      end
+    end
+
     describe '#complete_migration' do
       before do
         subject.migrate

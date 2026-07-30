@@ -71,7 +71,7 @@ module Morphosource
       # NB: date_managed is deliberately absent. OrganizationCollection derives it
       # from its managers on save, so copying it here would be overwritten; the
       # legacy value is applied afterwards, once the managers exist. See
-      # #expected_management_date.
+      # #migrated_management_date.
       def attributes_copied_from_organization
         ["title", "organization_type", "institution_code", "postal_code", "contact_person", "institution_name", "collection_code", "recordset_id", "permissions_enforcement_mode", "download_permission", "rights_holder_blank", "license_blank", "rights_statement_blank", "download_reviewer", "agreement_uri", "morphosource_use_agreement_type", "required_archival_of_published_derivatives", "permits_commercial_use", "permits_3d_use", "rights_holder", "preview_mode", "address", "city", "state_province", "country", "license", "rights_statement"]
       end
@@ -144,10 +144,10 @@ module Morphosource
         end
 
         # Apply the management date the collection should end up with, now that its
-        # managers are known. #is_migrated? validates against the same expectation.
-        expected_date_managed = expected_management_date
-        if organization_collection.date_managed != expected_date_managed
-          organization_collection.date_managed = expected_date_managed
+        # managers are known.
+        date_managed = migrated_management_date
+        if organization_collection.date_managed != date_managed
+          organization_collection.date_managed = date_managed
           organization_collection.save!
         end
 
@@ -440,8 +440,8 @@ module Morphosource
         if !organization_metadata.all? { |field, value| organization_collection.send(field) == value }
           raise "STEP 1 FAILED. Metadata not validated."
         end
-        if organization_collection.date_managed != expected_management_date
-          raise "STEP 1 FAILED. Management date #{organization_collection.date_managed.inspect} is not the expected #{expected_management_date.inspect}."
+        if !management_date_migrated?
+          raise "STEP 1 FAILED. Management date #{organization_collection.date_managed.inspect} does not match the collection's managers and the legacy date #{organization_work.date_managed.inspect}."
         end
 
         ### STEP 2. Have all media, devices, and objects been removed from organization work? ###
@@ -629,14 +629,31 @@ module Morphosource
         @batch_user ||= User.batch_user
       end
 
-      # The management date the organization collection should end up with. Only an
-      # externally managed organization keeps one, so an admin-managed collection
-      # expects none, which is what OrganizationCollection derives for itself on
-      # save. Both the migration and its validation read this, so they cannot drift.
-      def expected_management_date
+      # The management date to apply during migration. Only an externally managed
+      # organization keeps one, so an admin-managed collection gets none, which is
+      # what OrganizationCollection derives for itself on save. When the legacy
+      # work carried a date it wins; otherwise the derived date stands.
+      def migrated_management_date
         return nil unless organization_collection.managed_by_non_admin?
 
         organization_work.date_managed.presence || organization_collection.date_managed
+      end
+
+      # Validation counterpart to #migrated_management_date, which #is_migrated?
+      # deliberately does not call: that method's fallback arm reads the very
+      # field being checked, so comparing against it would assert x == x and
+      # detect no drift at all. #is_migrated? also runs in a later phase, by which
+      # point a date derived from Date.today is no longer reproducible.
+      #
+      # So assert only what is genuinely reproducible: no date unless the
+      # organization is externally managed, the legacy date when there was one,
+      # and otherwise that some date was derived.
+      def management_date_migrated?
+        actual = organization_collection.date_managed
+        return actual.nil? unless organization_collection.managed_by_non_admin?
+
+        legacy_date = organization_work.date_managed.presence
+        legacy_date ? actual == legacy_date : actual.present?
       end
 
       # @!endgroup

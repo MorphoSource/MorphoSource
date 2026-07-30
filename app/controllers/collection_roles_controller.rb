@@ -13,7 +13,7 @@ class CollectionRolesController < ApplicationController
   def update_collection_groups
     return unless can? :edit, collection
     if users_are_eligible?
-      if last_manager_update_forbidden?
+      if last_manager_blocker
         update_notice('last_manager')
       else
         update_subcollections
@@ -133,15 +133,26 @@ class CollectionRolesController < ApplicationController
   # parent update cannot partially change its child projects. Nothing downstream
   # re-checks, so this must run before any role is written.
   #
+  # Returns the title of the collection that blocks the update so the notice can
+  # name it, because the blocker is often a child project the user does not have
+  # open, and nil when nothing blocks.
+  #
   # This guards the mutation point rather than the data: Collection#remove_parent_membership
   # and the console can still empty a managers group. It is also not atomic --
   # two concurrent removals of different managers can each observe the other and
   # both succeed.
-  def last_manager_update_forbidden?
-    return false unless manager_role_change?
-    return true if last_manager_locked?(collection.id, organization: collection.organization_collection?)
+  def last_manager_blocker
+    return @last_manager_blocker if defined?(@last_manager_blocker)
 
-    subcollection_docs.any? { |doc| last_manager_locked?(doc['id']) }
+    @last_manager_blocker = find_last_manager_blocker
+  end
+
+  def find_last_manager_blocker
+    return nil unless manager_role_change?
+    return collection.title.first if last_manager_locked?(collection.id, organization: collection.organization_collection?)
+
+    blocked = subcollection_docs.find { |doc| last_manager_locked?(doc['id']) }
+    blocked && Array(blocked['title_tesim']).first
   end
 
   # Organizations must always retain at least one manager (even admins cannot
@@ -272,7 +283,7 @@ class CollectionRolesController < ApplicationController
       roles = t("morphosource.dashboard.collections.#{@collection.collection_type.machine_id}.members.roles.non-contributor")
       flash[:error] = translate('morphosource.dashboard.collections.form.non_contributor_errors', user: user, emails: emails, access: access, roles: roles)
     when 'last_manager'
-      flash[:error] = "Cannot remove the last manager from this collection."
+      flash[:error] = translate('morphosource.dashboard.collections.form.last_manager_errors', title: last_manager_blocker)
     when 'duplicate'
       flash[:error] = "#{@user.name} is already a member of #{@collection.title.first}"
     end

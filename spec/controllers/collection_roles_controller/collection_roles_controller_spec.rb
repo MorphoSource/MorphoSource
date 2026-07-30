@@ -770,7 +770,7 @@ RSpec.describe CollectionRolesController, type: :controller do
       before do
         allow(subject).to receive(:users_are_eligible?).and_return(true)
         allow(subject).to receive(:update_subcollections).and_return(true)
-        allow(subject).to receive(:last_manager_update_forbidden?).and_return(false)
+        allow(subject).to receive(:last_manager_blocker).and_return(nil)
         Timecop.freeze(Time.local(1999, 9, 9, 9))
       end
 
@@ -1063,6 +1063,15 @@ RSpec.describe CollectionRolesController, type: :controller do
         expect(flash[:error]).to match('Cannot remove the last manager')
         expect(team.managers).to include(another_user)
         expect(project.managers).to include(another_user)
+      end
+
+      # The blocker is a collection the user did not act on and may not know
+      # exists, so naming the team they are looking at would misdirect them.
+      it 'names the blocking child project rather than the team' do
+        post :update_collection_groups, params: params
+
+        expect(flash[:error]).to match('Child Project')
+        expect(flash[:error]).not_to match(team.title.first)
       end
     end
 

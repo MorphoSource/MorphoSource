@@ -147,8 +147,7 @@ class OrganizationCollection < Collection
 
   private
 
-  # Managers cannot be seeded until the record has an id, so the date derived from
-  # them needs a second write. Flagged so update_ark_status stays out of it.
+  # Managers cannot be seeded until the record has an id, so the date derived from them needs a second write.
   def persist_date_managed
     record_date_managed
     return unless date_managed_changed?
@@ -165,8 +164,7 @@ class OrganizationCollection < Collection
     @persisting_date_managed
   end
 
-  # Prefer the configured manager (an ms_id), falling back to the depositor when it
-  # is unset or names no user, so a bad setting cannot leave an organization unmanaged.
+  # Prefer the configured manager (an ms_id), falling back to the depositor.
   def default_manager
     ms_id = Morphosource.default_organization_manager
     return super if ms_id.blank?

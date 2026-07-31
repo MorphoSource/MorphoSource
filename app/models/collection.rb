@@ -50,9 +50,6 @@ class Collection < ActiveFedora::Base
     team? || project?
   end
 
-  # Role groups are named after the collection id, so they can be looked up without
-  # loading the record.
-  #
   # @param [String] collection_id
   # @param [String, Symbol] role One of DEFAULT_GROUP_ROLES
   # @return [Role, nil] The role group, or nil if it does not exist
@@ -162,8 +159,7 @@ class Collection < ActiveFedora::Base
     organization.title
   end
 
-  # Create a role per DEFAULT_GROUP_ROLES, then seed the collection's first manager.
-  #
+
   # @param [Boolean] seed_manager Pass false when the caller supplies the managers
   #   itself, as the organization starter project does by copying them from its parent.
   def create_collection_groups(seed_manager: true)

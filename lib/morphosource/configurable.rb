@@ -25,12 +25,9 @@ module Morphosource
         ENV["MS_TEST_USR"] || "NOT_SET"
       end
 
-      # ms_id of the user seeded as the default manager for newly created
-      # organization collections. Guarantees every organization has at least
-      # one manager so org-mode download-reviewer resolution always has a
-      # target. nil when unset, which falls back to the organization depositor.
+      # ms_id of the user seeded as the default organization manager
       mattr_accessor :default_organization_manager do
-        ENV["DEFAULT_ORGANIZATION_MANAGER"].presence
+        ENV['BATCH_USER_KEY']
       end
 
       # Allowed formats for uploads based on selected Media type

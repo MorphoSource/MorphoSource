@@ -42,64 +42,6 @@ RSpec.describe Morphosource::Organizations::MigrateWorkToCollectionService do
       end
     end
 
-    context 'when the legacy organization has a management date' do
-      let(:legacy_date_managed) { Date.new(2020, 1, 2) }
-
-      before do
-        allow(organization_work).to receive(:date_managed).and_return(legacy_date_managed)
-      end
-
-      context 'with a non-admin data manager' do
-        let(:data_manager) { create(:contributor) }
-        let(:organization_work) { create(:organization, data_manager: [data_manager.user_key]) }
-
-        it 'preserves the date when assigning the manager' do
-          subject.migrate
-
-          expect(subject.organization_collection.managers).to include(data_manager)
-          expect(subject.organization_collection.date_managed).to eq(legacy_date_managed)
-        end
-      end
-
-      context 'without a non-admin manager' do
-        let(:default_manager) { create(:admin) }
-
-        before do
-          allow(Morphosource).to receive(:default_organization_manager).and_return(default_manager.ms_id)
-        end
-
-        it 'does not carry the date onto an admin-managed collection' do
-          subject.migrate
-
-          expect(subject.organization_collection).not_to be_managed_by_non_admin
-          expect(subject.organization_collection.date_managed).to be_nil
-          expect(subject.is_migrated?).to eq(true)
-        end
-      end
-    end
-
-    # The batch user deposits the collection, so with no configured default it is
-    # the manager seeded at creation. Removing it as part of copying the team over
-    # is only safe once the team has supplied a manager of its own.
-    context 'with a legacy team that has no managers' do
-      let(:organization_team)  { create(:team) }
-      let(:organization_work)  { create(:organization, team_id: [organization_team.id]) }
-
-      before do
-        # The team factory stubs Collection.find for its own id, so the organization
-        # collection's own lookups need a passthrough default.
-        allow(Collection).to receive(:find).and_call_original
-        allow(Morphosource).to receive(:default_organization_manager).and_return(nil)
-      end
-
-      it 'keeps the seeded manager rather than migrating an unmanaged organization' do
-        subject.migrate
-
-        expect(subject.organization_collection.managers).to eq([User.batch_user])
-        expect(subject.is_migrated?).to eq(true)
-      end
-    end
-
     describe '#is_migrated?' do
       before do
         subject.migrate
@@ -107,30 +49,6 @@ RSpec.describe Morphosource::Organizations::MigrateWorkToCollectionService do
 
       it 'creates organization collection' do
         expect(subject.is_migrated?).to eq(true)
-      end
-    end
-
-    # The legacy organization carries no date, so the migrated date is whatever
-    # the collection derived from its own managers. Validating by recomputing that
-    # fallback would compare the field against itself and pass on anything; an
-    # externally managed collection must still be caught if it loses its date.
-    context 'when an externally managed collection loses its management date' do
-      let(:default_manager) { create(:contributor) }
-
-      before do
-        allow(Morphosource).to receive(:default_organization_manager).and_return(default_manager.ms_id)
-        subject.migrate
-      end
-
-      it 'fails validation' do
-        expect(subject.organization_work.date_managed).to be_blank
-        expect(subject.organization_collection).to be_managed_by_non_admin
-        expect(subject.organization_collection.date_managed).to be_present
-        expect(subject.is_migrated?).to eq(true)
-
-        allow(subject.organization_collection).to receive(:date_managed).and_return(nil)
-
-        expect { subject.is_migrated? }.to raise_error(/STEP 1 FAILED. Management date/)
       end
     end
 

@@ -128,11 +128,8 @@ class CollectionRolesController < ApplicationController
     end
   end
 
-  # Preflight the parent and its subcollections before any role is written, so a
-  # rejected parent update cannot partially change its child projects. Returns the
-  # blocking collection's title for the notice, or nil when nothing blocks.
-  # Guards this mutation point only -- remove_parent_membership and the console can
-  # still empty a managers group, and concurrent removals can race.
+  # Check the parent and its subcollections before any role is written, so a
+  # rejected parent update cannot partially change its child projects.
   def last_manager_blocker
     return @last_manager_blocker if defined?(@last_manager_blocker)
 
@@ -148,14 +145,11 @@ class CollectionRolesController < ApplicationController
   end
 
   # Organizations must always retain a manager, so even admins are blocked; teams
-  # and projects keep the admin override. Keyed on an id so a subcollection can be
-  # checked from its search result without loading it from Fedora.
+  # and projects keep the admin override.
   def last_manager_locked?(collection_id, organization: false)
     (organization || !current_user.admin?) && sole_manager_of?(collection_id)
   end
 
-  # Counts people, not memberships: a user can hold a role group twice, and a
-  # duplicated sole manager would otherwise read as two.
   def sole_manager_of?(collection_id)
     managers_group = Collection.role_group(collection_id, :managers)
     managers_group.present? &&
@@ -163,8 +157,6 @@ class CollectionRolesController < ApplicationController
       managers_group.users.distinct.count < 2
   end
 
-  # Only valid before the child walk reassigns @group. The presence check stops a
-  # collection with no role groups from matching on nil == nil.
   def manager_role_change?
     managers_group = collection.managers_group
     managers_group.present? && @group == managers_group && (@remove || @new_group.present?)

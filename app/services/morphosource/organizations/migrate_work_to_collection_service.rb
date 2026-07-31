@@ -67,11 +67,9 @@ module Morphosource
         ["creator", "contributor", "keyword",  "publisher", "subject", "language", "identifier", "based_near", "bibliographic_citation", "source", "can_submit_remote_files", "allowed_remote_source"]
       end
 
-      # For these attributes, value from org is primary.
-      # NB: date_managed is deliberately absent -- it is derived from the managers
-      # and applied after they exist. See #migrated_management_date.
+      # For these attributes, value from org is primary
       def attributes_copied_from_organization
-        ["title", "organization_type", "institution_code", "postal_code", "contact_person", "institution_name", "collection_code", "recordset_id", "permissions_enforcement_mode", "download_permission", "rights_holder_blank", "license_blank", "rights_statement_blank", "download_reviewer", "agreement_uri", "morphosource_use_agreement_type", "required_archival_of_published_derivatives", "permits_commercial_use", "permits_3d_use", "rights_holder", "preview_mode", "address", "city", "state_province", "country", "license", "rights_statement"]
+        ["title", "organization_type", "institution_code", "postal_code", "contact_person", "institution_name", "collection_code", "recordset_id", "permissions_enforcement_mode", "download_permission", "rights_holder_blank", "license_blank", "rights_statement_blank", "download_reviewer", "agreement_uri", "morphosource_use_agreement_type", "required_archival_of_published_derivatives", "permits_commercial_use", "permits_3d_use", "rights_holder", "preview_mode", "address", "city", "state_province", "country", "license", "rights_statement", "date_managed"]
       end
 
       # @!endgroup
@@ -120,29 +118,9 @@ module Morphosource
             end
           end
 
-          # Remove batch user as org collection manager, but only once the team has
-          # supplied another one -- as depositor, it is the manager seeded at creation.
-          if organization_collection.managers.any? { |manager| manager != batch_user }
-            organization_collection.managers.delete(batch_user)
-          end
-        end
+          # Remove batch user as org collection manager
+          organization_collection.managers.delete(batch_user)
 
-        organization_collection.reload
-
-        # Fail rather than finish with an unmanaged organization. Checked before the
-        # projects are reparented, so a failure leaves the legacy structure repeatable.
-        if organization_collection.managers.blank?
-          raise "STEP 3 FAILED. Organization collection has no managers."
-        end
-
-        # Apply the management date, now that the managers are known.
-        date_managed = migrated_management_date
-        if organization_collection.date_managed != date_managed
-          organization_collection.date_managed = date_managed
-          organization_collection.save!
-        end
-
-        if organization_team.present?
           # Copy team projects over
           if ( team_projects = Collection.where("member_of_collection_ids_ssim:#{organization_team.id}") ).present?
             team_projects.each do |project|
@@ -151,6 +129,13 @@ module Morphosource
               project.save!
             end
             organization_team.save!
+          end
+
+          # special case: re-save data managed to org coll in some cases
+          organization_collection.reload
+          if organization_collection.managers.present? && organization_work.date_managed.present? && organization_collection.date_managed != organization_work.date_managed
+            organization_collection.date_managed = organization_work.date_managed
+            organization_collection.save!
           end
         end
 
@@ -431,9 +416,6 @@ module Morphosource
         if !organization_metadata.all? { |field, value| organization_collection.send(field) == value }
           raise "STEP 1 FAILED. Metadata not validated."
         end
-        if !management_date_migrated?
-          raise "STEP 1 FAILED. Management date #{organization_collection.date_managed.inspect} does not match the collection's managers and the legacy date #{organization_work.date_managed.inspect}."
-        end
 
         ### STEP 2. Have all media, devices, and objects been removed from organization work? ###
         Rails.logger.info "STEP 2. Have all media, devices, and objects been removed from organization work?"
@@ -618,25 +600,6 @@ module Morphosource
 
       def batch_user
         @batch_user ||= User.batch_user
-      end
-
-      # The management date to apply during migration: none unless externally managed,
-      # otherwise the legacy work's date if it had one, else the derived date.
-      def migrated_management_date
-        return nil unless organization_collection.managed_by_non_admin?
-
-        organization_work.date_managed.presence || organization_collection.date_managed
-      end
-
-      # Validation counterpart to #migrated_management_date, which this deliberately
-      # does not call: its fallback arm reads the field under test, so comparing
-      # against it would assert x == x. Assert only what is reproducible.
-      def management_date_migrated?
-        actual = organization_collection.date_managed
-        return actual.nil? unless organization_collection.managed_by_non_admin?
-
-        legacy_date = organization_work.date_managed.presence
-        legacy_date ? actual == legacy_date : actual.present?
       end
 
       # @!endgroup

@@ -70,6 +70,44 @@ RSpec.describe Hyrax::CulturalHeritageObjectsController do
         end
       end
 
+      context 'when the cho has associated media' do
+        let(:device)        { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
+        let(:imaging_event) { ImagingEvent.create(title: ['imaging event'], device_id: [device.id.to_s], physical_object_id: [cho.id], ie_modality: device.modality) }
+        let(:media)         { Media.create(title: ['media']) }
+
+        before do
+          imaging_event.ordered_members << media
+          [cho, imaging_event, media].each(&:save)
+          [cho, imaging_event, media].each(&:reload)
+        end
+
+        it 'blocks the destroy at the actor-stack level and surfaces the has-media error' do
+          delete :destroy, params: { id: cho.id }
+          expect(response).to have_http_status(:found)
+          expect(flash[:alert]).to match(/associated media/)
+          expect(CulturalHeritageObject.exists?(cho.id)).to be true
+        end
+      end
+
+      context 'when the actor-stack guard misses media that the model-level guard catches' do
+        # Exercises the fallback: actor-stack guard (1st call) misses it, before_destroy
+        # (2nd call) blocks it -- after CleanupFileSetsActor already deleted the Solr doc.
+        before do
+          allow_any_instance_of(CulturalHeritageObject)
+            .to receive(:blocking_media_message)
+            .and_return(nil, 'Cannot delete this record while it still has associated media (media-1), which may not be public. Detach or reassign the media first.')
+        end
+
+        it 'does not destroy the underlying record and surfaces an error instead of a silent 204' do
+          delete :destroy, params: { id: cho.id }
+          expect(response).to have_http_status(:found)
+          expect(flash[:alert]).to eq('Cannot delete this record while it still has associated media (media-1), which may not be public. Detach or reassign the media first.')
+          # .exists? is Solr-backed; CleanupFileSetsActor deletes the Solr doc before the
+          # guard runs, so .find (reads Fedora directly) is what actually proves this.
+          expect { CulturalHeritageObject.find(cho.id) }.not_to raise_error
+        end
+      end
+
       context 'when the destroy is halted and populates errors' do
         before do
           allow_any_instance_of(CulturalHeritageObject).to receive(:destroy) do |record|
@@ -113,55 +151,6 @@ RSpec.describe Hyrax::CulturalHeritageObjectsController do
           expect(subject).to receive(:update_media_team_access)
           expect(subject).to receive(:update_po_team_access)
           patch :update, params: params
-        end
-      end
-    end
-
-    describe '#destroy' do
-      before do
-        allow(subject).to receive(:authorize!).with(:destroy, cho).and_return(true)
-      end
-
-      context 'when the cho has associated media' do
-        let(:device)        { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
-        let(:imaging_event) { ImagingEvent.create(title: ['imaging event'], device_id: [device.id.to_s], physical_object_id: [cho.id], ie_modality: device.modality) }
-        let(:media)         { Media.create(title: ['media']) }
-
-        before do
-          imaging_event.ordered_members << media
-          [cho, imaging_event, media].each(&:save)
-          [cho, imaging_event, media].each(&:reload)
-        end
-
-        it 'blocks the destroy at the actor-stack level, before the Solr doc is touched' do
-          delete :destroy, params: { id: cho.id }
-          expect(response).to have_http_status(:no_content)
-          expect(CulturalHeritageObject.exists?(cho.id)).to be true
-        end
-      end
-
-      context 'when the cho has no associated media' do
-        it 'destroys the cho normally' do
-          delete :destroy, params: { id: cho.id }
-          expect(CulturalHeritageObject.exists?(cho.id)).to be false
-        end
-      end
-
-      context 'when the actor-stack guard misses media that the model-level guard catches' do
-        # Exercises the fallback: actor-stack guard (1st call) misses it, before_destroy
-        # (2nd call) blocks it -- after CleanupFileSetsActor already deleted the Solr doc.
-        before do
-          allow_any_instance_of(CulturalHeritageObject)
-            .to receive(:blocking_media_message)
-            .and_return(nil, 'Cannot delete this record while it still has associated media (media-1), which may not be public. Detach or reassign the media first.')
-        end
-
-        it 'does not destroy the underlying record, though the response gives no indication' do
-          delete :destroy, params: { id: cho.id }
-          expect(response).to have_http_status(:no_content)
-          # .exists? is Solr-backed; CleanupFileSetsActor deletes the Solr doc before the
-          # guard runs, so .find (reads Fedora directly) is what actually proves this.
-          expect { CulturalHeritageObject.find(cho.id) }.not_to raise_error
         end
       end
     end

@@ -56,6 +56,13 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
         allow(subject).to receive(:authorize!).with(:destroy, specimen).and_return(true)
       end
 
+      context 'when the destroy is not halted' do
+        it 'destroys the specimen' do
+          delete :destroy, params: { id: specimen.id }
+          expect(BiologicalSpecimen.exists?(specimen.id)).to be false
+        end
+      end
+
       context 'when the specimen has associated media' do
         let(:device)        { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
         let(:imaging_event) { ImagingEvent.create(title: ['imaging event'], device_id: [device.id.to_s], physical_object_id: [specimen.id], ie_modality: device.modality) }
@@ -67,17 +74,11 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
           [specimen, imaging_event, media].each(&:reload)
         end
 
-        it 'blocks the destroy at the actor-stack level, before the Solr doc is touched' do
+        it 'blocks the destroy at the actor-stack level and surfaces the has-media error' do
           delete :destroy, params: { id: specimen.id }
-          expect(response).to have_http_status(:no_content)
+          expect(response).to have_http_status(:found)
+          expect(flash[:alert]).to match(/associated media/)
           expect(BiologicalSpecimen.exists?(specimen.id)).to be true
-        end
-      end
-
-      context 'when the specimen has no associated media' do
-        it 'destroys the specimen normally' do
-          delete :destroy, params: { id: specimen.id }
-          expect(BiologicalSpecimen.exists?(specimen.id)).to be false
         end
       end
 
@@ -90,12 +91,48 @@ RSpec.describe Hyrax::BiologicalSpecimensController do
             .and_return(nil, 'Cannot delete this record while it still has associated media (media-1), which may not be public. Detach or reassign the media first.')
         end
 
-        it 'does not destroy the underlying record, though the response gives no indication' do
+        it 'does not destroy the underlying record and surfaces an error instead of a silent 204' do
           delete :destroy, params: { id: specimen.id }
-          expect(response).to have_http_status(:no_content)
+          expect(response).to have_http_status(:found)
+          expect(flash[:alert]).to eq('Cannot delete this record while it still has associated media (media-1), which may not be public. Detach or reassign the media first.')
           # .exists? is Solr-backed; CleanupFileSetsActor deletes the Solr doc before the
           # guard runs, so .find (reads Fedora directly) is what actually proves this.
           expect { BiologicalSpecimen.find(specimen.id) }.not_to raise_error
+        end
+      end
+
+      context 'when the destroy is halted and populates errors' do
+        before do
+          allow_any_instance_of(BiologicalSpecimen).to receive(:destroy) do |record|
+            record.errors.add(:base, 'boom')
+            false
+          end
+        end
+
+        it 'does not destroy the specimen and redirects with the error instead of a silent 204' do
+          delete :destroy, params: { id: specimen.id }
+          expect(response).to have_http_status(:found)
+          expect(flash[:alert]).to eq('boom')
+          # .exists? is Solr-backed; CleanupFileSetsActor deletes the Solr doc before
+          # the model-level destroy runs, so .find (reads Fedora directly) is what
+          # actually proves the record survived.
+          expect { BiologicalSpecimen.find(specimen.id) }.not_to raise_error
+        end
+
+        it 'renders an unprocessable_entity json response' do
+          delete :destroy, params: { id: specimen.id, format: :json }
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+      end
+
+      context 'when the destroy is halted without populating errors' do
+        before do
+          allow_any_instance_of(BiologicalSpecimen).to receive(:destroy).and_return(false)
+        end
+
+        it 'falls back to a generic unable-to-delete message' do
+          delete :destroy, params: { id: specimen.id }
+          expect(flash[:alert]).to match(/\AUnable to delete .*specimen\.\z/)
         end
       end
     end

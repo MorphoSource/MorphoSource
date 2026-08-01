@@ -21,7 +21,7 @@ module Morphosource
 		  # No rollback on a mid-loop failure: already-reassigned IEs stay reassigned. Safe
 		  # but incomplete -- a retry picks up the rest.
 		  bso_from.media.each do |m|
-        # detach media's IE, add IE under target bso, reindex bso (reindex media and related media should be triggered after)
+        # detach media's IE, add IE under target bso
         media_list << m.id
         ie = m.imaging_event
         ie_list << ie.id
@@ -30,6 +30,10 @@ module Morphosource
           # Deliberately fatal -- the caller stops the run instead of skipping and continuing.
           raise "Failed to reassign ImagingEvent #{ie.id} (media #{m.id}) from specimen #{@merge_from} to #{@merge_to}"
         end
+        # Media's own Solr doc caches physical_object_id_ssim -- it won't reflect the
+        # reassigned IE until the media itself is reindexed, so do that explicitly here
+        # rather than relying on some other reindex path to eventually cover it.
+        UpdateWorkIndexJob.perform_later(m.id) unless @report_only
 		  end
       if media_list.present? && !@report_only
         # reindex bso_to specimens (ie.save above will reindex bso_from specimens)

@@ -62,16 +62,9 @@ RSpec.describe Morphosource::MergeBiologicalSpecimenService do
       expect(media_list.sort).to eq(media_set_1.map(&:id).sort)
       expect(ie_list.count).to eq(media_set_1.count)
 
-      # Under heavy concurrent Solr write load (e.g. full suite runs), the reassigned
-      # media's reindex can lag behind a single commit -- retry briefly before failing.
+      ActiveFedora::SolrService.commit
+      merged_specimen_media_ids = specimen[0].media.map(&:id).sort
       all_created_media_ids = (media_set_0 + media_set_1).map(&:id).sort
-      merged_specimen_media_ids = nil
-      5.times do
-        ActiveFedora::SolrService.commit
-        merged_specimen_media_ids = specimen[0].media.map(&:id).sort
-        break if merged_specimen_media_ids == all_created_media_ids
-        sleep 0.5
-      end
       expect(merged_specimen_media_ids).to eq(all_created_media_ids)
 
       expect(ActiveFedora::Base.exists?(specimen[1].id)).to be false

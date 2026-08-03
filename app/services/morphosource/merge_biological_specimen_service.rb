@@ -48,7 +48,7 @@ module Morphosource
 		  	    outcome = :destroyed
 		  	    puts " specimen #{@merge_from} destroyed"
 		  	  else
-		  	    outcome = :destroy_vetoed_by_guard
+		  	    outcome = :not_destroyed_has_media_guard
 		  	    puts " specimen #{@merge_from} NOT destroyed -- destroy call was vetoed (e.g. by the has-media guard): #{bso_from.errors.full_messages.join('; ')}"
 		  	  end
 		  	end

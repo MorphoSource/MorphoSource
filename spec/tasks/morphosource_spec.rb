@@ -362,12 +362,12 @@ describe 'morphosource rake tasks' do
         end
       end
 
-      context 'and the merge service returns a destroy_vetoed_by_guard outcome' do
+      context 'and the merge service returns a not_destroyed_has_media_guard outcome' do
         before { Hyrax.config.system_report_recipients = 'test@example.com' }
 
         it 'flags the email as needing attention' do
           allow(Morphosource::MergeBiologicalSpecimenService).to receive(:call)
-            .and_return([[], [], :destroy_vetoed_by_guard])
+            .and_return([[], [], :not_destroyed_has_media_guard])
 
           find_and_merge_duplicate_specimens.invoke('true', 'true')
 

@@ -361,6 +361,36 @@ describe 'morphosource rake tasks' do
           expect(ActionMailer::Base.deliveries.first.text_part.body.to_s).to include('NOT destroyed')
         end
       end
+
+      context 'and the merge service returns a not_destroyed_pending_reindex outcome' do
+        before { Hyrax.config.system_report_recipients = 'test@example.com' }
+
+        it 'flags the email as needing attention' do
+          allow(Morphosource::MergeBiologicalSpecimenService).to receive(:call)
+            .and_return([[], [], :not_destroyed_pending_reindex])
+
+          find_and_merge_duplicate_specimens.invoke('true', 'true')
+
+          expect(ActionMailer::Base.deliveries.count).to eq(1)
+          expect(ActionMailer::Base.deliveries.first.subject).to include('[ATTENTION]')
+          expect(ActionMailer::Base.deliveries.first.text_part.body.to_s).to include('NOT destroyed')
+        end
+      end
+
+      context 'and the merge service returns a not_destroyed_has_media_guard outcome' do
+        before { Hyrax.config.system_report_recipients = 'test@example.com' }
+
+        it 'flags the email as needing attention' do
+          allow(Morphosource::MergeBiologicalSpecimenService).to receive(:call)
+            .and_return([[], [], :not_destroyed_has_media_guard])
+
+          find_and_merge_duplicate_specimens.invoke('true', 'true')
+
+          expect(ActionMailer::Base.deliveries.count).to eq(1)
+          expect(ActionMailer::Base.deliveries.first.subject).to include('[ATTENTION]')
+          expect(ActionMailer::Base.deliveries.first.text_part.body.to_s).to include('NOT destroyed')
+        end
+      end
     end
   end
 end

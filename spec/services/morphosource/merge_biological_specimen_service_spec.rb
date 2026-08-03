@@ -100,6 +100,22 @@ RSpec.describe Morphosource::MergeBiologicalSpecimenService do
 
       expect(ActiveFedora::Base.exists?(specimen[1].id)).to be true
     end
+
+    it 'does not destroy the duplicate specimen when reassigned media reindex does not confirm in time' do
+      allow_any_instance_of(described_class).to receive(:wait_for_media_reindex).and_return(false)
+
+      _media_list, _ie_list, outcome = subject.call
+      expect(outcome).to eq(:not_destroyed_pending_reindex)
+      expect(ActiveFedora::Base.exists?(specimen[1].id)).to be true
+    end
+
+    it 'reports not_destroyed_has_media_guard and leaves the specimen intact when destroy is vetoed (e.g. by the has-media guard)' do
+      allow_any_instance_of(BiologicalSpecimen).to receive(:destroy).and_return(false)
+
+      _media_list, _ie_list, outcome = subject.call
+      expect(outcome).to eq(:not_destroyed_has_media_guard)
+      expect(ActiveFedora::Base.exists?(specimen[1].id)).to be true
+    end
   end
 
 end

@@ -780,6 +780,9 @@ namespace :morphosource do
                            when :not_destroyed_media_referencing
                              blocked_count += 1
                              "specimen #{merge_from} NOT destroyed -- Solr still shows media referencing it"
+                           when :not_destroyed_pending_reindex
+                             blocked_count += 1
+                             "specimen #{merge_from} NOT destroyed -- reassigned media hadn't finished reindexing in time"
                            else "specimen #{merge_from} not attempted (report_only)"
                            end
             msg = " #{outcome_text} -- considered media #{media_list} for move from specimen #{merge_from} to specimen #{merge_to}"

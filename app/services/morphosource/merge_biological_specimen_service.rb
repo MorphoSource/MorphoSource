@@ -12,6 +12,9 @@ module Morphosource
     	@report_only = report_only
     end
 
+    MEDIA_REINDEX_POLL_INTERVAL = 0.5 # seconds
+    MEDIA_REINDEX_MAX_WAIT = 10 # seconds
+
     def call
       bso_to = BiologicalSpecimen.find(@merge_to)
       bso_from = BiologicalSpecimen.find(@merge_from)
@@ -40,7 +43,10 @@ module Morphosource
         UpdateWorkIndexJob.perform_later(@merge_to)
       end
 		  if @delete_dup && !@report_only
-		  	if media_still_referencing?(bso_from, media_list)
+		  	if media_list.present? && !wait_for_media_reindex(bso_to, media_list)
+		  	  outcome = :not_destroyed_pending_reindex
+		  	  puts " specimen #{@merge_from} NOT destroyed -- reassigned media hadn't finished reindexing after #{MEDIA_REINDEX_MAX_WAIT}s; a retry will pick this up once it catches up"
+		  	elsif media_still_referencing?(bso_from, media_list)
 		  	  outcome = :not_destroyed_media_referencing
 		  	  puts " specimen #{@merge_from} NOT destroyed -- Solr still shows media referencing it beyond what this merge already handled"
 		  	else
@@ -61,6 +67,20 @@ module Morphosource
       qry = "physical_object_id_ssim:#{bso_from.id} AND has_model_ssim:Media"
       found_ids = ActiveFedora::SolrService.query(qry, rows: 999_999).map(&:id)
       (found_ids - already_handled_media_ids).present?
+    end
+
+    # UpdateWorkIndexJob is enqueued, not run inline -- poll (bounded) until every
+    # reassigned media's Solr doc confirms the new owner, rather than assuming it's done.
+    def wait_for_media_reindex(bso_to, media_ids)
+      qry = "id:(#{media_ids.join(' OR ')}) AND physical_object_id_ssim:#{bso_to.id}"
+      deadline = Time.now + MEDIA_REINDEX_MAX_WAIT
+      loop do
+        ActiveFedora::SolrService.commit
+        reindexed_count = ActiveFedora::SolrService.get(qry, rows: 0)["response"]["numFound"]
+        return true if reindexed_count == media_ids.size
+        return false if Time.now >= deadline
+        sleep MEDIA_REINDEX_POLL_INTERVAL
+      end
     end
 
   end

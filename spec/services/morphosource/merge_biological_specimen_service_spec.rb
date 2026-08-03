@@ -100,6 +100,14 @@ RSpec.describe Morphosource::MergeBiologicalSpecimenService do
 
       expect(ActiveFedora::Base.exists?(specimen[1].id)).to be true
     end
+
+    it 'does not destroy the duplicate specimen when reassigned media reindex does not confirm in time' do
+      allow_any_instance_of(described_class).to receive(:wait_for_media_reindex).and_return(false)
+
+      _media_list, _ie_list, outcome = subject.call
+      expect(outcome).to eq(:not_destroyed_pending_reindex)
+      expect(ActiveFedora::Base.exists?(specimen[1].id)).to be true
+    end
   end
 
 end

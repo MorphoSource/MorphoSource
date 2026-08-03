@@ -815,7 +815,7 @@ namespace :morphosource do
     end
 
     if blocked_count > 0
-      blocked_note = "#{blocked_count} specimen(s) NOT destroyed -- Solr still shows media referencing them, needs review."
+      blocked_note = "#{blocked_count} specimen(s) NOT destroyed -- see log for why (media still referencing, media not yet reindexed, or destroy blocked), needs review."
       send_report_email.call(action, blocked_note, attention: true)
     else
       send_report_email.call(action)

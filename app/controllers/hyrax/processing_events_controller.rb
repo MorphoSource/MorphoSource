@@ -8,6 +8,7 @@ module Hyrax
     include Morphosource::WorksControllerBehavior
     include Hyrax::ChildWorkRedirect
     include Morphosource::LinkedTeams::LinkedTeamsManagement
+    include Morphosource::HaltedDestroyResponse
 
     skip_authorize_resource only: :media_owner_update
 

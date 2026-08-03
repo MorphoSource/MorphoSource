@@ -100,6 +100,14 @@ RSpec.describe Morphosource::MergeBiologicalSpecimenService do
 
       expect(ActiveFedora::Base.exists?(specimen[1].id)).to be true
     end
+
+    it 'reports destroy_vetoed_by_guard and leaves the specimen intact when destroy is vetoed (e.g. by the has-media guard)' do
+      allow_any_instance_of(BiologicalSpecimen).to receive(:destroy).and_return(false)
+
+      _media_list, _ie_list, outcome = subject.call
+      expect(outcome).to eq(:destroy_vetoed_by_guard)
+      expect(ActiveFedora::Base.exists?(specimen[1].id)).to be true
+    end
   end
 
 end

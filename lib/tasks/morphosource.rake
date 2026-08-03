@@ -780,6 +780,9 @@ namespace :morphosource do
                            when :not_destroyed_media_referencing
                              blocked_count += 1
                              "specimen #{merge_from} NOT destroyed -- Solr still shows media referencing it"
+                           when :destroy_vetoed_by_guard
+                             blocked_count += 1
+                             "specimen #{merge_from} NOT destroyed -- destroy call was vetoed (e.g. by the has-media guard)"
                            else "specimen #{merge_from} not attempted (report_only)"
                            end
             msg = " #{outcome_text} -- considered media #{media_list} for move from specimen #{merge_from} to specimen #{merge_to}"

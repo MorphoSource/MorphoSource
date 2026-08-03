@@ -783,6 +783,9 @@ namespace :morphosource do
                            when :not_destroyed_pending_reindex
                              blocked_count += 1
                              "specimen #{merge_from} NOT destroyed -- reassigned media hadn't finished reindexing in time"
+                           when :not_destroyed_has_media_guard
+                             blocked_count += 1
+                             "specimen #{merge_from} NOT destroyed -- destroy call was vetoed (e.g. by the has-media guard)"
                            else "specimen #{merge_from} not attempted (report_only)"
                            end
             msg = " #{outcome_text} -- considered media #{media_list} for move from specimen #{merge_from} to specimen #{merge_to}"

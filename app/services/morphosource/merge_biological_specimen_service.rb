@@ -50,9 +50,13 @@ module Morphosource
 		  	  outcome = :not_destroyed_media_referencing
 		  	  puts " specimen #{@merge_from} NOT destroyed -- Solr still shows media referencing it beyond what this merge already handled"
 		  	else
-		  	  bso_from.destroy
-		  	  outcome = :destroyed
-		  	  puts " specimen #{@merge_from} destroyed"
+		  	  if bso_from.destroy
+		  	    outcome = :destroyed
+		  	    puts " specimen #{@merge_from} destroyed"
+		  	  else
+		  	    outcome = :not_destroyed_has_media_guard
+		  	    puts " specimen #{@merge_from} NOT destroyed -- destroy call was vetoed (e.g. by the has-media guard): #{bso_from.errors.full_messages.join('; ')}"
+		  	  end
 		  	end
 		  end
 		  return media_list, ie_list, outcome

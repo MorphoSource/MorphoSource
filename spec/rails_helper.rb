@@ -101,6 +101,13 @@ RSpec.configure do |config|
     clean_active_fedora_repository
   end
 
+  # Several specs set ActiveJob::Base.queue_adapter = :test in a before block
+  # without resetting it, which otherwise leaks into every later spec in the
+  # same run and silently stops perform_later from executing inline.
+  config.after(:each) do
+    ActiveJob::Base.queue_adapter = :inline
+  end
+
   # config.after(:each) do
   #   ActiveFedora::Cleaner.clean!
   # end

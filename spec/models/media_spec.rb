@@ -480,6 +480,7 @@ RSpec.describe Media do
         allow(media).to receive(:visibility_changed?).and_return(true)
         allow(media).to receive(:visibility).and_return('open')
         allow(media).to receive(:organizations).and_return([organization])
+        ActiveJob::Base.queue_adapter = :test
       end
 
       it 'calls transfer_media_to_organization' do

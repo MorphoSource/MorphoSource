@@ -1,8 +1,9 @@
 #!/bin/sh
 # Dev-only override: builds UniversalViewer from a specific git ref and
 # installs it into public/uv, bypassing the pinned release fetch. Never
-# committed -- public/uv is gitignored. Run bin/uv-install (or restart the
-# app container) afterward to restore the pinned release version.
+# committed -- public/uv is gitignored. Run bin/uv-install directly (or
+# `docker compose up db_migrate` again) afterward to restore the pinned
+# release version.
 #
 # Usage:
 #   bin/uv-install-local [ref]        # clone/fetch <ref> (branch, tag, or

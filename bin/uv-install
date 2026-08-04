@@ -2,6 +2,7 @@
 # Fetches the pinned UniversalViewer build (config/uv/VERSION) from a GitHub
 # Release on the MorphoSource/universalviewer fork and overlays our MS-specific
 # config on top. No-ops if public/uv already matches the pinned version.
+# Run via the Dockerfile build stages and db_migrate's docker-compose command.
 set -e
 
 APP_ROOT="$(cd "$(dirname "$0")/.." && pwd)"

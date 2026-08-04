@@ -102,7 +102,7 @@ services:
     env_file:
       - ./vendor/docker/credentials.env
       - ./vendor/docker/docker-compose.env
-    command: sh -c 'bundle && db-migrate-seed.sh'
+    command: sh -c 'bin/uv-install && bundle && db-migrate-seed.sh'
     depends_on:
       - postgres
       - fcrepo

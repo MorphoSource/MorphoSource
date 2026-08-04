@@ -13,7 +13,7 @@ module Morphosource
     end
 
     MEDIA_REINDEX_POLL_INTERVAL = 0.5 # seconds
-    MEDIA_REINDEX_MAX_WAIT = 10 # seconds
+    MEDIA_REINDEX_MAX_WAIT = 60 # seconds
 
     def call
       bso_to = BiologicalSpecimen.find(@merge_to)

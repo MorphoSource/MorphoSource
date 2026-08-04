@@ -105,7 +105,7 @@ While a number of volumes will be created, most will not be synced with location
 
 To pick up a new UV build, bump the tag in `config/uv/VERSION`. A new tag is published automatically whenever the fork's `morphosource` branch is updated. Then restart the `app` container, or run `bin/uv-install` directly.
 
-To test local, unreleased UV changes without publishing a release, use `bin/uv-install-local [path-to-universalviewer-checkout]` (defaults to `../universalviewer`). This builds from your local checkout and installs it into `public/uv`, bypassing the pinned release. Since `public/uv` is gitignored, this is safe to run freely -- run `bin/uv-install` again (or restart the container) to restore the pinned version.
+To test unreleased UV changes without publishing a release, use `bin/uv-install-local [ref]`. By default this clones/fetches the given branch, tag, or commit (defaults to `morphosource`) from the fork into `vendor/uv-local`, builds it, and installs it into `public/uv`. To instead build from an existing local checkout (e.g. to test uncommitted edits), use `bin/uv-install-local --path <dir>`. Either way this bypasses the pinned release, and since `public/uv` is gitignored, it's safe to run freely -- run `bin/uv-install` again (or restart the container) to restore the pinned version.
 
 ## Built With
 

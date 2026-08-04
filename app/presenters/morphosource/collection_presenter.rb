@@ -1,7 +1,7 @@
 module Morphosource
   class CollectionPresenter < Hyrax::CollectionPresenter
 
-    attr_reader :collection, :collection_managers, :search_form_url
+    attr_reader :collection, :search_form_url
 
     attr_writer :collection_type
 
@@ -11,7 +11,24 @@ module Morphosource
       super
       @search_form_url = ''
       @collection ||= Collection.find(id)
-      @collection_managers = manager_list(@collection.managers)
+    end
+
+    # @return [Array<User>] every manager of the collection
+    def managers
+      @managers ||= @collection.managers.to_a
+    end
+
+    # @return [Array<User>] the collection's managers, minus the configured default manager
+    def managers_for_display
+      ms_id = Morphosource.default_organization_manager
+      return managers if ms_id.blank?
+
+      managers.reject { |manager| manager.ms_id == ms_id }
+    end
+
+    # @return [String] links to #managers_for_display
+    def manager_links_for_display
+      @manager_links_for_display ||= manager_links(managers_for_display)
     end
 
     def team?
@@ -43,9 +60,9 @@ module Morphosource
       (team? || project? || list?)
     end
 
-    def manager_list(managers)
+    def manager_links(users)
       ml = []
-      managers.each do |m|
+      users.each do |m|
         renderer = Hyrax::Renderers::ShowcaseUserLinkAttributeRenderer.new(nil,nil)
         ml << renderer.user_link(m)
       end

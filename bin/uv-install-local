@@ -1,0 +1,33 @@
+#!/bin/sh
+# Dev-only override: builds UniversalViewer from a local checkout and installs
+# it into public/uv, bypassing the pinned release fetch. Never committed --
+# public/uv is gitignored. Run bin/uv-install (or restart the app container)
+# afterward to restore the pinned release version.
+#
+# Usage: bin/uv-install-local [path-to-universalviewer-checkout]
+# Defaults to ../universalviewer, or override via UV_LOCAL_PATH.
+set -e
+
+APP_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+UV_DIR="$APP_ROOT/public/uv"
+MARKER_FILE="$UV_DIR/.uv-version"
+
+UV_SOURCE="${1:-${UV_LOCAL_PATH:-$APP_ROOT/../universalviewer}}"
+UV_SOURCE="$(cd "$UV_SOURCE" && pwd)"
+
+echo "Building UniversalViewer from $UV_SOURCE..."
+(cd "$UV_SOURCE" && npm ci && npm run build)
+
+rm -rf "$UV_DIR"
+mkdir -p "$UV_DIR"
+cp -R "$UV_SOURCE/dist/." "$UV_DIR/"
+
+cp "$APP_ROOT/config/uv/uv.html" "$UV_DIR/uv.html"
+cp "$APP_ROOT/config/uv/uv-config.json" "$UV_DIR/uv-config.json"
+cp "$APP_ROOT/config/uv/uv-config-front-page.json" "$UV_DIR/uv-config-front-page.json"
+
+# Invalidate the pinned-version marker so a later bin/uv-install run (or the
+# next container start) knows to re-fetch the real pinned release.
+rm -f "$MARKER_FILE"
+
+echo "UniversalViewer installed to public/uv from local build (not pinned -- run bin/uv-install to restore the release version)"

@@ -52,6 +52,9 @@
 /public/terms
 /public/uploads
 
+/public/uv/*
+!/public/uv/README.md
+
 # Batch import config
 /config/batch_import.yml
 

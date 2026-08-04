@@ -99,6 +99,14 @@ While a number of volumes will be created, most will not be synced with location
 * `./vendor/docker/fcrepo/fedora.xml:/var/lib/jetty/webapps/fedora.xml` - Fedora config XML
 * `./solr/conf:/core_config/conf` - Solr config files
 
+### UniversalViewer
+
+`public/uv` is not checked into git -- it's fetched automatically from a GitHub Release of our [UniversalViewer fork](https://github.com/MorphoSource/universalviewer), pinned by tag in `config/uv/VERSION`. `bin/uv-install` handles the fetch and overlays our config (`config/uv/uv.html`, `uv-config.json`, `uv-config-front-page.json`) on top. It runs automatically on image build and on every container start (`bin/hyrax-entrypoint.sh`), but is a no-op unless `public/uv` is missing or out of date with `config/uv/VERSION`.
+
+To pick up a new UV build, bump the tag in `config/uv/VERSION`. A new tag is published automatically whenever the fork's `morphosource` branch is updated. Then restart the `app` container, or run `bin/uv-install` directly.
+
+To test local, unreleased UV changes without publishing a release, use `bin/uv-install-local [path-to-universalviewer-checkout]` (defaults to `../universalviewer`). This builds from your local checkout and installs it into `public/uv`, bypassing the pinned release. Since `public/uv` is gitignored, this is safe to run freely -- run `bin/uv-install` again (or restart the container) to restore the pinned version.
+
 ## Built With
 
 * [Fedora FCRepo 4.7.5](https://github.com/orgs/samvera/packages/container/package/fcrepo4)

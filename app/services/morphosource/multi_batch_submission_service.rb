@@ -210,7 +210,7 @@ module Morphosource
 
       organization_id = org_device_group[:organization_id]
       device_id = org_device_group[:device_id]
-      device = DeviceResource.find_by(id: device_id)&.first
+      device = DeviceResource.find_by(id: device_id)
       if device && device.modality.count == 1
         # override modality from device if only one modality
         modality = device.modality.first.to_s

@@ -7,18 +7,13 @@ module Morphosource
       helper_method :entry_name, :empty_state_message
     end
 
-    # Record name used for "No X found" / "Displaying X 1 - 20 of 42" pagination text (see
-    # morphosource/itemtable/_document_list and _results_pagination, both shared by every
-    # controller that includes this module, whether or not it inherits from ItemtableController).
-    # Override in a controller or concern; nil falls back to Kaminari's default (humanized model
-    # name).
+    # Record name used for "No X found" / "Displaying X 1 - 20 of 42" pagination text
+    # Override in a controller or concern; nil falls back to Kaminari's default
     def entry_name
       nil
     end
 
-    # Overridable message shown in the empty-state block (see morphosource/itemtable/_document_list)
-    # in place of the generic "No <entry_name(s)> found." text. nil (the default) falls back to
-    # that generic message.
+    # Overridable message shown in the empty-state block
     def empty_state_message
       nil
     end
@@ -38,7 +33,7 @@ module Morphosource
           else
             @sort_param = "#{sort_attribute} #{order.upcase}"
           end
-          
+
         else
           @sort_param = default_sort_param
         end
@@ -68,7 +63,7 @@ module Morphosource
 
     def split_filter_user_keys
       user_key_params.each do |user_key_param|
-        if params.dig(:filter_items, user_key_param).present? 
+        if params.dig(:filter_items, user_key_param).present?
           next if params.dig(:filter_items, user_key_param).kind_of? Array
           params[:filter_items][user_key_param] = params[:filter_items][user_key_param].split(',')
         end
@@ -124,7 +119,7 @@ module Morphosource
           elsif field == 'user_id' || field == 'action_by'
             value = User.find_by_user_key(value)&.name_and_email
           elsif field == 'reviewers'
-            value = (value || []).map { |user_key| User.find_by_user_key(user_key)&.name_and_email } 
+            value = (value || []).map { |user_key| User.find_by_user_key(user_key)&.name_and_email }
           end
 
           if value.kind_of? Array

@@ -74,12 +74,6 @@ module Hyrax
 
     private
 
-      # Per-row decide links carry the itemtable page's current filters as a return_to param (see
-      # morphosource/*/_list_item) rather than depending on the Referer header, which isn't always
-      # sent (browser privacy settings, extensions, some proxies) -- without this, deciding on
-      # transfers one at a time bounced the user back to the unfiltered index each time. Only
-      # same-app relative paths are accepted, so a crafted return_to can't be used as an open
-      # redirect.
       def redirect_target(fallback)
         return_to = params[:return_to]
         if return_to.present? && return_to.start_with?('/') && !return_to.start_with?('//')

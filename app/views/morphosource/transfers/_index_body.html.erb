@@ -13,10 +13,6 @@
   </div>
 <% end %>
 
-<%# Rendered as a sibling of (not nested inside) the itemtable card below: nesting it in the
-    card's own .card-body pulls in legacy .showcase/.card-body descendant rules (h2 border-bottom,
-    .panel-title background, .card-header background, .panel-default border removal) that were
-    written for the media/object showcase pages and clobber this panel's bordered-card look. %>
 <% if @search %>
   <%= render 'search_form' %>
 <% end %>
@@ -29,8 +25,7 @@
       </div>
     <% end %>
 
-    <%# list_actions and document_list share one form so batch-decide buttons can submit the checked row checkboxes.
-        The actual action is set by JS (transfer_batch_decide.js) from whichever batch-decide button is clicked. %>
+    <%# list_actions and document_list share one form so batch-decide buttons can submit the checked row checkboxes. %>
     <%= form_tag '#', method: :put, id: 'batch-transfer-decide' do %>
       <%= render 'list_actions' %>
       <%= render 'document_list' %>
@@ -44,7 +39,4 @@
   </div>
 </div>
 
-<%# Rendered outside the card for the same reason as the search pane above: nesting it in
-    .card-body.showcase pulls in the legacy h2 border-bottom/etc. rules and clobbers the modal's
-    styling (see morphosource/my/modals/_page_modal for the equivalent convention). %>
 <%= render 'transfer_decide_modal' %>

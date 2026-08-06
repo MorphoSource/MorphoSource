@@ -1,9 +1,5 @@
 @import 'variables';
 
-// The dashboard layout's shared page-header wrapper (.text-padding, see
-// layouts/hyrax/morphosource_dashboard) adds 10px of horizontal padding that non-itemtable
-// dashboard pages (Works, Collections, Teams) rely on. ItemTable pages already zero out their own
-// inner column padding (.no-horizontal-padding on the page_header content), so need for this.
 body.itemtable-page .text-padding {
   padding-left: 0;
   padding-right: 0;
@@ -12,10 +8,7 @@ body.itemtable-page .text-padding {
 div.card.itemtable {
   min-width: 1200px;
 
-  // The page title renders as a real page header above this card (see
-  // morphosource/itemtable/_index_body), so the card-body's horizontal padding just needs
-  // trimming to stay flush with the page margins (breadcrumbs, header buttons) above it.
-  > .card-body {
+    > .card-body {
     padding-left: 0;
     padding-right: 0;
   }
@@ -31,10 +24,7 @@ div.card.itemtable.requests {
   min-width: 1600px;
 }
 
-// Search-filter panel above the table, opt-in per controller (see
-// ItemtableController#bordered_search_panel?). Gives it the site's standard bordered-card look
-// (see e.g. .panel-borders on my/collections#index) and a title sized down from the page's h2
-// banner, since it's a sub-panel rather than the page header.
+// Search-filter panel above the table, opt-in per controller
 div.card.panel-default.itemtable-search-panel {
   .card-header {
     padding-top: 0.5rem;
@@ -51,8 +41,6 @@ div.card.itemtable.background_jobs, div.card.itemtable.pages {
   min-width: 600px;
 }
 
-// Shown in place of table rows when an ItemTable page's result set is empty, instead of the
-// table just petering out with no rows above a tiny pagination-info line.
 div.itemtable-empty-state {
   padding: 2.5rem 1rem;
   border: 1px dashed #ddd;

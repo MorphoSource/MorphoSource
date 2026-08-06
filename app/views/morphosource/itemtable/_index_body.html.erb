@@ -10,10 +10,6 @@
   </div>
 <% end %>
 
-<%# Rendered as a sibling of (not nested inside) the itemtable card below: nesting it in the
-    card's own .card-body pulls in legacy .showcase/.card-body descendant rules (h2 border-bottom,
-    .panel-title background, .card-header background, .panel-default border removal) that were
-    written for the media/object showcase pages and clobber this panel's bordered-card look. %>
 <% if @search %>
   <%= render 'search_form' %>
 <% end %>

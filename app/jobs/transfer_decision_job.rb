@@ -1,9 +1,3 @@
-# Applies a transfer decision (accept/reject/cancel/force_cancel) out of band. The transfers
-# dashboards only ever enqueue this for 'accept' -- reject/cancel/force_cancel have no slow side
-# effects, so Morphosource::TransfersControllerBehavior#process_batch_decisions applies those
-# synchronously in the controller instead and never enqueues them here. The other decision types
-# are kept working regardless, so a technician can trigger one directly from the Rails console
-# (e.g. TransferDecisionJob.perform_now(id, 'reject')) without going through the dashboards at all.
 class TransferDecisionJob < Hyrax::ApplicationJob
 
   queue_as Hyrax.config.update_fast_queue_name

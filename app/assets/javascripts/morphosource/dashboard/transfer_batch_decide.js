@@ -1,9 +1,4 @@
-// Shared batch-decide behavior for the ownership transfer ItemTable pages (My Transfers
-// Received/Sent, Admin All Transfers). Each page renders its rows and batch-toolbar buttons
-// inside one shared #batch-transfer-decide form (see morphosource/transfers/_index_body). A
-// batch-decide button doesn't know its own route ahead of time -- each button carries its target
-// route on data-url (plus optional data-reset/data-sticky), and this file points the shared form
-// at whichever button was clicked before submitting it.
+// Shared batch-decide behavior for the ownership transfer ItemTable pages (My Transfers Received/Sent, Admin All Transfers).
 Blacklight.onLoad(function () {
   var $form = $('#batch-transfer-decide');
   if (!$form.length) return;

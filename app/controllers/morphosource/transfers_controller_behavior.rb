@@ -1,8 +1,4 @@
-# Shared ItemTable wiring for the three ownership-transfer dashboards (My Transfers Received,
-# My Transfers Sent, Admin All Transfers). Provides: a default "pending" status quick-filter so
-# unresolved requests aren't buried among old ones, an @has_organization_transfers flag used to
-# conditionally render the organization-transfer quick-filter toggle, and shared batch-decision
-# helpers that hand work off to TransferDecisionJob instead of processing inline.
+# Shared ItemTable wiring for the three ownership-transfer dashboards
 module Morphosource
   module TransfersControllerBehavior
     extend ActiveSupport::Concern
@@ -19,24 +15,14 @@ module Morphosource
       raise NotImplementedError, "#{self.class} must implement #base_transfer_scope"
     end
 
-    # "Transfer" reads far better than ProxyDepositRequest's default humanized model name
-    # ("proxy deposit request") in pagination text like "No transfers found".
     def entry_name
       'transfer'
     end
 
-    # The status quick-filter currently in effect, or 'all'. Shared by _quick_filters (to highlight
-    # the active option) and #empty_state_message (to name it in the empty-state message) so the
-    # two can't drift out of sync.
     def current_transfer_status
       params[:all_statuses] == 'true' ? 'all' : (params.dig(:filter_items, 'status') || 'pending')
     end
 
-    # These pages default to a "pending" status filter (see #default_transfer_status_filter) so
-    # unresolved requests aren't buried among old ones -- but that means the page looks empty the
-    # moment a user has decided everything. Rather than silently switching the default filter (which
-    # would make the page behave differently with no visible explanation), name the active status
-    # filter and link to the unfiltered view instead. No override when already viewing "All".
     def empty_state_message
       return nil if current_transfer_status == 'all'
       link = view_context.link_to(I18n.t('morphosource.transfers.view_all_link_text'), quick_filter_all_statuses_url)
@@ -59,20 +45,10 @@ module Morphosource
       ['work_id', 'status', 'organization_transfer', 'sending_user_id', 'receiving_user_id', 'created_at_start', 'created_at_end']
     end
 
-    # sending_user_id/receiving_user_id are submitted as ms_id(s) from the user-search widget (see
-    # _search_form_fields), matching the userSearchMultiple convention used elsewhere (e.g.
-    # admin/downloads, admin/requests) -- split comma-separated multi-selects into arrays before
-    # filtering.
     def user_key_params
       ['sending_user_id', 'receiving_user_id']
     end
 
-    # sending_user_id/receiving_user_id store users.id (see ProxyDepositRequest), unlike CartItem's
-    # user_id which stores ms_id directly -- so the submitted ms_id(s) need resolving to users.id
-    # inline via a subquery rather than a plain column match. The ::text cast matters:
-    # proxy_deposit_requests.sending_user_id/receiving_user_id are character varying columns
-    # (needed since the association is polymorphic), while users.id is bigint -- without the cast,
-    # Postgres has no "character varying = bigint" operator and the query raises PG::UndefinedFunction.
     def filter_attribute_where_statements
       {
         'sending_user_id' => 'sending_user_id IN (SELECT id::text FROM users WHERE ms_id IN (?))',
@@ -101,16 +77,11 @@ module Morphosource
 
     private
 
-      # Quick-filter buttons handle status/organization_transfer without opening the full search
-      # pane, so a default status filter alone shouldn't cause the search form to render open.
       def search_form_present?
         return true if params[:search].present? || params[:commit] == 'Search'
         (params[:filter_items] || {}).except('status', 'organization_transfer').values.any?(&:present?)
       end
 
-      # Defaults the status quick-filter to "pending" unless the user picked a status explicitly
-      # or asked to see all statuses. Uses string keys throughout so this composes cleanly with
-      # both parsed query-string params (ActionController::Parameters) and this default (a Hash).
       def default_transfer_status_filter
         return if params[:all_statuses] == 'true'
         return if params.dig(:filter_items, 'status').present?
@@ -121,8 +92,6 @@ module Morphosource
         @has_organization_transfers = base_transfer_scope.where(organization_transfer: true).exists?
       end
 
-      # Current filter_items as a plain, string-keyed Hash, regardless of whether it originated
-      # from a real query string (ActionController::Parameters) or our own default Hash.
       def current_filter_items
         raw = params[:filter_items] || {}
         (raw.respond_to?(:to_unsafe_h) ? raw.to_unsafe_h : raw).stringify_keys
@@ -145,24 +114,11 @@ module Morphosource
         Array(params[:batch_document_ids]).uniq
       end
 
-      # Loads the selected, still-pending requests and drops any the current user isn't
-      # authorized for (rather than 403ing the whole batch over a stale/tampered id).
       def pending_requests_for_batch(ability_action)
         ProxyDepositRequest.where(id: batch_ids, status: 'pending').select { |r| can?(ability_action, r) }
       end
 
-      # Records each request's decision immediately (fast; closes the window where a second
-      # decision on the same request could be submitted while it still looks "pending") and, for
-      # accept only, enqueues TransferDecisionJob to apply the slower ownership/permission side
-      # effects afterward. Reject/cancel/force_cancel have no slow side effects, so they're applied
-      # synchronously here and never enqueued.
-      #
-      # force_cancel (which bypasses ProxyDepositRequest's "senders can't cancel an organization
-      # transfer" validation) is only used for admins -- matching Hyrax::TransfersController#destroy
-      # -- so a regular sender's own batch_cancel still can't force through an organization
-      # transfer; that request is left pending and logged rather than raising and aborting the rest
-      # of the batch, since this now runs synchronously in the request cycle instead of in a job
-      # that would have failed in isolation.
+      # Records each request's decision immediately and, for accept, enqueues TransferDecisionJob
       def process_batch_decisions(requests, decision, reset: false, sticky: false, comment: nil)
         requests.each do |r|
           case decision.to_s
@@ -179,10 +135,6 @@ module Morphosource
         end
       end
 
-      # Flashes a red error (matching previous_requests#edit_expiration's "No requests selected"
-      # pattern) instead of a bland success notice when the "Decide Selected" modal is submitted
-      # with nothing checked, or the selected rows are no longer eligible (already decided, stale
-      # page, etc).
       def redirect_with_batch_notice(requests, fallback, success_message:)
         if requests.empty?
           flash[:error] = I18n.t('morphosource.transfers.no_transfers_selected')
@@ -192,11 +144,6 @@ module Morphosource
         redirect_to redirect_target(fallback)
       end
 
-      # Batch-decide buttons carry the page's current filters (status/type/etc.) as a return_to
-      # param (see _list_actions) rather than depending on the Referer header, which isn't always
-      # sent (browser privacy settings, extensions, some proxies) -- without this, every batch
-      # decision bounced the user back to the unfiltered index. Only same-app relative paths are
-      # accepted, so a crafted return_to can't be used as an open redirect.
       def redirect_target(fallback)
         return_to = params[:return_to]
         if return_to.present? && return_to.start_with?('/') && !return_to.start_with?('//')

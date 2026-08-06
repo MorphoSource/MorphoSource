@@ -80,7 +80,7 @@ $( document ).ready(function() {
     $(downloadForm).find('input[type="submit"]').bind('click', function(e) {
       // download selected button clicked
       e.preventDefault();
-      $('form#download-form').data('mode', 'selected');
+      document.querySelector('form#download-form').dataset.mode = 'selected';
       sendSelectedItemsToModal();
       showAgreementModal();
     });
@@ -90,7 +90,7 @@ $( document ).ready(function() {
       // #download-all-form (no item ids) gets submitted directly once the agreement
       // modal is confirmed, so this works regardless of pagination or cart size.
       e.preventDefault();
-      $('form#download-form').data('mode', 'all');
+      document.querySelector('form#download-form').dataset.mode = 'all';
       setAgreementsForAll();
       showAgreementModal();
     });
@@ -111,7 +111,7 @@ $( document ).ready(function() {
       // download individual item clicked
       e.preventDefault();
       var itemId = $(this).attr('data-item-id');
-      $('form#download-form').data('mode', 'selected');
+      document.querySelector('form#download-form').dataset.mode = 'selected';
       uncheckAllDownloadable();
       $("input[id='batch_download_" + itemId + "']").trigger('click');
       sendSelectedItemsToModal();
@@ -199,14 +199,14 @@ $( document ).ready(function() {
       if ( $('#modal-agree').prop('checked') &&
         usage.length >= 50 && usageList() != "" )  {
 
-        var mode = $(this).data('mode');
+        const mode = this.dataset.mode;
         formType =$(this).attr('class');
         if (mode == 'all') {
           console.log('downloading all items in cart');
-          $('#download_all_usage').val(usage);
-          $('#download_all_usage_list').val(usageList());
-          $('#download_all_recaptcha_response').val($('#g-recaptcha-response').val());
-          $('#download-all-form')[0].submit();
+          document.querySelector('#download_all_usage').value = usage;
+          document.querySelector('#download_all_usage_list').value = usageList();
+          document.querySelector('#download_all_recaptcha_response').value = document.querySelector('#g-recaptcha-response').value;
+          document.querySelector('#download-all-form').submit();
         } else if (formType == 'download-selected') {
           console.log('downloading selected in cart');
           $('#batch_usage').val(usage);
@@ -268,7 +268,7 @@ function showAgreementModal() {
   $("#downloadAgreementsModal").on("hidden.bs.modal", function () {
     // remove selected items from modal
     $('form#download-form .download-items-wrapper').html('');
-    $('form#download-form').removeData('mode');
+    delete document.querySelector('form#download-form').dataset.mode;
     uncheckAllDownloadable();
     $("#check_all_unrestricted").prop('checked', false);
     $("input#download-selected").prop('disabled', true);
@@ -281,23 +281,29 @@ function setAgreementsForAll() {
   // hidden off-page ones rendered by _all_downloadable_items_hidden.html.erb) rather
   // than filtering by :checked, since "Download All" doesn't select/enumerate items -
   // it submits a separate form with no item ids (see download-all-form).
-  var agreements = new Array();
-  var customLinks = new Array();
-  $('input[name="ids[]"]').val('ALL');
-  $('input#modal-download').attr('data-download-item-id', 'ALL');
-  $('.agreements').each(function() {
-    var wrapper = $(this);
-    var mediaId = wrapper.find('[data-field="media_doc_id"]').attr('data-value');
-    var agreementLink = wrapper.find('[data-field="agreement_description"]').html();
+  const agreements = [];
+  const customLinks = [];
+  document.querySelectorAll('input[name="ids[]"]').forEach(function(input) {
+    input.value = 'ALL';
+  });
+  const modalDownloadBtn = document.querySelector('input#modal-download');
+  if (modalDownloadBtn) {
+    modalDownloadBtn.setAttribute('data-download-item-id', 'ALL');
+  }
+  document.querySelectorAll('.agreements').forEach(function(wrapper) {
+    const mediaIdField = wrapper.querySelector('[data-field="media_doc_id"]');
+    const mediaId = mediaIdField ? mediaIdField.getAttribute('data-value') : undefined;
+    const descriptionField = wrapper.querySelector('[data-field="agreement_description"]');
+    const agreementLink = descriptionField ? descriptionField.innerHTML : undefined;
     agreements.push(agreementLink);
-    var customLink = wrapper.find('[data-field="agreement_uri"] .showcase-link').html();
-    if (customLink) {
-      customLinks.push('Media ' + mediaId + ': ' + customLink);
+    const showcaseLink = wrapper.querySelector('[data-field="agreement_uri"] .showcase-link');
+    if (showcaseLink) {
+      customLinks.push('Media ' + mediaId + ': ' + showcaseLink.innerHTML);
     }
   });
-  var agreementGroup = groupCounts(agreements);
-  var display = buildAgreements(agreementGroup, customLinks.sort());
-  $('.agreement-items-wrapper').empty().append(display);
+  const agreementGroup = groupCounts(agreements);
+  const display = buildAgreements(agreementGroup, customLinks.sort());
+  document.querySelector('.agreement-items-wrapper').innerHTML = display;
 }
 
 function set_agreements(itemId, singleMediaId) {

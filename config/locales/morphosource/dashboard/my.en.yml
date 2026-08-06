@@ -72,9 +72,44 @@ en:
         transfers_received:
           page_title: 'Transfers Received'
           page_description: 'Ownership transfer requests other users or organizations have sent you. New requests default to showing only Pending transfers so they don''t get lost among older decisions; use the status buttons above the table to see Accepted, Rejected, Canceled, or All transfers.'
+          batch_accept_notice: "%{count} transfer(s) accepted. Ownership changes are being applied in the background and should complete shortly."
+          batch_reject_notice: "%{count} transfer(s) rejected."
+          list_item:
+            accept_retain_label: "Allow depositor to retain edit access"
+            accept_retain_title: "Accept the file and allow the original depositor to retain access to edit the file and metadata"
+            accept_reset_label: "Remove depositor access"
+            accept_reset_title: "Accept the file and remove access from the original depositor."
+            accept_stick_label: "Authorize depositor as proxy"
+            accept_stick_title: "Accept the file and allow the original depositor to retain access and authorize the original depositor as a proxy to deposit files on your behalf."
+            reject_label: "Reject"
+            reject_confirm: "Are you sure you want to reject this request?"
+          decide_modal:
+            heading: "Decide Selected Transfers"
+            intro: "Choose a decision to apply to all selected transfers:"
+            accept_retain_label: "Accept and retain depositor's edit access"
+            accept_retain_description: "Allow the original depositors to keep access to edit the file and metadata."
+            accept_reset_label: "Accept and remove depositor access"
+            accept_reset_description: "Accept the transfers and remove the original depositors' access entirely."
+            accept_stick_label: "Accept and authorize depositor as proxy"
+            accept_stick_description: "Retain the depositors' access and authorize them to deposit on your behalf going forward."
+            reject_label: "Reject"
+            reject_description: "Decline the selected transfer requests."
+            reject_confirm: "Are you sure you want to reject the selected transfers?"
+            close_label: "Close"
         transfers_sent:
           page_title: 'Transfers Sent'
           page_description: 'Ownership transfer requests you have sent to other users or organizations. New requests default to showing only Pending transfers; use the status buttons above the table to see Accepted, Rejected, Canceled, or All transfers.'
+          batch_cancel_notice: "%{count} transfer(s) canceled."
+          list_item:
+            cancel_label: "Cancel"
+            cancel_confirm: "Are you sure you want to cancel this request?"
+          decide_modal:
+            heading: "Decide Selected Transfers"
+            intro: "Choose a decision to apply to all selected transfers:"
+            cancel_label: "Cancel"
+            cancel_description: "Withdraw the selected transfer requests."
+            cancel_confirm: "Are you sure you want to cancel the selected transfers?"
+            close_label: "Close"
         requests:
           page_title: My Requests
           request_item:

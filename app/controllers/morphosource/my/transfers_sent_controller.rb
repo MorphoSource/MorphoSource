@@ -12,7 +12,7 @@ module Morphosource
         requests = pending_requests_for_batch(:destroy)
         process_batch_decisions(requests, 'cancel')
         redirect_with_batch_notice(requests, main_app.transfers_sent_path,
-          success_message: "#{requests.size} transfer(s) canceled.")
+          success_message: I18n.t('morphosource.dashboard.my.transfers_sent.batch_cancel_notice', count: requests.size))
       end
 
       private

@@ -12,14 +12,14 @@ module Morphosource
         requests = pending_requests_for_batch(:accept)
         process_batch_decisions(requests, 'accept', reset: params[:reset].present?, sticky: params[:sticky].present?)
         redirect_with_batch_notice(requests, main_app.transfers_received_path,
-          success_message: "#{requests.size} transfer(s) accepted. Ownership changes are being applied in the background and should complete shortly.")
+          success_message: I18n.t('morphosource.dashboard.my.transfers_received.batch_accept_notice', count: requests.size))
       end
 
       def batch_reject
         requests = pending_requests_for_batch(:reject)
         process_batch_decisions(requests, 'reject')
         redirect_with_batch_notice(requests, main_app.transfers_received_path,
-          success_message: "#{requests.size} transfer(s) rejected.")
+          success_message: I18n.t('morphosource.dashboard.my.transfers_received.batch_reject_notice', count: requests.size))
       end
 
       private

@@ -23,17 +23,17 @@
           </button>
           <ul class="dropdown-menu dropdown-menu-right">
             <li>
-              <%= link_to 'Allow depositor to retain edit access', hyrax.accept_transfer_path(item, return_to: request.original_fullpath), method: :put, class: 'accept-retain', title: 'Accept the file and allow the original depositor to retain access to edit the file and metadata' %>
+              <%= link_to t('morphosource.dashboard.my.transfers_received.list_item.accept_retain_label'), hyrax.accept_transfer_path(item, return_to: request.original_fullpath), method: :put, class: 'accept-retain', title: t('morphosource.dashboard.my.transfers_received.list_item.accept_retain_title') %>
             </li>
             <li>
-              <%= link_to 'Remove depositor access', hyrax.accept_transfer_path(item, reset: true, return_to: request.original_fullpath), method: :put, class: 'accept-reset', title: 'Accept the file and remove access from the original depositor.' %>
+              <%= link_to t('morphosource.dashboard.my.transfers_received.list_item.accept_reset_label'), hyrax.accept_transfer_path(item, reset: true, return_to: request.original_fullpath), method: :put, class: 'accept-reset', title: t('morphosource.dashboard.my.transfers_received.list_item.accept_reset_title') %>
             </li>
             <li>
-              <%= link_to 'Authorize depositor as proxy', hyrax.accept_transfer_path(item, sticky: true, return_to: request.original_fullpath), method: :put, class: 'accept-stick', title: 'Accept the file and allow the original depositor to retain access and authorize the original depositor as a proxy to deposit files on your behalf.' %>
+              <%= link_to t('morphosource.dashboard.my.transfers_received.list_item.accept_stick_label'), hyrax.accept_transfer_path(item, sticky: true, return_to: request.original_fullpath), method: :put, class: 'accept-stick', title: t('morphosource.dashboard.my.transfers_received.list_item.accept_stick_title') %>
             </li>
           </ul>
         </div>
-        <%= link_to "Reject", hyrax.reject_transfer_path(item, return_to: request.original_fullpath), method: :put, class: 'btn btn-sm btn-danger mb-1', data: { confirm: "Are you sure you want to reject this request?" } %>
+        <%= link_to t('morphosource.dashboard.my.transfers_received.list_item.reject_label'), hyrax.reject_transfer_path(item, return_to: request.original_fullpath), method: :put, class: 'btn btn-sm btn-danger mb-1', data: { confirm: t('morphosource.dashboard.my.transfers_received.list_item.reject_confirm') } %>
       <% end %>
     </td>
   </tr>

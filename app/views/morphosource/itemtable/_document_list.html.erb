@@ -14,7 +14,7 @@
 <% if @items.blank? %>
   <div class="itemtable-empty-state text-center text-muted">
     <i class="fas fa-folder-open" aria-hidden="true"></i>
-    <p><%= empty_state_message || "No #{(entry_name || @items.entry_name(count: 0)).pluralize} found." %></p>
+    <p><%= empty_state_message || t('morphosource.itemtable.no_entries_found', entries: (entry_name || @items.entry_name(count: 0)).pluralize) %></p>
   </div>
 <% end %>
 </div>

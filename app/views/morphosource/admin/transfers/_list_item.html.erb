@@ -20,19 +20,19 @@
       <% if item.pending? %>
         <div class="btn-group mr-2 mb-1" role="group">
           <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            Accept <span class="caret"></span>
+            <%= t('morphosource.admin.transfers.list_item.accept_button_label') %> <span class="caret"></span>
           </button>
           <ul class="dropdown-menu dropdown-menu-right">
             <li>
-              <%= link_to 'Allow depositor to retain edit access', hyrax.accept_transfer_path(item, return_to: request.original_fullpath), method: :put, class: 'accept-retain', title: 'Accept the transfer and allow the original depositor to retain access to edit the file and metadata' %>
+              <%= link_to t('morphosource.admin.transfers.list_item.accept_retain_label'), hyrax.accept_transfer_path(item, return_to: request.original_fullpath), method: :put, class: 'accept-retain', title: t('morphosource.admin.transfers.list_item.accept_retain_title') %>
             </li>
             <li>
-              <%= link_to 'Remove depositor access', hyrax.accept_transfer_path(item, reset: true, return_to: request.original_fullpath), method: :put, class: 'accept-reset', title: 'Accept the transfer and remove access from the original depositor.' %>
+              <%= link_to t('morphosource.admin.transfers.list_item.accept_reset_label'), hyrax.accept_transfer_path(item, reset: true, return_to: request.original_fullpath), method: :put, class: 'accept-reset', title: t('morphosource.admin.transfers.list_item.accept_reset_title') %>
             </li>
           </ul>
         </div>
-        <%= link_to "Reject", hyrax.reject_transfer_path(item, return_to: request.original_fullpath), method: :put, class: 'btn btn-sm btn-danger mr-2 mb-1', data: { confirm: "Are you sure you want to reject this request?" } %>
-        <%= link_to "Cancel", hyrax.transfer_path(item, return_to: request.original_fullpath), method: :delete, class: 'btn btn-sm btn-danger mb-1', data: { confirm: "Are you sure you want to cancel this request?" } %>
+        <%= link_to t('morphosource.admin.transfers.list_item.reject_label'), hyrax.reject_transfer_path(item, return_to: request.original_fullpath), method: :put, class: 'btn btn-sm btn-danger mr-2 mb-1', data: { confirm: t('morphosource.admin.transfers.list_item.reject_confirm') } %>
+        <%= link_to t('morphosource.admin.transfers.list_item.cancel_label'), hyrax.transfer_path(item, return_to: request.original_fullpath), method: :delete, class: 'btn btn-sm btn-danger mb-1', data: { confirm: t('morphosource.admin.transfers.list_item.cancel_confirm') } %>
       <% end %>
     </td>
   </tr>

@@ -39,8 +39,8 @@ module Morphosource
     # filter and link to the unfiltered view instead. No override when already viewing "All".
     def empty_state_message
       return nil if current_transfer_status == 'all'
-      link = view_context.link_to('view all transfers', quick_filter_all_statuses_url)
-      "No #{current_transfer_status} transfers found, #{link}.".html_safe
+      link = view_context.link_to(I18n.t('morphosource.transfers.view_all_link_text'), quick_filter_all_statuses_url)
+      I18n.t('morphosource.transfers.empty_state_html', status: current_transfer_status, link: link).html_safe
     end
 
     def get_items
@@ -185,7 +185,7 @@ module Morphosource
       # page, etc).
       def redirect_with_batch_notice(requests, fallback, success_message:)
         if requests.empty?
-          flash[:error] = "No transfers selected."
+          flash[:error] = I18n.t('morphosource.transfers.no_transfers_selected')
         else
           flash[:notice] = success_message
         end

@@ -49,6 +49,8 @@ module Morphosource
       # demand only when "Download All" is clicked - not pre-rendered for the whole cart
       # on every page view. One batched Solr query regardless of cart size.
       def download_all_agreements
+        response.headers['Cache-Control'] = 'no-store'
+
         get_downloadable_items
         work_ids = @items.map(&:work_id).uniq
         docs = view_context.solr_docs_find(work_ids).values

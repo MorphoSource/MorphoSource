@@ -1,0 +1,50 @@
+#!/bin/sh
+# Fetches the pinned UniversalViewer build (config/uv/VERSION) from a GitHub
+# Release on the MorphoSource/universalviewer fork and overlays our MS-specific
+# config on top. No-ops if public/uv already matches the pinned version.
+# Run via the Dockerfile build stages and db_migrate's docker-compose command.
+set -e
+
+APP_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+VERSION_FILE="$APP_ROOT/config/uv/VERSION"
+UV_DIR="$APP_ROOT/public/uv"
+MARKER_FILE="$UV_DIR/.uv-version"
+REPO="MorphoSource/universalviewer"
+
+TAG=$(tr -d '[:space:]' < "$VERSION_FILE")
+
+if [ -f "$MARKER_FILE" ] && [ "$(cat "$MARKER_FILE")" = "$TAG" ]; then
+  exit 0
+fi
+
+echo "Fetching UniversalViewer build $TAG..."
+
+TMP_DIR=$(mktemp -d)
+trap 'rm -rf "$TMP_DIR"' EXIT
+
+curl -fsSL "https://github.com/$REPO/releases/download/$TAG/dist.tar.gz" -o "$TMP_DIR/dist.tar.gz"
+
+# public/uv/README.md is committed to git (so it's visible browsing the repo)
+# -- preserve it across the wipe below instead of letting the fetch clobber it.
+README_TMP=""
+if [ -f "$UV_DIR/README.md" ]; then
+  README_TMP=$(mktemp)
+  cp "$UV_DIR/README.md" "$README_TMP"
+fi
+
+rm -rf "$UV_DIR"
+mkdir -p "$UV_DIR"
+tar -xzf "$TMP_DIR/dist.tar.gz" -C "$UV_DIR"
+
+cp "$APP_ROOT/config/uv/uv.html" "$UV_DIR/uv.html"
+cp "$APP_ROOT/config/uv/uv-config.json" "$UV_DIR/uv-config.json"
+cp "$APP_ROOT/config/uv/uv-config-front-page.json" "$UV_DIR/uv-config-front-page.json"
+
+if [ -n "$README_TMP" ]; then
+  cp "$README_TMP" "$UV_DIR/README.md"
+  rm -f "$README_TMP"
+fi
+
+echo "$TAG" > "$MARKER_FILE"
+
+echo "UniversalViewer $TAG installed to public/uv"

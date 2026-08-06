@@ -52,6 +52,9 @@
 /public/terms
 /public/uploads
 
+/public/uv/*
+!/public/uv/README.md
+
 # Batch import config
 /config/batch_import.yml
 
@@ -70,6 +73,9 @@
 
 #ignore banners and logos added to collections
 /public/branding
+
+# Local UniversalViewer clone/build cache used by bin/uv-install-local
+/vendor/uv-local
 
 # ---------------------------------------------------
 # MorphoSource Python module changes

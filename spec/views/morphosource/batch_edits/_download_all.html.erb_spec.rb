@@ -7,16 +7,9 @@ RSpec.describe 'morphosource/batch_edits/_download_all.html.erb', type: :view do
     render
   end
 
-  it 'submits the Download All form as a POST with no item ids' do
-    expect(page).to have_selector('form#download-all-form[action="/download_items"][method="post"]')
-    expect(page).not_to have_selector('form#download-all-form input[name="item_id"]')
-    expect(page).not_to have_selector('form#download-all-form input[name="batch_download_ids[]"]')
-  end
-
-  it 'carries hidden fields for usage, usage_list, and recaptcha response for the JS to populate before submit' do
-    expect(page).to have_selector('form#download-all-form input#download_all_usage[type="hidden"]', visible: false)
-    expect(page).to have_selector('form#download-all-form input#download_all_usage_list[type="hidden"]', visible: false)
-    expect(page).to have_selector('form#download-all-form input#download_all_recaptcha_response[type="hidden"][name="g-recaptcha-response"]', visible: false)
+  it 'renders a plain Download All button, not its own form' do
+    expect(page).to have_selector('button#download-all[type="button"]', text: 'Download All')
+    expect(page).not_to have_selector('form#download-all-form')
   end
 
   it 'still renders the Clear Cart form' do

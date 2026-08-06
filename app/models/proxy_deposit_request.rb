@@ -289,7 +289,7 @@ class ProxyDepositRequest < ActiveRecord::Base
   def apply_accept_side_effects!(reset: false)
     ContentDepositorChangeEventJob.perform_now(work, receiving_user_id, reset, sending_user_id)
   rescue => e
-    update_column(:status, PENDING) # bypass validations/callbacks -- this is a rollback, not a new decision
+    update_columns(status: PENDING, fulfillment_date: nil)
     Rails.logger.error("ProxyDepositRequest##{id}: accept side effects failed, reverted to pending: #{e.message}")
     raise
   end

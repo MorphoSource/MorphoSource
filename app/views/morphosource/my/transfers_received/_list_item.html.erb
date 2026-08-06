@@ -1,0 +1,42 @@
+<% if item.sending_user.present? %>
+  <tr id="item_<%= item.id %>">
+    <td>
+      <% if item.pending? && can?(:accept, item) %>
+        <%= render 'morphosource/batch_select/add_button', item: item %>
+      <% end %>
+    </td>
+    <td><%= show_transfer_request_title(item) %></td>
+    <td><%= item.organization_transfer? ? 'Organization' : 'Standard' %></td>
+    <td><%= link_to_transfer_participant(item.sending_user_id) %></td>
+    <td class="date">
+      <relative-time datetime="<%= item.created_at.getutc.iso8601 %>" title="<%= item.created_at.to_formatted_s(:standard) %>">
+        <%= item.created_at.to_formatted_s(:long_ordinal) %>
+      </relative-time>
+    </td>
+    <td><%= item.organization_transfer ? item.sender_comment.html_safe : item.sender_comment %></td>
+    <td><%= item.status.capitalize %></td>
+    <td>
+      <% if item.pending? && can?(:accept, item) %>
+        <div class="btn-group mr-2 mb-1" role="group">
+          <button type="button" class="btn btn-sm btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Accept <span class="caret"></span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-right">
+            <li>
+              <%= link_to t('morphosource.dashboard.my.transfers_received.list_item.accept_retain_label'), hyrax.accept_transfer_path(item, return_to: request.original_fullpath), method: :put, class: 'accept-retain', title: t('morphosource.dashboard.my.transfers_received.list_item.accept_retain_title') %>
+            </li>
+            <li>
+              <%= link_to t('morphosource.dashboard.my.transfers_received.list_item.accept_reset_label'), hyrax.accept_transfer_path(item, reset: true, return_to: request.original_fullpath), method: :put, class: 'accept-reset', title: t('morphosource.dashboard.my.transfers_received.list_item.accept_reset_title') %>
+            </li>
+            <li>
+              <%= link_to t('morphosource.dashboard.my.transfers_received.list_item.accept_stick_label'), hyrax.accept_transfer_path(item, sticky: true, return_to: request.original_fullpath), method: :put, class: 'accept-stick', title: t('morphosource.dashboard.my.transfers_received.list_item.accept_stick_title') %>
+            </li>
+          </ul>
+        </div>
+        <%= link_to t('morphosource.dashboard.my.transfers_received.list_item.reject_label'), hyrax.reject_transfer_path(item, return_to: request.original_fullpath), method: :put, class: 'btn btn-sm btn-danger mb-1', data: { confirm: t('morphosource.dashboard.my.transfers_received.list_item.reject_confirm') } %>
+      <% end %>
+    </td>
+  </tr>
+<% else %>
+  <% Rails.logger.error "A proxy request has no sender: #{item.inspect}" %>
+<% end %>

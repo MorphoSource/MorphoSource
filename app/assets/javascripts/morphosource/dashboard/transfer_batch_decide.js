@@ -22,7 +22,11 @@ Blacklight.onLoad(function () {
 
   $('.batch-decide').on('click', function (e) {
     e.preventDefault();
+    e.stopPropagation(); // keeps rails-ujs's document-level data-confirm listener from also firing
     var $button = $(this);
+
+    var confirmMessage = $button.data('confirm');
+    if (confirmMessage && !window.confirm(confirmMessage)) return;
 
     $form.attr('action', $button.data('url'));
     $form.find('input.batch-decide-param').remove();

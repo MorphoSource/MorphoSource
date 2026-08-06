@@ -80,17 +80,16 @@ $( document ).ready(function() {
     $(downloadForm).find('input[type="submit"]').bind('click', function(e) {
       // download selected button clicked
       e.preventDefault();
-      document.querySelector('form#download-form').dataset.mode = 'selected';
       sendSelectedItemsToModal();
       showAgreementModal();
     });
 
     $('#download-all').bind('click', function(e) {
-      // download all clicked - no item ids are enumerated client-side; the separate
-      // #download-all-form (no item ids) gets submitted directly once the agreement
-      // modal is confirmed, so this works regardless of pagination or cart size.
+      // download all clicked - no item ids are enumerated client-side; #download-form is
+      // submitted with an empty .download-items-wrapper, so MediaCartsController#download
+      // falls back to every downloadable item in the cart, regardless of pagination or size.
       e.preventDefault();
-      document.querySelector('form#download-form').dataset.mode = 'all';
+      document.querySelector('form#download-form .download-items-wrapper').innerHTML = '';
       setAgreementsForAll();
       showAgreementModal();
     });
@@ -111,7 +110,6 @@ $( document ).ready(function() {
       // download individual item clicked
       e.preventDefault();
       var itemId = $(this).attr('data-item-id');
-      document.querySelector('form#download-form').dataset.mode = 'selected';
       uncheckAllDownloadable();
       $("input[id='batch_download_" + itemId + "']").trigger('click');
       sendSelectedItemsToModal();
@@ -199,15 +197,8 @@ $( document ).ready(function() {
       if ( $('#modal-agree').prop('checked') &&
         usage.length >= 50 && usageList() != "" )  {
 
-        const mode = this.dataset.mode;
         formType =$(this).attr('class');
-        if (mode == 'all') {
-          console.log('downloading all items in cart');
-          document.querySelector('#download_all_usage').value = usage;
-          document.querySelector('#download_all_usage_list').value = usageList();
-          document.querySelector('#download_all_recaptcha_response').value = document.querySelector('#g-recaptcha-response').value;
-          document.querySelector('#download-all-form').submit();
-        } else if (formType == 'download-selected') {
+        if (formType == 'download-selected') {
           console.log('downloading selected in cart');
           $('#batch_usage').val(usage);
           $('#batch_usage_list').val(usageList());
@@ -268,7 +259,6 @@ function showAgreementModal() {
   $("#downloadAgreementsModal").on("hidden.bs.modal", function () {
     // remove selected items from modal
     $('form#download-form .download-items-wrapper').html('');
-    delete document.querySelector('form#download-form').dataset.mode;
     uncheckAllDownloadable();
     $("#check_all_unrestricted").prop('checked', false);
     $("input#download-selected").prop('disabled', true);
@@ -277,12 +267,9 @@ function showAgreementModal() {
 
 function setAgreementsForAll() {
   // Itemized agreement summary for every downloadable item in the cart, not just the
-  // current page. Reads directly from .agreements blocks (visible page rows plus the
-  // hidden off-page ones rendered by _all_downloadable_items_hidden.html.erb) rather
-  // than filtering by :checked, since "Download All" doesn't select/enumerate items -
-  // it submits a separate form with no item ids (see download-all-form).
-  const agreements = [];
-  const customLinks = [];
+  // current page - fetched on demand only when Download All is clicked (one batched
+  // Solr query server-side), rather than pre-rendering agreement data for the whole
+  // cart on every page view regardless of whether it's ever used.
   document.querySelectorAll('input[name="ids[]"]').forEach(function(input) {
     input.value = 'ALL';
   });
@@ -290,20 +277,23 @@ function setAgreementsForAll() {
   if (modalDownloadBtn) {
     modalDownloadBtn.setAttribute('data-download-item-id', 'ALL');
   }
-  document.querySelectorAll('.agreements').forEach(function(wrapper) {
-    const mediaIdField = wrapper.querySelector('[data-field="media_doc_id"]');
-    const mediaId = mediaIdField ? mediaIdField.getAttribute('data-value') : undefined;
-    const descriptionField = wrapper.querySelector('[data-field="agreement_description"]');
-    const agreementLink = descriptionField ? descriptionField.innerHTML : undefined;
-    agreements.push(agreementLink);
-    const showcaseLink = wrapper.querySelector('[data-field="agreement_uri"] .showcase-link');
-    if (showcaseLink) {
-      customLinks.push('Media ' + mediaId + ': ' + showcaseLink.innerHTML);
-    }
-  });
-  const agreementGroup = groupCounts(agreements);
-  const display = buildAgreements(agreementGroup, customLinks.sort());
-  document.querySelector('.agreement-items-wrapper').innerHTML = display;
+
+  document.querySelector('.agreement-items-wrapper').innerHTML = '<p>Loading agreements&hellip;</p>';
+
+  fetch('/download_all_agreements')
+    .then(function(response) { return response.json(); })
+    .then(function(data) {
+      const agreements = data.map(function(item) { return item.agreement_description_html; });
+      const customLinks = [];
+      data.forEach(function(item) {
+        if (item.custom_link_html) {
+          customLinks.push('Media ' + item.media_id + ': ' + item.custom_link_html);
+        }
+      });
+      const agreementGroup = groupCounts(agreements);
+      const display = buildAgreements(agreementGroup, customLinks.sort());
+      document.querySelector('.agreement-items-wrapper').innerHTML = display;
+    });
 }
 
 function set_agreements(itemId, singleMediaId) {

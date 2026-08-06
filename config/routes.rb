@@ -500,6 +500,7 @@ Rails.application.routes.draw do
       # media cart
       post 'download_items', action: :download, controller: :media_carts, as: 'download_items'
       delete 'remove_from_cart', action: :destroy, controller: :media_carts, as: 'remove_items'
+      get 'download_all_agreements', action: :download_all_agreements, controller: :media_carts, as: 'download_all_agreements'
 
       # downloads
       post 'batch_create_items', action: :batch_create, controller: :downloads

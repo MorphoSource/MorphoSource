@@ -127,6 +127,10 @@ module Morphosource
 
       private
 
+      def entry_name
+        'application'
+      end
+
       def get_current_items
         @items = ContributorPetition.where(decision_required: true).includes(:user).order(sort_param)
       end

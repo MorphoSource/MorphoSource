@@ -1,7 +1,7 @@
 <div id="details" class="tab-pane active">
   <div class="card panel-default labels">
     <div class="container-fluid mb-1 pt-0">
-      <%= simple_form_for @form, url: collection_form_url(@form), wrapper: :showcase_default, html: { class: 'editor' } do |f| %>
+      <%= simple_form_for @form, url: collection_form_url(@form), wrapper: :showcase_default, html: { class: 'editor', data: (@collection.doi.present? && !current_user.admin? && @collection.media_list? ? { doi_locked: true } : {}) } do |f| %>
 
         <div class="row no-horizontal-padding mb-3">
           <%= render 'morphosource/dashboard/collections/media_lists/details/action_buttons', f: f %>

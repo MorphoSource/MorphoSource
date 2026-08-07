@@ -1,3 +1,5 @@
+<%# Search form for the site header. Appears on homepage, login, etc. %>
+<%# Not used for catalog search results page, which uses _ms_catalog_search_form.html.erb instead. %>
 <%= form_tag main_app.media_search_path, method: :get, class: "form-horizontal search-form", id: "search-form-header", role: "search" do %>
   <% unless morphosource_collection_controller? %>
     <%= render_hash_as_hidden_fields(search_state.params_for_search.except(:q, :search_field, :qt, :page, :utf8)) %>
@@ -18,15 +20,15 @@
           </button>
 
           <div class="dropdown-menu float-right">
-            <%= link_to t("morphosource.search.form.option.media.label", application_name: application_name), "#", class: 'dropdown-item', 
+            <%= link_to t("morphosource.search.form.option.media.label", application_name: application_name), "#", class: 'dropdown-item',
                   data: { "search-option" => main_app.media_search_path, "search-label" => t("morphosource.search.form.option.media.label") } %>
-            <%= link_to t("morphosource.search.form.option.physical_objects.label_long"), "#", class: 'dropdown-item', 
+            <%= link_to t("morphosource.search.form.option.physical_objects.label_long"), "#", class: 'dropdown-item',
                 data: { "search-option" => main_app.object_search_path, "search-label" => t("morphosource.search.form.option.physical_objects.label_short") } %>
-            <%= link_to t("morphosource.search.form.option.organizations.label_long"), "#", class: 'dropdown-item', 
+            <%= link_to t("morphosource.search.form.option.organizations.label_long"), "#", class: 'dropdown-item',
                 data: { "search-option" => main_app.organization_search_path, "search-label" => t("morphosource.search.form.option.organizations.label_short") } %>
-            <%= link_to t("morphosource.search.form.option.collections.label_long"), "#", class: 'dropdown-item', 
+            <%= link_to t("morphosource.search.form.option.collections.label_long"), "#", class: 'dropdown-item',
                 data: { "search-option" => main_app.collection_search_path, "search-label" => t("morphosource.search.form.option.collections.label_short") } %>
-            <%= link_to t("morphosource.search.form.option.media_lists.label_long"), "#", class: 'dropdown-item', 
+            <%= link_to t("morphosource.search.form.option.media_lists.label_long"), "#", class: 'dropdown-item',
                 data: { "search-option" => main_app.media_list_search_path, "search-label" => t("morphosource.search.form.option.media_lists.label_short") } %>
           </div>
         </div>

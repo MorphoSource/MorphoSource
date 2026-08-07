@@ -55,8 +55,6 @@ Rails.application.routes.draw do
 
     ### DASHBOARD ###
 
-    put 'dashboard/transfers/decide', controller: :transfers, action: :batch_decide_transfers, as: 'transfers_batch_decide'
-
     ### USERS ###
 
     # Make user account active/inactive
@@ -170,6 +168,12 @@ Rails.application.routes.draw do
 
       # all requests
       get 'requests', action: :index, controller: :requests, as: 'admin_requests'
+
+      # all ownership transfers
+      get 'transfers', action: :index, controller: :transfers, as: 'admin_transfers'
+      put 'transfers/batch_accept', action: :batch_accept, controller: :transfers, as: 'admin_transfers_batch_accept'
+      put 'transfers/batch_reject', action: :batch_reject, controller: :transfers, as: 'admin_transfers_batch_reject'
+      put 'transfers/batch_cancel', action: :batch_cancel, controller: :transfers, as: 'admin_transfers_batch_cancel'
 
       # remote file health dashboard
       get 'remote_file_health', action: :index, controller: :remote_file_healths, as: 'remote_file_health'
@@ -520,6 +524,15 @@ Rails.application.routes.draw do
       # previous requests
       get 'dashboard/my/previous_requests', action: :index, controller: :previous_requests, as: 'previous_requests'
       put 'edit_expiration', action: :edit_expiration, controller: :previous_requests, as: 'edit_expiration'
+
+      # ownership transfers received
+      get 'dashboard/my/transfers_received', action: :index, controller: :transfers_received, as: 'transfers_received'
+      put 'transfers_received/batch_accept', action: :batch_accept, controller: :transfers_received, as: 'transfers_received_batch_accept'
+      put 'transfers_received/batch_reject', action: :batch_reject, controller: :transfers_received, as: 'transfers_received_batch_reject'
+
+      # ownership transfers sent
+      get 'dashboard/my/transfers_sent', action: :index, controller: :transfers_sent, as: 'transfers_sent'
+      put 'transfers_sent/batch_cancel', action: :batch_cancel, controller: :transfers_sent, as: 'transfers_sent_batch_cancel'
 
       # apply for contributor status
       get 'contribute', action: :index, controller: :contributor_petitions, as: 'user_contributor_petition'

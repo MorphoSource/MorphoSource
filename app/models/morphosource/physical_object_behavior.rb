@@ -98,4 +98,24 @@ module Morphosource::PhysicalObjectBehavior
       end
     end
   end
+
+  # Forces a Solr commit first so a media attached moments ago isn't missed.
+  # @return [String, nil] error message if media is still attached, else nil
+  def blocking_media_message
+    ActiveFedora::SolrService.commit
+    current_media = media
+    return nil if current_media.blank?
+
+    "Cannot delete this record while it still has associated media (#{current_media.map(&:id).join(', ')}), which may not be public. Detach or reassign the media first."
+  end
+
+  private
+
+  def prevent_destroy_with_media
+    message = blocking_media_message
+    return if message.nil?
+
+    errors.add(:base, message)
+    throw :abort
+  end
 end

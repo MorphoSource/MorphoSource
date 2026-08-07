@@ -102,6 +102,7 @@ RSpec.configure do |config|
 
   config.include FactoryBot::Syntax::Methods
   config.include Devise::Test::ControllerHelpers, :type => :controller
+  config.include Devise::Test::IntegrationHelpers, :type => :request
   config.include TestHelpers
 
   config.before(:suite) do
@@ -121,4 +122,13 @@ RSpec.configure do |config|
       FileUtils.rm_rf(test_adapter_uploads_path)
     end
   end
+
+  # Clean up ActiveJob::Base.queue_adapter = :test so it doesn't leak between tests
+  config.after(:each) do
+    ActiveJob::Base.queue_adapter = :inline
+  end
+
+  # config.after(:each) do
+  #   ActiveFedora::Cleaner.clean!
+  # end
 end

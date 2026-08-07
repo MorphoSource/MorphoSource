@@ -2,6 +2,7 @@ module Morphosource
   class CatalogSearchBuilder < Hyrax::CatalogSearchBuilder
     # enable f.field facet format
     include Morphosource::Facets::SearchBuilderFacetParamsBehavior
+    include Morphosource::Facets::SolrTitleLookup
 
     def add_facet_paging_to_solr(solr_params)
       super
@@ -31,10 +32,13 @@ module Morphosource
                          custom_list = Hyrax::RightsStatementService.new.select_all_options
                          custom_list.select { |title, _url| title.downcase.include?(contains_title.downcase) }.map(&:last)
                        when 'device', 'team', 'project', 'media_list', 'seq_section_list'
-                         response = fetch_ids_by_title(contains_title, facet_config.key)
-                         response['response']['docs'].map { |doc| doc['id'] }
-                        when 'owner', 'depositor'
-                         fetch_ms_ids_by_name(contains_title)
+                         fetch_ids_by_title(contains_title, facet_config.key)
+                       when 'owner'
+                         # owners can be users or organizations
+                         fetch_owner_ids_by_name(contains_title)
+                       when 'depositor'
+                         # depositors are always users
+                         fetch_user_ids_by_name(contains_title)
                        else
                          []
                        end
@@ -54,40 +58,5 @@ module Morphosource
     def new_query
       "{!lucene}#{interal_query(dismax_query)}"
     end
-
-    # Query Solr to fetch IDs by matching title and model
-    def fetch_ids_by_title(title, facet_key)
-      # Perform a lookup on the Solr title field to find matching IDs
-      solr_fq = nil
-      case facet_key
-      when 'device'
-        query = "title_tesim:\"#{title}\""
-        solr_fq = ['has_model_ssim:(Device OR DeviceResource)']
-      when 'team', 'project'
-        query = "has_model_ssim:Collection AND title_tesim:\"#{title}\""
-      when 'media_list'
-        query = "has_model_ssim:MediaList AND title_tesim:\"#{title}\""
-      when 'seq_section_list'
-        query = "has_model_ssim:SequentialSectionList AND title_tesim:\"#{title}\""
-      else
-        query = "has_model_ssim:unknown AND title_tesim:\"#{title}\""
-        Rails.logger.warn("Unknown model for facet key: #{facet_config.key}")
-      end
-
-      params = {
-        q: query,
-        fl: 'id',
-        rows: 999999
-      }
-      params[:fq] = solr_fq if solr_fq.present?
-
-      solr_service = Blacklight.default_index.connection
-      solr_service.get('select', params: params)
-    end
-
-    def fetch_ms_ids_by_name(name)
-      User.where('display_name ILIKE ?', "%#{name}%").pluck(:ms_id).map(&:to_s)
-    end
-
   end
 end

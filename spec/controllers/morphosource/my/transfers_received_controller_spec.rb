@@ -7,14 +7,16 @@ RSpec.describe Morphosource::My::TransfersReceivedController, type: :controller 
 
   before do
     ActiveJob::Base.queue_adapter = :test
+    sign_in receiving_user
     allow(subject).to receive(:current_user).and_return(receiving_user)
   end
 
   describe 'GET #index' do
     it "can not be accessed without a signed-in user" do
+      sign_out receiving_user
       allow(subject).to receive(:current_user).and_return(nil)
       get :index
-      expect(response).to redirect_to(new_user_session_path)
+      expect(response).to redirect_to(Rails.application.routes.url_helpers.new_user_session_path)
     end
 
     it "is accessible to a signed-in user" do

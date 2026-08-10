@@ -85,9 +85,7 @@ $( document ).ready(function() {
     });
 
     $('#download-all').bind('click', function(e) {
-      // download all clicked - no item ids are enumerated client-side; #download-form is
-      // submitted with an empty .download-items-wrapper, so MediaCartsController#download
-      // falls back to every downloadable item in the cart, regardless of pagination or size.
+      // Empty .download-items-wrapper makes #download-form submit the whole cart.
       e.preventDefault();
       document.querySelector('form#download-form .download-items-wrapper').innerHTML = '';
       setAgreementsForAll();
@@ -265,12 +263,7 @@ function showAgreementModal() {
 }
 
 function setAgreementsForAll() {
-  // Itemized agreement summary for every downloadable item in the cart, not just the
-  // current page - fetched on demand only when Download All is clicked (one batched
-  // Solr query server-side), rather than pre-rendering agreement data for the whole
-  // cart on every page view regardless of whether it's ever used. The modal is only
-  // shown once this data is ready, so there's no "Loading..." state a user could
-  // glance at and mistake for the final (missing-links) content.
+  // Fetches the agreement summary on demand instead of pre-rendering for the whole cart.
   document.querySelectorAll('input[name="ids[]"]').forEach(function(input) {
     input.value = 'ALL';
   });
@@ -279,8 +272,7 @@ function setAgreementsForAll() {
     modalDownloadBtn.setAttribute('data-download-item-id', 'ALL');
   }
 
-  // no-store: this reflects live cart state and must never be served from the browser's
-  // HTTP cache or resolved via a 304 conditional revalidation against a stale response.
+  // no-store: avoid a stale cached/304 response for live cart state.
   fetch('/download_all_agreements', { cache: 'no-store' })
     .then(function(response) { return response.json(); })
     .then(function(data) {
@@ -293,12 +285,7 @@ function setAgreementsForAll() {
       });
       const agreementGroup = groupCounts(agreements);
       const display = buildAgreements(agreementGroup, customLinks.sort());
-      // Scoped to the download modal specifically - the cart page also has a second,
-      // separate .agreement-items-wrapper inside the request modal (#pageModal, used
-      // for requesting restricted items), rendered earlier in the DOM. Unlike jQuery's
-      // $('.agreement-items-wrapper') (which updates every match), querySelector only
-      // returns the first one, so this must be scoped or it silently writes into the
-      // wrong (invisible) modal's wrapper.
+      // Scoped to the download modal - a second .agreement-items-wrapper exists in the request modal.
       document.querySelector('#downloadAgreementsModal .agreement-items-wrapper').innerHTML = display;
       showAgreementModal();
     })

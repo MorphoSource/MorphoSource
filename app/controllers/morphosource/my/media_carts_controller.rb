@@ -45,9 +45,7 @@ module Morphosource
         redirect_back(fallback_location: my_cart_path)
       end
 
-      # Itemized agreement summary for every downloadable item in the cart, fetched on
-      # demand only when "Download All" is clicked - not pre-rendered for the whole cart
-      # on every page view. One batched Solr query regardless of cart size.
+      # Itemized agreement summary for the whole cart, fetched on demand.
       def download_all_agreements
         response.headers['Cache-Control'] = 'no-store'
 
@@ -112,8 +110,7 @@ module Morphosource
         end
       end
 
-      # Mirrors Hyrax::Renderers::ShowcaseAgreementUriFileAttributeRenderer's link logic:
-      # prefer a depositor-uploaded agreement attachment, fall back to a plain agreement_uri.
+      # Mirrors ShowcaseAgreementUriFileAttributeRenderer's link logic.
       def custom_agreement_link_html(presenter)
         if presenter.attachment_url.present?
           view_context.link_to(

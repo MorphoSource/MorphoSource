@@ -46,15 +46,12 @@ module Morphosource
       @all_files ||= files + standard_agreement_files + media_agreement_files + xlsx_manifest + csv_manifest + unavailable_media_notice_file
     end
 
-    # Media ids skipped by prepare_files because their file could not be validated.
-    # Populated as a side effect of calling `files`/`prepare_files`.
+    # Ids skipped by prepare_files due to an invalid/missing file.
     def unavailable_media_ids
       @unavailable_media_ids ||= []
     end
 
-    # Bundles a plain-text notice into the zip itself when some media were skipped, so the
-    # message is visible the moment the user opens the download - no reliance on a flash
-    # message surfacing on some later page load.
+    # Notice of skipped media, bundled into the zip itself.
     def unavailable_media_notice_file
       return [] unless unavailable_media_ids.present?
 
@@ -143,8 +140,7 @@ module Morphosource
     end
 
     def zip_name
-      # Reflect what's actually in the zip, not what was originally requested -
-      # unavailable media are skipped by prepare_files and never make it in.
+      # Reflects what's actually in the zip, not what was requested.
       included_media = media.reject { |m| unavailable_media_ids.include?(m.id) }
 
       m = ""

@@ -4,10 +4,7 @@
     <%= submit_tag("Clear Cart", class: 'btn btn-danger', id: 'clear-cart') %>
   <% end %>
 
-  <%# JS opens the shared agreement modal/form (#download-form, rendered by
-      morphosource/my/modals/download_agreements_for_cart) with .download-items-wrapper
-      cleared, so submitting it downloads every downloadable item in the cart regardless
-      of pagination - see download_agreements.js %>
+  <%# JS clears .download-items-wrapper so submitting downloads the whole cart - see download_agreements.js %>
   <button type="button" class="btn btn-info" id="download-all">Download All</button>
 
 </div>

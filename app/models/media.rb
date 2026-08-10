@@ -456,8 +456,7 @@ class Media < Morphosource::Works::Base
     # check that organization has a valid data manager
     if org.managers&.first.present?
       # First, is media manager user the same as the new org data manager?
-      # owner_user will be nil when the current owner is an organization rather than a user
-      # (e.g. an org-to-org transfer), so this must be safe-navigated.
+      # owner_user is nil when the current owner is an organization, not a user, hence the safe navigation below.
       owner_user = User.find_by(ms_id: user_with_ownership)
       proxy_user = User.find_by(ms_id: on_behalf_of)
       if owner_user&.groups&.include?("#{org.id}_managers") || proxy_user&.groups&.include?("#{org.id}_managers")
@@ -506,8 +505,7 @@ class Media < Morphosource::Works::Base
     self.pending_org_transfer = true
   end
 
-  # user_with_ownership may hold either a User's ms_id or an OrganizationCollection's id
-  # (e.g. media already owned by one organization being transferred to another).
+  # Resolves the media's current owner as either a User or an OrganizationCollection.
   def sending_user_for_organization_transfer
     User.find_by_user_key(user_with_ownership) || OrganizationCollection.find_by(id: user_with_ownership)
   end

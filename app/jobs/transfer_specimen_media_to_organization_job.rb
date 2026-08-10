@@ -1,8 +1,4 @@
-# Transfers a single media's ownership to a specific organization, triggered by a
-# specimen/CHO's organization_id changing. Distinct from TransferToOrganizationJob
-# (driven by media visibility changing to open + organization_transfer_on_publish)
-# because here the target organization is already known precisely from the specimen
-# callback and must not be re-derived from Media#organizations (an ancestor aggregate).
+# Transfers a media's ownership to an organization, triggered by a specimen/CHO's organization_id changing.
 class TransferSpecimenMediaToOrganizationJob < Hyrax::ApplicationJob
   include Hyrax::Lockable
 

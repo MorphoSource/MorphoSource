@@ -27,9 +27,7 @@ module Hyrax
 
     def create
       @proxy_deposit_request.sending_user = current_user
-      # Manually-created transfers targeting an organization are organization transfers too,
-      # so they get the "sender can't cancel" protection and show up correctly in
-      # organization-transfer dashboard filtering, same as automatically-created ones.
+      # Org-directed transfers get the "sender can't cancel" protection too, same as automated ones.
       @proxy_deposit_request.organization_transfer = true if @proxy_deposit_request.receiving_user.is_a?(OrganizationCollection)
       if @proxy_deposit_request.save
         #redirect_to hyrax.transfers_path, notice: "Transfer request created"

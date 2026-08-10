@@ -109,22 +109,12 @@ module Morphosource::PhysicalObjectBehavior
     "Cannot delete this record while it still has associated media (#{current_media.map(&:id).join(', ')}), which may not be public. Detach or reassign the media first."
   end
 
-  # organization_id is a multi-valued RDF property, and ActiveFedora's dirty-tracking
-  # for this kind of property does not reliably preserve the pre-change value in
-  # organization_id_was (it can reflect the already-mutated in-memory value). So the
-  # previous organization must be captured independently, via a fresh Fedora read,
-  # before the in-memory changes are persisted. Call this from a before_save callback
-  # in each including model (mirrors record_original_organizations in
-  # Morphosource::LinkedTeams::LinkedTeamsManagement, which does the same thing at
-  # the controller level for a different purpose).
+  # organization_id_was is unreliable for this multi-valued property, so re-read the pre-change value from Fedora directly.
   def capture_original_organization_id
     @original_organization_id = new_record? ? [] : self.class.find(id).organization_id
   end
 
-  # Called via an after_update callback (guarded by organization_id_changed?) on
-  # BiologicalSpecimen/CulturalHeritageObject. Creates pending organization transfers
-  # for this specimen's media when its organization changes, if the media is currently
-  # owned by the old organization and the new organization accepts data transfers.
+  # Creates pending organization transfers for this specimen's media when its organization changes.
   def check_for_media_organization_transfer
     new_org = resolve_organization_collection(organization_id)
     return unless new_org&.media_ownership_transfer?
@@ -148,9 +138,7 @@ module Morphosource::PhysicalObjectBehavior
     throw :abort
   end
 
-  # Resolves the first id that is a live OrganizationCollection, skipping blank ids
-  # and ids that don't resolve to an OrganizationCollection (e.g. defunct legacy
-  # Organization work records) rather than raising.
+  # Resolves the first id that's a live OrganizationCollection, skipping blank/legacy ids rather than raising.
   def resolve_organization_collection(ids)
     Array(ids).each do |oid|
       next if oid.blank? || !ActiveFedora::Base.exists?(oid)

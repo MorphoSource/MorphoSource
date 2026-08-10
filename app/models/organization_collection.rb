@@ -11,8 +11,9 @@ class OrganizationCollection < Collection
   before_save :convert_media_ownership_transfer
   before_save :record_date_managed
   after_create :create_collection_groups
+  after_create :persist_date_managed
   after_create :create_organization_project
-  after_update :update_ark_status
+  after_update :update_ark_status, unless: :persisting_date_managed?
   after_update :index_related_works
   after_create :mint_ark
   after_destroy :delete_ark_if_reserved
@@ -130,26 +131,55 @@ class OrganizationCollection < Collection
     DeviceResource.where(organization_id: id)
   end
 
-  # Create manager and viewer roles for each Organization collection
-  def create_collection_groups
-    self.class::DEFAULT_GROUP_ROLES.each do |role|
-      name = id.concat("_#{role}")
-      Role.create(name: name) unless Role.find_by(name: name)
-    end
+  # @return [Boolean] true if any manager is not an admin
+  def managed_by_non_admin?
+    managers.any? { |manager| !manager.admin? }
   end
 
-  # before_save callback to set date_managed if needed
+  # Track when the organization first gains a non-admin manager.
   def record_date_managed
-    return self.date_managed if self.managers.present? && self.date_managed.present?
+    managed = managed_by_non_admin?
+    return self.date_managed if managed && self.date_managed.present?
 
-    self.date_managed = self.managers.present? ? Date.today : nil
+    self.date_managed = managed ? Date.today : nil
   end
 
   private
 
+  # Managers cannot be seeded until the record has an id, so the date derived from them needs a second write.
+  def persist_date_managed
+    record_date_managed
+    return unless date_managed_changed?
+
+    @persisting_date_managed = true
+    begin
+      save!
+    ensure
+      @persisting_date_managed = false
+    end
+  end
+
+  def persisting_date_managed?
+    @persisting_date_managed
+  end
+
+  # Prefer the configured manager (an ms_id), falling back to the depositor.
+  def default_manager
+    ms_id = Morphosource.default_organization_manager
+    return super if ms_id.blank?
+
+    user = User.find_by(ms_id: ms_id)
+    return user if user.present?
+
+    Rails.logger.warn("[OrganizationCollection] DEFAULT_ORGANIZATION_MANAGER '#{ms_id}' does not match any user; falling back to the depositor for #{id}")
+    super
+  end
+
+  # Takes its managers from the organization rather than seeding the depositor.
   def create_organization_project
     project = example_organization_project
-    project.create_collection_groups
+    project.create_collection_groups(seed_manager: false)
+    project.copy_parent_membership(id)
     Morphosource::Collections::PermissionsCreateService.create_default(collection: project)
     project.member_of_collections << self
     project.save!

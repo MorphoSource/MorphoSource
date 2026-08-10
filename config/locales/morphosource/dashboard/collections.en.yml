@@ -4,6 +4,7 @@ en:
       collections:
         form:
           non_contributor_errors: "The %{user} (%{emails}) can't be added to the %{access} role because they do not have contributor status. Either add the %{user} to a membership role that does not require contributor status (%{roles}) or have the %{user} request contributor status."
+          last_manager_errors: "Cannot remove the last manager from %{title}. Add another manager first."
         form_branding:
           logo:
             description: An image to be displayed next to the %{collection_type} name and in search results. For best results, upload an image (JPG, GIF or PNG) that is 40 pixels in height. Larger images will be resized to 40 pixels in height.

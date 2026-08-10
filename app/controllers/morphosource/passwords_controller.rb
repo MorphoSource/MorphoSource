@@ -9,9 +9,7 @@ module Morphosource
     def update
       super do |resource|
         if resource.errors.empty? && resource.profile_type.blank?
-          # Devise::PasswordsController#update yields before it calls sign_in,
-          # unlike SessionsController#create - sign in now so edit_profile_type's
-          # authorize_resource check has a current_user to authorize.
+          # Sign in now since edit_profile_type's authorize_resource needs a current_user.
           sign_in(resource_name, resource)
           redirect_to_complete_profile(resource) and return
         end

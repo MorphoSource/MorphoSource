@@ -4,9 +4,9 @@ module Morphosource
 
     private
 
-    # Redirects to the "complete your profile" page if +user+ has no
-    # profile_type set. Returns true if it redirected (caller should return
-    # immediately), false if the profile is already complete.
+    # Redirects to the "complete your profile" page if +user+ has no profile_type set.
+    # @param user [User]
+    # @return [Boolean] true if it redirected (caller should return immediately), false if the profile is already complete
     def redirect_to_complete_profile(user)
       return false if user.profile_type.present?
 

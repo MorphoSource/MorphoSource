@@ -11,7 +11,6 @@ class OrganizationCollection < Collection
   before_save :convert_media_ownership_transfer
   before_save :record_date_managed
   after_create :create_collection_groups
-  # Must stay ahead of mint_ark: with no ark yet, update_ark_status cannot reach EZID.
   after_create :persist_date_managed
   after_create :create_organization_project
   after_update :update_ark_status, unless: :persisting_date_managed?

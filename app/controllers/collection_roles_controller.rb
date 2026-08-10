@@ -128,12 +128,13 @@ class CollectionRolesController < ApplicationController
     end
   end
 
-  # Check the parent and its subcollections before any role is written, so a
-  # rejected parent update cannot partially change its child projects.
+  # Blocks a role change that would leave the parent or any of its subcollections
+  # without a manager.
+  #
+  # @return [String, nil] Title of the collection that would lose its last manager,
+  #   or nil if the change is allowed
   def last_manager_blocker
-    return @last_manager_blocker if defined?(@last_manager_blocker)
-
-    @last_manager_blocker = find_last_manager_blocker
+    @last_manager_blocker ||= find_last_manager_blocker
   end
 
   def find_last_manager_blocker

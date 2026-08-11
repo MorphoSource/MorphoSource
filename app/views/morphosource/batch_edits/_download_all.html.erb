@@ -4,8 +4,7 @@
     <%= submit_tag("Clear Cart", class: 'btn btn-danger', id: 'clear-cart') %>
   <% end %>
 
-  <%= form_tag(main_app.download_items_path, method: :get, class: "button_to-inline") do -%>
-    <%= submit_tag("Download All", class: 'btn btn-info', id: 'download-all') %>
-  <% end %>
+  <%# JS clears .download-items-wrapper so submitting downloads the whole cart - see download_agreements.js %>
+  <button type="button" class="btn btn-info" id="download-all">Download All</button>
 
 </div>

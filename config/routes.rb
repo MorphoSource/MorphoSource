@@ -808,7 +808,7 @@ Rails.application.routes.draw do
   ### HYRAX AND HYDRA RELATED ###
 
   # Devise and user roles
-  devise_for :users, :controllers => { registrations: 'registrations', sessions: 'sessions' }
+  devise_for :users, :controllers => { registrations: 'registrations', sessions: 'sessions', passwords: 'morphosource/passwords' }
   mount Hydra::RoleManagement::Engine => '/'
 
   # ms1 users changing their password must agree to terms and conditions

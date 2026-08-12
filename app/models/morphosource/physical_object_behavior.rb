@@ -116,16 +116,14 @@ module Morphosource::PhysicalObjectBehavior
 
   # Creates pending organization transfers for this specimen's media when its organization changes.
   def check_for_media_organization_transfer
-    new_org = resolve_organization_collection(organization_id)
-    return unless new_org&.media_ownership_transfer?
+    return if organization_id.blank?
+    new_org = OrganizationCollection.find(organization_id.first)
+    return unless new_org.media_ownership_transfer?
+    return if @original_organization_id.blank?
+    old_org = OrganizationCollection.find(@original_organization_id.first)
+    return if new_org.id == old_org.id
 
-    old_org = resolve_organization_collection(@original_organization_id)
-    return unless old_org
-
-    media.each do |m|
-      next unless m.user_with_ownership == old_org.id
-      TransferToOrganizationJob.perform_later(m.id, organization_id: new_org.id)
-    end
+    CheckSpecimenMediaOrganizationTransferJob.perform_later(id, old_org.id, new_org.id)
   end
 
   private
@@ -136,15 +134,5 @@ module Morphosource::PhysicalObjectBehavior
 
     errors.add(:base, message)
     throw :abort
-  end
-
-  # Resolves the first id that's a live OrganizationCollection, skipping blank/legacy ids rather than raising.
-  def resolve_organization_collection(ids)
-    Array(ids).each do |oid|
-      next if oid.blank? || !ActiveFedora::Base.exists?(oid)
-      obj = ActiveFedora::Base.find(oid)
-      return obj if obj.is_a?(OrganizationCollection)
-    end
-    nil
   end
 end

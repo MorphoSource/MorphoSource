@@ -124,7 +124,7 @@ module Morphosource::PhysicalObjectBehavior
 
     media.each do |m|
       next unless m.user_with_ownership == old_org.id
-      TransferSpecimenMediaToOrganizationJob.perform_later(m.id, new_org.id)
+      TransferToOrganizationJob.perform_later(m.id, organization_id: new_org.id)
     end
   end
 

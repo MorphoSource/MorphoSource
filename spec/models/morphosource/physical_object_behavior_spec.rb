@@ -194,14 +194,14 @@ RSpec.describe Morphosource::PhysicalObjectBehavior do
       context 'new organization accepts data transfers and media is owned by the old organization' do
         it 'enqueues a transfer job for each media owned by the old organization (specimen)' do
           expect { specimen.update(organization_id: [new_org.id]) }
-            .to have_enqueued_job(TransferSpecimenMediaToOrganizationJob).with(public_media.id, new_org.id)
-          expect(TransferSpecimenMediaToOrganizationJob).to have_been_enqueued.with(private_media.id, new_org.id)
+            .to have_enqueued_job(TransferToOrganizationJob).with(public_media.id, organization_id: new_org.id)
+          expect(TransferToOrganizationJob).to have_been_enqueued.with(private_media.id, organization_id: new_org.id)
         end
 
         it 'enqueues a transfer job for each media owned by the old organization (cho)' do
           expect { cho.update(organization_id: [new_org.id]) }
-            .to have_enqueued_job(TransferSpecimenMediaToOrganizationJob).with(public_media.id, new_org.id)
-          expect(TransferSpecimenMediaToOrganizationJob).to have_been_enqueued.with(private_media.id, new_org.id)
+            .to have_enqueued_job(TransferToOrganizationJob).with(public_media.id, organization_id: new_org.id)
+          expect(TransferToOrganizationJob).to have_been_enqueued.with(private_media.id, organization_id: new_org.id)
         end
       end
 
@@ -210,7 +210,7 @@ RSpec.describe Morphosource::PhysicalObjectBehavior do
 
         it 'does not enqueue any transfer job' do
           expect { specimen.update(organization_id: [new_org.id]) }
-            .not_to have_enqueued_job(TransferSpecimenMediaToOrganizationJob)
+            .not_to have_enqueued_job(TransferToOrganizationJob)
         end
       end
 
@@ -224,14 +224,14 @@ RSpec.describe Morphosource::PhysicalObjectBehavior do
 
         it 'does not enqueue any transfer job' do
           expect { specimen.update(organization_id: [new_org.id]) }
-            .not_to have_enqueued_job(TransferSpecimenMediaToOrganizationJob)
+            .not_to have_enqueued_job(TransferToOrganizationJob)
         end
       end
 
       context 'organization_id is unchanged' do
         it 'does not enqueue any transfer job' do
           expect { specimen.update(title: ['renamed specimen']) }
-            .not_to have_enqueued_job(TransferSpecimenMediaToOrganizationJob)
+            .not_to have_enqueued_job(TransferToOrganizationJob)
         end
       end
 
@@ -240,7 +240,7 @@ RSpec.describe Morphosource::PhysicalObjectBehavior do
 
         it 'does not enqueue any transfer job' do
           expect { specimen.update(organization_id: [new_org.id]) }
-            .not_to have_enqueued_job(TransferSpecimenMediaToOrganizationJob)
+            .not_to have_enqueued_job(TransferToOrganizationJob)
         end
       end
     end

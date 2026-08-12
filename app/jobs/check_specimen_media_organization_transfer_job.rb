@@ -1,4 +1,4 @@
-# Checks a specimen/CHO's media for organization transfer eligibility after its organization changed.
+# Transfers or redirects a specimen/CHO's media to its new organization after the organization changed.
 class CheckSpecimenMediaOrganizationTransferJob < Hyrax::ApplicationJob
   queue_as Hyrax.config.update_fast_queue_name
 
@@ -7,9 +7,14 @@ class CheckSpecimenMediaOrganizationTransferJob < Hyrax::ApplicationJob
   # @param [String] new_organization_id - the OrganizationCollection ID the specimen is now assigned to
   def perform(specimen_id, old_organization_id, new_organization_id)
     specimen = ActiveFedora::Base.find(specimen_id)
+    new_organization = OrganizationCollection.find(new_organization_id)
     specimen.media.each do |m|
-      next unless m.user_with_ownership == old_organization_id
-      TransferToOrganizationJob.perform_later(m.id, organization_id: new_organization_id)
+      if m.pending_org_transfer
+        m.create_new_organization_transfer_request(new_organization, true)
+        m.save!
+      elsif m.user_with_ownership == old_organization_id
+        TransferToOrganizationJob.perform_later(m.id, organization_id: new_organization_id)
+      end
     end
   end
 end

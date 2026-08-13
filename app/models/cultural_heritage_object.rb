@@ -3,7 +3,7 @@ class CulturalHeritageObject < Morphosource::Works::Base
   include ::Morphosource::PhysicalObjectBehavior
   include Morphosource::PersistentIdentifiersBehavior
   validates_with Morphosource::ParentChildValidator
-  before_save :capture_original_organization_id
+  before_save :capture_original_organization_id, if: :organization_id_changed?
   after_update :reindex_media, :update_ark_status
   after_update :check_for_media_organization_transfer, if: :organization_id_changed?
   after_create :mint_ark

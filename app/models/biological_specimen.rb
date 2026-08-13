@@ -9,7 +9,7 @@ class BiologicalSpecimen < Morphosource::Works::Base
     controlled_value_filter
     date_filter
   end
-  before_save :capture_original_organization_id
+  before_save :capture_original_organization_id, if: :organization_id_changed?
   after_update :reindex_media, :update_ark_status
   after_create :mint_ark
   before_destroy :prevent_destroy_with_media, prepend: true

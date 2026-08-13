@@ -110,6 +110,10 @@ RSpec.describe OrganizationCollection, type: :model do
   end
 
   describe '#create_collection_groups' do
+    before do
+      allow(Morphosource).to receive(:default_organization_manager).and_return(nil)
+    end
+
     let!(:organization) { FactoryBot.create(:organization_collection, depositor: user.ms_id) }
 
     it 'assigns them names with the collection id' do
@@ -168,7 +172,7 @@ RSpec.describe OrganizationCollection, type: :model do
 
       it 'warns that the configured user was not found' do
         allow(Rails.logger).to receive(:warn)
-        expect(Rails.logger).to receive(:warn).with(/DEFAULT_ORGANIZATION_MANAGER 'no_such_ms_id' does not match any user/)
+        expect(Rails.logger).to receive(:warn).with(/batch user key 'no_such_ms_id' does not match any user/)
         FactoryBot.create(:organization_collection, depositor: user.ms_id)
       end
     end
@@ -185,7 +189,7 @@ RSpec.describe OrganizationCollection, type: :model do
 
       it 'does not warn, since an unconfigured default manager is expected' do
         allow(Rails.logger).to receive(:warn)
-        expect(Rails.logger).not_to receive(:warn).with(/DEFAULT_ORGANIZATION_MANAGER/)
+        expect(Rails.logger).not_to receive(:warn).with(/batch user key/)
         FactoryBot.create(:organization_collection, depositor: user.ms_id)
       end
     end

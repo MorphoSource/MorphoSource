@@ -450,7 +450,7 @@ class Media < Morphosource::Works::Base
     raise NotImplementedError, "Org teams are defunct; use transfer_media_to_organization_collection instead"
   end
 
-  def transfer_media_to_organization_collection(org)
+  def transfer_media_to_organization_collection(org, force_update: false)
     # check if organization is already the media owner
     return if user_with_ownership == org.id
     # check that organization has a valid data manager
@@ -463,7 +463,7 @@ class Media < Morphosource::Works::Base
         # don't create transfer, but add organization as media owner and ensure no further transfers are created
         self.owner = org.id
       else
-        create_new_organization_transfer_request(org)
+        create_new_organization_transfer_request(org, force_update)
       end
       if self.organization_transfer_on_publish
         self.organization_transfer_on_publish = false

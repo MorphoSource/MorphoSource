@@ -7,11 +7,9 @@ class CheckSpecimenMediaOrganizationTransferJob < Hyrax::ApplicationJob
   # @param [String] new_organization_id - the OrganizationCollection ID the specimen is now assigned to
   def perform(specimen_id, old_organization_id, new_organization_id)
     specimen = ActiveFedora::Base.find(specimen_id)
-    new_organization = OrganizationCollection.find(new_organization_id)
     specimen.media.each do |m|
       if m.pending_org_transfer
-        m.create_new_organization_transfer_request(new_organization, true)
-        m.save!
+        TransferToOrganizationJob.perform_later(m.id, organization_id: new_organization_id, force_update: true)
       elsif m.user_with_ownership == old_organization_id
         TransferToOrganizationJob.perform_later(m.id, organization_id: new_organization_id)
       end

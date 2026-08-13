@@ -33,11 +33,9 @@ RSpec.describe CheckSpecimenMediaOrganizationTransferJob do
   context 'media with an existing pending organization transfer, not owned by the old organization' do
     before { allow(specimen).to receive(:media).and_return([pending_transfer_media]) }
 
-    it 'force-redirects the pending transfer to the new organization instead of enqueuing a new transfer job' do
-      expect(pending_transfer_media).to receive(:create_new_organization_transfer_request).with(new_org, true)
-      expect(pending_transfer_media).to receive(:save!)
+    it 'enqueues a force-updating transfer job to redirect the pending transfer to the new organization' do
       described_class.perform_now(specimen.id, old_org.id, new_org.id)
-      expect(TransferToOrganizationJob).not_to have_been_enqueued
+      expect(TransferToOrganizationJob).to have_been_enqueued.with('pending-media-id', organization_id: new_org.id, force_update: true)
     end
   end
 end

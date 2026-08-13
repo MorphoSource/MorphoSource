@@ -171,7 +171,7 @@ class OrganizationCollection < Collection
     user = User.find_by(ms_id: ms_id)
     return user if user.present?
 
-    Rails.logger.warn("[OrganizationCollection] DEFAULT_ORGANIZATION_MANAGER '#{ms_id}' does not match any user; falling back to the depositor for #{id}")
+    Rails.logger.warn("[OrganizationCollection] batch user key '#{ms_id}' does not match any user; falling back to the depositor for #{id}")
     super
   end
 

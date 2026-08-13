@@ -26,8 +26,8 @@ module Morphosource
       end
 
       # ms_id of the user seeded as the default organization manager
-      mattr_accessor :default_organization_manager do
-        ENV['BATCH_USER_KEY']
+      def self.default_organization_manager
+        Hyrax.config.batch_user_key
       end
 
       # Allowed formats for uploads based on selected Media type

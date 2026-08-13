@@ -124,6 +124,8 @@ module Morphosource::PhysicalObjectBehavior
     return if new_org.id == old_org.id
 
     CheckSpecimenMediaOrganizationTransferJob.perform_later(id, old_org.id, new_org.id)
+  rescue ActiveFedora::ModelMismatch, NoMethodError
+    nil
   end
 
   private

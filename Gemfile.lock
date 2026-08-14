@@ -16,8 +16,8 @@ GIT
 
 GIT
   remote: https://github.com/MorphoSource/iiif_manifest.git
-  revision: dc855024f006edb7a25800d5da7073a7a9758923
-  tag: v1.3.1
+  revision: 098026ed5ac03359d01af372b37ebbd1f4d77300
+  tag: v1.4.0
   specs:
     iiif_manifest (0.5.0)
       activesupport (>= 4)

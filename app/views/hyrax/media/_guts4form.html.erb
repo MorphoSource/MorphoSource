@@ -9,11 +9,11 @@
           </a>
         </li>
 
-        <% if @presenter.media_type&.first == 'Mesh' %>
+        <% if ['Mesh', 'CTImageSeries'].include?(@presenter.media_type&.first) %>
           <li role="presentation" id="tab-preview-settings" class="nav-item">
             <a href="#preview-settings" aria-controls="preview-settings" role="tab" data-toggle="tab" aria-expanded="false" class="nav-link" style="display: flex; align-items: center; gap: 5px;">
-              <i class="fa fa-tv"></i> 
-              Preview 
+              <i class="fa fa-tv"></i>
+              Preview
               <span class="label label-warning">BETA</span>
             </a>
           </li>
@@ -133,7 +133,7 @@
           </div>
         </div>
 
-        <% if @presenter.media_type&.first == 'Mesh' %>
+        <% if ['Mesh', 'CTImageSeries'].include?(@presenter.media_type&.first) %>
           <div role="tabpanel" class="tab-pane" id="preview-settings">
             <div class="form-tab-content">
 
@@ -146,9 +146,9 @@
         <div role="tabpanel" class="tab-pane active" id="media-details">
           <div class="form-tab-content">
 
-            <%# Trial new media details page sans preview (with preview tab) for Meshes %>
+            <%# Trial new media details page sans preview (with preview tab) for meshes and volumes %>
             <%# Decide if this should be the default for all moving forward %>
-            <% if @presenter.media_type&.first == 'Mesh' %>
+            <% if ['Mesh', 'CTImageSeries'].include?(@presenter.media_type&.first) %>
               <%= render 'tab_media_details_no_preview', f: f %>
             <% else %>
               <%= render 'tab_media_details', f: f %>

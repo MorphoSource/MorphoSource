@@ -133,6 +133,8 @@ RSpec.describe OrganizationCollection, type: :model do
     let(:user)  { FactoryBot.create(:registered_user) }
     let(:user2) { FactoryBot.create(:registered_user) }
 
+    before { allow(Morphosource).to receive(:default_organization_manager).and_return(nil) }
+
     context 'the organization has a download_reviewer set' do
       before do
         organization.download_reviewer = [user.ms_id, user2.ms_id]

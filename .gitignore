@@ -104,3 +104,10 @@ vendor/alembic/__pycache__/*
 /yarn-error.log
 yarn-debug.log*
 .yarn-integrity
+
+# ---------------------------------------------------
+# Valkyrie related rules
+# ---------------------------------------------------
+
+storage/
+uploads/

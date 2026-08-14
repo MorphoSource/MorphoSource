@@ -114,6 +114,8 @@ RSpec.describe Collection, type: :model do
     let(:collections)         { [team, organization] }
 
     before do
+      # Fall back to the depositor for the seeded manager
+      allow(Morphosource).to receive(:default_organization_manager).and_return(nil)
       organization.managers << user
       organization.managers_group.save
     end

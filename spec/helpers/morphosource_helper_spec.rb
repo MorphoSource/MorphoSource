@@ -715,7 +715,7 @@ RSpec.describe MorphosourceHelper, type: :helper do
     return false unless sharing_users = group_list[group.id]&.dig(:users)
     ["managers", "editors", "downloaders", "viewers"].each do |role|
       group.send(role).each do |user|
-        return false unless sharing_users[role].include?(user.display_name)
+        return false unless sharing_users[role].include?(user.name_or_email)
       end
     end
     true

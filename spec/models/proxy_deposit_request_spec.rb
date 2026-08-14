@@ -8,6 +8,8 @@ RSpec.describe ProxyDepositRequest do
 
   before do
     allow(Hyrax.config).to receive(:host_name) { "test.host" }
+    # Fall back to the depositor for the seeded manager
+    allow(Morphosource).to receive(:default_organization_manager).and_return(nil)
   end
 
   describe "instance" do

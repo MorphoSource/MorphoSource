@@ -1,6 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe Hyrax::TransfersController, type: :controller do
+  routes { Hyrax::Engine.routes }
+
   let(:sending_user)   { FactoryBot.create(:contributor, email: "sender@email.com") }
   let(:receiving_user) { FactoryBot.create(:contributor, email: "receiver@email.com") }
   let(:admin)          { FactoryBot.create(:admin) }
@@ -11,7 +13,7 @@ RSpec.describe Hyrax::TransfersController, type: :controller do
 
     it 'redirects to the new My Transfers Received page' do
       get :index
-      expect(response).to redirect_to(transfers_received_path)
+      expect(response).to redirect_to(Rails.application.routes.url_helpers.transfers_received_path(locale: I18n.locale))
     end
   end
 
@@ -24,7 +26,7 @@ RSpec.describe Hyrax::TransfersController, type: :controller do
       put :accept, params: { id: request.id }
       request.reload
       expect(request.status).to eq 'accepted'
-      expect(response).to redirect_to(transfers_received_path)
+      expect(response).to redirect_to(Rails.application.routes.url_helpers.transfers_received_path(locale: I18n.locale))
     end
   end
 
@@ -37,7 +39,7 @@ RSpec.describe Hyrax::TransfersController, type: :controller do
       put :reject, params: { id: request.id }
       request.reload
       expect(request.status).to eq 'rejected'
-      expect(response).to redirect_to(transfers_received_path)
+      expect(response).to redirect_to(Rails.application.routes.url_helpers.transfers_received_path(locale: I18n.locale))
     end
   end
 
@@ -51,7 +53,7 @@ RSpec.describe Hyrax::TransfersController, type: :controller do
         delete :destroy, params: { id: request.id }
         request.reload
         expect(request.status).to eq 'canceled'
-        expect(response).to redirect_to(transfers_sent_path)
+        expect(response).to redirect_to(Rails.application.routes.url_helpers.transfers_sent_path(locale: I18n.locale))
       end
     end
 
@@ -65,7 +67,7 @@ RSpec.describe Hyrax::TransfersController, type: :controller do
         delete :destroy, params: { id: request.id }
         request.reload
         expect(request.status).to eq 'canceled'
-        expect(response).to redirect_to(transfers_sent_path)
+        expect(response).to redirect_to(Rails.application.routes.url_helpers.transfers_sent_path(locale: I18n.locale))
       end
     end
 

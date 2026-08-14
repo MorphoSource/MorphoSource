@@ -2,6 +2,45 @@ require 'rails_helper'
 
 RSpec.describe MorphosourceHelper, type: :helper do
 
+  describe '#solr_docs_find' do
+    it 'returns an empty hash without querying Solr when given no ids' do
+      expect(ActiveFedora::SolrService).not_to receive(:query)
+      expect(helper.solr_docs_find([])).to eq({})
+    end
+
+    it 'fetches all ids in a single batched Solr query and keys the results by id' do
+      raw_docs = [
+        { 'id' => 'abc1', 'title_tesim' => ['First'] },
+        { 'id' => 'abc2', 'title_tesim' => ['Second'] }
+      ]
+      expect(ActiveFedora::SolrService).to receive(:query)
+        .with("*:*", hash_including(fq: ['{!terms f=id}abc1,abc2']))
+        .once
+        .and_return(raw_docs)
+
+      result = helper.solr_docs_find(%w[abc1 abc2])
+
+      expect(result.keys).to contain_exactly('abc1', 'abc2')
+      expect(result['abc1']).to be_a(SolrDocument)
+      expect(result['abc1']['title_tesim']).to eq(['First'])
+    end
+
+    it 'omits ids with no matching Solr document' do
+      allow(ActiveFedora::SolrService).to receive(:query).and_return([])
+
+      expect(helper.solr_docs_find(['missing'])).to eq({})
+    end
+
+    it 'de-duplicates ids before querying' do
+      expect(ActiveFedora::SolrService).to receive(:query)
+        .with("*:*", hash_including(fq: ['{!terms f=id}abc1']))
+        .once
+        .and_return([{ 'id' => 'abc1' }])
+
+      helper.solr_docs_find(%w[abc1 abc1])
+    end
+  end
+
   describe 'MorphosourceHelper::RemoteFileInfo' do
     let(:url) { 'https://deepblue.lib.umich.edu/data/downloads/abc123' }
 
@@ -676,7 +715,7 @@ RSpec.describe MorphosourceHelper, type: :helper do
     return false unless sharing_users = group_list[group.id]&.dig(:users)
     ["managers", "editors", "downloaders", "viewers"].each do |role|
       group.send(role).each do |user|
-        return false unless sharing_users[role].include?(user.display_name)
+        return false unless sharing_users[role].include?(user.name_or_email)
       end
     end
     true

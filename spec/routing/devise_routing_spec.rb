@@ -8,7 +8,7 @@ RSpec.describe 'devise routing', type: :routing do
   end
 
   it 'has a regular edit password route' do
-    route = { controller: 'devise/passwords', action: 'edit' }
+    route = { controller: 'morphosource/passwords', action: 'edit' }
     expect(get: '/users/password/edit').to route_to(route)
   end
 end

@@ -24,7 +24,5 @@
   <% if @presenter.creator.present? %>
     <%= " · Creator: #{@presenter.creator.join(', ')}" %>
   <% end %>
-  <% if @presenter.collection_managers.present? %>
-      <%= " · #{t('morphosource.collections.view.managed_by', managers: @presenter.collection_managers)}".html_safe %>
-  <% end %>
+  <%= render 'shared/collections/managed_by', manager_links: @presenter.manager_links_for_display %>
 </div>

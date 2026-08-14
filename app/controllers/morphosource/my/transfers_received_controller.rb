@@ -25,6 +25,7 @@ module Morphosource
       private
 
         def base_transfer_scope
+          return ProxyDepositRequest.none unless current_user
           ProxyDepositRequest.where(receiving_user_id: current_user.collections_managed_ids + [current_user.id])
         end
     end

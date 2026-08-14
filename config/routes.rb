@@ -504,6 +504,7 @@ Rails.application.routes.draw do
       # media cart
       post 'download_items', action: :download, controller: :media_carts, as: 'download_items'
       delete 'remove_from_cart', action: :destroy, controller: :media_carts, as: 'remove_items'
+      get 'download_all_agreements', action: :download_all_agreements, controller: :media_carts, as: 'download_all_agreements'
 
       # downloads
       post 'batch_create_items', action: :batch_create, controller: :downloads
@@ -808,7 +809,7 @@ Rails.application.routes.draw do
   ### HYRAX AND HYDRA RELATED ###
 
   # Devise and user roles
-  devise_for :users, :controllers => { registrations: 'registrations', sessions: 'sessions' }
+  devise_for :users, :controllers => { registrations: 'registrations', sessions: 'sessions', passwords: 'morphosource/passwords' }
   mount Hydra::RoleManagement::Engine => '/'
 
   # ms1 users changing their password must agree to terms and conditions

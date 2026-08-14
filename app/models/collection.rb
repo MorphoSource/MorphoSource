@@ -50,17 +50,24 @@ class Collection < ActiveFedora::Base
     team? || project?
   end
 
+  # @param [String] collection_id
+  # @param [String, Symbol] role One of DEFAULT_GROUP_ROLES
+  # @return [Role, nil] The role group, or nil if it does not exist
+  def self.role_group(collection_id, role)
+    Role.find_by(name: "#{collection_id}_#{role}")
+  end
+
   # managers_group, depositors_group, editors_group, downloaders_group, and viewers_group methods
   DEFAULT_GROUP_ROLES.each do |role|
     define_method("#{role}_group") do
-      Role.find_by(name: id&.concat("_#{role}"))
+      Collection.role_group(id, role)
     end
   end
 
   # managers, depositors, editors, downloaders, and viewers methods
   DEFAULT_GROUP_ROLES.each do |role|
     define_method(role) do
-      Role.find_by(name: id&.concat("_#{role}"))&.users || []
+      Collection.role_group(id, role)&.users || []
     end
   end
 
@@ -152,13 +159,14 @@ class Collection < ActiveFedora::Base
     organization.title
   end
 
-  # Create manager/depositor/viewer roles for each Team/Project collection
-  def create_collection_groups
+
+  # @param [Boolean] seed_manager Pass false when the caller supplies the managers
+  #   itself, as the organization starter project does by copying them from its parent.
+  def create_collection_groups(seed_manager: true)
     self.class::DEFAULT_GROUP_ROLES.each do |role|
-      name = id.concat("_#{role}")
-      Role.create(name: name) unless Role.find_by(name: name)
+      Role.create(name: "#{id}_#{role}") unless Collection.role_group(id, role)
     end
-    add_depositor_to_managers
+    add_default_manager if seed_manager
   end
 
   def copy_parent_membership(parent_id)
@@ -320,11 +328,23 @@ class Collection < ActiveFedora::Base
 
   private
 
-    def add_depositor_to_managers
-      user = User.find_by(ms_id: depositor)
+    # Subclasses choose the initial manager by overriding #default_manager.
+    def add_default_manager
+      user = default_manager
+      return if user.blank?
+
       unless managers_group.users.include? user
         managers_group.users << user
         managers_group.save
+      end
+    end
+
+    # Teams and projects are managed by whoever deposited them.
+    def default_manager
+      return if depositor.blank?
+
+      User.find_by(ms_id: depositor).tap do |user|
+        Rails.logger.warn("[Collection] depositor '#{depositor}' does not match any user; #{id} created without a manager") if user.blank?
       end
     end
 

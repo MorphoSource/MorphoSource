@@ -30,6 +30,9 @@ module Hyrax
       # Org-directed transfers get the "sender can't cancel" protection too, same as automated ones.
       @proxy_deposit_request.organization_transfer = true if @proxy_deposit_request.receiving_user.is_a?(OrganizationCollection)
       if @proxy_deposit_request.save
+        if @proxy_deposit_request.organization_transfer? && @proxy_deposit_request.work.respond_to?(:pending_org_transfer=)
+          @proxy_deposit_request.work.update(pending_org_transfer: true)
+        end
         #redirect_to hyrax.transfers_path, notice: "Transfer request created"
         redirect_to main_app.media_showcase_edit_path(params[:id]), notice: "Transfer request has been sent."
       else

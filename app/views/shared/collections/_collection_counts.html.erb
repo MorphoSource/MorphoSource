@@ -10,5 +10,5 @@
       <%= ' · ' + @cho_count.to_s + ' Object'.pluralize(@cho_count) %>
     <% end %>
   </span>
-  <%= render 'shared/collections/managed_by', manager_links: @presenter.manager_links_for_display %>
+  <%= render 'shared/collections/managed_by', manager_links: @presenter.manager_links %>
 </div>

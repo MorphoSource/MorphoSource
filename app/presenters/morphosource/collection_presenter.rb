@@ -18,19 +18,6 @@ module Morphosource
       @managers ||= @collection.managers.to_a
     end
 
-    # @return [Array<User>] the collection's managers, minus the configured default manager
-    def managers_for_display
-      ms_id = Morphosource.default_organization_manager
-      return managers if ms_id.blank?
-
-      managers.reject { |manager| manager.ms_id == ms_id }
-    end
-
-    # @return [String] links to #managers_for_display
-    def manager_links_for_display
-      @manager_links_for_display ||= manager_links(managers_for_display)
-    end
-
     def team?
       self.class == Morphosource::Collections::TeamPresenter
     end
@@ -60,7 +47,7 @@ module Morphosource
       (team? || project? || list?)
     end
 
-    def manager_links(users)
+    def manager_links(users = managers)
       ml = []
       users.each do |m|
         renderer = Hyrax::Renderers::ShowcaseUserLinkAttributeRenderer.new(nil,nil)

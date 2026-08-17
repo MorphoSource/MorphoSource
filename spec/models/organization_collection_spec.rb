@@ -78,42 +78,9 @@ RSpec.describe OrganizationCollection, type: :model do
       expect(project.depositor).to eq(user.ms_id)
       expect(organization.child_projects).to include(project)
     end
-
-    context 'when the organization has a configured default manager' do
-      let(:default_manager) { FactoryBot.create(:contributor) }
-
-      before do
-        allow(Morphosource).to receive(:default_organization_manager).and_return(default_manager.ms_id)
-      end
-
-      it 'copies the organization manager to the starter project' do
-        project = organization.send(:create_organization_project)
-        expect(project.managers).to include(default_manager)
-      end
-
-      it 'does not make the depositor a manager of the starter project' do
-        project = organization.send(:create_organization_project)
-        expect(project.managers).not_to include(user)
-      end
-    end
-
-    context 'when no default organization manager is configured' do
-      before do
-        allow(Morphosource).to receive(:default_organization_manager).and_return(nil)
-      end
-
-      it 'leaves the depositor managing the starter project, by way of the organization' do
-        project = organization.send(:create_organization_project)
-        expect(project.managers).to eq([user])
-      end
-    end
   end
 
   describe '#create_collection_groups' do
-    before do
-      allow(Morphosource).to receive(:default_organization_manager).and_return(nil)
-    end
-
     let!(:organization) { FactoryBot.create(:organization_collection, depositor: user.ms_id) }
 
     it 'assigns them names with the collection id' do
@@ -123,74 +90,18 @@ RSpec.describe OrganizationCollection, type: :model do
       end
     end
 
-    it 'adds the depositor as a manager when no default is configured' do
+    it 'adds the depositor as a manager' do
       expect(organization.managers).to eq([user])
       expect(organization.date_managed).to eq(Date.today)
     end
 
-    context 'when a default organization manager is configured' do
-      let(:default_manager) { FactoryBot.create(:contributor) }
-
-      before do
-        allow(Morphosource).to receive(:default_organization_manager).and_return(default_manager.ms_id)
-      end
-
-      it 'seeds the configured user as a manager' do
-        org = FactoryBot.create(:organization_collection, depositor: user.ms_id)
-        expect(org.managers).to include(default_manager)
-        expect(org.managers).not_to include(user)
-        expect(org.date_managed).to eq(Date.today)
-      end
-    end
-
-    context 'when the configured default manager is an admin' do
-      let(:default_manager) { FactoryBot.create(:admin) }
-
-      before do
-        allow(Morphosource).to receive(:default_organization_manager).and_return(default_manager.ms_id)
-      end
+    context 'when the depositor is an admin' do
+      let(:admin) { FactoryBot.create(:admin) }
 
       it 'does not mark the organization as managed' do
-        org = FactoryBot.create(:organization_collection, depositor: user.ms_id)
-        expect(org.managers).to eq([default_manager])
+        org = FactoryBot.create(:organization_collection, depositor: admin.ms_id)
+        expect(org.managers).to eq([admin])
         expect(org.date_managed).to be_nil
-      end
-    end
-
-    # A typo or a deleted user must not recreate the managerless organizations
-    # this seeding exists to prevent, so a broken setting degrades to the
-    # depositor instead of being treated as no setting at all.
-    context 'when the configured default manager does not match a user' do
-      before do
-        allow(Morphosource).to receive(:default_organization_manager).and_return('no_such_ms_id')
-      end
-
-      it 'falls back to the depositor' do
-        org = FactoryBot.create(:organization_collection, depositor: user.ms_id)
-        expect(org.managers).to eq([user])
-      end
-
-      it 'warns that the configured user was not found' do
-        allow(Rails.logger).to receive(:warn)
-        expect(Rails.logger).to receive(:warn).with(/batch user key 'no_such_ms_id' does not match any user/)
-        FactoryBot.create(:organization_collection, depositor: user.ms_id)
-      end
-    end
-
-    context 'when no default organization manager is configured' do
-      before do
-        allow(Morphosource).to receive(:default_organization_manager).and_return(nil)
-      end
-
-      it 'uses the depositor as the manager' do
-        org = FactoryBot.create(:organization_collection, depositor: user.ms_id)
-        expect(org.managers).to eq([user])
-      end
-
-      it 'does not warn, since an unconfigured default manager is expected' do
-        allow(Rails.logger).to receive(:warn)
-        expect(Rails.logger).not_to receive(:warn).with(/batch user key/)
-        FactoryBot.create(:organization_collection, depositor: user.ms_id)
       end
     end
   end

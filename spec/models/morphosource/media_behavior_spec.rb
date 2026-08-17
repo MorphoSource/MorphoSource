@@ -106,8 +106,6 @@ RSpec.describe Morphosource::MediaBehavior do
       context 'media is owned by an organization' do
         let(:org) { FactoryBot.create(:organization_collection) }
 
-        before { allow(Morphosource).to receive(:default_organization_manager).and_return(nil) }
-
         before do
           restricted_media.owner = org.id
           restricted_media.save!

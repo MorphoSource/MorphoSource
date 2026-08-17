@@ -163,18 +163,6 @@ class OrganizationCollection < Collection
     @persisting_date_managed
   end
 
-  # Prefer the configured manager (an ms_id), falling back to the depositor.
-  def default_manager
-    ms_id = Morphosource.default_organization_manager
-    return super if ms_id.blank?
-
-    user = User.find_by(ms_id: ms_id)
-    return user if user.present?
-
-    Rails.logger.warn("[OrganizationCollection] batch user key '#{ms_id}' does not match any user; falling back to the depositor for #{id}")
-    super
-  end
-
   # Takes its managers from the organization rather than seeding the depositor.
   def create_organization_project
     project = example_organization_project

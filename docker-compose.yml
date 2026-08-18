@@ -207,6 +207,44 @@ services:
     networks:
       - morphosource
 
+  minio:
+    image: minio/minio:RELEASE.2025-09-07T16-13-09Z
+    container_name: minio
+    command: server /data --console-address ":9001"
+    env_file:
+      - ./vendor/docker/credentials.env
+      - ./vendor/docker/docker-compose.env
+    ports:
+      - 9000:9000
+      - 9001:9001
+    volumes:
+      - minio_data:/data
+    networks:
+      - morphosource
+    profiles:
+      - object_storage
+
+  minio_setup:
+    image: minio/mc:RELEASE.2025-08-13T08-35-41Z
+    container_name: minio_setup
+    depends_on:
+      - minio
+    env_file:
+      - ./vendor/docker/credentials.env
+      - ./vendor/docker/docker-compose.env
+    entrypoint: >
+      /bin/sh -c "
+      until mc alias set local http://minio:9000 \"$$MINIO_ROOT_USER\" \"$$MINIO_ROOT_PASSWORD\" >/dev/null 2>&1; do
+        echo 'waiting for minio...'; sleep 1;
+      done &&
+      mc mb --ignore-existing \"local/$$S3_BUCKET\" &&
+      echo 'Bucket ready.'
+      "
+    networks:
+      - morphosource
+    profiles:
+      - object_storage
+
 volumes:
   app-bundle:
   app-node-modules:
@@ -215,6 +253,7 @@ volumes:
   fcrepo:
   hyrax-derivatives:
   hyrax-uploads:
+  minio_data:
   rails-tmp:
   redis:
   solr_data:

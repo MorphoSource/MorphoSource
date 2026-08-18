@@ -840,6 +840,8 @@ RSpec.describe CollectionRolesController, type: :controller do
 
           before do
             sign_in admin
+            organization.managers_group.users = [admin]
+            organization.managers_group.save!
             allow(subject).to receive(:can?).with(:edit, organization).and_return(true)
           end
 

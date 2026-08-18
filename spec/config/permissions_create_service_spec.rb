@@ -40,7 +40,7 @@ RSpec.describe Morphosource::Collections::PermissionsCreateService do
           allow(collection).to receive_message_chain("#{role}_group.name").and_return("#{collection.id}_#{role}")
         end
       end
-      allow_any_instance_of(Collection).to receive(:add_default_manager).and_return(true)
+      allow_any_instance_of(Collection).to receive(:add_depositor_to_managers).and_return(true)
 
       described_class.create_default(collection: collection)
     end

@@ -78,6 +78,17 @@ RSpec.describe OrganizationCollection, type: :model do
       expect(project.depositor).to eq(user.ms_id)
       expect(organization.child_projects).to include(project)
     end
+
+    it 'creates the starter project without managers' do
+      Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::Projects::SETTINGS)
+
+      project = organization.send(:create_organization_project)
+      expect(project.managers).to eq([])
+      expect(organization.managers).to eq([])
+      Collection::DEFAULT_GROUP_ROLES.each do |role|
+        expect(Collection.role_group(project.id, role)).to be_present
+      end
+    end
   end
 
   describe '#create_collection_groups' do
@@ -90,27 +101,10 @@ RSpec.describe OrganizationCollection, type: :model do
       end
     end
 
-    it 'adds the depositor as a manager' do
-      expect(organization.managers).to eq([user])
-      expect(organization.date_managed).to eq(Date.today)
-    end
-
-    context 'when the depositor is an admin' do
-      let(:admin) { FactoryBot.create(:admin) }
-
-      it 'does not mark the organization as managed' do
-        org = FactoryBot.create(:organization_collection, depositor: admin.ms_id)
-        expect(org.managers).to eq([admin])
-        expect(org.date_managed).to be_nil
-      end
-    end
-  end
-
-  describe 'persisting the derived management date' do
-    it 'writes the date without re-entering the ark status callback' do
-      expect_any_instance_of(described_class).not_to receive(:update_ark_status)
-      org = FactoryBot.create(:organization_collection, depositor: user.ms_id)
-      expect(org.date_managed).to eq(Date.today)
+    # Organizations are created with no managers and no management date.
+    it 'does not add the depositor as a manager' do
+      expect(organization.managers).to eq([])
+      expect(organization.date_managed).to be_nil
     end
   end
 

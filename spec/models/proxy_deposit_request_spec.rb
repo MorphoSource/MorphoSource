@@ -169,8 +169,6 @@ RSpec.describe ProxyDepositRequest do
     let(:sending_user)        { FactoryBot.create(:contributor, email: "sender@email.com", display_name: "Sender") }
     let(:receiving_user)      { FactoryBot.create(:contributor, email: "receiver@email.com", display_name: "Receiver") }
     let(:org_manager_1)       { FactoryBot.create(:contributor, email: "org_manager_1@email.com", display_name: "Org Manager 1") }
-    # NB: creating an organization seeds its depositor as the sole manager, so
-    # contexts below only add the *additional* managers they need.
     let(:organization)        { FactoryBot.create(:organization_collection, depositor: org_manager_1.ms_id) }
     let(:org_manager_2)       { FactoryBot.create(:contributor, email: "org_manager_2@email.com", display_name: "Org Manager 2") }
     let(:organization2)       { FactoryBot.create(:organization_collection, depositor: org_manager_2.ms_id) }
@@ -343,6 +341,10 @@ RSpec.describe ProxyDepositRequest do
           subject { described_class.new(work_id: work.id, sending_user_id: organization2.id, receiving_user_id: organization.id, organization_transfer: true, sender_comment: org_comment) }
 
           before do
+            organization.managers << org_manager_1
+            organization.managers_group.save
+            organization2.managers << org_manager_2
+            organization2.managers_group.save
             allow(subject).to receive(:deliver_message).and_return(true)
             allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
           end
@@ -376,8 +378,11 @@ RSpec.describe ProxyDepositRequest do
           subject { described_class.new(work_id: work.id, sending_user_id: organization2.id, receiving_user_id: organization.id, organization_transfer: true, sender_comment: org_comment) }
 
           before do
-            organization2.managers << org_manager_3
+            organization2.managers << org_manager_3 << org_manager_2
             organization2.managers_group.save
+
+            organization.managers << org_manager_1
+            organization.managers_group.save
 
             allow(subject).to receive(:deliver_message).and_return(true)
             allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
@@ -406,8 +411,10 @@ RSpec.describe ProxyDepositRequest do
           subject { described_class.new(work_id: work.id, sending_user_id: organization2.id, receiving_user_id: organization.id, organization_transfer: true, sender_comment: org_comment) }
 
           before do
-            organization.managers << org_manager_3
+            organization.managers << org_manager_3 << org_manager_1
             organization.managers_group.save
+            organization2.managers << org_manager_2
+            organization2.managers_group.save
             allow(subject).to receive(:deliver_message).and_return(true)
             allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
           end
@@ -434,9 +441,9 @@ RSpec.describe ProxyDepositRequest do
           subject { described_class.new(work_id: work.id, sending_user_id: organization2.id, receiving_user_id: organization.id, organization_transfer: true, sender_comment: org_comment) }
 
           before do
-            organization.managers << org_manager_3
+            organization.managers << org_manager_3 << org_manager_1
             organization.managers_group.save
-            organization2.managers << org_manager_4
+            organization2.managers << org_manager_4 << org_manager_2
             organization2.managers_group.save
             allow(subject).to receive(:deliver_message).and_return(true)
             allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
@@ -470,8 +477,6 @@ RSpec.describe ProxyDepositRequest do
     let(:sending_user)        { FactoryBot.create(:contributor, email: "sender@email.com", display_name: "Sender") }
     let(:receiving_user)      { FactoryBot.create(:contributor, email: "receiver@email.com", display_name: "Receiver") }
     let(:org_manager_1)       { FactoryBot.create(:contributor, email: "org_manager_1@email.com", display_name: "Org Manager 1") }
-    # NB: creating an organization seeds its depositor as the sole manager, so
-    # contexts below only add the *additional* managers they need.
     let(:organization)        { FactoryBot.create(:organization_collection, depositor: org_manager_1.ms_id) }
     let(:org_manager_2)       { FactoryBot.create(:contributor, email: "org_manager_2@email.com", display_name: "Org Manager 2") }
     let(:organization2)       { FactoryBot.create(:organization_collection, depositor: org_manager_2.ms_id) }
@@ -532,6 +537,8 @@ RSpec.describe ProxyDepositRequest do
         subject { described_class.create(work_id: work.id, sending_user_id: organization2.id, receiving_user_id: receiving_user.id, sender_comment: comment) }
 
         before do
+          organization2.managers << org_manager_2
+          organization2.managers_group.save
           allow(subject).to receive(:deliver_message).and_return(true)
           allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
           subject.transfer!
@@ -557,7 +564,7 @@ RSpec.describe ProxyDepositRequest do
         subject { described_class.create(work_id: work.id, sending_user_id: organization2.id, receiving_user_id: receiving_user.id, sender_comment: comment) }
 
         before do
-          organization2.managers << org_manager_3
+          organization2.managers << org_manager_3 << org_manager_2
           organization2.managers_group.save
           allow(subject).to receive(:deliver_message).and_return(true)
           allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
@@ -579,6 +586,10 @@ RSpec.describe ProxyDepositRequest do
         subject { described_class.create(work_id: work.id, sending_user_id: organization2.id, receiving_user_id: organization.id, sender_comment: comment) }
 
         before do
+          organization2.managers << org_manager_2
+          organization2.managers_group.save
+          organization.managers << org_manager_1
+          organization.managers_group.save
           allow(subject).to receive(:deliver_message).and_return(true)
           allow(subject).to receive(:email_sender).and_return(email_dispatch_user)
           subject.transfer!
@@ -604,7 +615,9 @@ RSpec.describe ProxyDepositRequest do
         subject { described_class.create(work_id: work.id, sending_user_id: organization2.id, receiving_user_id: organization.id, sender_comment: comment) }
 
         before do
-          organization2.managers << org_manager_3
+          organization.managers << org_manager_1
+          organization.managers_group.save
+          organization2.managers << org_manager_3 << org_manager_2
           organization2.managers_group.save
           allow(subject).to receive(:deliver_message).and_return(true)
           allow(subject).to receive(:email_sender).and_return(email_dispatch_user)

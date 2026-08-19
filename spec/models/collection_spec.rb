@@ -113,6 +113,12 @@ RSpec.describe Collection, type: :model do
     let(:organization)        { FactoryBot.create(:organization_collection, depositor: user.ms_id) }
     let(:collections)         { [team, organization] }
 
+    # Organizations are created without a manager, so give this one a manager to copy.
+    before do
+      organization.managers << user
+      organization.managers_group.save
+    end
+
     context 'the parent collection is a team or organization' do
       before do
         allow(Collection).to receive(:find).with(team.id).and_return(team)

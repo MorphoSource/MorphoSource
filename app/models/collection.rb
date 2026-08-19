@@ -159,14 +159,15 @@ class Collection < ActiveFedora::Base
     organization.title
   end
 
+  def create_collection_groups
+    create_default_roles
+    add_depositor_to_managers
+  end
 
-  # @param [Boolean] seed_manager Pass false when the caller supplies the managers
-  #   itself, as the organization starter project does by copying them from its parent.
-  def create_collection_groups(seed_manager: true)
+  def create_default_roles
     self.class::DEFAULT_GROUP_ROLES.each do |role|
       Role.create(name: "#{id}_#{role}") unless Collection.role_group(id, role)
     end
-    add_default_manager if seed_manager
   end
 
   def copy_parent_membership(parent_id)
@@ -328,23 +329,19 @@ class Collection < ActiveFedora::Base
 
   private
 
-    # Subclasses choose the initial manager by overriding #default_manager.
-    def add_default_manager
-      user = default_manager
-      return if user.blank?
+    # teams, projects, lists
+    def add_depositor_to_managers
+      return if depositor.blank?
+
+      user = User.find_by(ms_id: depositor)
+      if user.blank?
+        Rails.logger.warn("[Collection] depositor '#{depositor}' does not match any user; #{id} created without a manager")
+        return
+      end
 
       unless managers_group.users.include? user
         managers_group.users << user
         managers_group.save
-      end
-    end
-
-    # Teams and projects are managed by whoever deposited them.
-    def default_manager
-      return if depositor.blank?
-
-      User.find_by(ms_id: depositor).tap do |user|
-        Rails.logger.warn("[Collection] depositor '#{depositor}' does not match any user; #{id} created without a manager") if user.blank?
       end
     end
 

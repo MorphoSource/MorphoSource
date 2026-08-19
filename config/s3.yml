@@ -1,0 +1,23 @@
+default: &default
+  bucket:            <%= ENV.fetch('S3_BUCKET',            'morphosource') %>
+  region:            <%= ENV.fetch('S3_REGION',            'us-east-1') %>
+  access_key_id:     <%= ENV.fetch('S3_ACCESS_KEY_ID',     '') %>
+  secret_access_key: <%= ENV.fetch('S3_SECRET_ACCESS_KEY', '') %>
+  endpoint:          <%= ENV['S3_ENDPOINT'] %>
+  force_path_style:  <%= ENV.fetch('S3_FORCE_PATH_STYLE', 'false') == 'true' %>
+  public:            false
+
+development:
+  <<: *default
+  bucket:           <%= ENV.fetch('S3_BUCKET', 'morphosource-dev') %>
+  endpoint:         <%= ENV.fetch('S3_ENDPOINT', 'http://minio:9000') %>
+  force_path_style: true
+
+test:
+  <<: *default
+  bucket:           <%= ENV.fetch('S3_BUCKET', 'morphosource-test') %>
+  endpoint:         <%= ENV.fetch('S3_ENDPOINT', 'http://minio:9000') %>
+  force_path_style: true
+
+production:
+  <<: *default

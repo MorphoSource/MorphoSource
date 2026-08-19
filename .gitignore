@@ -115,5 +115,5 @@ yarn-debug.log*
 # Valkyrie related rules
 # ---------------------------------------------------
 
-storage/
+/storage/
 uploads/

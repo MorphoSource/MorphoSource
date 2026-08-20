@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2026_04_28_211000) do
+ActiveRecord::Schema.define(version: 2026_08_07_235020) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -562,6 +562,7 @@ ActiveRecord::Schema.define(version: 2026_04_28_211000) do
     t.jsonb "aleph_scene", null: false
     t.jsonb "iiif_annotations"
     t.jsonb "iiif_transforms"
+    t.jsonb "iiif_cameras"
   end
 
   create_table "searches", id: :serial, force: :cascade do |t|

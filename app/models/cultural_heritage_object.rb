@@ -5,6 +5,7 @@ class CulturalHeritageObject < Morphosource::Works::Base
   validates_with Morphosource::ParentChildValidator
   after_update :reindex_media, :update_ark_status
   after_create :mint_ark
+  before_destroy :prevent_destroy_with_media, prepend: true
   after_destroy :delete_ark_if_reserved
 
   self.indexer = CulturalHeritageObjectIndexer

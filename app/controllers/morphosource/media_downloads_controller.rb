@@ -16,6 +16,10 @@ module Morphosource
   class MediaDownloadsController < ApplicationController
     include Morphosource::CartItems
 
+    # Access-control keys are always UUIDs. Used to validate keys before interpolating
+    # them into Solr fq strings, guarding against query injection via params[:key].
+    ACCESS_KEY_PATTERN = /\A[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}\z/i
+
     before_action :validate_params, only: [:show]
     before_action :validate_download_hash, only: [:show]
     before_action :validate_user, only: [:show]
@@ -39,11 +43,42 @@ module Morphosource
         @media = [@media]
       end
       @temp_files = []
-      @all_files ||= files + standard_agreement_files + media_agreement_files + xlsx_manifest + csv_manifest
+      @all_files ||= files + standard_agreement_files + media_agreement_files + xlsx_manifest + csv_manifest + unavailable_media_notice_file
+    end
+
+    # Ids skipped by prepare_files due to an invalid/missing file.
+    def unavailable_media_ids
+      @unavailable_media_ids ||= []
+    end
+
+    # Notice of skipped media, bundled into the zip itself.
+    def unavailable_media_notice_file
+      return [] unless unavailable_media_ids.present?
+
+      file_name = "unavailable_items.txt"
+      file_path = File.join(temp_manifest_directory, "#{SecureRandom.uuid}-#{file_name}")
+      File.write(file_path, unavailable_media_notice_text)
+      file = File.open(file_path)
+      crc32 = crc32_from_io(file)
+      [{
+        name: file_name,
+        size: file.size,
+        crc32: crc32,
+        file: file
+      }]
+    end
+
+    def unavailable_media_notice_text
+      "The following item(s) could not be downloaded because a file is currently unavailable:\n\n" \
+      "#{unavailable_media_ids.join("\n")}\n\n" \
+      "They remain in your cart untouched. Please try again later, or remove them if the issue persists.\n" \
+      "If it continues, contact us (morphosource@duke.edu)."
     end
 
     def create_or_update_cart_items_for_download
       media.each do |m|
+        next if unavailable_media_ids.include?(m.id)
+
         if (item = find_downloaded_downloadable_item(m.id, download_hash)).present?
           # CartItem for media with DL hash exists, can increment DL attempts and update DL date
           add_subsequent_download(item, "UI")
@@ -65,14 +100,14 @@ module Morphosource
       zip = ZipTricks::Streamer.new(io)
       @all_files.each do |file|
         next unless file[:file].present?
-        
+
         # raw_file is written "as is" (STORED mode).
         # Write the local file header first..
         zip.add_stored_entry(filename: file[:name], size: file[:size], crc32: file[:crc32])
-        
+
         # local zip file header
         interval_sequence << io.to_segment_and_clear
-        
+
         # file data
         if file[:file].is_a?(File) || file[:file].is_a?(Tempfile)
           interval_sequence << IntervalResponse::LazyFile.new(file[:file])
@@ -88,7 +123,7 @@ module Morphosource
       interval_sequence << io.to_segment_and_clear
     end
 
-    def send_interval_response 
+    def send_interval_response
       zipname = zip_name
       interval_response = IntervalResponse.new(interval_sequence, request.env)
       rack_response = interval_response.to_rack_response_triplet
@@ -105,11 +140,14 @@ module Morphosource
     end
 
     def zip_name
+      # Reflects what's actually in the zip, not what was requested.
+      included_media = media.reject { |m| unavailable_media_ids.include?(m.id) }
+
       m = ""
-      if media.present? && ( media.count == 1 )
-        m = "id-#{media&.first&.id}"
-      elsif media.present? && ( media.count > 1 )
-        m = "#{media.count}-items"
+      if included_media.present? && included_media.count == media.count
+        m = included_media.count == 1 ? "id-#{included_media.first.id}" : "#{included_media.count}-items"
+      elsif included_media.present?
+        m = "#{included_media.count}-of-#{media.count}-items"
       end
 
       "morphosource_media-#{m}_download-#{download_hash[0..7]}.zip"
@@ -133,12 +171,27 @@ module Morphosource
 
       # Get Media from keys
       def media
-        @media ||= Media.where(accessControl_ssim: keys)
+        @media ||= if keys.empty?
+          []
+        else
+          docs = ActiveFedora::SolrService.query(
+            "*:*",
+            fq: ["has_model_ssim:Media", "{!terms f=accessControl_ssim}#{keys.join(',')}"],
+            rows: keys.uniq.length,
+            fl: ['id'],
+            method: :post
+          )
+          ids = docs.map { |d| d['id'] }
+          ids.empty? ? [] : Media.find(ids)
+        end
       end
 
-      # Media access_control keys
-      def keys 
-        @keys ||= Array(params[:key])
+      # Session-stored keys are used for batch cart downloads (avoids oversized redirect URLs).
+      # Direct key[] params are used by the single-media download modal and controller specs.
+      def keys
+        entry = session.dig(:download_keys, params[:download])
+        raw = entry&.fetch("keys", nil) || Array(params[:key])
+        @keys ||= raw.select { |k| k.to_s.match?(ACCESS_KEY_PATTERN) }
       end
 
       def download_hash
@@ -146,8 +199,7 @@ module Morphosource
       end
 
       def validate_download_hash
-        uuid_regex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-5][0-9a-f]{3}-[089ab][0-9a-f]{3}-[0-9a-f]{12}$/i
-        return head(:bad_request) unless uuid_regex.match?(download_hash.to_s.downcase)
+        return head(:bad_request) unless ACCESS_KEY_PATTERN.match?(download_hash.to_s)
       end
 
       def validate_user
@@ -187,17 +239,23 @@ module Morphosource
         media.map do |m|
           if m.is_remote_backed?
             file_set = get_and_validate_fileset_for_remote(m)
-            return [] unless file_set.present?
+            unless file_set.present?
+              unavailable_media_ids << m.id
+              next nil
+            end
             file_uri = file_set.import_url
           else
             file_set, original_file = get_and_validate_fileset(m)
-            return [] unless file_set.present? && original_file.present?
+            unless file_set.present? && original_file.present?
+              unavailable_media_ids << m.id
+              next nil
+            end
             file_uri = file_set.original_file.uri
           end
-          
+
           attrs = {
             name: File.join(
-              output_dirname(m), 
+              output_dirname(m),
               output_filename(file_set, m.id)
             ),
             size: file_set.file_size&.first.to_i,
@@ -208,6 +266,7 @@ module Morphosource
           if attrs.values.all? { |v| v.present? }
             attrs
           else
+            unavailable_media_ids << m.id
             nil
           end
         end.compact
@@ -220,7 +279,7 @@ module Morphosource
           file_set.crc32&.first.present? &&
           file_set.original_file.uri.present? &&
           file_set.original_file.original_name.present?
-        ) 
+        )
           return file_set
         else
           return nil
@@ -235,7 +294,7 @@ module Morphosource
           file_set.crc32&.first.present? &&
           original_file.original_name.present? &&
           original_file.uri.present?
-        ) 
+        )
           return file_set, original_file
         else
           return nil, nil
@@ -268,9 +327,9 @@ module Morphosource
             label = s[:type]
           else
             label = [
-              s[:type], 
-              s[:permits_commercial_use], 
-              s[:required_archival_of_published_derivatives], 
+              s[:type],
+              s[:permits_commercial_use],
+              s[:required_archival_of_published_derivatives],
               s[:permits_3d_use]
             ].join('_')
           end
@@ -286,11 +345,11 @@ module Morphosource
           else
             {
               type: 'std',
-              permits_commercial_use: 
+              permits_commercial_use:
                 permits_commercial_use(
                   m.permits_commercial_use&.first
                 ),
-              required_archival_of_published_derivatives: 
+              required_archival_of_published_derivatives:
                 required_archival_of_published_derivatives(
                   m.required_archival_of_published_derivatives&.first
                 ),
@@ -412,11 +471,11 @@ module Morphosource
           file: file
         }]
       end
-      
-      def xlsx_manifest 
+
+      def xlsx_manifest
         file_name = "#{manifest_filename}.xlsx"
         xlsx_path = File.join(temp_manifest_directory, file_name)
- 
+
         p = Axlsx::Package.new
         wb = p.workbook
         date_time_format = wb.styles.add_style :format_code => 'YYYY-MM-DD'
@@ -424,8 +483,8 @@ module Morphosource
         wb.add_worksheet(:name => "xlsx manifest") do |sheet|
           sheet.add_row manifest_headers
           media_hashes.each do |h|
-            sheet.add_row h.values.map{ |v| v.first }, 
-              :types => xlsx_column_types(manifest_headers), 
+            sheet.add_row h.values.map{ |v| v.first },
+              :types => xlsx_column_types(manifest_headers),
               :style => xlsx_column_styles(manifest_headers, date_time_format)
           end
         end
@@ -476,36 +535,35 @@ module Morphosource
           media_list = []
           media.each do |m|
             doc = SolrDocument.find(m.id)
-            if doc.present?
-              if m.is_remote_backed?
-                file_set = get_and_validate_fileset_for_remote(m)
-              else
-                file_set, original_file = get_and_validate_fileset(m)
-              end
-              if file_set.present?
-                media_list << {
-                  :id => [m.id],
-                  :title => [m.title.first],
-                  :file_name => [file_set.label], 
-                  :file_size => file_set.file_size,
-                  :media_type => m.media_type,
-                  :mime_type => [m.is_remote_backed? ? file_set.mime_type_of_remote : file_set.mime_type]
-                }.merge(doc.to_semantic_values).merge({
-                  :points => file_set.point_count,
-                  :polygons => file_set.face_count,
-                  :vertex_color => file_set.vertex_color,
-                  :uv_coordinates => file_set.has_uv_space,
-                  :bounding_box_x => file_set.bounding_box_x,
-                  :bounding_box_y => file_set.bounding_box_y,
-                  :bounding_box_z => file_set.bounding_box_z
-                })
-              else
-                media_list << {
-                  :id => [m.id],
-                  :title => [m.title.first],
-                  :media_type => m.media_type
-                }
-              end
+            next unless doc.present?
+
+            if unavailable_media_ids.include?(m.id)
+              media_list << {
+                :id => [m.id],
+                :title => [m.title.first],
+                :media_type => m.media_type,
+                :status => ['Not included - file unavailable']
+              }
+            else
+              # already validated by prepare_files - just fetch it for its metadata
+              file_set = m.file_sets&.first
+              media_list << {
+                :id => [m.id],
+                :title => [m.title.first],
+                :file_name => [file_set.label],
+                :file_size => file_set.file_size,
+                :media_type => m.media_type,
+                :mime_type => [m.is_remote_backed? ? file_set.mime_type_of_remote : file_set.mime_type]
+              }.merge(doc.to_semantic_values).merge({
+                :points => file_set.point_count,
+                :polygons => file_set.face_count,
+                :vertex_color => file_set.vertex_color,
+                :uv_coordinates => file_set.has_uv_space,
+                :bounding_box_x => file_set.bounding_box_x,
+                :bounding_box_y => file_set.bounding_box_y,
+                :bounding_box_z => file_set.bounding_box_z,
+                :status => ['Included']
+              })
             end
           end
           media_list

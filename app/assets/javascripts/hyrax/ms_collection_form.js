@@ -85,6 +85,34 @@ $(document).ready(function() {
     setupTooltip();
     removeLastRepeatable();
 
+    // DOI-locked media list: disable all form fields except visibility radio buttons.
+    // Mirrors the approach used in ms_media_form.js for DOI-locked media.
+    // data-doi-locked is only set on MediaList forms (not SequentialSectionList).
+    if ($('[data-doi-locked]').length) {
+      // Disable all inputs/textareas/selects except the visibility radios, the submit button,
+      // and hidden inputs (which include Rails' _method, authenticity_token, and utf8 fields
+      // needed for the form to route and authenticate correctly).
+      $('[data-doi-locked]')
+        .find('input:not([type="submit"]):not([type="hidden"]):not([name*="[visibility]"]), textarea, select')
+        .prop('disabled', true);
+      // Disable all buttons (submit is an <input type="submit">, so it is unaffected).
+      $('[data-doi-locked]').find('button').prop('disabled', true);
+      // Add the disabled class to the logo/banner fileinput-button spans so they look disabled.
+      // pointer-events: none is also needed because the hidden file input inside the span
+      // still shows a pointer cursor on hover even when disabled.
+      disableUpload('fileuploadlogo');
+      disableUpload('fileuploadbanner');
+      $('[data-doi-locked]').find('.fileinput-button').css('pointer-events', 'none');
+
+      // If already public, lock the visibility section and disable Save — no changes are
+      // possible (public→private is blocked, and all other fields are already locked).
+      if ($('#selected_visibility_for_collection').hasClass('open')) {
+        $('input[name*="[visibility]"]').prop('disabled', true);
+        $('.collapse-block-visibility').css({ 'pointer-events': 'none', 'opacity': '0.65' });
+        $('#update_submit').prop('disabled', true);
+      }
+    }
+
     // Handling Actions dropdown menu clicks
     $('.actions-add-subcollection').on('click', function (e) {
       $('.sub-collections-wrapper button.add-subcollection').trigger('click');

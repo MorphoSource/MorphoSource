@@ -78,6 +78,17 @@ RSpec.describe OrganizationCollection, type: :model do
       expect(project.depositor).to eq(user.ms_id)
       expect(organization.child_projects).to include(project)
     end
+
+    it 'creates the starter project without managers' do
+      Hyrax::CollectionType.find_or_create_by(Morphosource::CollectionTypes::Projects::SETTINGS)
+
+      project = organization.send(:create_organization_project)
+      expect(project.managers).to eq([])
+      expect(organization.managers).to eq([])
+      Collection::DEFAULT_GROUP_ROLES.each do |role|
+        expect(Collection.role_group(project.id, role)).to be_present
+      end
+    end
   end
 
   describe '#create_collection_groups' do
@@ -90,8 +101,10 @@ RSpec.describe OrganizationCollection, type: :model do
       end
     end
 
+    # Organizations are created with no managers and no management date.
     it 'does not add the depositor as a manager' do
       expect(organization.managers).to eq([])
+      expect(organization.date_managed).to be_nil
     end
   end
 
@@ -123,6 +136,12 @@ RSpec.describe OrganizationCollection, type: :model do
     let!(:organization) { FactoryBot.create(:organization_collection, depositor: user.ms_id) }
 
     context 'collection does not have managers' do
+      before do
+        organization.managers_group.users = []
+        organization.managers_group.save!
+        organization.date_managed = nil
+      end
+
       context 'collection has a date_managed' do
         before do
           organization.date_managed = Date.today
@@ -154,9 +173,42 @@ RSpec.describe OrganizationCollection, type: :model do
         end
       end
       context 'collections does not have a date_managed' do
+        before do
+          organization.date_managed = nil
+        end
+
         it 'adds a date_managed' do
           expect(organization.date_managed).to be_nil
           expect { organization.record_date_managed }.to change { organization.date_managed }.from(nil).to(Date.today)
+        end
+      end
+    end
+
+    context 'collection has only an admin manager' do
+      let(:admin) { FactoryBot.create(:admin) }
+
+      before do
+        organization.managers_group.users = [admin]
+        organization.managers_group.save!
+      end
+
+      context 'collection has a date_managed' do
+        before do
+          organization.date_managed = Date.today
+        end
+
+        it 'removes date_managed' do
+          expect { organization.record_date_managed }.to change { organization.date_managed }.from(Date.today).to(nil)
+        end
+      end
+
+      context 'collection does not have a date_managed' do
+        before do
+          organization.date_managed = nil
+        end
+
+        it 'does not change date_managed' do
+          expect { organization.record_date_managed }.not_to change { organization.date_managed }
         end
       end
     end

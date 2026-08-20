@@ -22,10 +22,17 @@ module Morphosource
         get_work_ids_by_items
         usage = request.params['usage'].present? ? request.params['usage'] : ''
         usage_list = request.params['usage_list'].present? ? request.params['usage_list'] : ''
+        download_uuid = SecureRandom.uuid
+        session[:download_keys] ||= {}
+        # Prune entries older than 12 hours, then apply a hard cap as a safety valve.
+        # Abandoned downloads are never actively cleaned up, so this bounds session growth
+        # while keeping recent entries available for retries and range-request resumes.
+        session[:download_keys].delete_if { |_, v| v["at"].to_i < 12.hours.ago.to_i }
+        session[:download_keys].shift while session[:download_keys].size >= 20
+        session[:download_keys][download_uuid] = { "keys" => access_control_ids_from_work_ids, "at" => Time.current.to_i }
         redirect_to main_app.media_download_path(
-          key: access_control_ids_from_work_ids,
           token: current_user.token,
-          download: SecureRandom.uuid,
+          download: download_uuid,
           usage: usage,
           usage_list: usage_list
         )
@@ -36,6 +43,28 @@ module Morphosource
         flash[:notice] = destroy_flash
         remove_from_cart
         redirect_back(fallback_location: my_cart_path)
+      end
+
+      # Itemized agreement summary for the whole cart, fetched on demand.
+      def download_all_agreements
+        response.headers['Cache-Control'] = 'no-store'
+
+        get_downloadable_items
+        work_ids = @items.map(&:work_id).uniq
+        docs = view_context.solr_docs_find(work_ids).values
+
+        agreements = docs.map do |doc|
+          presenter = Hyrax::MediaPresenter.new(doc, current_ability)
+          {
+            media_id: doc.id,
+            agreement_description_html: view_context.link_to(
+              presenter.agreement_description, view_context.asset_path(presenter.aup_path), target: '_blank', class: 'aup-link'
+            ),
+            custom_link_html: custom_agreement_link_html(presenter)
+          }
+        end
+
+        render json: agreements
       end
 
       def is_requests_page?
@@ -78,6 +107,19 @@ module Morphosource
           else
             item.destroy
           end
+        end
+      end
+
+      # Mirrors ShowcaseAgreementUriFileAttributeRenderer's link logic.
+      def custom_agreement_link_html(presenter)
+        if presenter.attachment_url.present?
+          view_context.link_to(
+            'Depositor-Supplied Additional Usage Agreement', presenter.attachment_url.first, target: '_blank', class: 'showcase-link'
+          )
+        elsif presenter.agreement_uri.present?
+          url = presenter.agreement_uri.first.to_s
+          url = "http://#{url}" unless URI.parse(url).scheme
+          view_context.link_to(url, url, target: '_blank', class: 'showcase-link')
         end
       end
     end

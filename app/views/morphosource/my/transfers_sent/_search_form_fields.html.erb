@@ -1,0 +1,24 @@
+<%= f.input :work_id, label: "Media ID", input_html: { value: @work_id }, required: false %>
+
+<%# Searching by sending/receiving organization is planned for a future update. %>
+<%= f.input :receiving_user_id, label: "To User", input_html: { data: { user: format_users_select2(@receiving_user_id) } }, required: false %>
+
+<div class="form-group search_start_date">
+  <label class="col-form-label" for="filter_items_created_at_start">
+    Transfer Date After
+  </label>
+  <%= f.date_field :created_at_start, value: @created_at_start, class: 'datepicker form-control' %>
+</div>
+
+<div class="form-group search_end_date">
+  <label class="col-form-label" for="filter_items_created_at_end">
+    Transfer Date Before
+  </label>
+  <%= f.date_field :created_at_end, value: @created_at_end, class: 'datepicker form-control' %>
+</div>
+
+<script>
+  $( document ).ready(function() {
+    $('#filter_items_receiving_user_id').userSearchMultiple($('#filter_items_receiving_user_id').data('user'));
+  });
+</script>

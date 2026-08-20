@@ -1,5 +1,5 @@
 # Scene configuration and content for presenting media in Aleph or other IIIF 3D viewer
-# 
+#
 # == Schema Information
 #
 # Table name: scenes
@@ -9,6 +9,7 @@
 #  aleph_scene        :jsonb            not null
 #  iiif_annotations   :jsonb
 #  iiif_transforms    :jsonb
+#  iiif_cameras       :jsonb
 class Scene < ApplicationRecord
   # Validations
   validates :media_id, presence: true, uniqueness: true
@@ -16,7 +17,7 @@ class Scene < ApplicationRecord
   validate :is_aleph_scene_hash_or_array?
 
   # Callbacks
-  before_save :ensure_media_id_uniqueness, :set_iiif_annotations, :set_iiif_transforms
+  before_save :ensure_media_id_uniqueness, :set_iiif_annotations, :set_iiif_cameras, :set_iiif_transforms
   before_validation :parse_aleph_scene_to_json
 
   # Instance methods
@@ -50,15 +51,8 @@ class Scene < ApplicationRecord
   end
 
   def set_iiif_annotations
-    if (
-      aleph_scene &&
-      aleph_scene.is_a?(Hash) &&
-      ( annotations = aleph_scene['annotations']).present? &&
-      annotations.is_a?(Array) &&
-      annotations.length > 0 &&
-      annotations.all? { |a| a.is_a?(Hash) }
-    )
-      self.iiif_annotations = annotations.map.with_index do |annotation, index|
+    if aleph_scene_annotations.present?
+      self.iiif_annotations = aleph_scene_annotations.map.with_index do |annotation, index|
         anno_iiif = {
           id: anno_uri(index),
           type: "Annotation",
@@ -66,98 +60,15 @@ class Scene < ApplicationRecord
           bodyValue: annotation['label'] || "No Label"
         }
         if annotation['description'].present? && annotation['description'].is_a?(String)
-          anno_iiif[:summary] = { "none": [ annotation['description'] ] } 
+          anno_iiif[:summary] = { "none": [ annotation['description'] ] }
         end
 
-        # scene target with positioning if present
+        anno_iiif[:target] = comment_target(annotation)
 
-        target = {
-          type: "SpecificResource",
-          source: [{
-            id: nil, # This will be rewritten with correct painting annotation URI
-            type: "Annotation"
-          }]
-        }
-
-        if (
-          annotation['position'].present? && 
-          annotation['position'].is_a?(Hash) &&
-          ['x', 'y', 'z'].all? { |v| annotation.dig('position', v).present? } &&
-          ['x', 'y', 'z'].all? { |v| is_numeric? annotation.dig('position', v) }
-        )
-          target[:selector] = [{
-            type: "PointSelector",
-            x: Float(annotation['position']['x']),
-            y: Float(annotation['position']['y']),
-            z: Float(annotation['position']['z'])
-          }]
-        end
-
-        anno_iiif[:target] = target
-
-        # scope content state with camera annotation if viewpoint present
-
-        if (
-          annotation['cameraPosition'].present? &&
-          annotation['cameraPosition'].is_a?(Hash) &&
-          ['x', 'y', 'z'].all? { |v| annotation.dig('cameraPosition', v).present? } &&
-          ['x', 'y', 'z'].all? { |v| is_numeric? annotation.dig('cameraPosition', v) }
-        )
-          scope = {
-            "@context": "http://iiif.io/api/presentation/4/context.json",
-            id: "#{anno_uri(index)}/scope",
-            type: "Annotation",
-            motivation: ["contentState"],
-            target: {
-              id: nil, # This will be rewritten with correct scene URI
-              type: "Scene",
-              items: [{
-                id: "#{anno_uri(index)}/scope/camera",
-                type: "Annotation",
-                motivation: ["painting"],
-                body: {
-                  id: "#{anno_uri(index)}/scope/camera/1",
-                  type: "PerspectiveCamera", 
-                },
-                target: {
-                  type: "SpecificResource",
-                  source: [{
-                    id: nil, # This will be rewritten with correct painting annotation URI
-                    type: "Annotation"
-                  }],
-                  selector: [{
-                    type: "PointSelector",
-                    x: Float(annotation['cameraPosition']['x']),
-                    y: Float(annotation['cameraPosition']['y']),
-                    z: Float(annotation['cameraPosition']['z'])
-                  }]
-                }
-              }]
-            }
-          }
-
-          if (
-            annotation['cameraTarget'].present? &&
-            annotation['cameraTarget'].is_a?(Hash) &&
-            ['x', 'y', 'z'].all? { |v| annotation.dig('cameraTarget', v).present? } &&
-            ['x', 'y', 'z'].all? { |v| is_numeric? annotation.dig('cameraTarget', v) }
-          )
-            scope[:target][:items][0][:body][:lookAt] = {
-              type: "SpecificResource",
-              source: [{
-                id: nil, # This will be rewritten with correct painting annotation URI
-                type: "Annotation"
-              }],
-              selector: [{
-                type: "PointSelector",
-                x: Float(annotation['cameraTarget']['x']),
-                y: Float(annotation['cameraTarget']['y']),
-                z: Float(annotation['cameraTarget']['z'])
-              }]
-            }
-          end
-
-          anno_iiif[:target][:scope] = scope
+        # Link to the sibling camera annotation (built by #set_iiif_cameras) so a
+        # client can activate that view when the comment is selected.
+        if has_point?(annotation, 'cameraPosition')
+          anno_iiif[:scope] = [{ id: camera_uri(index), type: "Annotation" }]
         end
 
         anno_iiif
@@ -167,17 +78,87 @@ class Scene < ApplicationRecord
     end
   end
 
+  def set_iiif_cameras
+    if aleph_scene_annotations.present?
+      cameras = aleph_scene_annotations.each_with_index.filter_map do |annotation, index|
+        next unless has_point?(annotation, 'cameraPosition')
+
+        camera_body = { type: "PerspectiveCamera" }
+        camera_body[:lookAt] = point_selector(annotation['cameraTarget']) if has_point?(annotation, 'cameraTarget')
+
+        {
+          id: camera_uri(index),
+          type: "Annotation",
+          motivation: ["painting"],
+          # Per-comment cameras are only meant to be activated via a comment's scope,
+          # not selected directly or treated as the scene's default camera.
+          behavior: ["hidden"],
+          body: camera_body,
+          target: {
+            type: "SpecificResource",
+            source: { id: nil, type: "Scene" }, # This will be rewritten with the correct scene URI
+            selector: [point_selector(annotation['cameraPosition'])]
+          }
+        }
+      end
+
+      self.iiif_cameras = cameras.presence
+    else
+      self.iiif_cameras = nil
+    end
+  end
+
+  # Aleph's raw annotations array, or nil if aleph_scene doesn't have a usable one
+  def aleph_scene_annotations
+    return nil unless aleph_scene.is_a?(Hash)
+
+    annotations = aleph_scene['annotations']
+    return nil unless annotations.is_a?(Array) && annotations.present? && annotations.all? { |a| a.is_a?(Hash) }
+
+    annotations
+  end
+
+  def comment_target(annotation)
+    target = {
+      type: "SpecificResource",
+      source: { id: nil, type: "Scene" } # This will be rewritten with the correct scene URI
+    }
+    target[:selector] = [point_selector(annotation['position'])] if has_point?(annotation, 'position')
+    target
+  end
+
+  def has_point?(annotation, key)
+    point = annotation[key]
+    point.present? &&
+      point.is_a?(Hash) &&
+      ['x', 'y', 'z'].all? { |v| point[v].present? } &&
+      ['x', 'y', 'z'].all? { |v| is_numeric? point[v] }
+  end
+
+  def point_selector(point)
+    {
+      type: "PointSelector",
+      x: Float(point['x']),
+      y: Float(point['y']),
+      z: Float(point['z'])
+    }
+  end
+
   def anno_uri(index)
     "http://#{Hyrax.config.host_name}/iiif/annotations/commenting/#{media_id}/#{index}"
   end
 
+  def camera_uri(index)
+    "#{anno_uri(index)}/camera"
+  end
+
   def set_iiif_transforms
     if (
-      aleph_scene && 
+      aleph_scene &&
       aleph_scene.is_a?(Hash) &&
-      ( rotation = aleph_scene.dig('scene', 'rotation') ).present? && 
-      rotation.is_a?(Array) && 
-      rotation.count == 3 && 
+      ( rotation = aleph_scene.dig('scene', 'rotation') ).present? &&
+      rotation.is_a?(Array) &&
+      rotation.count == 3 &&
       rotation.all? { |v| is_numeric? v } &&
       rotation.any? { |v| v != 0 }
     )
@@ -194,7 +175,7 @@ class Scene < ApplicationRecord
     end
   end
 
-  def is_numeric?(value) 
+  def is_numeric?(value)
     true if Float(value) rescue false
   end
 end

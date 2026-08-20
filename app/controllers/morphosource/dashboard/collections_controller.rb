@@ -210,6 +210,10 @@ module Morphosource
       end
 
       def update_thumbnail
+        # Only update when the caller explicitly submitted representative_id.
+        # Absent key means "leave it alone"; setting thumbnail_id to nil here would
+        # silently wipe the thumbnail (e.g. when strip_doi_protected_fields removes the key).
+        return unless params[snake_case_collection_class]&.key?(:representative_id)
         media = Media.where(id: thumbnail_params).first
         @collection.thumbnail_id = media.try(:thumbnail_id)
       end

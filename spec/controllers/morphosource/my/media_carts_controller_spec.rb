@@ -47,6 +47,11 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
   end
 
   describe 'GET #download' do
+    def download_keys_for_redirect
+      uuid = Rack::Utils.parse_query(URI.parse(response.location).query)['download']
+      session[:download_keys][uuid]["keys"]
+    end
+
     context 'the user uses the item download button to
     download one item' do
       context 'the item is unrestricted' do
@@ -60,7 +65,7 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
           work_id = Media.find(cartItem2.work_id).access_control_id
           redirect_params = Rack::Utils.parse_query(URI.parse(response.location).query)
           expect(response).to redirect_to %r(\Ahttp://test.host/download?)
-          expect(redirect_params["key[]"]).to eq(work_id)
+          expect(download_keys_for_redirect).to contain_exactly(work_id)
         end
       end
 
@@ -72,7 +77,7 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
         it "redirects to zip with nil as params" do
           redirect_params = Rack::Utils.parse_query(URI.parse(response.location).query)
           expect(response).to redirect_to %r(\Ahttp://test.host/download?)
-          expect(redirect_params["key[]"]).to be(nil)
+          expect(download_keys_for_redirect).to be_empty
         end
       end
     end
@@ -89,7 +94,7 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
           work_id = Media.find(cartItem2.work_id).access_control_id
           redirect_params = Rack::Utils.parse_query(URI.parse(response.location).query)
           expect(response).to redirect_to %r(\Ahttp://test.host/download?)
-          expect(redirect_params["key[]"]).to eq(work_id)
+          expect(download_keys_for_redirect).to contain_exactly(work_id)
         end
       end
 
@@ -101,7 +106,7 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
         it "redirects to zip without the work ids as params" do
           redirect_params = Rack::Utils.parse_query(URI.parse(response.location).query)
           expect(response).to redirect_to %r(\Ahttp://test.host/download?)
-          expect(redirect_params["key[]"]).to be(nil)
+          expect(download_keys_for_redirect).to be_empty
         end
       end
 
@@ -116,7 +121,7 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
           work_id = Media.find(cartItem2.work_id).access_control_id
           redirect_params = Rack::Utils.parse_query(URI.parse(response.location).query)
           expect(response).to redirect_to %r(\Ahttp://test.host/download?)
-          expect(redirect_params["key[]"]).to eq(work_id)
+          expect(download_keys_for_redirect).to contain_exactly(work_id)
         end
       end
     end
@@ -136,7 +141,7 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
         it "redirects to zip with all the work ids as params" do
           redirect_params = Rack::Utils.parse_query(URI.parse(response.location).query)
           expect(response).to redirect_to %r(\Ahttp://test.host/download?)
-          expect(redirect_params["key[]"]).to match_array(unrestricted_work_ids)
+          expect(download_keys_for_redirect).to match_array(unrestricted_work_ids)
         end
       end
 
@@ -153,7 +158,7 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
         it "redirects to zip with none of the work ids as params" do
           redirect_params = Rack::Utils.parse_query(URI.parse(response.location).query)
           expect(response).to redirect_to %r(\Ahttp://test.host/download?)
-          expect(redirect_params["key[]"]).to eq(nil)
+          expect(download_keys_for_redirect).to be_empty
         end
       end
 
@@ -171,9 +176,44 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
           ]
           redirect_params = Rack::Utils.parse_query(URI.parse(response.location).query)
           expect(response).to redirect_to %r(\Ahttp://test.host/download?)
-          expect(redirect_params["key[]"]).to match_array(work_ids)
+          expect(download_keys_for_redirect).to match_array(work_ids)
+        end
+
+        it "does not include access-control keys in the redirect URL" do
+          redirect_params = Rack::Utils.parse_query(URI.parse(response.location).query)
+          expect(redirect_params.keys).not_to include('key', 'key[]')
         end
       end
+    end
+  end
+
+  describe "GET #download_all_agreements" do
+    before do
+      get :download_all_agreements
+    end
+
+    it "returns agreement data for every downloadable item in the cart" do
+      json = JSON.parse(response.body)
+      media_ids = json.map { |item| item['media_id'] }
+      expect(media_ids).to include(work1.id, work2.id)
+    end
+
+    it "does not include restricted items" do
+      json = JSON.parse(response.body)
+      media_ids = json.map { |item| item['media_id'] }
+      expect(media_ids).not_to include(work3.id)
+    end
+
+    it "does not include items that are not in the cart" do
+      json = JSON.parse(response.body)
+      media_ids = json.map { |item| item['media_id'] }
+      expect(media_ids).not_to include(work5.id, work6.id, work7.id)
+    end
+
+    it "includes an itemized agreement description link for each item" do
+      json = JSON.parse(response.body)
+      item = json.find { |i| i['media_id'] == work2.id }
+      expect(item['agreement_description_html']).to include('aup-link')
     end
   end
 

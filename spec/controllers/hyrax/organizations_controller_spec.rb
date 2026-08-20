@@ -63,4 +63,56 @@ RSpec.describe Hyrax::OrganizationsController, type: :controller do
       end
     end
   end
+
+  describe '#destroy' do
+    let(:organization) { Organization.create(title: ['organization']) }
+    let(:user)          { User.create(email: 'email@email.com', password: 'password', ms_id: 'user') }
+
+    before do
+      allow(subject).to receive(:authorize!).with(:destroy, organization).and_return(true)
+      sign_in user
+    end
+
+    context 'when the destroy is not halted' do
+      it 'destroys the organization' do
+        delete :destroy, params: { id: organization.id }
+        expect(Organization.exists?(organization.id)).to be false
+      end
+    end
+
+    context 'when the destroy is halted and populates errors' do
+      before do
+        allow_any_instance_of(Organization).to receive(:destroy) do |record|
+          record.errors.add(:base, 'boom')
+          false
+        end
+      end
+
+      it 'does not destroy the organization and redirects with the error instead of a silent 204' do
+        delete :destroy, params: { id: organization.id }
+        expect(response).to have_http_status(:found)
+        expect(flash[:alert]).to eq('boom')
+        # .exists? is Solr-backed; CleanupFileSetsActor deletes the Solr doc before
+        # the model-level destroy runs, so .find (reads Fedora directly) is what
+        # actually proves the record survived.
+        expect { Organization.find(organization.id) }.not_to raise_error
+      end
+
+      it 'renders an unprocessable_entity json response' do
+        delete :destroy, params: { id: organization.id, format: :json }
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
+    end
+
+    context 'when the destroy is halted without populating errors' do
+      before do
+        allow_any_instance_of(Organization).to receive(:destroy).and_return(false)
+      end
+
+      it 'falls back to a generic unable-to-delete message' do
+        delete :destroy, params: { id: organization.id }
+        expect(flash[:alert]).to match(/\AUnable to delete .*organization\.\z/)
+      end
+    end
+  end
 end

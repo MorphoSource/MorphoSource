@@ -1,0 +1,4 @@
+<% unless @search %>
+  <%= link_to "Search Issues", url_for(search: true), class: 'btn btn-primary' %>
+<% end %>
+<%= link_to 'Export CSV', url_for(format: :csv), class: 'btn btn-primary' %>

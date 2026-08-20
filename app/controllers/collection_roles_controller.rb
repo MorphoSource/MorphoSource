@@ -13,9 +13,13 @@ class CollectionRolesController < ApplicationController
   def update_collection_groups
     return unless can? :edit, collection
     if users_are_eligible?
-      update_subcollections
-      update_agent_access
-      update_collection_managed_date
+      if last_manager_blocker
+        update_notice('last_manager')
+      else
+        update_subcollections
+        update_agent_access
+        update_collection_managed_date
+      end
     else
       update_notice('user_status')
     end
@@ -73,13 +77,13 @@ class CollectionRolesController < ApplicationController
 
   def update_subcollections
     find_subcollections
-    update_child_groups unless @subcollection_docs.empty?
+    update_child_groups if subcollection_docs.any?
     reset_collection_role_values
   end
 
   def update_child_groups
     @parent = @collection
-    child_ids = @subcollection_docs.map { |doc| doc['id'] }
+    child_ids = subcollection_docs.map { |doc| doc['id'] }
     child_ids.each do |id|
       update_child_collection(id)
     end
@@ -107,10 +111,6 @@ class CollectionRolesController < ApplicationController
 
   def update_user_access
     if @new_group || @remove
-      if removing_last_manager? && !current_user.admin?
-        update_notice('last_manager')
-        return
-      end
       if @new_group
         change_groups(user)
       elsif @remove
@@ -128,9 +128,39 @@ class CollectionRolesController < ApplicationController
     end
   end
 
-  def removing_last_manager?
+  # Blocks a role change that would leave the parent or any of its subcollections
+  # without a manager.
+  #
+  # @return [String, nil] Title of the collection that would lose its last manager,
+  #   or nil if the change is allowed
+  def last_manager_blocker
+    @last_manager_blocker ||= find_last_manager_blocker
+  end
+
+  def find_last_manager_blocker
+    return nil unless manager_role_change?
+    return collection.title.first if last_manager_locked?(collection.id, organization: collection.organization_collection?)
+
+    blocked = subcollection_docs.find { |doc| last_manager_locked?(doc['id']) }
+    blocked && Array(blocked['title_tesim']).first
+  end
+
+  # Organizations must always retain a manager, so even admins are blocked; teams
+  # and projects keep the admin override.
+  def last_manager_locked?(collection_id, organization: false)
+    (organization || !current_user.admin?) && sole_manager_of?(collection_id)
+  end
+
+  def sole_manager_of?(collection_id)
+    managers_group = Collection.role_group(collection_id, :managers)
+    managers_group.present? &&
+      managers_group.users.include?(user) &&
+      managers_group.users.distinct.count < 2
+  end
+
+  def manager_role_change?
     managers_group = collection.managers_group
-    managers_group.present? && @group == managers_group && managers_group.users.count < 2
+    managers_group.present? && @group == managers_group && (@remove || @new_group.present?)
   end
 
   def change_groups(user)
@@ -166,7 +196,7 @@ class CollectionRolesController < ApplicationController
   end
 
   def update_subcollections_membership
-    ids = @subcollection_docs.map(&:id)
+    ids = subcollection_docs.map { |doc| doc['id'] }
     copy_team_members_to_subcollections(ids)
     reset_collection_role_values
   end
@@ -229,7 +259,7 @@ class CollectionRolesController < ApplicationController
       roles = t("morphosource.dashboard.collections.#{@collection.collection_type.machine_id}.members.roles.non-contributor")
       flash[:error] = translate('morphosource.dashboard.collections.form.non_contributor_errors', user: user, emails: emails, access: access, roles: roles)
     when 'last_manager'
-      flash[:error] = "Cannot remove the last manager from this collection."
+      flash[:error] = translate('morphosource.dashboard.collections.form.last_manager_errors', title: last_manager_blocker)
     when 'duplicate'
       flash[:error] = "#{@user.name} is already a member of #{@collection.title.first}"
     end
@@ -240,9 +270,17 @@ class CollectionRolesController < ApplicationController
   end
 
   # CollectionsControllerBehavior methods
+  # Primes the presenter and the subcollection memo for the rest of the request.
   def find_subcollections
     presenter
-    @subcollection_docs = Morphosource::SolrService.new.get_docs("has_model_ssim:Collection AND member_of_collection_ids_ssim:#{@collection.id}")
+    subcollection_docs
+  end
+
+  # Keyed on params[:id] rather than #collection, which the child walk reassigns.
+  # Memoized: the preflight and the child role update both need these.
+  def subcollection_docs
+    @subcollection_docs ||=
+      Morphosource::SolrService.new.get_docs("has_model_ssim:Collection AND member_of_collection_ids_ssim:#{params[:id]}")
   end
 
   def update_collection_managed_date

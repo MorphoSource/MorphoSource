@@ -176,6 +176,7 @@ en:
           deposit_costs: Data Deposit Costs
           citation: Citation
           faq: FAQ
+          deposit_structure: How to structure media deposits
         resources:
           title: Resources
           title_footer: Resources
@@ -396,6 +397,7 @@ en:
         based_near: A place name related to the collection, such as its site of publication, or the city, state, or country the collection contents are about.
       defaults:
         agreement_uri: Additional terms and conditions that users must agree to in order to download media
+        aleph_scene: Raw JSON scene configuration (rotation, annotations) for the interactive preview
         data_manager: The user who should control most or all media representing organization objects. They will receive requests to transfer ownership of newly published or submitted media from original contributors to data manager. Contact admins to change.
         download_permission: Media publication status, can be private, published with open download (any user can download), or published with restricted download (users must request to download)
         download_reviewer: Users that receive and decide requests to download Media if published with Restricted Download, defaults to data manager if not specified
@@ -403,7 +405,9 @@ en:
         media_ownership_transfer: Opt in to automated management transfer
         permissions_enforcement_mode: Whether organization default permission values are recommended or required to be used by new media contributors
         publisher: Entity responsible for making the resource available
+        preview_annotations: Number of custom annotations set for the interactive preview
         preview_mode: Whether media can be previewed with interactive 3D/2D preview or restricted to small 2D thumbnail, Interactive/Embeddable generally recommended
+        preview_rotation: Custom initial rotation applied to the interactive preview
         morphosource_use_agreement_type: Type of MorphoSource use agreement users must agree to when downloading Media
         permits_3d_use: Whether Media may be 3D printed freely, may be 3D printed in limited ways, or if 3D printing is prohibited
         permits_commercial_use: Whether commercial use of Media is permitted

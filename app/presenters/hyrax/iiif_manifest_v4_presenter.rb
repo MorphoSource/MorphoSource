@@ -36,8 +36,18 @@ module Hyrax
         return nil unless model.mesh? || model.volume?
         return nil unless latest_file_id
 
-        scene = parent_work.present? ? Scene.find_by(media_id: parent_work.id) : nil
         scene&.iiif_annotations
+      end
+
+      ##
+      # Displays scene camera annotations (activated by commenting annotations via scope) if present
+      #
+      # @return [Array<Hash>, nil] List of camera annotations or nil if not present
+      def display_cameras
+        return nil unless model.mesh? || model.volume?
+        return nil unless latest_file_id
+
+        scene&.iiif_cameras
       end
 
       ##
@@ -80,8 +90,6 @@ module Hyrax
       #
       # @return [IIIFManifest::V4::DisplayContent] the display content required by the manifest builder.
       def display_scene_content(download_file_suffix, format, type)
-        scene = parent_work.present? ? Scene.find_by(media_id: parent_work.id) : nil
-
         IIIFManifest::V4::DisplayContent.new(URI::join(
             hostname,
             Rails.application.routes.url_helpers.download_path(model.access_control_id, file: download_file_suffix)
@@ -92,7 +100,11 @@ module Hyrax
         )
       end
 
-      
+      private
+
+        def scene
+          @scene ||= parent_work.present? ? Scene.find_by(media_id: parent_work.id) : nil
+        end
     end
   end
 end

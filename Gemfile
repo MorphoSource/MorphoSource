@@ -19,6 +19,8 @@ gem 'redis'
 gem 'rsolr', '>= 1.0'
 gem 'jquery-rails'
 gem 'devise'
+gem 'doorkeeper'
+gem 'doorkeeper-openid_connect'
 gem 'devise-guests', '~> 0.6'
 gem 'bootstrap', '~> 4.0'
 

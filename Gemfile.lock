@@ -273,6 +273,12 @@ GEM
       declarative (>= 0.0.9, < 1.0.0)
       representable (>= 3.1.1, < 4)
     domain_name (0.6.20240107)
+    doorkeeper (5.9.0)
+      railties (>= 5)
+    doorkeeper-openid_connect (1.9.0)
+      doorkeeper (>= 5.5, < 6.0)
+      jwt (>= 2.5)
+      ostruct (>= 0.5)
     dotenv (3.1.8)
     dotenv-rails (3.1.8)
       dotenv (= 3.1.8)
@@ -1287,6 +1293,8 @@ DEPENDENCIES
   dalli
   devise
   devise-guests (~> 0.6)
+  doorkeeper
+  doorkeeper-openid_connect
   dotenv-rails
   ezid-client (~> 1.11.0)
   factory_bot_rails (~> 4.8)

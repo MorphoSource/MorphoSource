@@ -14,6 +14,36 @@ en:
       background_jobs:
         page_title: All Background Jobs
         page_description: This is a new page listing all tracked background jobs corresponding to Resque jobs. For now, only batch submissions are tracked with this system. You can optionally choose to include Resque data, adding new information and features to this page, but this will slow page loads when many Resque jobs are present or when many rows are viewed per page. You may want to search for your desired subset of background jobs prior to including Resque data.
+      transfers:
+        page_title: All Ownership Transfers
+        page_description: All ownership transfer requests site-wide, both received and sent. Defaults to showing only Pending transfers; use the status buttons above the table to see Accepted, Rejected, Canceled, or All transfers.
+        batch_accept_notice: "%{count} transfer(s) accepted. Ownership changes are being applied in the background and should complete shortly."
+        batch_reject_notice: "%{count} transfer(s) rejected."
+        batch_cancel_notice: "%{count} transfer(s) canceled."
+        list_item:
+          accept_button_label: "Accept"
+          accept_retain_label: "Allow depositor to retain edit access"
+          accept_retain_title: "Accept the transfer and allow the original depositor to retain access to edit the file and metadata"
+          accept_reset_label: "Remove depositor access"
+          accept_reset_title: "Accept the transfer and remove access from the original depositor."
+          reject_label: "Reject"
+          reject_confirm: "Are you sure you want to reject this request?"
+          cancel_label: "Cancel"
+          cancel_confirm: "Are you sure you want to cancel this request?"
+        decide_modal:
+          heading: "Decide Selected Transfers"
+          intro: "Choose a decision to apply to all selected transfers:"
+          accept_retain_label: "Accept and retain depositor's edit access"
+          accept_retain_description: "Allow the original depositors to keep access to edit the file and metadata."
+          accept_reset_label: "Accept and remove depositor access"
+          accept_reset_description: "Accept the transfers and remove the original depositors' access entirely."
+          reject_label: "Reject"
+          reject_description: "Decline the selected transfer requests."
+          reject_confirm: "Are you sure you want to reject the selected transfers?"
+          cancel_label: "Cancel"
+          cancel_description: "Withdraw the selected transfers. Organization transfers will be force-canceled."
+          cancel_confirm: "Are you sure you want to cancel the selected transfers? Organization transfers will be force-canceled."
+          close_label: "Close"
       contributor_petitions:
         page_title: 'Contributor Applications'
         page_description: ''
@@ -54,6 +84,12 @@ en:
       remote_file_health:
         page_title: Remote File Health
         page_description: This is a report of remote file status and issues.
+    itemtable:
+      no_entries_found: "No %{entries} found."
+    transfers:
+      empty_state_html: "No %{status} transfers found, %{link}."
+      view_all_link_text: "view all transfers"
+      no_transfers_selected: "No transfers selected."
     background_jobs:
       status:
         completed: Complete

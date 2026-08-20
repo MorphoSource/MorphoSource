@@ -12,7 +12,8 @@ en:
           media_and_objects: Media and Objects
           new_requests_for_my_media: New Requests for My Media
           previous_requests: Previous Requests
-          ownership_transfers: Ownership Transfers
+          transfers_received: Transfers Received
+          transfers_sent: Transfers Sent
         my_media_collections:
           title: My Media Collections
           projects: Projects
@@ -37,6 +38,7 @@ en:
             all_background_jobs: All Background Jobs
             all_downloads: All Downloads
             all_requests: All Requests
+            all_transfers: All Transfers
             all_works: All Works
             statistics: Statistics
             remote_file_health: Remote File Health

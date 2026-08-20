@@ -22,10 +22,17 @@
     </span>
   <% end %>
 
-  <%= menu.nav_link(hyrax.transfers_path, class: "nav-link") do %>
-    <span class="fa fas fa-arrows-alt-h" aria-hidden="true"></span>
+  <%= menu.nav_link(main_app.transfers_received_path, class: "nav-link") do %>
+    <span class="fa fas fa-arrow-down" aria-hidden="true"></span>
     <span class="sidebar-action-text">
-      <%= t('morphosource.dashboard.sidebar.my_media.ownership_transfers') %>
+      <%= t('morphosource.dashboard.sidebar.my_media.transfers_received') %>
+    </span>
+  <% end %>
+
+  <%= menu.nav_link(main_app.transfers_sent_path, class: "nav-link") do %>
+    <span class="fa fas fa-arrow-up" aria-hidden="true"></span>
+    <span class="sidebar-action-text">
+      <%= t('morphosource.dashboard.sidebar.my_media.transfers_sent') %>
     </span>
   <% end %>
 <% end %>

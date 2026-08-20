@@ -14,4 +14,15 @@ RSpec.describe Morphosource::CollectionPresenter do
   describe 'model' do
     it { expect(subject.model).to be_a(Hyrax::SolrDocumentBehavior::ModelWrapper) }
   end
+
+  describe '#manager_links' do
+    let(:manager) { FactoryBot.create(:contributor) }
+
+    before { allow(collection).to receive(:managers).and_return([manager]) }
+
+    it 'renders every manager by default' do
+      expected = %(<a href="/users/#{manager.ms_id}">#{manager.name_or_email}</a>)
+      expect(subject.manager_links).to eq(expected)
+    end
+  end
 end

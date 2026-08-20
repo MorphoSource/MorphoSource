@@ -23,3 +23,7 @@
   url: https://duke.atlassian.net/wiki/spaces/MD/pages/35422899/Frequently+Asked+Questions
   header: true
   footer: false
+- label: hyrax.controls.links.docs.deposit_structure
+  url: https://duke.atlassian.net/wiki/spaces/MD/pages/35423429/Specimens+per+scan+Scans+per+media+deposit
+  header: false
+  footer: false

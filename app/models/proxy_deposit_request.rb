@@ -256,7 +256,7 @@ class ProxyDepositRequest < ActiveRecord::Base
   def transfers_dashboard_link
     link_to(
       "Ownership Transfers",
-      Hyrax::Engine.routes.url_helpers.transfers_url(host: host_name)
+      Rails.application.routes.url_helpers.transfers_received_url(host: host_name)
     )
   end
 
@@ -278,34 +278,42 @@ class ProxyDepositRequest < ActiveRecord::Base
 
   # @param [TrueClass,FalseClass] reset (false)  if true, reset the access controls. This revokes edit access from the depositor
   def transfer!(reset = false)
-    if organization_transfer && receiving_user_type == "User"
-      work.add_to_organization_team
-    end
+    record_decision!(status: ACCEPTED)
+    apply_accept_side_effects!(reset: reset)
+  end
+
+  # The slow part of accepting a transfer, meant to run after record_decision!
+  def apply_accept_side_effects!(reset: false)
     ContentDepositorChangeEventJob.perform_now(work, receiving_user_id, reset, sending_user_id)
-    fulfill!(status: ACCEPTED)
+  rescue => e
+    update_columns(status: PENDING, fulfillment_date: nil)
+    Rails.logger.error("ProxyDepositRequest##{id}: accept side effects failed, reverted to pending: #{e.message}")
+    raise
   end
 
   # @param [String, nil] comment - A given reason by the rejecting user
   def reject!(comment = nil)
-    fulfill!(status: REJECTED, comment: comment)
+    record_decision!(status: REJECTED, comment: comment)
   end
 
   def cancel!
-    fulfill!(status: CANCELED)
+    record_decision!(status: CANCELED)
   end
 
   def force_cancel!
     @force_update = true
-    fulfill!(status: CANCELED)
+    record_decision!(status: CANCELED)
+  end
+
+  # Fast, synchronous status flip with no side effects
+  def record_decision!(status:, comment: nil)
+    self.receiver_comment = comment if comment
+    self.status = status
+    self.fulfillment_date = Time.current
+    save!
   end
 
   private
-    def fulfill!(status:, comment: nil)
-      self.receiver_comment = comment if comment
-      self.status = status
-      self.fulfillment_date = Time.current
-      save!
-    end
 
     def org_transfer_resolved?
       organization_transfer? && previous_changes.key?('status') && !pending?

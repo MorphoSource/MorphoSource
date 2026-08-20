@@ -1,0 +1,24 @@
+<div class="modal fade" id="transferDecideModal" tabindex="-1" role="dialog" aria-labelledby="transferDecideModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header d-block border-bottom-0">
+        <h2>
+          <%= t('morphosource.dashboard.my.transfers_sent.decide_modal.heading') %>
+          <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        </h2>
+      </div>
+      <div class="modal-body">
+        <p><%= t('morphosource.dashboard.my.transfers_sent.decide_modal.intro') %></p>
+        <div class="list-group">
+          <%= link_to '#', class: 'list-group-item list-group-item-action list-group-item-danger batch-decide', data: { url: main_app.transfers_sent_batch_cancel_path(return_to: request.original_fullpath), confirm: t('morphosource.dashboard.my.transfers_sent.decide_modal.cancel_confirm') } do %>
+            <strong><%= t('morphosource.dashboard.my.transfers_sent.decide_modal.cancel_label') %></strong>
+            <div class="small text-muted"><%= t('morphosource.dashboard.my.transfers_sent.decide_modal.cancel_description') %></div>
+          <% end %>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal"><%= t('morphosource.dashboard.my.transfers_sent.decide_modal.close_label') %></button>
+      </div>
+    </div>
+  </div>
+</div>

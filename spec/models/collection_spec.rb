@@ -84,6 +84,19 @@ RSpec.describe Collection, type: :model do
     end
   end
 
+  describe 'role group lookup' do
+    before { team.create_collection_groups }
+
+    # Role names were built with id.concat, which mutates the receiver.
+    it 'tolerates a frozen id' do
+      frozen_id = team.id.dup.freeze
+      allow(team).to receive(:id).and_return(frozen_id)
+
+      expect { team.managers_group }.not_to raise_error
+      expect(team.managers).to include(user)
+    end
+  end
+
   describe '#copy_parent_membership, #remove_parent_membership' do
     let(:manager)             { FactoryBot.create(:contributor) }
     let(:editor)              { FactoryBot.create(:contributor) }
@@ -100,6 +113,7 @@ RSpec.describe Collection, type: :model do
     let(:organization)        { FactoryBot.create(:organization_collection, depositor: user.ms_id) }
     let(:collections)         { [team, organization] }
 
+    # Organizations are created without a manager, so give this one a manager to copy.
     before do
       organization.managers << user
       organization.managers_group.save

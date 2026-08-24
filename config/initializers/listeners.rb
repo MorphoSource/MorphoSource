@@ -19,6 +19,11 @@ Hyrax.publisher.instance_variable_set(:@default_listeners, nil)
 Rails.application.config.to_prepare do
   publisher = Hyrax.publisher
 
+  # Must be the instance register_event, above the subscribe loop: Bus#attach only
+  # binds handlers for events registered at that moment.
+  publisher.register_event('media.reviewers.updated')
+  publisher.register_event('organization.reviewers.updated')
+
   (Rails.application.config.x.all_event_listeners ||= []).each { |l| publisher.unsubscribe(l) }
 
   publisher.instance_variable_set(:@default_listeners, nil)
@@ -30,6 +35,7 @@ Rails.application.config.to_prepare do
     Morphosource::Listeners::DestroyProxyDepositRequestsListener,
     Morphosource::Listeners::IndexRelatedWorksListener,
     Morphosource::Listeners::MintArkListener,
+    Morphosource::Listeners::ReviewerUpdateListener,
     Morphosource::Listeners::UpdateArkStatusListener
   ].map { |klass| klass.new.tap { |l| publisher.subscribe(l) } }
 

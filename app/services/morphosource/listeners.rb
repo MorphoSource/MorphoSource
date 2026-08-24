@@ -14,6 +14,7 @@ module Morphosource
     autoload :DestroyProxyDepositRequestsListener
     autoload :IndexRelatedWorksListener
     autoload :MintArkListener
+    autoload :ReviewerUpdateListener
     autoload :UpdateArkStatusListener
   end
 end

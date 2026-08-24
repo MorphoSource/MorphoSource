@@ -6,6 +6,7 @@ class CollectionRolesController < ApplicationController
   include Hyrax::CollectionsControllerBehavior
   include Morphosource::Dashboard::CollectionsControllerBehavior
 
+  around_action :publish_reviewer_events
   before_action { collection_role_values(params[:collection_roles]) }
 
   delegate :presenter_class, to: :@collection
@@ -114,7 +115,7 @@ class CollectionRolesController < ApplicationController
       if @new_group
         change_groups(user)
       elsif @remove
-        @group.users.delete(user)
+        remove_user_from_group(user, @group)
       end
       update_notice('success') if @group.save
     else
@@ -164,14 +165,25 @@ class CollectionRolesController < ApplicationController
   end
 
   def change_groups(user)
-    @group.users.delete(user)
+    remove_user_from_group(user, @group)
     add_user_to_group(user, @new_group)
     @new_group.save
   end
 
   # Add user to appropriate role if user does not already have another collection role.
   def add_user_to_group(user, group)
-    group.users << user unless collection.group_members.include? user
+    return if collection.group_members.include? user
+
+    group.users << user
+    note_manager_role_change(group)
+  end
+
+  # check_subcollection_for_user sweeps all five roles, so most calls remove nothing.
+  def remove_user_from_group(user, group)
+    return unless group.users.include?(user)
+
+    group.users.delete(user)
+    note_manager_role_change(group)
   end
 
   # If a user is added to a team, and the team's subcollection already has that user in a role, remove the user.
@@ -179,7 +191,7 @@ class CollectionRolesController < ApplicationController
     return unless @collection.group_members.include? user
 
     @collection.user_groups.each do |group|
-      group.users.delete(user)
+      remove_user_from_group(user, group)
       group.save
     end
   end
@@ -289,5 +301,33 @@ class CollectionRolesController < ApplicationController
 
     organization.record_date_managed
     organization.save! if organization.date_managed_changed?
+  end
+
+  # Publishes one event per OrganizationCollection whose Manager role changed. In an
+  # ensure because the role change commits before update_collection_managed_date can raise.
+  def publish_reviewer_events
+    yield
+  ensure
+    touched_organization_ids.each do |id|
+      begin
+        Hyrax.publisher.publish('organization.reviewers.updated', organization_id: id)
+      rescue StandardError => e
+        Rails.logger.error("CollectionRolesController: failed to publish organization.reviewers.updated " \
+                           "for #{id}; its media's cached reviewers are now stale. #{e.class}: #{e.message}")
+        Sentry.capture_exception(e, extra: { organization_id: id })
+      end
+    end
+  end
+
+  # The role group always belongs to the current @collection, which the child walk reassigns.
+  # organization_collection? not organization?: the latter is only true for the deprecated work.
+  def note_manager_role_change(group)
+    return unless group.try(:name) == "#{@collection.id}_managers"
+
+    touched_organization_ids << @collection.id if @collection.organization_collection?
+  end
+
+  def touched_organization_ids
+    @touched_organization_ids ||= Set.new
   end
 end

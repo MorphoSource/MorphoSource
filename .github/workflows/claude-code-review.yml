@@ -12,7 +12,6 @@ on:
 
 jobs:
   claude-review:
-    if: false # disabled — re-enable when ready
     runs-on: ubuntu-latest
     permissions:
       contents: read

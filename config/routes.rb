@@ -810,6 +810,13 @@ Rails.application.routes.draw do
 
   # Devise and user roles
   devise_for :users, :controllers => { registrations: 'registrations', sessions: 'sessions', passwords: 'morphosource/passwords' }
+
+  # Identity provider (OAuth2/OIDC via Doorkeeper) — only mounted when enabled
+  if Hyrax.config.enable_identity_provider?
+    use_doorkeeper
+    use_doorkeeper_openid_connect
+  end
+
   mount Hydra::RoleManagement::Engine => '/'
 
   # ms1 users changing their password must agree to terms and conditions

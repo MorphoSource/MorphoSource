@@ -32,6 +32,9 @@
 .env
 .irb_history
 
+.claude
+storage/
+
 # Ignore application configuration
 /config/application.yml
 

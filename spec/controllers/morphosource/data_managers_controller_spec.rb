@@ -10,7 +10,10 @@ RSpec.describe Morphosource::DataManagersController, type: :controller do
   let!(:bbb_organization)  { FactoryBot.build(:organization_collection, id: 'bbb', title: ['BBB Organization'], institution_name: ['BBB Institution'], visibility: 'open') }
   let!(:ccc_organization)  { FactoryBot.build(:organization_collection, id: 'ccc', title: ['CCC Organization'], institution_name: ['CCC Institution'], visibility: 'open') }
 
+  let!(:signed_in_user)    { FactoryBot.create(:user) }
+
   before do
+    sign_in signed_in_user
     [aaa_organization, bbb_organization, ccc_organization].each do |org|
       ActiveFedora::SolrService.add(org.to_solr, commit: true)
     end

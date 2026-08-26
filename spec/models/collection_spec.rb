@@ -113,9 +113,8 @@ RSpec.describe Collection, type: :model do
     let(:organization)        { FactoryBot.create(:organization_collection, depositor: user.ms_id) }
     let(:collections)         { [team, organization] }
 
+    # Organizations are created without a manager, so give this one a manager to copy.
     before do
-      # Fall back to the depositor for the seeded manager
-      allow(Morphosource).to receive(:default_organization_manager).and_return(nil)
       organization.managers << user
       organization.managers_group.save
     end

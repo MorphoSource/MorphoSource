@@ -91,7 +91,8 @@
         id: 'collapseSettingsMS',
         open: [
           hyrax.admin_appearance_path,
-          hyrax.admin_features_path
+          hyrax.admin_features_path,
+          *(Hyrax.config.enable_identity_provider? ? [main_app.oauth_applications_path] : [])
         ].any? { |path| current_page?(path) } do %>
 
         <%= menu.nav_link(hyrax.admin_appearance_path) do %>
@@ -114,6 +115,11 @@
         <% end %>
         <%= menu.nav_link(Rails.application.routes.url_helpers.admin_pages_path) do %>
           <span class="fa fa-newspaper" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.admin.sidebar.simple_pages') %></span>
+        <% end %>
+        <% if Hyrax.config.enable_identity_provider? %>
+          <%= menu.nav_link(main_app.oauth_applications_path) do %>
+            <span class="fa fa-key" aria-hidden="true"></span> <span class="sidebar-action-text"><%= t('morphosource.admin.sidebar.oauth_applications') %></span>
+          <% end %>
         <% end %>
       <% end %>
     </li>

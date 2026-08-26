@@ -768,8 +768,6 @@ RSpec.describe CollectionRolesController, type: :controller do
 
     describe 'update_collection_managed_date' do
       before do
-        # Fall back to the depositor for the seeded manager
-        allow(Morphosource).to receive(:default_organization_manager).and_return(nil)
         allow(subject).to receive(:users_are_eligible?).and_return(true)
         allow(subject).to receive(:update_subcollections).and_return(true)
         allow(subject).to receive(:last_manager_blocker).and_return(nil)
@@ -842,6 +840,8 @@ RSpec.describe CollectionRolesController, type: :controller do
 
           before do
             sign_in admin
+            organization.managers_group.users = [admin]
+            organization.managers_group.save!
             allow(subject).to receive(:can?).with(:edit, organization).and_return(true)
           end
 

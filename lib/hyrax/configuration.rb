@@ -1060,6 +1060,12 @@ module Hyrax
       @host_name ||= "morphosource.org"
     end
 
+    attr_writer :enable_identity_provider
+    def enable_identity_provider?
+      return @enable_identity_provider unless @enable_identity_provider.nil?
+      ActiveModel::Type::Boolean.new.cast(ENV.fetch('MORPHOSOURCE_IDENTITY_PROVIDER_ENABLED', false))
+    end
+
     attr_writer :sftp_share_root
     def sftp_share_root
       @sftp_share_root ||= "/sftp_share_root_NOT_DEFINED/"

@@ -13,5 +13,5 @@
   <% if @presenter.creator.present? %>
     · Creator: <%= @presenter.creator_display %>
   <% end %>
-  <%= render 'shared/collections/managed_by', manager_links: @presenter.manager_links_for_display %>
+  <%= render 'shared/collections/managed_by', manager_links: @presenter.manager_links %>
 </div>

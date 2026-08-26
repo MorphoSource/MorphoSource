@@ -71,6 +71,14 @@ module Morphosource
           index.as :symbol
         end
 
+        property :valkyrie_representative_id,
+                 predicate: ::RDF::URI.new("https://www.morphosource.org/terms/valkyrieRepresentativeId"),
+                 multiple: false
+
+        property :valkyrie_thumbnail_id,
+                 predicate: ::RDF::URI.new("https://www.morphosource.org/terms/valkyrieThumbnailId"),
+                 multiple: false
+
         [
           :ordered_members,
           :members
@@ -90,6 +98,16 @@ module Morphosource
           :member_of
         ].each do |method_name|
           create_method_get_member_of(method_name)
+        end
+
+        [
+          :representative,
+          :thumbnail
+        ].each do |method_name|
+          create_method_get_singular_association(method_name)
+          create_method_set_singular_association(method_name)
+          create_method_get_singular_association_id(method_name)
+          create_method_set_singular_association_id(method_name)
         end
       end
 
@@ -150,6 +168,89 @@ module Morphosource
             (valkyrie_member_of + super().to_a).uniq { |w| w.id.to_s }
           end
         end
+
+        ##
+        # Defines getter that returns the Valkyrie resource if one is stored,
+        # otherwise falls back to the ActiveFedora association object.
+        #
+        # @param method_name [Symbol] :representative or :thumbnail
+        def create_method_get_singular_association(method_name)
+          valkyrie_id_property = "valkyrie_#{method_name}_id"
+          alias_method "active_fedora_#{method_name}", method_name
+          define_method method_name do
+            vid = public_send(valkyrie_id_property)
+            if vid.present?
+              begin
+                Hyrax.query_service.postgres_service.find_by(id: vid)
+              rescue Valkyrie::Persistence::ObjectNotFoundError
+                super()
+              end
+            else
+              super()
+            end
+          end
+        end
+
+        ##
+        # Defines setter that routes to Valkyrie ID storage when the object is a
+        # Valkyrie::Resource, otherwise delegates to the ActiveFedora setter.
+        #
+        # @param method_name [Symbol] :representative or :thumbnail
+        def create_method_set_singular_association(method_name)
+          valkyrie_id_property = "valkyrie_#{method_name}_id"
+          alias_method "active_fedora_#{method_name}=", "#{method_name}="
+          define_method "#{method_name}=" do |object|
+            if object.is_a?(::Valkyrie::Resource)
+              self.public_send("#{valkyrie_id_property}=", object.id.to_s)
+              send("active_fedora_#{method_name}=", nil)
+            else
+              self.public_send("#{valkyrie_id_property}=", nil)
+              super(object)
+            end
+          end
+        end
+
+        ##
+        # Defines getter for the association ID that returns the Valkyrie ID when
+        # one is stored, otherwise returns the ActiveFedora ID.
+        #
+        # @param method_name [Symbol] :representative or :thumbnail
+        # @return [String, nil]
+        def create_method_get_singular_association_id(method_name)
+          valkyrie_id_property = "valkyrie_#{method_name}_id"
+          alias_method "active_fedora_#{method_name}_id", "#{method_name}_id"
+          define_method "#{method_name}_id" do
+            public_send(valkyrie_id_property) || super()
+          end
+        end
+
+        ##
+        # Defines setter for the association ID. Routes to Valkyrie storage when
+        # the value is a Valkyrie::ID, otherwise delegates to the ActiveFedora setter
+        # and clears any stored Valkyrie ID.
+        #
+        # @param method_name [Symbol] :representative or :thumbnail
+        def create_method_set_singular_association_id(method_name)
+          valkyrie_id_property = "valkyrie_#{method_name}_id"
+          alias_method "active_fedora_#{method_name}_id=", "#{method_name}_id="
+          define_method "#{method_name}_id=" do |id_val|
+            if id_val.is_a?(::Valkyrie::ID)
+              self.public_send("#{valkyrie_id_property}=", id_val.to_s)
+              send("active_fedora_#{method_name}_id=", nil)
+            else
+              self.public_send("#{valkyrie_id_property}=", nil)
+              super(id_val)
+            end
+          end
+        end
+      end
+
+      ##
+      # For members with .file_set? true, return ID strings. Override from Hydra::Works::WorkBehavior.
+      #
+      # @return [Array<String>]
+      def file_set_ids
+        file_sets.map { |fs| fs.id.to_s }
       end
 
       ##
@@ -157,6 +258,7 @@ module Morphosource
       #
       # @return [Array<Valkyrie::Resource>]
       def valkyrie_member_of
+        return [] unless id.present?
         Hyrax.query_service.postgres_service.find_inverse_references_by(id: id, property: :member_ids).to_a
       end
 
@@ -170,6 +272,28 @@ module Morphosource
         rescue Valkyrie::Persistence::ObjectNotFoundError
           next
         end.compact
+      end
+
+      ##
+      # The Valkyrie resource stored as representative, if any.
+      #
+      # @return [Valkyrie::Resource, nil]
+      def valkyrie_representative
+        return nil if valkyrie_representative_id.blank?
+        Hyrax.query_service.postgres_service.find_by(id: valkyrie_representative_id)
+      rescue Valkyrie::Persistence::ObjectNotFoundError
+        nil
+      end
+
+      ##
+      # The Valkyrie resource stored as thumbnail, if any.
+      #
+      # @return [Valkyrie::Resource, nil]
+      def valkyrie_thumbnail
+        return nil if valkyrie_thumbnail_id.blank?
+        Hyrax.query_service.postgres_service.find_by(id: valkyrie_thumbnail_id)
+      rescue Valkyrie::Persistence::ObjectNotFoundError
+        nil
       end
     end
   end

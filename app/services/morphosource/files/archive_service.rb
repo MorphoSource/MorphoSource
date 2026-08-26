@@ -208,7 +208,7 @@ module Morphosource
       #
       # @param [String] file_name File name of file within archive to read, must include archive dir path if present
       #
-      # @return Rubyzip entry input stream (for ZIP) or file byte data (for TAR)
+      # @return Rubyzip entry input stream (for ZIP), Minitar entry stream or file byte data (for TAR)
       #
       def get_contents_file(file_name)
         read_archive do |archive, archive_type|
@@ -218,7 +218,7 @@ module Morphosource
             archive.each do |f|
               next if File.basename(f.name).start_with?('.') || (f.respond_to?(:file?) && !f.file?)
               if f.name == file_name
-                return f.read
+                return StringIO.new(f.read)
               end
             end
           end

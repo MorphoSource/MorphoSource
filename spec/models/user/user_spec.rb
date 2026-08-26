@@ -312,6 +312,116 @@ RSpec.describe User, type: :model do
     end
   end
 
+  describe '#can_submit_remote_file?' do
+    let(:org_id)  { 'org-001' }
+    let(:org_url) { 'https://example.com/file.ply' }
+    let(:team) do
+      instance_double(Collection,
+        id: org_id,
+        can_submit_remote_files?: true,
+        allowed_remote_source: "example.com\nother.com")
+    end
+    let(:org) { double('org', team: team) }
+
+    before do
+      allow(ActiveFedora::Base).to receive(:find).with(org_id).and_return(org)
+      allow(org).to receive(:class).and_return(Collection)
+    end
+
+    context 'when user is an admin' do
+      before { allow(user).to receive(:admin?).and_return(true) }
+
+      it 'returns false when org_id is blank' do
+        expect(user.can_submit_remote_file?(org_url, nil)).to be false
+      end
+
+      it 'returns false when org is not found' do
+        allow(ActiveFedora::Base).to receive(:find).with(org_id).and_raise(ActiveFedora::ObjectNotFoundError)
+        expect(user.can_submit_remote_file?(org_url, org_id)).to be false
+      end
+
+      it 'returns false when team cannot submit remote files' do
+        allow(team).to receive(:can_submit_remote_files?).and_return(false)
+        expect(user.can_submit_remote_file?(org_url, org_id)).to be false
+      end
+
+      it 'returns false when team has no allowed_remote_source' do
+        allow(team).to receive(:allowed_remote_source).and_return('')
+        expect(user.can_submit_remote_file?(org_url, org_id)).to be false
+      end
+
+      context 'when checking tab visibility (url is nil)' do
+        it 'returns true without checking allowed_domains' do
+          expect(user.can_submit_remote_file?(nil, org_id)).to be true
+        end
+      end
+
+      context 'when checking a URL' do
+        it 'returns true when URL host is on the whitelist' do
+          expect(user.can_submit_remote_file?('https://example.com/file.ply', org_id)).to be true
+        end
+
+        it 'returns false when URL host is not on the whitelist' do
+          expect(user.can_submit_remote_file?('https://notallowed.com/file.ply', org_id)).to be false
+        end
+      end
+    end
+
+    context 'when user is a non-admin remote_file_submitter' do
+      before do
+        allow(user).to receive(:admin?).and_return(false)
+        allow(user).to receive(:remote_file_submitter?).and_return(true)
+        allow(user).to receive(:allowed_domains).and_return({ org_id => "example.com\nother.com" })
+      end
+
+      it 'returns false when org_id is blank' do
+        expect(user.can_submit_remote_file?(org_url, nil)).to be false
+      end
+
+      it 'returns false when team cannot submit remote files' do
+        allow(team).to receive(:can_submit_remote_files?).and_return(false)
+        expect(user.can_submit_remote_file?(org_url, org_id)).to be false
+      end
+
+      context 'when checking tab visibility (url is nil)' do
+        it 'returns true when user has allowed_domains for the team' do
+          expect(user.can_submit_remote_file?(nil, org_id)).to be true
+        end
+
+        it 'returns false when user has no allowed_domains for the team' do
+          allow(user).to receive(:allowed_domains).and_return({})
+          expect(user.can_submit_remote_file?(nil, org_id)).to be false
+        end
+      end
+
+      context 'when checking a URL' do
+        it 'returns true when URL host is on the whitelist and user has domain access' do
+          expect(user.can_submit_remote_file?('https://example.com/file.ply', org_id)).to be true
+        end
+
+        it 'returns false when URL host is not on the whitelist' do
+          expect(user.can_submit_remote_file?('https://notallowed.com/file.ply', org_id)).to be false
+        end
+
+        it 'returns false when user has no allowed_domains (no team membership)' do
+          allow(user).to receive(:allowed_domains).and_return({})
+          expect(user.can_submit_remote_file?('https://example.com/file.ply', org_id)).to be false
+        end
+      end
+    end
+
+    context 'when user is neither admin nor remote_file_submitter' do
+      before do
+        allow(user).to receive(:admin?).and_return(false)
+        allow(user).to receive(:remote_file_submitter?).and_return(false)
+      end
+
+      it 'returns false regardless of org or url' do
+        expect(user.can_submit_remote_file?(org_url, org_id)).to be false
+      end
+    end
+  end
+
   describe 'fund code methods' do
     let(:creator) { User.create(email: 'admin@email.com', password: 'password') }
     let(:fund_code) { FundCode.new(user: creator, title: 'Fund Code Title', description: 'Fund code description')}

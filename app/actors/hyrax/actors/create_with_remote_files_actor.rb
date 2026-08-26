@@ -1,7 +1,7 @@
 module Hyrax
   module Actors
     # If there is a key `:remote_files' in the attributes, it attaches the files at the specified URIs
-    # to the work. e.g.:
+    # to the work. e.g.,:
     #     attributes[:remote_files] = filenames.map do |name|
     #       { url: "https://example.com/file/#{name}", file_name: name }
     #     end
@@ -49,12 +49,17 @@ module Hyrax
       end
 
       def attach_files(env, remote_files)
-        ingest_remote_files_service_class.new(user: env.user,
-                                              curation_concern: env.curation_concern,
-                                              remote_files: remote_files,
-                                              file_set_actor_class: file_set_actor_class).attach!
+        return true if remote_files.blank?
+        # Mirror the guard in CreateWithFilesActor: skip if the work already has a file set,
+        # preventing a duplicate on re-save/update.
+        if env.curation_concern.media? && env.curation_concern.file_sets.count > 0
+          return true
+        end
+        AttachRemoteFilesToWorkJob.perform_later(env.curation_concern, remote_files)
+        true
       end
 
+      # @deprecated No longer used, instead use AttachRemoteFilesToWorkJob
       class IngestRemoteFilesService
         ##
         # @parm user [User]
@@ -79,7 +84,8 @@ module Hyrax
         # @return true
         def attach!
           return true unless remote_files
-          remote_files.each do |file_info|
+
+          valid_files = remote_files.each_with_object([]) do |file_info, arr|
             next if file_info.blank? || file_info[:url].blank?
             # Escape any space characters, so that this is a legal URI
             uri = URI.parse(Addressable::URI.escape(file_info[:url]))
@@ -87,10 +93,15 @@ module Hyrax
               Rails.logger.error "User #{user.user_key} attempted to ingest file from url #{file_info[:url]}, which doesn't pass validation"
               return false
             end
-            auth_header = file_info.fetch(:auth_header, {})
-            mime_type_of_remote = file_info[:mime_type_of_remote]
-            create_file_from_url(uri, file_info[:file_name], auth_header, mime_type_of_remote)
+            arr << file_info
           end
+
+          if Hyrax.config.use_valkyrie?
+            uploads_handler.add_remote_files(remote_files: valid_files).attach
+          else
+            create_file_from_url(uri, file_info[:file_name], file_info.fetch(:auth_header, {}), file_info[:mime_type_of_remote])
+          end
+
           add_ordered_members! if ordered
           true
         end
@@ -99,7 +110,7 @@ module Hyrax
           Hyrax.config.whitelisted_ingest_dirs
         end
 
-        # @param uri [URI] the uri fo the resource to import
+        # @param uri [URI] the uri of the resource to import
         def self.validate_remote_url(uri)
           if uri.scheme == 'file'
             path = File.absolute_path(CGI.unescape(uri.path))
@@ -113,6 +124,10 @@ module Hyrax
         end
 
         private
+
+        def uploads_handler
+          @uploads_handler ||= Morphosource::WorkUploadsHandler.new(work: curation_concern, user: user)
+        end
 
         def create_file_from_url(uri, file_name, auth_header, mime_type_of_remote = nil)
           import_url = URI.decode_www_form_component(uri.to_s)

@@ -12,22 +12,22 @@ RSpec.describe CharacterizeJob do
       describe 'DCM characterization' do
         let(:file_path_string) {fixture_path + '/CMB06020_R-m1_011.dcm'}
         let(:dcm_file) { File.open(file_path_string) }
-    
+
         before do
           Hydra::Works::AddFileToFileSet.call(file_set, dcm_file, :original_file)
           described_class.perform_now(file_set, file_set.original_file.id, file_path_string)
         end
-    
+
         # find the solr doc, then verify the metadata
         subject { SolrDocument.find(file_set.id) }
-    
+
         it "has dicom attributes in the metadata" do
           expect(subject[:mime_type_ssi]).to eq("application/dicom")
           expect(subject[:spacing_between_slices_tesim].first).to eq("0.0100088")
           expect(subject[:modality_tesim].first).to eq("OT")
           expect(subject[:secondary_capture_device_manufacturer_tesim].first).to eq("FEI")
           expect(subject[:secondary_capture_device_software_vers_tesim].first).to eq("Avizo")
-        end   
+        end
       end
 
       describe 'PLY characterization' do
@@ -59,7 +59,7 @@ RSpec.describe CharacterizeJob do
           expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be false
         end
       end
-    
+
       describe 'OBJ characterization' do
         let(:file_path_string) {fixture_path + '/bunny/bunny.obj'}
         let(:mesh_file) { File.open(file_path_string) }
@@ -98,10 +98,10 @@ RSpec.describe CharacterizeJob do
           Hydra::Works::AddFileToFileSet.call(file_set, mesh_file, :original_file)
           described_class.perform_now(file_set, file_set.original_file.id, file_path_string)
         end
-    
+
         # find the solr doc, then verify the metadata
         subject { SolrDocument.find(file_set.id) }
-    
+
         it "has GLTF attributes in the metadata" do
           # mesh details
           expect(subject[:point_count_tesim].first).to eq("34834")
@@ -133,10 +133,10 @@ RSpec.describe CharacterizeJob do
           Hydra::Works::AddFileToFileSet.call(file_set, mesh_file, :original_file)
           described_class.perform_now(file_set, file_set.original_file.id, file_path_string)
         end
-    
+
         # find the solr doc, then verify the metadata
         subject { SolrDocument.find(file_set.id) }
-    
+
         it "has GLB attributes in the metadata" do
           # mesh details
           expect(subject[:point_count_tesim].first).to eq("34834")
@@ -168,10 +168,10 @@ RSpec.describe CharacterizeJob do
           Hydra::Works::AddFileToFileSet.call(file_set, mesh_file, :original_file)
           described_class.perform_now(file_set, file_set.original_file.id, file_path_string)
         end
-    
+
         # find the solr doc, then verify the metadata
         subject { SolrDocument.find(file_set.id) }
-    
+
         it "has GLB attributes in the metadata" do
           # mesh details
           expect(subject[:point_count_tesim].first).to eq("86317")
@@ -188,7 +188,7 @@ RSpec.describe CharacterizeJob do
           expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be true
         end
       end
-        
+
       describe 'STL characterization' do
         let(:file_path_string) {fixture_path + '/bunny/bunny.stl'}
         let(:mesh_file) { File.open(file_path_string) }
@@ -218,7 +218,7 @@ RSpec.describe CharacterizeJob do
           expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be false
         end
       end
-    
+
       describe 'WRL characterization' do
         let(:file_path_string) {fixture_path + '/bunny/bunny.wrl'}
         let(:mesh_file) { File.open(file_path_string) }
@@ -247,7 +247,7 @@ RSpec.describe CharacterizeJob do
           expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be false
         end
       end
-    
+
       describe 'X3D characterization' do
         let(:file_path_string) {fixture_path + '/bunny/bunny.x3d'}
         let(:mesh_file) { File.open(file_path_string) }
@@ -277,7 +277,7 @@ RSpec.describe CharacterizeJob do
           expect(subject[:gltf_inspect_version_tesim]&.first.present?).to be false
         end
       end
-    
+
       describe 'Not a valid mesh file' do
         let(:file_path_string) {fixture_path + '/bunny/Source.docx'}
         let(:mesh_file) { File.open(file_path_string) }
@@ -297,15 +297,15 @@ RSpec.describe CharacterizeJob do
       describe 'DCM (ZIP) characterization' do
         let(:file_path_string) {fixture_path + '/dcm_stack/dcm_stack.zip'}
         let(:dcm_file) { File.open(file_path_string) }
-    
+
         before do
           Hydra::Works::AddFileToFileSet.call(file_set, dcm_file, :original_file)
           described_class.perform_now(file_set, file_set.original_file.id, file_path_string)
         end
-    
+
         # find the solr doc, then verify the metadata
         subject { SolrDocument.find(file_set.id) }
-    
+
         it "has dicom attributes in the metadata" do
           expect(subject.mime_type).to eq("application/zip")
           expect(subject.contents_mime_type.first).to eq("application/dicom")
@@ -322,15 +322,15 @@ RSpec.describe CharacterizeJob do
       describe 'DCM (TAR) characterization' do
         let(:file_path_string) {fixture_path + '/dcm_stack/dcm_stack.tar'}
         let(:dcm_file) { File.open(file_path_string) }
-    
+
         before do
           Hydra::Works::AddFileToFileSet.call(file_set, dcm_file, :original_file)
           described_class.perform_now(file_set, file_set.original_file.id, file_path_string)
         end
-    
+
         # find the solr doc, then verify the metadata
         subject { SolrDocument.find(file_set.id) }
-    
+
         it "has dicom attributes in the metadata" do
           expect(subject.mime_type).to eq("application/x-tar")
           expect(subject.contents_mime_type.first).to eq("application/dicom")
@@ -352,10 +352,10 @@ RSpec.describe CharacterizeJob do
           Hydra::Works::AddFileToFileSet.call(file_set, zip_file, :original_file)
           described_class.perform_now(file_set, file_set.original_file.id, file_path_string)
         end
-    
+
         # find the solr doc, then verify the metadata
         subject { SolrDocument.find(file_set.id) }
-    
+
         it "has OBJ attributes in the metadata" do
           # mesh details
           expect(subject.mime_type).to eq("application/zip")
@@ -385,10 +385,10 @@ RSpec.describe CharacterizeJob do
           Hydra::Works::AddFileToFileSet.call(file_set, zip_file, :original_file)
           described_class.perform_now(file_set, file_set.original_file.id, file_path_string)
         end
-    
+
         # find the solr doc, then verify the metadata
         subject { SolrDocument.find(file_set.id) }
-    
+
         it "has OBJ attributes in the metadata" do
           # mesh details
           expect(subject.mime_type).to eq("application/x-tar")
@@ -418,10 +418,10 @@ RSpec.describe CharacterizeJob do
           Hydra::Works::AddFileToFileSet.call(file_set, zip_file, :original_file)
           described_class.perform_now(file_set, file_set.original_file.id, file_path_string)
         end
-    
+
         # find the solr doc, then verify the metadata
         subject { SolrDocument.find(file_set.id) }
-    
+
         it "has GLTF attributes in the metadata" do
           # mesh details
           expect(subject.mime_type).to eq("application/zip")
@@ -452,10 +452,10 @@ RSpec.describe CharacterizeJob do
           Hydra::Works::AddFileToFileSet.call(file_set, zip_file, :original_file)
           described_class.perform_now(file_set, file_set.original_file.id, file_path_string)
         end
-    
+
         # find the solr doc, then verify the metadata
         subject { SolrDocument.find(file_set.id) }
-    
+
         it "has GLTF attributes in the metadata" do
           # mesh details
           expect(subject.mime_type).to eq("application/x-tar")
@@ -481,15 +481,15 @@ RSpec.describe CharacterizeJob do
       describe 'PLY (DEFLATE64 ZIP) characterization' do
         let(:file_path_string) {fixture_path + '/bunny/bunny_deflate64.zip'}
         let(:zip_file) { File.open(file_path_string) }
-    
+
         before do
           Hydra::Works::AddFileToFileSet.call(file_set, zip_file, :original_file)
           described_class.perform_now(file_set, file_set.original_file.id, file_path_string)
         end
-    
+
         # find the solr doc, then verify the metadata
         subject { SolrDocument.find(file_set.id) }
-    
+
         it "has PLY attributes in the metadata" do
           expect(subject.mime_type).to eq("application/zip")
           expect(subject.contents_mime_type.first).to eq("application/ply")

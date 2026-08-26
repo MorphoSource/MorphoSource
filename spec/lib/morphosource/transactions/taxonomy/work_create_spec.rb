@@ -12,7 +12,6 @@ RSpec.describe Morphosource::Transactions::Taxonomy::WorkCreate, :clean_repo do
   context 'default hyrax work create transaction behavior' do
     describe '#call' do
       it 'is a success' do
-        # byebug
         expect(tx.call(change_set)).to be_success
       end
 

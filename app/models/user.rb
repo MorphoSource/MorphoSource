@@ -222,7 +222,9 @@ class User < ApplicationRecord
   end
 
   def can_submit_remote_file?(url, org_id)
-    return false unless self.remote_file_submitter? && org_id.present?
+    # Admins bypass the remote_file_submitter? flag and membership checks,
+    # but org-level controls (can_submit_remote_files? and domain allowlist) still apply.
+    return false unless (self.admin? || self.remote_file_submitter?) && org_id.present?
     begin
       org = ActiveFedora::Base.find(org_id)
       team = org.class == OrganizationCollection ? org : org&.team
@@ -231,15 +233,16 @@ class User < ApplicationRecord
       return false
     end
     return false unless team.present?
+    return false unless team.can_submit_remote_files? && team.allowed_remote_source.present?
     if url.nil?
       # if url not available (e.g. determine to show/hide remote file tab),
       # no need to check domain.  Instead, check the permission at the team level and
       # the user's allowed_domains list for the team
-      return team.can_submit_remote_files? && team.allowed_remote_source.present? &&
-        allowed_domains[team.id].present?
+      return true if self.admin?
+      return allowed_domains[team.id].present?
     end
-    return false unless allowed_domains[team.id].present?
-    white_list = allowed_domains[team.id].split(/\n+|\r+/).reject(&:empty?)
+    return false unless self.admin? || allowed_domains[team.id].present?
+    white_list = team.allowed_remote_source.split(/\n+|\r+/).reject(&:empty?)
     uri = URI(url)
     return false unless uri.host.present?
     return (white_list.include? uri.host)

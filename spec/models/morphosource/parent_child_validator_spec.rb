@@ -52,6 +52,10 @@ require 'rails_helper'
 
     context "two invalid parents and two invalid children are added" do
       before do
+        record.save!
+        invalid_child.save!
+        invalid_child2.save!
+
         record.ordered_members << invalid_child
         record.ordered_members << invalid_child2
         invalid_parent.ordered_members << record

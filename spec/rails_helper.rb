@@ -7,6 +7,10 @@ abort("The Rails environment is running in production mode!") if Rails.env.produ
 require 'rspec/rails'
 # Add additional requires below this line. Rails is not loaded until this point!
 
+# Downstream tests may use Webmock and block requests, this is to prevent conflicts
+require 'webmock/rspec'
+WebMock.allow_net_connect!
+
 require 'shoulda/matchers'
 require 'shoulda/callback/matchers'
 Shoulda::Matchers.configure do |config|
@@ -20,7 +24,15 @@ require 'active_fedora/cleaner'
 
 require 'valkyrie'
 Valkyrie::MetadataAdapter.register(Valkyrie::Persistence::Memory::MetadataAdapter.new, :test_adapter)
-Valkyrie::StorageAdapter.register(Valkyrie::Storage::Memory.new, :memory)
+
+test_adapter_uploads_path = Rails.root / 'tmp' / 'test_adapter_uploads'
+test_versioned_disk = Valkyrie::Storage::VersionedDisk.new(base_path: test_adapter_uploads_path)
+Valkyrie::StorageAdapter.register(
+  Valkyrie::Storage::Hoard.new(services: [test_versioned_disk, Valkyrie::Storage::ExternalUrl.new]),
+  :test_disk
+)
+FileUtils.mkdir_p(test_adapter_uploads_path)
+Valkyrie.config.storage_adapter = :test_disk
 
 require 'hyrax/specs/shared_specs/factories/strategies/json_strategy'
 require 'hyrax/specs/shared_specs/factories/strategies/valkyrie_resource'
@@ -99,11 +111,19 @@ RSpec.configure do |config|
 
   config.before(:each) do
     clean_active_fedora_repository
+
+    if !Dir.exist?(test_adapter_uploads_path)
+      FileUtils.mkdir_p(test_adapter_uploads_path)
+    end
   end
 
-  # Several specs set ActiveJob::Base.queue_adapter = :test in a before block
-  # without resetting it, which otherwise leaks into every later spec in the
-  # same run and silently stops perform_later from executing inline.
+  config.after(:each) do
+    if Dir.exist?(test_adapter_uploads_path)
+      FileUtils.rm_rf(test_adapter_uploads_path)
+    end
+  end
+
+  # Clean up ActiveJob::Base.queue_adapter = :test so it doesn't leak between tests
   config.after(:each) do
     ActiveJob::Base.queue_adapter = :inline
   end

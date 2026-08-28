@@ -5,9 +5,19 @@ require 'webmock/rspec'
 
 RSpec.describe Valkyrie::Storage::Hoard do
   let(:test_path) { Rails.root / 'tmp' / 'hoard_test_uploads' }
+  # AWS's stubbed responses don't produce a real checksum, so pass a no-op verifier --
+  # exercising the real checksum verifier requires an actual S3-compatible endpoint,
+  # already covered by manual verification against local MinIO.
+  let(:no_op_verifier) { double('verifier', verify_checksum: true) } # rubocop:disable RSpec/VerifiedDoubles
+  let(:s3_storage) do
+    Valkyrie::Storage::VersionedShrine.new(
+      Valkyrie::Shrine::Storage::S3.new(bucket: 'test-bucket', region: 'us-east-1', stub_responses: true),
+      no_op_verifier
+    )
+  end
   let(:versioned_disk) { Valkyrie::Storage::VersionedDisk.new(base_path: test_path) }
   let(:external_url) { Valkyrie::Storage::ExternalUrl.new }
-  let(:hoard) { described_class.new(services: [versioned_disk, external_url]) }
+  let(:hoard) { described_class.new(services: [s3_storage, versioned_disk, external_url]) }
   let(:working_external_path) { Rails.root / 'tmp' / 'hoard_test_external' }
   let(:resource) { instance_double(Hyrax::FileSet, id: Valkyrie::ID.new(SecureRandom.uuid)) }
 
@@ -34,6 +44,11 @@ RSpec.describe Valkyrie::Storage::Hoard do
   end
 
   describe '#handles?' do
+    it 'returns true for shrine:// IDs' do
+      id = Valkyrie::ID.new('shrine://some/key')
+      expect(hoard.handles?(id: id)).to be true
+    end
+
     it 'returns true for versiondisk:// IDs' do
       id = Valkyrie::ID.new("versiondisk://#{test_path}/some/file.txt")
       expect(hoard.handles?(id: id)).to be true
@@ -56,7 +71,7 @@ RSpec.describe Valkyrie::Storage::Hoard do
   end
 
   describe '#supports?' do
-    it 'delegates to the primary service' do
+    it 'delegates to the primary service (S3)' do
       expect(hoard.supports?(:versions)).to be true
       expect(hoard.supports?(:version_deletion)).to be true
     end
@@ -67,7 +82,7 @@ RSpec.describe Valkyrie::Storage::Hoard do
   end
 
   describe '#upload' do
-    it 'routes local files to VersionedDisk' do
+    it 'routes plain filenames to the primary service (S3)' do
       file = Tempfile.new(['test', '.txt'])
       file.write('test content')
       file.rewind
@@ -75,7 +90,7 @@ RSpec.describe Valkyrie::Storage::Hoard do
       result = hoard.upload(file: file, original_filename: 'test.txt', resource: resource)
 
       expect(result).to be_a(Valkyrie::StorageAdapter::File)
-      expect(result.id.to_s).to start_with('versiondisk://')
+      expect(result.id.to_s).to start_with('shrine://')
 
       file.close
       file.unlink
@@ -100,7 +115,7 @@ RSpec.describe Valkyrie::Storage::Hoard do
       result = hoard.upload(file: file, original_filename: 'plain-file.txt', resource: resource)
 
       expect(result).to be_a(Valkyrie::StorageAdapter::File)
-      expect(result.id.to_s).to start_with('versiondisk://')
+      expect(result.id.to_s).to start_with('shrine://')
 
       file.close
       file.unlink
@@ -113,7 +128,7 @@ RSpec.describe Valkyrie::Storage::Hoard do
       file.write('test content')
       file.rewind
 
-      uploaded = hoard.upload(file: file, original_filename: 'test.txt', resource: resource)
+      uploaded = versioned_disk.upload(file: file, original_filename: 'test.txt', resource: resource)
       found = hoard.find_by(id: uploaded.id)
 
       expect(found.id.to_s).to eq(uploaded.id.to_s)
@@ -146,7 +161,7 @@ RSpec.describe Valkyrie::Storage::Hoard do
       file.write('test content')
       file.rewind
 
-      uploaded = hoard.upload(file: file, original_filename: 'test.txt', resource: resource)
+      uploaded = versioned_disk.upload(file: file, original_filename: 'test.txt', resource: resource)
       hoard.delete(id: uploaded.id)
 
       expect { hoard.find_by(id: uploaded.id) }.to raise_error(Valkyrie::StorageAdapter::FileNotFound)
@@ -167,7 +182,7 @@ RSpec.describe Valkyrie::Storage::Hoard do
       file.write('v1 content')
       file.rewind
 
-      uploaded = hoard.upload(file: file, original_filename: 'test.txt', resource: resource)
+      uploaded = versioned_disk.upload(file: file, original_filename: 'test.txt', resource: resource)
       versions = hoard.find_versions(id: uploaded.id)
 
       expect(versions).to be_an(Array)

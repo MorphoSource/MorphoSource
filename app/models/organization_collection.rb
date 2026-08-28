@@ -16,8 +16,12 @@ class OrganizationCollection < Collection
   after_update :index_related_works
   after_create :mint_ark
   after_destroy :delete_ark_if_reserved
+  after_update :publish_reviewers_updated
 
   self.indexer = OrganizationCollectionIndexer
+
+  # Set on the corpus-wide backfill so it does not publish one reviewer event per record.
+  attr_accessor :skip_reviewer_event
 
   def search_builder_class
     Morphosource::Collections::MediaSearchBuilder
@@ -103,6 +107,12 @@ class OrganizationCollection < Collection
     managers&.map(&:user_key) || []
   end
 
+  # @return [Boolean] the stored value, or true when it has never been written
+  def managers_are_download_reviewers
+    value = super
+    value.nil? ? true : value
+  end
+
   # used by ProxyDepositRequest
   def self.primary_key
     "id"
@@ -145,6 +155,14 @@ class OrganizationCollection < Collection
     return self.date_managed if managed && self.date_managed.present?
 
     self.date_managed = managed ? Date.today : nil
+  end
+
+  # ActiveFedora saves publish no Hyrax events, so the model publishes its own.
+  def publish_reviewers_updated
+    return if skip_reviewer_event
+    return unless managers_are_download_reviewers_changed? || custom_download_reviewer_users_changed?
+
+    Hyrax.publisher.publish('organization.reviewers.updated', organization_id: id)
   end
 
   private

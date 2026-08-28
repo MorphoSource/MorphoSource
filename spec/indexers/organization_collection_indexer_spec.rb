@@ -112,4 +112,47 @@ RSpec.describe OrganizationCollectionIndexer do
     expect(solr_document['ark_ssim']).to match_array(organization.ark)
     expect(solr_document['ark_tesim']).to match_array(organization.ark)
   end
+
+  describe 'reviews_object_media_downloads' do
+    # The suffix is load-bearing: the schema accepts booleans only through *_bi / *_bs /
+    # *_bsi and has no catch-all, so an unsuffixed key would fail the whole Solr add.
+    it 'writes the flag under the suffixed boolean key' do
+      organization.reviews_object_media_downloads = true
+
+      expect(solr_document['reviews_object_media_downloads_bsi']).to be(true)
+    end
+
+    it 'writes nil when the flag has never been set' do
+      expect(solr_document['reviews_object_media_downloads_bsi']).to be_nil
+    end
+  end
+
+  describe 'managers_are_download_reviewers' do
+    it 'writes the flag under the suffixed boolean key' do
+      organization.managers_are_download_reviewers = false
+
+      expect(solr_document['managers_are_download_reviewers_bsi']).to be(false)
+    end
+
+    # The model reads an unwritten field as true, so the index never stores nil for it.
+    it 'writes true when the flag has never been set' do
+      expect(solr_document['managers_are_download_reviewers_bsi']).to be(true)
+    end
+  end
+
+  describe 'custom_download_reviewer_users' do
+    it 'indexes the ms_ids as strings' do
+      organization.custom_download_reviewer_users = ['2956', 'f95e50']
+
+      expect(solr_document['custom_download_reviewer_users_ssim']).to match_array(['2956', 'f95e50'])
+    end
+
+    it 'indexes nothing when no custom reviewers are named' do
+      expect(solr_document['custom_download_reviewer_users_ssim']).to be_empty
+    end
+  end
+
+  it 'still indexes the stored download_reviewer, which this deploy does not touch' do
+    expect(solr_document['download_reviewer_tesim']).to match_array(organization.download_reviewer)
+  end
 end

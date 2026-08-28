@@ -51,6 +51,98 @@ RSpec.describe OrganizationCollection, type: :model do
     expect(subject).to be_valid
   end
 
+  describe 'download reviewer metadata' do
+    let(:reviewer)       { FactoryBot.create(:contributor) }
+    let(:other_reviewer) { FactoryBot.create(:contributor) }
+    let(:manager)        { FactoryBot.create(:contributor) }
+    let!(:organization)  { FactoryBot.create(:organization_collection, depositor: user.ms_id) }
+
+    describe '#managers_are_download_reviewers' do
+      it 'reads a never-written field as manager mode' do
+        expect(organization.managers_are_download_reviewers).to be(true)
+      end
+
+      it 'leaves a brand-new organization valid with the field never written' do
+        expect(organization).to be_valid
+      end
+
+      it 'reads a written false as custom mode' do
+        organization.managers_are_download_reviewers = false
+
+        expect(organization.managers_are_download_reviewers).to be(false)
+      end
+
+      it 'round-trips through a save' do
+        organization.managers_are_download_reviewers = false
+        organization.save!
+
+        expect(organization.reload.managers_are_download_reviewers).to be(false)
+      end
+    end
+
+    describe '#custom_download_reviewer_users' do
+      it 'stores multiple ms_ids' do
+        organization.custom_download_reviewer_users = [reviewer.ms_id, other_reviewer.ms_id]
+        organization.save!
+
+        expect(organization.reload.custom_download_reviewer_users)
+          .to match_array([reviewer.ms_id, other_reviewer.ms_id])
+      end
+    end
+
+    describe '#reviews_object_media_downloads' do
+      it 'stores a boolean' do
+        organization.reviews_object_media_downloads = true
+        organization.save!
+
+        expect(organization.reload.reviews_object_media_downloads).to be(true)
+      end
+    end
+
+    # This deploy is additive: the stored property is still the one resolution reads.
+    describe '#download_reviewer' do
+      it 'is still the stored property' do
+        organization.download_reviewer = [reviewer.ms_id]
+        organization.save!
+
+        expect(organization.reload.download_reviewer).to eq([reviewer.ms_id])
+      end
+    end
+
+    describe '#publish_reviewers_updated' do
+      it 'publishes when the mode changes' do
+        expect(Hyrax.publisher)
+          .to receive(:publish).with('organization.reviewers.updated', organization_id: organization.id)
+
+        organization.managers_are_download_reviewers = false
+        organization.save!
+      end
+
+      it 'publishes when the custom user list changes' do
+        expect(Hyrax.publisher)
+          .to receive(:publish).with('organization.reviewers.updated', organization_id: organization.id)
+
+        organization.custom_download_reviewer_users = [reviewer.ms_id]
+        organization.save!
+      end
+
+      it 'publishes nothing for an unrelated save' do
+        expect(Hyrax.publisher).not_to receive(:publish).with('organization.reviewers.updated', any_args)
+
+        organization.city = ['Durham']
+        organization.save!
+      end
+
+      it 'is suppressed by skip_reviewer_event' do
+        expect(Hyrax.publisher).not_to receive(:publish).with('organization.reviewers.updated', any_args)
+
+        organization.skip_reviewer_event = true
+        organization.managers_are_download_reviewers = false
+        organization.save!
+      end
+    end
+  end
+
   describe 'collection_type' do
     it 'has the organization collection type' do
       expect(described_class.collection_type).to eq(organization_collection_type)

@@ -41,6 +41,12 @@ class ApplicationContainerOverrides
     end
   end
 
+  namespace 'file_set' do |ops|
+    ops.register 'remove_from_work' do
+      Morphosource::Transactions::Steps::RemoveFileSetFromWork.new
+    end
+  end
+
   namespace 'taxonomy_change_set' do |ops|
     ops.register 'create_work' do
       Morphosource::Transactions::Taxonomy::WorkCreate.new

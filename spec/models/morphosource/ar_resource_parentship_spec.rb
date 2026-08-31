@@ -48,6 +48,14 @@ RSpec.describe Morphosource::ArResourceParentship do
       expect(parent_ids).to include(valkyrie_parent.id.to_s)
     end
 
+    it 'returns AF parents for a plain-AF child never linked via valkyrie_member_ids (e.g. an unmigrated FileSet)' do
+      af_child = FileSet.create!(title: ['Child AF FileSet'])
+      af_parent.ordered_members << af_child
+      af_parent.save!
+
+      expect(af_child.valkyrie_resource.member_of.map { |p| p.id.to_s }).to include(af_parent.id)
+    end
+
     it 'deduplicates parents that appear in both Postgres and Solr' do
       # Simulate the hybrid migration window: the AF parent has been saved with
       # valkyrie_member_ids (so it appears in Solr via valkyrie_member_ids_ssim)

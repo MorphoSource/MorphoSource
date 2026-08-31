@@ -91,5 +91,21 @@ RSpec.describe FreyjaWithWings::Persister do
       expect(af_parent.members).to include(af_child)
       expect(af_parent.ordered_members).to include(af_child)
     end
+
+    it "does not crash when the AF record's RDF graph fails to parse (e.g. invalid UTF-8)" do
+      # ActiveFedora::Base.exists? does a full LDP fetch + RDF parse, so it can raise on a
+      # corrupted Fedora object; #delete now checks existence via Solr instead, sidestepping this.
+      allow(ActiveFedora::Base).to receive(:exists?).and_raise(ArgumentError, 'invalid byte sequence in UTF-8')
+
+      af_parent.ordered_members << af_child
+      af_parent.save!
+      allow(Hyrax.config).to receive(:valkyrie_transition?).and_return(true)
+      af_child.save!
+      persister.save(resource: af_child.reload.valkyrie_resource)
+
+      valkyrie_child = Hyrax.query_service.find_by(id: af_child.id)
+      expect { persister.delete(resource: valkyrie_child) }.not_to raise_error
+      expect(ActiveFedora::Base).not_to have_received(:exists?)
+    end
   end
 end

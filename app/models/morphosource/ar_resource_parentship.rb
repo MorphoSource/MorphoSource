@@ -16,7 +16,10 @@ module Morphosource
       ).to_a
 
       if include_af_works
+        # valkyrie_member_ids_ssim is only populated once a parent has been touched by the
+        # migration; AF-native, never-migrated parents still store membership as member_ids_ssim.
         parents.concat(ActiveFedora::Base.where(valkyrie_member_ids_ssim: id.to_s).to_a)
+        parents.concat(ActiveFedora::Base.where(member_ids_ssim: id.to_s).to_a)
       end
 
       parents.uniq { |p| p.id.to_s }

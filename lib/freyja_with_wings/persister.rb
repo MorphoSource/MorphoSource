@@ -53,9 +53,11 @@ module FreyjaWithWings
           end
 
           # If new resource has AF record that is member of AF works, update membership to refer to resource
+          # Solr-based existence check (not ActiveFedora::Base.exists?, which does a full LDP fetch + RDF
+          # parse) avoids crashing on Fedora objects whose stored RDF graph fails to parse.
           if (
             ActiveFedora::SolrService.count("member_ids_ssim:#{new_resource.id.to_s}") > 0 &&
-            ActiveFedora::Base.exists?(new_resource.id.to_s)
+            ActiveFedora::SolrService.count("id:#{new_resource.id.to_s}") > 0
           )
             af_object = ActiveFedora::Base.find(new_resource.id.to_s)
             af_object.member_of.select { |p| p.is_a?(ActiveFedora::Base) }.each do |parent|
@@ -74,11 +76,19 @@ module FreyjaWithWings
     # @param [Valkyrie::Resource] resource
     # @return [Valkyrie::Resource] the deleted resource
     def delete(resource:)
-      resource = super
+      # super is a no-op for Wings-backed resources (Freyja::Persister has no #delete, so it
+      # falls through to a pure Postgres row delete); dispatch those to Wings instead, like #save does.
+      resource = if resource.respond_to?(:wings?) && resource.wings?
+                   Wings::Valkyrie::Persister.new(adapter: Wings::Valkyrie::MetadataAdapter.new).delete(resource: resource)
+                 else
+                   super
+                 end
 
       # If deleted resource has AF record and is member of AF works, reset membership to refer to AF record
+      # Solr-based existence check (not ActiveFedora::Base.exists?, which does a full LDP fetch + RDF
+      # parse) avoids crashing on Fedora objects whose stored RDF graph fails to parse.
       if (
-        ActiveFedora::Base.exists?(resource.id.to_s) &&
+        ActiveFedora::SolrService.count("id:#{resource.id.to_s}") > 0 &&
         (parents = ActiveFedora::Base.where(valkyrie_member_ids_ssim: resource.id.to_s)).present?
       )
         af_object = ActiveFedora::Base.find(resource.id.to_s)

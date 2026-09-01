@@ -16,8 +16,14 @@ class OrganizationCollection < Collection
   after_update :index_related_works
   after_create :mint_ark
   after_destroy :delete_ark_if_reserved
+  after_update :publish_reviewers_updated
 
   self.indexer = OrganizationCollectionIndexer
+
+  # Set on the corpus-wide backfill so it does not publish one reviewer event per record.
+  attr_accessor :skip_reviewer_event
+
+  ADMIN_ONLY_FIELDS = %i[media_ownership_transfer reviews_object_media_downloads].freeze
 
   def search_builder_class
     Morphosource::Collections::MediaSearchBuilder
@@ -103,6 +109,30 @@ class OrganizationCollection < Collection
     managers&.map(&:user_key) || []
   end
 
+  # @return [Boolean] the stored value, or true when it has never been written
+  def managers_are_download_reviewers
+    value = super
+    value.nil? ? true : value
+  end
+
+  def managers_are_download_reviewers=(value)
+    super(ActiveModel::Type::Boolean.new.cast(value))
+  end
+
+  def reviews_object_media_downloads=(value)
+    super(ActiveModel::Type::Boolean.new.cast(value))
+  end
+
+  # @return [Array<String>] User ms_ids
+  def download_reviewers
+    ms_ids = if managers_are_download_reviewers
+               managers.map(&:ms_id)
+             else
+               resolved_custom_download_reviewers.presence || managers.map(&:ms_id)
+             end
+    ms_ids.reject(&:blank?).uniq
+  end
+
   # used by ProxyDepositRequest
   def self.primary_key
     "id"
@@ -148,6 +178,23 @@ class OrganizationCollection < Collection
   end
 
   private
+
+  # ActiveFedora saves publish no Hyrax events, so the model publishes its own.
+  def publish_reviewers_updated
+    return if skip_reviewer_event
+    return unless managers_are_download_reviewers_changed? ||
+                  (!managers_are_download_reviewers && custom_download_reviewer_users_changed?)
+
+    Hyrax.publisher.publish('organization.reviewers.updated', organization_id: id)
+  rescue StandardError => e
+    Rails.logger.error("OrganizationCollection: failed to publish organization.reviewers.updated " \
+                       "for #{id}; its media's cached reviewers are now stale. #{e.class}: #{e.message}")
+    Sentry.capture_exception(e, extra: { organization_id: id })
+  end
+
+  def resolved_custom_download_reviewers
+    User.where(ms_id: Array(custom_download_reviewer_users).reject(&:blank?)).pluck(:ms_id)
+  end
 
   def create_organization_project
     project = example_organization_project

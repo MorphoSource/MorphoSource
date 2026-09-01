@@ -49,8 +49,11 @@ module Morphosource
           redirect_back_organization and return
         end
 
-        update_organization
-        flash[:notice] = "Permissions updated."
+        if update_organization
+          flash[:notice] = "Permissions updated."
+        else
+          flash[:error] = "Permissions not updated. #{@organization.errors.full_messages.to_sentence}"
+        end
         redirect_back_organization
       end
 

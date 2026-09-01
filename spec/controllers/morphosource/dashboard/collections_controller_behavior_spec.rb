@@ -3,6 +3,31 @@ require 'rails_helper'
 
 RSpec.describe Morphosource::Dashboard::CollectionsControllerBehavior, type: :controller do
 
+  describe 'administrator-controlled fields in collection_params' do
+    subject { Morphosource::Dashboard::Collections::OrganizationCollectionsController.new }
+
+    let(:params) do
+      ActionController::Parameters.new(
+        'organization_collection' => { 'title' => 'org title', 'media_ownership_transfer' => 'true' }
+      )
+    end
+
+    before { allow(subject).to receive(:params).and_return(params) }
+
+    it 'drops them when the user is not an admin' do
+      allow(subject).to receive(:current_user).and_return(FactoryBot.create(:contributor))
+
+      expect(subject.send(:collection_params).keys).not_to include('media_ownership_transfer')
+      expect(subject.send(:collection_params)['title']).to match_array(['org title'])
+    end
+
+    it 'keeps them for an admin' do
+      allow(subject).to receive(:current_user).and_return(FactoryBot.create(:admin))
+
+      expect(subject.send(:collection_params)['media_ownership_transfer']).to be_present
+    end
+  end
+
   describe 'collection type specific methods' do
     before do
       allow(subject).to receive(:params).and_return(params)

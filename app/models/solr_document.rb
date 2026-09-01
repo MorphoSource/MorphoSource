@@ -99,6 +99,10 @@ class SolrDocument
     self['title_tesim']
   end
 
+  def download_reviewers
+    self['download_reviewers_ssim'] || []
+  end
+
   def creator
     self['creator_tesim']
   end

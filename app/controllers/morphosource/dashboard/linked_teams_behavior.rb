@@ -91,25 +91,33 @@ module Morphosource
         end
       end
 
+      # @return [Boolean] false when the organization rejected the update
       def update_organization
         @params = params[:organization]
         ensure_blank_values
         create_attachment_if_needed
         format_update_params
         correct_empty_str_arrays
-        check_proxy_deposit_requests
+        reject_admin_only_fields
+        # Read before the save, which overwrites the stored data_manager it compares against.
+        transfers = pending_transfer_requests
         @params.permit!
-        @organization.update(@params)
+        return false unless @organization.update(@params)
+
+        UpdateOrganizationTransferRequestsJob.perform_later(*transfers) if transfers
+        true
       end
 
-      def check_proxy_deposit_requests
+      # @return [Array(Array<ProxyDepositRequest>, User), nil]
+      def pending_transfer_requests
         return unless (@params["data_manager"].present? && @organization.data_manager.present?)
         return if @params["data_manager"].first == @organization.data_manager.first
         old_manager = User.find_by_user_key(@organization.data_manager.first)
         new_manager = User.find_by_user_key(@params["data_manager"].first)
-        if (requests_to_handle = ProxyDepositRequest.where(organization_transfer: true, receiving_user_id: old_manager.id, status: 'pending')).present?
-          UpdateOrganizationTransferRequestsJob.perform_later(requests_to_handle.to_ary, new_manager)
-        end
+        requests_to_handle = ProxyDepositRequest.where(organization_transfer: true, receiving_user_id: old_manager.id, status: 'pending')
+        return if requests_to_handle.blank?
+
+        [requests_to_handle.to_ary, new_manager]
       end
 
       def ensure_blank_values
@@ -148,6 +156,12 @@ module Morphosource
         end
       end
 
+      def reject_admin_only_fields
+        return if current_user&.admin?
+
+        OrganizationCollection::ADMIN_ONLY_FIELDS.each { |field| @params.delete(field) }
+      end
+
       def format_download_permission
         if @params[:visibility].present?
           @params[:download_permission] = @params[:visibility]
@@ -168,10 +182,10 @@ module Morphosource
          :agreement_uri,
          :city,
          :country,
+         :custom_download_reviewer_users,
          :data_manager,
          :description,
          :download_permission,
-         :download_reviewer,
          :institution_name,
          :license,
          :license_blank,

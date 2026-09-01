@@ -59,8 +59,14 @@ module FreyjaWithWings
             ActiveFedora::SolrService.count("member_ids_ssim:#{new_resource.id.to_s}") > 0 &&
             ActiveFedora::SolrService.count("id:#{new_resource.id.to_s}") > 0
           )
-            af_object = ActiveFedora::Base.find(new_resource.id.to_s)
-            af_object.member_of.select { |p| p.is_a?(ActiveFedora::Base) }.each do |parent|
+            # Solr can be briefly stale relative to Fedora, so the count check above doesn't
+            # guarantee the object still exists by the time we look it up here.
+            af_object = begin
+                          ActiveFedora::Base.find(new_resource.id.to_s)
+                        rescue ActiveFedora::ObjectNotFoundError
+                          nil
+                        end
+            af_object&.member_of&.select { |p| p.is_a?(ActiveFedora::Base) }&.each do |parent|
               parent.ordered_members.delete(af_object)
               parent.members.delete(af_object)
               parent.valkyrie_member_ids = (parent.valkyrie_member_ids.to_a + [new_resource.id.to_s]).uniq
@@ -91,11 +97,19 @@ module FreyjaWithWings
         ActiveFedora::SolrService.count("id:#{resource.id.to_s}") > 0 &&
         (parents = ActiveFedora::Base.where(valkyrie_member_ids_ssim: resource.id.to_s)).present?
       )
-        af_object = ActiveFedora::Base.find(resource.id.to_s)
-        parents.each do |parent|
-          parent.valkyrie_member_ids = (parent.valkyrie_member_ids.to_a - [resource.id.to_s]).uniq
-          parent.ordered_members << af_object unless parent.ordered_members.include?(af_object)
-          parent.save!
+        # Solr can be briefly stale relative to Fedora, so the count check above doesn't
+        # guarantee the object still exists by the time we look it up here.
+        af_object = begin
+                      ActiveFedora::Base.find(resource.id.to_s)
+                    rescue ActiveFedora::ObjectNotFoundError
+                      nil
+                    end
+        af_object&.tap do |obj|
+          parents.each do |parent|
+            parent.valkyrie_member_ids = (parent.valkyrie_member_ids.to_a - [resource.id.to_s]).uniq
+            parent.ordered_members << obj unless parent.ordered_members.include?(obj)
+            parent.save!
+          end
         end
       end
 

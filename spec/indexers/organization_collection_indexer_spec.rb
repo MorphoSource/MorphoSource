@@ -112,4 +112,66 @@ RSpec.describe OrganizationCollectionIndexer do
     expect(solr_document['ark_ssim']).to match_array(organization.ark)
     expect(solr_document['ark_tesim']).to match_array(organization.ark)
   end
+
+  describe 'reviews_object_media_downloads' do
+    it 'writes the flag under the suffixed boolean key' do
+      organization.reviews_object_media_downloads = true
+
+      expect(solr_document['reviews_object_media_downloads_bsi']).to be(true)
+    end
+
+    it 'writes nil when the flag has never been set' do
+      expect(solr_document['reviews_object_media_downloads_bsi']).to be_nil
+    end
+  end
+
+  describe 'managers_are_download_reviewers' do
+    it 'writes the flag under the suffixed boolean key' do
+      organization.managers_are_download_reviewers = false
+
+      expect(solr_document['managers_are_download_reviewers_bsi']).to be(false)
+    end
+
+    it 'writes true when the flag has never been set' do
+      expect(solr_document['managers_are_download_reviewers_bsi']).to be(true)
+    end
+  end
+
+  describe 'custom_download_reviewer_users' do
+    it 'indexes the ms_ids as strings' do
+      organization.custom_download_reviewer_users = ['2956', 'f95e50']
+
+      expect(solr_document['custom_download_reviewer_users_ssim']).to match_array(['2956', 'f95e50'])
+    end
+
+    it 'indexes nothing when no custom reviewers are named' do
+      expect(solr_document['custom_download_reviewer_users_ssim']).to be_empty
+    end
+  end
+
+  describe 'download_reviewers' do
+    it 'indexes the resolved reviewer ms_ids' do
+      expect(solr_document['download_reviewers_ssim']).to eq([user.ms_id])
+    end
+
+    it 'de-duplicates repeated managers' do
+      organization.managers << user
+      organization.managers_group.save!
+
+      expect(solr_document['download_reviewers_ssim']).to eq([user.ms_id])
+    end
+
+    # A real User row: dead ms_ids are dropped, so a fabricated one would fall back to managers.
+    it 'indexes the custom reviewers in custom mode' do
+      reviewer = FactoryBot.create(:contributor)
+      organization.managers_are_download_reviewers = false
+      organization.custom_download_reviewer_users = [reviewer.ms_id]
+
+      expect(solr_document['download_reviewers_ssim']).to eq([reviewer.ms_id])
+    end
+  end
+
+  it 'still indexes the stored download_reviewer, which this deploy does not touch' do
+    expect(solr_document['download_reviewer_tesim']).to match_array(organization.download_reviewer)
+  end
 end

@@ -19,5 +19,17 @@ namespace :morphosource do
 
       exporter.summary_lines.each { |line| puts line }
     end
+
+    desc 'Check the backfilled reviewer fields against the stored download_reviewer on every ' \
+         'OrganizationCollection, and the new download_reviewers getter against ' \
+         'media_download_reviewers (read-only). Only meaningful until ticket 5 folds the two ' \
+         'together. Usage: rake morphosource:download_reviewer:verify_organizations'
+    task verify_organizations: :environment do
+      verification = Morphosource::OrganizationReviewerVerification.new
+      verification.call
+
+      verification.summary_lines.each { |line| puts line }
+      abort('verify_organizations found organizations the backfill did not copy correctly') unless verification.verified?
+    end
   end
 end

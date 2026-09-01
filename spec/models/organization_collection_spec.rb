@@ -51,6 +51,304 @@ RSpec.describe OrganizationCollection, type: :model do
     expect(subject).to be_valid
   end
 
+  describe 'download reviewer metadata' do
+    let(:reviewer)       { FactoryBot.create(:contributor) }
+    let(:other_reviewer) { FactoryBot.create(:contributor) }
+    let(:manager)        { FactoryBot.create(:contributor) }
+    let!(:organization)  { FactoryBot.create(:organization_collection, depositor: user.ms_id) }
+
+    describe '#managers_are_download_reviewers' do
+      it 'reads a never-written field as manager mode' do
+        expect(organization.managers_are_download_reviewers).to be(true)
+      end
+
+      it 'leaves a brand-new organization valid with the field never written' do
+        expect(organization).to be_valid
+      end
+
+      it 'reads a written false as custom mode' do
+        organization.managers_are_download_reviewers = false
+
+        expect(organization.managers_are_download_reviewers).to be(false)
+      end
+
+      it 'round-trips through a save' do
+        organization.managers_are_download_reviewers = false
+        organization.custom_download_reviewer_users = [reviewer.ms_id]
+        organization.save!
+
+        expect(organization.reload.managers_are_download_reviewers).to be(false)
+      end
+    end
+
+    describe 'boolean casting on assignment' do
+      it 'casts the string "false" to false' do
+        organization.managers_are_download_reviewers = 'false'
+
+        expect(organization.managers_are_download_reviewers).to be(false)
+      end
+
+      it 'casts the string "true" to true' do
+        organization.managers_are_download_reviewers = 'true'
+
+        expect(organization.managers_are_download_reviewers).to be(true)
+      end
+
+      it 'casts an empty string to nil, leaving the reader in manager mode' do
+        organization.managers_are_download_reviewers = ''
+
+        expect(organization.managers_are_download_reviewers).to be(true)
+      end
+
+      it 'casts reviews_object_media_downloads too' do
+        organization.reviews_object_media_downloads = 'false'
+
+        expect(organization.reviews_object_media_downloads).to be(false)
+      end
+
+      it 'leaves a never-assigned field unchanged' do
+        expect(organization.managers_are_download_reviewers_changed?).to be(false)
+      end
+    end
+
+    describe '#custom_download_reviewer_users' do
+      it 'stores multiple ms_ids' do
+        organization.custom_download_reviewer_users = [reviewer.ms_id, other_reviewer.ms_id]
+        organization.save!
+
+        expect(organization.reload.custom_download_reviewer_users)
+          .to match_array([reviewer.ms_id, other_reviewer.ms_id])
+      end
+    end
+
+    describe '#reviews_object_media_downloads' do
+      it 'stores a boolean' do
+        organization.reviews_object_media_downloads = true
+        organization.save!
+
+        expect(organization.reload.reviews_object_media_downloads).to be(true)
+      end
+    end
+
+    describe '#download_reviewer' do
+      it 'is still the stored property' do
+        organization.download_reviewer = [reviewer.ms_id]
+        organization.save!
+
+        expect(organization.reload.download_reviewer).to eq([reviewer.ms_id])
+      end
+    end
+
+    describe '#download_reviewers' do
+      def add_manager(u)
+        organization.managers << u
+        organization.managers_group.save!
+      end
+
+      context 'manager mode with a blank custom list' do
+        before do
+          add_manager(manager)
+          organization.managers_are_download_reviewers = true
+        end
+
+        it 'returns the manager ms_ids' do
+          expect(organization.download_reviewers).to eq([manager.ms_id])
+        end
+      end
+
+      context 'manager mode with a populated custom list' do
+        before do
+          add_manager(manager)
+          organization.managers_are_download_reviewers = true
+          organization.custom_download_reviewer_users = [reviewer.ms_id]
+        end
+
+        it 'returns the manager ms_ids -- manager mode overrides custom' do
+          expect(organization.download_reviewers).to eq([manager.ms_id])
+        end
+      end
+
+      context 'custom mode with a populated custom list' do
+        before do
+          add_manager(manager)
+          organization.managers_are_download_reviewers = false
+          organization.custom_download_reviewer_users = [reviewer.ms_id, other_reviewer.ms_id]
+        end
+
+        it 'returns the custom user ms_ids and not the managers' do
+          expect(organization.download_reviewers).to match_array([reviewer.ms_id, other_reviewer.ms_id])
+        end
+      end
+
+      context 'custom mode naming a mix of live and dead ms_ids' do
+        before do
+          add_manager(manager)
+          organization.managers_are_download_reviewers = false
+          organization.custom_download_reviewer_users = ['dead-ms-id', reviewer.ms_id]
+        end
+
+        it 'drops the ms_ids with no User row' do
+          expect(organization.download_reviewers).to eq([reviewer.ms_id])
+        end
+      end
+
+      context 'custom mode whose ms_ids are all dead' do
+        before do
+          add_manager(manager)
+          organization.managers_are_download_reviewers = false
+          organization.custom_download_reviewer_users = ['dead-ms-id', 'also-dead']
+        end
+
+        it 'falls back to the managers, as media_download_reviewers does' do
+          expect(organization.download_reviewers).to eq([manager.ms_id])
+        end
+      end
+
+      context 'custom mode whose ms_ids are all dead, with no managers' do
+        before do
+          organization.managers_are_download_reviewers = false
+          organization.custom_download_reviewer_users = ['dead-ms-id']
+        end
+
+        it 'returns an empty array' do
+          expect(organization.download_reviewers).to eq([])
+        end
+      end
+
+      context 'manager mode with no managers' do
+        it 'returns an empty array' do
+          expect(organization.download_reviewers).to eq([])
+        end
+      end
+
+      context 'reviews_object_media_downloads' do
+        before { add_manager(manager) }
+
+        it 'is ignored when true' do
+          organization.reviews_object_media_downloads = true
+
+          expect(organization.download_reviewers).to eq([manager.ms_id])
+        end
+
+        it 'is ignored when false' do
+          organization.reviews_object_media_downloads = false
+
+          expect(organization.download_reviewers).to eq([manager.ms_id])
+        end
+      end
+
+      it 'never returns an org_collection: token' do
+        add_manager(manager)
+
+        expect(organization.download_reviewers).to all(satisfy { |v| !v.to_s.start_with?('org_collection:') })
+      end
+
+      it 'has no setter' do
+        expect(organization).not_to respond_to(:download_reviewers=)
+      end
+    end
+
+    describe 'custom mode with no live reviewers' do
+      before do
+        add_manager(manager)
+        organization.managers_are_download_reviewers = false
+      end
+
+      def add_manager(u)
+        organization.managers << u
+        organization.managers_group.save!
+      end
+
+      it 'is valid with a list whose ms_ids are all dead' do
+        organization.custom_download_reviewer_users = ['dead-ms-id']
+
+        expect(organization).to be_valid
+      end
+
+      it 'is valid with an empty list' do
+        organization.custom_download_reviewer_users = []
+
+        expect(organization).to be_valid
+      end
+
+      it 'saves, and resolves to the managers' do
+        organization.custom_download_reviewer_users = ['dead-ms-id']
+        organization.save!
+
+        expect(organization.reload.download_reviewers).to eq([manager.ms_id])
+      end
+    end
+
+    describe '#publish_reviewers_updated' do
+      it 'publishes when the mode changes' do
+        expect(Hyrax.publisher)
+          .to receive(:publish).with('organization.reviewers.updated', organization_id: organization.id)
+
+        organization.managers_are_download_reviewers = false
+        organization.custom_download_reviewer_users = [reviewer.ms_id]
+        organization.save!
+      end
+
+      it 'publishes when the custom user list changes in custom mode' do
+        organization.managers_are_download_reviewers = false
+        organization.custom_download_reviewer_users = [reviewer.ms_id]
+        organization.save!
+
+        expect(Hyrax.publisher)
+          .to receive(:publish).with('organization.reviewers.updated', organization_id: organization.id)
+
+        organization.custom_download_reviewer_users = [reviewer.ms_id, other_reviewer.ms_id]
+        organization.save!
+      end
+
+      it 'publishes nothing when the custom user list changes in manager mode' do
+        expect(Hyrax.publisher).not_to receive(:publish).with('organization.reviewers.updated', any_args)
+
+        organization.custom_download_reviewer_users = [reviewer.ms_id]
+        organization.save!
+      end
+
+      it 'publishes nothing for an unrelated save' do
+        expect(Hyrax.publisher).not_to receive(:publish).with('organization.reviewers.updated', any_args)
+
+        organization.city = ['Durham']
+        organization.save!
+      end
+
+      it 'is suppressed by skip_reviewer_event' do
+        expect(Hyrax.publisher).not_to receive(:publish).with('organization.reviewers.updated', any_args)
+
+        organization.skip_reviewer_event = true
+        organization.managers_are_download_reviewers = false
+        organization.custom_download_reviewer_users = [reviewer.ms_id]
+        organization.save!
+      end
+
+      it 'does not fail the save when the publish itself raises' do
+        allow(Hyrax.publisher).to receive(:publish)
+          .with('organization.reviewers.updated', any_args).and_raise(Redis::CannotConnectError)
+
+        organization.managers_are_download_reviewers = false
+        organization.custom_download_reviewer_users = [reviewer.ms_id]
+
+        expect { organization.save! }.not_to raise_error
+      end
+
+      it 'reports a failed publish to Sentry' do
+        allow(Sentry).to receive(:capture_exception)
+        allow(Hyrax.publisher).to receive(:publish)
+          .with('organization.reviewers.updated', any_args).and_raise(Redis::CannotConnectError)
+
+        organization.managers_are_download_reviewers = false
+        organization.custom_download_reviewer_users = [reviewer.ms_id]
+        organization.save!
+
+        expect(Sentry).to have_received(:capture_exception)
+          .with(instance_of(Redis::CannotConnectError), extra: { organization_id: organization.id })
+      end
+    end
+  end
+
   describe 'collection_type' do
     it 'has the organization collection type' do
       expect(described_class.collection_type).to eq(organization_collection_type)

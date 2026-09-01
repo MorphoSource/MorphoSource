@@ -27,6 +27,19 @@ module Morphosource
         self['media_ownership_transfer_bsi']
       end
 
+      def reviews_object_media_downloads
+        self['reviews_object_media_downloads_bsi']
+      end
+
+      def managers_are_download_reviewers
+        value = self['managers_are_download_reviewers_bsi']
+        value.nil? ? true : value
+      end
+
+      def custom_download_reviewer_users
+        self['custom_download_reviewer_users_ssim'] || []
+      end
+
       def recordset_id
         self['recordset_id_ssim']
       end

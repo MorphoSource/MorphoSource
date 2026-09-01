@@ -1,3 +1,4 @@
+# Can be removed after the Morphosource download reviewer migration is complete and the rake task is no longer needed.
 # frozen_string_literal: true
 
 require 'rails_helper'
@@ -16,6 +17,160 @@ describe 'morphosource:download_reviewer rake tasks', type: :task do
 
   def rows
     CSV.read(path, headers: true)
+  end
+
+  describe 'morphosource:download_reviewer:verify_organizations' do
+    let(:reviewer) { FactoryBot.create(:contributor) }
+    let(:manager)  { FactoryBot.create(:contributor) }
+
+    let!(:organization) { FactoryBot.create(:organization_collection) }
+
+    subject(:verification) { Morphosource::OrganizationReviewerVerification.new }
+
+    def persist_mode(value)
+      organization.managers_are_download_reviewers_will_change!
+      organization.managers_are_download_reviewers = value
+      organization.save!
+    end
+
+    context 'manager mode, no stored reviewers' do
+      before do
+        organization.managers << manager
+        organization.managers_group.save!
+        persist_mode(true)
+      end
+
+      it 'reports zero diffs' do
+        summary = verification.call
+
+        expect(summary[:backfill_diffs]).to be_empty
+        expect(summary[:resolution_diffs]).to be_empty
+        expect(verification).to be_verified
+      end
+    end
+
+    context 'manager mode the migration never reached' do
+      before do
+        organization.managers << manager
+        organization.managers_group.save!
+      end
+
+      it 'reports the missing flag, which the resolution comparison cannot see' do
+        summary = verification.call
+
+        expect(summary[:resolution_diffs]).to be_empty
+        expect(summary[:backfill_diffs].first)
+          .to include(id: organization.id, expected_mode: true, actual_mode: nil)
+        expect(verification).not_to be_verified
+      end
+    end
+
+    context 'custom mode matching the stored reviewers' do
+      before do
+        organization.download_reviewer = [reviewer.ms_id]
+        organization.managers_are_download_reviewers = false
+        organization.custom_download_reviewer_users = [reviewer.ms_id]
+        organization.save!
+      end
+
+      it 'reports zero diffs' do
+        summary = verification.call
+
+        expect(summary[:backfill_diffs]).to be_empty
+        expect(summary[:resolution_diffs]).to be_empty
+      end
+    end
+
+    context 'a stored reviewer that resolves to no User' do
+      before do
+        organization.download_reviewer = ['org_collection:000200362']
+        organization.save!
+        organization.managers << manager
+        organization.managers_group.save!
+        persist_mode(true)
+      end
+
+      it 'reports zero diffs' do
+        summary = verification.call
+
+        expect(summary[:backfill_diffs]).to be_empty
+        expect(verification).to be_verified
+      end
+    end
+
+    context 'manager mode carrying a stale custom list' do
+      before do
+        organization.custom_download_reviewer_users = ['left-behind']
+        organization.save!
+        organization.managers << manager
+        organization.managers_group.save!
+        persist_mode(true)
+      end
+
+      it 'reports the field diff that the resolution comparison misses' do
+        summary = verification.call
+
+        expect(summary[:resolution_diffs]).to be_empty
+        expect(summary[:backfill_diffs].first)
+          .to include(id: organization.id, expected_mode: true, actual_mode: true,
+                      expected_users: [], actual_users: ['left-behind'])
+        expect(verification).not_to be_verified
+      end
+    end
+
+    context 'custom mode whose list is missing a stored reviewer' do
+      before do
+        organization.download_reviewer = [reviewer.ms_id]
+        organization.managers_are_download_reviewers = false
+        organization.custom_download_reviewer_users = []
+        organization.save!
+      end
+
+      it 'reports the missing user' do
+        summary = verification.call
+
+        expect(summary[:backfill_diffs].first)
+          .to include(expected_users: [reviewer.ms_id], actual_users: [])
+        expect(verification).not_to be_verified
+      end
+    end
+
+    context 'a stored reviewer the mode fields do not reflect' do
+      before do
+        organization.download_reviewer = [reviewer.ms_id]
+        organization.save!
+        organization.managers << manager
+        organization.managers_group.save!
+      end
+
+      it 'reports the organization and fails verification' do
+        summary = verification.call
+
+        expect(verification).not_to be_verified
+        expect(summary[:resolution_diffs].first)
+          .to include(id: organization.id, expected: [reviewer.ms_id], actual: [manager.ms_id])
+        expect(summary[:backfill_diffs].first)
+          .to include(expected_mode: false, actual_mode: nil, expected_users: [reviewer.ms_id])
+      end
+    end
+
+    it 'reports an id that is in Solr but gone from Fedora' do
+      allow(OrganizationCollection).to receive(:find)
+        .with(organization.id).and_raise(ActiveFedora::ObjectNotFoundError)
+
+      summary = verification.call
+
+      expect(summary[:unloadable]).to eq([organization.id])
+      expect(verification).not_to be_verified
+    end
+
+    it 'writes nothing' do
+      organization.download_reviewer = [reviewer.ms_id]
+      organization.save!
+
+      expect { verification.call }
+        .not_to change { organization.reload.managers_are_download_reviewers }
+    end
   end
 
   describe 'morphosource:download_reviewer:export' do

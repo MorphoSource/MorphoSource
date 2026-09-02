@@ -250,7 +250,7 @@ module Morphosource
               unavailable_media_ids << m.id
               next nil
             end
-            file_uri = file_set.original_file.uri
+            file_uri = original_file_uri(original_file)
           end
 
           attrs = {
@@ -277,8 +277,8 @@ module Morphosource
           (file_set = m.file_sets&.first).present? &&
           file_set.file_size&.first.present? &&
           file_set.crc32&.first.present? &&
-          file_set.original_file.uri.present? &&
-          file_set.original_file.original_name.present?
+          original_file_uri(file_set.original_file).present? &&
+          original_file_name(file_set.original_file).present?
         )
           return file_set
         else
@@ -292,13 +292,30 @@ module Morphosource
           (original_file = file_set.original_file).present? &&
           file_set.file_size&.first.present? &&
           file_set.crc32&.first.present? &&
-          original_file.original_name.present? &&
-          original_file.uri.present?
+          original_file_name(original_file).present? &&
+          original_file_uri(original_file).present?
         )
           return file_set, original_file
         else
           return nil, nil
         end
+      end
+
+      # Hydra::PCDM::File (AF-native) has #original_name/#uri; Hyrax::FileMetadata
+      # (Valkyrie) has #original_filename/#file_identifier instead.
+      def original_file_name(original_file)
+        original_file.respond_to?(:original_name) ? original_file.original_name : original_file.original_filename
+      end
+
+      def original_file_uri(original_file)
+        return original_file.uri if original_file.respond_to?(:uri)
+
+        # file_identifier isn't fetchable directly; shrine:// (S3) ids need a presigned URL,
+        # resolved through find_by since VersionedShrine stores content under a versioned key.
+        identifier = original_file.file_identifier.to_s
+        return identifier unless identifier.start_with?('shrine://')
+        versioned_key = Valkyrie::StorageAdapter.find_by(id: identifier).io.id
+        Valkyrie::StorageAdapter.find(:s3).shrine.url(versioned_key)
       end
 
       # Get FileSets from Media
@@ -582,7 +599,7 @@ module Morphosource
       end
 
       def output_filename(file_set, media_id)
-        file_name = file_set.original_file.original_name
+        file_name = original_file_name(file_set.original_file)
         if file_set.is_remote_backed? && !File.extname(file_name).present?
           file_name = file_set.label || ""
         end

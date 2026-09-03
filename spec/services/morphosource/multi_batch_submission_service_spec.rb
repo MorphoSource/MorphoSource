@@ -272,5 +272,43 @@ RSpec.describe Morphosource::MultiBatchSubmissionService do
       expect(fields['organization_transfer_on_publish']).to eq(true)
       expect(fields['preview_mode']).to eq('Interactive/Embeddable')
     end
+
+    # Reviewer Eligibility is not a media field. This service reads organization defaults
+    # directly and never sees a form, so it translates the flag itself.
+    context 'reviewer eligibility' do
+      def org_double(reviews:)
+        instance_double(
+          OrganizationCollection,
+          download_permission: nil, download_reviewer: nil, rights_holder: nil,
+          rights_statement: nil, license: nil, morphosource_use_agreement_type: nil,
+          permits_commercial_use: nil, permits_3d_use: nil,
+          required_archival_of_published_derivatives: nil, publisher: nil, preview_mode: nil,
+          agreement_uri: nil, member_of_collection_ids: nil, depositor: nil,
+          reviews_object_media_downloads: reviews
+        )
+      end
+
+      def fields_for(reviews:)
+        org = org_double(reviews: reviews)
+        allow(OrganizationCollection).to receive(:exists?).with('000200001').and_return(org)
+        allow(OrganizationCollection).to receive(:find).with('000200001').and_return(org)
+
+        service.send(:media_ownership_fields, '000200001')
+      end
+
+      it 'sets object_organization mode for an eligible organization' do
+        expect(fields_for(reviews: true)['download_reviewer_mode']).to eq('object_organization')
+      end
+
+      # ownership_value_available? treats a literal false as a value worth applying, so the
+      # key has to stay absent rather than carry false through to the media attributes.
+      it 'sets no mode for an ineligible organization' do
+        expect(fields_for(reviews: false)).not_to have_key('download_reviewer_mode')
+      end
+
+      it 'sets no mode when the flag was never written' do
+        expect(fields_for(reviews: nil)).not_to have_key('download_reviewer_mode')
+      end
+    end
   end
 end

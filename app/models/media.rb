@@ -666,7 +666,9 @@ class Media < Morphosource::Works::Base
   def owner_download_reviewers
     owner_id = Array(user_with_ownership).first
     return [] if owner_id.blank?
-    return [org_collection_token(owner_id)] if OrganizationCollection.find_by(id: owner_id).present?
+    # exists? rather than find_by: find_by reifies the collection from Fedora to answer a
+    # boolean, and this runs for every media indexed.
+    return [org_collection_token(owner_id)] if OrganizationCollection.exists?(owner_id)
 
     [owner_id]
   end

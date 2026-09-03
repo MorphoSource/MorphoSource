@@ -4,10 +4,10 @@ require 'rails_helper'
 
 RSpec.describe Hyrax::MediaForm do
 
-  let(:terms)                 { [:media_type, :x_spacing, :y_spacing, :z_spacing, :slice_thickness, :scale_bar, :unit, :map_type, :series_type, :identifier, :related_url, :part, :short_description, :side, :orientation, :description, :keyword, :identifier, :related_url, :creator, :date_created, :publisher, :representative_id, :thumbnail_id, :rendering_ids, :files, :visibility_during_embargo, :embargo_release_date, :visibility_after_embargo, :visibility_during_lease, :lease_expiration_date, :visibility_after_lease, :visibility, :ordered_member_ids, :in_works_ids, :member_of_collection_ids, :admin_set_id, :download_reviewer, :agreement_uri, :license, :morphosource_use_agreement_type, :required_archival_of_published_derivatives, :rights_statement, :permits_commercial_use, :permits_3d_use, :rights_holder, :funding, :publisher, :cite_as, :preview_mode, :remote_origin_url, :short_title, :custom_title_case_sensitive, :owner, :fileset_accessibility] }
+  let(:terms)                 { [:media_type, :x_spacing, :y_spacing, :z_spacing, :slice_thickness, :scale_bar, :unit, :map_type, :series_type, :identifier, :related_url, :part, :short_description, :side, :orientation, :description, :keyword, :identifier, :related_url, :creator, :date_created, :publisher, :representative_id, :thumbnail_id, :rendering_ids, :files, :visibility_during_embargo, :embargo_release_date, :visibility_after_embargo, :visibility_during_lease, :lease_expiration_date, :visibility_after_lease, :visibility, :ordered_member_ids, :in_works_ids, :member_of_collection_ids, :admin_set_id, :download_reviewer, :download_reviewer_mode, :agreement_uri, :license, :morphosource_use_agreement_type, :required_archival_of_published_derivatives, :rights_statement, :permits_commercial_use, :permits_3d_use, :rights_holder, :funding, :publisher, :cite_as, :preview_mode, :remote_origin_url, :short_title, :custom_title_case_sensitive, :owner, :fileset_accessibility] }
   let(:required_fields)       { [:media_type] }
   let(:single_valued_fields)  { [:short_description, :description, :media_type, :cite_as, :legacy_media_file_id, :legacy_media_group_id, :uuid, :ark, :doi, :available, :x_spacing, :y_spacing, :z_spacing, :slice_thickness, :series_type, :unit, :identifier, :related_url, :agreement_uri, :license, :rights_statement, :permits_3d_use, :permits_commercial_use, :required_archival_of_published_derivatives, :morphosource_use_agreement_type, :preview_mode, :date_created, :short_title, :custom_title_case_sensitive] }
-  let(:permissions_terms)     { [:download_reviewer, :agreement_uri, :license, :rights_statement, :permits_commercial_use, :permits_3d_use, :rights_holder, :funding, :publisher, :cite_as, :required_archival_of_published_derivatives, :morphosource_use_agreement_type, :preview_mode] }
+  let(:permissions_terms)     { [:download_reviewer, :download_reviewer_mode, :agreement_uri, :license, :rights_statement, :permits_commercial_use, :permits_3d_use, :rights_holder, :funding, :publisher, :cite_as, :required_archival_of_published_derivatives, :morphosource_use_agreement_type, :preview_mode] }
   let(:other_terms)           { [:x_spacing, :y_spacing, :z_spacing, :slice_thickness, :scale_bar, :unit, :map_type, :series_type, :identifier, :related_url, :part, :short_description, :side, :orientation, :description, :keyword, :identifier, :related_url, :creator, :date_created, :remote_origin_url, :short_title, :custom_title_case_sensitive, :owner, :fileset_accessibility] }
 
 
@@ -41,6 +41,27 @@ RSpec.describe Hyrax::MediaForm do
   describe '.build_permitted_params' do
     it 'includes tags' do
       expect(described_class.build_permitted_params).to include(:tags)
+    end
+  end
+
+  describe 'download_reviewer_mode' do
+    # The organization's Reviewer Eligibility default reached the creation form's JSON but
+    # never the created media, because the field was not a permitted term and
+    # model_attributes discarded it.
+    it 'survives model_attributes' do
+      attributes = described_class.model_attributes(
+        ActionController::Parameters.new(download_reviewer_mode: 'object_organization')
+      )
+
+      expect(attributes['download_reviewer_mode']).to eq('object_organization')
+    end
+
+    # multiple: false on the model, so it must not be array-wrapped. single_valued_fields is
+    # for the opposite shape -- multivalued in the model, single in the form -- and putting
+    # this field there would hand an Array to a singular property.
+    it 'is permitted as a scalar rather than array-wrapped' do
+      expect(described_class.build_permitted_params).to include(:download_reviewer_mode)
+      expect(described_class.single_valued_fields).not_to include(:download_reviewer_mode)
     end
   end
 end

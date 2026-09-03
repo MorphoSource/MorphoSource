@@ -126,8 +126,10 @@ module Morphosource
         index.as :stored_sortable
       end
 
-      # User ms_ids of this record's own Download Reviewers. Indexed by MediaIndexer.
-      property :record_download_reviewer_users, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/recordDownloadReviewerUsers"), multiple: true
+      # User ms_ids of this record's own Download Reviewers.
+      property :record_download_reviewer_users, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/recordDownloadReviewerUsers"), multiple: true do |index|
+        index.as :symbol
+      end
 
       # -- Management of File Visibility/Download/View --
       # -- Default settings can be set by organization linked team --

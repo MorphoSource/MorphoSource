@@ -751,6 +751,18 @@ describe 'description attachment methods' do
         it 'returns a token for the owning organization' do
           expect(media.download_reviewers).to eq([token_for(organization)])
         end
+
+        # find_by reifies the collection from Fedora (Collection.find_by is where(...).take,
+        # and SolrHit#reify is model.find(id)) purely to answer a boolean. This runs for
+        # every media indexed.
+        it 'does not load the organization from Fedora to identify it' do
+          # Create first: indexing on create calls owner_class, which runs its own find_by.
+          media
+
+          expect(OrganizationCollection).not_to receive(:find_by)
+
+          media.download_reviewers
+        end
       end
 
       context 'object_organization mode' do

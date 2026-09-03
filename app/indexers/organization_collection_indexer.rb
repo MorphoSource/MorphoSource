@@ -3,9 +3,8 @@ class OrganizationCollectionIndexer < Hyrax::CollectionWithBasicMetadataIndexer
   def generate_solr_document
     super.tap do |solr_doc|
       solr_doc['media_ownership_transfer_bsi'] = object.media_ownership_transfer
-      solr_doc['reviews_object_media_downloads_bsi'] = object.reviews_object_media_downloads
-      solr_doc['managers_are_download_reviewers_bsi'] = object.managers_are_download_reviewers
-      solr_doc['custom_download_reviewer_users_ssim'] = object.custom_download_reviewer_users
+      # download_reviewers is a computed getter, not a property, so it has no index block of its
+      # own. The three reviewer properties are indexed from their declarations.
       solr_doc['download_reviewers_ssim'] = object.download_reviewers
       solr_doc['generic_type_sim'] = ['Collection']
       solr_doc['title_ssi'] = object.title.first

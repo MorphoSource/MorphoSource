@@ -11,6 +11,7 @@ class Media < Morphosource::Works::Base
   before_update :record_original_member_of_public_collection_ids, :record_original_related_media_ids, :controlled_value_filter, :date_filter
   before_validation :normalize_download_reviewer
   after_update :update_ark_status, :update_cartitem_reviewer, :check_for_organization_transfer
+  after_update :publish_reviewers_updated
   before_destroy :prevent_doi_deletion
   before_destroy :record_original_objects
   after_destroy :reindex_physical_objects, :publish_destroyed_event
@@ -29,6 +30,8 @@ class Media < Morphosource::Works::Base
   validates :title, presence: { message: 'Your work must have a title.' }
 
   attr_accessor :download_permission, :tags, :delete_thumbnail, :generated_thumbnail
+  # Set on the corpus-wide backfill so it does not publish one reviewer event per record.
+  attr_accessor :skip_reviewer_event
   after_destroy :delete_ark_if_reserved, :delete_fund_code_media_associations
 
   include Morphosource::MediaMetadata
@@ -37,6 +40,9 @@ class Media < Morphosource::Works::Base
   # This must be included at the end, because it finalizes the metadata
   # schema (by adding accepts_nested_attributes)
   include ::Hyrax::BasicMetadata
+
+  validates :download_reviewer_mode, inclusion: { in: DOWNLOAD_REVIEWER_MODES }
+  validate :object_organization_mode_is_eligible
 
   def self.parent_works(work)
     if work.in_works.empty?
@@ -97,6 +103,36 @@ class Media < Morphosource::Works::Base
 
   def normalize_download_reviewer
     self.download_reviewer = self.download_reviewer.map { |x| x.split(',') }.flatten
+  end
+
+  # @return [String] the persisted mode, or 'record_users' when nothing has been written.
+  #   The reader is overridden rather than the attribute defaulted so that
+  #   download_reviewer_mode_was still reports the persisted nil and the first transition
+  #   into 'object_organization' is detectable.
+  def download_reviewer_mode
+    super.presence || 'record_users'
+  end
+
+  # This media's Reviewer Identity (see CONTEXT.md): User ms_ids, or one
+  # "org_collection:<id>" token per OrganizationCollection that reviews on its behalf.
+  #
+  # Organizations are deliberately *not* resolved into Users here. Keeping the token in the
+  # index means a change to an organization's managers does not require reindexing every
+  # media it reviews. Morphosource::DownloadReviewerResolver performs Reviewer Resolution.
+  #
+  # Reviewer Eligibility (reviews_object_media_downloads) is never consulted: it is checked
+  # once, when the mode changes, so that Grandfathering holds.
+  #
+  # @return [Array<String>] User ms_ids and/or org_collection: tokens
+  def download_reviewers
+    if download_reviewer_mode == 'object_organization'
+      return organizations.map { |org| org_collection_token(org.id) }.uniq
+    end
+
+    record_users = Array(record_download_reviewer_users).reject(&:blank?)
+    return record_users.uniq if record_users.present?
+
+    owner_download_reviewers
   end
 
   # Generate a formatted Media work title from work attributes, using part, media_type, and modality
@@ -621,4 +657,57 @@ class Media < Morphosource::Works::Base
       }
     end
 
+  # The owner stands in for the record's reviewers when it names none of its own. It holds
+  # either a User ms_id or an OrganizationCollection id, so an org-owned media routes to that
+  # organization rather than nowhere.
+  def owner_download_reviewers
+    owner_id = Array(user_with_ownership).first
+    return [] if owner_id.blank?
+    return [org_collection_token(owner_id)] if OrganizationCollection.find_by(id: owner_id).present?
+
+    [owner_id]
+  end
+
+  def org_collection_token(organization_id)
+    "#{Morphosource::MediaMetadata::ORG_COLLECTION_TOKEN_PREFIX}#{organization_id}"
+  end
+
+  # Entering 'object_organization' mode requires every one of the media's Object
+  # Organizations to be eligible, not merely one: a media shared between a paying and a
+  # non-paying organization must not silently drop the second from review.
+  #
+  # Checked only on the transition. The walk is expensive — physical_objects traverses
+  # ancestors, and PhysicalObjectBehavior#organizations loads each organization from Fedora —
+  # and re-checking later would fail an unrelated edit on a record that was valid a moment
+  # earlier, contradicting Grandfathering. Reading media_organization_id_ssim from Solr would
+  # be cheaper, but a stale index would silently grant eligibility.
+  #
+  # An empty set passes: at create time the ImagingEvent parent may not be linked yet. The
+  # submission path checks the organization it already holds (SubmissionsController).
+  def object_organization_mode_is_eligible
+    return unless download_reviewer_mode_changed?
+    return unless download_reviewer_mode == 'object_organization'
+
+    # try: physical objects may still resolve to the deprecated Organization model, which has
+    # neither the flag nor a display_name and is therefore never eligible.
+    ineligible = organizations.reject { |org| org.try(:reviews_object_media_downloads) }
+    return if ineligible.empty?
+
+    names = ineligible.map { |org| org.try(:display_name) || org.title&.first }.compact
+    errors.add(:download_reviewer_mode,
+               "cannot be set to the object organization: #{names.to_sentence} " \
+               "#{ineligible.one? ? 'does' : 'do'} not review download requests for media of their objects")
+  end
+
+  # ActiveFedora saves publish no Hyrax events, so the model publishes its own.
+  def publish_reviewers_updated
+    return if skip_reviewer_event
+    return unless download_reviewer_mode_changed? || record_download_reviewer_users_changed?
+
+    Hyrax.publisher.publish('media.reviewers.updated', media_id: id)
+  rescue StandardError => e
+    Rails.logger.error("Media: failed to publish media.reviewers.updated for #{id}; " \
+                       "its cart items' cached reviewers are now stale. #{e.class}: #{e.message}")
+    Sentry.capture_exception(e, extra: { media_id: id })
+  end
 end

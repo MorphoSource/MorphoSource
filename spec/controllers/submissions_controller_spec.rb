@@ -281,6 +281,56 @@ RSpec.describe SubmissionsController, type: :controller do
         )
       end
     end
+
+    # The create-time Reviewer Eligibility gate. It runs here rather than on the Media
+    # validation because that validation walks the new media's ancestors, which the actor
+    # stack may not have linked yet, so an empty set would pass vacuously.
+    context 'with an organization collection that reviews its objects\' media downloads' do
+      let(:user)        { FactoryBot.create(:contributor) }
+      let(:form_params) { { organization_id: organization.id } }
+      let(:organization) do
+        FactoryBot.create(:organization_collection,
+                          title: ['Reviewing Org'],
+                          depositor: user.ms_id,
+                          reviews_object_media_downloads: eligible)
+      end
+
+      before { allow(subject).to receive(:find_ancestor_organization).and_return(organization) }
+
+      context 'when the organization is eligible' do
+        let(:eligible) { true }
+
+        it 'defaults the new media to object_organization mode' do
+          post :organization_default_media_fields, params: form_params
+
+          default_fields = JSON.parse(response.body)['default_fields']
+          expect(default_fields['download_reviewer_mode']).to eq('object_organization')
+          expect(default_fields).not_to have_key('reviews_object_media_downloads')
+        end
+      end
+
+      context 'when the organization is not eligible' do
+        let(:eligible) { false }
+
+        it 'sets no mode, and does not raise on the scalar flag' do
+          post :organization_default_media_fields, params: form_params
+
+          default_fields = JSON.parse(response.body)['default_fields']
+          expect(default_fields).not_to have_key('download_reviewer_mode')
+          expect(default_fields).not_to have_key('reviews_object_media_downloads')
+        end
+      end
+
+      context 'when the flag has never been written' do
+        let(:eligible) { nil }
+
+        it 'sets no mode' do
+          post :organization_default_media_fields, params: form_params
+
+          expect(JSON.parse(response.body)['default_fields']).not_to have_key('download_reviewer_mode')
+        end
+      end
+    end
   end
 
   describe '#save_data' do

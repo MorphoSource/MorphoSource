@@ -24,9 +24,9 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['download_access_person_ssim'] = object.download_users
       solr_doc['download_reviewer_ssim'] = object.download_reviewer
       # Reviewer Identity: ms_ids and/or org_collection: tokens, not resolved Users.
+      # download_reviewers is a computed getter, not a property, so it has no index block of
+      # its own. The mode and record-users keys come from their property declarations.
       solr_doc['download_reviewers_ssim'] = object.download_reviewers
-      solr_doc['download_reviewer_mode_ssi'] = object.download_reviewer_mode
-      solr_doc['record_download_reviewer_users_ssim'] = object.record_download_reviewer_users
       solr_doc['owner_ssim'] = object.owner
       solr_doc['owner_type_ssi'] = object.owner_class.to_s
       solr_doc['user_with_ownership_ssi'] = object.user_with_ownership

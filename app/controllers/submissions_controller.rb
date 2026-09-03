@@ -845,6 +845,12 @@ class SubmissionsController < ApplicationController
       download_reviewer: format_reviewers_select2(organization.download_reviewer)
     ) if organization.download_reviewer.present?
 
+    # Reviewer Eligibility is checked here, on the organization already in hand, rather than
+    # left to Media's transition validation: that validation walks the new media's ancestors,
+    # which the actor stack may not have linked yet, and an empty set passes vacuously.
+    # The flag itself is not a media field, so it is translated rather than passed through.
+    fields[:download_reviewer_mode] = 'object_organization' if fields.delete(:reviews_object_media_downloads)
+
     fields
   end
 

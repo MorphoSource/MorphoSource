@@ -665,4 +665,243 @@ describe 'description attachment methods' do
       expect(media.agreement_attachment).to eq(media.agreement_attachment_url)
     end
   end
+
+  describe 'download reviewer metadata' do
+    let(:owner_user)      { FactoryBot.create(:contributor) }
+    let(:reviewer)        { FactoryBot.create(:contributor) }
+    let(:other_reviewer)  { FactoryBot.create(:contributor) }
+    let(:media)           { FactoryBot.create(:media, owner: owner_user.ms_id, depositor: owner_user.ms_id) }
+    let(:organization) do
+      FactoryBot.create(:organization_collection,
+                        title: ['Eligible Org'],
+                        depositor: owner_user.ms_id,
+                        reviews_object_media_downloads: true)
+    end
+
+    def token_for(organization)
+      "org_collection:#{organization.id}"
+    end
+
+    describe 'the download_reviewer_mode declaration' do
+      # Asserted directly because a wrong declaration has no visible symptom: on a multivalued
+      # ActiveFedora property _was and _change return the new value, so a transition from an
+      # unset mode to object_organization would be undetectable.
+      it 'is single-valued' do
+        expect(Media.properties['download_reviewer_mode'].multiple?).to be false
+      end
+
+      it 'reads back a scalar rather than an array' do
+        media.download_reviewer_mode = 'object_organization'
+
+        expect(media.download_reviewer_mode).to eq('object_organization')
+      end
+    end
+
+    describe '#download_reviewer_mode' do
+      it "defaults to 'record_users' when nothing is stored" do
+        expect(media.download_reviewer_mode).to eq('record_users')
+      end
+
+      # ActiveFedora captures the prior value through the reader in attribute_will_change!, so
+      # overriding the reader also moves _was onto the default — it does not report the
+      # persisted nil. _changed? is unaffected, and it is what the eligibility validation and
+      # the publish hook both guard on, so the transition stays detectable.
+      it 'detects the first transition away from the default' do
+        media.download_reviewer_mode = 'object_organization'
+
+        expect(media.download_reviewer_mode_changed?).to be true
+        expect(media.download_reviewer_mode_was).to eq('record_users')
+      end
+
+      it 'is not dirtied by writing the default onto a record that never had one' do
+        media.download_reviewer_mode = 'record_users'
+
+        expect(media.download_reviewer_mode_changed?).to be false
+      end
+
+      it 'is valid when blank' do
+        expect(media).to be_valid
+      end
+
+      it 'is invalid when set to an unknown mode' do
+        media.download_reviewer_mode = 'everybody'
+
+        expect(media).not_to be_valid
+      end
+    end
+
+    describe '#download_reviewers' do
+      context 'record_users mode with a populated record list' do
+        it 'returns those ms_ids' do
+          media.record_download_reviewer_users = [reviewer.ms_id, other_reviewer.ms_id]
+
+          expect(media.download_reviewers).to match_array([reviewer.ms_id, other_reviewer.ms_id])
+        end
+      end
+
+      context 'record_users mode, blank record list, User owner' do
+        it "returns the owner's ms_id" do
+          expect(media.download_reviewers).to eq([owner_user.ms_id])
+        end
+      end
+
+      context 'record_users mode, blank record list, OrganizationCollection owner' do
+        let(:media) { FactoryBot.create(:media, owner: organization.id, depositor: owner_user.ms_id) }
+
+        it 'returns a token for the owning organization' do
+          expect(media.download_reviewers).to eq([token_for(organization)])
+        end
+      end
+
+      context 'object_organization mode' do
+        let(:other_organization) do
+          FactoryBot.create(:organization_collection,
+                            title: ['Second Org'],
+                            depositor: owner_user.ms_id,
+                            reviews_object_media_downloads: true)
+        end
+
+        before do
+          allow(media).to receive(:organizations).and_return([organization, other_organization])
+          media.download_reviewer_mode = 'object_organization'
+        end
+
+        it 'emits one token per Object Organization' do
+          expect(media.download_reviewers)
+            .to match_array([token_for(organization), token_for(other_organization)])
+        end
+
+        it 'ignores the record list' do
+          media.record_download_reviewer_users = [reviewer.ms_id]
+
+          expect(media.download_reviewers).not_to include(reviewer.ms_id)
+        end
+      end
+
+      it 'never reads reviews_object_media_downloads' do
+        allow(media).to receive(:organizations).and_return([organization])
+        media.download_reviewer_mode = 'object_organization'
+        expect(organization).not_to receive(:reviews_object_media_downloads)
+
+        media.download_reviewers
+      end
+
+      it 'has no setter' do
+        expect(media).not_to respond_to(:download_reviewers=)
+      end
+    end
+
+    describe 'object organization eligibility' do
+      let(:ineligible_organization) do
+        FactoryBot.create(:organization_collection, title: ['Ineligible Org'], depositor: owner_user.ms_id)
+      end
+
+      it 'permits the transition when every Object Organization is eligible' do
+        allow(media).to receive(:organizations).and_return([organization])
+        media.download_reviewer_mode = 'object_organization'
+
+        expect(media).to be_valid
+      end
+
+      it 'refuses the transition when any Object Organization is ineligible' do
+        allow(media).to receive(:organizations).and_return([organization, ineligible_organization])
+        media.download_reviewer_mode = 'object_organization'
+
+        expect(media).not_to be_valid
+        expect(media.errors[:download_reviewer_mode].join).to include('Ineligible Org')
+      end
+
+      it 'passes vacuously when no Object Organization is linked yet' do
+        allow(media).to receive(:organizations).and_return([])
+        media.download_reviewer_mode = 'object_organization'
+
+        expect(media).to be_valid
+      end
+
+      # The walk is expensive (ancestors, then a Fedora load per organization), so it must not
+      # run on an ordinary save.
+      it 'does not walk the graph when the mode has not changed' do
+        expect(media).not_to receive(:organizations)
+        media.title = ['a new title']
+
+        expect(media).to be_valid
+      end
+
+      it 'leaves a grandfathered record valid after its organization stops being eligible' do
+        allow(media).to receive(:organizations).and_return([organization])
+        media.download_reviewer_mode = 'object_organization'
+        media.save!
+
+        organization.reviews_object_media_downloads = false
+        media.title = ['edited after the organization stopped reviewing']
+
+        expect(media).to be_valid
+      end
+    end
+
+    describe '#publish_reviewers_updated' do
+      it 'publishes when the mode changes' do
+        allow(media).to receive(:organizations).and_return([organization])
+
+        expect(Hyrax.publisher).to receive(:publish).with('media.reviewers.updated', media_id: media.id)
+
+        media.download_reviewer_mode = 'object_organization'
+        media.save!
+      end
+
+      it 'publishes when the record user list changes' do
+        expect(Hyrax.publisher).to receive(:publish).with('media.reviewers.updated', media_id: media.id)
+
+        media.record_download_reviewer_users = [reviewer.ms_id]
+        media.save!
+      end
+
+      it 'publishes nothing for an unrelated save' do
+        expect(Hyrax.publisher).not_to receive(:publish).with('media.reviewers.updated', any_args)
+
+        media.title = ['a new title']
+        media.save!
+      end
+
+      it 'is suppressed by skip_reviewer_event' do
+        expect(Hyrax.publisher).not_to receive(:publish).with('media.reviewers.updated', any_args)
+
+        media.skip_reviewer_event = true
+        media.record_download_reviewer_users = [reviewer.ms_id]
+        media.save!
+      end
+
+      it 'does not fail the save when the publish itself raises' do
+        allow(Hyrax.publisher).to receive(:publish)
+          .with('media.reviewers.updated', any_args).and_raise(Redis::CannotConnectError)
+        media.record_download_reviewer_users = [reviewer.ms_id]
+
+        expect { media.save! }.not_to raise_error
+      end
+
+      it 'reports a failed publish to Sentry' do
+        allow(Sentry).to receive(:capture_exception)
+        allow(Hyrax.publisher).to receive(:publish)
+          .with('media.reviewers.updated', any_args).and_raise(Redis::CannotConnectError)
+
+        media.record_download_reviewer_users = [reviewer.ms_id]
+        media.save!
+
+        expect(Sentry).to have_received(:capture_exception)
+          .with(instance_of(Redis::CannotConnectError), extra: { media_id: media.id })
+      end
+    end
+
+    # This PR is additive: the stored download_reviewer still drives every read path.
+    describe 'existing records are unaffected' do
+      it 'resolves an existing-shaped media through MediaBehavior#reviewer exactly as before' do
+        media.download_reviewer = [reviewer.ms_id]
+        media.save!
+
+        expect(media.download_reviewer_mode).to eq('record_users')
+        expect(media.record_download_reviewer_users).to eq([])
+        expect(media.reviewer).to eq([reviewer.ms_id])
+      end
+    end
+  end
 end

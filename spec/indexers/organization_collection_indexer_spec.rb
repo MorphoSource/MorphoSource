@@ -144,8 +144,11 @@ RSpec.describe OrganizationCollectionIndexer do
       expect(solr_document['custom_download_reviewer_users_ssim']).to match_array(['2956', 'f95e50'])
     end
 
+    # Indexed from the property declaration, which omits the key entirely rather than writing
+    # an empty array. The Solr document is the same either way -- an empty array indexes to no
+    # field -- and Morphosource::Solr::OrganizationCollection reads it through `|| []`.
     it 'indexes nothing when no custom reviewers are named' do
-      expect(solr_document['custom_download_reviewer_users_ssim']).to be_empty
+      expect(solr_document['custom_download_reviewer_users_ssim']).to be_blank
     end
   end
 

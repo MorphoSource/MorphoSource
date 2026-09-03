@@ -106,9 +106,12 @@ class Media < Morphosource::Works::Base
   end
 
   # @return [String] the persisted mode, or 'record_users' when nothing has been written.
-  #   The reader is overridden rather than the attribute defaulted so that
-  #   download_reviewer_mode_was still reports the persisted nil and the first transition
-  #   into 'object_organization' is detectable.
+  #
+  # Overriding the reader, rather than writing a default into the attribute, avoids dirtying
+  # every record that never had one. Note that download_reviewer_mode_was then reports
+  # 'record_users' as well -- ActiveFedora captures the prior value through this reader -- so
+  # only _changed? distinguishes the unset -> 'object_organization' transition, and it is what
+  # object_organization_mode_is_eligible and publish_reviewers_updated guard on.
   def download_reviewer_mode
     super.presence || 'record_users'
   end

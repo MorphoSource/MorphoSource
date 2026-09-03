@@ -439,6 +439,7 @@ class SubmissionsController < ApplicationController
       if addl_params[:organization_transfer_on_publish].present?
         model_params.merge!({ organization_transfer_on_publish: addl_params[:organization_transfer_on_publish] })
       end
+      model_params = reject_ineligible_reviewer_mode(model_params)
       @media_create_params = model_params
 
     # the below cases are only required for temp show page instance object creation
@@ -811,10 +812,13 @@ class SubmissionsController < ApplicationController
   end
 
   def find_ancestor_organization
-    parent_list = params[:parent_media_list]
-    organization_id = params[:organization_id]
-    biological_specimen_id = params[:biological_specimen_id]
-    cultural_heritage_object_id = params[:cultural_heritage_object_id]
+    # The AJAX prefill sends these as top-level params; on create they arrive nested under
+    # :submission. Both routes must resolve the same organization, or the create-time
+    # eligibility gate below would reject a mode this controller itself prefilled.
+    parent_list = params[:parent_media_list] || @submission&.parent_media_list
+    organization_id = params[:organization_id] || @submission&.organization_id
+    biological_specimen_id = params[:biological_specimen_id] || @submission&.biological_specimen_id
+    cultural_heritage_object_id = params[:cultural_heritage_object_id] || @submission&.cultural_heritage_object_id
 
     organization = nil
 
@@ -852,6 +856,19 @@ class SubmissionsController < ApplicationController
     fields[:download_reviewer_mode] = 'object_organization' if fields.delete(:reviews_object_media_downloads)
 
     fields
+  end
+
+  # Reviewer Eligibility gate for a posted mode. download_reviewer_mode is a permitted form
+  # term, so it can arrive from the client, and Media's own validation cannot serve as the
+  # gate at create time: it walks the new media's ancestors, which the actor stack may not
+  # have linked yet, so an empty set passes vacuously and nothing re-checks afterwards.
+  # Check the organization the submission already holds instead.
+  def reject_ineligible_reviewer_mode(model_params)
+    return model_params unless model_params['download_reviewer_mode'] == 'object_organization'
+    # try: the deprecated Organization model has no such property and is never eligible.
+    return model_params if find_ancestor_organization.try(:reviews_object_media_downloads)
+
+    model_params.except('download_reviewer_mode')
   end
 
   def format_reviewers_select2(reviewers)

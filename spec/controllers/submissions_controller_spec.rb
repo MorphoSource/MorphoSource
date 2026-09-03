@@ -333,6 +333,56 @@ RSpec.describe SubmissionsController, type: :controller do
     end
   end
 
+  # download_reviewer_mode is a permitted form term, so a mode can arrive from the client
+  # rather than from an organization's defaults. Media's own validation cannot gate it at
+  # create time: it walks ancestors the actor stack may not have linked yet, so an empty set
+  # passes vacuously, and nothing re-checks afterwards.
+  describe '#reject_ineligible_reviewer_mode' do
+    let(:posted)  { ActionController::Parameters.new('download_reviewer_mode' => 'object_organization') }
+    let(:eligible) { nil }
+    let(:organization) do
+      FactoryBot.create(:organization_collection,
+                        title: ['Posting Org'],
+                        depositor: user.ms_id,
+                        reviews_object_media_downloads: eligible)
+    end
+
+    before { allow(subject).to receive(:find_ancestor_organization).and_return(organization) }
+
+    context 'when the organization is eligible' do
+      let(:eligible) { true }
+
+      it 'keeps the posted mode' do
+        result = subject.send(:reject_ineligible_reviewer_mode, posted)
+
+        expect(result['download_reviewer_mode']).to eq('object_organization')
+      end
+    end
+
+    context 'when the organization is not eligible' do
+      let(:eligible) { false }
+
+      it 'drops the posted mode' do
+        result = subject.send(:reject_ineligible_reviewer_mode, posted)
+
+        expect(result).not_to have_key('download_reviewer_mode')
+      end
+    end
+
+    it 'drops the posted mode when no organization resolves' do
+      allow(subject).to receive(:find_ancestor_organization).and_return(nil)
+
+      expect(subject.send(:reject_ineligible_reviewer_mode, posted)).not_to have_key('download_reviewer_mode')
+    end
+
+    it 'leaves record_users alone without resolving an organization' do
+      expect(subject).not_to receive(:find_ancestor_organization)
+      params = ActionController::Parameters.new('download_reviewer_mode' => 'record_users')
+
+      expect(subject.send(:reject_ineligible_reviewer_mode, params)['download_reviewer_mode']).to eq('record_users')
+    end
+  end
+
   describe '#save_data' do
     let(:form_params) { { submission: { 'raw_or_derived_media' => 'raw' } } }
 

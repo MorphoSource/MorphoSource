@@ -140,4 +140,52 @@ RSpec.describe BatchSubmissionsController, type: :controller do
     end
 
   end
+
+  # The batch path never reaches Hyrax::MediaForm, so neither its permitted-params filter nor
+  # SubmissionsController's eligibility gate applies -- these fields become media attributes
+  # directly. This is the only thing standing between a posted mode and a created media.
+  describe '#reject_ineligible_reviewer_mode' do
+    let(:eligible) { nil }
+    let(:organization) do
+      FactoryBot.create(:organization_collection,
+                        title: ['Batch Org'],
+                        reviews_object_media_downloads: eligible)
+    end
+    let(:posted) { { "download_reviewer_mode" => "object_organization", "visibility" => "open" } }
+
+    context 'when the organization is eligible' do
+      let(:eligible) { true }
+
+      it 'keeps the posted mode' do
+        result = controller.send(:reject_ineligible_reviewer_mode, posted, organization.id)
+
+        expect(result["download_reviewer_mode"]).to eq('object_organization')
+      end
+    end
+
+    context 'when the organization is not eligible' do
+      let(:eligible) { false }
+
+      it 'drops the posted mode and leaves the other fields alone' do
+        result = controller.send(:reject_ineligible_reviewer_mode, posted, organization.id)
+
+        expect(result).not_to have_key("download_reviewer_mode")
+        expect(result["visibility"]).to eq('open')
+      end
+    end
+
+    it 'drops the posted mode when the flag was never written' do
+      result = controller.send(:reject_ineligible_reviewer_mode, posted, organization.id)
+
+      expect(result).not_to have_key("download_reviewer_mode")
+    end
+
+    it 'leaves record_users alone without resolving an organization' do
+      expect(controller).not_to receive(:find_organization)
+      fields = { "download_reviewer_mode" => "record_users" }
+
+      expect(controller.send(:reject_ineligible_reviewer_mode, fields, '000200001'))
+        .to eq(fields)
+    end
+  end
 end

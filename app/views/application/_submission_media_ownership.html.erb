@@ -47,6 +47,14 @@
 
       <%= render_edit_field_partial('download_reviewer', f: f) %>
 
+      <%# Carries the organization's Reviewer Eligibility default into the created media.
+          This partial is shared by the single and batch submission flows, and the JS prefill
+          matches on the name suffix, so it serves media[...] and batch_submission[media][...]
+          alike. Hidden because the visible control belongs to ticket 9. Deliberately absent
+          from PermissionsHelper::MULTI_VALUE/SINGLE_VALUE: default_present? calls reject on
+          the value, which raises on this field's scalar String. %>
+      <%= f.hidden_field :download_reviewer_mode %>
+
       <div id="media_transfer_management" class="form-group row select media_transfer_management hide">
         <div class="col-6 showcase-label">
           <label class="col-form-label select optional" for="media_transfer_management">

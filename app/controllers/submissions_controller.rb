@@ -865,8 +865,7 @@ class SubmissionsController < ApplicationController
   # Check the organization the submission already holds instead.
   def reject_ineligible_reviewer_mode(model_params)
     return model_params unless model_params['download_reviewer_mode'] == 'object_organization'
-    # try: the deprecated Organization model has no such property and is never eligible.
-    return model_params if find_ancestor_organization.try(:reviews_object_media_downloads)
+    return model_params if object_organization_mode_allowed?(find_ancestor_organization)
 
     model_params.except('download_reviewer_mode')
   end

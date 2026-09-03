@@ -151,7 +151,9 @@ class BatchSubmissionsController < ApplicationController
     fund_code_id = request.params["batch_submission"]["fund_code"]
     modality = request.params["batch_submission"]["modality"]
     owner = request.params.dig("media","owner") || on_behalf_of&.ms_id || depositor.ms_id
-    media_ownership_fields = request.params["batch_submission"]["media"]
+    media_ownership_fields = reject_ineligible_reviewer_mode(
+      request.params["batch_submission"]["media"], organization_id
+    )
     media_ownership_fields["owner"] = owner
     media_ownership_fields["organization_transfer_on_publish"] = true if ( organization_media_transfer == :publication )
     @manifest_object = BatchSubmissionTools::Ms2Batch::Manifest.new(
@@ -169,6 +171,17 @@ class BatchSubmissionsController < ApplicationController
       device_id:device_id,
       media_ownership_fields:media_ownership_fields,
       modality:modality).to_h
+  end
+
+  # Reviewer Eligibility gate for a posted mode. This path never reaches Hyrax::MediaForm, so
+  # neither its permitted-params filter nor SubmissionsController's gate applies -- these
+  # fields become media attributes directly (media_manifest.rb). Check the posted mode against
+  # the organization the batch is already for.
+  def reject_ineligible_reviewer_mode(media_fields, organization_id)
+    return media_fields unless media_fields["download_reviewer_mode"] == 'object_organization'
+    return media_fields if object_organization_mode_allowed?(find_organization(organization_id))
+
+    media_fields.except("download_reviewer_mode")
   end
 
   def ingest

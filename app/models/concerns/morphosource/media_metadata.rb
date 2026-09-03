@@ -4,6 +4,13 @@ module Morphosource
   module MediaMetadata
     extend ActiveSupport::Concern
 
+    # Legal values of download_reviewer_mode.
+    DOWNLOAD_REVIEWER_MODES = %w[record_users object_organization].freeze
+
+    # Prefix marking an entry in download_reviewers as an OrganizationCollection id rather
+    # than a User ms_id. See Reviewer Identity in CONTEXT.md.
+    ORG_COLLECTION_TOKEN_PREFIX = 'org_collection:'.freeze
+
     included do
       # -- Core metadata --
 
@@ -105,6 +112,22 @@ module Morphosource
       property :pending_org_transfer, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/pendingOrgTransfer"), multiple: false do |index|
         index.as :stored_sortable
       end
+
+      # -- Download review --
+
+      # Which Reviewer Identity applies: 'record_users' (record_download_reviewer_users, or the
+      # media owner when those are blank) or 'object_organization' (the media's Object
+      # Organizations). Blank means 'record_users'; see the Media#download_reviewer_mode reader.
+      #
+      # multiple: false is required, not stylistic. On a multivalued ActiveFedora property
+      # _was and _change return the *new* value, because AF stores the live
+      # ActiveTriples::Relation by reference, so a transition could not be detected.
+      property :download_reviewer_mode, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/downloadReviewerMode"), multiple: false do |index|
+        index.as :stored_sortable
+      end
+
+      # User ms_ids of this record's own Download Reviewers. Indexed by MediaIndexer.
+      property :record_download_reviewer_users, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/recordDownloadReviewerUsers"), multiple: true
 
       # -- Management of File Visibility/Download/View --
       # -- Default settings can be set by organization linked team --

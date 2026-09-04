@@ -23,10 +23,6 @@ class MediaIndexer < Morphosource::WorkIndexer
       solr_doc['download_access_group_ssim'] = object.download_groups
       solr_doc['download_access_person_ssim'] = object.download_users
       solr_doc['download_reviewer_ssim'] = object.download_reviewer
-      # Reviewer Identity: ms_ids and/or org_collection: tokens, not resolved Users.
-      # download_reviewers is a computed getter, not a property, so it has no index block of
-      # its own. The mode and record-users keys come from their property declarations.
-      solr_doc['download_reviewers_ssim'] = object.download_reviewers
       solr_doc['owner_ssim'] = object.owner
       solr_doc['owner_type_ssi'] = object.owner_class.to_s
       solr_doc['user_with_ownership_ssi'] = object.user_with_ownership
@@ -119,6 +115,16 @@ class MediaIndexer < Morphosource::WorkIndexer
         catalog_number = nil
         occurrence_id = nil
       end
+
+      # Reviewer Identity: ms_ids and/or org_collection: tokens, not resolved Users.
+      # download_reviewers is a computed getter, not a property, so it has no index block of
+      # its own. The mode and record-users keys come from their property declarations.
+      #
+      # Set here rather than beside download_reviewer_ssim so the Object Organizations walked
+      # above can be handed over: object_organization mode would otherwise repeat the whole
+      # ancestor traversal, plus a Fedora load per organization, on every reindex. Nil when the
+      # media has no physical objects, and the getter walks for itself in that case.
+      solr_doc['download_reviewers_ssim'] = object.download_reviewers(@organizations)
 
       # add physical object facet
       solr_doc['media_physical_object_type_tesim'] = physical_object_type
@@ -251,11 +257,9 @@ class MediaIndexer < Morphosource::WorkIndexer
     end
   end
 
+  # Media#organizations is the same walk without the uniq, so it is the one implementation.
   def organizations
-    organizations = object.physical_objects.each_with_object([]) do |obj, orgs|
-      obj.organizations.each { |org| orgs << org }
-    end
-    organizations.uniq
+    object.organizations.uniq
   end
 
   def are_physical_objects(works)

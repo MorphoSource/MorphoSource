@@ -126,10 +126,15 @@ class Media < Morphosource::Works::Base
   # Reviewer Eligibility (reviews_object_media_downloads) is never consulted: it is checked
   # once, when the mode changes, so that Grandfathering holds.
   #
+  # @param object_organizations [Array, nil] this media's Object Organizations, when the caller
+  #   has already loaded them. MediaIndexer walks the same ancestors for its own keys and passes
+  #   the result rather than paying for a second walk; every other caller omits it. Consulted
+  #   only in object_organization mode, so record_users mode never walks either way.
   # @return [Array<String>] User ms_ids and/or org_collection: tokens
-  def download_reviewers
+  def download_reviewers(object_organizations = nil)
     if download_reviewer_mode == 'object_organization'
-      return organizations.map { |org| org_collection_token(org.id) }.uniq
+      orgs = object_organizations || organizations
+      return orgs.map { |org| org_collection_token(org.id) }.uniq
     end
 
     record_users = Array(record_download_reviewer_users).reject(&:blank?)

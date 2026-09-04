@@ -1,5 +1,5 @@
 This directory is generated automatically by `bin/uv-install` (run at Docker
-build time and on every container start via `bin/hyrax-entrypoint.sh`) and is
-gitignored. Do not commit files here.
+build time and as part of `db_migrate`'s command in `docker-compose.yml`) and
+is gitignored. Do not commit files here.
 
 See `CONTAINERS.md` for details.

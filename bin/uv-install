@@ -13,7 +13,7 @@ REPO="MorphoSource/universalviewer"
 
 TAG=$(tr -d '[:space:]' < "$VERSION_FILE")
 
-if [ -f "$MARKER_FILE" ] && [ "$(cat "$MARKER_FILE")" = "$TAG" ]; then
+if [ -f "$MARKER_FILE" ] && [ "$(cat "$MARKER_FILE")" = "$TAG" ] && [ -f "$UV_DIR/uv.html" ]; then
   exit 0
 fi
 

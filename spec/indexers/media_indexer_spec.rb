@@ -340,6 +340,38 @@ RSpec.describe MediaIndexer do
       expect(subject['download_reviewers_ssim']).to eq(["org_collection:#{organization.id}"])
       expect(subject['record_download_reviewer_users_ssim']).to match_array([reviewer.ms_id])
     end
+
+    # Driven through a real ancestor graph rather than a stubbed #organizations, because the
+    # thing under test is that the indexer's own walk is the one the getter uses.
+    context 'with a real Object Organization graph' do
+      let(:device)        { FactoryBot.create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
+      let(:specimen)      { FactoryBot.create(:biological_specimen, organization_id: [organization.id]) }
+      let(:imaging_event) do
+        FactoryBot.create(:imaging_event, title: ['imaging event'], ie_modality: device.modality,
+                                          physical_object_id: [specimen.id], device_id: [device.id.to_s])
+      end
+      let(:media) { Media.create(title: ['media']) }
+
+      before do
+        imaging_event.ordered_members << media
+        imaging_event.save!
+        media.download_reviewer_mode = 'object_organization'
+      end
+
+      it 'emits a token for the Object Organization' do
+        expect(subject['download_reviewers_ssim']).to eq(["org_collection:#{organization.id}"])
+      end
+
+      # physical_objects traverses ancestors and PhysicalObjectBehavior#organizations loads each
+      # organization from Fedora, so a second walk here would be paid on every reindex.
+      it 'walks the ancestors once, not once per key' do
+        allow(media).to receive(:organizations).and_call_original
+
+        described_class.new(media).generate_solr_document
+
+        expect(media).to have_received(:organizations).once
+      end
+    end
   end
 
   describe 'organization fields' do

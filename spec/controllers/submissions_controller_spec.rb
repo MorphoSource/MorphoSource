@@ -383,6 +383,28 @@ RSpec.describe SubmissionsController, type: :controller do
     end
   end
 
+  # The create-time eligibility gate calls this, so the value @submission carries has to be a
+  # single id: parent_media_list is comma-joined when several parents are selected, and
+  # Media.find raises on the whole list.
+  describe '#find_ancestor_organization' do
+    let(:organization) { FactoryBot.create(:organization_collection, title: ['Parent Org']) }
+    let(:parent)       { instance_double(Media, organizations: [organization]) }
+
+    it 'resolves the first parent when the submission names several' do
+      subject.instance_variable_set(:@submission, Submission.new(parent_media_list: 'aaa,bbb'))
+      expect(Media).to receive(:find).with('aaa').and_return(parent)
+
+      expect(subject.send(:find_ancestor_organization)).to eq(organization)
+    end
+
+    it 'resolves a single parent unchanged' do
+      subject.instance_variable_set(:@submission, Submission.new(parent_media_list: 'aaa'))
+      expect(Media).to receive(:find).with('aaa').and_return(parent)
+
+      expect(subject.send(:find_ancestor_organization)).to eq(organization)
+    end
+  end
+
   describe '#save_data' do
     let(:form_params) { { submission: { 'raw_or_derived_media' => 'raw' } } }
 

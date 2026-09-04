@@ -815,7 +815,12 @@ class SubmissionsController < ApplicationController
     # The AJAX prefill sends these as top-level params; on create they arrive nested under
     # :submission. Both routes must resolve the same organization, or the create-time
     # eligibility gate below would reject a mode this controller itself prefilled.
-    parent_list = params[:parent_media_list] || @submission&.parent_media_list
+    #
+    # parent_media_list is comma-joined when several parents are selected; the create path
+    # takes the first, matching :271. Multiple parent organizations are rare and handled case
+    # by case. The params branch is deliberately untouched -- it is the pre-existing AJAX
+    # route, and splitting there would change prefill behaviour beyond this PR.
+    parent_list = params[:parent_media_list] || @submission&.parent_media_list&.split(',')&.first
     organization_id = params[:organization_id] || @submission&.organization_id
     biological_specimen_id = params[:biological_specimen_id] || @submission&.biological_specimen_id
     cultural_heritage_object_id = params[:cultural_heritage_object_id] || @submission&.cultural_heritage_object_id

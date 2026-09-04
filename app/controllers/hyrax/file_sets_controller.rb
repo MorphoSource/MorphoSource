@@ -55,6 +55,7 @@ module Hyrax
     end
 
     # PATCH /concern/file_sets/:id
+    # @deprecated
     def update
       if attempt_update
         after_update_response
@@ -78,12 +79,19 @@ module Hyrax
     private
 
       # this is provided so that implementing application can override this behavior and map params to different attributes
+      # @deprecated
       def update_metadata
         file_attributes = form_class.model_attributes(attributes)
         actor.update_metadata(file_attributes)
       end
 
+      # @deprecated no current caller (no route/view/JS reaches #update), and unsafe for a Valkyrie-native FileSet
       def attempt_update
+        if valkyrie_native?(file_set)
+          raise NotImplementedError, "FileSet metadata/content updates are not supported for " \
+                                      "a Valkyrie-native FileSet through this AF-only actor path."
+        end
+
         if wants_to_revert?
           actor.revert_content(params[:revision])
         elsif params.key?(:file_set)
@@ -95,6 +103,7 @@ module Hyrax
         end
       end
 
+      # @deprecated
       def after_update_response
         respond_to do |wants|
           wants.html do
@@ -107,6 +116,7 @@ module Hyrax
         end
       end
 
+      # @deprecated
       def after_update_failure_response
         respond_to do |wants|
           wants.html do

@@ -107,4 +107,13 @@ RSpec.describe Hyrax::FileSetsController, type: :controller do
       controller.send(:actor)
     end
   end
+
+  describe '#attempt_update' do
+    it 'raises for a genuinely migrated FileSet rather than reaching the AF-only actor' do
+      allow(controller).to receive(:file_set).and_return(migrated_file_set)
+      expect(controller).not_to receive(:actor)
+
+      expect { controller.send(:attempt_update) }.to raise_error(NotImplementedError)
+    end
+  end
 end

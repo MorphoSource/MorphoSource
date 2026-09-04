@@ -30,6 +30,9 @@ class PrepareCharacterizeJob < Hyrax::ApplicationJob
   private
 
   def resolve_file_set(work_id)
+    migrated_file_set = migrated_file_set_for(work_id)
+    return migrated_file_set if migrated_file_set
+
     work = ActiveFedora::Base.find(work_id)
     if work.class == Media
       fs = work.file_sets.first
@@ -42,5 +45,12 @@ class PrepareCharacterizeJob < Hyrax::ApplicationJob
     end
   rescue ActiveFedora::ObjectNotFoundError
     Hyrax.query_service.find_by(id: Valkyrie::ID.new(work_id))
+  end
+
+  def migrated_file_set_for(work_id)
+    resource = Hyrax.query_service.postgres_service.find_by(id: Valkyrie::ID.new(work_id))
+    resource if resource.respond_to?(:file_set?) && resource.file_set?
+  rescue Valkyrie::Persistence::ObjectNotFoundError
+    nil
   end
 end

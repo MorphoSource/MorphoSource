@@ -290,7 +290,7 @@ RSpec.describe Morphosource::MultiBatchSubmissionService do
 
       def fields_for(reviews:)
         org = org_double(reviews: reviews)
-        allow(OrganizationCollection).to receive(:exists?).with('000200001').and_return(org)
+        allow(OrganizationCollection).to receive(:exists?).with('000200001').and_return(true)
         allow(OrganizationCollection).to receive(:find).with('000200001').and_return(org)
 
         service.send(:media_ownership_fields, '000200001')

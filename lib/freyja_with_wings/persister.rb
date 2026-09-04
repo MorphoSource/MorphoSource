@@ -28,7 +28,9 @@ module FreyjaWithWings
       # if the resource was wings and is now a Valkyrie resource, we need to migrate sipity, files, and members
       if Hyrax.config.valkyrie_transition? && was_wings && !new_resource.wings?
         if new_resource.is_a?(Hyrax::FileSet)
-          if new_resource.respond_to?(:is_remote_backed?) && new_resource.is_remote_backed?
+          relink_file_set_parent(new_resource)
+
+          if remote_backed?(new_resource)
             MigrateExternalFilesToValkyrieJob.perform_later(new_resource)
           elsif new_resource.file_ids.size == 1 && new_resource.file_ids.first.id.to_s.match('/files/')
             MigrateFilesToValkyrieJob.perform_later(new_resource)
@@ -59,10 +61,7 @@ module FreyjaWithWings
           )
             af_object = ActiveFedora::Base.find(new_resource.id.to_s)
             af_object.member_of.select { |p| p.is_a?(ActiveFedora::Base) }.each do |parent|
-              parent.ordered_members.delete(af_object)
-              parent.members.delete(af_object)
-              parent.valkyrie_member_ids = (parent.valkyrie_member_ids.to_a + [new_resource.id.to_s]).uniq
-              parent.save!
+              relink_member!(parent: parent, af_object: af_object, new_id: new_resource.id.to_s)
             end
           end
         end
@@ -90,6 +89,44 @@ module FreyjaWithWings
       end
 
       resource
+    end
+
+    private
+
+    # Re-points new_resource's parent AF work from the legacy FileSet to new_resource.
+    # @param new_resource [Hyrax::FileSet]
+    def relink_file_set_parent(new_resource)
+      return unless ::FileSet.exists?(new_resource.id.to_s)
+
+      af_file_set = ::FileSet.find(new_resource.id.to_s)
+      relink_member!(parent: af_file_set.parent, af_object: af_file_set, new_id: new_resource.id.to_s)
+    rescue StandardError => e
+      Rails.logger.error("FreyjaWithWings::Persister: failed to update parent membership for FileSet #{new_resource.id}: #{e.message}")
+    end
+
+    # Moves af_object out of parent's AF membership and adds new id to valkyrie_member_ids.
+    # @param parent [ActiveFedora::Base]
+    # @param af_object [ActiveFedora::Base]
+    # @param new_id [String]
+    def relink_member!(parent:, af_object:, new_id:)
+      return unless parent.present? && parent.respond_to?(:valkyrie_member_ids)
+
+      parent.reload unless parent.new_record?
+      parent.ordered_members.delete(af_object)
+      parent.members.delete(af_object)
+      parent.valkyrie_member_ids = (parent.valkyrie_member_ids.to_a + [new_id]).uniq
+      parent.save!
+      parent.update_index # valkyrie_member_ids_ssim must be committed for ArResourceParentship#member_of to see it
+    end
+
+    # @param new_resource [Hyrax::FileSet]
+    # @return [Boolean] true if new_resource, or its legacy FileSet counterpart, is remote-backed
+    def remote_backed?(new_resource)
+      return true if new_resource.is_remote_backed?
+
+      ::FileSet.find(new_resource.id.to_s).is_remote_backed?
+    rescue ::ActiveFedora::ObjectNotFoundError, Ldp::Gone
+      false
     end
   end
 end

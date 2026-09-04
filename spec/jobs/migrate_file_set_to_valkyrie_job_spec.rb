@@ -1,7 +1,5 @@
 require 'rails_helper'
 
-# todo: add scenarios for AF files with various remote-backed arrangements
-
 RSpec.describe MigrateFileSetToValkyrieJob do
   include ActiveJob::TestHelper
 
@@ -26,7 +24,7 @@ RSpec.describe MigrateFileSetToValkyrieJob do
   end
 
   # ---------------------------------------------------------------------------
-  # Scenario 1 — plain AF FileSet (no file content)
+  # plain AF FileSet (no file content)
   # ---------------------------------------------------------------------------
   context "plain AF FileSet with no file content" do
     let(:af_file_set) { create(:file_set, user: user, label: 'test.ply', title: ['test.ply']) }
@@ -45,7 +43,7 @@ RSpec.describe MigrateFileSetToValkyrieJob do
   end
 
   # ---------------------------------------------------------------------------
-  # Scenario 2 — AF FileSet with real file content (full migration chain)
+  # AF FileSet with real file content enqueues appropriate job
   # ---------------------------------------------------------------------------
   context "AF FileSet with file content stored in Fedora" do
     let(:content)    { File.open(Rails.root.join('spec/fixtures/images/duke.png')) }
@@ -57,34 +55,10 @@ RSpec.describe MigrateFileSetToValkyrieJob do
       expect { described_class.perform_now(id: af_file_set.id) }
         .to have_enqueued_job(MigrateFilesToValkyrieJob)
     end
-
-    it "produces a FileMetadata record and a real storage file after the full chain" do
-      # perform_enqueued_jobs auto-runs MigrateFilesToValkyrieJob when it is
-      # enqueued inside the block (by the Freyja persister hook).
-      perform_enqueued_jobs(only: MigrateFilesToValkyrieJob) do
-        described_class.perform_now(id: af_file_set.id)
-      end
-
-      fs = valkyrie_file_set_for(af_file_set.id)
-      expect(fs).not_to be_wings
-      expect(fs.label).to eq "duke.png"
-      expect(fs.title).to include("duke.png")
-
-      file_metadata = Hyrax.custom_queries.find_original_file(file_set: fs)
-      expect(file_metadata).to be_a(Hyrax::FileMetadata)
-      expect(file_metadata.file_set_id).to eq fs.id
-      expect(file_metadata.file_identifier).to be_present
-
-      storage_file = Valkyrie.config.storage_adapter.find_by(id: file_metadata.file_identifier)
-      expect(storage_file).to be_a(Valkyrie::StorageAdapter::File)
-      expect(storage_file.disk_path).to be_present
-      expect(File.exist?(storage_file.disk_path)).to eq true
-      expect(File.basename(storage_file.disk_path)).to include("duke.png") # versioneddisk appends other info to file name
-    end
   end
 
   # ---------------------------------------------------------------------------
-  # Scenario 3 — parent work membership update
+  # parent work membership update
   # ---------------------------------------------------------------------------
   context "AF FileSet attached to an AF work" do
     let(:work) { create(:public_media, depositor: user.user_key) }
@@ -103,7 +77,7 @@ RSpec.describe MigrateFileSetToValkyrieJob do
   end
 
   # ---------------------------------------------------------------------------
-  # Scenario 4 — idempotency: already-migrated FileSet is skipped
+  # idempotency: already-migrated FileSet is skipped
   # ---------------------------------------------------------------------------
   context "when the FileSet has already been migrated to Valkyrie" do
     let(:af_file_set) { create(:file_set, user: user, title: ['scan.ply']) }
@@ -117,7 +91,7 @@ RSpec.describe MigrateFileSetToValkyrieJob do
   end
 
   # ---------------------------------------------------------------------------
-  # Scenario 5 — FileSet not found
+  # FileSet not found
   # ---------------------------------------------------------------------------
   context "when the FileSet ID does not exist" do
     it "logs a warning and does not raise" do
@@ -126,7 +100,7 @@ RSpec.describe MigrateFileSetToValkyrieJob do
   end
 
   # ---------------------------------------------------------------------------
-  # Scenario 6 — remote-backed FileSet (custom MorphoSource properties)
+  # remote-backed FileSet (custom MorphoSource properties)
   # ---------------------------------------------------------------------------
   context "AF FileSet with remote-backed custom properties" do
     let(:af_file_set) do
@@ -154,32 +128,6 @@ RSpec.describe MigrateFileSetToValkyrieJob do
       expect(fs.accessibility).to eq ['open']
     end
 
-    context "when is_remote_backed? is true" do
-      before do
-        allow_any_instance_of(Hyrax::FileSet).to receive(:is_remote_backed?).and_return(true)
-      end
-
-      it "enqueues MigrateExternalFilesToValkyrieJob for the remote-backed file" do
-        expect { described_class.perform_now(id: af_file_set.id) }
-          .to have_enqueued_job(MigrateExternalFilesToValkyrieJob)
-      end
-
-      it "produces an ExternalFile as the original file after the full chain" do
-        perform_enqueued_jobs(only: MigrateExternalFilesToValkyrieJob) do
-          described_class.perform_now(id: af_file_set.id)
-        end
-
-        fs = valkyrie_file_set_for(af_file_set.id)
-        fm = Hyrax.custom_queries.find_original_file(file_set: fs)
-        sf = Valkyrie.config.storage_adapter.find_by(id: fm.file_identifier)
-
-        expect(sf).to be_a(Valkyrie::StorageAdapter::ExternalFile)
-        expect(sf.id.to_s).to eq 'https://remote.example.com/model.ply'
-        expect(fm.original_filename).to eq 'model.ply'
-        expect(fm.file_set_id).to eq fs.id
-      end
-    end
-
     context "when attached to a parent work" do
       let(:work) { create(:public_media, depositor: user.user_key) }
 
@@ -196,6 +144,201 @@ RSpec.describe MigrateFileSetToValkyrieJob do
 
         fs = valkyrie_file_set_for(af_file_set.id)
         expect(fs.mime_type_of_remote).to eq 'model/ply'
+      end
+    end
+  end
+
+  describe "full migration chain by realistic file-origin scenario" do
+    # Local upload: real Fedora binary, no import_url, not remote-backed.
+    context "scenario 0: local web UI upload" do
+      let(:content) { File.open(Rails.root.join('spec/fixtures/images/duke.png')) }
+      let(:work) { create(:public_media, depositor: user.user_key) }
+      let(:af_file_set) do
+        fs = create(:file_set, user: user, label: 'upload.png', title: ['upload.png'], content: content)
+        work.ordered_members << fs
+        work.save!
+        fs
+      end
+
+      after { content.close }
+
+      it "migrates to a local-disk-backed Hyrax::FileSet with no import_url and is_remote_backed? false" do
+        perform_enqueued_jobs(only: [MigrateFilesToValkyrieJob, MigrateExternalFilesToValkyrieJob]) do
+          described_class.perform_now(id: af_file_set.id)
+        end
+
+        work.reload
+        expect(work.valkyrie_member_ids).to include(af_file_set.id)
+
+        fs = valkyrie_file_set_for(af_file_set.id)
+        expect(fs).not_to be_wings
+        expect(fs.import_url).to be_blank
+        expect(fs.is_remote_backed?).to be false
+
+        file_metadata = Hyrax.custom_queries.find_original_file(file_set: fs)
+        storage_file = Valkyrie.config.storage_adapter.find_by(id: file_metadata.file_identifier)
+        expect(storage_file).to be_a(Valkyrie::StorageAdapter::File)
+        expect(File.exist?(storage_file.disk_path)).to eq true
+      end
+    end
+
+    # BrowseEverything Globus file: real Fedora binary, import_url is a local path.
+    context "scenario 1: local secondary-source file (Globus)" do
+      let(:content) { File.open(Rails.root.join('spec/fixtures/images/duke.png')) }
+      let(:work) { create(:public_media, depositor: user.user_key) }
+      let(:af_file_set) do
+        fs = create(:file_set, user: user, label: 'globus_scan.png', title: ['globus_scan.png'], content: content)
+        fs.import_url = '/mnt/globus/incoming/globus_scan.png'
+        fs.save!
+        work.ordered_members << fs
+        work.save!
+        fs
+      end
+
+      after { content.close }
+
+      it "migrates to a local-disk-backed Hyrax::FileSet preserving the local import_url and is_remote_backed? false" do
+        perform_enqueued_jobs(only: [MigrateFilesToValkyrieJob, MigrateExternalFilesToValkyrieJob]) do
+          described_class.perform_now(id: af_file_set.id)
+        end
+
+        work.reload
+        expect(work.valkyrie_member_ids).to include(af_file_set.id)
+
+        fs = valkyrie_file_set_for(af_file_set.id)
+        expect(fs).not_to be_wings
+        expect(fs.import_url).to eq '/mnt/globus/incoming/globus_scan.png'
+        expect(fs.is_remote_backed?).to be false
+
+        file_metadata = Hyrax.custom_queries.find_original_file(file_set: fs)
+        storage_file = Valkyrie.config.storage_adapter.find_by(id: file_metadata.file_identifier)
+        expect(storage_file).to be_a(Valkyrie::StorageAdapter::File)
+      end
+    end
+
+    # BrowseEverything URL: real Fedora binary, import_url is the remote URL.
+    context "scenario 2: BrowseEverything URL ingested locally" do
+      let(:content) { File.open(Rails.root.join('spec/fixtures/images/duke.png')) }
+      let(:work) { create(:public_media, depositor: user.user_key) }
+      let(:af_file_set) do
+        fs = create(:file_set, user: user, label: 'downloaded_scan.png', title: ['downloaded_scan.png'], content: content)
+        fs.import_url = 'https://browse-everything.example.com/downloaded_scan.png'
+        fs.save!
+        work.ordered_members << fs
+        work.save!
+        fs
+      end
+
+      after { content.close }
+
+      it "migrates to a local-disk-backed Hyrax::FileSet preserving the remote import_url and is_remote_backed? false" do
+        perform_enqueued_jobs(only: [MigrateFilesToValkyrieJob, MigrateExternalFilesToValkyrieJob]) do
+          described_class.perform_now(id: af_file_set.id)
+        end
+
+        work.reload
+        expect(work.valkyrie_member_ids).to include(af_file_set.id)
+
+        fs = valkyrie_file_set_for(af_file_set.id)
+        expect(fs).not_to be_wings
+        expect(fs.import_url).to eq 'https://browse-everything.example.com/downloaded_scan.png'
+        expect(fs.is_remote_backed?).to be false
+
+        file_metadata = Hyrax.custom_queries.find_original_file(file_set: fs)
+        storage_file = Valkyrie.config.storage_adapter.find_by(id: file_metadata.file_identifier)
+        expect(storage_file).to be_a(Valkyrie::StorageAdapter::File)
+      end
+    end
+
+    # Remote-backed media: no Fedora binary, Media.remote_origin_url is set on a real parent.
+    context "scenario 3: remote-backed media with temp cache copy" do
+      let(:remote_url) { 'https://remote.example.com/model.ply' }
+      let(:work) do
+        m = create(:public_media, depositor: user.user_key)
+        m.remote_origin_url = remote_url
+        m.save!
+        m
+      end
+      let(:af_file_set) do
+        fs = create(:file_set, user: user, label: 'model.ply', title: ['model.ply'])
+        fs.import_url = remote_url
+        fs.save!
+        work.ordered_members << fs
+        work.save!
+        fs
+      end
+
+      it "confirms is_remote_backed? is true pre-migration via the real Media parent" do
+        expect(af_file_set.is_remote_backed?).to be true
+      end
+
+      it "migrates to an ExternalFile-backed Hyrax::FileSet pointing at the remote URL" do
+        perform_enqueued_jobs(only: [MigrateFilesToValkyrieJob, MigrateExternalFilesToValkyrieJob]) do
+          described_class.perform_now(id: af_file_set.id)
+        end
+
+        work.reload
+        expect(work.valkyrie_member_ids).to include(af_file_set.id)
+
+        fs = valkyrie_file_set_for(af_file_set.id)
+        expect(fs).not_to be_wings
+        expect(fs.import_url).to eq remote_url
+        expect(fs.is_remote_backed?).to be true
+
+        file_metadata = Hyrax.custom_queries.find_original_file(file_set: fs)
+        expect(file_metadata).to be_a(Hyrax::FileMetadata)
+
+        storage_file = Valkyrie.config.storage_adapter.find_by(id: file_metadata.file_identifier)
+        expect(storage_file).to be_a(Valkyrie::StorageAdapter::ExternalFile)
+        expect(storage_file.id.to_s).to eq remote_url
+      end
+    end
+
+    # Same as scenario 3, plus Media.remote_manifest_url set on the real parent.
+    context "scenario 4: remote-backed media with remote manifest, no temp copy" do
+      let(:remote_url) { 'https://remote.example.com/model.ply' }
+      let(:manifest_url) { 'https://remote.example.com/iiif/manifest.json' }
+      let(:work) do
+        m = create(:public_media, depositor: user.user_key)
+        m.remote_origin_url = remote_url
+        m.remote_manifest_url = manifest_url
+        m.save!
+        m
+      end
+      let(:af_file_set) do
+        fs = create(:file_set, user: user, label: 'model.ply', title: ['model.ply'])
+        fs.import_url = remote_url
+        fs.save!
+        work.ordered_members << fs
+        work.save!
+        fs
+      end
+
+      it "confirms is_remote_backed? and has_remote_manifest? are true pre-migration via the real Media parent" do
+        expect(af_file_set.is_remote_backed?).to be true
+        expect(af_file_set.has_remote_manifest?).to be true
+      end
+
+      it "migrates to an ExternalFile-backed Hyrax::FileSet without downloading a local cache copy" do
+        perform_enqueued_jobs(only: [MigrateFilesToValkyrieJob, MigrateExternalFilesToValkyrieJob]) do
+          described_class.perform_now(id: af_file_set.id)
+        end
+
+        work.reload
+        expect(work.valkyrie_member_ids).to include(af_file_set.id)
+
+        fs = valkyrie_file_set_for(af_file_set.id)
+        expect(fs).not_to be_wings
+        expect(fs.import_url).to eq remote_url
+        expect(fs.is_remote_backed?).to be true
+        expect(fs.has_remote_manifest?).to be true
+
+        file_metadata = Hyrax.custom_queries.find_original_file(file_set: fs)
+        expect(file_metadata).to be_a(Hyrax::FileMetadata)
+
+        storage_file = Valkyrie.config.storage_adapter.find_by(id: file_metadata.file_identifier)
+        expect(storage_file).to be_a(Valkyrie::StorageAdapter::ExternalFile)
+        expect(storage_file.id.to_s).to eq remote_url
       end
     end
   end

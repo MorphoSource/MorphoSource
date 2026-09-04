@@ -19,7 +19,8 @@ module Morphosource
 
             unsaved = change_set.sync
             save_lease_or_embargo(unsaved)
-            saved = @persister.save(resource: unsaved)
+            # via_transaction: true to indicate trustworthy save (see FreyjaWithWings::Persister#save)
+            saved = @persister.save(resource: unsaved, via_transaction: true)
           rescue StandardError => err
             return Failure.new(["Failed save on #{change_set}\n\t#{err.message}", change_set.resource], err.backtrace.first)
           end

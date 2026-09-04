@@ -694,11 +694,11 @@ class Media < Morphosource::Works::Base
     return unless download_reviewer_mode == 'object_organization'
 
     # try: physical objects may still resolve to the deprecated Organization model, which has
-    # neither the flag nor a display_name and is therefore never eligible.
+    # no such property and is therefore never eligible.
     ineligible = organizations.reject { |org| org.try(:reviews_object_media_downloads) }
     return if ineligible.empty?
 
-    names = ineligible.map { |org| org.try(:display_name) || org.title&.first }.compact
+    names = ineligible.map { |org| org.title&.first }.compact
     errors.add(:download_reviewer_mode,
                "cannot be set to the object organization: #{names.to_sentence} " \
                "#{ineligible.one? ? 'does' : 'do'} not review download requests for media of their objects")

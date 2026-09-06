@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2026_08_28_140000) do
+ActiveRecord::Schema.define(version: 2026_09_06_140000) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -319,6 +319,29 @@ ActiveRecord::Schema.define(version: 2026_08_28_140000) do
     t.boolean "enabled", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "institutions", force: :cascade do |t|
+    t.string "title"
+    t.string "code"
+    t.string "ark"
+    t.string "address"
+    t.string "city"
+    t.string "state_province"
+    t.string "country"
+    t.string "postal_code"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.string "gbif_id"
+    t.string "homepage"
+    t.string "ror_id"
+    t.string "logo_url"
+    t.decimal "latitude", precision: 10, scale: 6
+    t.decimal "longitude", precision: 10, scale: 6
+    t.jsonb "identifiers", default: [], null: false
+    t.index ["code"], name: "index_institutions_on_code"
+    t.index ["gbif_id"], name: "index_institutions_on_gbif_id", unique: true
+    t.index ["title"], name: "index_institutions_on_title"
   end
 
   create_table "job_io_wrappers", force: :cascade do |t|

@@ -33,15 +33,15 @@ class BackfillMediaDownloadReviewers < ActiveRecord::Migration[6.1]
           report_dropped(media.id, rejected)
         end
 
-        if Array(media.record_download_reviewer_users).sort == users.sort
-          unchanged += 1
-          next
-        end
-
         # A save would split these values and enqueue the old CartItem reviewer job.
         if Array(media.download_reviewer).any? { |value| value.include?(',') }
           failed += 1
           say "#{id}: comma-joined download_reviewer requires repair before backfill", true
+          next
+        end
+
+        if Array(media.record_download_reviewer_users).sort == users.sort
+          unchanged += 1
           next
         end
 

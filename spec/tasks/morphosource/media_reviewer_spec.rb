@@ -75,6 +75,21 @@ describe 'Media reviewer migration support', type: :task do
         expect(summary[:resolution_diffs].first).to include(reason: :stored_organization, actual: [owner.ms_id])
         expect(summary[:resolution_diffs].first[:expected]).to match_array([owner.ms_id, reviewer.ms_id])
       end
+
+      it 'classifies a stored organization without loading metadata from Fedora' do
+        media.update!(download_reviewer: [organization.id, owner.ms_id],
+                      record_download_reviewer_users: [owner.ms_id])
+        # Legacy resolution needs Fedora; isolate the additional classification lookup.
+        allow(media).to receive(:reviewer).and_return([owner.ms_id, reviewer.ms_id])
+        allow(Media).to receive(:find).with(media.id).and_return(media)
+        allow_any_instance_of(ActiveFedora::Relation).to receive(:load_from_fedora)
+          .and_raise('Classification must not load metadata from Fedora')
+
+        summary = verification.call
+
+        expect(summary[:resolution_diffs].first)
+          .to include(reason: :stored_organization, actual: [owner.ms_id])
+      end
     end
 
     it 'reports the batch User fallback for an owner organization with no reviewers' do

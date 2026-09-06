@@ -91,7 +91,7 @@ module Morphosource
 
     def resolution_difference_reason(media, actual)
       stored = Array(media.download_reviewer).reject(&:blank?)
-      return :stored_organization if stored.any? && OrganizationCollection.where(id: stored).to_a.any?
+      return :stored_organization if stored.any? && OrganizationCollection.exists?(id: stored)
       return :batch_user_fallback if actual == [User.batch_user_key]
       return :object_organization_mode if media.download_reviewer_mode == 'object_organization'
 

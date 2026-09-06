@@ -7,6 +7,7 @@ class BackfillMediaDownloadReviewers < ActiveRecord::Migration[6.1]
       raise 'Media reviewer backfill must run before the ticket 5 read-path cutover'
     end
 
+    @organizations = {}
     processed = 0
     written = 0
     unchanged = 0
@@ -72,7 +73,14 @@ class BackfillMediaDownloadReviewers < ActiveRecord::Migration[6.1]
   private
 
   def report_dropped(media_id, values)
-    organizations = OrganizationCollection.where(id: values).to_a
+    uncached_ids = values.reject { |id| @organizations.key?(id) }
+    if uncached_ids.any?
+      OrganizationCollection.where(id: uncached_ids).each do |organization|
+        @organizations[organization.id] = organization
+      end
+    end
+
+    organizations = values.map { |id| @organizations[id] }.compact
     organizations.each do |organization|
       say "#{media_id}: dropped OrganizationCollection #{organization.id}; " \
           "current reviewers: #{organization.media_download_reviewers.inspect}", true

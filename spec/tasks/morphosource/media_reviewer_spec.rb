@@ -175,5 +175,30 @@ describe 'Media reviewer migration support', type: :task do
       task.reenable
       expect { task.invoke }.not_to raise_error
     end
+
+    [ActiveFedora::ObjectNotFoundError, Ldp::Gone].each do |error_class|
+      it "reports and skips deleted Media when loading raises #{error_class}" do
+        allow(Morphosource::MediaReviewerBatches).to receive(:each).and_yield([media.id, other_media.id])
+        allow(Media).to receive(:find).with(media.id).and_raise(error_class)
+        expect(media).not_to receive(:update_index)
+        expect(other_media).to receive(:update_index).and_call_original
+        message = "#{media.id}: in Solr but deleted from Fedora; skipped"
+        expect(Rails.logger).to receive(:warn).with("[morphosource:download_reviewer:reindex_media] #{message}")
+
+        expect { task.invoke }.to output(a_string_including(
+          message, 'Media reindex complete: processed 2; failed 0; orphaned 1'
+        )).to_stdout
+      end
+
+      it "counts an existing Media as failed when indexing raises #{error_class}" do
+        allow(Morphosource::MediaReviewerBatches).to receive(:each).and_yield([media.id, other_media.id])
+        allow(media).to receive(:update_index).and_raise(error_class)
+        expect(other_media).to receive(:update_index).and_call_original
+
+        expect do
+          expect { task.invoke }.to raise_error(SystemExit) { |error| expect(error.status).to eq(1) }
+        end.to output(a_string_including('Media reindex complete: processed 2; failed 1; orphaned 0')).to_stdout
+      end
+    end
   end
 end

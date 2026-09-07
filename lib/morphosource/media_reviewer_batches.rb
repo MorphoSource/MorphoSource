@@ -8,6 +8,8 @@ module Morphosource
     # Solr supplies ids only; callers load authoritative metadata from Fedora.
     # @yieldparam ids [Array<String>] one batch, ordered by the unique id
     def self.each
+      return enum_for(:each) unless block_given?
+
       cursor = '*'
       solr = Morphosource::SolrService.new
 

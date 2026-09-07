@@ -15,10 +15,20 @@ namespace :morphosource do
     task reindex_media: :environment do
       processed = 0
       failed = 0
+      orphaned = 0
       Morphosource::MediaReviewerBatches.each do |ids|
         ids.each do |id|
           begin
-            Media.find(id).update_index
+            begin
+              media = Media.find(id)
+            rescue ActiveFedora::ObjectNotFoundError, Ldp::Gone
+              orphaned += 1
+              message = "#{id}: in Solr but deleted from Fedora; skipped"
+              puts message
+              Rails.logger.warn("[morphosource:download_reviewer:reindex_media] #{message}")
+              next
+            end
+            media.update_index
           rescue StandardError => e
             failed += 1
             Rails.logger.error("[morphosource:download_reviewer:reindex_media] #{id}: #{e.class}: #{e.message}")
@@ -26,9 +36,10 @@ namespace :morphosource do
             processed += 1
           end
         end
-        Rails.logger.info("[morphosource:download_reviewer:reindex_media] processed #{processed}; failed #{failed}")
+        Rails.logger.info("[morphosource:download_reviewer:reindex_media] processed #{processed}; " \
+                          "failed #{failed}; orphaned #{orphaned}")
       end
-      puts "Media reindex complete: processed #{processed}; failed #{failed}"
+      puts "Media reindex complete: processed #{processed}; failed #{failed}; orphaned #{orphaned}"
       abort('reindex_media had failures; repair and rerun before cutover') if failed.positive?
     end
 

@@ -36,16 +36,20 @@ RSpec.describe Morphosource::PhysicalObjectBehavior do
     let(:public_media)    { Media.create(title: ['Public Media'], media_type: ['CTImageSeries'], keyword: ['red', 'yellow', 'blue'], visibility: 'open') }
     let(:private_media)   { Media.create(title: ['Private Media'], media_type: ['PhotogrammetryImageSeries'], keyword: ['green', 'orange', 'purple'], visibility: 'restricted') }
     let(:device)          { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
-    let(:imaging_event)   { ImagingEvent.create(title: ['Imaging Event'], device_id: [device.id.to_s], physical_object_id: [specimen.id], ie_modality: device.modality) }
-    let(:imaging_event2)   { ImagingEvent.create(title: ['Imaging Event'], device_id: [device.id.to_s], physical_object_id: [cho.id], ie_modality: device.modality) }
+    let(:imaging_event)   { FactoryBot.valkyrie_create(:imaging_event_resource, title: ['Imaging Event'], device: device, ie_modality: device.modality, physical_object_id: [specimen.id], with_index: false) }
+    let(:imaging_event2)   { FactoryBot.valkyrie_create(:imaging_event_resource, title: ['Imaging Event'], device: device, ie_modality: device.modality, physical_object_id: [cho.id], with_index: false) }
     let(:media)           { [public_media, private_media] }
     let(:works)           { [imaging_event, imaging_event2, public_media, private_media] }
 
     before do
-      imaging_event.ordered_members << public_media << private_media
-      imaging_event2.ordered_members << public_media << private_media
-      works.each(&:save)
-      works.each(&:reload)
+      imaging_event.member_ids += [Valkyrie::ID.new(public_media.id), Valkyrie::ID.new(private_media.id)]
+      imaging_event2.member_ids += [Valkyrie::ID.new(public_media.id), Valkyrie::ID.new(private_media.id)]
+      Hyrax.persister.save(resource: imaging_event)
+      Hyrax.persister.save(resource: imaging_event2)
+      [public_media, private_media].each(&:save)
+      [public_media, private_media].each do |media|
+        media.reload.update_index
+      end
     end
 
     describe 'media_solr' do

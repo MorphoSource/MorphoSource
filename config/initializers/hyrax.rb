@@ -14,6 +14,7 @@ Hyrax.config do |config|
   # Injected via `rails g hyrax:work CulturalHeritageObject`
   config.register_curation_concern :cultural_heritage_object
   # Injected via `rails g hyrax:work ImagingEvent`
+  # TODO: Remove when all ImagingEvents have been migrated to ImagingEventResource
   config.register_curation_concern :imaging_event
   # Injected via `rails g hyrax:work Taxonomy`
   config.register_curation_concern :taxonomy
@@ -21,6 +22,8 @@ Hyrax.config do |config|
   config.register_curation_concern :taxonomy_resource
   # Injected via `rails g hyrax:work_resource DeviceResource`
   config.register_curation_concern :device_resource
+  # Injected via `rails g hyrax:work_resource ImagingEventResource`
+  config.register_curation_concern :imaging_event_resource
 
   # Register roles that are expected by your implementation.
   # @see Hyrax::RoleRegistry for additional details.

@@ -1,3 +1,4 @@
+# @deprecated Use ImagingEventResource with Transactions.
 module Hyrax
   module Actors
     class ImagingEventActor < Hyrax::Actors::BaseActor

@@ -922,6 +922,34 @@ RSpec.describe Hyrax::MediaController, type: :controller do
     end
   end
 
+  describe '#destroy' do
+    let(:media) do
+      instance_double(
+        Media,
+        id: 'media-1',
+        parent_works: [processing_event],
+        related_media: [],
+        physical_objects: [],
+        destroy: true
+      )
+    end
+    let(:sibling_media) { instance_double(Media, id: 'media-2') }
+    let(:processing_event) { ProcessingEvent.new(title: ['processing event']) }
+    let(:imaging_event) { ImagingEventResource.new(title: ['imaging event']) }
+
+    before do
+      allow(subject).to receive(:curation_concern).and_return(media)
+      allow(processing_event).to receive(:imaging_event).and_return(imaging_event)
+      allow(imaging_event).to receive(:media).and_return([media, sibling_media])
+    end
+
+    it 'does not delete the ImagingEventResource when sibling media exists under another descendant path' do
+      expect(subject).to receive(:after_destroy).with([], [processing_event])
+
+      subject.destroy
+    end
+  end
+
   describe '#set_scene_attributes' do
     let(:media)           { FactoryBot.create(:media, title: ['Test Media']) }
     let(:params)          { ActionController::Parameters.new( { "media" =>{} } ) }

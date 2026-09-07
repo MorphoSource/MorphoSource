@@ -218,7 +218,11 @@ class Media < Morphosource::Works::Base
   end
 
   def physical_objects
-    ancestors.select(&:imaging_event?).map(&:objects).flatten
+    # Delegates to imaging_event rather than ancestors.select(&:imaging_event?) because IER is
+    # Postgres-backed and not reachable via the AF ancestor chain; imaging_event handles both paths.
+    ie = imaging_event
+    return [] if ie.blank?
+    Array(ie.objects)
   end
   alias objects physical_objects
 
@@ -233,7 +237,20 @@ class Media < Morphosource::Works::Base
   end
 
   def imaging_event
-    ancestors.find(&:imaging_event?)
+    # TODO: Remove AF path when all ImagingEvents have been migrated to ImagingEventResource
+    # AF path: traverse AF ancestors for an AF ImagingEvent
+    ie = ancestors.find(&:imaging_event?)
+    return ie if ie.present?
+
+    # Valkyrie path: check if an AF ProcessingEvent ancestor links to an ImagingEventResource
+    parent_pe = ancestors.find { |a| a.is_a?(ProcessingEvent) && a.imaging_event_id.present? }
+    return unless parent_pe.present?
+
+    begin
+      Hyrax.query_service.find_by(id: Valkyrie::ID.new(parent_pe.imaging_event_id))
+    rescue Valkyrie::Persistence::ObjectNotFoundError
+      nil
+    end
   end
 
   def processing_event
@@ -266,7 +283,12 @@ class Media < Morphosource::Works::Base
 
   def related_media
     return [] unless imaging_event.present?
-    imaging_event.descendants.select { |d| d.class == Media && d.id != self.id}
+    if imaging_event.is_a?(Valkyrie::Resource)
+      imaging_event.media.select { |m| m.id.to_s != self.id.to_s }
+    else
+      # TODO: Remove AF branch when all ImagingEvents have been migrated to ImagingEventResource
+      imaging_event.descendants.select { |d| d.class == Media && d.id != self.id }
+    end
   end
 
   def related_media_ids
@@ -280,7 +302,9 @@ class Media < Morphosource::Works::Base
   def related_media_solr
     return [] if !imaging_event.present? || !imaging_event&.id.present?
 
-    qry = "#{ActiveFedora.index_field_mapper.solr_name('imaging_event_id', :stored_searchable)}:#{imaging_event.id} AND has_model_ssim:Media"
+    # TODO: Drop the _tesim fallback after all Media documents are reindexed with imaging_event_id_ssim.
+    qry = "has_model_ssim:Media AND " \
+      "(imaging_event_id_ssim:\"#{imaging_event.id}\" OR imaging_event_id_tesim:\"#{imaging_event.id}\")"
     ::Morphosource::SolrService.new().get_docs(qry, args: { fl: 'id' } )
   end
 

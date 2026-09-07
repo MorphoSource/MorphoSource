@@ -10,16 +10,17 @@ RSpec.describe Organization, type: :model do
     let(:cho)             { FactoryBot.create(:cultural_heritage_object, organization_id: [another_org.id]) }
     let(:deviceA)         { FactoryBot.create(:device_resource, organization_id: [organization.id]) }
     let(:deviceB)         { FactoryBot.create(:device_resource, organization_id: [organization.id]) }
-    let(:imaging_eventA)  { FactoryBot.create(:imaging_event, device_id: [deviceA.id.to_s], ie_modality: deviceA.modality, physical_object_id: [cho.id]) }
-    let(:imaging_eventB)  { FactoryBot.create(:imaging_event, device_id: [deviceB.id.to_s], ie_modality: deviceB.modality, physical_object_id: [specimen.id]) }
+    let(:imaging_eventA)  { FactoryBot.valkyrie_create(:imaging_event_resource, device: deviceA, ie_modality: deviceA.modality, physical_object_id: [cho.id], with_index: false) }
+    let(:imaging_eventB)  { FactoryBot.valkyrie_create(:imaging_event_resource, device: deviceB, ie_modality: deviceB.modality, physical_object_id: [specimen.id], with_index: false) }
     let(:mediaA)          { FactoryBot.create(:media) }
     let(:mediaB)          { FactoryBot.create(:media) }
 
     before do
-      imaging_eventA.ordered_members << mediaA
-      imaging_eventB.ordered_members << mediaB
-      [imaging_eventA, imaging_eventB].each(&:save!)
-      [mediaA, mediaB].each(&:update_index)
+      imaging_eventA.member_ids += [Valkyrie::ID.new(mediaA.id)]
+      imaging_eventB.member_ids += [Valkyrie::ID.new(mediaB.id)]
+      Hyrax.persister.save(resource: imaging_eventA)
+      Hyrax.persister.save(resource: imaging_eventB)
+      [mediaA, mediaB].each { |media| media.reload.update_index }
     end
 
     it 'returns the correct records' do
@@ -40,16 +41,17 @@ RSpec.describe Organization, type: :model do
     let(:cho)             { FactoryBot.create(:cultural_heritage_object, organization_id: [organization.id]) }
     let(:deviceA)         { FactoryBot.create(:device_resource, organization_id: [organization.id]) }
     let(:deviceB)         { FactoryBot.create(:device_resource, organization_id: [organization.id]) }
-    let(:imaging_eventA)  { FactoryBot.create(:imaging_event, device_id: [deviceA.id.to_s], ie_modality: deviceA.modality, physical_object_id: [cho.id]) }
-    let(:imaging_eventB)  { FactoryBot.create(:imaging_event, device_id: [deviceB.id.to_s], ie_modality: deviceB.modality, physical_object_id: [specimen.id]) }
+    let(:imaging_eventA)  { FactoryBot.valkyrie_create(:imaging_event_resource, device: deviceA, ie_modality: deviceA.modality, physical_object_id: [cho.id], with_index: false) }
+    let(:imaging_eventB)  { FactoryBot.valkyrie_create(:imaging_event_resource, device: deviceB, ie_modality: deviceB.modality, physical_object_id: [specimen.id], with_index: false) }
     let(:mediaA)          { FactoryBot.create(:media) }
     let(:mediaB)          { FactoryBot.create(:media) }
 
     before do
-      imaging_eventA.ordered_members << mediaA
-      imaging_eventB.ordered_members << mediaB
-      [imaging_eventA, imaging_eventB].each(&:save!)
-      [mediaA, mediaB].each(&:update_index)
+      imaging_eventA.member_ids += [Valkyrie::ID.new(mediaA.id)]
+      imaging_eventB.member_ids += [Valkyrie::ID.new(mediaB.id)]
+      Hyrax.persister.save(resource: imaging_eventA)
+      Hyrax.persister.save(resource: imaging_eventB)
+      [mediaA, mediaB].each { |media| media.reload.update_index }
     end
 
     it 'returns the correct records' do
@@ -75,16 +77,17 @@ RSpec.describe OrganizationCollection, type: :model do
     let(:cho)             { FactoryBot.create(:cultural_heritage_object, organization_id: [another_org.id]) }
     let(:deviceA)         { FactoryBot.create(:device_resource, organization_id: [organization.id]) }
     let(:deviceB)         { FactoryBot.create(:device_resource, organization_id: [organization.id]) }
-    let(:imaging_eventA)  { FactoryBot.create(:imaging_event, device_id: [deviceA.id.to_s], ie_modality: deviceA.modality, physical_object_id: [cho.id]) }
-    let(:imaging_eventB)  { FactoryBot.create(:imaging_event, device_id: [deviceB.id.to_s], ie_modality: deviceB.modality, physical_object_id: [specimen.id]) }
+    let(:imaging_eventA)  { FactoryBot.valkyrie_create(:imaging_event_resource, device: deviceA, ie_modality: deviceA.modality, physical_object_id: [cho.id], with_index: false) }
+    let(:imaging_eventB)  { FactoryBot.valkyrie_create(:imaging_event_resource, device: deviceB, ie_modality: deviceB.modality, physical_object_id: [specimen.id], with_index: false) }
     let(:mediaA)          { FactoryBot.create(:media) }
     let(:mediaB)          { FactoryBot.create(:media) }
 
     before do
-      imaging_eventA.ordered_members << mediaA
-      imaging_eventB.ordered_members << mediaB
-      [imaging_eventA, imaging_eventB].each(&:save!)
-      [mediaA, mediaB].each(&:update_index)
+      imaging_eventA.member_ids += [Valkyrie::ID.new(mediaA.id)]
+      imaging_eventB.member_ids += [Valkyrie::ID.new(mediaB.id)]
+      Hyrax.persister.save(resource: imaging_eventA)
+      Hyrax.persister.save(resource: imaging_eventB)
+      [mediaA, mediaB].each { |media| media.reload.update_index }
     end
 
     it 'returns the correct records' do
@@ -105,16 +108,17 @@ RSpec.describe OrganizationCollection, type: :model do
     let(:cho)  { FactoryBot.create(:cultural_heritage_object, organization_id: [organization.id]) }
     let(:deviceA)                   { FactoryBot.create(:device_resource, organization_id: [organization.id]) }
     let(:deviceB)                   { FactoryBot.create(:device_resource, organization_id: [organization.id]) }
-    let(:imaging_eventA)            { FactoryBot.create(:imaging_event, device_id: [deviceA.id.to_s], ie_modality: deviceA.modality, physical_object_id: [cho.id]) }
-    let(:imaging_eventB)            { FactoryBot.create(:imaging_event, device_id: [deviceB.id.to_s], ie_modality: deviceB.modality, physical_object_id: [specimen.id]) }
+    let(:imaging_eventA)            { FactoryBot.valkyrie_create(:imaging_event_resource, device: deviceA, ie_modality: deviceA.modality, physical_object_id: [cho.id], with_index: false) }
+    let(:imaging_eventB)            { FactoryBot.valkyrie_create(:imaging_event_resource, device: deviceB, ie_modality: deviceB.modality, physical_object_id: [specimen.id], with_index: false) }
     let(:mediaA)                    { FactoryBot.create(:media) }
     let(:mediaB)                    { FactoryBot.create(:media) }
 
     before do
-      imaging_eventA.ordered_members << mediaA
-      imaging_eventB.ordered_members << mediaB
-      [imaging_eventA, imaging_eventB].each(&:save!)
-      [mediaA, mediaB].each(&:update_index)
+      imaging_eventA.member_ids += [Valkyrie::ID.new(mediaA.id)]
+      imaging_eventB.member_ids += [Valkyrie::ID.new(mediaB.id)]
+      Hyrax.persister.save(resource: imaging_eventA)
+      Hyrax.persister.save(resource: imaging_eventB)
+      [mediaA, mediaB].each { |media| media.reload.update_index }
     end
 
     it 'returns the correct records' do

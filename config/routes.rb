@@ -91,6 +91,13 @@ Rails.application.routes.draw do
       end
     end
 
+    resources :imaging_event_resources do
+      member do
+        post 'media_owner_update'
+        patch 'media_owner_update'
+      end
+    end
+
     ### NON-MODULE SCOPES ###
 
     scope :browse do

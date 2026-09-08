@@ -293,40 +293,6 @@ RSpec.describe Media do
       end
     end
 
-    describe '#reviewer' do
-      let(:download_reviewer) { double('User', ms_id: 'reviewer') }
-      let(:depositor) { double('User', ms_id: 'depositor') }
-      context 'there is no download_reviewer' do
-        before do
-          subject.download_reviewer = []
-          subject.depositor = depositor.ms_id
-        end
-        it 'returns the depositor' do
-          expect(subject.reviewer).to eq([depositor.ms_id])
-        end
-      end
-      context 'there is a download_reviewer' do
-        context 'the download_reviewer exists' do
-          before do
-            subject.download_reviewer = [download_reviewer.ms_id]
-            subject.depositor = depositor.ms_id
-            expect(User).to receive(:where).with(ms_id: ['reviewer']).and_return([download_reviewer])
-          end
-          it 'returns the reviewer' do
-            expect(subject.reviewer).to eq([download_reviewer.ms_id])
-          end
-        end
-        context 'the download_reviewer does not exist' do
-          before do
-            subject.depositor = depositor.ms_id
-          end
-          it 'returns the depositor' do
-            expect(subject.reviewer).to eq([depositor.ms_id])
-          end
-        end
-      end
-    end
-
     describe 'ancestor physical objects' do
       let(:media)         { Media.create(title: ['title'], media_type: ['Image'])}
       let(:organization)  { Organization.create(title: ['organization'])}
@@ -851,7 +817,37 @@ describe 'description attachment methods' do
       end
     end
 
+    describe 'reviewer picker normalization' do
+      it 'persists separate ms_ids from a multi-user form input without changing legacy data' do
+        media.download_reviewer = [owner_user.ms_id]
+        media.record_download_reviewer_users = ["#{reviewer.ms_id},#{other_reviewer.ms_id}", '']
+        media.save!
+        expect(media.reload.record_download_reviewer_users).to match_array([reviewer.ms_id, other_reviewer.ms_id])
+        expect(media.download_reviewer).to eq([owner_user.ms_id])
+      end
+    end
+
     describe '#publish_reviewers_updated' do
+      before { ActiveJob::Base.queue_adapter = :test }
+
+      it 'publishes for an owner-only change when the record list is blank' do
+        media
+        expect { media.update!(owner: reviewer.ms_id) }
+          .to have_enqueued_job(UpdateCartItemReviewersJob).with(media.id)
+      end
+
+      it 'publishes when the depositor fallback changes' do
+        media.update!(owner: nil)
+        expect { media.update!(depositor: reviewer.ms_id) }
+          .to have_enqueued_job(UpdateCartItemReviewersJob).with(media.id)
+      end
+
+      it 'does not publish an owner-only change when record users determine the reviewers' do
+        media.update!(record_download_reviewer_users: [reviewer.ms_id])
+        expect { media.update!(owner: other_reviewer.ms_id) }
+          .not_to have_enqueued_job(UpdateCartItemReviewersJob)
+      end
+
       it 'publishes when the mode changes' do
         allow(media).to receive(:organizations).and_return([organization])
 
@@ -904,15 +900,16 @@ describe 'description attachment methods' do
       end
     end
 
-    # This PR is additive: the stored download_reviewer still drives every read path.
-    describe 'existing records are unaffected' do
-      it 'resolves an existing-shaped media through MediaBehavior#reviewer exactly as before' do
-        media.download_reviewer = [reviewer.ms_id]
+    describe 'read-path cutover' do
+      it 'retains legacy data but resolves only the new fields' do
+        media.download_reviewer = [other_reviewer.ms_id]
+        media.record_download_reviewer_users = [reviewer.ms_id]
         media.save!
 
-        expect(media.download_reviewer_mode).to eq('record_users')
-        expect(media.record_download_reviewer_users).to eq([])
-        expect(media.reviewer).to eq([reviewer.ms_id])
+        expect(media.reload.download_reviewer).to eq([other_reviewer.ms_id])
+        expect(media).not_to respond_to(:reviewer)
+        expect(Morphosource::DownloadReviewerResolver.new.call(media)).to eq([reviewer.ms_id])
+        expect(SolrDocument.find(media.id).download_reviewers).to eq([reviewer.ms_id])
       end
     end
   end

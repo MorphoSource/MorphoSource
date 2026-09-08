@@ -93,7 +93,6 @@ module Morphosource
     def permissions_fields
       {
         download_permission: download_permission,
-        download_reviewer: download_reviewer,
         # try: the deprecated Organization model shares this behavior but has no such
         # property, and is deliberately frozen rather than given one.
         reviews_object_media_downloads: try(:reviews_object_media_downloads),

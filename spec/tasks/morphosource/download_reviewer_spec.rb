@@ -176,7 +176,7 @@ describe 'morphosource:download_reviewer rake tasks', type: :task do
   describe 'morphosource:download_reviewer:export' do
     let(:reviewer)      { FactoryBot.create(:contributor) }
     let(:organization)  { FactoryBot.create(:organization_collection, download_reviewer: [reviewer.ms_id]) }
-    let(:media)         { FactoryBot.create(:media, download_reviewer: [reviewer.ms_id]) }
+    let(:media)         { FactoryBot.create(:media, download_reviewer: [reviewer.ms_id], record_download_reviewer_users: [reviewer.ms_id]) }
 
     context 'with a Media and an OrganizationCollection' do
       before do

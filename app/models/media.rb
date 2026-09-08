@@ -9,8 +9,8 @@ class Media < Morphosource::Works::Base
   before_create :controlled_value_filter, :date_filter
   after_create :mint_ark
   before_update :record_original_member_of_public_collection_ids, :record_original_related_media_ids, :controlled_value_filter, :date_filter
-  before_validation :normalize_download_reviewer
-  after_update :update_ark_status, :update_cartitem_reviewer, :check_for_organization_transfer
+  before_validation :normalize_download_reviewer, :normalize_record_download_reviewer_users
+  after_update :update_ark_status, :check_for_organization_transfer
   after_update :publish_reviewers_updated
   before_destroy :prevent_doi_deletion
   before_destroy :record_original_objects
@@ -103,6 +103,10 @@ class Media < Morphosource::Works::Base
 
   def normalize_download_reviewer
     self.download_reviewer = self.download_reviewer.map { |x| x.split(',') }.flatten
+  end
+
+  def normalize_record_download_reviewer_users
+    self.record_download_reviewer_users = record_download_reviewer_users.flat_map { |value| value.split(',') }.reject(&:blank?).uniq
   end
 
   # @return [String] the persisted mode, or 'record_users' when nothing has been written.
@@ -447,12 +451,6 @@ class Media < Morphosource::Works::Base
     active_fund_code_association&.title || "MorphoSource"
   end
 
-  def update_cartitem_reviewer
-    if self.download_reviewer_changed?
-      UpdateCartItemReviewersJob.perform_later(self)
-    end
-  end
-
   def check_for_organization_transfer
     if (
       self.visibility_changed? &&
@@ -712,7 +710,10 @@ class Media < Morphosource::Works::Base
     # ActiveFedora saves publish no Hyrax events, so the model publishes its own.
     def publish_reviewers_updated
       return if skip_reviewer_event
-      return unless download_reviewer_mode_changed? || record_download_reviewer_users_changed?
+      owner_fallback_changed = download_reviewer_mode == 'record_users' &&
+                               record_download_reviewer_users.reject(&:blank?).empty? &&
+                               (owner_changed? || depositor_changed?)
+      return unless download_reviewer_mode_changed? || record_download_reviewer_users_changed? || owner_fallback_changed
 
       Hyrax.publisher.publish('media.reviewers.updated', media_id: id)
     rescue StandardError => e

@@ -494,7 +494,7 @@ module Hyrax
 
       # Params non-admin users may submit on DOI media — everything else is stripped.
       # aleph_scene is included so annotations (Preview Settings tab) can still be saved.
-      DOI_LOCKED_ALLOWED_PARAMS = %w[visibility fileset_accessibility permissions_attributes admin_set_id version aleph_scene download_reviewer].freeze
+      DOI_LOCKED_ALLOWED_PARAMS = %w[visibility fileset_accessibility permissions_attributes admin_set_id version aleph_scene download_reviewer_mode record_download_reviewer_users].freeze
 
       def check_for_published_doi
         return if current_user&.admin?

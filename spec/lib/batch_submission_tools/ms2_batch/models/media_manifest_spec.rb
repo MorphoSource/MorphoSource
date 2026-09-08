@@ -28,6 +28,17 @@ RSpec.describe BatchSubmissionTools::Ms2Batch::Models::MediaManifest do
   end
 
   describe 'additional_attributes' do
+    it 'carries record reviewers without accepting a legacy reviewer writer' do
+      manifest = described_class.new(initial_attrs: {}, depositor: depositor.ms_id, owner: owner,
+        media_ownership_fields: { 'record_download_reviewer_users' => [depositor.ms_id],
+                                 'download_reviewer_mode' => 'record_users',
+                                 'download_reviewer' => ['legacy-value'] })
+      attributes = manifest.additional_attributes
+      expect(attributes[:record_download_reviewer_users]).to eq([depositor.ms_id])
+      expect(attributes[:download_reviewer_mode]).to eq('record_users')
+      expect(attributes).not_to have_key(:download_reviewer)
+    end
+
     it 'includes owner' do
       expect(subject.additional_attributes[:owner]).to eq(owner)
     end

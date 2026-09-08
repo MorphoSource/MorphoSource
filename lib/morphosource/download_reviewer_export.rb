@@ -122,8 +122,8 @@ module Morphosource
       end
     end
 
-    # Morphosource::Solr::Media includes MediaBehavior, so #reviewer here is what CartItem calls.
     def export_media(csv)
+      resolver = DownloadReviewerResolver.new
       each_solr_document('has_model_ssim:Media') do |media|
         summary[:media] += 1
         stored = Array(media.download_reviewer).reject(&:blank?)
@@ -133,7 +133,7 @@ module Morphosource
           media.id,
           'Media',
           join(stored),
-          join(media.reviewer),
+          join(resolver.call(media)),
           nil
         ]
       end

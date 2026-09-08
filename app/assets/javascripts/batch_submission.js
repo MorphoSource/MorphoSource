@@ -102,9 +102,9 @@ $( document ).ready(function() {
           formData.push({ name: "projects", value: projects });
 
           let reviewers = []
-          let choices = $('.media_download_reviewer').find('.select2-search-choice > div');
-          if ((choices.length > 0) && ($('#media_download_reviewer').val() != '')) {
-            let reviewerIDs = $('#media_download_reviewer').val().split(',');
+          let choices = $('.media_record_download_reviewer_users').find('.select2-search-choice > div');
+          if ((choices.length > 0) && ($('#media_record_download_reviewer_users').val() != '')) {
+            let reviewerIDs = $('#media_record_download_reviewer_users').val().split(',');
             $.each(reviewerIDs, function(index, item) {
               reviewers.push({ id:item , name:$(choices[index]).text() });
             })
@@ -306,7 +306,7 @@ $( document ).ready(function() {
           $('[data-id="' + proj.id + '"]').text(proj.name);
         })
 
-        let reviewerSelect = $('#media_download_reviewer');
+        let reviewerSelect = $('#media_record_download_reviewer_users');
         let reviewers_to_add = formData['reviewers'];
         if (reviewers_to_add.length > 0) {
           let reviewers_array = []
@@ -321,6 +321,10 @@ $( document ).ready(function() {
           reviewerSelect.data('reviewers', '');
           reviewerSelect.select2('destroy').empty().userSearchMultiple('');
         }
+        const orgData = batchSubmissionForm.orgData || {};
+        batchSubmissionForm.configureReviewerMode(orgData.default_fields || {},
+          orgData.organization_permissions_mode === 'Require',
+          formData['batch_submission[media][download_reviewer_mode]']);
         window.scrollTo(0,0);
       };
     }
@@ -699,7 +703,7 @@ $( document ).ready(function() {
         "user_key": $(this).val(),
         "text": $("select[name='batch_submission[on_behalf_of]'] option:selected").text()
       }
-      $('#media_download_reviewer').userSearchMultiple(reviewer);
+      $('#media_record_download_reviewer_users').userSearchMultiple(reviewer);
       // Unset org transfer settings and reset (in case on behalf of is chosen after org)
       batchSubmissionForm.setDefaultMediaPermissionFields();
     });

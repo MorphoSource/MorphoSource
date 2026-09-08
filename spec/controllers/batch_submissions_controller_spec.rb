@@ -163,6 +163,18 @@ RSpec.describe BatchSubmissionsController, type: :controller do
       end
     end
 
+    context 'when organization review is required' do
+      let(:eligible) { true }
+
+      it 'keeps the required mode even when the client omits or overrides it' do
+        organization.update!(permissions_enforcement_mode: ['Require'])
+        [{}, { 'download_reviewer_mode' => 'record_users' }].each do |fields|
+          result = controller.send(:reject_ineligible_reviewer_mode, fields, organization.id)
+          expect(result['download_reviewer_mode']).to eq('object_organization')
+        end
+      end
+    end
+
     context 'when the organization is not eligible' do
       let(:eligible) { false }
 
@@ -180,8 +192,8 @@ RSpec.describe BatchSubmissionsController, type: :controller do
       expect(result).not_to have_key("download_reviewer_mode")
     end
 
-    it 'leaves record_users alone without resolving an organization' do
-      expect(controller).not_to receive(:find_organization)
+    it 'leaves record_users alone when no organization requires review' do
+      allow(controller).to receive(:find_organization).and_return(nil)
       fields = { "download_reviewer_mode" => "record_users" }
 
       expect(controller.send(:reject_ineligible_reviewer_mode, fields, '000200001'))

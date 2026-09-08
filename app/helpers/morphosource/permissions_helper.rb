@@ -20,7 +20,7 @@ module Morphosource
     end
 
     def reviewer_email(f)
-      ms_id = f.object.model.download_reviewer.first
+      ms_id = f.object.model.record_download_reviewer_users.first
       user = User.where(ms_id: ms_id).first
       user ? user.email : ''
     end
@@ -34,9 +34,9 @@ module Morphosource
       end.to_json
     end
 
-    def reviewer_data(f)
+    def reviewer_data(f, field: :record_download_reviewer_users)
       if f.object.model.id.present?
-        f.object.model.download_reviewer.map do |ms_id|
+        f.object.model.public_send(field).map do |ms_id|
           { id: ms_id.to_i, user_key: ms_id, text: (u = User.where(ms_id: ms_id)&.first).present? ? u.name_or_email : '' }
         end
       else

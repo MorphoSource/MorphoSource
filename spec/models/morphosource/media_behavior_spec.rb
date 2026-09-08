@@ -85,7 +85,7 @@ RSpec.describe Morphosource::MediaBehavior do
     end
   end
 
-  describe 'reviewer' do
+  describe 'reviewer resolution through the service' do
     context 'media does not have a download reviewer set' do
       context 'media has an owner' do
         before do
@@ -93,14 +93,14 @@ RSpec.describe Morphosource::MediaBehavior do
           restricted_media.save!
         end
         it 'returns the media owner' do
-          expect(restricted_media.reviewer).to match_array([user.ms_id])
-          expect(restricted_media_solr.reviewer).to match_array([user.ms_id])
+          expect(Morphosource::DownloadReviewerResolver.new.call(restricted_media)).to match_array([user.ms_id])
+          expect(Morphosource::DownloadReviewerResolver.new.call(restricted_media_solr)).to match_array([user.ms_id])
         end
       end
       context 'media does not have an owner' do
         it 'returns the media depositor' do
-          expect(restricted_media.reviewer).to match_array([depositor.ms_id])
-          expect(restricted_media_solr.reviewer).to match_array([depositor.ms_id])
+          expect(Morphosource::DownloadReviewerResolver.new.call(restricted_media)).to match_array([depositor.ms_id])
+          expect(Morphosource::DownloadReviewerResolver.new.call(restricted_media_solr)).to match_array([depositor.ms_id])
         end
       end
       context 'media is owned by an organization' do
@@ -113,12 +113,13 @@ RSpec.describe Morphosource::MediaBehavior do
 
         context 'the organization has a download_reviewer set' do
           before do
-            org.download_reviewer = [user.ms_id]
+            org.managers_are_download_reviewers = false
+            org.custom_download_reviewer_users = [user.ms_id]
             org.save!
           end
           it 'returns the organization download reviewer' do
-            expect(restricted_media.reviewer).to match_array([user.ms_id])
-            expect(restricted_media_solr.reviewer).to match_array([user.ms_id])
+            expect(Morphosource::DownloadReviewerResolver.new.call(restricted_media)).to match_array([user.ms_id])
+            expect(Morphosource::DownloadReviewerResolver.new.call(restricted_media_solr)).to match_array([user.ms_id])
           end
         end
 
@@ -126,10 +127,11 @@ RSpec.describe Morphosource::MediaBehavior do
           before do
             org.managers << user
             org.managers_group.save!
+            org.update_index
           end
           it 'returns the organization manager ms_ids' do
-            expect(restricted_media.reviewer).to match_array([user.ms_id])
-            expect(restricted_media_solr.reviewer).to match_array([user.ms_id])
+            expect(Morphosource::DownloadReviewerResolver.new.call(restricted_media)).to match_array([user.ms_id])
+            expect(Morphosource::DownloadReviewerResolver.new.call(restricted_media_solr)).to match_array([user.ms_id])
           end
         end
       end
@@ -137,56 +139,55 @@ RSpec.describe Morphosource::MediaBehavior do
     context 'media does have a download reviewer set' do
       context 'with individual users' do
         before do
-          restricted_media.download_reviewer = [user.ms_id, depositor.ms_id]
+          restricted_media.record_download_reviewer_users = [user.ms_id, depositor.ms_id]
           restricted_media.save!
         end
 
         it 'returns the download reviewers' do
-          expect(restricted_media.reviewer).to match_array([user.ms_id, depositor.ms_id])
-          expect(restricted_media_solr.reviewer).to match_array([user.ms_id, depositor.ms_id])
+          expect(Morphosource::DownloadReviewerResolver.new.call(restricted_media)).to match_array([user.ms_id, depositor.ms_id])
+          expect(Morphosource::DownloadReviewerResolver.new.call(restricted_media_solr)).to match_array([user.ms_id, depositor.ms_id])
         end
       end
 
-      context 'with an individual user and multiple organizations' do
-        let(:org) { FactoryBot.create(:organization_collection, download_reviewer: [user2.ms_id]) }
-        let(:org2) { FactoryBot.create(:organization_collection, download_reviewer: [user3.ms_id]) }
+      context 'with multiple object organizations' do
+        let(:org) { FactoryBot.create(:organization_collection, managers_are_download_reviewers: false, custom_download_reviewer_users: [user2.ms_id], reviews_object_media_downloads: true) }
+        let(:org2) { FactoryBot.create(:organization_collection, managers_are_download_reviewers: false, custom_download_reviewer_users: [user3.ms_id], reviews_object_media_downloads: true) }
 
         before do
-          restricted_media.download_reviewer = [user.ms_id, org.id, org2.id]
+          allow(restricted_media).to receive(:organizations).and_return([org, org2])
+          restricted_media.download_reviewer_mode = 'object_organization'
           restricted_media.save!
         end
 
-        it 'returns the individual and every organization reviewer' do
-          expected_reviewers = [user.ms_id, user2.ms_id, user3.ms_id]
-
-          expect(restricted_media.reviewer).to match_array(expected_reviewers)
-          expect(restricted_media_solr.reviewer).to match_array(expected_reviewers)
+        it 'returns every organization reviewer on the model and indexed document' do
+          expect(Morphosource::DownloadReviewerResolver.new.call(restricted_media)).to match_array([user2.ms_id, user3.ms_id])
+          expect(Morphosource::DownloadReviewerResolver.new.call(restricted_media_solr)).to match_array([user2.ms_id, user3.ms_id])
         end
       end
 
       context 'when no configured reviewer exists' do
         before do
           restricted_media.owner = user.ms_id
-          restricted_media.download_reviewer = ['missing-reviewer']
+          restricted_media.record_download_reviewer_users = ['missing-reviewer']
           restricted_media.save!
         end
 
-        it 'falls back to the media owner' do
-          expect(restricted_media.reviewer).to match_array([user.ms_id])
-          expect(restricted_media_solr.reviewer).to match_array([user.ms_id])
+        it 'falls back to the batch user' do
+          expect(Morphosource::DownloadReviewerResolver.new.call(restricted_media)).to match_array([User.batch_user.ms_id])
+          expect(Morphosource::DownloadReviewerResolver.new.call(restricted_media_solr)).to match_array([User.batch_user.ms_id])
         end
       end
 
       context 'when at least one configured reviewer exists' do
         before do
           restricted_media.owner = depositor.ms_id
-          restricted_media.download_reviewer = [user.ms_id, 'missing-reviewer']
+          restricted_media.record_download_reviewer_users = [user.ms_id, 'missing-reviewer']
           restricted_media.save!
         end
 
         it 'does not add the media owner' do
-          expect(restricted_media.reviewer).to match_array([user.ms_id])
-          expect(restricted_media_solr.reviewer).to match_array([user.ms_id])
+          expect(Morphosource::DownloadReviewerResolver.new.call(restricted_media)).to match_array([user.ms_id])
+          expect(Morphosource::DownloadReviewerResolver.new.call(restricted_media_solr)).to match_array([user.ms_id])
         end
       end
     end

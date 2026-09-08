@@ -178,10 +178,7 @@ class BatchSubmissionsController < ApplicationController
   # fields become media attributes directly (media_manifest.rb). Check the posted mode against
   # the organization the batch is already for.
   def reject_ineligible_reviewer_mode(media_fields, organization_id)
-    return media_fields unless media_fields["download_reviewer_mode"] == 'object_organization'
-    return media_fields if object_organization_mode_allowed?(find_organization(organization_id))
-
-    media_fields.except("download_reviewer_mode")
+    apply_reviewer_mode_default(media_fields, find_organization(organization_id))
   end
 
   def ingest

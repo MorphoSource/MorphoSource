@@ -7,6 +7,8 @@ require 'rails_helper'
 RSpec.describe 'reviewer domain event registration' do
   let(:event_ids) { ['media.reviewers.updated', 'organization.reviewers.updated'] }
 
+  before { ActiveJob::Base.queue_adapter = :test }
+
   def registered_event_ids
     Hyrax.publisher.send(:__bus__).events.keys
   end

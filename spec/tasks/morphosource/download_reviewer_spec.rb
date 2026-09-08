@@ -180,7 +180,7 @@ describe 'morphosource:download_reviewer rake tasks', type: :task do
   describe 'morphosource:download_reviewer:export' do
     let(:reviewer)      { FactoryBot.create(:contributor) }
     let(:organization)  { FactoryBot.create(:organization_collection, download_reviewer: [reviewer.ms_id]) }
-    let(:media)         { FactoryBot.create(:media, download_reviewer: [reviewer.ms_id]) }
+    let(:media)         { FactoryBot.create(:media, download_reviewer: [reviewer.ms_id], record_download_reviewer_users: [reviewer.ms_id]) }
 
     context 'with a Media and an OrganizationCollection' do
       before do
@@ -244,7 +244,9 @@ describe 'morphosource:download_reviewer rake tasks', type: :task do
         expect(row['resolved_reviewers']).to eq(manager.ms_id)
       end
 
-      it 'resolves a Media whose stored reviewer names an OrganizationCollection' do
+      # The stored pointer is recorded verbatim -- ticket 10 scopes its strip by this column --
+      # but resolution reads download_reviewers, so it no longer follows the pointer.
+      it 'records a stored reviewer naming an OrganizationCollection without resolving through it' do
         organization.download_reviewer = []
         organization.managers << manager
         organization.managers_group.save!
@@ -256,7 +258,7 @@ describe 'morphosource:download_reviewer rake tasks', type: :task do
 
         expect(row['stored_download_reviewer']).to eq(organization.id)
         expect(row['owner']).to eq(owner.ms_id)
-        expect(row['resolved_reviewers']).to eq(manager.ms_id)
+        expect(row['resolved_reviewers']).to eq(owner.ms_id)
       end
 
       it 'records Manager ms_ids even when a stored reviewer hides them from resolution' do
@@ -365,19 +367,6 @@ describe 'morphosource:download_reviewer rake tasks', type: :task do
       expect(Dir.glob("#{path}.*.part")).to be_empty
     end
 
-    it 'reports a Media resolving through a dangling record and finishes the walk' do
-      media
-      allow_any_instance_of(SolrDocument).to receive(:reviewer)
-        .and_raise(ActiveFedora::ObjectNotFoundError)
-
-      summary = Morphosource::DownloadReviewerExport.new(path: path, scope: 'media').call
-
-      expect(summary[:unresolvable]).to include(media.id)
-      row = row_for(media)
-      expect(row['stored_download_reviewer']).to eq(reviewer.ms_id)
-      expect(row['resolved_reviewers']).to be_blank
-    end
-
     it 'resolves Media reviewers without loading them from Fedora' do
       media
       expect(Media).not_to receive(:find)
@@ -391,8 +380,10 @@ describe 'morphosource:download_reviewer rake tasks', type: :task do
       owner = FactoryBot.create(:contributor)
       2.times { FactoryBot.create(:media, owner: owner.ms_id) }
 
-      # The Fedora-backed lookup #resolve_reviewers' cache exists to collapse.
-      expect(OrganizationCollection).to receive(:find_by).once.and_call_original
+      # Resolution reads Solr now; #resolve_reviewers' cache exists to collapse these two
+      # records, which share a reviewer set and an owner, into a single resolver call.
+      expect_any_instance_of(Morphosource::DownloadReviewerResolver)
+        .to receive(:call).once.and_call_original
 
       Morphosource::DownloadReviewerExport.new(path: path, scope: 'media').call
     end

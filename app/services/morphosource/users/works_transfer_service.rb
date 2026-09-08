@@ -52,7 +52,7 @@ module Morphosource
       end
 
       def works
-        ActiveFedora::Base.where("generic_type_sim:Work AND (depositor_ssim:#{@old_user.ms_id}  OR download_reviewer_ssim:#{@old_user.ms_id} OR owner_ssim:#{@old_user.ms_id})")
+        ActiveFedora::Base.where("generic_type_sim:Work AND (depositor_ssim:#{@old_user.ms_id}  OR download_reviewers_ssim:#{@old_user.ms_id} OR record_download_reviewer_users_ssim:#{@old_user.ms_id} OR owner_ssim:#{@old_user.ms_id})")
       end
 
     end

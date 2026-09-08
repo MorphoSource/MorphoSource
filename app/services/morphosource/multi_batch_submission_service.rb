@@ -243,7 +243,6 @@ module Morphosource
       org = OrganizationCollection.exists?(org_id) ? OrganizationCollection.find(org_id) : Organization.find(org_id)
       org_fields = {
         "visibility" => Array(org.download_permission).first,
-        "download_reviewer" => Array(org.download_reviewer),
         "rights_holder" => Array(org.rights_holder),
         "rights_statement" => Array(org.rights_statement).first,
         "license" => Array(org.license).first,
@@ -264,7 +263,7 @@ module Morphosource
       org_fields["download_reviewer_mode"] = 'object_organization' if org.try(:reviews_object_media_downloads)
 
       defaults = default_ownership_fields
-      org_overrides = ownership_options_for(org_id)
+      org_overrides = ownership_options_for(org_id).except("download_reviewer", :download_reviewer)
 
       keys = defaults.keys | org_fields.keys | org_overrides.keys.map(&:to_s)
 
@@ -285,7 +284,6 @@ module Morphosource
     def default_ownership_fields
       {
         "visibility"=>"restricted",
-        "download_reviewer"=>user.ms_id,
         "rights_holder"=>[""],
         "rights_statement"=>"",
         "license"=>"",

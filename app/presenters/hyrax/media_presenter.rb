@@ -53,7 +53,7 @@ module Hyrax
 
     # Attributes from Media solr document
     delegate :access_control_id, :agreement_uri, :ark, :cite_as, :depositor, :description, :doi,
-      :download_reviewer, :fileset_accessibility, :fileset_visibility, :funding,
+      :download_reviewers, :fileset_accessibility, :fileset_visibility, :funding,
       :human_readable_media_type, :identifier, :imaging_event_id, :is_remote_backed, :map_type,
       :media_organization_id, :media_organization, :media_type, :morphosource_use_agreement_type,
       :number_of_images_in_set, :organization_transfer_on_publish, :pending_org_transfer, :orientation, :part,

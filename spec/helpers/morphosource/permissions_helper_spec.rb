@@ -37,7 +37,7 @@ RSpec.describe Morphosource::PermissionsHelper, type: :helper do
 
     context 'A default reviewer exists' do
       before do
-        media.download_reviewer = [reviewer.ms_id]
+        media.record_download_reviewer_users = [reviewer.ms_id]
       end
       it 'returns the reviewer email' do
         helper.simple_form_for form, url: '' do |f|
@@ -47,7 +47,7 @@ RSpec.describe Morphosource::PermissionsHelper, type: :helper do
     end
     context 'A default reviewer does not exist' do
       before do
-        media.download_reviewer = []
+        media.record_download_reviewer_users = []
       end
       it 'returns the reviewer email' do
         helper.simple_form_for form, url: '' do |f|

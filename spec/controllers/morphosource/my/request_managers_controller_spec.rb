@@ -34,7 +34,7 @@ RSpec.describe Morphosource::My::RequestManagersController, :type => :controller
       cartItem7.reviewers = [current_user.ms_id]
       [cartItem1,cartItem3,cartItem5,cartItem7].each(&:save)
       [work1,work3,work5,work7].each do |work|
-        work.download_reviewer = [current_user.ms_id]
+        work.record_download_reviewer_users = [current_user.ms_id]
         work.save
       end
     end

@@ -256,7 +256,6 @@ RSpec.describe SubmissionsController, type: :controller do
       end
 
       it 'returns JSON organization response' do
-        allow(subject).to receive(:format_reviewers_select2).and_return([ { id: 012345, user_key: '012345', text: 'email@email.com' } ])
         allow(subject).to receive(:find_ancestor_organization).and_return(organization)
 
         post :organization_default_media_fields, params: form_params
@@ -265,7 +264,6 @@ RSpec.describe SubmissionsController, type: :controller do
           status: 'OK',
           message: 'Organization default permission settings retrieved',
           default_fields: {
-          'download_reviewer': [ { id: 012345, user_key: '012345', text: 'email@email.com' } ],
           'agreement_uri': ['http://agreement.uri'],
           'license': ['CC0'],
           'rights_statement': ['In Copyright'],
@@ -359,6 +357,30 @@ RSpec.describe SubmissionsController, type: :controller do
       end
     end
 
+    context 'when organization review is required' do
+      let(:eligible) { true }
+
+      it 'uses object_organization even if the client posts record_users' do
+        organization.update!(permissions_enforcement_mode: ['Require'])
+        params = ActionController::Parameters.new('download_reviewer_mode' => 'record_users')
+        expect(subject.send(:reject_ineligible_reviewer_mode, params)['download_reviewer_mode'])
+          .to eq('object_organization')
+      end
+    end
+
+    it 'persists multiple reviewers through the submission form param path' do
+      reviewer = FactoryBot.create(:contributor)
+      posted = ActionController::Parameters.new(
+        download_reviewer_mode: 'record_users',
+        record_download_reviewer_users: ["#{user.ms_id},#{reviewer.ms_id}"],
+        download_reviewer: ['legacy-value'])
+      fields = Hyrax::MediaForm.model_attributes(subject.send(:reject_ineligible_reviewer_mode, posted))
+      media = FactoryBot.create(:media, fields)
+
+      expect(media.reload.record_download_reviewer_users).to match_array([user.ms_id, reviewer.ms_id])
+      expect(media.download_reviewer).to be_empty
+    end
+
     context 'when the organization is not eligible' do
       let(:eligible) { false }
 
@@ -375,8 +397,7 @@ RSpec.describe SubmissionsController, type: :controller do
       expect(subject.send(:reject_ineligible_reviewer_mode, posted)).not_to have_key('download_reviewer_mode')
     end
 
-    it 'leaves record_users alone without resolving an organization' do
-      expect(subject).not_to receive(:find_ancestor_organization)
+    it 'allows record_users when organization review is not required' do
       params = ActionController::Parameters.new('download_reviewer_mode' => 'record_users')
 
       expect(subject.send(:reject_ineligible_reviewer_mode, params)['download_reviewer_mode']).to eq('record_users')

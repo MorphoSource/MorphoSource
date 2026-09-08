@@ -152,6 +152,18 @@ module SubmissionsControllerBehavior
     organization.try(:reviews_object_media_downloads).present?
   end
 
+  def apply_reviewer_mode_default(fields, organization)
+    fields = fields.except('download_reviewer')
+    if object_organization_mode_allowed?(organization)
+      if organization.permissions_enforcement_mode&.first == 'Require'
+        fields = fields.merge('download_reviewer_mode' => 'object_organization')
+      end
+    elsif fields['download_reviewer_mode'] == 'object_organization'
+      fields = fields.except('download_reviewer_mode')
+    end
+    fields
+  end
+
   def transfer_media_immediately?
     transfer = params.dig(:media, :transfer_management)
     visibility = params.dig(:batch_submission, :media, :visibility) || params.dig(:media, :visibility)

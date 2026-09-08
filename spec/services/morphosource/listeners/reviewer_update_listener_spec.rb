@@ -5,10 +5,9 @@ require 'rails_helper'
 RSpec.describe Morphosource::Listeners::ReviewerUpdateListener do
   subject(:listener) { described_class.new }
 
-  let(:media_event)        { instance_double('Dry::Events::Event', payload: { media_id: 'media-1' }) }
+  let(:media_event)        { instance_double('Dry::Events::Event', :[] => 'media-1') }
   let(:organization_event) { instance_double('Dry::Events::Event', payload: { organization_id: 'org-1' }) }
 
-  # Both handlers are inert until the jobs they will enqueue exist.
   before { ActiveJob::Base.queue_adapter = :test }
 
   describe '#on_media_reviewers_updated' do
@@ -16,9 +15,9 @@ RSpec.describe Morphosource::Listeners::ReviewerUpdateListener do
       expect { listener.on_media_reviewers_updated(media_event) }.not_to raise_error
     end
 
-    it 'enqueues nothing yet' do
+    it 'enqueues the media id' do
       expect { listener.on_media_reviewers_updated(media_event) }
-        .not_to have_enqueued_job
+        .to have_enqueued_job(UpdateCartItemReviewersJob).with('media-1')
     end
   end
 
@@ -34,6 +33,11 @@ RSpec.describe Morphosource::Listeners::ReviewerUpdateListener do
   end
 
   describe 'event subscription' do
+    it 'enqueues a refresh when the domain event publishes' do
+      expect { Hyrax.publisher.publish('media.reviewers.updated', media_id: 'media-1') }
+        .to have_enqueued_job(UpdateCartItemReviewersJob).with('media-1')
+    end
+
     # Bus#attach derives the handler name from the event id, so a rename silently unbinds it.
     it 'responds to the handler name derived from each event id' do
       expect(listener).to respond_to(:on_media_reviewers_updated)

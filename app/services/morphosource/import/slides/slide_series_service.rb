@@ -148,11 +148,11 @@ module Morphosource
                          # values from providers.yml
                          agreement_uri: agreement_uri,
                          depositor: manager.user_key,
-                         download_reviewer: [download_reviewer.user_key],
+                         record_download_reviewer_users: [download_reviewer.ms_id],
                          fileset_accessibility: fileset_accessibility,
                          license: license,
                          morphosource_use_agreement_type: morphosource_use_agreement_type,
-                         owner: manager.user_key,
+                         owner: manager.ms_id,
                          permits_3d_use: permits_3d_use,
                          permits_commercial_use: permits_commercial_use,
                          preview_mode: preview_mode,

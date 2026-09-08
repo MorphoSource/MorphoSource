@@ -606,7 +606,8 @@ RSpec.describe Hyrax::MediaController, type: :controller do
           "visibility" => "open",
           "permissions_attributes" => { "0" => { "access" => "read" } },
           "aleph_scene" => '{"annotations":[]}',
-          "download_reviewer" => ["user@example.com"]
+          "record_download_reviewer_users" => ["reviewer-id"],
+          "download_reviewer_mode" => "record_users"
         }
       })
     end
@@ -659,9 +660,9 @@ RSpec.describe Hyrax::MediaController, type: :controller do
           expect(params["media"].keys).to include("aleph_scene")
         end
 
-        it 'keeps download_reviewer so it can still be changed' do
+        it 'keeps both reviewer fields so they can still be changed' do
           subject.send(:strip_doi_protected_fields)
-          expect(params["media"].keys).to include("download_reviewer")
+          expect(params["media"].keys).to include("record_download_reviewer_users", "download_reviewer_mode")
         end
       end
     end

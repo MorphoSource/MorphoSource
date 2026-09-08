@@ -22,7 +22,6 @@ module Morphosource
       @user = User.find_by(email: user_email)
       @remove_previous_reviewers = remove_previous_reviewers
       @update_publication_status = update_publication_status
-      update_download_reviewer
       update_media_publication_status
       update_data_manager
       update_permissions
@@ -47,15 +46,7 @@ module Morphosource
     end
 
     def update_download_reviewer
-      if @media.open? || @remove_previous_reviewers == "true"
-        @media.download_reviewer = @organization.download_reviewer
-      elsif @media.private?
-        # if a download reviewer has been designated, include them along with the organization download reviewers
-        @media.download_reviewer = (@media.download_reviewer + @organization.download_reviewer).uniq
-      else
-        # if media is restricted download, include the default reviewer (regardless of whether one has been explicitly desginated) along with the organization download reviewers
-        @media.download_reviewer = (@media.reviewer + @organization.download_reviewer.to_a).uniq
-      end
+      @media.record_download_reviewer_users = [] if @media.open? || @remove_previous_reviewers == "true"
     end
 
     def update_media_publication_status

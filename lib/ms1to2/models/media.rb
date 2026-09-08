@@ -39,7 +39,7 @@ module Ms1to2
       def expected_special_fields
         [:depositor, :parent_id, :part, :side, :description, 
          :cite_as, :available, :unit, :funding, :license, :rights_statement, 
-         :rights_holder, :x_spacing, :y_spacing, :z_spacing, :download_reviewer, 
+         :rights_holder, :x_spacing, :y_spacing, :z_spacing,
          :visibility, :fileset_visibility, :fileset_accessibility,
          :morphosource_use_agreement_type, :required_archival_of_published_derivatives,
          :permits_commercial_use, :permits_3d_use, :media_type]

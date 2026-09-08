@@ -25,6 +25,7 @@ RSpec.describe Morphosource::My::CartItemsController, :type => :controller  do
         expect(item.user_id).to eq(current_user.ms_id)
         expect(item.work_id).to eq(work6.id)
         expect(item.in_cart).to be(true)
+        expect(item.reviewers).to eq([reviewer.ms_id])
       end
 
       it "returns flash message 'Item Added to Cart'" do

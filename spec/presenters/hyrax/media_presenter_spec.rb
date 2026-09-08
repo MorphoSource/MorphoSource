@@ -22,7 +22,7 @@ RSpec.describe Hyrax::MediaPresenter do
     context "for media" do
       attributes = [
         :access_control_id, :agreement_uri, :ark, :cite_as, :depositor, :description, :doi,
-        :download_reviewer, :fileset_accessibility, :fileset_visibility, :funding, :id, :identifier,
+        :download_reviewers, :fileset_accessibility, :fileset_visibility, :funding, :id, :identifier,
         :imaging_event_id, :is_remote_backed, :map_type, :media_organization_id, :media_type,
         :morphosource_use_agreement_type, :number_of_images_in_set, :organization_transfer_on_publish,
         :pending_org_transfer, :orientation, :part, :permits_3d_use, :permits_commercial_use, :physical_object_id,

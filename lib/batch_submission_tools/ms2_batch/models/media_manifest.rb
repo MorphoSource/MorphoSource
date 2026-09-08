@@ -70,16 +70,11 @@ module BatchSubmissionTools
             depositor: depositor,
             owner: owner,
             on_behalf_of: on_behalf_of,
-            download_reviewer: download_reviewer,
             description: description,
             derived_parent_file: derived_parent_file
           }
-          attrs.merge!(@media_ownership_fields).symbolize_keys!
+          attrs.merge!(@media_ownership_fields.except("download_reviewer", :download_reviewer)).symbolize_keys!
           attrs.merge!(visibility_mapped(@media_ownership_fields["visibility"]))
-        end
-
-        def download_reviewer
-          on_behalf_of.present? ? [on_behalf_of] : [depositor]
         end
 
         def description

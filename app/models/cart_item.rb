@@ -102,7 +102,7 @@ class CartItem < ApplicationRecord
   end
 
   def reviewer
-    User.where(ms_id: work.reviewer)
+    User.where(ms_id: Morphosource::DownloadReviewerResolver.new.call(work))
   end
 
   def reviewer_names

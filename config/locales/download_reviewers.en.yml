@@ -1,0 +1,16 @@
+en:
+  morphosource:
+    reviewers:
+      mode_label: "Download reviewers"
+      record_users: "Specific users (media owner when blank)"
+      object_organization: "Object organization"
+  blacklight:
+    search:
+      fields:
+        media:
+          show:
+            download_reviewers: "Download reviewers"
+  simple_form:
+    hints:
+      defaults:
+        download_reviewers: "Users who receive and decide requests for restricted downloads. An organization routes requests to its current download reviewers."

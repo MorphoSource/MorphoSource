@@ -843,28 +843,13 @@ class SubmissionsController < ApplicationController
   def default_media_permissions(organization)
     fields = organization.enforced_permissions_fields
 
-    fields.merge!(
-      download_reviewer: format_reviewers_select2(organization.download_reviewer)
-    ) if organization.download_reviewer.present?
-
     fields[:download_reviewer_mode] = 'object_organization' if fields.delete(:reviews_object_media_downloads)
 
     fields
   end
 
   def reject_ineligible_reviewer_mode(model_params)
-    return model_params unless model_params['download_reviewer_mode'] == 'object_organization'
-    return model_params if object_organization_mode_allowed?(find_ancestor_organization)
-
-    model_params.except('download_reviewer_mode')
-  end
-
-  def format_reviewers_select2(reviewers)
-    reviewers.map do |ms_id|
-      if (u = User.where(ms_id: ms_id)&.first).present?
-        { id: u.id, user_key: u.user_key, text: u.email.present? ? u.email : '' }
-      end
-    end.compact
+    apply_reviewer_mode_default(model_params, find_ancestor_organization)
   end
 
   # reindex works that have catalog facets depending on metadata from associated work types after all works have been linked with each other.

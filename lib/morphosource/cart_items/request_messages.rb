@@ -9,6 +9,7 @@ module Morphosource
 
       def cart_item_message_content(items, message_for="requestor")
         content = ""
+        resolver = Morphosource::DownloadReviewerResolver.new
         items.each do |item|
           work = SolrDocument.find(item.work_id)
           if work.present?
@@ -27,14 +28,15 @@ module Morphosource
               end
             end
             content += " for intended use: <i>\"" + item.use + "\"</i>" if item.use.present?
+            reviewer_ids = resolver.call(work)
             reviewers = []
-            Array(work.reviewer).each do |r|
+            reviewer_ids.each do |r|
               if User.where(ms_id:r).present?
                 # todo: check and skip if current reviewer?
                 reviewers << User.where(ms_id:r).first
               end
             end
-            if message_for == "reviewer" && Array(work.reviewer).count > 1
+            if message_for == "reviewer" && reviewer_ids.count > 1
               content += "<br/><small>(This request has been sent to multiple reviewers: #{user_email_link(reviewers)} who are all able to approve, deny, or clear this request.  Please coordinate your response if appropriate.)</small>"
             elsif message_for == "requestor"
               content += "<br/><small>(This request has been sent to: #{user_email_link(reviewers)})</small>"

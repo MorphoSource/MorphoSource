@@ -19,7 +19,7 @@ PRIVATE_MEDIA_DOC_ATTRIBUTES = {
   doi_ssim: ["doi"],
   doi_tesim: ["doi"],
   download_reviewer_tesim: ["123456"],
-  download_reviewer_ssim: ["123456"],
+  download_reviewers_ssim: ["123456"],
   file_set_ids_ssim: ["678912345"],
   funding_tesim: ["Funding"],
   hasRelatedMediaFragment_ssim: ["678912345"],

@@ -99,6 +99,8 @@ class SolrDocument
     self['title_tesim']
   end
 
+  # @return [Array<String>] Media reviewer identities (User ms_ids or org_collection: tokens),
+  #   or resolved User ms_ids on OrganizationCollection documents.
   def download_reviewers
     self['download_reviewers_ssim'] || []
   end

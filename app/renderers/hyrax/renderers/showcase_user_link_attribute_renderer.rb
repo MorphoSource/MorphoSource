@@ -23,7 +23,12 @@ module Hyrax
           markup = ''
           return markup if value.blank?
 
-          user = ::User.find_by_user_key(value) || ::SolrDocument.where({"id" => value}).first
+          prefix = Morphosource::MediaMetadata::ORG_COLLECTION_TOKEN_PREFIX
+          user = if value.start_with?(prefix)
+                   ::SolrDocument.where({ "id" => value.delete_prefix(prefix) }).first
+                 else
+                   ::User.find_by_user_key(value) || ::SolrDocument.where({ "id" => value }).first
+                 end
           if user.present?
             link = user_link(user)
           else

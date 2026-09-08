@@ -32,8 +32,6 @@ module Morphosource
 
     BATCH_SIZE = 1000
 
-    UNRESOLVABLE = :unresolvable
-
     attr_reader :path, :scope, :logger, :summary
 
     # @param path [String] where to write the CSV; must survive a deploy
@@ -68,7 +66,6 @@ module Morphosource
       lines.concat(media_summary_lines)
       lines.concat(cart_item_summary_lines)
       lines << "in Solr but not in Fedora: #{summary[:unloadable].count}" if summary[:unloadable].any?
-      lines << "Media whose resolution hit a dangling record: #{summary[:unresolvable].count}" if summary[:unresolvable].any?
       lines
     end
 
@@ -186,20 +183,14 @@ module Morphosource
     end
 
     def resolve_reviewers(media)
-      key = [media.download_reviewer, media.user_with_ownership]
-      resolved = @reviewer_cache.fetch(key) { @reviewer_cache[key] = resolve_uncached(media) }
-      return resolved unless resolved == UNRESOLVABLE
-
-      summary[:unresolvable] << media.id
-      []
+      key = [media.download_reviewers, media.user_with_ownership]
+      @reviewer_cache.fetch(key) { @reviewer_cache[key] = resolver.call(media) }
     end
 
-    def resolve_uncached(media)
-      media.reviewer
-    rescue ActiveFedora::ObjectNotFoundError, Ldp::Gone => e
-      logger.warn("[morphosource:download_reviewer:export] Media #{media.id} resolves through a " \
-                  "record that is in Solr but not in Fedora (#{e.class}); resolution left blank")
-      UNRESOLVABLE
+    # One instance per export run: the resolver memoizes organization reviewers internally,
+    # which is the reload it exists to avoid.
+    def resolver
+      @resolver ||= DownloadReviewerResolver.new
     end
 
     def each_record(model, query)
@@ -307,8 +298,7 @@ module Morphosource
         cart_items: 0,
         cart_items_with_reviewers: 0,
         cart_items_total: 0,
-        unloadable: [],
-        unresolvable: []
+        unloadable: []
       }
     end
 
@@ -319,11 +309,6 @@ module Morphosource
         logger.warn("[morphosource:download_reviewer:export] #{summary[:unloadable].count} records were in " \
                     "Solr but not in Fedora: #{summary[:unloadable].join(', ')}")
       end
-
-      return if summary[:unresolvable].empty?
-
-      logger.warn("[morphosource:download_reviewer:export] #{summary[:unresolvable].count} Media resolve " \
-                  "through a record that is in Solr but not in Fedora: #{summary[:unresolvable].join(', ')}")
     end
 
     def log(message)

@@ -6,9 +6,9 @@ RSpec.describe CartItem, type: :model do
   let(:reviewer)      { User.create(email: 'reviewer@email.com', password: 'password') }
   let(:depositor)     { User.create(email: 'depositor@email.com', password: 'password') }
 
-  let(:work1)         { Media.create(id: "aaa", title: ["Test Media Work"], depositor: depositor.ms_id, download_reviewer: [reviewer.ms_id], fileset_accessibility: ['restricted_download'])}
+  let(:work1)         { Media.create(id: "aaa", title: ["Test Media Work"], depositor: depositor.ms_id, record_download_reviewer_users: [reviewer.ms_id], fileset_accessibility: ['restricted_download'])}
 
-  let(:work2)         { Media.create(id: "bbb", title: ["Test Media Work"], depositor: depositor.ms_id, download_reviewer: [], visibility: 'open', fileset_accessibility: ['open'])}
+  let(:work2)         { Media.create(id: "bbb", title: ["Test Media Work"], depositor: depositor.ms_id, record_download_reviewer_users: [], visibility: 'open', fileset_accessibility: ['open'])}
 
   let!(:cartItem1)    { CartItem.create(user: user, work_id: work1.id) }
   let!(:cartItem2)    { CartItem.create(user: user, work_id: work2.id) }
@@ -19,6 +19,15 @@ RSpec.describe CartItem, type: :model do
 
   after do
     Timecop.return
+  end
+
+  it 'allows an organization reviewer to download its restricted media' do
+    organization = FactoryBot.create(:organization_collection, managers_are_download_reviewers: false,
+                                      custom_download_reviewer_users: [user.ms_id])
+    media = FactoryBot.create(:media, owner: organization.id, fileset_accessibility: ['restricted_download'])
+    item = CartItem.create!(user: user, work_id: media.id)
+    expect(item).to be_downloadable
+    expect(item.reviewer).to include(user)
   end
 
   describe '#active_request, #inactive_request' do
@@ -263,7 +272,7 @@ RSpec.describe CartItem, type: :model do
       end
       context 'user is the work download reviewer' do
         before do
-          work1.download_reviewer = [user.ms_id]
+          work1.record_download_reviewer_users = [user.ms_id]
           work1.save!
           allow(SolrDocument).to receive(:find).with(work1.id).and_return(SolrDocument.find(work1.id))
         end
@@ -295,7 +304,7 @@ RSpec.describe CartItem, type: :model do
     end
     context 'user is the reviewer' do
       before do
-        work1.download_reviewer = [user.ms_id]
+        work1.record_download_reviewer_users = [user.ms_id]
         work1.save!
         allow(SolrDocument).to receive(:find).with(work1.id).and_return(SolrDocument.find(work1.id))
       end

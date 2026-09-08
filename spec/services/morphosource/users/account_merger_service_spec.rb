@@ -181,7 +181,7 @@ RSpec.describe Morphosource::Users::AccountMergerService do
   end
 
   describe 'transfer_roles' do
-    let(:work)  { Media.new(title: ['work'], depositor: old_user.ms_id, owner: old_user.ms_id, download_reviewer: [old_user.ms_id], proxy_depositor: old_user.ms_id, on_behalf_of: old_user.ms_id) }
+    let(:work)  { Media.new(title: ['work'], depositor: old_user.ms_id, owner: old_user.ms_id, record_download_reviewer_users: [old_user.ms_id], proxy_depositor: old_user.ms_id, on_behalf_of: old_user.ms_id) }
     let(:works) { [work] }
 
     before do
@@ -192,7 +192,7 @@ RSpec.describe Morphosource::Users::AccountMergerService do
     it 'assigns the new user to old user roles' do
       expect(work.depositor).to eq(new_user.ms_id)
       expect(work.owner).to eq(new_user.ms_id)
-      expect(work.download_reviewer).to include(new_user.ms_id)
+      expect(work.record_download_reviewer_users).to include(new_user.ms_id)
       expect(work.proxy_depositor).to eq(new_user.ms_id)
       expect(work.on_behalf_of).to eq(new_user.ms_id)
     end
@@ -212,11 +212,29 @@ RSpec.describe Morphosource::Users::AccountMergerService do
     end
   end
 
+  describe 'dormant reviewer transfer' do
+    it 'updates the stored list without publishing or changing organization identity' do
+      organization = FactoryBot.create(:organization_collection, reviews_object_media_downloads: true)
+      media = FactoryBot.create(:media, record_download_reviewer_users: [old_user.ms_id])
+      allow(media).to receive(:organizations).and_return([organization])
+      media.update!(download_reviewer_mode: 'object_organization')
+      service = described_class.new(old_user.email, new_user.email)
+
+      expect(Hyrax.publisher).not_to receive(:publish)
+      service.update_download_reviewer(media)
+
+      expect(media.record_download_reviewer_users).to eq([new_user.ms_id])
+      expect(media.download_reviewers).to eq(["org_collection:#{organization.id}"])
+      expect(media.skip_reviewer_event).to be_falsey
+      expect(SolrDocument.find(media.id)['record_download_reviewer_users_ssim']).to eq([new_user.ms_id])
+    end
+  end
+
   describe 'works' do
     # user roles
     let!(:deposited_work)       { Media.create(title: ['deposited work'], depositor: old_user.ms_id) }
     let!(:owned_work)           { Media.create(title: ['owned work'], owner: old_user.ms_id) }
-    let!(:reviewed_work)        { Media.create(title: ['reviewed work'], download_reviewer: [old_user.ms_id]) }
+    let!(:reviewed_work)        { Media.create(title: ['reviewed work'], record_download_reviewer_users: [old_user.ms_id]) }
     let!(:proxy_deposited_work) { Media.create(title: ['proxy deposted work'], proxy_depositor: old_user.ms_id) }
     let!(:on_behalf_of_work)    { Media.create(title: ['on behalf of work'], on_behalf_of: old_user.ms_id) }
     # user permissions
@@ -235,6 +253,27 @@ RSpec.describe Morphosource::Users::AccountMergerService do
       download_access_work.download_users += [old_user]
       read_access_work.read_users += [old_user]
       [edit_access_work, download_access_work, read_access_work].each(&:save!)
+    end
+
+    it 'does not select media solely because the old user manages its reviewer organization' do
+      organization = FactoryBot.create(:organization_collection)
+      organization.managers << old_user
+      organization.managers_group.save!
+      organization.update_index
+      media = FactoryBot.build(:media, owner: new_user.ms_id, depositor: new_user.ms_id)
+      allow(media).to receive(:download_reviewers).and_return(["org_collection:#{organization.id}"])
+      media.save!
+
+      expect(subject.works.map(&:id)).not_to include(media.id)
+    end
+
+    it 'finds a dormant list even when the indexed reviewer identity is an organization' do
+      media = FactoryBot.build(:media, owner: new_user.ms_id, depositor: new_user.ms_id,
+                                record_download_reviewer_users: [old_user.ms_id])
+      allow(media).to receive(:download_reviewers).and_return(['org_collection:another-org'])
+      media.save!
+
+      expect(subject.works.map(&:id)).to include(media.id)
     end
 
     it 'returns all works associated with the old user' do

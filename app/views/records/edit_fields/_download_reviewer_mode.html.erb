@@ -1,0 +1,12 @@
+<div class="form-group row media_download_reviewer_mode">
+  <div class="col-6 showcase-label">
+    <%= f.label :download_reviewer_mode, t('morphosource.reviewers.mode_label'), for: 'media_download_reviewer_mode', class: 'col-form-label' %>
+  </div>
+  <div class="col-6 showcase-value">
+    <%= f.select :download_reviewer_mode,
+      [[t('morphosource.reviewers.record_users'), 'record_users'],
+       [t('morphosource.reviewers.object_organization'), 'object_organization',
+        { disabled: local_assigns[:submission] && f.object.download_reviewer_mode != 'object_organization' }]],
+      {}, id: 'media_download_reviewer_mode', class: 'form-control' %>
+  </div>
+</div>

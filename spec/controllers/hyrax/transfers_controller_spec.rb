@@ -82,4 +82,35 @@ RSpec.describe Hyrax::TransfersController, type: :controller do
       end
     end
   end
+
+  describe 'POST create' do
+    let(:depositor) { FactoryBot.create(:contributor) }
+    let(:media)     { Media.create(title: ['media'], depositor: depositor.ms_id, owner: depositor.ms_id, visibility: 'restricted', fileset_accessibility: ['private']) }
+
+    before { sign_in depositor }
+
+    context 'transferring to an organization' do
+      let!(:organization) { FactoryBot.create(:organization_collection, media_ownership_transfer: true) }
+
+      it 'flags the created ProxyDepositRequest as an organization transfer and marks the media as having a pending org transfer' do
+        post :create, params: { id: media.id, proxy_deposit_request: { transfer_to: organization.id, sender_comment: 'please accept' } }
+        transfer = ProxyDepositRequest.where(work_id: media.id, receiving_user_id: organization.id).first
+        expect(transfer).to be_present
+        expect(transfer.organization_transfer).to eq(true)
+        expect(Media.find(media.id).pending_org_transfer).to eq(true)
+      end
+    end
+
+    context 'transferring to a user' do
+      let!(:other_user) { FactoryBot.create(:contributor) }
+
+      it 'does not flag the created ProxyDepositRequest as an organization transfer, and does not mark the media as having a pending org transfer' do
+        post :create, params: { id: media.id, proxy_deposit_request: { transfer_to: other_user.id, sender_comment: 'please accept' } }
+        transfer = ProxyDepositRequest.where(work_id: media.id, receiving_user_id: other_user.id).first
+        expect(transfer).to be_present
+        expect(transfer.organization_transfer).to eq(false)
+        expect(Media.find(media.id).pending_org_transfer).to be_falsey
+      end
+    end
+  end
 end

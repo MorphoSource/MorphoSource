@@ -43,7 +43,9 @@ module Hyrax
         #          # ./spec/jobs/create_derivatives_job_spec.rb:7:in `block (2 levels) in <top (required)>'
         #
         Hydra::Derivatives.source_file_service = Hyrax::LocalFileService
-        Hydra::Derivatives.output_file_service = Hyrax::ValkyriePersistDerivatives
+        # todovalk: once all ::FileSets are migrated to Hyrax::FileSet, this can go back to
+        # plain Hyrax::ValkyriePersistDerivatives -- see Morphosource::DerivativeOutputFileService.
+        Hydra::Derivatives.output_file_service = Morphosource::DerivativeOutputFileService
         Hydra::Derivatives::FullTextExtract.output_file_service = Hyrax::PersistDirectlyContainedOutputFileService
         before_destroy :cleanup_derivatives
         # This completely overrides the version in Hydra::Works so that we

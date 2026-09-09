@@ -5,6 +5,7 @@ module Hyrax
     include Hyrax::Breadcrumbs
 
     before_action :authenticate_user!, except: [:show, :citation, :stats]
+    # Valkyrie note: this class will load a Hyrax::FileSet resource, even for unmigrated AF ::FileSet works
     load_and_authorize_resource class: Hyrax.config.file_set_class, except: :show
     before_action :build_breadcrumbs, only: [:show, :edit, :stats]
 
@@ -54,6 +55,7 @@ module Hyrax
     end
 
     # PATCH /concern/file_sets/:id
+    # @deprecated
     def update
       if attempt_update
         after_update_response
@@ -77,12 +79,19 @@ module Hyrax
     private
 
       # this is provided so that implementing application can override this behavior and map params to different attributes
+      # @deprecated
       def update_metadata
         file_attributes = form_class.model_attributes(attributes)
         actor.update_metadata(file_attributes)
       end
 
+      # @deprecated no current caller (no route/view/JS reaches #update), and unsafe for a Valkyrie-native FileSet
       def attempt_update
+        if valkyrie_native?(file_set)
+          raise NotImplementedError, "FileSet metadata/content updates are not supported for " \
+                                      "a Valkyrie-native FileSet through this AF-only actor path."
+        end
+
         if wants_to_revert?
           actor.revert_content(params[:revision])
         elsif params.key?(:file_set)
@@ -94,6 +103,7 @@ module Hyrax
         end
       end
 
+      # @deprecated
       def after_update_response
         respond_to do |wants|
           wants.html do
@@ -106,6 +116,7 @@ module Hyrax
         end
       end
 
+      # @deprecated
       def after_update_failure_response
         respond_to do |wants|
           wants.html do
@@ -137,8 +148,7 @@ module Hyrax
       end
 
       def delete(file_set:)
-        case file_set
-        when Hyrax::Resource
+        if valkyrie_native?(file_set)
           # remove_from_work transaction step uses find_parents (Valkyrie-only) and
           # won't see AF parent works, so unlink from AF parents manually first.
           unlink_valkyrie_file_set_from_af_work(file_set)
@@ -154,16 +164,12 @@ module Hyrax
         end
       end
 
-      # AF parents store FileSet membership via valkyrie_member_ids (not Valkyrie member_ids),
-      # so find_parents (pure Valkyrie) returns nothing. Use member_of from ArResourceParentship
-      # which searches Solr for AF parents.
       def parent
         @parent ||=
-          case file_set
-          when Hyrax::Resource
+          if valkyrie_native?(file_set)
             file_set.member_of.first
           else
-            file_set.parent
+            af_file_set.parent
           end
       end
 
@@ -188,10 +194,6 @@ module Hyrax
         original = @file_set.original_file
         @version_list = Hyrax::VersionListPresenter.new(original ? original.versions.all : [])
         @groups = current_user.groups
-      end
-
-      def actor
-        @actor ||= Hyrax::Actors::FileSetActor.new(@file_set, current_user)
       end
 
       def attributes
@@ -228,6 +230,26 @@ module Hyrax
                    'dashboard'
                  end
         File.join(theme, layout)
+      end
+
+      ### METHODS FOR WORKING WITH LEGACY UNMIGRATED AF FILESETS ###
+      # todovalk: could be simplified significantly after all filesets are migrated
+
+      # Get AF ::FileSet from Hyrax::FileSet
+      def af_file_set
+        @af_file_set ||= file_set.is_a?(::FileSet) ? file_set : ::FileSet.find(file_set.id.to_s)
+      end
+
+      # Hyrax::Actors::FileSetActor is AF-native (file_set.destroy, file_set.parent,
+      # work.file_sets, etc. all assume real ActiveFedora/Hydra::Works associations).
+      # So we build the actor from the AF ::FileSet.
+      def actor
+        @actor ||= Hyrax::Actors::FileSetActor.new(af_file_set, current_user)
+      end
+
+      # Valkyrie native is a Hyrax::FileSet that is not wings-backed (i.e., not an unmigrated AF record)
+      def valkyrie_native?(file_set)
+        file_set.is_a?(Hyrax::Resource) && !file_set.wings?
       end
   end
 end

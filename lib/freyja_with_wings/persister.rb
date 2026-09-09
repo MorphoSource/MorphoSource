@@ -1,5 +1,8 @@
 module FreyjaWithWings
   class Persister < ::Freyja::Persister
+    class WingsFileSetDeleteError < StandardError; end
+    class UnexpectedWingsResourceSaveError < StandardError; end
+
     # Generic Valkyrie models that signal we are actually looking at an AF work
     AF_RESOURCES = ["Hyrax::PcdmCollection", "Hyrax::Work", "CollectionResource"]
 
@@ -8,18 +11,27 @@ module FreyjaWithWings
     # Modified from the upstream to use Wings for AF-only models
     #
     # @param [Valkyrie::Resource] resource
+    # @param [Boolean] via_transaction Flag for when save is generated from Transaction. We trust
+    #   record saving from Transactions more than from other pathways. Wings-backed AF record
+    #   migration is only allowed from Transactions to avoid necessary steps being skipped.
     # @return [Valkyrie::Resource] the persisted/updated resource
     # @raise [Valkyrie::Persistence::StaleObjectError] raised if the resource
     #   was modified in the database between been read into memory and persisted
     # rubocop:disable Lint/UnusedMethodArgument
 
-    def save(resource:, external_resource: false, perform_af_validation: false)
+    def save(resource:, external_resource: false, perform_af_validation: false, via_transaction: false)
       # If resource is a Valkyrie resource, save it using Wings
       if AF_RESOURCES.include?(resource.model_name)
         wings_persister = Wings::Valkyrie::Persister.new(adapter: Wings::Valkyrie::MetadataAdapter.new)
         wings_persister.save(resource: resource, external_resource: external_resource, perform_af_validation: perform_af_validation)
       else
-        super
+        if resource.respond_to?(:wings?) && resource.wings? && !via_transaction
+          raise UnexpectedWingsResourceSaveError,
+                "Refusing to save Wings-backed #{resource.class} (id=#{resource.id}) via a direct " \
+                "persister/#save! call. Save it through its normal update transaction (or an " \
+                "explicit migration job) instead."
+        end
+        super(resource: resource, external_resource: external_resource, perform_af_validation: perform_af_validation)
       end
     end
 
@@ -73,10 +85,16 @@ module FreyjaWithWings
     # @param [Valkyrie::Resource] resource
     # @return [Valkyrie::Resource] the deleted resource
     def delete(resource:)
+      if resource.is_a?(Hyrax::FileSet) && resource.wings?
+        raise WingsFileSetDeleteError,
+              "Refusing to delete Wings-backed FileSet #{resource.id} via the Valkyrie " \
+              "persister -- it has no Postgres row to delete. Use the AF actor instead."
+      end
+
       resource = super
 
-      # If deleted resource has AF record and is member of AF works, reset membership to refer to AF record
-      if (
+      # Reconcile AF parent membership for resources that can be members of AF work
+      if (resource.is_a?(Hyrax::Work) || resource.is_a?(Hyrax::FileSet)) && (
         ActiveFedora::Base.exists?(resource.id.to_s) &&
         (parents = ActiveFedora::Base.where(valkyrie_member_ids_ssim: resource.id.to_s)).present?
       )

@@ -29,6 +29,7 @@ services:
       - hyrax-derivatives:/app/samvera/hyrax-webapp/derivatives
       - hyrax-uploads:/app/samvera/hyrax-webapp/uploads
       - rails-tmp:/app/samvera/hyrax-webapp/tmp
+      - fcrepo:/app/samvera/hyrax-webapp/file-storage
     networks:
       - morphosource
 
@@ -56,6 +57,7 @@ services:
       - hyrax-derivatives:/app/samvera/hyrax-webapp/derivatives
       - hyrax-uploads:/app/samvera/hyrax-webapp/uploads
       - rails-tmp:/app/samvera/hyrax-webapp/tmp
+      - fcrepo:/app/samvera/hyrax-webapp/file-storage
     networks:
       - morphosource
 
@@ -88,6 +90,7 @@ services:
       - test-uploads:/app/samvera/hyrax-webapp/uploads
       - test-public:/app/samvera/hyrax-webapp/public
       - test-tmp:/app/samvera/hyrax-webapp/tmp
+      - fcrepo:/app/samvera/hyrax-webapp/file-storage
     networks:
       - morphosource
 
@@ -172,6 +175,7 @@ services:
     volumes:
       - fcrepo:/data
       - ./vendor/docker/fcrepo/fedora.xml:/var/lib/jetty/webapps/fedora.xml
+      - ./vendor/docker/fcrepo/fedora-entrypoint.sh:/fedora-entrypoint.sh
     ports:
      - 8080:8080
     networks:

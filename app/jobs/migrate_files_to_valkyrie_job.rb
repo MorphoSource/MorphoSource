@@ -92,8 +92,19 @@ class MigrateFilesToValkyrieJob < Hyrax::ApplicationJob
         logger.error(e.backtrace.join("\n"))
       end
     end
-    # reindex the file set after migrating files to include characterization info
-    Hyrax.index_adapter.save(resource: resource)
+
+    # Resource is persisted by Hyrax::ValkyrieUpload after removing file.id from resource.file_ids
+    # Re-index persistent copy to avoid dropping file.id ref if Hyrax::ValkyrieUpload fails
+    persisted = Hyrax.query_service.find_by(id: resource.id)
+    Hyrax.index_adapter.save(resource: persisted)
+
+    # If migration is successful, there should be no fedora: file_identifiers
+    unmigrated = Hyrax.custom_queries.find_many_file_metadata_by_ids(ids: persisted.file_ids)
+                      .select { |file| /^fedora:/.match?(file.file_identifier.to_s) }
+    return if unmigrated.empty?
+
+    raise "MigrateFilesToValkyrieJob: #{unmigrated.size} file(s) for FileSet #{resource.id} " \
+          "still Fedora-backed after migration (#{unmigrated.map { |file| file.id.to_s }.join(', ')})"
   end
 
   def copy_attributes(valkyrie_file:, original_file:)

@@ -42,17 +42,26 @@ RSpec.describe MigrateFilesToValkyrieJob do
     Valkyrie.config.storage_adapter.find_by(id: file_metadata.file_identifier).disk_path
   end
 
+  before do
+    ActiveJob::Base.queue_adapter = :test
+    allow(Hyrax.config).to receive(:valkyrie_transition?).and_return(true)
+  end
+
+  def migrate_file_set_metadata
+    MigrateFileSetToValkyrieJob.perform_now(id: af_file_set.id)
+  end
+
+  def run_enqueued_file_migration
+    perform_enqueued_jobs(only: [MigrateFilesToValkyrieJob, MigrateExternalFilesToValkyrieJob])
+  end
+
   it "hard-links the migrated file to Fedora's own binary instead of copying it" do
     original_path = fcrepo_disk_path_for(af_file_set)
     expect(File.exist?(original_path)).to be true
     original_inode = File.stat(original_path).ino
 
-    ActiveJob::Base.queue_adapter = :test
-    allow(Hyrax.config).to receive(:valkyrie_transition?).and_return(true)
-
-    perform_enqueued_jobs(only: [MigrateFilesToValkyrieJob, MigrateExternalFilesToValkyrieJob]) do
-      MigrateFileSetToValkyrieJob.perform_now(id: af_file_set.id)
-    end
+    migrate_file_set_metadata
+    run_enqueued_file_migration
 
     resource = Hyrax.query_service.find_by(id: af_file_set.id)
     migrated_path = migrated_original_file_disk_path(resource)
@@ -65,5 +74,29 @@ RSpec.describe MigrateFilesToValkyrieJob do
     # Fedora's own copy is untouched -- migration only adds a link, never removes
     # the source (Fedora never deletes binaries; nothing here should either).
     expect(File.exist?(original_path)).to be true
+  end
+
+  context "when a file fails to migrate" do
+    before { allow(Hyrax::ValkyrieUpload).to receive(:file).and_raise(StandardError, "upload boom") }
+
+    it "raises (so the job is retried) and reindexes from persisted state, not the mutated in-memory resource" do
+      indexed_file_ids = nil
+      allow(Hyrax.index_adapter).to receive(:save).and_wrap_original do |original, **kwargs|
+        indexed = kwargs[:resource]
+        indexed_file_ids = indexed.file_ids.map(&:to_s) if indexed.respond_to?(:id) && indexed.id.to_s == af_file_set.id.to_s
+        original.call(**kwargs)
+      end
+
+      migrate_file_set_metadata
+      expect { run_enqueued_file_migration }.to raise_error(/still Fedora-backed/)
+
+      persisted = Hyrax.query_service.find_by(id: af_file_set.id)
+      # Postgres still references the un-migrated file (nothing persisted the in-memory removal)...
+      expect(persisted.file_ids).not_to be_empty
+      expect(Hyrax.custom_queries.find_original_file(file_set: persisted).file_identifier.to_s).to start_with("fedora:")
+      # ...and that persisted state is what got indexed, not the in-memory resource
+      # whose file_ids were emptied mid-loop.
+      expect(indexed_file_ids).to match_array(persisted.file_ids.map(&:to_s))
+    end
   end
 end

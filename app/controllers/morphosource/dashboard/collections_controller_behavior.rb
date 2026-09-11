@@ -40,7 +40,12 @@ module Morphosource
         end
 
         def collection_params
-          form_class.model_attributes(params[snake_case_collection_class])
+          attributes = form_class.model_attributes(params[snake_case_collection_class])
+          admin_only = OrganizationCollection::ADMIN_ONLY_FIELDS.map(&:to_s)
+          return attributes if (attributes.keys & admin_only).empty?
+          return attributes if current_user&.admin?
+
+          attributes.except(*admin_only)
         end
 
         def member_params

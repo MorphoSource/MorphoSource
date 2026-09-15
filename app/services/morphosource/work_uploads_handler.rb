@@ -69,6 +69,10 @@ module Morphosource
         # immediately. Without this, is_remote_backed? on the FileSet returns false
         # because the AF Solr query in ArResourceParentship#member_of finds nothing.
         work.update_index
+        # Unlike Hyrax::Actors::FileSetActor#create_content (the older AF upload path),
+        # this handler never granted edit access to the new FileSets -- InheritPermissionsJob
+        # copies it from the work now, same as every other path that mutates a work's filesets.
+        InheritPermissionsJob.perform_later(work.id)
         event_payloads.each do |payload|
           payload.delete(:job).enqueue
           Hyrax.publisher.publish('file.set.attached', payload)

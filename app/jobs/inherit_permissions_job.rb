@@ -43,6 +43,9 @@ class InheritPermissionsJob < Hyrax::ApplicationJob
   private
 
   # Copies permissions to a legacy ActiveFedora FileSet.
+  #
+  # @param work [ActiveFedora::Base] the work whose permissions are copied
+  # @param file [ActiveFedora::Base] the FileSet to receive the permissions
   def copy_af_permissions(work:, file:)
     file.reload
     attribute_map = work.permissions.map(&:to_hash)
@@ -60,12 +63,10 @@ class InheritPermissionsJob < Hyrax::ApplicationJob
     file.save!
   end
 
-  # Copies permissions to a Valkyrie-native FileSet. These have no AF-style
-  # #permissions_attributes= / #reload -- access is managed via Hyrax::PermissionManager /
-  # Hyrax::AccessControlList instead. `work` stays ActiveFedora even when its FileSets are
-  # Valkyrie, so permissions are read from `work` via its normal AF accessors and written to
-  # `file` via its PermissionManager, rather than casting `work` through AccessControlList
-  # (which would silently yield an empty permission set for an AF resource).
+  # `work` stays AF-typed, so read its permissions directly rather than via AccessControlList.
+  #
+  # @param work [ActiveFedora::Base] the work whose permissions are copied
+  # @param file [Hyrax::FileSet] the Valkyrie FileSet to receive the permissions
   def copy_valkyrie_permissions(work:, file:)
     permission_manager = file.permission_manager
     permission_manager.edit_users      = work.edit_users

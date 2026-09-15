@@ -109,6 +109,25 @@ module Morphosource::PhysicalObjectBehavior
     "Cannot delete this record while it still has associated media (#{current_media.map(&:id).join(', ')}), which may not be public. Detach or reassign the media first."
   end
 
+  # organization_id_was is unreliable for this multi-valued property, so re-read the pre-change value from Fedora directly.
+  def capture_original_organization_id
+    @original_organization_id = new_record? ? [] : self.class.find(id).organization_id
+  end
+
+  # Creates pending organization transfers for this specimen's media when its organization changes.
+  def check_for_media_organization_transfer
+    return if organization_id.blank?
+    new_org = OrganizationCollection.find(organization_id.first)
+    return unless new_org.media_ownership_transfer?
+    return if @original_organization_id.blank?
+    old_org = OrganizationCollection.find(@original_organization_id.first)
+    return if new_org.id == old_org.id
+
+    CheckSpecimenMediaOrganizationTransferJob.perform_later(id, old_org.id, new_org.id)
+  rescue ActiveFedora::ModelMismatch, NoMethodError
+    nil
+  end
+
   private
 
   def prevent_destroy_with_media

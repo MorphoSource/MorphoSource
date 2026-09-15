@@ -23,20 +23,12 @@ class InheritPermissionsJob < Hyrax::ApplicationJob
 
       work.file_sets.each do |file|
         Rails.logger.info "[InheritPermissionsJob] Copying permissions from work #{work.id} to fileset #{file.id}"
-        file.reload
-        attribute_map = work.permissions.map(&:to_hash)
 
-        # copy and removed access to the new access with the delete flag
-        file.permissions.map(&:to_hash).each do |perm|
-          unless attribute_map.include?(perm)
-            perm[:_destroy] = true
-            attribute_map << perm
-          end
+        if file.is_a?(ActiveFedora::Base)
+          copy_af_permissions(work: work, file: file)
+        else
+          copy_valkyrie_permissions(work: work, file: file)
         end
-
-        # apply the new and deleted attributes
-        file.permissions_attributes = attribute_map
-        file.save!
       end
     rescue StandardError => e
       if (retries += 1) <= 3
@@ -46,5 +38,44 @@ class InheritPermissionsJob < Hyrax::ApplicationJob
         raise e, "Maximum number of retries reached. Last exception message: #{e.message}"
       end
     end
+  end
+
+  private
+
+  # Copies permissions to a legacy ActiveFedora FileSet.
+  def copy_af_permissions(work:, file:)
+    file.reload
+    attribute_map = work.permissions.map(&:to_hash)
+
+    # copy and removed access to the new access with the delete flag
+    file.permissions.map(&:to_hash).each do |perm|
+      unless attribute_map.include?(perm)
+        perm[:_destroy] = true
+        attribute_map << perm
+      end
+    end
+
+    # apply the new and deleted attributes
+    file.permissions_attributes = attribute_map
+    file.save!
+  end
+
+  # Copies permissions to a Valkyrie-native FileSet. These have no AF-style
+  # #permissions_attributes= / #reload -- access is managed via Hyrax::PermissionManager /
+  # Hyrax::AccessControlList instead. `work` stays ActiveFedora even when its FileSets are
+  # Valkyrie, so permissions are read from `work` via its normal AF accessors and written to
+  # `file` via its PermissionManager, rather than casting `work` through AccessControlList
+  # (which would silently yield an empty permission set for an AF resource).
+  def copy_valkyrie_permissions(work:, file:)
+    permission_manager = file.permission_manager
+    permission_manager.edit_users      = work.edit_users
+    permission_manager.edit_groups     = work.edit_groups
+    permission_manager.read_users      = work.read_users
+    permission_manager.read_groups     = work.read_groups
+    permission_manager.discover_users  = work.discover_users
+    permission_manager.discover_groups = work.discover_groups
+    permission_manager.download_users  = work.download_users
+    permission_manager.download_groups = work.download_groups
+    permission_manager.acl.save
   end
 end

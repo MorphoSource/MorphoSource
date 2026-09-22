@@ -69,6 +69,8 @@ module Morphosource
         # immediately. Without this, is_remote_backed? on the FileSet returns false
         # because the AF Solr query in ArResourceParentship#member_of finds nothing.
         work.update_index
+        # Grants the new FileSets edit access from the work; the visibility set above only covers read access.
+        InheritPermissionsJob.perform_later(work.id)
         event_payloads.each do |payload|
           payload.delete(:job).enqueue
           Hyrax.publisher.publish('file.set.attached', payload)

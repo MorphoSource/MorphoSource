@@ -81,13 +81,18 @@
 
               <% if @collection&.media_ownership_transfer %>
                 <%= Hyrax::Renderers::ShowcaseLinkAttributeRenderer.new(
-                  :transfer_ready_media,
-                  @unmanaged_media_transferable_count,
-                  render_options.merge(link: main_app.organization_path(@collection.id, "f.transfer" => :ready))
+                  :transfer_pending_media,
+                  @unmanaged_media_transfer_pending_count,
+                  render_options.merge(link: main_app.organization_path(@collection.id, "f.transfer" => :transfer_pending))
+                ).render %>
+                <%= Hyrax::Renderers::ShowcaseLinkAttributeRenderer.new(
+                  :transfer_awaiting_publish_media,
+                  @unmanaged_media_awaiting_publish_count,
+                  render_options.merge(link: main_app.organization_path(@collection.id, "f.transfer" => :awaiting_publish))
                 ).render %>
                 <%= Hyrax::Renderers::ShowcaseLinkAttributeRenderer.new(
                   :transfer_unready_media,
-                  @unmanaged_media_untransferable_count,
+                  @unmanaged_media_no_transfer_count,
                   render_options.merge(link: main_app.organization_path(@collection.id, "f.transfer" => :unready))
                 ).render %>
                 <div class="row mb-1 csv-export-link"><div class="col-8">

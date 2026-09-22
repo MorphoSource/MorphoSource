@@ -135,6 +135,22 @@ module MorphosourceHelper
     end
   end
 
+  # Batched version of solr_doc_find - one Solr query for all ids instead of one per id.
+  # @param [Array<String>] ids
+  # @return [Hash{String => SolrDocument}] found documents keyed by id (ids with no match are omitted)
+  def solr_docs_find(ids)
+    ids = Array(ids).uniq
+    return {} if ids.empty?
+
+    docs = ActiveFedora::SolrService.query(
+      "*:*",
+      fq: ["{!terms f=id}#{ids.join(',')}"],
+      rows: ids.length,
+      method: :post
+    )
+    docs.each_with_object({}) { |doc, hash| hash[doc['id']] = SolrDocument.new(doc) }
+  end
+
   def donate_link
     Hyrax.config.donation_url
   end

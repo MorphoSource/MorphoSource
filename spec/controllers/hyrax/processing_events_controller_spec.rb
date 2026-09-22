@@ -31,6 +31,54 @@ RSpec.describe Hyrax::ProcessingEventsController do
       end
     end
 
+    describe '#destroy' do
+      before do
+        allow(subject).to receive(:authorize!).with(:destroy, processing_event).and_return(true)
+      end
+
+      context 'when the destroy is not halted' do
+        it 'destroys the processing event' do
+          delete :destroy, params: { id: processing_event.id }
+          expect(ProcessingEvent.exists?(processing_event.id)).to be false
+        end
+      end
+
+      context 'when the destroy is halted and populates errors' do
+        before do
+          allow_any_instance_of(ProcessingEvent).to receive(:destroy) do |record|
+            record.errors.add(:base, 'boom')
+            false
+          end
+        end
+
+        it 'does not destroy the processing event and redirects with the error instead of a silent 204' do
+          delete :destroy, params: { id: processing_event.id }
+          expect(response).to have_http_status(:found)
+          expect(flash[:alert]).to eq('boom')
+          # .exists? is Solr-backed; CleanupFileSetsActor deletes the Solr doc before
+          # the model-level destroy runs, so .find (reads Fedora directly) is what
+          # actually proves the record survived.
+          expect { ProcessingEvent.find(processing_event.id) }.not_to raise_error
+        end
+
+        it 'renders an unprocessable_entity json response' do
+          delete :destroy, params: { id: processing_event.id, format: :json }
+          expect(response).to have_http_status(:unprocessable_entity)
+        end
+      end
+
+      context 'when the destroy is halted without populating errors' do
+        before do
+          allow_any_instance_of(ProcessingEvent).to receive(:destroy).and_return(false)
+        end
+
+        it 'falls back to a generic unable-to-delete message' do
+          delete :destroy, params: { id: processing_event.id }
+          expect(flash[:alert]).to match(/\AUnable to delete .*processing event\.\z/)
+        end
+      end
+    end
+
     describe '#update_media_team_access' do
       context "when the processing event's params don't include parents" do
         it 'returns nil for parents_attributes' do

@@ -1,5 +1,5 @@
 
-# Module for methods held in common between organizations and organization collections
+# OrganizationCollection behavior module
 module Morphosource
   module OrganizationBehavior
 
@@ -118,6 +118,14 @@ module Morphosource
       return [] unless self.country.present?
 
       Array(Morphosource::CountriesService.new.continent(self.country.first))
+    end
+
+    # Returns ms_ids of the users who should approve download requests for this organization.
+    # When an organization has valid download_reviewers configured, those users are returned.
+    # Otherwise, the ms_ids of the organization managers are returned.
+    def media_download_reviewers
+      configured_reviewers = User.where(ms_id: Array(download_reviewer).reject(&:blank?)).map(&:ms_id)
+      configured_reviewers.presence || managers.map(&:ms_id)
     end
   end
 end

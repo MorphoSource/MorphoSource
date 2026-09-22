@@ -186,6 +186,9 @@ Hyrax.config do |config|
   # Path to where derivative generation tmp files should be placed (temporary method)
   config.derivatives_tmp_path = ENV.fetch("DERIVATIVES_TMP_PATH", Rails.root.join("tmp"))
 
+  # Path on the local file system where Valkyrie-managed files will be stored
+  config.valkyrie_disk_storage_path = ENV.fetch("VALKYRIE_DISK_STORAGE_PATH", Rails.root.join("storage", "files"))
+
   # directory path for finding MS1 dropbox user folders
   config.sftp_share_root = ENV['SFTP_SHARE_ROOT']
 

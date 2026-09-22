@@ -1,11 +1,14 @@
 module Hyrax
   class UsersController < ApplicationController
     include Blacklight::SearchContext
+    include Morphosource::RestApiBehavior
+
     prepend_before_action :find_user, only: [:show, :make_user_active, :make_user_inactive, :become]
+    before_action :authenticate_api_key_optional, only: [:index, :show]
+    before_action :require_authentication, only: [:index, :show]
     helper Hyrax::TrophyHelper
 
-    # do not restrict json (need it for searching for users during submission/record editing)
-    # only allow admins to access the /users page
+    # HTML: admin only. JSON: any authenticated user (used for submission/editing autocomplete).
     def index
       if request.format == :html
         authorize! :index, ::User
@@ -14,12 +17,15 @@ module Hyrax
       @users = search(params[:uq], false)
     end
 
-    # Display user profile
+    # HTML: any authenticated user. JSON: the user themselves or an admin.
     def show
-      authenticate_user!
-      user = ::User.from_url_component(params[:id])
-      return redirect_to root_path, alert: "User '#{params[:id]}' does not exist" if user.nil?
-      @presenter = Morphosource::UserProfilePresenter.new(user, current_ability)
+      return redirect_to root_path, alert: "User '#{params[:id]}' does not exist" if @user.nil?
+      respond_to do |format|
+        format.html { @presenter = Morphosource::UserProfilePresenter.new(@user, current_ability) }
+        format.json do
+          return head :forbidden unless current_user == @user || current_user&.admin?
+        end
+      end
     end
 
     # For admins, allow sign in as any user
@@ -49,6 +55,13 @@ module Hyrax
     end
 
     private
+
+      # After authenticate_api_key_optional runs, current_user is set for both session
+      # and API key users. Enforce that one of those succeeded before reaching the action.
+      def require_authentication
+        return deny_access_unauthorized if current_user.nil? && request.format == :json
+        authenticate_user!
+      end
 
       # TODO: this should move to a service.
       # Returns a list of users excluding the system users and guest_users

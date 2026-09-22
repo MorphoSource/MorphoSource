@@ -7,6 +7,7 @@ en:
         modal: Sitewide Modal
         download_modal: Download Modal
         simple_pages: Simple Pages
+        oauth_applications: OAuth Applications
     dashboard:
       admin:
         data_curation:

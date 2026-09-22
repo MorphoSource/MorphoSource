@@ -55,21 +55,26 @@ module Morphosource
         return unless current_user&.can? :edit, @curation_concern
         return if blacklight_config.facet_fields["transfer"].present?
 
-        org_is_owner_clause = "owner_ssim:#{@curation_concern.id}"
-        transfer_ready_clause = "organization_transfer_on_publish_bsi:true"
+        org_is_owner_clause      = "owner_ssim:#{@curation_concern.id}"
+        awaiting_publish_clause  = "organization_transfer_on_publish_bsi:true"
+        transfer_pending_clause  = "pending_org_transfer_bsi:true"
 
         blacklight_config.add_facet_field "transfer", label: "Transfer Status", query: {
           managed: {
             label: t("hyrax.organization.show.facets.transfer.managed"),
             fq: "#{org_is_owner_clause}"
           },
-          ready: {
-            label: t("hyrax.organization.show.facets.transfer.ready"),
-            fq: "-#{org_is_owner_clause} AND #{transfer_ready_clause}"
+          transfer_pending: {
+            label: t("hyrax.organization.show.facets.transfer.transfer_pending"),
+            fq: "-#{org_is_owner_clause} AND #{transfer_pending_clause}"
+          },
+          awaiting_publish: {
+            label: t("hyrax.organization.show.facets.transfer.awaiting_publish"),
+            fq: "-#{org_is_owner_clause} AND #{awaiting_publish_clause}"
           },
           unready: {
             label: t("hyrax.organization.show.facets.transfer.unready"),
-            fq: "-#{org_is_owner_clause} AND -#{transfer_ready_clause}"
+            fq: "-#{org_is_owner_clause} AND -#{transfer_pending_clause} AND -#{awaiting_publish_clause}"
           }
         }
       end

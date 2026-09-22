@@ -20,6 +20,7 @@ RUN --mount=type=cache,uid=1001,gid=0,target=/tmp/yarn-cache \
     yarn install --cache-folder /tmp/yarn-cache
 
 COPY --chmod=0775 --chown=1001:0 $APP_PATH $RAILS_ROOT
+RUN bin/uv-install
 RUN chmod -R g+rwX $RAILS_ROOT/tmp
 
 
@@ -44,6 +45,7 @@ RUN --mount=type=cache,uid=1001,gid=0,target=/tmp/yarn-cache \
     yarn install --cache-folder /tmp/yarn-cache
 
 COPY --chmod=0775 --chown=1001:0 $APP_PATH $RAILS_ROOT
+RUN bin/uv-install
 
 RUN NODE_OPTIONS=--openssl-legacy-provider RAILS_ENV=development bundle exec rails assets:precompile
 RUN chmod -R g+rwX $RAILS_ROOT/tmp

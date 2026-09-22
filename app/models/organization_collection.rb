@@ -130,26 +130,28 @@ class OrganizationCollection < Collection
     DeviceResource.where(organization_id: id)
   end
 
-  # Create manager and viewer roles for each Organization collection
   def create_collection_groups
-    self.class::DEFAULT_GROUP_ROLES.each do |role|
-      name = id.concat("_#{role}")
-      Role.create(name: name) unless Role.find_by(name: name)
-    end
+    create_default_roles
   end
 
-  # before_save callback to set date_managed if needed
-  def record_date_managed
-    return self.date_managed if self.managers.present? && self.date_managed.present?
+  # @return [Boolean] true if any manager is not an admin
+  def managed_by_non_admin?
+    managers.any? { |manager| !manager.admin? }
+  end
 
-    self.date_managed = self.managers.present? ? Date.today : nil
+  # Track when the organization first gains a non-admin manager.
+  def record_date_managed
+    managed = managed_by_non_admin?
+    return self.date_managed if managed && self.date_managed.present?
+
+    self.date_managed = managed ? Date.today : nil
   end
 
   private
 
   def create_organization_project
     project = example_organization_project
-    project.create_collection_groups
+    project.create_default_roles
     Morphosource::Collections::PermissionsCreateService.create_default(collection: project)
     project.member_of_collections << self
     project.save!

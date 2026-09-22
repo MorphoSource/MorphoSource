@@ -4,11 +4,9 @@ module Hyrax
 
     before_action :authenticate_user!
     before_action :load_proxy_deposit_request, only: :create
-    load_and_authorize_resource :proxy_deposit_request, parent: false, except: [:index, :batch_decide_transfers]
+    load_and_authorize_resource :proxy_deposit_request, parent: false, except: [:index]
     before_action :authorize_depositor_by_id, only: [:new, :create]
-    before_action :validate_decision_params, :validate_decision_type, :load_and_authorize_batch_transfers, only: [:batch_decide_transfers]
     with_themed_layout :decide_layout
-    before_action :build_breadcrumbs, only: [:index]
 
     # Catch permission errors
     # TODO: Isn't this already handled?
@@ -39,8 +37,10 @@ module Hyrax
       end
     end
 
+    # The Hyrax engine still routes GET dashboard/transfers here; redirect old bookmarks/links
+    # to the new My Transfers Received page rather than 500ing with no #index defined.
     def index
-      @presenter = MsTransfersPresenter.new(current_user, view_context, request)
+      redirect_to main_app.transfers_received_path
     end
 
     # Kicks of a job that completes the transfer. If params[:reset] is set, it will revoke
@@ -53,47 +53,35 @@ module Hyrax
           current_user.can_receive_deposits_from << @proxy_deposit_request.sending_user
         end
       end
-      redirect_to hyrax.transfers_path, notice: "Transfer has been accepted."
+      redirect_to redirect_target(main_app.transfers_received_path), notice: "Transfer has been accepted."
     end
 
     def reject
       @proxy_deposit_request.reject!
-      redirect_to hyrax.transfers_path, notice: "Transfer has been rejected."
+      redirect_to redirect_target(main_app.transfers_received_path), notice: "Transfer has been rejected."
     end
 
+    # Admins may cancel an organization transfer (a regular sender cannot; the model validation
+    # would raise), since the admin All Transfers page exists precisely for this kind of oversight.
     def destroy
-      @proxy_deposit_request.cancel!
-      redirect_to hyrax.transfers_path, notice: "Transfer has been canceled."
-    end
-
-    def batch_decide_transfers
-      unless @proxy_deposit_requests.present?
-        redirect_to hyrax.transfers_path, alert: 'No transfers were selected.' and return
+      if @proxy_deposit_request.organization_transfer? && current_user.admin?
+        @proxy_deposit_request.force_cancel!
+      else
+        @proxy_deposit_request.cancel!
       end
-
-      notice = ""
-      if params[:decision] == 'accept'
-        @proxy_deposit_requests.each do |proxy_deposit_request|
-          proxy_deposit_request.transfer!(params[:reset])
-          # todo: might need to file a bug on this.  no need to add proxy user if the user is already in the proxy user list
-          if params[:sticky]
-            unless current_user.can_receive_deposits_from.include? proxy_deposit_request.sending_user
-              current_user.can_receive_deposits_from << proxy_deposit_request.sending_user
-            end
-          end
-        end
-        notice = "One or more transfers have been accepted. If this action included a large number of transfers, they may take a few moments to process."
-      elsif params[:decision] == 'reject'
-        @proxy_deposit_requests.each do |proxy_deposit_request|
-          proxy_deposit_request.reject!
-        end
-        notice = "One or more transfers have been rejected. If this action included a large number of transfers, they may take a few moments to process."
-      end
-
-      redirect_to hyrax.transfers_path, notice: notice
+      redirect_to redirect_target(main_app.transfers_sent_path), notice: "Transfer has been canceled."
     end
 
     private
+
+      def redirect_target(fallback)
+        return_to = params[:return_to]
+        if return_to.present? && return_to.start_with?('/') && !return_to.start_with?('//')
+          return_to
+        else
+          request.referer || fallback
+        end
+      end
 
       def authorize_depositor_by_id
         @id = params[:id]
@@ -119,37 +107,6 @@ module Hyrax
                    'morphosource_dashboard'
                  end
         File.join(theme, layout)
-      end
-
-      def validate_decision_params
-        params.require([:batch_transfers, :decision])
-      end
-
-      def validate_decision_type
-        if !acceptable_decision_types.include?(params[:decision])
-          redirect_to hyrax.transfers_path, alert: 'You did not submit an acceptable type of decision.'
-        end
-      end
-
-      def acceptable_decision_types
-        ['accept', 'reject']
-      end
-
-      def load_and_authorize_batch_transfers
-        load_batch_transfers
-        authorize_batch_transfers
-      end
-
-      def load_batch_transfers
-        @proxy_deposit_requests =
-          params[:batch_transfers]
-          .map { |id| ProxyDepositRequest.find(id) }
-      end
-
-      def authorize_batch_transfers
-        @proxy_deposit_requests.each { |req| authorize! params[:decision].to_sym, req }
-      rescue CanCan::AccessDenied
-        redirect_to root_url, alert: 'You are not authorized to transfer one or more works.'
       end
   end
 end

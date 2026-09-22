@@ -73,6 +73,8 @@ module Morphosource
             status = req.status
           elsif d['organization_transfer_on_publish_bsi']
             status = 'transfer_on_publication'
+          elsif d['pending_org_transfer_bsi']
+            status = 'transfer_pending'
           end
 
           d.to_semantic_values.merge('organization_transfer_status' => status)

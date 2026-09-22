@@ -2,6 +2,12 @@ require 'rails_helper'
 
 RSpec.describe OrganizationsCatalogController, :type => :controller do
 
+  describe '#catalog_search_form_action' do
+    it 'returns the organizations search path' do
+      expect(controller.catalog_search_form_action).to eq(organization_search_path)
+    end
+  end
+
   describe '#search_managed_organizations' do
     let(:user) { User.create(email: 'manager@example.com', password: 'password') }
 

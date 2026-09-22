@@ -8,6 +8,10 @@ module Morphosource
 
       private
 
+      def entry_name
+        'background job'
+      end
+
       def authorize_index
         authorize! :index, BackgroundJob
       end

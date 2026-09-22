@@ -1,7 +1,17 @@
 @import 'variables';
 
+body.itemtable-page .text-padding {
+  padding-left: 0;
+  padding-right: 0;
+}
+
 div.card.itemtable {
   min-width: 1200px;
+
+    > .card-body {
+    padding-left: 0;
+    padding-right: 0;
+  }
 
   // Rules for optional description heading within body
   .card-body .card-header {
@@ -14,8 +24,36 @@ div.card.itemtable.requests {
   min-width: 1600px;
 }
 
+// Search-filter panel above the table, opt-in per controller
+div.card.panel-default.itemtable-search-panel {
+  .card-header {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+
+    h2 {
+      font-size: 1.15rem;
+      margin: 0;
+    }
+  }
+}
+
 div.card.itemtable.background_jobs, div.card.itemtable.pages {
   min-width: 600px;
+}
+
+div.itemtable-empty-state {
+  padding: 2.5rem 1rem;
+  border: 1px dashed #ddd;
+  border-top: none;
+
+  i {
+    font-size: 1.75rem;
+    opacity: 0.5;
+  }
+
+  p {
+    margin: 0.5rem 0 0;
+  }
 }
 
 table.itemtable {
@@ -43,8 +81,8 @@ table.itemtable {
       opacity:  0.3;
     }
 
-    span.fa-sort-up.fa-sort-by-attributes:after, 
-    span.fa-sort-up.fa-sort-by-attributes-alt:after, 
+    span.fa-sort-up.fa-sort-by-attributes:after,
+    span.fa-sort-up.fa-sort-by-attributes-alt:after,
     span.fa-sort-down.fa-sort-by-attributes:before,
     span.fa-sort-down.fa-sort-by-attributes-alt:before {
       opacity:  0.7;

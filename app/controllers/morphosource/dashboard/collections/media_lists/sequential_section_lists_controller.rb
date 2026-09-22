@@ -7,6 +7,8 @@ module Morphosource
           skip_load_and_authorize_resource only: [:edit, :update, :new, :members, :create], instance_name: :sequential_section_list
 
           before_action :redirect_to_collection_type, only: []
+          skip_before_action :check_visibility_direction
+          skip_before_action :strip_doi_protected_fields
 
           self.presenter_class = Morphosource::Collections::MediaLists::SequentialSectionListPresenter
 

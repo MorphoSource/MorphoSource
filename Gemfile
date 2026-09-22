@@ -19,6 +19,8 @@ gem 'redis'
 gem 'rsolr', '>= 1.0'
 gem 'jquery-rails'
 gem 'devise'
+gem 'doorkeeper'
+gem 'doorkeeper-openid_connect'
 gem 'devise-guests', '~> 0.6'
 gem 'bootstrap', '~> 4.0'
 
@@ -28,7 +30,7 @@ gem 'bootstrap', '~> 4.0'
 gem 'browse-everything', github: 'MorphoSource/browse-everything', ref: '676505bfed8a5a59e039e359296c53ce65bd4097'
 
 # pull iiif_manifest fork that can handle 3D manifests
-gem 'iiif_manifest', github: 'MorphoSource/iiif_manifest', tag: 'v1.3.1'
+gem 'iiif_manifest', github: 'MorphoSource/iiif_manifest', tag: 'v1.4.0'
 
 gem 'riiif', '~> 2.2'
 

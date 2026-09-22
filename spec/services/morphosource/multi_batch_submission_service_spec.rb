@@ -197,7 +197,7 @@ RSpec.describe Morphosource::MultiBatchSubmissionService do
   describe '#manifest_arguments' do
     it 'uses the device modality when the device has a single modality' do
       device = instance_double('DeviceResource', modality: ['MicroCT'])
-      allow(DeviceResource).to receive(:find_by).with(id: '000000222').and_return([device])
+      allow(DeviceResource).to receive(:find_by).with(id: '000000222').and_return(device)
       allow(service).to receive(:user_share_full_path).and_return('/tmp/')
       allow(User).to receive(:batch_user).and_return(user)
       allow(service).to receive(:media_ownership_fields).and_return({})
@@ -213,6 +213,25 @@ RSpec.describe Morphosource::MultiBatchSubmissionService do
       )
 
       expect(args[:modality]).to eq('MicroCT')
+    end
+
+    it 'falls back to the spreadsheet modality when the device is not found' do
+      allow(DeviceResource).to receive(:find_by).with(id: '000000222').and_return(nil)
+      allow(service).to receive(:user_share_full_path).and_return('/tmp/')
+      allow(User).to receive(:batch_user).and_return(user)
+      allow(service).to receive(:media_ownership_fields).and_return({})
+      allow(service).to receive(:organization_media_transfer_for).and_return(nil)
+      allow(service).to receive(:on_behalf_of_for).and_return(nil)
+      allow(service).to receive(:collection_ids_for).and_return([])
+      allow(service).to receive(:fund_code_id_for).and_return(nil)
+
+      args = service.send(
+        :manifest_arguments,
+        { organization_id: '000000111', device_id: '000000222' },
+        [{ experimental: { device_modality: ['MRI'] } }]
+      )
+
+      expect(args[:modality]).to eq('MRI')
     end
   end
 

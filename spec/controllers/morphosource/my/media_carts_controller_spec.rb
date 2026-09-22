@@ -187,6 +187,36 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
     end
   end
 
+  describe "GET #download_all_agreements" do
+    before do
+      get :download_all_agreements
+    end
+
+    it "returns agreement data for every downloadable item in the cart" do
+      json = JSON.parse(response.body)
+      media_ids = json.map { |item| item['media_id'] }
+      expect(media_ids).to include(work1.id, work2.id)
+    end
+
+    it "does not include restricted items" do
+      json = JSON.parse(response.body)
+      media_ids = json.map { |item| item['media_id'] }
+      expect(media_ids).not_to include(work3.id)
+    end
+
+    it "does not include items that are not in the cart" do
+      json = JSON.parse(response.body)
+      media_ids = json.map { |item| item['media_id'] }
+      expect(media_ids).not_to include(work5.id, work6.id, work7.id)
+    end
+
+    it "includes an itemized agreement description link for each item" do
+      json = JSON.parse(response.body)
+      item = json.find { |i| i['media_id'] == work2.id }
+      expect(item['agreement_description_html']).to include('aup-link')
+    end
+  end
+
   describe "DELETE #destroy" do
     context 'the user batch selects items to destroy' do
       it "deletes the cart item if it hasn't been downloaded" do

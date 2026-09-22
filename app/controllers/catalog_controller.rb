@@ -11,6 +11,16 @@ class CatalogController < ApplicationController
   helper Morphosource::CatalogHelper
   helper Morphosource::FacetParamsHelper
 
+  # Subclasses must override #catalog_search_form_action to return the top-level
+  # search route for their catalog type. Used by the header search form
+  # (see _ms_catalog_search_form.html.erb) so a plain text search stays within the
+  # current record type instead of falling back to media.
+  helper_method :catalog_search_form_action
+
+  def catalog_search_form_action
+    raise NotImplementedError, "#{self.class} must implement #catalog_search_form_action"
+  end
+
   with_themed_layout "morphosource_1_column"
 
   # This filter applies the hydra access controls

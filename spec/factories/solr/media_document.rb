@@ -34,6 +34,7 @@ PRIVATE_MEDIA_DOC_ATTRIBUTES = {
   morphosource_use_agreement_type_tesim: ["Standard"],
   number_of_images_in_set_tesim: ["1500"],
   organization_transfer_on_publish_bsi: false,
+  pending_org_transfer_bsi: false,
   orientation_tesim: ["Sagittal"],
   part_tesim: ["Cranium"],
   permits_3d_use_tesim: ["3DPrintingLimited"],

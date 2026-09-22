@@ -1,0 +1,69 @@
+#!/bin/sh
+# Dev-only override: builds UniversalViewer from a specific git ref and
+# installs it into public/uv, bypassing the pinned release fetch. Never
+# committed -- public/uv is gitignored. Run bin/uv-install directly (or
+# `docker compose up db_migrate` again) afterward to restore the pinned
+# release version.
+#
+# Usage:
+#   bin/uv-install-local [ref]        # clone/fetch <ref> (branch, tag, or
+#                                      # commit) from the fork into
+#                                      # vendor/uv-local, build, and install.
+#                                      # ref defaults to "morphosource".
+#   bin/uv-install-local --path <dir> # build from an existing local
+#                                      # checkout instead (e.g. to test
+#                                      # uncommitted edits)
+set -e
+
+APP_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
+UV_DIR="$APP_ROOT/public/uv"
+MARKER_FILE="$UV_DIR/.uv-version"
+REPO_URL="https://github.com/MorphoSource/universalviewer.git"
+CLONE_DIR="$APP_ROOT/vendor/uv-local"
+
+if [ "$1" = "--path" ]; then
+  UV_SOURCE="$(cd "$2" && pwd)"
+else
+  REF="${1:-morphosource}"
+
+  if [ -d "$CLONE_DIR/.git" ]; then
+    echo "Fetching $REPO_URL into $CLONE_DIR..."
+    git -C "$CLONE_DIR" fetch origin
+  else
+    echo "Cloning $REPO_URL into $CLONE_DIR..."
+    git clone "$REPO_URL" "$CLONE_DIR"
+  fi
+  git -C "$CLONE_DIR" checkout "$REF"
+
+  UV_SOURCE="$CLONE_DIR"
+fi
+
+echo "Building UniversalViewer from $UV_SOURCE..."
+(cd "$UV_SOURCE" && npm ci && npm run build)
+
+# public/uv/README.md is committed to git (so it's visible browsing the repo)
+# -- preserve it across the wipe below instead of letting the build clobber it.
+README_TMP=""
+if [ -f "$UV_DIR/README.md" ]; then
+  README_TMP=$(mktemp)
+  cp "$UV_DIR/README.md" "$README_TMP"
+fi
+
+rm -rf "$UV_DIR"
+mkdir -p "$UV_DIR"
+cp -R "$UV_SOURCE/dist/." "$UV_DIR/"
+
+cp "$APP_ROOT/config/uv/uv.html" "$UV_DIR/uv.html"
+cp "$APP_ROOT/config/uv/uv-config.json" "$UV_DIR/uv-config.json"
+cp "$APP_ROOT/config/uv/uv-config-front-page.json" "$UV_DIR/uv-config-front-page.json"
+
+if [ -n "$README_TMP" ]; then
+  cp "$README_TMP" "$UV_DIR/README.md"
+  rm -f "$README_TMP"
+fi
+
+# Invalidate the pinned-version marker so a later bin/uv-install run (or the
+# next container start) knows to re-fetch the real pinned release.
+rm -f "$MARKER_FILE"
+
+echo "UniversalViewer installed to public/uv from $UV_SOURCE (not pinned -- run bin/uv-install to restore the release version)"

@@ -121,6 +121,10 @@ module Morphosource
         self["organization_transfer_on_publish_bsi"]
       end
 
+      def pending_org_transfer
+        self["pending_org_transfer_bsi"]
+      end
+
       def publication_status_label
         self["publication_status_ssi"]
       end

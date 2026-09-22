@@ -9,6 +9,12 @@ RSpec.describe CatalogController, :type => :controller do
     end
   end
 
+  describe '#catalog_search_form_action' do
+    it 'raises NotImplementedError so subclasses must declare their search path' do
+      expect { controller.catalog_search_form_action }.to raise_error(NotImplementedError)
+    end
+  end
+
   describe 'Blacklight Configuration' do
     let(:config) { described_class.new.blacklight_config }
     describe 'facet fields' do

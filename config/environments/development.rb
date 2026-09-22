@@ -47,7 +47,7 @@ Rails.application.configure do
     enable_starttls_auto: true
   }
   # pull the host from env variable later (see http://samvera.github.io/email_notifications.html)
-  config.action_mailer.default_url_options = { host: ENV["HOST_NAME"] }
+  config.action_mailer.default_url_options = { host: ENV["HOST_NAME"], port: ENV.fetch("PORT") { 3000 } }
 
   # Raise an error on page load if there are pending migrations.
   config.active_record.migration_error = :page_load

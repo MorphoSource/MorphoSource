@@ -265,6 +265,12 @@ module Hyrax
       @derivatives_path ||= Rails.root.join('tmp', 'derivatives')
     end
 
+    # Path on the local file system where Valkyrie-managed files will be stored
+    attr_writer :valkyrie_disk_storage_path
+    def valkyrie_disk_storage_path
+      @valkyrie_disk_storage_path ||= Rails.root.join("storage", "files")
+    end
+
     attr_writer :derivatives_tmp_path
     def derivatives_tmp_path
       @derivatives_tmp_path ||= Rails.root.join("tmp")
@@ -1052,6 +1058,12 @@ module Hyrax
     attr_writer :host_name
     def host_name
       @host_name ||= "morphosource.org"
+    end
+
+    attr_writer :enable_identity_provider
+    def enable_identity_provider?
+      return @enable_identity_provider unless @enable_identity_provider.nil?
+      ActiveModel::Type::Boolean.new.cast(ENV.fetch('MORPHOSOURCE_IDENTITY_PROVIDER_ENABLED', false))
     end
 
     attr_writer :sftp_share_root

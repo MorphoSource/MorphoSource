@@ -99,6 +99,14 @@ While a number of volumes will be created, most will not be synced with location
 * `./vendor/docker/fcrepo/fedora.xml:/var/lib/jetty/webapps/fedora.xml` - Fedora config XML
 * `./solr/conf:/core_config/conf` - Solr config files
 
+### UniversalViewer
+
+`public/uv` is not checked into git (aside from a placeholder `README.md`) -- it's fetched automatically from a GitHub Release of our [UniversalViewer fork](https://github.com/MorphoSource/universalviewer), pinned by tag in `config/uv/VERSION`. `bin/uv-install` handles the fetch and overlays our config (`config/uv/uv.html`, `uv-config.json`, `uv-config-front-page.json`) on top. It runs during the Docker image build and as part of `db_migrate`'s command in `docker-compose.yml`. It's a no-op unless `public/uv` is missing or out of date with `config/uv/VERSION`.
+
+To pick up a new UV build, bump the tag in `config/uv/VERSION` and run `docker compose up -d` again or run `bin/uv-install` directly, e.g. via `docker compose exec app bin/uv-install`.
+
+To test unreleased UV changes without publishing a release, use `bin/uv-install-local [ref]`. By default this clones/fetches the given branch, tag, or commit (defaults to `morphosource`) from the fork into `vendor/uv-local`, builds it, and installs it into `public/uv`. To instead build from an existing local checkout (e.g. to test uncommitted edits), use `bin/uv-install-local --path <dir>`. Either way this bypasses the pinned release, and since `public/uv` is gitignored, it's safe to run freely. Run `bin/uv-install` again or `docker compose up -d` to restore the pinned version.
+
 ## Built With
 
 * [Fedora FCRepo 4.7.5](https://github.com/orgs/samvera/packages/container/package/fcrepo4)

@@ -1,10 +1,12 @@
 <%#
-  Disable action buttons if the collection has a DOI and the user is not an admin.
+  When a DOI is present and the user is not an admin:
+  - Save button is always enabled (visibility change from private→public is allowed via JS+controller guards)
+  - Delete button remains disabled
 %>
 
 <div class="col-12 tab-action-buttons pt-0 d-flex flex-row-reverse" style="gap: 5px;">
-  <% if @collection.doi.empty? || current_user.admin? %>
-    <%= f.submit t(:'hyrax.collection.select_form.update'), class: 'btn btn-primary', onclick: "confirmation_needed = false;", id: "update_submit", name: "update_collection" %>
+  <%= f.submit t(:'hyrax.collection.select_form.update'), class: 'btn btn-primary', onclick: "confirmation_needed = false;", id: "update_submit", name: "update_collection" %>
+  <% if @collection.doi.empty? %>
     <%= link_to t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.label'),
               hyrax.dashboard_collection_path(@presenter),
               title: t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.label'),
@@ -12,9 +14,6 @@
               data: { confirm: t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.confirmation'),
               method: :delete } %>
   <% else %>
-    <div title="<%= t('morphosource.dashboard.collections.media_list.edit.doi_warning') %>" style="display: inline-block;">
-      <%= button_tag t(:'hyrax.collection.select_form.update'), class: "btn btn-primary", disabled: true %>
-    </div>
     <div title="<%= t('morphosource.dashboard.collections.media_list.edit.doi_warning') %>" style="display: inline-block;">
       <%= button_tag t('hyrax.dashboard.collections.actions.delete_' + @presenter.collection_type_title + '.label'), class: "btn btn-primary", disabled: true %>
     </div>

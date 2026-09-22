@@ -2,6 +2,12 @@ require 'rails_helper'
 
 RSpec.describe CollectionsCatalogController, :type => :controller do
 
+  describe '#catalog_search_form_action' do
+    it 'returns the collections search path' do
+      expect(controller.catalog_search_form_action).to eq(collection_search_path)
+    end
+  end
+
   describe 'Blacklight Configuration' do
     let(:config) { described_class.new.blacklight_config }
     describe 'search_builder_class' do

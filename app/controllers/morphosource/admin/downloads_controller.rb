@@ -21,6 +21,10 @@ module Morphosource
 
       private
 
+      def entry_name
+        'download'
+      end
+
       def require_permissions
         authorize! :read, :admin_dashboard
       end

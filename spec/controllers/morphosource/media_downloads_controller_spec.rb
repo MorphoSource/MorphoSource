@@ -117,6 +117,43 @@ RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
         end
       end
 
+      context 'one of the requested works has no file set' do
+        let(:work_broken) { Media.create(title: ["Broken Media Work"], depositor: depositor.ms_id) }
+
+        before do
+          works.each do |work|
+            work.visibility = 'open'
+            work.fileset_accessibility = ['open']
+            work.save
+          end
+          work_broken.visibility = 'open'
+          work_broken.fileset_accessibility = ['open']
+          work_broken.save
+        end
+
+        it "still returns a zip for the available work, skipping the broken one" do
+          get :show, params: { key: [work1.access_control_id, work_broken.access_control_id], token: user.token, download: download_hash }
+          expect(response.status).to eq(200)
+          expect(response.headers["Content-Type"]).to eq("application/zip")
+        end
+
+        it "names the zip to reflect the partial count" do
+          get :show, params: { key: [work1.access_control_id, work_broken.access_control_id], token: user.token, download: download_hash }
+          expect(response.headers["Content-Disposition"]).to match(/morphosource_media-1-of-2-items_download-.*\.zip/)
+        end
+      end
+
+      context 'none of the requested works have a file set' do
+        let(:work_broken)  { Media.create(title: ["Broken Media Work"], depositor: depositor.ms_id, visibility: 'open', fileset_accessibility: ['open']) }
+        let(:work_broken2) { Media.create(title: ["Broken Media Work 2"], depositor: depositor.ms_id, visibility: 'open', fileset_accessibility: ['open']) }
+
+        it "falls back to the generic unavailable error instead of streaming an empty zip" do
+          get :show, params: { key: [work_broken.access_control_id, work_broken2.access_control_id], token: user.token, download: download_hash }
+          expect(response).to redirect_to('/')
+          expect(flash[:error]).to include('not available right now')
+        end
+      end
+
       context 'keys are provided via session (batch cart download path)' do
         before do
           works.each do |work|
@@ -256,6 +293,29 @@ RSpec.describe Morphosource::MediaDownloadsController, type: :controller do
         context 'user has no cart items for media' do
           it 'creates new downloaded cart items' do
             expect{ process :show, method: :get, params: { key: [work1.access_control_id, work2.access_control_id], token: user.token, download: download_hash } }.to change{CartItem.count}.by(2)
+          end
+        end
+
+        context 'one of the requested works has no file set' do
+          let(:work_broken) { Media.create(title: ["Broken Media Work"], depositor: depositor.ms_id, visibility: 'open', fileset_accessibility: ['open']) }
+          let!(:cart_item_broken) { CartItem.create!(user_id: user.ms_id, work_id: work_broken.id, download_hash: nil, download_attempts: nil, date_downloaded: nil, in_cart: true) }
+
+          before do
+            allow_any_instance_of(User).to receive(:can?).with(:download, work_broken.id).and_return(true)
+          end
+
+          it 'does not mark the broken item as downloaded or remove it from the cart' do
+            process :show, method: :get, params: { key: [work1.access_control_id, work_broken.access_control_id], token: user.token, download: download_hash }
+            cart_item_broken.reload
+            expect(cart_item_broken.in_cart).to eq(true)
+            expect(cart_item_broken.date_downloaded).to be_nil
+          end
+
+          it 'still marks the available item as downloaded' do
+            process :show, method: :get, params: { key: [work1.access_control_id, work_broken.access_control_id], token: user.token, download: download_hash }
+            cart_item1 = CartItem.find_by(user_id: user.ms_id, work_id: work1.id)
+            expect(cart_item1).to be_present
+            expect(cart_item1.date_downloaded.to_date).to eq(Date.today)
           end
         end
       end

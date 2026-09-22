@@ -46,6 +46,10 @@ module Morphosource
 
       private
 
+      def entry_name
+        'issue'
+      end
+
       def authorize
         authorize! :manage, RemoteFileHealth
       end

@@ -29,6 +29,10 @@ module Morphosource
 
       private
 
+      def entry_name
+        'background job'
+      end
+
       # Only admins can access this index route
       def authorize_index
         authorize! :manage, BackgroundJob

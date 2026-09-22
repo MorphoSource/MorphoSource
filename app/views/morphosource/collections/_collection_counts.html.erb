@@ -13,5 +13,5 @@
   <% if @presenter.creator.present? %>
     · Creator: <%= @presenter.creator.join(', ') %>
   <% end %>
-  · Managed by: <%= @presenter.collection_managers %>
+  <%= render 'shared/collections/managed_by', manager_links: @presenter.manager_links %>
 </div>

@@ -77,21 +77,18 @@ $( document ).ready(function() {
 
   if ( isCartPage ) {
     
-    $(downloadForm).find('input[type="submit"]').bind('click', function(e) { 
+    $(downloadForm).find('input[type="submit"]').bind('click', function(e) {
       // download selected button clicked
       e.preventDefault();
       sendSelectedItemsToModal();
       showAgreementModal();
     });
 
-    $('#download-all').bind('click', function(e) { 
-      // download all clicked
+    $('#download-all').bind('click', function(e) {
+      // Empty .download-items-wrapper makes #download-form submit the whole cart.
       e.preventDefault();
-      uncheckAllDownloadable();
-      $("#check_all_unrestricted").prop('checked', false);
-      $("#check_all_unrestricted").trigger('click');
-      sendSelectedItemsToModal();
-      showAgreementModal();
+      document.querySelector('form#download-form .download-items-wrapper').innerHTML = '';
+      setAgreementsForAll();
     });
 
     $('.unrestricted_documents input[type="checkbox"]').bind('click', function(e) {
@@ -106,7 +103,7 @@ $( document ).ready(function() {
       set_agreements_for_restricted();
     });
 
-    $('.btn-download-item').bind('click', function(e) { 
+    $('.btn-download-item').bind('click', function(e) {
       // download individual item clicked
       e.preventDefault();
       var itemId = $(this).attr('data-item-id');
@@ -197,7 +194,7 @@ $( document ).ready(function() {
       if ( $('#modal-agree').prop('checked') &&
         usage.length >= 50 && usageList() != "" )  {
 
-        formType =$(this).attr('class');        
+        formType =$(this).attr('class');
         if (formType == 'download-selected') {
           console.log('downloading selected in cart');
           $('#batch_usage').val(usage);
@@ -258,11 +255,45 @@ function showAgreementModal() {
   // reset things on modal close
   $("#downloadAgreementsModal").on("hidden.bs.modal", function () {
     // remove selected items from modal
-    $('form#download-form .download-items-wrapper').html('');  
+    $('form#download-form .download-items-wrapper').html('');
     uncheckAllDownloadable();
     $("#check_all_unrestricted").prop('checked', false);
     $("input#download-selected").prop('disabled', true);
   });
+}
+
+function setAgreementsForAll() {
+  // Fetches the agreement summary on demand instead of pre-rendering for the whole cart.
+  document.querySelectorAll('input[name="ids[]"]').forEach(function(input) {
+    input.value = 'ALL';
+  });
+  const modalDownloadBtn = document.querySelector('input#modal-download');
+  if (modalDownloadBtn) {
+    modalDownloadBtn.setAttribute('data-download-item-id', 'ALL');
+  }
+
+  // no-store: avoid a stale cached/304 response for live cart state.
+  fetch('/download_all_agreements', { cache: 'no-store' })
+    .then(function(response) { return response.json(); })
+    .then(function(data) {
+      const agreements = data.map(function(item) { return item.agreement_description_html; });
+      const customLinks = [];
+      data.forEach(function(item) {
+        if (item.custom_link_html) {
+          customLinks.push('Media ' + item.media_id + ': ' + item.custom_link_html);
+        }
+      });
+      const agreementGroup = groupCounts(agreements);
+      const display = buildAgreements(agreementGroup, customLinks.sort());
+      // Scoped to the download modal - a second .agreement-items-wrapper exists in the request modal.
+      document.querySelector('#downloadAgreementsModal .agreement-items-wrapper').innerHTML = display;
+      showAgreementModal();
+    })
+    .catch(function(error) {
+      console.error('Failed to load Download All agreement summary:', error);
+      document.querySelector('#downloadAgreementsModal .agreement-items-wrapper').innerHTML = '<p>Unable to load agreements. Please try again.</p>';
+      showAgreementModal();
+    });
 }
 
 function set_agreements(itemId, singleMediaId) {

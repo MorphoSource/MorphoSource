@@ -166,5 +166,30 @@ RSpec.describe Morphosource::PhysicalObjectBehavior do
       end
     end
 
+    describe '#destroy' do
+      it 'does not destroy the record while it still has associated media' do
+        expect(specimen.destroy).to be false
+        expect(specimen.errors[:base]).to be_present
+        expect(BiologicalSpecimen.exists?(specimen.id)).to be true
+
+        expect(cho.destroy).to be false
+        expect(cho.errors[:base]).to be_present
+        expect(CulturalHeritageObject.exists?(cho.id)).to be true
+      end
+    end
+
+  end
+
+  describe '#destroy without associated media' do
+    let(:empty_specimen) { BiologicalSpecimen.create(title: ['No Media Specimen'], vouchered: ['Yes']) }
+    let(:empty_cho)      { CulturalHeritageObject.create(title: ['No Media CHO'], vouchered: ['Yes']) }
+
+    it 'destroys normally when there is no associated media' do
+      expect(empty_specimen.destroy).to be_truthy
+      expect(BiologicalSpecimen.exists?(empty_specimen.id)).to be false
+
+      expect(empty_cho.destroy).to be_truthy
+      expect(CulturalHeritageObject.exists?(empty_cho.id)).to be false
+    end
   end
 end

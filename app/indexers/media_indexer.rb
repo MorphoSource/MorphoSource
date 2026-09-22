@@ -196,6 +196,7 @@ class MediaIndexer < Morphosource::WorkIndexer
 
       # organization transfer fields
       solr_doc['organization_transfer_on_publish_bsi'] = object.organization_transfer_on_publish
+      solr_doc['pending_org_transfer_bsi'] = object.pending_org_transfer
 
       # store unstored fields
       solr_doc['admin_set_ssim'] = object.admin_set.to_s

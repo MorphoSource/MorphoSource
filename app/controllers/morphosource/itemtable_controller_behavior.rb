@@ -1,6 +1,23 @@
 # Methods to quickly bootstrap controllers that use JS datatable to list Rails DB objects
 module Morphosource
   module ItemtableControllerBehavior
+    extend ActiveSupport::Concern
+
+    included do
+      helper_method :entry_name, :empty_state_message
+    end
+
+    # Record name used for "No X found" / "Displaying X 1 - 20 of 42" pagination text
+    # Override in a controller or concern; nil falls back to Kaminari's default
+    def entry_name
+      nil
+    end
+
+    # Overridable message shown in the empty-state block
+    def empty_state_message
+      nil
+    end
+
     # For custom param names, method returns real DB ordering clause and @sort_param is custom name
     def sort_param
       if params[:sort].present?
@@ -16,7 +33,7 @@ module Morphosource
           else
             @sort_param = "#{sort_attribute} #{order.upcase}"
           end
-          
+
         else
           @sort_param = default_sort_param
         end
@@ -46,7 +63,7 @@ module Morphosource
 
     def split_filter_user_keys
       user_key_params.each do |user_key_param|
-        if params.dig(:filter_items, user_key_param).present? 
+        if params.dig(:filter_items, user_key_param).present?
           next if params.dig(:filter_items, user_key_param).kind_of? Array
           params[:filter_items][user_key_param] = params[:filter_items][user_key_param].split(',')
         end
@@ -102,7 +119,7 @@ module Morphosource
           elsif field == 'user_id' || field == 'action_by'
             value = User.find_by_user_key(value)&.name_and_email
           elsif field == 'reviewers'
-            value = (value || []).map { |user_key| User.find_by_user_key(user_key)&.name_and_email } 
+            value = (value || []).map { |user_key| User.find_by_user_key(user_key)&.name_and_email }
           end
 
           if value.kind_of? Array

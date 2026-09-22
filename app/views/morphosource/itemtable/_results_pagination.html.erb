@@ -16,7 +16,9 @@
 				</ul>
 			</div>
 		<% end %>
-		<div class="paginate-info">Showing <%= page_entries_info @items %></div>
-		<%= paginate @items, outer_window: 2, theme: 'blacklight', param_name: :page, class: 'btn-group' %>
+		<% if @items.present? %>
+			<div class="paginate-info">Showing <%= page_entries_info @items, entry_name: entry_name %></div>
+			<%= paginate @items, outer_window: 2, theme: 'blacklight', param_name: :page, class: 'btn-group' %>
+		<% end %>
 	</div>
 </div><!-- /row -->

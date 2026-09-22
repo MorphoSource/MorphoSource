@@ -3,22 +3,40 @@ name: Push Commit To GitLab
 on:
   push:
     branches: [dev, main]
+permissions:
+  contents: read
+  pull-requests: read
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
     - uses: actions/checkout@v3
-      with: 
+      with:
         fetch-depth: 0
-  
+
+    - name: Check whether the merged PR requires a DB migration
+      id: migrate_check
+      run: |
+        HAS_MIGRATE_LABEL=$(gh api "repos/${{ github.repository }}/commits/${{ github.sha }}/pulls" \
+          --jq '[.[].labels[].name] | index("migrate") != null')
+        echo "migrate=$HAS_MIGRATE_LABEL" >> "$GITHUB_OUTPUT"
+
     - name: Push To GitLab
-      env: 
+      env:
         TOKEN: ${{ secrets.GITLAB_ACCESS_TOKEN }}
         TOKEN_NAME: ${{ secrets.GITLAB_ACCESS_TOKEN_NAME }}
-        BRANCH_NAME: ${{ github.ref_name }} 
+        BRANCH_NAME: ${{ github.ref_name }}
+        MIGRATE: ${{ steps.migrate_check.outputs.migrate }}
       run: |
         echo Starting to push repo to gitlab
         git config user.name "Julie Winchester"
         git config user.email "julie.winchester@duke.edu"
         git remote set-url origin "https://$TOKEN_NAME:$TOKEN@gitlab.oit.duke.edu/morphosource/MorphoSource.git"
-        git push origin $BRANCH_NAME
+        if [ "$MIGRATE" == "true" ]; then
+          echo "Merged PR has the migrate label — pushing with MIGRATE_DB=true"
+          git push -o ci.variable="MIGRATE_DB=true" origin $BRANCH_NAME
+        else
+          git push origin $BRANCH_NAME
+        fi

@@ -2,6 +2,13 @@ require 'rails_helper'
 include ActionDispatch::TestProcess
 
 RSpec.describe MediaCatalogController, :type => :controller do
+
+  describe '#catalog_search_form_action' do
+    it 'returns the media search path' do
+      expect(controller.catalog_search_form_action).to eq(media_search_path)
+    end
+  end
+
   describe 'Blacklight Configuration' do
     let(:config) { described_class.new.blacklight_config }
 

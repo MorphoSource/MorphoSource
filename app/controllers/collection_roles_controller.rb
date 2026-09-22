@@ -6,6 +6,7 @@ class CollectionRolesController < ApplicationController
   include Hyrax::CollectionsControllerBehavior
   include Morphosource::Dashboard::CollectionsControllerBehavior
 
+  around_action :publish_reviewer_events
   before_action { collection_role_values(params[:collection_roles]) }
 
   delegate :presenter_class, to: :@collection
@@ -13,9 +14,13 @@ class CollectionRolesController < ApplicationController
   def update_collection_groups
     return unless can? :edit, collection
     if users_are_eligible?
-      update_subcollections
-      update_agent_access
-      update_collection_managed_date
+      if last_manager_blocker
+        update_notice('last_manager')
+      else
+        update_subcollections
+        update_agent_access
+        update_collection_managed_date
+      end
     else
       update_notice('user_status')
     end
@@ -73,13 +78,13 @@ class CollectionRolesController < ApplicationController
 
   def update_subcollections
     find_subcollections
-    update_child_groups unless @subcollection_docs.empty?
+    update_child_groups if subcollection_docs.any?
     reset_collection_role_values
   end
 
   def update_child_groups
     @parent = @collection
-    child_ids = @subcollection_docs.map { |doc| doc['id'] }
+    child_ids = subcollection_docs.map { |doc| doc['id'] }
     child_ids.each do |id|
       update_child_collection(id)
     end
@@ -107,14 +112,10 @@ class CollectionRolesController < ApplicationController
 
   def update_user_access
     if @new_group || @remove
-      if removing_last_manager? && !current_user.admin?
-        update_notice('last_manager')
-        return
-      end
       if @new_group
         change_groups(user)
       elsif @remove
-        @group.users.delete(user)
+        remove_user_from_group(user, @group)
       end
       update_notice('success') if @group.save
     else
@@ -128,20 +129,61 @@ class CollectionRolesController < ApplicationController
     end
   end
 
-  def removing_last_manager?
+  # Blocks a role change that would leave the parent or any of its subcollections
+  # without a manager.
+  #
+  # @return [String, nil] Title of the collection that would lose its last manager,
+  #   or nil if the change is allowed
+  def last_manager_blocker
+    @last_manager_blocker ||= find_last_manager_blocker
+  end
+
+  def find_last_manager_blocker
+    return nil unless manager_role_change?
+    return collection.title.first if last_manager_locked?(collection.id, organization: collection.organization_collection?)
+
+    blocked = subcollection_docs.find { |doc| last_manager_locked?(doc['id']) }
+    blocked && Array(blocked['title_tesim']).first
+  end
+
+  # Organizations must always retain a manager, so even admins are blocked; teams
+  # and projects keep the admin override.
+  def last_manager_locked?(collection_id, organization: false)
+    (organization || !current_user.admin?) && sole_manager_of?(collection_id)
+  end
+
+  def sole_manager_of?(collection_id)
+    managers_group = Collection.role_group(collection_id, :managers)
+    managers_group.present? &&
+      managers_group.users.include?(user) &&
+      managers_group.users.distinct.count < 2
+  end
+
+  def manager_role_change?
     managers_group = collection.managers_group
-    managers_group.present? && @group == managers_group && managers_group.users.count < 2
+    managers_group.present? && @group == managers_group && (@remove || @new_group.present?)
   end
 
   def change_groups(user)
-    @group.users.delete(user)
+    remove_user_from_group(user, @group)
     add_user_to_group(user, @new_group)
     @new_group.save
   end
 
   # Add user to appropriate role if user does not already have another collection role.
   def add_user_to_group(user, group)
-    group.users << user unless collection.group_members.include? user
+    return if collection.group_members.include? user
+
+    group.users << user
+    note_manager_role_change(group)
+  end
+
+  # check_subcollection_for_user sweeps all five roles, so most calls remove nothing.
+  def remove_user_from_group(user, group)
+    return unless group.users.include?(user)
+
+    group.users.delete(user)
+    note_manager_role_change(group)
   end
 
   # If a user is added to a team, and the team's subcollection already has that user in a role, remove the user.
@@ -149,7 +191,7 @@ class CollectionRolesController < ApplicationController
     return unless @collection.group_members.include? user
 
     @collection.user_groups.each do |group|
-      group.users.delete(user)
+      remove_user_from_group(user, group)
       group.save
     end
   end
@@ -166,7 +208,7 @@ class CollectionRolesController < ApplicationController
   end
 
   def update_subcollections_membership
-    ids = @subcollection_docs.map(&:id)
+    ids = subcollection_docs.map { |doc| doc['id'] }
     copy_team_members_to_subcollections(ids)
     reset_collection_role_values
   end
@@ -229,7 +271,7 @@ class CollectionRolesController < ApplicationController
       roles = t("morphosource.dashboard.collections.#{@collection.collection_type.machine_id}.members.roles.non-contributor")
       flash[:error] = translate('morphosource.dashboard.collections.form.non_contributor_errors', user: user, emails: emails, access: access, roles: roles)
     when 'last_manager'
-      flash[:error] = "Cannot remove the last manager from this collection."
+      flash[:error] = translate('morphosource.dashboard.collections.form.last_manager_errors', title: last_manager_blocker)
     when 'duplicate'
       flash[:error] = "#{@user.name} is already a member of #{@collection.title.first}"
     end
@@ -240,9 +282,17 @@ class CollectionRolesController < ApplicationController
   end
 
   # CollectionsControllerBehavior methods
+  # Primes the presenter and the subcollection memo for the rest of the request.
   def find_subcollections
     presenter
-    @subcollection_docs = Morphosource::SolrService.new.get_docs("has_model_ssim:Collection AND member_of_collection_ids_ssim:#{@collection.id}")
+    subcollection_docs
+  end
+
+  # Keyed on params[:id] rather than #collection, which the child walk reassigns.
+  # Memoized: the preflight and the child role update both need these.
+  def subcollection_docs
+    @subcollection_docs ||=
+      Morphosource::SolrService.new.get_docs("has_model_ssim:Collection AND member_of_collection_ids_ssim:#{params[:id]}")
   end
 
   def update_collection_managed_date
@@ -251,5 +301,33 @@ class CollectionRolesController < ApplicationController
 
     organization.record_date_managed
     organization.save! if organization.date_managed_changed?
+  end
+
+  # Publishes one event per OrganizationCollection whose Manager role changed. In an
+  # ensure because the role change commits before update_collection_managed_date can raise.
+  def publish_reviewer_events
+    yield
+  ensure
+    touched_organization_ids.each do |id|
+      begin
+        Hyrax.publisher.publish('organization.reviewers.updated', organization_id: id)
+      rescue StandardError => e
+        Rails.logger.error("CollectionRolesController: failed to publish organization.reviewers.updated " \
+                           "for #{id}; its media's cached reviewers are now stale. #{e.class}: #{e.message}")
+        Sentry.capture_exception(e, extra: { organization_id: id })
+      end
+    end
+  end
+
+  # The role group always belongs to the current @collection, which the child walk reassigns.
+  # organization_collection? not organization?: the latter is only true for the deprecated work.
+  def note_manager_role_change(group)
+    return unless group.try(:name) == "#{@collection.id}_managers"
+
+    touched_organization_ids << @collection.id if @collection.organization_collection?
+  end
+
+  def touched_organization_ids
+    @touched_organization_ids ||= Set.new
   end
 end

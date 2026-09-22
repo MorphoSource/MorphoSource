@@ -1,0 +1,4 @@
+<% decide_button = capture do %>
+  <button type="button" class="btn btn-primary btn-sm ml-2" data-toggle="modal" data-target="#transferDecideModal">Decide Selected</button>
+<% end %>
+<%= render 'morphosource/transfers/quick_filters', decide_button: decide_button %>

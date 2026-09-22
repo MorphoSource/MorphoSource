@@ -23,13 +23,13 @@
           <!-- Tab panes -->
           <div class="tab-content tab-borders mt-0">
             <div role="tabpanel" class="tab-pane active" id="local-file-section">
-              <div class="form-tab-content p-3">
+              <div class="form-tab-content pl-3 pr-3">
                 <%= render 'form_files_edit', f: f %>
               </div>
             </div>
             <div role="tabpanel" id="remote-file-section"  
             class="tab-pane <%= current_user.can_submit_remote_file?(nil, @presenter.media_organization_id&.first) ? "" : "hide" %>">
-              <div class="form-tab-content p-3">
+              <div class="form-tab-content pl-3 pr-3">
                 <%= render 'form_files_remote', f: f %>
               </div>
             </div>

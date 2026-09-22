@@ -21,11 +21,17 @@ module Morphosource
     end
 
     def link_to_receiving_user(receiving_user_id)
-      if OrganizationCollection.exists?(receiving_user_id)
-        organization = SolrDocument.find(receiving_user_id)
+      link_to_transfer_participant(receiving_user_id)
+    end
+
+    # @param user_id [String] the id of a ProxyDepositRequest's sending_user_id or
+    #   receiving_user_id, which may belong to either a User or an OrganizationCollection
+    def link_to_transfer_participant(user_id)
+      if OrganizationCollection.exists?(user_id)
+        organization = SolrDocument.find(user_id)
         link_to organization['title_tesim']&.first, main_app.organization_path(organization)
       else
-        link_to User.find(receiving_user_id).name, hyrax.user_path(User.find(receiving_user_id))
+        link_to User.find(user_id).name, hyrax.user_path(User.find(user_id))
       end
     end
   end

@@ -1,0 +1,4 @@
+<% deposit_structure_link = Hyrax.config.docs.find { |d| d["label"] == "hyrax.controls.links.docs.deposit_structure" } %>
+<% if deposit_structure_link %>
+  <p class="p-0"><%= link_to deposit_structure_link["url"], target: "_blank" do %><i class="fa fa-info-circle" aria-hidden="true"></i> <%= t("hyrax.controls.links.docs.deposit_structure") %><% end %></p>
+<% end %>

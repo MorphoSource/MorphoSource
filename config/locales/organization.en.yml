@@ -9,7 +9,8 @@ en:
           org_cho_count: Number of cultural heritage objects
           org_device_count: Number of devices
           org_specimen_count: Number of biological specimen objects
-          transfer_ready_media: Number of media with transfer pending or forthcoming
+          transfer_pending_media: Number of media with pending transfer request
+          transfer_awaiting_publish_media: Number of media awaiting publication to trigger transfer
           transfer_unready_media: Number of media unavailable for automated transfer
   hyrax:
     icons:
@@ -50,7 +51,8 @@ en:
         facets:
           transfer:
             managed: Managed by Organization
-            ready: Transfer Request Pending or Will Be Generated
+            transfer_pending: Transfer Request Pending
+            awaiting_publish: Will Generate Transfer Request on Publication
             unready: Not Available for Automated Transfer
         manage_buttons:
           new_device: Device
@@ -109,6 +111,7 @@ en:
         related_url: The website(s) associated with the organization.
         state_province: The state or province where the organization is located
         title: The name of the collection, laboratory, department, or other autonomous organization that manages a collection of physical objects.
-        transfer_ready_media: Total number of media where an automated transfer request is currently pending or where a request will be generated on media publication
+        transfer_pending_media: Total number of media where an automated transfer request is currently pending acceptance
+        transfer_awaiting_publish_media: Total number of media where a transfer request will be generated when the media is published
         transfer_unready_media: Total number of media that are not available for automated transfer, probably due to pre-dating organization opting in to automated transfer workflow
         value_blank_check: If this is selected, users contributing media will be recommended or required to leave this field blank. You may not add a value to this field if this is selected.

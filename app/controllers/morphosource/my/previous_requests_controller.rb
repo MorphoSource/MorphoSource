@@ -36,6 +36,10 @@ module Morphosource
 
       # Itemtable Methods
 
+      def entry_name
+        'request'
+      end
+
       def get_items
         @items = current_user ?
           CartItem

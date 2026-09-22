@@ -46,7 +46,18 @@ module Morphosource
         )
       end
 
-      def unmanaged_media_transferable_count
+      def unmanaged_media_transfer_pending_count
+        ActiveFedora::SolrService.count(
+          %{
+            has_model_ssim:Media AND
+            media_organization_id_ssim:#{collection.id} AND
+            -owner_ssim:#{@collection.id} AND
+            pending_org_transfer_bsi:true
+          }
+        )
+      end
+
+      def unmanaged_media_awaiting_publish_count
         ActiveFedora::SolrService.count(
           %{
             has_model_ssim:Media AND
@@ -57,21 +68,23 @@ module Morphosource
         )
       end
 
-      def unmanaged_media_untransferable_count
+      def unmanaged_media_no_transfer_count
         ActiveFedora::SolrService.count(
           %{
             has_model_ssim:Media AND
             media_organization_id_ssim:#{collection.id} AND
             -owner_ssim:#{@collection.id} AND
-            organization_transfer_on_publish_bsi:false
+            -pending_org_transfer_bsi:true AND
+            -organization_transfer_on_publish_bsi:true
           }
         )
       end
 
       def query_media_management_counts
         @managed_media_count ||= managed_media_count
-        @unmanaged_media_transferable_count ||= unmanaged_media_transferable_count
-        @unmanaged_media_untransferable_count ||= unmanaged_media_untransferable_count
+        @unmanaged_media_transfer_pending_count ||= unmanaged_media_transfer_pending_count
+        @unmanaged_media_awaiting_publish_count ||= unmanaged_media_awaiting_publish_count
+        @unmanaged_media_no_transfer_count ||= unmanaged_media_no_transfer_count
       end
     end
   end

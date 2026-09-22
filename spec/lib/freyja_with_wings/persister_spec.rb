@@ -35,8 +35,8 @@ RSpec.describe FreyjaWithWings::Persister do
 
       af_child.save!
 
-      # Save the resource (simulating migration to Postgres)
-      persister.save(resource: af_child.reload.valkyrie_resource)
+      # Migration normally requires saving from transaction, hence via_transaction: true
+      persister.save(resource: af_child.reload.valkyrie_resource, via_transaction: true)
 
       # Reload parent to verify changes
       af_parent.reload
@@ -48,10 +48,31 @@ RSpec.describe FreyjaWithWings::Persister do
       # Verify Valkyrie membership is added
       expect(af_parent.valkyrie_member_ids).to include(af_child.id.to_s)
     end
+
+    it "raises rather than silently migrating a Wings-backed resource without via_transaction: true" do
+      af_file_set = create(:file_set, user: create(:user))
+      wings_file_set = Hyrax.query_service.find_by(id: af_file_set.id)
+      expect(wings_file_set).to be_wings
+
+      expect { persister.save(resource: wings_file_set) }
+        .to raise_error(FreyjaWithWings::Persister::UnexpectedWingsResourceSaveError, /#{af_file_set.id}/)
+
+      # nothing was migrated -- no Postgres row exists for this id
+      expect(Valkyrie::Persistence::Postgres::ORM::Resource.where(id: af_file_set.id).exists?).to be false
+    end
+
+    it "allows saving a Wings-backed resource when via_transaction: true is passed" do
+      af_file_set = create(:file_set, user: create(:user))
+      wings_file_set = Hyrax.query_service.find_by(id: af_file_set.id)
+
+      expect { persister.save(resource: wings_file_set, via_transaction: true) }.not_to raise_error
+
+      expect(Valkyrie::Persistence::Postgres::ORM::Resource.where(id: af_file_set.id).exists?).to be true
+    end
   end
 
   describe "#delete" do
-    it "updates an AF parent's membership when a child is deleted and has an AF representation" do
+    it "migrates an AF child to Valkyrie, then restores AF membership when that migrated child is deleted" do
       # Setup: Parent has AF child
       af_parent.ordered_members << af_child
       af_parent.save!
@@ -64,8 +85,10 @@ RSpec.describe FreyjaWithWings::Persister do
 
       af_child.save!
 
-      # Save the resource (simulating migration to Postgres)
-      persister.save(resource: af_child.reload.valkyrie_resource)
+      # Save the resource (simulating migration to Postgres, as the real transaction-mediated
+      # save would -- via_transaction: true is required now that a bare save on a Wings-backed
+      # resource raises)
+      persister.save(resource: af_child.reload.valkyrie_resource, via_transaction: true)
 
       # Reload parent to verify changes
       af_parent.reload
@@ -90,6 +113,27 @@ RSpec.describe FreyjaWithWings::Persister do
       # Verify AF membership is added
       expect(af_parent.members).to include(af_child)
       expect(af_parent.ordered_members).to include(af_child)
+    end
+
+    it "does not attempt AF membership reconciliation for a resource that isn't a Hyrax::Work or Hyrax::FileSet" do
+      file_metadata = Hyrax.persister.save(resource: Hyrax::FileMetadata.new(file_set_id: 'irrelevant'))
+
+      expect(ActiveFedora::Base).not_to receive(:exists?)
+
+      persister.delete(resource: file_metadata)
+    end
+
+    it "raises rather than silently no-op'ing when asked to delete a Wings-backed Hyrax::FileSet" do
+      af_file_set = create(:file_set, user: create(:user))
+      wings_file_set = Hyrax.query_service.find_by(id: af_file_set.id)
+      expect(wings_file_set).to be_wings
+
+      expect { persister.delete(resource: wings_file_set) }
+        .to raise_error(FreyjaWithWings::Persister::WingsFileSetDeleteError, /#{af_file_set.id}/)
+
+      # the AF record is untouched -- the point is that this never reaches the
+      # base Postgres persister's no-op delete in the first place
+      expect(::FileSet.exists?(af_file_set.id)).to be true
     end
   end
 end

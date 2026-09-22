@@ -90,6 +90,74 @@ RSpec.describe Hyrax::UsersController, :type => :controller do
         end
       end
     end
+
+    describe 'JSON API access' do
+      let(:user)       { FactoryBot.create(:user) }
+      let(:other_user) { FactoryBot.create(:user) }
+      let(:admin)      { FactoryBot.create(:admin) }
+
+      # Note: RSpec controller specs use a mock Warden that does not run custom strategies,
+      # so API key header auth cannot be tested here. sign_in simulates the authenticated
+      # state that warden.authenticate(:api_key) produces in real requests.
+
+      describe '#index' do
+        context 'when not authenticated' do
+          it 'returns 401 for JSON' do
+            get :index, params: { format: 'json' }
+            expect(response.status).to eq(401)
+          end
+        end
+
+        context 'when authenticated as a regular user' do
+          before { sign_in user }
+          it 'returns 200 for JSON' do
+            get :index, params: { format: 'json' }
+            expect(response.status).to eq(200)
+          end
+        end
+
+        context 'when authenticated as an admin' do
+          before { sign_in admin }
+          it 'returns 200 for JSON' do
+            get :index, params: { format: 'json' }
+            expect(response.status).to eq(200)
+          end
+        end
+      end
+
+      describe '#show' do
+        context 'when not authenticated' do
+          it 'returns 401 for JSON' do
+            get :show, params: { id: user.ms_id, format: 'json' }
+            expect(response.status).to eq(401)
+          end
+        end
+
+        context 'when authenticated as the requested user' do
+          before { sign_in user }
+          it 'returns 200 for JSON' do
+            get :show, params: { id: user.ms_id, format: 'json' }
+            expect(response.status).to eq(200)
+          end
+        end
+
+        context 'when authenticated as a different non-admin user' do
+          before { sign_in other_user }
+          it 'returns 403 for JSON' do
+            get :show, params: { id: user.ms_id, format: 'json' }
+            expect(response.status).to eq(403)
+          end
+        end
+
+        context 'when authenticated as an admin' do
+          before { sign_in admin }
+          it 'returns 200 for JSON for any user' do
+            get :show, params: { id: user.ms_id, format: 'json' }
+            expect(response.status).to eq(200)
+          end
+        end
+      end
+    end
   end
 
   describe '#become' do

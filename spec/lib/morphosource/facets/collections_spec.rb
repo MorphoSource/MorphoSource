@@ -96,4 +96,48 @@ RSpec.describe Morphosource::Facets::Collections do
       end
     end
   end
+
+  # The "Data Manager" (owner) facet resolves values with :user_name_by_id,
+  # which can be either a User ms_id or an OrganizationCollection id when media
+  # is owned/managed by an organization. The facet "more" list, search box and
+  # name sorting must handle the OrganizationCollection case, not just users.
+  describe MediaCatalogController, 'owner facet', :type => :controller do
+    let(:org)         { FactoryBot.create(:organization_collection, title: ['Test Owner Organization'], visibility: 'open') }
+    let(:org_media)   { Media.create(title: ['org owned media'], visibility: 'open', owner: org.id.to_s) }
+    let(:user_media)  { Media.create(title: ['user owned media'], visibility: 'open', owner: admin.ms_id) }
+
+    before do
+      admin.update(first_name: 'Jane', last_name: 'Smith')
+      # index the organization first so user_with_ownership can resolve org_media's owner to the org id
+      org.update_index
+      [org_media, user_media].each(&:update_index)
+      sign_in admin
+    end
+
+    it 'keeps the organization owner in the Data Manager facet "more" list' do
+      get :facet, params: { :id => "owner" }
+      values = subject.instance_variable_get(:@display_facet).items.map(&:value)
+      expect(values).to include(org.id.to_s)
+      expect(values).to include(admin.ms_id.to_s)
+    end
+
+    it 'finds the organization owner when searching the facet by name' do
+      get :facet, params: { :id => "owner", "facet.containsTitle" => "Test Owner" }
+      values = subject.instance_variable_get(:@display_facet).items.map(&:value)
+      expect(values).to include(org.id.to_s)
+      expect(values).not_to include(admin.ms_id.to_s)
+    end
+
+    it 'shows no values when the facet search matches nothing' do
+      get :facet, params: { :id => "owner", "facet.containsTitle" => "name matching nothing" }
+      expect(subject.instance_variable_get(:@display_facet).items).to be_empty
+    end
+
+    it 'sorts the organization by its full title when sorting by name' do
+      get :facet, params: { :id => "owner", "facet.sort" => "index" }
+      values = subject.instance_variable_get(:@display_facet).items.map(&:value)
+      # 'Jane Smith' sorts by last name ('smith') before the org title ('test owner organization')
+      expect(values.index(admin.ms_id.to_s)).to be < values.index(org.id.to_s)
+    end
+  end
 end

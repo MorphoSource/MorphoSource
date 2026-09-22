@@ -1,0 +1,36 @@
+# Label PRs that add a new DB migration so reviewers know to run `rails db:migrate`
+name: Label DB Migration PRs
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches: [dev, main]
+
+permissions:
+  pull-requests: write
+
+jobs:
+  label:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add migrate label if a new migration file is present
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const files = await github.paginate(github.rest.pulls.listFiles, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              pull_number: context.issue.number,
+            });
+
+            const hasNewMigration = files.some(
+              (file) => file.status === 'added' && file.filename.startsWith('db/migrate/')
+            );
+
+            if (hasNewMigration) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: context.issue.number,
+                labels: ['migrate'],
+              });
+            }

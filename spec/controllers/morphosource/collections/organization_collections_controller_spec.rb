@@ -208,6 +208,22 @@ RSpec.describe Morphosource::Collections::OrganizationCollectionsController, typ
         it 'has a transfer status facet' do
           expect(subject.label).to eq("Transfer Status")
         end
+
+        it 'has managed, transfer_pending, awaiting_publish, and unready query buckets' do
+          expect(subject.query.keys).to match_array(%w[managed transfer_pending awaiting_publish unready])
+
+          expect(subject.query["managed"][:label]).to eq("Managed by Organization")
+          expect(subject.query["managed"][:fq]).to eq("owner_ssim:#{organization.id}")
+
+          expect(subject.query["transfer_pending"][:label]).to eq("Transfer Request Pending")
+          expect(subject.query["transfer_pending"][:fq]).to eq("-owner_ssim:#{organization.id} AND pending_org_transfer_bsi:true")
+
+          expect(subject.query["awaiting_publish"][:label]).to eq("Will Generate Transfer Request on Publication")
+          expect(subject.query["awaiting_publish"][:fq]).to eq("-owner_ssim:#{organization.id} AND organization_transfer_on_publish_bsi:true")
+
+          expect(subject.query["unready"][:label]).to eq("Not Available for Automated Transfer")
+          expect(subject.query["unready"][:fq]).to eq("-owner_ssim:#{organization.id} AND -pending_org_transfer_bsi:true AND -organization_transfer_on_publish_bsi:true")
+        end
       end
 
       context 'with non-admin user' do

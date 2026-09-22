@@ -22,6 +22,7 @@ module Morphosource
                :preview_mode,
                :recordset_id,
                :required_archival_of_published_derivatives,
+               :reviews_object_media_downloads,
                :rights_holder,
                :rights_statement,
                :state_province,

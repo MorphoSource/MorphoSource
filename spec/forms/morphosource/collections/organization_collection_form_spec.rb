@@ -19,7 +19,6 @@ RSpec.describe Morphosource::Forms::Collections::OrganizationCollectionForm do
      :data_manager,
      :date_created,
      :download_permission,
-     :download_reviewer,
      :identifier,
      :institution_code,
      :institution_name,

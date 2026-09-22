@@ -14,6 +14,7 @@ RSpec.describe Morphosource::MsFileSetDerivativesService do
 
   describe '#create_derivatives FileSetSizeInfo update' do
     let(:image_mime) { FileSet.image_mime_types.first }
+    let(:parent_media) { instance_double('Media', id: 'media-001') }
     let(:file_set) do
       klass = class_double('FileSet',
         audio_mime_types:   [],
@@ -22,7 +23,7 @@ RSpec.describe Morphosource::MsFileSetDerivativesService do
         mesh_mime_types:    [],
         archive_mime_types: []
       )
-      instance_double('FileSet', id: 'fs-deriv-001', class: klass, mime_type: image_mime)
+      instance_double('FileSet', id: 'fs-deriv-001', class: klass, mime_type: image_mime, parent: parent_media)
     end
 
     let(:deriv_path) { '/derivatives/fs-deriv-001/thumbnail.jpg' }
@@ -39,6 +40,7 @@ RSpec.describe Morphosource::MsFileSetDerivativesService do
     it 'calls upsert_for_file_set with derivative sizes after create_derivatives' do
       expect(FileSetSizeInfo).to receive(:upsert_for_file_set).with(
         file_set,
+        media_id:                     'media-001',
         derivatives:                  { 'thumbnail.jpg' => 55_000 },
         summed_derivatives_file_size: 55_000
       )

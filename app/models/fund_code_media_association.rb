@@ -2,7 +2,9 @@ class FundCodeMediaAssociation < ApplicationRecord
   belongs_to :fund_code
 
   validate :can_add_media_to_fund_code
-  before_save :ensure_active_uniqueness
+  before_save  :ensure_active_uniqueness
+  after_save   :sync_file_set_size_info_data_allocation
+  after_destroy :clear_file_set_size_info_data_allocation
   
   def self.destroy_defunct_associations
     # get all media IDs
@@ -25,7 +27,25 @@ class FundCodeMediaAssociation < ApplicationRecord
     end
   end
 
-  private 
+  private
+
+  # When this association is saved (active or inactive), update data_allocation_id
+  # on every FileSetSizeInfo row that belongs to the associated media.
+  # active=true  → point to this fund code's DataAllocation
+  # active=false → clear (another association's after_save will set the real one, if any)
+  def sync_file_set_size_info_data_allocation
+    da_id = active? ? fund_code&.data_allocation&.id : nil
+    FileSetSizeInfo.where(media_id: media).update_all(data_allocation_id: da_id)
+  rescue => e
+    Rails.logger.error "FileSetSizeInfo data_allocation sync failed for media #{media}: #{e.message}"
+  end
+
+  # When the association record is destroyed entirely, clear the data_allocation_id.
+  def clear_file_set_size_info_data_allocation
+    FileSetSizeInfo.where(media_id: media).update_all(data_allocation_id: nil)
+  rescue => e
+    Rails.logger.error "FileSetSizeInfo data_allocation clear failed for media #{media}: #{e.message}"
+  end
 
   # Can't create or save active association between media and fund code that can't add media
   def can_add_media_to_fund_code

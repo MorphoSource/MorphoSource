@@ -9,9 +9,31 @@ module Morphosource
       when *file_set.class.mesh_mime_types            then create_mesh_derivatives(filename)
       when *file_set.class.archive_mime_types         then create_archive_derivatives(filename)
       end
+    ensure
+      begin
+        update_file_set_size_info_derivatives
+      rescue => e
+        Rails.logger.error "FileSetSizeInfo derivative update failed for #{file_set.id}: #{e.message}"
+      end
     end
 
     private
+
+      # Scans derivative files for this FileSet on disk and updates the
+      # FileSetSizeInfo row with names, sizes, and the recomputed sum.
+      def update_file_set_size_info_derivatives
+        deriv_paths = Morphosource::DerivativePath.derivatives_for_reference(file_set.id)
+        deriv_sizes = deriv_paths.each_with_object({}) do |path, h|
+          size = File.size?(path)
+          h[File.basename(path)] = size if size
+        end
+        FileSetSizeInfo.upsert_for_file_set(
+          file_set,
+          media_id:                     file_set.parent&.id&.to_s,
+          derivatives:                  deriv_sizes,
+          summed_derivatives_file_size: deriv_sizes.values.sum
+        )
+      end
 
       def supported_mime_types
         file_set.class.audio_mime_types +

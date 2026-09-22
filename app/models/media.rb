@@ -451,19 +451,20 @@ class Media < Morphosource::Works::Base
     raise NotImplementedError, "Org teams are defunct; use transfer_media_to_organization_collection instead"
   end
 
-  def transfer_media_to_organization_collection(org)
+  def transfer_media_to_organization_collection(org, force_update: false)
     # check if organization is already the media owner
     return if user_with_ownership == org.id
     # check that organization has a valid data manager
     if org.managers&.first.present?
       # First, is media manager user the same as the new org data manager?
+      # owner_user is nil when the current owner is an organization, not a user, hence the safe navigation below.
       owner_user = User.find_by(ms_id: user_with_ownership)
       proxy_user = User.find_by(ms_id: on_behalf_of)
-      if owner_user.groups.include?("#{org.id}_managers") || proxy_user&.groups&.include?("#{org.id}_managers")
+      if owner_user&.groups&.include?("#{org.id}_managers") || proxy_user&.groups&.include?("#{org.id}_managers")
         # don't create transfer, but add organization as media owner and ensure no further transfers are created
         self.owner = org.id
       else
-        create_new_organization_transfer_request(org)
+        create_new_organization_transfer_request(org, force_update)
       end
       if self.organization_transfer_on_publish
         self.organization_transfer_on_publish = false
@@ -492,17 +493,22 @@ class Media < Morphosource::Works::Base
         existing_transfers.each { |t| t.cancel! }
       end
     end
-    # Create new proxy deposit request from user with ownership to organization
+    # Create new proxy deposit request from user (or organization) with ownership to organization
     message = I18n.t('morphosource.media.organization_transfer.transfer_message').html_safe
     ProxyDepositRequest.create!(
       work_id: id,
       receiving_user: org_data_manager,
-      sending_user: User.find_by_user_key(user_with_ownership),
+      sending_user: sending_user_for_organization_transfer,
       sender_comment: message,
       organization_transfer: true
     )
     # Flag that a transfer request is now pending; persisted by the calling method's save!
     self.pending_org_transfer = true
+  end
+
+  # Resolves the media's current owner as either a User or an OrganizationCollection.
+  def sending_user_for_organization_transfer
+    User.find_by_user_key(user_with_ownership) || OrganizationCollection.find_by(id: user_with_ownership)
   end
 
   # keeping external file methods for now, but these will be deleted once Simon's remote file changes are incorporated.

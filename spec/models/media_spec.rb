@@ -580,6 +580,40 @@ RSpec.describe Media do
       end
     end
 
+    describe 'transfer_media_to_organization_collection' do
+      let(:depositor)                { create(:user) }
+      let(:organization_depositor)   { User.create(email: 'org_depositor@email.com', password: 'password') }
+      let!(:contributor_role)        { Role.create(name: 'contributor') }
+      let!(:new_organization)        { FactoryBot.create(:organization_collection, depositor: organization_depositor.ms_id, media_ownership_transfer: true) }
+      let!(:old_organization)        { FactoryBot.create(:organization_collection, title: ['old organization'], depositor: depositor.ms_id) }
+      let(:media)                    { Media.create(title: ['media'], depositor: depositor.ms_id, visibility: 'restricted', fileset_accessibility: ['private'], owner: old_organization.id) }
+
+      before do
+        organization_depositor.make_contributor
+        new_organization.managers << organization_depositor
+        new_organization.managers_group.save
+      end
+
+      context 'media is currently owned by a different organization' do
+        it 'does not raise an error' do
+          expect { media.transfer_media_to_organization_collection(new_organization) }.not_to raise_error
+        end
+
+        it 'creates a new ProxyDepositRequest sent from the old organization' do
+          media.transfer_media_to_organization_collection(new_organization)
+          transfer = ProxyDepositRequest.where(work_id: media.id, receiving_user: new_organization.id, organization_transfer: true).first
+          expect(transfer).to be_present
+          expect(transfer.sending_user_id).to eq old_organization.id
+          expect(transfer.sending_user_type).to eq 'OrganizationCollection'
+        end
+
+        it 'sets pending_org_transfer to true' do
+          media.transfer_media_to_organization_collection(new_organization)
+          expect(media.pending_org_transfer).to eq(true)
+        end
+      end
+    end
+
     describe 'owner_class' do
       let(:media)         { FactoryBot.build(:media, owner: owner) }
 

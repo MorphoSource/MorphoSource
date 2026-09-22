@@ -271,6 +271,13 @@ module Hyrax
       @valkyrie_disk_storage_path ||= Rails.root.join("storage", "files")
     end
 
+    # Root of Fedora's own on-disk binary store. Only used by FileSet migration
+    # todovalk: remove once all FileSets have been migrated.
+    attr_writer :fcrepo_binary_directory_path
+    def fcrepo_binary_directory_path
+      @fcrepo_binary_directory_path ||= Rails.root.join("file-storage", "fcrepo.binary.directory")
+    end
+
     attr_writer :derivatives_tmp_path
     def derivatives_tmp_path
       @derivatives_tmp_path ||= Rails.root.join("tmp")

@@ -173,10 +173,7 @@ class BatchSubmissionsController < ApplicationController
       modality:modality).to_h
   end
 
-  # Reviewer Eligibility gate for a posted mode. This path never reaches Hyrax::MediaForm, so
-  # neither its permitted-params filter nor SubmissionsController's gate applies -- these
-  # fields become media attributes directly (media_manifest.rb). Check the posted mode against
-  # the organization the batch is already for.
+  # Drops a posted object_organization mode unless the batch's organization is eligible.
   def reject_ineligible_reviewer_mode(media_fields, organization_id)
     return media_fields unless media_fields["download_reviewer_mode"] == 'object_organization'
     return media_fields if object_organization_mode_allowed?(find_organization(organization_id))

@@ -25,6 +25,15 @@ POSTGRES_PASSWORD=
 FCREPO_USERNAME=
 FCREPO_PASSWORD=
 
+# MinIO (local S3-compatible object storage) user and pass
+MINIO_ROOT_USER=
+MINIO_ROOT_PASSWORD=
+
+# S3 (object storage) access key and secret used by the Rails app to connect to S3.
+# For local dev, match MINIO_ROOT_USER/MINIO_ROOT_PASSWORD above.
+S3_ACCESS_KEY_ID=
+S3_SECRET_ACCESS_KEY=
+
 # Initial MorphoSource user, will be granted admin access
 MS_INIT_USR=
 MS_INIT_PW=
@@ -70,6 +79,13 @@ docker-compose down  # Stop and remove containers
 
 There is also a test profile used to run automated tests when doing development on the MorphoSource application. If you're doing development on MorphoSource using Docker, there is a separate documentation file with specific guides and tips for this purpose.
 
+Local S3-compatible object storage (MinIO) is opt-in via the `object_storage` profile, and won't start with a plain `docker-compose up -d`:
+
+```
+docker compose --profile object_storage up -d   # Start containers, including MinIO
+docker compose --profile object_storage down    # Stop and remove containers, including MinIO
+```
+
 Finally, accessing the interactive Rails console (for technical site administration) is straightforward:
 
 ```
@@ -90,6 +106,8 @@ bundle exec rails c
 * `postgres`
 * `memcached`
 * `redis`
+* `minio` - Local S3-compatible object storage, used for testing object storage. Only created when using the `object_storage` profile. Console available at port 9001.
+* `minio_setup` - Creates the `S3_BUCKET` bucket in `minio` on startup, then exits. Only created when using the `object_storage` profile.
 
 #### Volumes
 
@@ -114,6 +132,7 @@ To test unreleased UV changes without publishing a release, use `bin/uv-install-
 * [Postgres 16.9](https://hub.docker.com/_/postgres)
 * [Memcached](https://hub.docker.com/_/memcached)
 * [Redis](https://hub.docker.com/_/redis)
+* [MinIO](https://hub.docker.com/r/minio/minio)
 
 ## Find Us
 

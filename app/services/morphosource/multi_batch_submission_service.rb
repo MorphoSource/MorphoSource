@@ -258,14 +258,10 @@ module Morphosource
         "owner" => Array(org.depositor).first,
         "organization_transfer_on_publish" => (organization_media_transfer_for(org_id) == :publication)
       }
-      # Reviewer Eligibility is not a media field, so it is translated rather than passed
-      # through. Only the organization decides the mode: overrides may not supply it, since that
-      # would skip the eligibility check, so the compiled key is absent unless the organization
-      # reviews these downloads -- ownership_value_available? treats a literal false as a value
-      # worth applying.
       org_fields["download_reviewer_mode"] = 'object_organization' if org.try(:reviews_object_media_downloads)
 
       defaults = default_ownership_fields
+      # Overrides may not set the mode; only an eligible organization can.
       org_overrides = ownership_options_for(org_id).with_indifferent_access.except(:download_reviewer_mode)
 
       keys = defaults.keys | org_fields.keys | org_overrides.keys.map(&:to_s)

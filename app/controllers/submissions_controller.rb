@@ -812,14 +812,7 @@ class SubmissionsController < ApplicationController
   end
 
   def find_ancestor_organization
-    # The AJAX prefill sends these as top-level params; on create they arrive nested under
-    # :submission. Both routes must resolve the same organization, or the create-time
-    # eligibility gate below would reject a mode this controller itself prefilled.
-    #
-    # parent_media_list is comma-joined when several parents are selected; the create path
-    # takes the first, matching :271. Multiple parent organizations are rare and handled case
-    # by case. The params branch is deliberately untouched -- it is the pre-existing AJAX
-    # route, and splitting there would change prefill behaviour beyond this PR.
+    # Top-level params on the AJAX prefill; nested under :submission on create.
     parent_list = params[:parent_media_list] || @submission&.parent_media_list&.split(',')&.first
     organization_id = params[:organization_id] || @submission&.organization_id
     biological_specimen_id = params[:biological_specimen_id] || @submission&.biological_specimen_id
@@ -854,20 +847,13 @@ class SubmissionsController < ApplicationController
       download_reviewer: format_reviewers_select2(organization.download_reviewer)
     ) if organization.download_reviewer.present?
 
-    # Reviewer Eligibility is checked here, on the organization already in hand, rather than
-    # left to Media's transition validation: that validation walks the new media's ancestors,
-    # which AddToWorkActor links only after saving, so at create time it passes vacuously.
-    # The flag itself is not a media field, so it is translated rather than passed through.
     fields[:download_reviewer_mode] = 'object_organization' if fields.delete(:reviews_object_media_downloads)
 
     fields
   end
 
-  # Reviewer Eligibility gate for a posted mode. download_reviewer_mode is a permitted form
-  # term, so it can arrive from the client, and Media's own validation cannot serve as the
-  # gate at create time: it walks the new media's ancestors, which AddToWorkActor links only
-  # after saving, so an empty set passes vacuously and nothing re-checks afterwards.
-  # Check the organization the submission already holds instead.
+  # Drops a posted object_organization mode unless the submission's organization is eligible.
+  # Media's own validation passes vacuously at create; see Media#object_organization_mode_is_eligible.
   def reject_ineligible_reviewer_mode(model_params)
     return model_params unless model_params['download_reviewer_mode'] == 'object_organization'
     return model_params if object_organization_mode_allowed?(find_ancestor_organization)

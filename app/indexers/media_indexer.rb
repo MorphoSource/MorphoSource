@@ -116,14 +116,7 @@ class MediaIndexer < Morphosource::WorkIndexer
         occurrence_id = nil
       end
 
-      # Reviewer Identity: ms_ids and/or org_collection: tokens, not resolved Users.
-      # download_reviewers is a computed getter, not a property, so it has no index block of
-      # its own. The mode and record-users keys come from their property declarations.
-      #
-      # Set here rather than beside download_reviewer_ssim so the Object Organizations walked
-      # above can be handed over: object_organization mode would otherwise repeat the whole
-      # ancestor traversal, plus a Fedora load per organization, on every reindex. Nil when the
-      # media has no physical objects, and the getter walks for itself in that case.
+      # Reuses the organizations walked above so object_organization mode does not walk again.
       solr_doc['download_reviewers_ssim'] = object.download_reviewers(@organizations)
 
       # add physical object facet
@@ -257,7 +250,6 @@ class MediaIndexer < Morphosource::WorkIndexer
     end
   end
 
-  # Media#organizations is the same walk without the uniq, so it is the one implementation.
   def organizations
     object.organizations.uniq
   end

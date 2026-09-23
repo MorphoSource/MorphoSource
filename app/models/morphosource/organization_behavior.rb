@@ -67,9 +67,7 @@ module Morphosource
       device_specimens + device_cultural_heritage_objects
     end
 
-    # Array(v) rather than v&.first: reviews_object_media_downloads is a scalar boolean, and
-    # &. guards only nil, so v&.first raised NoMethodError on true/false. Identical behaviour
-    # for every multivalued field; scalar false and nil both drop out.
+    # Array(v): reviews_object_media_downloads is a scalar boolean, which v&.first raised on.
     def enforced_permissions_fields
       permissions_fields.select { |k, v| is_intentionally_blank(k) || Array(v).first.present? }
     end
@@ -94,8 +92,7 @@ module Morphosource
       {
         download_permission: download_permission,
         download_reviewer: download_reviewer,
-        # try: the deprecated Organization model shares this behavior but has no such
-        # property, and is deliberately frozen rather than given one.
+        # try: the deprecated Organization model has no such property.
         reviews_object_media_downloads: try(:reviews_object_media_downloads),
         rights_holder: rights_holder,
         rights_statement: rights_statement,

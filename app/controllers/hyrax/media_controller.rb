@@ -29,6 +29,7 @@ module Hyrax
     # must run before map_publication_status_to_visibility and check_for_published_doi
     before_action :save_publication_status, only: [:update]
     before_action :map_publication_status_to_visibility, only: [:create, :update]
+    before_action :strip_download_reviewer_mode, only: [:create]
     before_action :check_for_published_doi, only: [:update]
     before_action :strip_doi_protected_fields, only: [:update]
 
@@ -509,6 +510,11 @@ module Hyrax
         return unless curation_concern.doi.present?
         return unless params[:media].present?
         params[:media].slice!(*DOI_LOCKED_ALLOWED_PARAMS)
+      end
+
+      # The submission flows are the only create paths that check Reviewer Eligibility.
+      def strip_download_reviewer_mode
+        params[:media]&.delete(:download_reviewer_mode)
       end
 
       def update_thumbnail

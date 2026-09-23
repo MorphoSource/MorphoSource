@@ -849,6 +849,57 @@ describe 'description attachment methods' do
 
         expect(media).to be_valid
       end
+
+      # Pins the create-time ordering on the real actor stack: AddToWorkActor saves the media
+      # before attaching it to its parent, so the validation sees no Object Organizations and an
+      # ineligible organization's mode passes. The submission paths' own gate is what stops it.
+      context 'at create time through the actor stack' do
+        let(:device)   { FactoryBot.create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
+        let(:specimen) { FactoryBot.create(:biological_specimen, organization_id: [ineligible_organization.id]) }
+        let(:imaging_event) do
+          FactoryBot.create(:imaging_event, title: ['imaging event'], ie_modality: device.modality,
+                                            physical_object_id: [specimen.id], device_id: [device.id.to_s])
+        end
+        let(:seen_at_validation) { [] }
+
+        before do
+          seen = seen_at_validation
+          allow_any_instance_of(Media).to receive(:object_organization_mode_is_eligible)
+            .and_wrap_original do |original|
+              seen << original.receiver.organizations
+              original.call
+            end
+        end
+
+        def expect_vacuous_pass(created)
+          expect(seen_at_validation.first).to eq([])
+          expect(created).to be_persisted
+          expect(created.reload.download_reviewer_mode).to eq('object_organization')
+          expect(created.organizations.map(&:id)).to eq([ineligible_organization.id])
+        end
+
+        it 'passes vacuously on the single submission path' do
+          media = Media.new
+          attributes = {
+            'title' => ['single submission media'],
+            'download_reviewer_mode' => 'object_organization',
+            'work_parents_attributes' => { '0' => { 'id' => imaging_event.id, '_destroy' => 'false' } }
+          }
+          Hyrax::CurationConcern.actor.create(Hyrax::Actors::Environment.new(media, ::Ability.new(owner_user), attributes))
+
+          expect_vacuous_pass(media)
+        end
+
+        it 'passes vacuously on the batch import path' do
+          media = BatchSubmissionsImporter::BatchObjectImporter.call(
+            'Media',
+            { title: ['batch media'], depositor: owner_user.ms_id,
+              download_reviewer_mode: 'object_organization', parent_id: [imaging_event.id] }
+          )
+
+          expect_vacuous_pass(media)
+        end
+      end
     end
 
     describe '#publish_reviewers_updated' do

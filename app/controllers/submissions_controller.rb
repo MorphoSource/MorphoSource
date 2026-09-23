@@ -856,7 +856,7 @@ class SubmissionsController < ApplicationController
 
     # Reviewer Eligibility is checked here, on the organization already in hand, rather than
     # left to Media's transition validation: that validation walks the new media's ancestors,
-    # which the actor stack may not have linked yet, and an empty set passes vacuously.
+    # which AddToWorkActor links only after saving, so at create time it passes vacuously.
     # The flag itself is not a media field, so it is translated rather than passed through.
     fields[:download_reviewer_mode] = 'object_organization' if fields.delete(:reviews_object_media_downloads)
 
@@ -865,8 +865,8 @@ class SubmissionsController < ApplicationController
 
   # Reviewer Eligibility gate for a posted mode. download_reviewer_mode is a permitted form
   # term, so it can arrive from the client, and Media's own validation cannot serve as the
-  # gate at create time: it walks the new media's ancestors, which the actor stack may not
-  # have linked yet, so an empty set passes vacuously and nothing re-checks afterwards.
+  # gate at create time: it walks the new media's ancestors, which AddToWorkActor links only
+  # after saving, so an empty set passes vacuously and nothing re-checks afterwards.
   # Check the organization the submission already holds instead.
   def reject_ineligible_reviewer_mode(model_params)
     return model_params unless model_params['download_reviewer_mode'] == 'object_organization'

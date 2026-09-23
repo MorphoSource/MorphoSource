@@ -692,8 +692,10 @@ class Media < Morphosource::Works::Base
     # earlier, contradicting Grandfathering. Reading media_organization_id_ssim from Solr would
     # be cheaper, but a stale index would silently grant eligibility.
     #
-    # An empty set passes: at create time the ImagingEvent parent may not be linked yet. The
-    # submission path checks the organization it already holds (SubmissionsController).
+    # An empty set passes, and at create time the set is always empty: AddToWorkActor saves the
+    # media before attaching it to its parent, on both the single and batch submission paths.
+    # Those paths check the organization they already hold instead (SubmissionsController,
+    # BatchSubmissionsController, MultiBatchSubmissionService).
     def object_organization_mode_is_eligible
       return unless download_reviewer_mode_changed?
       return unless download_reviewer_mode == 'object_organization'

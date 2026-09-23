@@ -288,12 +288,16 @@ RSpec.describe Morphosource::MultiBatchSubmissionService do
         )
       end
 
-      def fields_for(reviews:)
+      def fields_for(reviews:, from: service)
         org = org_double(reviews: reviews)
         allow(OrganizationCollection).to receive(:exists?).with('000200001').and_return(true)
         allow(OrganizationCollection).to receive(:find).with('000200001').and_return(org)
 
-        service.send(:media_ownership_fields, '000200001')
+        from.send(:media_ownership_fields, '000200001')
+      end
+
+      def service_with(ownership_options)
+        described_class.new(xlsx_file_path: xlsx_path, user: user, options: { ownership_options: ownership_options })
       end
 
       it 'sets object_organization mode for an eligible organization' do
@@ -308,6 +312,19 @@ RSpec.describe Morphosource::MultiBatchSubmissionService do
 
       it 'sets no mode when the flag was never written' do
         expect(fields_for(reviews: nil)).not_to have_key('download_reviewer_mode')
+      end
+
+      # The organization alone decides the mode; an override would skip the eligibility check.
+      it 'ignores a mode forced through ownership_options for the organization' do
+        forcing = service_with('000200001' => { 'download_reviewer_mode' => 'object_organization' })
+
+        expect(fields_for(reviews: false, from: forcing)).not_to have_key('download_reviewer_mode')
+      end
+
+      it 'ignores a mode forced through ownership_options for all organizations' do
+        forcing = service_with(all: { download_reviewer_mode: 'object_organization' })
+
+        expect(fields_for(reviews: false, from: forcing)).not_to have_key('download_reviewer_mode')
       end
     end
   end

@@ -667,6 +667,36 @@ RSpec.describe Hyrax::MediaController, type: :controller do
     end
   end
 
+  describe '#strip_download_reviewer_mode' do
+    before { allow(subject).to receive(:params).and_return(params) }
+
+    context 'when a mode is posted' do
+      let(:params) do
+        ActionController::Parameters.new({
+          "media" => { "title" => ["New Title"], "download_reviewer_mode" => "object_organization" }
+        })
+      end
+
+      it 'removes it' do
+        subject.send(:strip_download_reviewer_mode)
+        expect(params["media"].keys).not_to include("download_reviewer_mode")
+      end
+
+      it 'keeps the other media params' do
+        subject.send(:strip_download_reviewer_mode)
+        expect(params["media"].keys).to include("title")
+      end
+    end
+
+    context 'when no media params are posted' do
+      let(:params) { ActionController::Parameters.new({}) }
+
+      it 'does not raise' do
+        expect { subject.send(:strip_download_reviewer_mode) }.not_to raise_error
+      end
+    end
+  end
+
   describe "#file_formats_valid? for DOI media" do
     let(:doi)  { ["10.1234/test"] }
     let(:work) { Media.new(title: ["Test Media Work"], doi: doi) }

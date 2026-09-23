@@ -145,9 +145,6 @@ module SubmissionsControllerBehavior
     end
   end
 
-  # Reviewer Eligibility: an organization's Permission Defaults may only put new media into
-  # object_organization mode when the organization actually reviews those downloads.
-  # try: the deprecated Organization model has no such property and is never eligible.
   def object_organization_mode_allowed?(organization)
     organization.try(:reviews_object_media_downloads).present?
   end

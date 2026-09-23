@@ -105,32 +105,18 @@ class Media < Morphosource::Works::Base
     self.download_reviewer = self.download_reviewer.map { |x| x.split(',') }.flatten
   end
 
-  # @return [String] the persisted mode, or 'record_users' when nothing has been written.
+  # _was also reports the default; use _changed? to detect a transition.
   #
-  # Overriding the reader, rather than writing a default into the attribute, avoids dirtying
-  # every record that never had one. Note that download_reviewer_mode_was then reports
-  # 'record_users' as well -- ActiveFedora captures the prior value through this reader -- so
-  # only _changed? distinguishes the unset -> 'object_organization' transition, and it is what
-  # object_organization_mode_is_eligible and publish_reviewers_updated guard on.
+  # @return [String] the persisted mode, or 'record_users' when nothing has been written
   def download_reviewer_mode
     super.presence || 'record_users'
   end
 
-  # This media's Reviewer Identity (see CONTEXT.md): User ms_ids, or one
-  # "org_collection:<id>" token per OrganizationCollection that reviews on its behalf.
+  # Tokens keep the index stable when an organization's managers change;
+  # Morphosource::DownloadReviewerResolver expands them into Users.
   #
-  # Organizations are deliberately *not* resolved into Users here. Keeping the token in the
-  # index means a change to an organization's managers does not require reindexing every
-  # media it reviews. Morphosource::DownloadReviewerResolver performs Reviewer Resolution.
-  #
-  # Reviewer Eligibility (reviews_object_media_downloads) is never consulted: it is checked
-  # once, when the mode changes, so that Grandfathering holds.
-  #
-  # @param object_organizations [Array, nil] this media's Object Organizations, when the caller
-  #   has already loaded them. MediaIndexer walks the same ancestors for its own keys and passes
-  #   the result rather than paying for a second walk; every other caller omits it. Consulted
-  #   only in object_organization mode, so record_users mode never walks either way.
-  # @return [Array<String>] User ms_ids and/or org_collection: tokens
+  # @param object_organizations [Array, nil] Object Organizations the caller already loaded
+  # @return [Array<String>] User ms_ids and/or "org_collection:<id>" tokens
   def download_reviewers(object_organizations = nil)
     if download_reviewer_mode == 'object_organization'
       orgs = object_organizations || organizations
@@ -665,14 +651,11 @@ class Media < Morphosource::Works::Base
       }
     end
 
-    # The owner stands in for the record's reviewers when it names none of its own. It holds
-    # either a User ms_id or an OrganizationCollection id, so an org-owned media routes to that
-    # organization rather than nowhere.
+    # The owner is either a User ms_id or an OrganizationCollection id.
     def owner_download_reviewers
       owner_id = Array(user_with_ownership).first
       return [] if owner_id.blank?
-      # exists? rather than find_by: find_by reifies the collection from Fedora to answer a
-      # boolean, and this runs for every media indexed.
+      # exists?, not find_by: find_by loads the collection from Fedora.
       return [org_collection_token(owner_id)] if OrganizationCollection.exists?(owner_id)
 
       [owner_id]
@@ -682,26 +665,13 @@ class Media < Morphosource::Works::Base
       "#{Morphosource::MediaMetadata::ORG_COLLECTION_TOKEN_PREFIX}#{organization_id}"
     end
 
-    # Entering 'object_organization' mode requires every one of the media's Object
-    # Organizations to be eligible, not merely one: a media shared between a paying and a
-    # non-paying organization must not silently drop the second from review.
-    #
-    # Checked only on the transition. The walk is expensive — physical_objects traverses
-    # ancestors, and PhysicalObjectBehavior#organizations loads each organization from Fedora —
-    # and re-checking later would fail an unrelated edit on a record that was valid a moment
-    # earlier, contradicting Grandfathering. Reading media_organization_id_ssim from Solr would
-    # be cheaper, but a stale index would silently grant eligibility.
-    #
-    # An empty set passes, and at create time the set is always empty: AddToWorkActor saves the
-    # media before attaching it to its parent, on both the single and batch submission paths.
-    # Those paths check the organization they already hold instead (SubmissionsController,
-    # BatchSubmissionsController, MultiBatchSubmissionService).
+    # Every Object Organization must be eligible, checked only on the transition. At create time
+    # the set is empty (AddToWorkActor links parents after saving), so the submission paths gate
+    # creation instead.
     def object_organization_mode_is_eligible
       return unless download_reviewer_mode_changed?
       return unless download_reviewer_mode == 'object_organization'
 
-      # try: physical objects may still resolve to the deprecated Organization model, which has
-      # no such property and is therefore never eligible.
       ineligible = organizations.reject { |org| org.try(:reviews_object_media_downloads) }
       return if ineligible.empty?
 

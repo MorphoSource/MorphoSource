@@ -109,7 +109,7 @@ module Morphosource
         interval_sequence << io.to_segment_and_clear
 
         # file data
-        if file[:file].is_a?(File) || file[:file].is_a?(Tempfile)
+        if file[:file].is_a?(File) || file[:file].is_a?(Tempfile) || file[:file].is_a?(Pathname)
           interval_sequence << IntervalResponse::LazyFile.new(file[:file])
         else # must be streamable
           interval_sequence << file[:file]
@@ -250,7 +250,8 @@ module Morphosource
               unavailable_media_ids << m.id
               next nil
             end
-            file_uri = original_file_uri(original_file)
+            disk_path = original_file_disk_path(original_file)
+            file_uri = original_file_uri(original_file) unless disk_path
           end
 
           attrs = {
@@ -260,7 +261,7 @@ module Morphosource
             ),
             size: file_set.file_size&.first.to_i,
             crc32: file_set.crc32&.first.to_i,
-            file: RemoteInclusion.new(file_uri, file_set.file_size&.first.to_i)
+            file: disk_path || RemoteInclusion.new(file_uri, file_set.file_size&.first.to_i)
           }
 
           if attrs.values.all? { |v| v.present? }
@@ -305,6 +306,14 @@ module Morphosource
       # (Valkyrie) has #original_filename/#file_identifier instead.
       def original_file_name(original_file)
         original_file.respond_to?(:original_name) ? original_file.original_name : original_file.original_filename
+      end
+
+      # Assumes Valkyrie file migrations may start before S3 becomes primary, leaving
+      # versiondisk:// originals that must be streamed from local disk.
+      def original_file_disk_path(original_file)
+        identifier = original_file.try(:file_identifier).to_s
+        return unless identifier.start_with?('versiondisk://')
+        Valkyrie::StorageAdapter.find_by(id: identifier).disk_path
       end
 
       def original_file_uri(original_file)

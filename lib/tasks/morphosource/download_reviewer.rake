@@ -12,41 +12,6 @@ namespace :morphosource do
       abort('verify_media found differences requiring review') unless verification.verified?
     end
 
-    desc 'Reindex every indexed Media synchronously before the download_reviewers read-path cutover; ' \
-         'rerun to recover from failures'
-    task reindex_media: :environment do
-      processed = 0
-      failed = 0
-      orphaned = 0
-      Morphosource::MediaReviewerBatches.each do |ids|
-        ids.each do |id|
-          begin
-            begin
-              media = Media.find(id)
-            rescue ActiveFedora::ObjectNotFoundError, Ldp::Gone
-              orphaned += 1
-              message = "#{id}: in Solr but deleted from Fedora; skipped"
-              puts message
-              Rails.logger.warn("[morphosource:download_reviewer:reindex_media] #{message}")
-              next
-            end
-            media.update_index
-          rescue StandardError => e
-            failed += 1
-            message = "#{id}: #{e.class}: #{e.message}"
-            puts message
-            Rails.logger.error("[morphosource:download_reviewer:reindex_media] #{message}")
-          ensure
-            processed += 1
-          end
-        end
-        Rails.logger.info("[morphosource:download_reviewer:reindex_media] processed #{processed}; " \
-                          "failed #{failed}; orphaned #{orphaned}")
-      end
-      puts "Media reindex complete: processed #{processed}; failed #{failed}; orphaned #{orphaned}"
-      abort('reindex_media had failures; repair and rerun before cutover') if failed.positive?
-    end
-
     desc 'Snapshot current download reviewer values and resolution (read-only). ' \
          'Usage: rake "morphosource:download_reviewer:export[/path/to/export.csv,all]" ' \
          '-- scope is all, organizations, media or cart_items'

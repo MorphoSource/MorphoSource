@@ -425,19 +425,26 @@ class CatalogController < ApplicationController
     Enumerator.new do |yielder|
       fetched = 0
       total = CSV_EXPORT_MAX_ROWS
-      header_written = false
+      header_column_count = nil
 
       loop do
         batch_size = [CSV_EXPORT_BATCH_SIZE, total - fetched].min
         break if batch_size <= 0
 
-        solr_response, documents = search_service.search_results do |builder|
-          builder.start(fetched).rows(batch_size)
+        begin
+          solr_response, documents = search_service.search_results do |builder|
+            builder.start(fetched).rows(batch_size)
+          end
+        rescue Blacklight::Exceptions::ECONNREFUSED, Blacklight::Exceptions::InvalidRequest => e
+          Rails.logger.error("Entire-search CSV export truncated after #{fetched} rows: #{e.class}: #{e.message}")
+          yielder << csv_export_error_row(fetched, header_column_count)
+          break
         end
 
-        unless header_written
-          yielder << (documents.first&.to_semantic_values || {}).keys.to_csv
-          header_written = true
+        if header_column_count.nil?
+          header = (documents.first&.to_semantic_values || {}).keys
+          header_column_count = header.size
+          yielder << header.to_csv
         end
 
         break if documents.empty?
@@ -450,6 +457,14 @@ class CatalogController < ApplicationController
         total = [total, solr_response.total].min
       end
     end
+  end
+
+  # Pads the error message to the same column count as the data rows so the CSV stays
+  # rectangular (safe for strict parsers) if a batch fails partway through the export.
+  def csv_export_error_row(fetched, header_column_count)
+    message = "ERROR: export truncated after #{fetched} rows due to a server error. Please retry your search."
+    padding = Array.new([header_column_count.to_i - 1, 0].max)
+    ([message] + padding).to_csv
   end
 
   # paginated results shown in the facet "more" modal

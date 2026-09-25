@@ -379,6 +379,26 @@ RSpec.describe MediaCatalogController, :type => :controller do
           expect(call_count).to be > 1
           expect(response.body).to include(media.id)
         end
+
+        it 'appends a padded error row and stops streaming if a batch fails mid-export' do
+          stub_const('CatalogController::CSV_EXPORT_BATCH_SIZE', 1)
+          create(:public_media_document) # a second document so a second batch is attempted
+
+          call_count = 0
+          allow(controller).to receive(:search_service).and_wrap_original do |original|
+            call_count += 1
+            raise Blacklight::Exceptions::ECONNREFUSED, 'connection refused' if call_count == 2
+
+            original.call
+          end
+
+          get :index, format: :csv, params: { scope: 'all' }
+
+          expect(response.code).to eq("200")
+          rows = CSV.parse(response.body)
+          expect(rows.last.first).to include('ERROR: export truncated')
+          expect(rows.last.size).to eq(rows.first.size)
+        end
       end
     end
   end

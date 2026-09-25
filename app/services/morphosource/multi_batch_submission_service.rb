@@ -258,9 +258,10 @@ module Morphosource
         "owner" => Array(org.depositor).first,
         "organization_transfer_on_publish" => (organization_media_transfer_for(org_id) == :publication)
       }
+      org_fields["download_reviewer_mode"] = 'object_organization' if org.try(:reviews_object_media_downloads)
 
       defaults = default_ownership_fields
-      org_overrides = ownership_options_for(org_id)
+      org_overrides = ownership_options_for(org_id).with_indifferent_access.except(:download_reviewer_mode)
 
       keys = defaults.keys | org_fields.keys | org_overrides.keys.map(&:to_s)
 

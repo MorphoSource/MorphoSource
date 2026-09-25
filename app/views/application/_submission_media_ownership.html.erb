@@ -47,7 +47,6 @@
 
       <%= render_edit_field_partial('download_reviewer', f: f) %>
 
-      <%# Not in PermissionsHelper's value lists: default_present? raises on a scalar. %>
       <%= f.hidden_field :download_reviewer_mode %>
 
       <div id="media_transfer_management" class="form-group row select media_transfer_management hide">

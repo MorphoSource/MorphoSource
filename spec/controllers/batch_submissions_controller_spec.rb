@@ -141,9 +141,6 @@ RSpec.describe BatchSubmissionsController, type: :controller do
 
   end
 
-  # The batch path never reaches Hyrax::MediaForm, so neither its permitted-params filter nor
-  # SubmissionsController's eligibility gate applies -- these fields become media attributes
-  # directly. This is the only thing standing between a posted mode and a created media.
   describe '#reject_ineligible_reviewer_mode' do
     let(:eligible) { nil }
     let(:organization) do

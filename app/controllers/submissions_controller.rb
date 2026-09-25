@@ -852,8 +852,6 @@ class SubmissionsController < ApplicationController
     fields
   end
 
-  # Drops a posted object_organization mode unless the submission's organization is eligible.
-  # Media's own validation passes vacuously at create; see Media#object_organization_mode_is_eligible.
   def reject_ineligible_reviewer_mode(model_params)
     return model_params unless model_params['download_reviewer_mode'] == 'object_organization'
     return model_params if object_organization_mode_allowed?(find_ancestor_organization)

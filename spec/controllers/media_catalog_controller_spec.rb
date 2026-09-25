@@ -330,6 +330,59 @@ RSpec.describe MediaCatalogController, :type => :controller do
     end
   end
 
+  describe '#index CSV export' do
+    render_views
+
+    context 'current page (no scope param)' do
+      let!(:media) { create(:public_media_document) }
+
+      it 'is available without signing in' do
+        get :index, format: :csv
+        expect(response.code).to eq("200")
+        expect(response.content_type).to include('text/csv')
+        expect(response.body).to include(media.id)
+      end
+    end
+
+    context 'entire search (scope=all)' do
+      context 'when not signed in' do
+        it 'returns 403 forbidden' do
+          get :index, format: :csv, params: { scope: 'all' }
+          expect(response.code).to eq("403")
+        end
+      end
+
+      context 'when signed in' do
+        let(:user) { create(:user) }
+        let!(:media) { create(:public_media_document) }
+
+        before { sign_in user }
+
+        it 'returns 200 with CSV results' do
+          get :index, format: :csv, params: { scope: 'all' }
+          expect(response.code).to eq("200")
+          expect(response.content_type).to include('text/csv')
+          expect(response.body).to include(media.id)
+        end
+
+        it 'fetches results in multiple small batches rather than one large query' do
+          stub_const('CatalogController::CSV_EXPORT_BATCH_SIZE', 1)
+          call_count = 0
+          allow(controller).to receive(:search_service).and_wrap_original do |original|
+            call_count += 1
+            original.call
+          end
+
+          get :index, format: :csv, params: { scope: 'all' }
+
+          expect(response.code).to eq("200")
+          expect(call_count).to be > 1
+          expect(response.body).to include(media.id)
+        end
+      end
+    end
+  end
+
   describe '#show JSON API endpoint' do
     context 'query private media' do
       let (:media) { create(:private_media_document) }

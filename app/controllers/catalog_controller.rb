@@ -80,7 +80,7 @@ class CatalogController < ApplicationController
     # turn on csv response
     config.index.respond_to.csv = true
 
-    # standard maximum results per page limit (does not apply to CSV export)
+    # standard maximum results per page limit
     config.max_per_page = 1000
 
     # solr fields that will be treated as facets by the blacklight application
@@ -310,11 +310,19 @@ class CatalogController < ApplicationController
     config.autocomplete_enabled = false
   end
 
+  # Batch size and hard cap for the "entire search" CSV export (see #entire_search_csv_enumerator).
+  # Keeping the batch size well under blacklight_config.max_per_page means it never needs
+  # to be overridden for this export path.
+  CSV_EXPORT_BATCH_SIZE = 500
+  CSV_EXPORT_MAX_ROWS = 500_000
+
   # get search results from the solr index
   def index
-    if request.format == "csv"
-      blacklight_config.max_per_page = 1_000_000
+    if entire_search_csv_export?
+      return deny_entire_search_csv_export unless current_user.present?
+      return stream_entire_search_csv
     end
+
     (@response, @document_list) = search_service.search_results
     @document_type = document_type
     respond_to do |format|
@@ -329,18 +337,7 @@ class CatalogController < ApplicationController
         )
       end
       format.csv do
-        # Stream CSV since it might be very large
-
-        headers.delete("Content-Length")
-        headers["Cache-Control"] = "no-cache"
-        headers["Content-Type"] = "text/csv"
-        headers["Content-Disposition"] = "attachment; filename=\"catalog_export.csv\""
-        headers["X-Accel-Buffering"] = "no"
-
-        response.status = 200
-
-        self.response_body = csv_enumerator
-
+        stream_csv(csv_enumerator)
         return
       end
       additional_response_formats(format)
@@ -391,6 +388,66 @@ class CatalogController < ApplicationController
       yielder << (@document_list&.first&.to_semantic_values || {}).keys.to_csv
       (@document_list || []).each do |d|
         yielder << d.to_semantic_values.values.map { |v| v.kind_of?(Array) ? v.join('; ') : v }.to_csv
+      end
+    end
+  end
+
+  def entire_search_csv_export?
+    request.format == "csv" && params[:scope] == "all"
+  end
+
+  def deny_entire_search_csv_export
+    render plain: "Exporting an entire search as CSV requires signing in.", status: :forbidden
+  end
+
+  def stream_entire_search_csv
+    stream_csv(entire_search_csv_enumerator)
+  end
+
+  # Streams a CSV enumerator as the response body without buffering it in memory.
+  def stream_csv(enumerator)
+    headers.delete("Content-Length")
+    headers["Cache-Control"] = "no-cache"
+    headers["Content-Type"] = "text/csv"
+    headers["Content-Disposition"] = "attachment; filename=\"catalog_export.csv\""
+    headers["X-Accel-Buffering"] = "no"
+
+    response.status = 200
+
+    self.response_body = enumerator
+  end
+
+  # Fetches documents from Solr in fixed-size batches (CSV_EXPORT_BATCH_SIZE) so that at
+  # most one batch of documents is held in memory at a time, up to a hard cap of
+  # CSV_EXPORT_MAX_ROWS total rows. The batch/row bounds are set directly on the search
+  # builder and never come from client-supplied page/per_page/rows params.
+  def entire_search_csv_enumerator
+    Enumerator.new do |yielder|
+      fetched = 0
+      total = CSV_EXPORT_MAX_ROWS
+      header_written = false
+
+      loop do
+        batch_size = [CSV_EXPORT_BATCH_SIZE, total - fetched].min
+        break if batch_size <= 0
+
+        solr_response, documents = search_service.search_results do |builder|
+          builder.start(fetched).rows(batch_size)
+        end
+
+        unless header_written
+          yielder << (documents.first&.to_semantic_values || {}).keys.to_csv
+          header_written = true
+        end
+
+        break if documents.empty?
+
+        documents.each do |d|
+          yielder << d.to_semantic_values.values.map { |v| v.kind_of?(Array) ? v.join('; ') : v }.to_csv
+        end
+
+        fetched += documents.size
+        total = [total, solr_response.total].min
       end
     end
   end

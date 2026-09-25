@@ -4,7 +4,7 @@ class BackfillMediaDownloadReviewers < ActiveRecord::Migration[6.1]
 
   def up
     unless Media.instance_methods.include?(:download_reviewer=) && Media.instance_methods.include?(:reviewer)
-      raise 'Media reviewer backfill must run before the ticket 5 read-path cutover'
+      raise 'Media reviewer backfill must run before the download_reviewers read-path cutover'
     end
 
     @organizations = {}
@@ -26,19 +26,20 @@ class BackfillMediaDownloadReviewers < ActiveRecord::Migration[6.1]
           next
         end
 
-        stored = Array(media.download_reviewer).reject(&:blank?).uniq
+        # A save would normalize these values and enqueue the old CartItem reviewer job.
+        legacy = Array(media.download_reviewer)
+        if legacy.flat_map { |value| value.split(',') }.to_set != legacy.to_set
+          failed += 1
+          say "#{id}: comma-joined or blank download_reviewer requires repair before backfill", true
+          next
+        end
+
+        stored = legacy.reject(&:blank?).uniq
         users = stored.present? ? User.where(ms_id: stored).pluck(:ms_id) : []
         rejected = stored - users
         if rejected.any?
           dropped += 1
           report_dropped(media.id, rejected)
-        end
-
-        # A save would split these values and enqueue the old CartItem reviewer job.
-        if Array(media.download_reviewer).any? { |value| value.include?(',') }
-          failed += 1
-          say "#{id}: comma-joined download_reviewer requires repair before backfill", true
-          next
         end
 
         if Array(media.record_download_reviewer_users).sort == users.sort
@@ -54,6 +55,9 @@ class BackfillMediaDownloadReviewers < ActiveRecord::Migration[6.1]
           failed += 1
           say "#{id}: #{media.errors.full_messages.join('; ')}", true
         end
+      rescue StandardError => e
+        say "#{id}: #{e.class}: #{e.message}", true
+        raise
       end
 
       say "Media processed: #{processed}; written: #{written}; unchanged: #{unchanged}; failed: #{failed}"
@@ -63,7 +67,7 @@ class BackfillMediaDownloadReviewers < ActiveRecord::Migration[6.1]
     say "Deleted Media still in Solr, skipped: #{orphaned}"
     raise "#{failed} Media could not be back filled" if failed.positive?
 
-    say 'Complete synchronously. Re-run before ticket 5 with writes quiesced, then verify_media.'
+    say 'Complete synchronously. Re-run before the read-path cutover with writes quiesced, then verify_media.'
   end
 
   def down

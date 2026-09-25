@@ -3,7 +3,8 @@
 
 namespace :morphosource do
   namespace :download_reviewer do
-    desc 'Compare Media reviewer backfill fields and resolution against live legacy values (read-only, before ticket 5)'
+    desc 'Compare Media reviewer backfill fields and resolution against live legacy values ' \
+         '(read-only, before the download_reviewers read-path cutover)'
     task verify_media: :environment do
       verification = Morphosource::MediaReviewerVerification.new
       verification.call
@@ -11,7 +12,8 @@ namespace :morphosource do
       abort('verify_media found differences requiring review') unless verification.verified?
     end
 
-    desc 'Reindex every indexed Media synchronously before ticket 5; rerun to recover from failures'
+    desc 'Reindex every indexed Media synchronously before the download_reviewers read-path cutover; ' \
+         'rerun to recover from failures'
     task reindex_media: :environment do
       processed = 0
       failed = 0
@@ -31,7 +33,9 @@ namespace :morphosource do
             media.update_index
           rescue StandardError => e
             failed += 1
-            Rails.logger.error("[morphosource:download_reviewer:reindex_media] #{id}: #{e.class}: #{e.message}")
+            message = "#{id}: #{e.class}: #{e.message}"
+            puts message
+            Rails.logger.error("[morphosource:download_reviewer:reindex_media] #{message}")
           ensure
             processed += 1
           end

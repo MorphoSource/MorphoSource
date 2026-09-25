@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Morphosource
-  # Temporary enumeration shared by the Media reviewer backfill, verification and reindex.
+  # Temporary enumeration shared by the Media reviewer backfill and verification.
   module MediaReviewerBatches
     BATCH_SIZE = 500
 

@@ -116,7 +116,7 @@ class MediaIndexer < Morphosource::WorkIndexer
         occurrence_id = nil
       end
 
-      # Reuses the organizations walked above so object_organization mode does not walk again.
+      # Pass the walked organizations: each walk loads them from Fedora.
       solr_doc['download_reviewers_ssim'] = object.download_reviewers(@organizations)
 
       # add physical object facet

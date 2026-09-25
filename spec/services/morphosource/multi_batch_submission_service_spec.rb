@@ -273,8 +273,6 @@ RSpec.describe Morphosource::MultiBatchSubmissionService do
       expect(fields['preview_mode']).to eq('Interactive/Embeddable')
     end
 
-    # Reviewer Eligibility is not a media field. This service reads organization defaults
-    # directly and never sees a form, so it translates the flag itself.
     context 'reviewer eligibility' do
       def org_double(reviews:)
         instance_double(
@@ -304,8 +302,6 @@ RSpec.describe Morphosource::MultiBatchSubmissionService do
         expect(fields_for(reviews: true)['download_reviewer_mode']).to eq('object_organization')
       end
 
-      # ownership_value_available? treats a literal false as a value worth applying, so the
-      # key has to stay absent rather than carry false through to the media attributes.
       it 'sets no mode for an ineligible organization' do
         expect(fields_for(reviews: false)).not_to have_key('download_reviewer_mode')
       end
@@ -314,7 +310,6 @@ RSpec.describe Morphosource::MultiBatchSubmissionService do
         expect(fields_for(reviews: nil)).not_to have_key('download_reviewer_mode')
       end
 
-      # The organization alone decides the mode; an override would skip the eligibility check.
       it 'ignores a mode forced through ownership_options for the organization' do
         forcing = service_with('000200001' => { 'download_reviewer_mode' => 'object_organization' })
 

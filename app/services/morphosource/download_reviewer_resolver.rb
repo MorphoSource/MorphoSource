@@ -1,9 +1,8 @@
 # frozen_string_literal: true
 
 module Morphosource
-  # Expands Media#download_reviewers tokens into the ms_ids of the Users who review the media's
-  # Download Requests. Organizations are memoized per instance, so use one instance per
-  # operation (a make_request call, a job batch, a page), not one per media.
+  # Expands Media#download_reviewers tokens into reviewer ms_ids. Memoizes organizations,
+  # so use one instance per operation, not per media.
   #
   # @example
   #   resolver = Morphosource::DownloadReviewerResolver.new
@@ -24,7 +23,6 @@ module Morphosource
       reviewers = existing_users(ms_ids) +
                   tokens.flat_map { |token| organization_reviewers(token.delete_prefix(TOKEN_PREFIX)) }
 
-      # Fall back once on the whole union, never per token.
       reviewers.uniq.presence || [batch_user_ms_id]
     end
 
@@ -40,8 +38,6 @@ module Morphosource
       @organization_reviewers[organization_id] ||= load_organization_reviewers(organization_id)
     end
 
-    # Solr, not Fedora: lifecycle jobs call this in large batches. A deleted organization
-    # resolves to nothing rather than raising, so it cannot block a batch.
     def load_organization_reviewers(organization_id)
       document = ActiveFedora::SolrService.query("id:#{organization_id}",
                                                  fq: ['has_model_ssim:OrganizationCollection'],

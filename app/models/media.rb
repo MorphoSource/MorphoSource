@@ -30,7 +30,6 @@ class Media < Morphosource::Works::Base
   validates :title, presence: { message: 'Your work must have a title.' }
 
   attr_accessor :download_permission, :tags, :delete_thumbnail, :generated_thumbnail
-  # Set on the corpus-wide backfill so it does not publish one reviewer event per record.
   attr_accessor :skip_reviewer_event
   after_destroy :delete_ark_if_reserved, :delete_fund_code_media_associations
 
@@ -112,9 +111,6 @@ class Media < Morphosource::Works::Base
     super.presence || 'record_users'
   end
 
-  # Tokens keep the index stable when an organization's managers change;
-  # Morphosource::DownloadReviewerResolver expands them into Users.
-  #
   # @param object_organizations [Array, nil] Object Organizations the caller already loaded
   # @return [Array<String>] User ms_ids and/or "org_collection:<id>" tokens
   def download_reviewers(object_organizations = nil)
@@ -651,11 +647,9 @@ class Media < Morphosource::Works::Base
       }
     end
 
-    # The owner is either a User ms_id or an OrganizationCollection id.
     def owner_download_reviewers
       owner_id = Array(user_with_ownership).first
       return [] if owner_id.blank?
-      # exists?, not find_by: find_by loads the collection from Fedora.
       return [org_collection_token(owner_id)] if OrganizationCollection.exists?(owner_id)
 
       [owner_id]
@@ -665,9 +659,8 @@ class Media < Morphosource::Works::Base
       "#{Morphosource::MediaMetadata::ORG_COLLECTION_TOKEN_PREFIX}#{organization_id}"
     end
 
-    # Every Object Organization must be eligible, checked only on the transition. At create time
-    # the set is empty (AddToWorkActor links parents after saving), so the submission paths gate
-    # creation instead.
+    # Passes vacuously at create: AddToWorkActor links parents after saving, so the
+    # submission paths gate creation instead.
     def object_organization_mode_is_eligible
       return unless download_reviewer_mode_changed?
       return unless download_reviewer_mode == 'object_organization'

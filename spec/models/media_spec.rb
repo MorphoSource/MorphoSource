@@ -683,9 +683,6 @@ describe 'description attachment methods' do
     end
 
     describe 'the download_reviewer_mode declaration' do
-      # Asserted directly because a wrong declaration has no visible symptom: on a multivalued
-      # ActiveFedora property _was and _change return the new value, so a transition from an
-      # unset mode to object_organization would be undetectable.
       it 'is single-valued' do
         expect(Media.properties['download_reviewer_mode'].multiple?).to be false
       end
@@ -702,10 +699,6 @@ describe 'description attachment methods' do
         expect(media.download_reviewer_mode).to eq('record_users')
       end
 
-      # ActiveFedora captures the prior value through the reader in attribute_will_change!, so
-      # overriding the reader also moves _was onto the default — it does not report the
-      # persisted nil. _changed? is unaffected, and it is what the eligibility validation and
-      # the publish hook both guard on, so the transition stays detectable.
       it 'detects the first transition away from the default' do
         media.download_reviewer_mode = 'object_organization'
 
@@ -752,11 +745,8 @@ describe 'description attachment methods' do
           expect(media.download_reviewers).to eq([token_for(organization)])
         end
 
-        # find_by reifies the collection from Fedora (Collection.find_by is where(...).take,
-        # and SolrHit#reify is model.find(id)) purely to answer a boolean. This runs for
-        # every media indexed.
         it 'does not load the organization from Fedora to identify it' do
-          # Create first: indexing on create calls owner_class, which runs its own find_by.
+          # Create first: indexing on create calls find_by itself.
           media
 
           expect(OrganizationCollection).not_to receive(:find_by)
@@ -830,8 +820,6 @@ describe 'description attachment methods' do
         expect(media).to be_valid
       end
 
-      # The walk is expensive (ancestors, then a Fedora load per organization), so it must not
-      # run on an ordinary save.
       it 'does not walk the graph when the mode has not changed' do
         expect(media).not_to receive(:organizations)
         media.title = ['a new title']
@@ -850,9 +838,6 @@ describe 'description attachment methods' do
         expect(media).to be_valid
       end
 
-      # Pins the create-time ordering on the real actor stack: AddToWorkActor saves the media
-      # before attaching it to its parent, so the validation sees no Object Organizations and an
-      # ineligible organization's mode passes. The submission paths' own gate is what stops it.
       context 'at create time through the actor stack' do
         let(:device)   { FactoryBot.create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
         let(:specimen) { FactoryBot.create(:biological_specimen, organization_id: [ineligible_organization.id]) }
@@ -955,7 +940,6 @@ describe 'description attachment methods' do
       end
     end
 
-    # This PR is additive: the stored download_reviewer still drives every read path.
     describe 'existing records are unaffected' do
       it 'resolves an existing-shaped media through MediaBehavior#reviewer exactly as before' do
         media.download_reviewer = [reviewer.ms_id]

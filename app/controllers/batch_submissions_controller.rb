@@ -173,7 +173,6 @@ class BatchSubmissionsController < ApplicationController
       modality:modality).to_h
   end
 
-  # Drops a posted object_organization mode unless the batch's organization is eligible.
   def reject_ineligible_reviewer_mode(media_fields, organization_id)
     return media_fields unless media_fields["download_reviewer_mode"] == 'object_organization'
     return media_fields if object_organization_mode_allowed?(find_organization(organization_id))

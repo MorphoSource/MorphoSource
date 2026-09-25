@@ -111,8 +111,7 @@ module Morphosource
 
       # -- Download review --
 
-      # multiple: false is required: on a multivalued AF property _was/_change return the new
-      # value, so the transition could not be detected.
+      # Must stay single-valued: multivalued AF properties report the new value from _was/_change.
       property :download_reviewer_mode, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/downloadReviewerMode"), multiple: false do |index|
         index.as :stored_sortable
       end

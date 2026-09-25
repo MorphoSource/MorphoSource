@@ -306,7 +306,6 @@ RSpec.describe MediaIndexer do
     let(:media)   { FactoryBot.create(:media, owner: user.ms_id, depositor: user.ms_id) }
     subject       { described_class.new(media).generate_solr_document }
 
-    # This PR is additive: the old key is still the live read path until the cutover.
     it 'still writes download_reviewer_ssim' do
       media.download_reviewer = [reviewer.ms_id]
 
@@ -330,8 +329,6 @@ RSpec.describe MediaIndexer do
       expect(subject['download_reviewer_mode_ssi']).to eq('object_organization')
     end
 
-    # download_reviewers_ssim cannot find media in object_organization mode by user, because it
-    # holds no ms_id at all; the record list needs its own key.
     it 'writes the record user list even while it is dormant' do
       allow(media).to receive(:organizations).and_return([organization])
       media.download_reviewer_mode = 'object_organization'
@@ -341,8 +338,6 @@ RSpec.describe MediaIndexer do
       expect(subject['record_download_reviewer_users_ssim']).to match_array([reviewer.ms_id])
     end
 
-    # Driven through a real ancestor graph rather than a stubbed #organizations, because the
-    # thing under test is that the indexer's own walk is the one the getter uses.
     context 'with a real Object Organization graph' do
       let(:device)        { FactoryBot.create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
       let(:specimen)      { FactoryBot.create(:biological_specimen, organization_id: [organization.id]) }
@@ -362,8 +357,6 @@ RSpec.describe MediaIndexer do
         expect(subject['download_reviewers_ssim']).to eq(["org_collection:#{organization.id}"])
       end
 
-      # physical_objects traverses ancestors and PhysicalObjectBehavior#organizations loads each
-      # organization from Fedora, so a second walk here would be paid on every reindex.
       it 'walks the ancestors once, not once per key' do
         allow(media).to receive(:organizations).and_call_original
 

@@ -282,9 +282,6 @@ RSpec.describe SubmissionsController, type: :controller do
       end
     end
 
-    # The create-time Reviewer Eligibility gate. It runs here rather than on the Media
-    # validation because that validation walks the new media's ancestors, which the actor
-    # stack may not have linked yet, so an empty set would pass vacuously.
     context 'with an organization collection that reviews its objects\' media downloads' do
       let(:user)        { FactoryBot.create(:contributor) }
       let(:form_params) { { organization_id: organization.id } }
@@ -333,10 +330,6 @@ RSpec.describe SubmissionsController, type: :controller do
     end
   end
 
-  # download_reviewer_mode is a permitted form term, so a mode can arrive from the client
-  # rather than from an organization's defaults. Media's own validation cannot gate it at
-  # create time: it walks ancestors the actor stack may not have linked yet, so an empty set
-  # passes vacuously, and nothing re-checks afterwards.
   describe '#reject_ineligible_reviewer_mode' do
     let(:posted)  { ActionController::Parameters.new('download_reviewer_mode' => 'object_organization') }
     let(:eligible) { nil }
@@ -383,9 +376,6 @@ RSpec.describe SubmissionsController, type: :controller do
     end
   end
 
-  # The create-time eligibility gate calls this, so the value @submission carries has to be a
-  # single id: parent_media_list is comma-joined when several parents are selected, and
-  # Media.find raises on the whole list.
   describe '#find_ancestor_organization' do
     let(:organization) { FactoryBot.create(:organization_collection, title: ['Parent Org']) }
     let(:parent)       { instance_double(Media, organizations: [organization]) }

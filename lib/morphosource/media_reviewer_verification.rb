@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Morphosource
-  # Temporary live-field and resolution comparison, meaningful only before ticket 5.
+  # Temporary live-field and resolution comparison, meaningful only before the read-path cutover.
   class MediaReviewerVerification
     attr_reader :summary
 
@@ -14,7 +14,7 @@ module Morphosource
     # @return [Hash] field differences, resolution differences and informational CartItem counts
     def call
       unless Media.instance_methods.include?(:download_reviewer=) && Media.instance_methods.include?(:reviewer)
-        raise 'verify_media must run before the ticket 5 read-path cutover'
+        raise 'verify_media must run before the download_reviewers read-path cutover'
       end
       # The resolver otherwise creates this account on its first empty resolution.
       unless User.find_by_user_key(User.batch_user_key)
@@ -36,6 +36,9 @@ module Morphosource
           summary[:total] += 1
           verify_backfill(media)
           resolutions[id] = verify_resolution(media, resolver)
+        rescue StandardError => e
+          log("#{id}: #{e.class}: #{e.message}")
+          raise
         end
         verify_cart_items(resolutions)
         log("processed #{summary[:total]} Media")

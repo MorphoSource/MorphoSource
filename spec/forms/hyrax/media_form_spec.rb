@@ -45,9 +45,6 @@ RSpec.describe Hyrax::MediaForm do
   end
 
   describe 'download_reviewer_mode' do
-    # The organization's Reviewer Eligibility default reached the creation form's JSON but
-    # never the created media, because the field was not a permitted term and
-    # model_attributes discarded it.
     it 'survives model_attributes' do
       attributes = described_class.model_attributes(
         ActionController::Parameters.new(download_reviewer_mode: 'object_organization')
@@ -56,9 +53,7 @@ RSpec.describe Hyrax::MediaForm do
       expect(attributes['download_reviewer_mode']).to eq('object_organization')
     end
 
-    # multiple: false on the model, so it must not be array-wrapped. single_valued_fields is
-    # for the opposite shape -- multivalued in the model, single in the form -- and putting
-    # this field there would hand an Array to a singular property.
+    # single_valued_fields is for multivalued-model fields; this one is singular in the model.
     it 'is permitted as a scalar rather than array-wrapped' do
       expect(described_class.build_permitted_params).to include(:download_reviewer_mode)
       expect(described_class.single_valued_fields).not_to include(:download_reviewer_mode)

@@ -11,8 +11,7 @@ RSpec.describe Morphosource::DownloadReviewerResolver do
   let(:organization)       { FactoryBot.create(:organization_collection, title: ['Org A'], depositor: user.ms_id) }
   let(:other_organization) { FactoryBot.create(:organization_collection, title: ['Org B'], depositor: user.ms_id) }
 
-  # The resolver reads each organization's reviewers from Solr, so a manager change has to be
-  # reindexed before it is visible to it.
+  # The resolver reads Solr, so reindex after changing managers.
   def add_manager(organization, new_manager)
     organization.managers << new_manager
     organization.managers_group.save!
@@ -23,8 +22,6 @@ RSpec.describe Morphosource::DownloadReviewerResolver do
     "org_collection:#{organization.id}"
   end
 
-  # Anything answering #download_reviewers is acceptable input; a double keeps the graph out of
-  # the examples that are only about resolution.
   def identity(*download_reviewers)
     instance_double(Media, download_reviewers: download_reviewers)
   end
@@ -54,8 +51,6 @@ RSpec.describe Morphosource::DownloadReviewerResolver do
       expect(resolver.call(identity(token_for(organization)))).to eq([manager.ms_id])
     end
 
-    # The sharpest trap in this design: resolving only the organization that changed would
-    # silently delete the other organization's managers from a shared media.
     it 'returns the union when a media names two organizations' do
       add_manager(organization, manager)
       add_manager(other_organization, other_manager)
@@ -79,8 +74,6 @@ RSpec.describe Morphosource::DownloadReviewerResolver do
   end
 
   describe 'memoization' do
-    # Load-bearing rather than an optimization: a cart batch is typically many media from one
-    # organization, and the lifecycle jobs resolve several hundred media per process.
     it 'loads one organization once across many media' do
       add_manager(organization, manager)
       media = Array.new(5) { identity(token_for(organization)) }
@@ -94,14 +87,10 @@ RSpec.describe Morphosource::DownloadReviewerResolver do
   describe 'a dangling token' do
     let(:dangling) { 'org_collection:no-such-organization' }
 
-    # The lifecycle jobs process media in batches and let exceptions raise, so a resolver that
-    # raised would fail a whole batch and fail it again on every retry.
     it 'does not raise' do
       expect { resolver.call(identity(dangling)) }.not_to raise_error
     end
 
-    # The negative case that protects the union rule: the fallback inspects the total, so a
-    # token contributing nothing must not pull a system account in alongside a live result.
     it 'contributes nothing beside a resolvable organization' do
       add_manager(organization, manager)
 

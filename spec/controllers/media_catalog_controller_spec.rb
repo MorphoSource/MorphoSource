@@ -376,8 +376,8 @@ RSpec.describe MediaCatalogController, :type => :controller do
           get :index, format: :csv, params: { scope: 'all' }
 
           expect(response.code).to eq("200")
+          expect(response.body).to include(media.id) # above call_count to trigger enumerator
           expect(call_count).to be > 1
-          expect(response.body).to include(media.id)
         end
 
         it 'appends a padded error row and stops streaming if a batch fails mid-export' do

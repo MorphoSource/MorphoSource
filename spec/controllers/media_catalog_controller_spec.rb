@@ -367,6 +367,7 @@ RSpec.describe MediaCatalogController, :type => :controller do
 
         it 'fetches results in multiple small batches rather than one large query' do
           stub_const('CatalogController::CSV_EXPORT_BATCH_SIZE', 1)
+          create(:public_media_document) # a second document so more than one batch is needed
           call_count = 0
           allow(controller).to receive(:search_service).and_wrap_original do |original|
             call_count += 1

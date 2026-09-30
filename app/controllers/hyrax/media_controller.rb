@@ -425,7 +425,7 @@ module Hyrax
         self.curation_concern.file_sets.each do |file_set|
           if file_set.original_file.present?
             original_file = file_set.original_file
-            # Hydra::PCDM::File (AF-native) has #original_name; Hyrax::FileMetadata (Valkyrie) has #original_filename.
+            # original_file's class depends on this FileSet's migration status.
             files << (original_file.respond_to?(:original_name) ? original_file.original_name : original_file.original_filename)
           # if a recent upload hasn't been processed yet, use the title instead.
           elsif ( file_set.title.present? || file_set.label.present? )

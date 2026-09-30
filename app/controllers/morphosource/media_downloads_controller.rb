@@ -302,14 +302,12 @@ module Morphosource
         end
       end
 
-      # Hydra::PCDM::File (AF-native) has #original_name/#uri; Hyrax::FileMetadata
-      # (Valkyrie) has #original_filename/#file_identifier instead.
+      # original_file's class depends on this FileSet's migration status.
       def original_file_name(original_file)
         original_file.respond_to?(:original_name) ? original_file.original_name : original_file.original_filename
       end
 
-      # Assumes Valkyrie file migrations may start before S3 becomes primary, leaving
-      # versiondisk:// originals that must be streamed from local disk.
+      # Non-nil only for a migrated FileSet whose bytes weren't also moved to S3.
       def original_file_disk_path(original_file)
         identifier = original_file.try(:file_identifier).to_s
         return unless identifier.start_with?('versiondisk://')
@@ -319,10 +317,9 @@ module Morphosource
       def original_file_uri(original_file)
         return original_file.uri if original_file.respond_to?(:uri)
 
-        # file_identifier isn't fetchable directly; shrine:// (S3) ids need a presigned URL,
-        # resolved through find_by since VersionedShrine stores content under a versioned key.
         identifier = original_file.file_identifier.to_s
         return identifier unless identifier.start_with?('shrine://')
+        # find_by resolves the current version; the bare identifier's key doesn't exist in S3.
         versioned_key = Valkyrie::StorageAdapter.find_by(id: identifier).io.id
         Valkyrie::StorageAdapter.find(:s3).shrine.url(versioned_key)
       end

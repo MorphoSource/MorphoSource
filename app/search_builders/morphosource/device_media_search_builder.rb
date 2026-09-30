@@ -8,10 +8,10 @@ module Morphosource
     self.default_processor_chain += [:return_selected_fields, :add_custom_facet_fields, :add_custom_facet_limit]
 
     # Return only the fields we need instead of the entire document
-    # In this case, we only need the document count and imaging event facet
+    # In this case, we only need the document count and imaging event IDs.
     def return_selected_fields(solr_parameters)
       if !@blacklight_params[:return_all_fields]
-        solr_parameters[:fl] = 'id'
+        solr_parameters[:fl] = 'id,imaging_event_id_ssim,imaging_event_id_tesim'
       end
     end
 
@@ -28,7 +28,7 @@ module Morphosource
 
     # List of custom facets to add to the search
     def custom_facets
-      ["imaging_event_id_tesim"]
+      ["imaging_event_id_ssim"]
     end
 
     # override default facet limit

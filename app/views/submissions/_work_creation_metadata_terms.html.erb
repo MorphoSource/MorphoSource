@@ -7,7 +7,7 @@
           <%= f.date_field :date_created, wrapper: :inline, value: f.object.date_created, class: 'datepicker form-control' %>
         </div>
       </div>
-    <% elsif term == :description && f.object.model.class == ImagingEvent %>
+    <% elsif term == :description && f.object.model.imaging_event? %>
       <%= render_edit_field_partial(term, f: f) %>
       <%= render_edit_field_partial(
         'attachment_for_description', 

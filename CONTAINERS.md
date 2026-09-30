@@ -29,6 +29,11 @@ FCREPO_PASSWORD=
 MINIO_ROOT_USER=
 MINIO_ROOT_PASSWORD=
 
+# S3 (object storage) access key and secret used by the Rails app to connect to S3.
+# For local dev, match MINIO_ROOT_USER/MINIO_ROOT_PASSWORD above.
+S3_ACCESS_KEY_ID=
+S3_SECRET_ACCESS_KEY=
+
 # Initial MorphoSource user, will be granted admin access
 MS_INIT_USR=
 MS_INIT_PW=

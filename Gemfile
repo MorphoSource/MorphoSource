@@ -61,6 +61,9 @@ gem 'zip_tricks'
 gem 'interval_response'
 gem 'http'
 
+# Valkyrie S3/object storage support
+gem 'valkyrie-shrine'
+
 gem 'rest-client', '~> 2.0'
 
 gem 'twitter-typeahead-rails', '0.11.1.pre.corejavascript'

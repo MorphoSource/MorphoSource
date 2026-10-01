@@ -30,7 +30,13 @@ class ValkyrieCharacterizeCrc32Job < HeavyJob
     if stream.respond_to?(:each)
       stream.each { |chunk| crc32_calculator << chunk }
     else
-      crc32_calculator << stream.read(1024 * 1024) until stream.eof?
+      begin
+        while (chunk = stream.read(1024 * 1024))
+          crc32_calculator << chunk
+        end
+      ensure
+        stream.close if stream.respond_to?(:close)
+      end
     end
     crc32_calculator.to_i
   end

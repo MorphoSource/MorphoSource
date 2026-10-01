@@ -7,9 +7,8 @@ en:
   blacklight:
     search:
       fields:
-        media:
-          show:
-            download_reviewers: "Download reviewers"
+        show:
+          download_reviewers: "Download reviewers"
   simple_form:
     hints:
       defaults:

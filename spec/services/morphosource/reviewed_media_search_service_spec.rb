@@ -36,4 +36,33 @@ RSpec.describe Morphosource::ReviewedMediaSearchService do
 
     expect(described_class.call(ms_id: reviewer.ms_id)).to be_empty
   end
+
+  context 'with Media indexed before download_reviewers_ssim existed' do
+    def index_without_reviewer_identities(media)
+      ActiveFedora::SolrService.add(media.to_solr.except('download_reviewers_ssim'), softCommit: true)
+    end
+
+    it 'matches a user-owned document by owner' do
+      media = FactoryBot.create(:media, owner: reviewer.ms_id)
+      index_without_reviewer_identities(media)
+
+      expect(described_class.call(ms_id: reviewer.ms_id).map { |doc| doc['id'] }).to eq([media.id])
+    end
+
+    it 'matches an organization-owned document through the organization' do
+      organization = FactoryBot.create(:organization_collection, managers_are_download_reviewers: false,
+                                        custom_download_reviewer_users: [reviewer.ms_id])
+      media = FactoryBot.create(:media, owner: organization.id)
+      index_without_reviewer_identities(media)
+
+      expect(described_class.call(ms_id: reviewer.ms_id).map { |doc| doc['id'] }).to eq([media.id])
+    end
+
+    it 'does not match by owner once the document carries reviewer identities' do
+      other = FactoryBot.create(:contributor)
+      FactoryBot.create(:media, owner: reviewer.ms_id, record_download_reviewer_users: [other.ms_id])
+
+      expect(described_class.call(ms_id: reviewer.ms_id)).to be_empty
+    end
+  end
 end

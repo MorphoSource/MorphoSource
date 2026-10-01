@@ -101,4 +101,38 @@ RSpec.describe ::SolrDocument, type: :model do
       expect(subject.download_people).to match_array([user1, user2])
     end
   end
+
+  describe '#download_reviewers' do
+    let(:organization) { FactoryBot.create(:organization_collection) }
+
+    it 'returns indexed Media identities' do
+      document = described_class.new('has_model_ssim' => ['Media'], 'user_with_ownership_ssi' => 'owner',
+                                     'download_reviewers_ssim' => ['reviewer'])
+
+      expect(document.download_reviewers).to eq(['reviewer'])
+    end
+
+    it 'falls back to a User owner on a Media document without the field' do
+      document = described_class.new('has_model_ssim' => ['Media'], 'user_with_ownership_ssi' => 'owner')
+
+      expect(document.download_reviewers).to eq(['owner'])
+    end
+
+    it 'falls back to an organization owner token on a Media document without the field' do
+      document = described_class.new('has_model_ssim' => ['Media'], 'user_with_ownership_ssi' => organization.id)
+
+      expect(document.download_reviewers).to eq(["org_collection:#{organization.id}"])
+    end
+
+    it 'returns nothing for an ownerless Media document without the field' do
+      expect(described_class.new('has_model_ssim' => ['Media']).download_reviewers).to eq([])
+    end
+
+    it 'never falls back on an OrganizationCollection document' do
+      document = described_class.new('has_model_ssim' => ['OrganizationCollection'],
+                                     'user_with_ownership_ssi' => 'owner')
+
+      expect(document.download_reviewers).to eq([])
+    end
+  end
 end

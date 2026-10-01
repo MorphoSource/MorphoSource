@@ -494,12 +494,13 @@ namespace :morphosource do
 
   desc 'Update reviewers column for all cart items'
   task :update_cartitem_reviewers => :environment do
+    resolver = Morphosource::DownloadReviewerResolver.new
     CartItem.find_each do |item|
       unless item.date_downloaded.present?
         begin
           media = Media.find(item.work_id)
           if media.present?
-            item.reviewers = Morphosource::DownloadReviewerResolver.new.call(media)
+            item.reviewers = resolver.call(media)
             item.save
             puts("CartItem #{item.id} updated")
           end

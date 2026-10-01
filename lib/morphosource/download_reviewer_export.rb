@@ -183,7 +183,7 @@ module Morphosource
     end
 
     def resolve_reviewers(media)
-      key = [media.download_reviewers, media.user_with_ownership]
+      key = media.download_reviewers
       @reviewer_cache.fetch(key) { @reviewer_cache[key] = resolver.call(media) }
     end
 

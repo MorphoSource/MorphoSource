@@ -250,7 +250,13 @@ module Morphosource
               unavailable_media_ids << m.id
               next nil
             end
-            disk_path = original_file_disk_path(original_file)
+            begin
+              disk_path = original_file_disk_path(original_file)
+            rescue Valkyrie::StorageAdapter::FileNotFound
+              # Metadata points at a versiondisk:// file that's missing/stale on disk.
+              unavailable_media_ids << m.id
+              next nil
+            end
             file_uri = original_file_uri(original_file) unless disk_path
           end
 

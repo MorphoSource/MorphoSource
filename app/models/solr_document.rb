@@ -100,9 +100,17 @@ class SolrDocument
   end
 
   # @return [Array<String>] Media reviewer identities (User ms_ids or org_collection: tokens),
-  #   or resolved User ms_ids on OrganizationCollection documents.
+  #   or resolved User ms_ids on OrganizationCollection documents. A Media document indexed
+  #   before the field existed falls back to its indexed owner, as Media#download_reviewers would.
   def download_reviewers
-    self['download_reviewers_ssim'] || []
+    return self['download_reviewers_ssim'] if self['download_reviewers_ssim']
+    return [] unless self['has_model_ssim'] == ['Media']
+
+    owner_id = self['user_with_ownership_ssi']
+    return [] if owner_id.blank?
+    return ["#{::Morphosource::MediaMetadata::ORG_COLLECTION_TOKEN_PREFIX}#{owner_id}"] if ::OrganizationCollection.exists?(owner_id)
+
+    [owner_id]
   end
 
   def creator

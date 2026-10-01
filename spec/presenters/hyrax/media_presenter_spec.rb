@@ -38,6 +38,16 @@ RSpec.describe Hyrax::MediaPresenter do
         end
       end
 
+      it 'renders the owner as reviewer for a document indexed without download_reviewers_ssim' do
+        owner = FactoryBot.create(:contributor)
+        document = SolrDocument.new(media_document.to_h.except('download_reviewers_ssim')
+                                                        .merge('user_with_ownership_ssi' => owner.ms_id))
+        html = described_class.new(document, ability, request)
+                              .attribute_to_html(:download_reviewers, render_as: :showcase_user_link)
+
+        expect(html).to include("/users/#{owner.ms_id}")
+      end
+
       it "returns an aup_path" do
         expect(subject.aup_path).to eq("ms_usage_std_comm_no_rearc_ms_3d_limited.pdf")
       end

@@ -45,6 +45,15 @@ nav.navbar .container, nav.navbar .container-fluid {
 
 .banner-text {
   text-align: center;
+
+  a {
+    color: #f68628;
+    font-weight: bold;
+
+    &:hover, &:focus {
+      color: #d99a36;
+    }
+  }
 }
 
 #donate-button {

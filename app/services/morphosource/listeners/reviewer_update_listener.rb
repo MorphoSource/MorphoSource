@@ -9,7 +9,9 @@ module Morphosource
       end
 
       # @param event [Dry::Events::Event] payload +{ organization_id: String }+
-      def on_organization_reviewers_updated(event); end
+      def on_organization_reviewers_updated(event)
+        UpdateOrgMediaReviewersJob.perform_later(event[:organization_id])
+      end
     end
   end
 end

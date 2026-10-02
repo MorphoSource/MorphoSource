@@ -9,12 +9,6 @@ class UpdateCartItemReviewersJob < Hyrax::ApplicationJob
       return
     end
 
-    reviewers = Morphosource::DownloadReviewerResolver.new.call(media)
-    CartItem.where(work_id: media_id).find_each do |item|
-      next if Array(item.reviewers).to_set == reviewers.to_set
-
-      # Deleted requestors leave CartItems whose required User association no longer validates.
-      item.update_columns(reviewers: reviewers, updated_at: Time.current)
-    end
+    CartItem.refresh_reviewers(media_id => Morphosource::DownloadReviewerResolver.new.call(media))
   end
 end

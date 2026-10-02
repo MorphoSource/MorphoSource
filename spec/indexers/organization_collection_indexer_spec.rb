@@ -132,7 +132,7 @@ RSpec.describe OrganizationCollectionIndexer do
       expect(solr_document['managers_are_download_reviewers_bsi']).to be(false)
     end
 
-    it 'writes true when the flag has never been set' do
+    it 'writes true for a new organization' do
       expect(solr_document['managers_are_download_reviewers_bsi']).to be(true)
     end
   end

@@ -1,7 +1,4 @@
 class BackfillOrganizationDownloadReviewers < ActiveRecord::Migration[6.1]
-  MANAGERS_ARE_DOWNLOAD_REVIEWERS =
-    ::RDF::URI.new('https://www.morphosource.org/terms/managersAreDownloadReviewers').freeze
-
   # Records an explicit download reviewer mode on every OrganizationCollection, from the
   # download_reviewer values live at this deploy.
 
@@ -43,15 +40,13 @@ class BackfillOrganizationDownloadReviewers < ActiveRecord::Migration[6.1]
         custom_mode += 1
       end
 
-      # Re-run at the cutover deploy. Compares the persisted value, not the reader.
-      if stored_managers_flag(organization) == managers_review &&
+      # Re-run at the cutover deploy.
+      if organization.managers_are_download_reviewers == managers_review &&
          Array(organization.custom_download_reviewer_users).sort == resolvable.sort
         unchanged += 1
         next
       end
 
-      # The reader answers true for a blank field, so without this the write is dropped.
-      organization.managers_are_download_reviewers_will_change!
       organization.managers_are_download_reviewers = managers_review
       organization.custom_download_reviewer_users = resolvable
       # Resolution is unchanged, so the event would carry no news.
@@ -75,14 +70,5 @@ class BackfillOrganizationDownloadReviewers < ActiveRecord::Migration[6.1]
 
   def down
     raise ActiveRecord::IrreversibleMigration
-  end
-
-  private
-
-  # The reader answers true for a blank field and cannot distinguish it from a written true.
-  def stored_managers_flag(organization)
-    organization.resource
-                .query([organization.rdf_subject, MANAGERS_ARE_DOWNLOAD_REVIEWERS, nil])
-                .to_a.first&.object&.object
   end
 end

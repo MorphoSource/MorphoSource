@@ -101,6 +101,8 @@ class SolrDocument
 
   # @return [Array<String>] User ms_ids or org_collection: tokens (resolved ms_ids on an
   #   OrganizationCollection); Media indexed without download_reviewer_mode_ssi fall back to their owner
+  # @yieldparam owner_id [String] legacy owner to classify, optionally using a shared cache
+  # @yieldreturn [Boolean] whether the owner is an OrganizationCollection
   def download_reviewers
     return self['download_reviewers_ssim'] if self['download_reviewers_ssim']
     # Temporary owner fallback: remove once a full Media reindex leaves no document without download_reviewer_mode_ssi
@@ -108,7 +110,8 @@ class SolrDocument
 
     owner_id = self['user_with_ownership_ssi']
     return [] if owner_id.blank?
-    return ["#{::Morphosource::MediaMetadata::ORG_COLLECTION_TOKEN_PREFIX}#{owner_id}"] if ::OrganizationCollection.exists?(owner_id)
+    organization_owner = block_given? ? yield(owner_id) : ::OrganizationCollection.exists?(owner_id)
+    return ["#{::Morphosource::MediaMetadata::ORG_COLLECTION_TOKEN_PREFIX}#{owner_id}"] if organization_owner
 
     [owner_id]
   end

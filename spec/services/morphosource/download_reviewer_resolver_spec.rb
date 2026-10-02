@@ -90,6 +90,57 @@ RSpec.describe Morphosource::DownloadReviewerResolver do
 
       expect(media.map { |m| resolver.call(m) }).to all(eq([manager.ms_id]))
     end
+
+    def legacy_documents(owner_id)
+      Array.new(5) do
+        SolrDocument.new('has_model_ssim' => ['Media'], 'user_with_ownership_ssi' => owner_id)
+      end
+    end
+
+    it 'classifies and resolves a shared legacy organization owner once' do
+      add_manager(organization, manager)
+      documents = legacy_documents(organization.id)
+
+      expect(OrganizationCollection).to receive(:exists?).with(organization.id).once.and_call_original
+      expect(ActiveFedora::SolrService).to receive(:query).twice.and_call_original
+
+      expect(documents.map { |document| resolver.call(document) }).to all(eq([manager.ms_id]))
+    end
+
+    it 'caches the non-organization classification of a User owner' do
+      documents = legacy_documents(user.ms_id)
+
+      expect(ActiveFedora::SolrService).to receive(:query).once.and_call_original
+
+      expect(documents.map { |document| resolver.call(document) }).to all(eq([user.ms_id]))
+    end
+
+    it 'caches a missing owner while retaining the batch User fallback' do
+      documents = legacy_documents('missing-owner')
+      batch_user_ms_id = User.batch_user.ms_id
+
+      expect(ActiveFedora::SolrService).to receive(:query).once.and_call_original
+
+      expect(documents.map { |document| resolver.call(document) }).to all(eq([batch_user_ms_id]))
+    end
+
+    it 'keeps a zero-manager organization as an organization with the batch User fallback' do
+      documents = legacy_documents(organization.id)
+      batch_user_ms_id = User.batch_user.ms_id
+
+      expect(ActiveFedora::SolrService).to receive(:query).twice.and_call_original
+
+      expect(documents.map { |document| resolver.call(document) }).to all(eq([batch_user_ms_id]))
+    end
+
+    it 'classifies the owner again in a new resolver operation' do
+      document = legacy_documents(user.ms_id).first
+
+      expect(OrganizationCollection).to receive(:exists?).with(user.ms_id).twice.and_call_original
+
+      expect(resolver.call(document)).to eq([user.ms_id])
+      expect(described_class.new.call(document)).to eq([user.ms_id])
+    end
   end
 
   describe 'a dangling token' do

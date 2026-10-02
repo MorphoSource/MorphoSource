@@ -124,11 +124,25 @@ RSpec.describe ::SolrDocument, type: :model do
       expect(document.download_reviewers).to eq(["org_collection:#{organization.id}"])
     end
 
+    it 'uses a supplied organization classification for the legacy owner' do
+      document = described_class.new('has_model_ssim' => ['Media'], 'user_with_ownership_ssi' => 'owner')
+      expect(OrganizationCollection).not_to receive(:exists?)
+
+      reviewers = document.download_reviewers do |owner_id|
+        expect(owner_id).to eq('owner')
+        true
+      end
+
+      expect(reviewers).to eq(['org_collection:owner'])
+      expect(document.download_reviewers { false }).to eq(['owner'])
+    end
+
     it 'does not fall back when a Media document indexed an empty list' do
       document = described_class.new('has_model_ssim' => ['Media'], 'user_with_ownership_ssi' => 'owner',
                                      'download_reviewer_mode_ssi' => 'object_organization')
 
       expect(document.download_reviewers).to eq([])
+      expect { |block| document.download_reviewers(&block) }.not_to yield_control
     end
 
     it 'returns nothing for an ownerless Media document without the field' do

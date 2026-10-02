@@ -12,13 +12,15 @@ module Morphosource
 
     def initialize
       @organization_reviewers = {}
+      @owner_organizations = {}
     end
 
     # @param media [Media, SolrDocument] anything answering #download_reviewers
     # @return [Array<String>] reviewer ms_ids; never empty, falling back to the batch User
     def call(media)
-      tokens, ms_ids = Array(media.download_reviewers).reject(&:blank?).uniq
-                                                      .partition { |identity| identity.start_with?(TOKEN_PREFIX) }
+      identities = media.download_reviewers { |owner_id| owner_organization?(owner_id) }
+      tokens, ms_ids = Array(identities).reject(&:blank?).uniq
+                                      .partition { |identity| identity.start_with?(TOKEN_PREFIX) }
 
       candidates = ms_ids + tokens.flat_map { |token| organization_reviewers(token.delete_prefix(TOKEN_PREFIX)) }
 
@@ -26,6 +28,12 @@ module Morphosource
     end
 
     private
+
+    def owner_organization?(owner_id)
+      @owner_organizations.fetch(owner_id) do
+        @owner_organizations[owner_id] = OrganizationCollection.exists?(owner_id)
+      end
+    end
 
     # Organization reviewers come from Solr, which keeps the ms_id of a User deleted since the
     # organization was last indexed.

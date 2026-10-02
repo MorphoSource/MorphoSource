@@ -20,6 +20,8 @@ module Morphosource
         transfer_group_permissions
         transfer_proxy_rights
         transfer_cart_items
+        # Last, so reviewer jobs never run against a half-merged account.
+        publish_reviewer_events
       end
 
       def transfer_works
@@ -67,12 +69,21 @@ module Morphosource
       end
 
       def transfer_group_permissions
+        new_user_groups = @new_user.groups
         @old_user.groups.each do |group|
-          next if @new_user.groups.include? group
           role = Role.find_by(name: group)
-          role.users += [@new_user]
+          next unless role
+
+          role.users += [@new_user] unless new_user_groups.include?(group)
           role.users -= [@old_user]
           role.save!
+          managed_organization_ids << group.chomp('_managers') if organization_manager_role?(group)
+        end
+      end
+
+      def publish_reviewer_events
+        managed_organization_ids.each do |id|
+          Hyrax.publisher.publish('organization.reviewers.updated', organization_id: id)
         end
       end
 
@@ -114,6 +125,21 @@ module Morphosource
 
       def cart_items
         CartItem.where(user_id: @old_user.ms_id).or(CartItem.where(action_by: @old_user.ms_id))
+      end
+
+      private
+
+      def managed_organization_ids
+        @managed_organization_ids ||= []
+      end
+
+      # organization_collection?, not organization?: the latter is false for every collection.
+      def organization_manager_role?(group)
+        return false unless group.end_with?('_managers')
+
+        Collection.find(group.chomp('_managers')).organization_collection?
+      rescue ActiveFedora::ObjectNotFoundError, Ldp::Gone
+        false
       end
 
     end

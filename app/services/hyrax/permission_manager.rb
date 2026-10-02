@@ -3,10 +3,11 @@
 
 module Hyrax
   ##
-  # Provides setters and getters for the three most common permission modes:
+  # Provides setters and getters for the four most common permission modes:
   #   - :discover
   #   - :edit
   #   - :read
+  #   - :download
   #
   # @example
   #   my_resource = Hyrax.persister.save(resource: Hyrax::Resource.new)

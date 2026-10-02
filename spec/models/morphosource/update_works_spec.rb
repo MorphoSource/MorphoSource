@@ -6,7 +6,7 @@ RSpec.describe Morphosource::Works::Base do
   let(:user)                      { User.create(email: 'email@email.com', password: 'password') }
   let(:contributors)              { Role.create(name: 'contributor') }
 
-  let(:organization)              { Organization.create(title: ['old title']) }
+  let(:organization)              { FactoryBot.create(:organization_collection, title: ['old title']) }
   let(:taxonomy)                  { valkyrie_create(:taxonomy_resource, title: ['old title']) }
   let(:specimen)                  { BiologicalSpecimen.create(title: ['old title'], vouchered: ['Yes'], organization_id: [organization.id], taxonomy_id: [taxonomy.id]) }
   let(:device)                    { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ["MagneticResonanceImaging"])}

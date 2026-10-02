@@ -1,3 +1,5 @@
+# Indexes AF FileSet, see FileSetIndexer for indexing Hyrax::FileSet resources
+
 # override `generate_solr_document` by calling super and indexing the other fields you care about.
 class MsFileSetIndexer < Hyrax::FileSetIndexer
   def generate_solr_document
@@ -83,7 +85,7 @@ class MsFileSetIndexer < Hyrax::FileSetIndexer
       solr_doc['blender_version_tesim'] = object.blender_version
       solr_doc['gltf_inspect_version_tesim'] = object.gltf_inspect_version
       solr_doc['pymeshlab_version_tesim'] = object.pymeshlab_version
-      
+
       # zip archive contents
       solr_doc['contents_all_files_ss'] = object.contents_all_files
       solr_doc['contents_mime_type_tesim'] = object.contents_mime_type

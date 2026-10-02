@@ -1,0 +1,32 @@
+---
+attributes:
+  bits_per_sample:
+    type: string
+    multiple: true
+    index_keys:
+      - "bits_per_sample_tesim"
+    predicate: RDF::Vocab::EXIF.bitsPerSample
+  focal_length:
+    type: string
+    multiple: true
+    index_keys:
+      - "focal_length_tesim"
+    predicate: RDF::Vocab::EXIF.focalLength
+  aperture_value:
+    type: string
+    multiple: true
+    index_keys:
+      - "aperture_value_tesim"
+    predicate: RDF::Vocab::EXIF.apertureValue
+  iso_speed_ratings:
+    type: string
+    multiple: true
+    index_keys:
+      - "iso_speed_ratings_tesim"
+    predicate: RDF::Vocab::EXIF.isoSpeedRatings
+  shutter_speed:
+    type: string
+    multiple: true
+    index_keys:
+      - "shutter_speed_tesim"
+    predicate: RDF::Vocab::EXIF.shutterSpeedValue

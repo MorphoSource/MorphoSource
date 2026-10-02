@@ -5,7 +5,8 @@ module Hyrax
     include Hyrax::Breadcrumbs
 
     before_action :authenticate_user!, except: [:show, :citation, :stats]
-    load_and_authorize_resource class: ::FileSet, except: :show
+    # Valkyrie note: this class will load a Hyrax::FileSet resource, even for unmigrated AF ::FileSet works
+    load_and_authorize_resource class: Hyrax.config.file_set_class, except: :show
     before_action :build_breadcrumbs, only: [:show, :edit, :stats]
 
     # provides the help_text view method
@@ -48,12 +49,13 @@ module Hyrax
 
     # DELETE /concern/file_sets/:id
     def destroy
-      parent = curation_concern.parent
-      actor.destroy
-      redirect_to [main_app, parent], notice: 'The file has been deleted.'
+      work = parent
+      delete(file_set: curation_concern)
+      redirect_to [main_app, work], notice: 'The file has been deleted.'
     end
 
     # PATCH /concern/file_sets/:id
+    # @deprecated
     def update
       if attempt_update
         after_update_response
@@ -77,12 +79,19 @@ module Hyrax
     private
 
       # this is provided so that implementing application can override this behavior and map params to different attributes
+      # @deprecated
       def update_metadata
         file_attributes = form_class.model_attributes(attributes)
         actor.update_metadata(file_attributes)
       end
 
+      # @deprecated no current caller (no route/view/JS reaches #update), and unsafe for a Valkyrie-native FileSet
       def attempt_update
+        if valkyrie_native?(file_set)
+          raise NotImplementedError, "FileSet metadata/content updates are not supported for " \
+                                      "a Valkyrie-native FileSet through this AF-only actor path."
+        end
+
         if wants_to_revert?
           actor.revert_content(params[:revision])
         elsif params.key?(:file_set)
@@ -94,6 +103,7 @@ module Hyrax
         end
       end
 
+      # @deprecated
       def after_update_response
         respond_to do |wants|
           wants.html do
@@ -106,6 +116,7 @@ module Hyrax
         end
       end
 
+      # @deprecated
       def after_update_failure_response
         respond_to do |wants|
           wants.html do
@@ -136,15 +147,53 @@ module Hyrax
         Hyrax::FileSetSearchBuilder
       end
 
+      def delete(file_set:)
+        if valkyrie_native?(file_set)
+          # remove_from_work transaction step uses find_parents (Valkyrie-only) and
+          # won't see AF parent works, so unlink from AF parents manually first.
+          unlink_valkyrie_file_set_from_af_work(file_set)
+          # Let the transaction handle ACL deletion, file metadata deletion, and FileSet deletion.
+          # The remove_from_work step is a no-op here (AF parents already unlinked above).
+          transactions['file_set.destroy']
+            .with_step_args('file_set.remove_from_work' => { user: current_user },
+                            'file_set.delete' => { user: current_user })
+            .call(curation_concern)
+            .value!
+        else
+          actor.destroy
+        end
+      end
+
+      def parent
+        @parent ||=
+          if valkyrie_native?(file_set)
+            file_set.member_of.first
+          else
+            af_file_set.parent
+          end
+      end
+
+      def unlink_valkyrie_file_set_from_af_work(file_set)
+        fs_id = file_set.id.to_s
+        file_set.member_of.each do |work|
+          remaining_ids = work.valkyrie_member_ids.reject { |id| id.to_s == fs_id }
+          work.valkyrie_member_ids = remaining_ids
+          work.representative_id = nil if work.representative_id.to_s == fs_id
+          work.thumbnail_id = nil if work.thumbnail_id.to_s == fs_id
+          # Mirror AF actor behavior: clear remote URL fields when the last file set is removed
+          if remaining_ids.empty?
+            work.remote_origin_url = ""
+            work.remote_manifest_url = ""
+          end
+          work.save!
+        end
+      end
+
       def initialize_edit_form
-        @parent = @file_set.in_objects.first
+        @parent = parent
         original = @file_set.original_file
         @version_list = Hyrax::VersionListPresenter.new(original ? original.versions.all : [])
         @groups = current_user.groups
-      end
-
-      def actor
-        @actor ||= Hyrax::Actors::FileSetActor.new(@file_set, current_user)
       end
 
       def attributes
@@ -181,6 +230,26 @@ module Hyrax
                    'dashboard'
                  end
         File.join(theme, layout)
+      end
+
+      ### METHODS FOR WORKING WITH LEGACY UNMIGRATED AF FILESETS ###
+      # todovalk: could be simplified significantly after all filesets are migrated
+
+      # Get AF ::FileSet from Hyrax::FileSet
+      def af_file_set
+        @af_file_set ||= file_set.is_a?(::FileSet) ? file_set : ::FileSet.find(file_set.id.to_s)
+      end
+
+      # Hyrax::Actors::FileSetActor is AF-native (file_set.destroy, file_set.parent,
+      # work.file_sets, etc. all assume real ActiveFedora/Hydra::Works associations).
+      # So we build the actor from the AF ::FileSet.
+      def actor
+        @actor ||= Hyrax::Actors::FileSetActor.new(af_file_set, current_user)
+      end
+
+      # Valkyrie native is a Hyrax::FileSet that is not wings-backed (i.e., not an unmigrated AF record)
+      def valkyrie_native?(file_set)
+        file_set.is_a?(Hyrax::Resource) && !file_set.wings?
       end
   end
 end

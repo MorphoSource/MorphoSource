@@ -1,45 +1,17 @@
 # Generated via
 #  `rails generate hyrax:work Device`
-# @deprecated Use DeviceResource with Transactions.
+# @deprecated Device creation/update goes through the device_change_set transaction
+#   (see Hyrax::DevicesController), not the actor stack. This class has no live caller;
+#   it exists only so that Hyrax's naming-convention-based actor lookup for :device
+#   fails loudly instead of silently doing the wrong thing if anything ever reaches it.
 module Hyrax
   module Actors
     class DeviceActor < Hyrax::Actors::BaseActor
-
+      # @defunct
       def create(env)
-        save_organization_id(env)
-        super
+        raise NotImplementedError, "Devices are deprecated, use DeviceResource and Transactions instead."
       end
-
-      def update(env)
-        save_organization_id(env)
-        super
-      end
-
-      private
-
-        # TODO: This code should be removed when organization collections
-        # have been implemented on production and devices no longer are
-        # associated with organization works through a parent/child relationship.
-
-        # Coming from the device new/edit form, use work_parents_attributes to
-        # populate the device organization_id.
-        # If the organization is a work, proceed with adding it as a parent of the device.
-        # If the organization is a collection, remove it from work_parents_attributes.
-        def save_organization_id(env)
-          env.attributes['organization_id'] ||= []
-          organizations = env.attributes['work_parents_attributes']
-          organizations&.each do |k, v|
-            id = v['id']
-            if v['_destroy'] == "false"
-              env.attributes['organization_id'] << id
-            else
-              env.attributes['organization_id'].delete(id)
-            end
-            if OrganizationCollection.exists?(id)
-              env.attributes['work_parents_attributes'].delete(k)
-            end
-          end
-        end
+      alias update create
     end
   end
 end

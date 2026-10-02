@@ -7,6 +7,8 @@ vendor/bundle
 .bundle
 coverage
 
+public/uv
+
 log/*
 tmp/*
 *.log

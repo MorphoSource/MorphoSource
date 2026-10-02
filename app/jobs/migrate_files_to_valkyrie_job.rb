@@ -1,0 +1,139 @@
+# Overrides Hyrax 5.0.5's MigrateFilesToValkyrieJob to avoid double-storing file
+# content. Compared to upstream, uses hard links where possible (zero-copy, zero extra disk space).
+##
+# Responsible for conditionally enqueuing the file and thumbnail migration
+# logic of an ActiveFedora object.
+class MigrateFilesToValkyrieJob < Hyrax::ApplicationJob
+  # Define a logger for this job
+  def logger
+    FileUtils.mkdir_p(Hyrax.config.working_path)
+    @logger ||= Logger.new(Hyrax.config.working_path.join('migrate_files_to_valkyrie_job.log'))
+  end
+  ##
+  #
+  # @param resource [Hyrax::FileSet]
+  def perform(resource)
+    migrate_derivatives!(resource:)
+    # need to reload file_set to get the derivative ids
+    resource = Hyrax.query_service.find_by(id: resource.id)
+    migrate_files!(resource: resource)
+  end
+
+  def attribute_mapping
+    return @attribute_mapping if @attribute_mapping
+    @attribute_mapping = %w[
+      aspect_ratio bit_depth bit_rate byte_order capture_device channels character_count character_set
+      checksum color_map color_space compression creator data_format duration exif_version file_title
+      fits_version format_label frame_rate gps_timestamp graphics_count height image_producer language
+      latitude line_count longitude markup_basis markup_language offset orientation page_count
+      paragraph_count profile_name profile_version recorded_size sample_rate scanning_software
+      table_count well_formed width word_count ].inject({}) { |j, i| j[i] = i; j}
+    @attribute_mapping['recorded_size'] = 'file_size'
+    @attribute_mapping['channels'] = 'alpha_channels'
+    @attribute_mapping['checksum'] = 'original_checksum'
+    @attribute_mapping
+  end
+
+  private
+
+  def migrate_derivatives!(resource:)
+    # @todo should we trigger a job if the member is a child work?
+    paths = Hyrax::DerivativePath.derivatives_for_reference(resource)
+    paths.each do |path|
+      next unless File.size?(path) # skip blank files
+      container = container_for(path)
+      mime_type = Marcel::MimeType.for(extension: File.extname(path))
+      directives = { url: path, container: container, mime_type: mime_type }
+      File.open(path, 'rb') do |content|
+        Hyrax::ValkyriePersistDerivatives.call(content, directives)
+      end
+    end
+  end
+
+  ##
+  # Move the ActiveFedora files out of ActiveFedora's domain and into the
+  # configured {Hyrax.storage_adapter}'s domain.
+  def migrate_files!(resource:)
+    return unless resource.respond_to?(:file_ids)
+
+    files = Hyrax.custom_queries.find_many_file_metadata_by_ids(ids: resource.file_ids)
+    files.each do |file|
+      begin
+        # If it doesn't start with fedora, we've likely already migrated it.
+        next unless /^fedora:/.match?(file.file_identifier.to_s)
+        resource.file_ids.delete(file.id)
+
+        # `file` here is a Hyrax::FileMetadata (its own metadata row already migrated
+        # to Postgres), not the Hydra::PCDM::File its file_identifier still points at --
+        # Hyrax::FileMetadata has no #digest. Ask Fedora directly for the fixity digest
+        # it already computed for this specific binary (a small RDF request, not a
+        # download of the file itself). ActiveFedora::File.new needs an http(s):// URI,
+        # not fedora:// (which it would otherwise try to pairtree-translate as a plain id).
+        http_uri = file.file_identifier.to_s.gsub(/\Afedora:/, "http:")
+        digest = ActiveFedora::File.new(http_uri).digest.first
+        local_path = Morphosource::FcrepoBinaryPath.for(digest)
+
+        File.open(local_path, 'rb') do |content|
+          valkyrie_file = Hyrax::ValkyrieUpload.file(
+            filename: resource.label,
+            file_set: resource,
+            io: content,
+            use: file.pcdm_use.select {|use| Hyrax::FileMetadata::Use.use_list.include?(use)},
+            user: User.find_or_initialize_by(User.user_key_field => resource.depositor),
+            mime_type: file.mime_type,
+            skip_derivatives: true
+          )
+          valkyrie_file = copy_attributes(valkyrie_file:, original_file: file)
+          Hyrax.persister.save(resource: valkyrie_file)
+        end
+      rescue StandardError => e
+        # Log errors specific to file migration
+        logger.error("Error migrating file #{file.id} for resource #{resource.id}: #{e.message}")
+        logger.error(e.backtrace.join("\n"))
+      end
+    end
+
+    # Resource is persisted by Hyrax::ValkyrieUpload after removing file.id from resource.file_ids
+    # Re-index persistent copy to avoid dropping file.id ref if Hyrax::ValkyrieUpload fails
+    persisted = Hyrax.query_service.find_by(id: resource.id)
+    Hyrax.index_adapter.save(resource: persisted)
+
+    # If migration is successful, there should be no fedora: file_identifiers
+    unmigrated = Hyrax.custom_queries.find_many_file_metadata_by_ids(ids: persisted.file_ids)
+                      .select { |file| /^fedora:/.match?(file.file_identifier.to_s) }
+    return if unmigrated.empty?
+
+    raise "MigrateFilesToValkyrieJob: #{unmigrated.size} file(s) for FileSet #{resource.id} " \
+          "still Fedora-backed after migration (#{unmigrated.map { |file| file.id.to_s }.join(', ')})"
+  end
+
+  def copy_attributes(valkyrie_file:, original_file:)
+    attribute_mapping.each do |k, v|
+      valkyrie_file.set_value(k, original_file.send(v))
+    end
+    # Special case as this property isn't in the characterization proxy
+    valkyrie_file.set_value('alternate_ids', original_file.alternate_ids)
+    valkyrie_file
+  end
+
+  ##
+  # Map from the file name used for the derivative to a valid option for
+  # container that ValkyriePersistDerivatives can convert into a
+  # Hyrax::Metadata::Use
+  #
+  # @param filename [String] the name of the derivative file: i.e. 'x-thumbnail.jpg'
+  # @return [String]
+  def container_for(path)
+    # we want the portion between the '-' and the '.'
+    file_blob = File.basename(path, '.*').split('-').last
+
+    case file_blob
+    when 'thumbnail'
+      'thumbnail_image'
+    when 'txt', 'json', 'xml'
+      'extracted_text'
+    else
+      'service_file'
+    end
+  end
+end

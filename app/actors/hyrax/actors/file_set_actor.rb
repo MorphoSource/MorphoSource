@@ -22,10 +22,13 @@ module Hyrax
       # @param [Symbol, #to_s] relation
       # @return [IngestJob, FalseClass] false on failure, otherwise the queued job
       def create_content(file, relation = :original_file, from_url: false)
-        if (@is_remote_backed || file_set.is_remote_backed?) && file&.path&.present?
-          file_set.digest = Digest::SHA1.file(file.path).to_s
+        if (
+          (@is_remote_backed || file_set.is_remote_backed?) &&
+          (file_path = file.respond_to?(:path) ? file.path : file.file.path).present?
+        )
+          file_set.digest = Digest::SHA1.file(file_path).to_s
           # get the actual file name set previously in import_url_job (to avoid no/wrong file ext)
-          file_set.label = File.basename(file.path)
+          file_set.label = File.basename(file_path)
           file_set.e_tag = MorphosourceHelper::RemoteFileInfo.new(file_set.import_url)&.e_tag
         end
 
@@ -165,8 +168,8 @@ module Hyrax
           file.uploader.filename.presence || File.basename(Addressable::URI.unencode(file.file_url))
         elsif file.respond_to?(:original_name) # e.g. Hydra::Derivatives::IoDecorator
           file.original_name
-        elsif (@is_remote_backed || file_set.is_remote_backed?) && file.path.present?
-          File.basename(file.path)
+        elsif (@is_remote_backed || file_set.is_remote_backed?) && (file_path = file.respond_to?(:path) ? file.path : file.file.path).present?
+          File.basename(file_path)
         elsif file_set.import_url.present?
           # This path is taken when file is a Tempfile (e.g. from ImportUrlJob)
           File.basename(Addressable::URI.unencode(file.file_url))

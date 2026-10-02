@@ -15,7 +15,7 @@ Rails.application.config.to_prepare do
               end
             end
           rescue OpenURI::HTTPError, Net::HTTPError => e
-            raise ImageNotFoundError, e.message
+            raise Riiif::ImageNotFoundError, e.message
           end
         end
       end

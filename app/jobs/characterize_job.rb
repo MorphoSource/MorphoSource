@@ -16,7 +16,7 @@ class CharacterizeJob < HeavyJob
 
     # Generic file characterization based on FITS applied to the upload's single file
     # Want to run this on all uploads, to get basic file info
-    
+
     Rails.logger.debug "Running FITS characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
     Hydra::Works::CharacterizationService.run(file_set.characterization_proxy, filepath)
     Rails.logger.debug "Ran FITS characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
@@ -33,7 +33,7 @@ class CharacterizeJob < HeavyJob
       ext = ( File.extname(filepath) || "" ).downcase
       if (ext =~ /\.(glb|gltf)$/)
         gltf_inspect_options = {
-          "parser_class" => Hydra::Works::Characterization::BlenderDocument, 
+          "parser_class" => Hydra::Works::Characterization::BlenderDocument,
           "tool_class" => :gltf_inspect
         }
         Rails.logger.debug "Running gltf-inspect characterization on #{file_set.characterization_proxy.id} (#{file_set.characterization_proxy.mime_type})"
@@ -59,17 +59,13 @@ class CharacterizeJob < HeavyJob
     # UpdateDataAllocationStorageJob queries all_files_file_size_lts. This is an accepted
     # approximation: storage_current_gb is display-only and not used by the billing cycle,
     # which calculates storage independently from FileSet file_size_lts.
-    # TODOVALK: When FileSets are valkyrized this AF-based CharacterizeJob will be replaced.
-    # The valkyrize-fileset PR must provide an alternate route to enqueue
-    # UpdateFileSetDataAllocationJob, presumably via a Valkyrie event listener on
-    # the characterization complete event.
     UpdateFileSetDataAllocationJob.perform_later(file_set)
     CreateDerivativesJob.perform_later(file_set, file_id, filepath)
   end
 
   def blender_options
     {
-      "parser_class" => Hydra::Works::Characterization::BlenderDocument, 
+      "parser_class" => Hydra::Works::Characterization::BlenderDocument,
       "tool_class" => ( Hyrax.config.skip_pymeshlab_characterization ? :blender : :pymeshlab )
     }
   end

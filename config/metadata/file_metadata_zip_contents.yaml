@@ -1,0 +1,32 @@
+---
+attributes:
+  contents_all_files:
+    type: string
+    multiple: true
+    index_keys:
+      - "contents_all_files_tesim"
+    predicate: https://www.morphosource.org/terms/contentsAllFiles
+  contents_mime_type:
+    type: string
+    multiple: true
+    index_keys:
+      - "contents_mime_type_tesim"
+    predicate: https://www.morphosource.org/terms/contentsMimeType
+  contents_file_name:
+    type: string
+    multiple: true
+    index_keys:
+      - "contents_file_name_tesim"
+    predicate: https://www.morphosource.org/terms/contentsFileName
+  contents_file_size:
+    type: string
+    multiple: true
+    index_keys:
+      - "contents_file_size_tesim"
+    predicate: https://www.morphosource.org/terms/contentsFileSize
+  contents_accepted_file_count:
+    type: string
+    multiple: true
+    index_keys:
+      - "contents_accepted_file_count_tesim"
+    predicate: https://www.morphosource.org/terms/contentsAcceptedFileCount

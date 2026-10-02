@@ -12,6 +12,7 @@
 /vendor/bundle
 
 /?
+/.claude
 /.config
 /.npm
 
@@ -28,12 +29,13 @@
 /node_modules
 /yarn-error.log
 
+/storage
+
 .byebug_history
 .env
 .irb_history
 
 .claude
-storage/
 
 # Ignore application configuration
 /config/application.yml
@@ -112,5 +114,5 @@ yarn-debug.log*
 # Valkyrie related rules
 # ---------------------------------------------------
 
-storage/
+/storage/
 uploads/

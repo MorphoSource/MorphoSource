@@ -20,18 +20,19 @@ module Morphosource
       tokens, ms_ids = Array(media.download_reviewers).reject(&:blank?).uniq
                                                       .partition { |identity| identity.start_with?(TOKEN_PREFIX) }
 
-      reviewers = existing_users(ms_ids) +
-                  tokens.flat_map { |token| organization_reviewers(token.delete_prefix(TOKEN_PREFIX)) }
+      candidates = ms_ids + tokens.flat_map { |token| organization_reviewers(token.delete_prefix(TOKEN_PREFIX)) }
 
-      reviewers.uniq.presence || [batch_user_ms_id]
+      existing_users(candidates.uniq).presence || [batch_user_ms_id]
     end
 
     private
 
+    # Organization reviewers come from Solr, which keeps the ms_id of a User deleted since the
+    # organization was last indexed.
     def existing_users(ms_ids)
       return [] if ms_ids.empty?
 
-      User.where(ms_id: ms_ids).pluck(:ms_id)
+      ms_ids & User.where(ms_id: ms_ids).pluck(:ms_id)
     end
 
     def organization_reviewers(organization_id)

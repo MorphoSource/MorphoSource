@@ -779,11 +779,20 @@ describe 'description attachment methods' do
         expect(media.errors[:download_reviewer_mode].join).to include('Ineligible Org')
       end
 
-      it 'passes vacuously when no Object Organization is linked yet' do
+      it 'passes vacuously at create, before any Object Organization is linked' do
+        new_media = FactoryBot.build(:media, owner: owner_user.ms_id, depositor: owner_user.ms_id)
+        allow(new_media).to receive(:organizations).and_return([])
+        new_media.download_reviewer_mode = 'object_organization'
+
+        expect(new_media).to be_valid
+      end
+
+      it 'refuses the transition on a saved record with no Object Organizations' do
         allow(media).to receive(:organizations).and_return([])
         media.download_reviewer_mode = 'object_organization'
 
-        expect(media).to be_valid
+        expect(media).not_to be_valid
+        expect(media.errors[:download_reviewer_mode].join).to include('no object organizations')
       end
 
       it 'does not walk the graph when the mode has not changed' do

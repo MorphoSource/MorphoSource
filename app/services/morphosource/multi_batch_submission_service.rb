@@ -295,6 +295,7 @@ module Morphosource
         "agreement_uri"=>"",
         "member_of_collection_ids"=>"",
         "owner"=>user.ms_id,
+        "record_download_reviewer_users"=>[user.ms_id],
         "organization_transfer_on_publish"=>false
       }
     end

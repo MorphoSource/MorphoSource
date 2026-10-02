@@ -32,6 +32,7 @@ class OrganizationCollection < Collection
   def initialize(params=nil)
     super
     self.collection_type_gid ||= collection_type.to_global_id
+    self.managers_are_download_reviewers = true if managers_are_download_reviewers.nil?
   end
 
   def self.collection_type
@@ -107,12 +108,6 @@ class OrganizationCollection < Collection
 
   def data_manager
     managers&.map(&:user_key) || []
-  end
-
-  # @return [Boolean] the stored value, or true when it has never been written
-  def managers_are_download_reviewers
-    value = super
-    value.nil? ? true : value
   end
 
   def managers_are_download_reviewers=(value)

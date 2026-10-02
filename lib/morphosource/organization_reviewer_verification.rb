@@ -8,9 +8,6 @@ module Morphosource
   class OrganizationReviewerVerification
     QUERY = 'has_model_ssim:OrganizationCollection'
 
-    MANAGERS_ARE_DOWNLOAD_REVIEWERS =
-      ::RDF::URI.new('https://www.morphosource.org/terms/managersAreDownloadReviewers').freeze
-
     attr_reader :logger, :summary
 
     # @param logger [Logger]
@@ -64,20 +61,12 @@ module Morphosource
       expected_users = stored.present? ? User.where(ms_id: stored).pluck(:ms_id) : []
       actual_users = Array(organization.custom_download_reviewer_users).reject(&:blank?)
       expected_mode = expected_users.empty?
-      actual_mode = stored_managers_flag(organization)
+      actual_mode = organization.managers_are_download_reviewers
       return if expected_mode == actual_mode && expected_users.sort == actual_users.sort
 
       summary[:backfill_diffs] << { id: organization.id,
                                     expected_mode: expected_mode, actual_mode: actual_mode,
                                     expected_users: expected_users, actual_users: actual_users }
-    end
-
-    # The reader answers true for a blank field
-    # Reads the triple instead
-    def stored_managers_flag(organization)
-      organization.resource
-                  .query([organization.rdf_subject, MANAGERS_ARE_DOWNLOAD_REVIEWERS, nil])
-                  .to_a.first&.object&.object
     end
 
     def verify_resolution(organization)

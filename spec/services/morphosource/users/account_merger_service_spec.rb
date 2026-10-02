@@ -20,6 +20,8 @@ RSpec.describe Morphosource::Users::AccountMergerService do
       expect_any_instance_of(described_class).to receive(:transfer_collections)
       expect_any_instance_of(described_class).to receive(:transfer_group_permissions)
       expect_any_instance_of(described_class).to receive(:transfer_proxy_rights)
+      expect_any_instance_of(described_class).to receive(:transfer_cart_items)
+      expect_any_instance_of(described_class).to receive(:publish_reviewer_events)
       subject
     end
   end
@@ -161,6 +163,65 @@ RSpec.describe Morphosource::Users::AccountMergerService do
     it 'transfers role memberships to the new user' do
       expect(old_user.groups).not_to include('role1','role2','role3')
       expect(new_user.groups).to include('role1','role2','role3')
+    end
+  end
+
+  describe 'manager roles and reviewer events' do
+    let(:organization)        { FactoryBot.create(:organization_collection) }
+    let(:other_organization)  { FactoryBot.create(:organization_collection) }
+    let(:team)                { FactoryBot.create(:team) }
+    let(:project)             { FactoryBot.create(:project) }
+
+    def add_manager(collection, user)
+      Role.find_or_create_by!(name: "#{collection.id}_managers").users << user
+    end
+
+    def expect_reviewer_events(*organizations)
+      organizations.each do |organization|
+        expect(Hyrax.publisher).to have_received(:publish)
+          .with('organization.reviewers.updated', organization_id: organization.id).once
+      end
+      expect(Hyrax.publisher).to have_received(:publish)
+        .with('organization.reviewers.updated', anything).exactly(organizations.size).times
+    end
+
+    before { allow(Hyrax.publisher).to receive(:publish) }
+
+    it 'publishes one event for a managed organization' do
+      add_manager(organization, old_user)
+
+      subject
+
+      expect_reviewer_events(organization)
+    end
+
+    it 'publishes one event per managed organization' do
+      add_manager(organization, old_user)
+      add_manager(other_organization, old_user)
+
+      subject
+
+      expect_reviewer_events(organization, other_organization)
+    end
+
+    it 'publishes nothing for Team and Project managers or other roles' do
+      add_manager(team, old_user)
+      add_manager(project, old_user)
+      Role.find_or_create_by!(name: 'contributor').users << old_user
+
+      subject
+
+      expect_reviewer_events
+    end
+
+    it 'removes the old user from a manager role the new user already holds, and publishes' do
+      add_manager(organization, new_user)
+      add_manager(organization, old_user)
+
+      subject
+
+      expect(organization.managers).to contain_exactly(new_user)
+      expect_reviewer_events(organization)
     end
   end
 

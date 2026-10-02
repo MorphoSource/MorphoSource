@@ -66,6 +66,14 @@ RSpec.describe Morphosource::DownloadReviewerResolver do
         .to match_array([reviewer.ms_id, manager.ms_id])
     end
 
+    it "drops an organization reviewer whose User was deleted after the organization was indexed" do
+      add_manager(organization, manager)
+      add_manager(organization, other_manager)
+      other_manager.delete
+
+      expect(resolver.call(identity(token_for(organization)))).to eq([manager.ms_id])
+    end
+
     it 'de-duplicates a user reachable both directly and through an organization' do
       add_manager(organization, manager)
 
@@ -111,6 +119,13 @@ RSpec.describe Morphosource::DownloadReviewerResolver do
 
     it 'applies when no stored ms_id names a live User' do
       expect(resolver.call(identity('dead-ms-id', 'another-dead-ms-id'))).to eq([batch_user_ms_id])
+    end
+
+    it "applies when an organization's indexed reviewers have all been deleted" do
+      add_manager(organization, manager)
+      manager.delete
+
+      expect(resolver.call(identity(token_for(organization)))).to eq([batch_user_ms_id])
     end
 
     it 'applies when every token is dangling' do

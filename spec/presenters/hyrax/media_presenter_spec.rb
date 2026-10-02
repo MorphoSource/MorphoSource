@@ -38,9 +38,9 @@ RSpec.describe Hyrax::MediaPresenter do
         end
       end
 
-      it 'renders the owner as reviewer for a document indexed without download_reviewers_ssim' do
+      it 'renders the owner as reviewer for a document indexed before ticket 3' do
         owner = FactoryBot.create(:contributor)
-        document = SolrDocument.new(media_document.to_h.except('download_reviewers_ssim')
+        document = SolrDocument.new(media_document.to_h.except('download_reviewers_ssim', 'download_reviewer_mode_ssi')
                                                         .merge('user_with_ownership_ssi' => owner.ms_id))
         html = described_class.new(document, ability, request)
                               .attribute_to_html(:download_reviewers, render_as: :showcase_user_link)

@@ -9,7 +9,7 @@ module Morphosource
     end
 
     # @return [Array<Hash>] Media documents the User reviews directly or through an organization,
-    #   including documents indexed before download_reviewers_ssim, matched by owner
+    #   including documents indexed before download_reviewer_mode_ssi, matched by owner
     def call
       return [] if @ms_id.blank?
 
@@ -20,7 +20,7 @@ module Morphosource
       owners = [@ms_id] + organization_ids
       ActiveFedora::SolrService.query('has_model_ssim:Media',
         fq: ["#{any_of('download_reviewers_ssim', identities)} OR " \
-             "(#{any_of('user_with_ownership_ssi', owners)} AND -download_reviewers_ssim:[* TO *])"],
+             "(#{any_of('user_with_ownership_ssi', owners)} AND -download_reviewer_mode_ssi:[* TO *])"],
         rows: 999999, method: :post)
     end
 

@@ -32,7 +32,6 @@ describe 'morphosource:download_reviewer rake tasks', type: :task do
     subject(:verification) { Morphosource::OrganizationReviewerVerification.new }
 
     def persist_mode(value)
-      organization.managers_are_download_reviewers_will_change!
       organization.managers_are_download_reviewers = value
       organization.save!
     end
@@ -55,6 +54,8 @@ describe 'morphosource:download_reviewer rake tasks', type: :task do
 
     context 'manager mode the migration never reached' do
       before do
+        organization.managers_are_download_reviewers = nil
+        organization.save!
         organization.managers << manager
         organization.managers_group.save!
       end
@@ -154,7 +155,7 @@ describe 'morphosource:download_reviewer rake tasks', type: :task do
         expect(summary[:resolution_diffs].first)
           .to include(id: organization.id, expected: [reviewer.ms_id], actual: [manager.ms_id])
         expect(summary[:backfill_diffs].first)
-          .to include(expected_mode: false, actual_mode: nil, expected_users: [reviewer.ms_id])
+          .to include(expected_mode: false, actual_mode: true, expected_users: [reviewer.ms_id])
       end
     end
 

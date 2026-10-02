@@ -32,8 +32,7 @@ module Morphosource
       end
 
       def managers_are_download_reviewers
-        value = self['managers_are_download_reviewers_bsi']
-        value.nil? ? true : value
+        self['managers_are_download_reviewers_bsi']
       end
 
       def custom_download_reviewer_users

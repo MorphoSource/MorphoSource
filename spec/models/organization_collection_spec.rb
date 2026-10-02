@@ -58,11 +58,32 @@ RSpec.describe OrganizationCollection, type: :model do
     let!(:organization)  { FactoryBot.create(:organization_collection, depositor: user.ms_id) }
 
     describe '#managers_are_download_reviewers' do
-      it 'reads a never-written field as manager mode' do
-        expect(organization.managers_are_download_reviewers).to be(true)
+      it 'stores manager mode on a new organization' do
+        expect(organization.reload.managers_are_download_reviewers).to be(true)
       end
 
-      it 'leaves a brand-new organization valid with the field never written' do
+      it 'keeps a false passed at creation' do
+        expect(OrganizationCollection.new(managers_are_download_reviewers: false)
+                                     .managers_are_download_reviewers).to be(false)
+      end
+
+      it 'reads an unwritten field as nil' do
+        organization.managers_are_download_reviewers = nil
+        organization.save!
+
+        expect(organization.reload.managers_are_download_reviewers).to be_nil
+      end
+
+      it 'persists true written over an unwritten field' do
+        organization.managers_are_download_reviewers = nil
+        organization.save!
+        organization.reload.managers_are_download_reviewers = true
+        organization.save!
+
+        expect(organization.reload.managers_are_download_reviewers).to be(true)
+      end
+
+      it 'leaves a brand-new organization valid' do
         expect(organization).to be_valid
       end
 
@@ -94,10 +115,10 @@ RSpec.describe OrganizationCollection, type: :model do
         expect(organization.managers_are_download_reviewers).to be(true)
       end
 
-      it 'casts an empty string to nil, leaving the reader in manager mode' do
+      it 'casts an empty string to nil' do
         organization.managers_are_download_reviewers = ''
 
-        expect(organization.managers_are_download_reviewers).to be(true)
+        expect(organization.managers_are_download_reviewers).to be_nil
       end
 
       it 'casts reviews_object_media_downloads too' do

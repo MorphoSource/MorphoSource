@@ -103,13 +103,16 @@ class SolrDocument
   #   or resolved User ms_ids on OrganizationCollection documents. A Media document indexed
   #   before download_reviewer_mode_ssi existed falls back to its indexed owner, as
   #   Media#download_reviewers would; an empty indexed list (Solr omits it) is not a fallback.
+  # @yieldparam owner_id [String] legacy owner to classify, optionally using a shared cache
+  # @yieldreturn [Boolean] whether the owner is an OrganizationCollection
   def download_reviewers
     return self['download_reviewers_ssim'] if self['download_reviewers_ssim']
     return [] if self['download_reviewer_mode_ssi'] || self['has_model_ssim'] != ['Media']
 
     owner_id = self['user_with_ownership_ssi']
     return [] if owner_id.blank?
-    return ["#{::Morphosource::MediaMetadata::ORG_COLLECTION_TOKEN_PREFIX}#{owner_id}"] if ::OrganizationCollection.exists?(owner_id)
+    organization_owner = block_given? ? yield(owner_id) : ::OrganizationCollection.exists?(owner_id)
+    return ["#{::Morphosource::MediaMetadata::ORG_COLLECTION_TOKEN_PREFIX}#{owner_id}"] if organization_owner
 
     [owner_id]
   end

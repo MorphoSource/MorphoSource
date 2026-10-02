@@ -658,12 +658,18 @@ class Media < Morphosource::Works::Base
     end
 
     # Passes vacuously at create: AddToWorkActor links parents after saving, so the
-    # submission paths gate creation instead.
+    # submission paths gate creation instead. On update it links them before saving.
     def object_organization_mode_is_eligible
       return unless download_reviewer_mode_changed?
       return unless download_reviewer_mode == 'object_organization'
 
-      ineligible = organizations.reject { |org| org.try(:reviews_object_media_downloads) }
+      object_organizations = organizations
+      if persisted? && object_organizations.empty?
+        errors.add(:download_reviewer_mode, 'cannot be set to the object organization: this media has no object organizations')
+        return
+      end
+
+      ineligible = object_organizations.reject { |org| org.try(:reviews_object_media_downloads) }
       return if ineligible.empty?
 
       names = ineligible.map { |org| org.title&.first }.compact

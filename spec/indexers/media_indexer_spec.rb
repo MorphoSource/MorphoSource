@@ -294,6 +294,79 @@ RSpec.describe MediaIndexer do
     end
   end
 
+  describe 'download reviewer keys' do
+    let(:user)          { FactoryBot.create(:contributor) }
+    let(:reviewer)      { FactoryBot.create(:contributor) }
+    let(:organization) do
+      FactoryBot.create(:organization_collection,
+                        title: ['Object Org'],
+                        depositor: user.ms_id,
+                        reviews_object_media_downloads: true)
+    end
+    let(:media)   { FactoryBot.create(:media, owner: user.ms_id, depositor: user.ms_id) }
+    subject       { described_class.new(media).generate_solr_document }
+
+    it 'still writes download_reviewer_ssim' do
+      media.download_reviewer = [reviewer.ms_id]
+
+      expect(subject['download_reviewer_ssim']).to match_array([reviewer.ms_id])
+    end
+
+    it 'writes the new Reviewer Identity key' do
+      media.record_download_reviewer_users = [reviewer.ms_id]
+
+      expect(subject['download_reviewers_ssim']).to match_array([reviewer.ms_id])
+    end
+
+    it 'writes the reader default for the mode rather than the raw nil' do
+      expect(subject['download_reviewer_mode_ssi']).to eq('record_users')
+    end
+
+    it 'writes the mode once set' do
+      allow(media).to receive(:organizations).and_return([organization])
+      media.download_reviewer_mode = 'object_organization'
+
+      expect(subject['download_reviewer_mode_ssi']).to eq('object_organization')
+    end
+
+    it 'writes the record user list even while it is dormant' do
+      allow(media).to receive(:organizations).and_return([organization])
+      media.download_reviewer_mode = 'object_organization'
+      media.record_download_reviewer_users = [reviewer.ms_id]
+
+      expect(subject['download_reviewers_ssim']).to eq(["org_collection:#{organization.id}"])
+      expect(subject['record_download_reviewer_users_ssim']).to match_array([reviewer.ms_id])
+    end
+
+    context 'with a real Object Organization graph' do
+      let(:device)        { FactoryBot.create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
+      let(:specimen)      { FactoryBot.create(:biological_specimen, organization_id: [organization.id]) }
+      let(:imaging_event) do
+        FactoryBot.create(:imaging_event, title: ['imaging event'], ie_modality: device.modality,
+                                          physical_object_id: [specimen.id], device_id: [device.id.to_s])
+      end
+      let(:media) { Media.create(title: ['media']) }
+
+      before do
+        imaging_event.ordered_members << media
+        imaging_event.save!
+        media.download_reviewer_mode = 'object_organization'
+      end
+
+      it 'emits a token for the Object Organization' do
+        expect(subject['download_reviewers_ssim']).to eq(["org_collection:#{organization.id}"])
+      end
+
+      it 'walks the ancestors once, not once per key' do
+        allow(media).to receive(:organizations).and_call_original
+
+        described_class.new(media).generate_solr_document
+
+        expect(media).to have_received(:organizations).once
+      end
+    end
+  end
+
   describe 'organization fields' do
     let(:device)          { FactoryBot.create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
     let(:specimen)        { FactoryBot.create(:biological_specimen, organization_id: [organization.id]) }

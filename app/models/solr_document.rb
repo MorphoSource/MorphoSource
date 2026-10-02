@@ -101,10 +101,11 @@ class SolrDocument
 
   # @return [Array<String>] Media reviewer identities (User ms_ids or org_collection: tokens),
   #   or resolved User ms_ids on OrganizationCollection documents. A Media document indexed
-  #   before the field existed falls back to its indexed owner, as Media#download_reviewers would.
+  #   before download_reviewer_mode_ssi existed falls back to its indexed owner, as
+  #   Media#download_reviewers would; an empty indexed list (Solr omits it) is not a fallback.
   def download_reviewers
     return self['download_reviewers_ssim'] if self['download_reviewers_ssim']
-    return [] unless self['has_model_ssim'] == ['Media']
+    return [] if self['download_reviewer_mode_ssi'] || self['has_model_ssim'] != ['Media']
 
     owner_id = self['user_with_ownership_ssi']
     return [] if owner_id.blank?

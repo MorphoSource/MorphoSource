@@ -124,6 +124,13 @@ RSpec.describe ::SolrDocument, type: :model do
       expect(document.download_reviewers).to eq(["org_collection:#{organization.id}"])
     end
 
+    it 'does not fall back when a Media document indexed an empty list' do
+      document = described_class.new('has_model_ssim' => ['Media'], 'user_with_ownership_ssi' => 'owner',
+                                     'download_reviewer_mode_ssi' => 'object_organization')
+
+      expect(document.download_reviewers).to eq([])
+    end
+
     it 'returns nothing for an ownerless Media document without the field' do
       expect(described_class.new('has_model_ssim' => ['Media']).download_reviewers).to eq([])
     end

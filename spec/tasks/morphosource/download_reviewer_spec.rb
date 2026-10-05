@@ -245,8 +245,6 @@ describe 'morphosource:download_reviewer rake tasks', type: :task do
         expect(row['resolved_reviewers']).to eq(manager.ms_id)
       end
 
-      # The stored pointer is recorded verbatim -- ticket 10 scopes its strip by this column --
-      # but resolution reads download_reviewers, so it no longer follows the pointer.
       it 'records a stored reviewer naming an OrganizationCollection without resolving through it' do
         organization.download_reviewer = []
         organization.managers << manager
@@ -381,8 +379,6 @@ describe 'morphosource:download_reviewer rake tasks', type: :task do
       owner = FactoryBot.create(:contributor)
       2.times { FactoryBot.create(:media, owner: owner.ms_id) }
 
-      # Resolution reads Solr now; #resolve_reviewers' cache exists to collapse these two
-      # records, which share a reviewer set and an owner, into a single resolver call.
       expect_any_instance_of(Morphosource::DownloadReviewerResolver)
         .to receive(:call).once.and_call_original
 

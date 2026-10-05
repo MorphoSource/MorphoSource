@@ -321,13 +321,25 @@ module Morphosource
       end
 
       def original_file_uri(original_file)
-        return original_file.uri if original_file.respond_to?(:uri)
+        @original_file_uri_cache ||= {}
+        return @original_file_uri_cache[original_file.id] if @original_file_uri_cache.key?(original_file.id)
 
-        identifier = original_file.file_identifier.to_s
-        return identifier unless identifier.start_with?('shrine://')
-        # find_by resolves the current version; the bare identifier's key doesn't exist in S3.
-        versioned_key = Valkyrie::StorageAdapter.find_by(id: identifier).io.id
-        Valkyrie::StorageAdapter.find(:s3).shrine.url(versioned_key)
+        @original_file_uri_cache[original_file.id] = begin
+          if original_file.respond_to?(:uri)
+            original_file.uri
+          else
+            identifier = original_file.file_identifier.to_s
+            if identifier.start_with?('shrine://')
+              # find_by resolves the current version; the bare identifier's key doesn't exist in S3.
+              versioned_key = Valkyrie::StorageAdapter.find_by(id: identifier).io.id
+              Valkyrie::StorageAdapter.find(:s3).shrine.url(versioned_key)
+            else
+              identifier
+            end
+          end
+        rescue Valkyrie::StorageAdapter::FileNotFound
+          nil
+        end
       end
 
       # Get FileSets from Media

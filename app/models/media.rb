@@ -657,8 +657,8 @@ class Media < Morphosource::Works::Base
       "#{Morphosource::MediaMetadata::ORG_COLLECTION_TOKEN_PREFIX}#{organization_id}"
     end
 
-    # Passes vacuously at create: AddToWorkActor links parents after saving, so the
-    # submission paths gate creation instead. On update it links them before saving.
+    # AddToWorkActor links parents after save on create (submission paths gate that case)
+    # and before save on update, so only persisted records are checked for organizations.
     def object_organization_mode_is_eligible
       return unless download_reviewer_mode_changed?
       return unless download_reviewer_mode == 'object_organization'

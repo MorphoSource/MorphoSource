@@ -8,8 +8,7 @@ module Morphosource
       @ms_id = params[:ms_id]
     end
 
-    # @return [Array<Hash>] Media documents the User reviews directly or through an organization,
-    #   including documents indexed before download_reviewer_mode_ssi, matched by owner
+    # @return [Array<Hash>] Media documents the User reviews directly or through an organization.
     def call
       return [] if @ms_id.blank?
 

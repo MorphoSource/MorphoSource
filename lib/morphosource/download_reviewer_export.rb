@@ -187,8 +187,6 @@ module Morphosource
       @reviewer_cache.fetch(key) { @reviewer_cache[key] = resolver.call(media) }
     end
 
-    # One instance per export run: the resolver memoizes organization reviewers internally,
-    # which is the reload it exists to avoid.
     def resolver
       @resolver ||= DownloadReviewerResolver.new
     end

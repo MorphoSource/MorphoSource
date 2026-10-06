@@ -1,3 +1,5 @@
+@import 'variables';
+
 // Styles for top bar masthead content
 nav#masthead {
   min-height: 55px !important;
@@ -43,15 +45,22 @@ nav.navbar .container, nav.navbar .container-fluid {
   }
 }
 
+#sitewide-banner {
+  background-color: $ms-orange;
+  color: black;
+}
+
 .banner-text {
   text-align: center;
 
   a {
-    color: #f68628;
+    color: $ms-blue;
     font-weight: bold;
+    text-decoration: none;
 
     &:hover, &:focus {
-      color: #d99a36;
+      color: $ms-dark-blue;
+      text-decoration: underline;
     }
   }
 }

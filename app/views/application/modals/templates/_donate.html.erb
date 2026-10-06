@@ -8,7 +8,7 @@
       <a href=<%= donate_link %> class="btn btn-primary mb-3">Donate Now</a>
       <div class="modal-dismiss-options">
         <%= link_to "Already Donated", modal.snooze_week_path, method: :post, remote: true, class: "already-donated d-block" %>
-        <%= link_to "Maybe Later", modal.snooze_day_path, method: :post, remote: true, class: "maybe-later d-block" %>
+        <%= link_to "Maybe Later", modal.snooze_hour_path, method: :post, remote: true, class: "maybe-later d-block" %>
         <a href="#" class="no-thanks d-block text-danger">No Thanks</a>
       </div>
     </div>

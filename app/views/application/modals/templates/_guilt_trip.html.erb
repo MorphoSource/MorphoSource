@@ -7,7 +7,7 @@
       </div>
       <a href=<%= donate_link %> class="btn btn-primary mb-3">Donate Now</a>
       <div id="modal-donate-wrapper">
-        <%= link_to "Not Now", modal.snooze_day_path, method: :post, remote: true, class: "btn btn-secondary not-now" %>
+        <%= button_to modal.snooze_day_path, remote: true, class: "btn btn-secondary not-now", form_class: "snooze-form" do %>Not Now<% end %>
       </div>
     </div>
   </div>

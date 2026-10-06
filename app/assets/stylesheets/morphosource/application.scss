@@ -1,11 +1,12 @@
 // Application-wide overrides, restore styles changed in Bootstrap 4 to our desired defaults
+@import 'variables';
 
 a {
   text-decoration: none;
 }
 
 a:hover, a:focus {
-  color: #23527c;
+  color: $link-hover-font-color;
   text-decoration: underline;
 }
 

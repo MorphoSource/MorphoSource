@@ -68,22 +68,19 @@ function initSitewideModals() {
 
   // Attach click listeners to document (event delegation)
   document.body.addEventListener("click", function (e) {
-    const maybeLater = e.target.closest("a.maybe-later");
-    const alreadyDonated = e.target.closest("a.already-donated");
-    const noThanksSite1 = e.target.closest("#sitewide-modal a.no-thanks");
-    const notNowSite2 = e.target.closest("#sitewide-modal-2 a.not-now");
-    const notNowSite1 = e.target.closest("#sitewide-modal a.not-now");
+    const snoozeButton = e.target.closest(".configured-modal .maybe-later, .configured-modal .already-donated");
+    const noThanksSite1 = e.target.closest("#sitewide-modal .no-thanks");
+    const notNowSite2 = e.target.closest("#sitewide-modal-2 .not-now");
+    const notNowSite1 = e.target.closest("#sitewide-modal .not-now");
 
-    const noThanksDownload = e.target.closest("#download-modal a.no-thanks");
-    const noThanksDownload2 = e.target.closest("#download-modal-2 a.no-thanks");
-    const notNowDownload = e.target.closest("#download-modal a.not-now");
-    const notNowDownload2 = e.target.closest("#download-modal-2 a.not-now");
+    const noThanksDownload = e.target.closest("#download-modal .no-thanks");
+    const noThanksDownload2 = e.target.closest("#download-modal-2 .no-thanks");
+    const notNowDownload = e.target.closest("#download-modal .not-now");
+    const notNowDownload2 = e.target.closest("#download-modal-2 .not-now");
 
-    if (maybeLater || alreadyDonated) {
-      e.preventDefault();
-      closeModal(modal1);
-      closeModal(downloadModal);
-      closeModal(downloadModal2);
+    // Snooze buttons submit remote forms, so their clicks must not be prevented
+    if (snoozeButton) {
+      closeModal(snoozeButton.closest(".configured-modal"));
       return;
     }
     if (noThanksSite1) {
@@ -93,12 +90,10 @@ function initSitewideModals() {
       return;
     }
     if (notNowSite1) {
-      e.preventDefault();
       closeModal(modal1);
       return;
     }
     if (notNowSite2) {
-      e.preventDefault();
       closeModal(modal2);
       return;
     }
@@ -109,7 +104,6 @@ function initSitewideModals() {
       return;
     }
     if (notNowDownload) {
-      e.preventDefault();
       closeModal(downloadModal);
       return;
     }
@@ -119,7 +113,6 @@ function initSitewideModals() {
       return;
     }
     if (notNowDownload2) {
-      e.preventDefault();
       closeModal(downloadModal2);
       return;
     }
@@ -155,10 +148,10 @@ function initSitewideModals() {
   });
 
   document.addEventListener("ajax:success", function (e) {
-    const link = e.target.closest("a.already-donated, a.maybe-later");
-    if (!link) return;
+    const form = e.target.closest("form.snooze-form");
+    if (!form) return;
 
-    const parentModal = link.closest("#sitewide-modal, #download-modal");
+    const parentModal = form.closest(".configured-modal");
     if (!parentModal) return;
 
     closeModal(parentModal);

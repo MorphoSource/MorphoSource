@@ -68,8 +68,7 @@ function initSitewideModals() {
 
   // Attach click listeners to document (event delegation)
   document.body.addEventListener("click", function (e) {
-    const maybeLater = e.target.closest(".maybe-later");
-    const alreadyDonated = e.target.closest(".already-donated");
+    const snoozeButton = e.target.closest(".configured-modal .maybe-later, .configured-modal .already-donated");
     const noThanksSite1 = e.target.closest("#sitewide-modal .no-thanks");
     const notNowSite2 = e.target.closest("#sitewide-modal-2 .not-now");
     const notNowSite1 = e.target.closest("#sitewide-modal .not-now");
@@ -80,10 +79,8 @@ function initSitewideModals() {
     const notNowDownload2 = e.target.closest("#download-modal-2 .not-now");
 
     // Snooze buttons submit remote forms, so their clicks must not be prevented
-    if (maybeLater || alreadyDonated) {
-      closeModal(modal1);
-      closeModal(downloadModal);
-      closeModal(downloadModal2);
+    if (snoozeButton) {
+      closeModal(snoozeButton.closest(".configured-modal"));
       return;
     }
     if (noThanksSite1) {
@@ -154,7 +151,7 @@ function initSitewideModals() {
     const form = e.target.closest("form.snooze-form");
     if (!form) return;
 
-    const parentModal = form.closest("#sitewide-modal, #download-modal");
+    const parentModal = form.closest(".configured-modal");
     if (!parentModal) return;
 
     closeModal(parentModal);

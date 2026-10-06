@@ -72,9 +72,9 @@ test:
     - docker network create test-network
     - docker run --name postgres --network test-network -e POSTGRES_USER=hydra -e POSTGRES_PASSWORD=hydra -e POSTGRES_DB=test -d postgres
     - docker run --name solr --network test-network -v $(pwd)/solr/conf:/core_config/conf -d solr:7.7.3 sh -c "solr-precreate hydra-test /core_config"
-    - docker run --name fcrepo --network test-network -v $(pwd)/vendor/docker/fcrepo/fedora.xml:/var/lib/jetty/webapps/fedora.xml -d ghcr.io/samvera/fcrepo4:4.7.5
+    - docker run --name fcrepo --network test-network -v fcrepo-data:/data -v $(pwd)/vendor/docker/fcrepo/fedora-entrypoint.sh:/fedora-entrypoint.sh -v $(pwd)/vendor/docker/fcrepo/fedora.xml:/var/lib/jetty/webapps/fedora.xml -d ghcr.io/samvera/fcrepo4:4.7.5
     - docker run --name redis --network test-network -d redis:5-alpine
-    - docker run --name morphosource --network test-network --env-file ./vendor/docker/docker-compose.env -e RAILS_ENV=test -e SOLR_TEST_URL=http://solr:8983/solr/hydra-test -e FCREPO_BASE_PATH=/test -e FIJI_SCRIPT_COMMAND= gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA docker-test.sh
+    - docker run --name morphosource --network test-network -v fcrepo-data:/app/samvera/hyrax-webapp/file-storage --env-file ./vendor/docker/docker-compose.env -e RAILS_ENV=test -e SOLR_TEST_URL=http://solr:8983/solr/hydra-test -e FCREPO_BASE_PATH=/test -e FIJI_SCRIPT_COMMAND= gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA docker-test.sh
   tags:
     - oit-shared
 
@@ -99,9 +99,9 @@ test_controllers:
     - docker network create test-network
     - docker run --name postgres --network test-network -e POSTGRES_USER=hydra -e POSTGRES_PASSWORD=hydra -e POSTGRES_DB=test -d postgres
     - docker run --name solr --network test-network -v $(pwd)/solr/conf:/core_config/conf -d solr:7.7.3 sh -c "solr-precreate hydra-test /core_config"
-    - docker run --name fcrepo --network test-network -v $(pwd)/vendor/docker/fcrepo/fedora.xml:/var/lib/jetty/webapps/fedora.xml -d ghcr.io/samvera/fcrepo4:4.7.5
+    - docker run --name fcrepo --network test-network -v fcrepo-data:/data -v $(pwd)/vendor/docker/fcrepo/fedora-entrypoint.sh:/fedora-entrypoint.sh -v $(pwd)/vendor/docker/fcrepo/fedora.xml:/var/lib/jetty/webapps/fedora.xml -d ghcr.io/samvera/fcrepo4:4.7.5
     - docker run --name redis --network test-network -d redis:5-alpine
-    - docker run --name morphosource --network test-network --env-file ./vendor/docker/docker-compose.env -e RAILS_ENV=test -e SOLR_TEST_URL=http://solr:8983/solr/hydra-test -e FCREPO_BASE_PATH=/test -e FIJI_SCRIPT_COMMAND= -e TEST_GROUP=1 gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA docker-test.sh
+    - docker run --name morphosource --network test-network -v fcrepo-data:/app/samvera/hyrax-webapp/file-storage --env-file ./vendor/docker/docker-compose.env -e RAILS_ENV=test -e SOLR_TEST_URL=http://solr:8983/solr/hydra-test -e FCREPO_BASE_PATH=/test -e FIJI_SCRIPT_COMMAND= -e TEST_GROUP=1 gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA docker-test.sh
   tags:
     - oit-shared
 
@@ -126,9 +126,9 @@ test_actors_to_lib:
     - docker network create test-network
     - docker run --name postgres --network test-network -e POSTGRES_USER=hydra -e POSTGRES_PASSWORD=hydra -e POSTGRES_DB=test -d postgres
     - docker run --name solr --network test-network -v $(pwd)/solr/conf:/core_config/conf -d solr:7.7.3 sh -c "solr-precreate hydra-test /core_config"
-    - docker run --name fcrepo --network test-network -v $(pwd)/vendor/docker/fcrepo/fedora.xml:/var/lib/jetty/webapps/fedora.xml -d ghcr.io/samvera/fcrepo4:4.7.5
+    - docker run --name fcrepo --network test-network -v fcrepo-data:/data -v $(pwd)/vendor/docker/fcrepo/fedora-entrypoint.sh:/fedora-entrypoint.sh -v $(pwd)/vendor/docker/fcrepo/fedora.xml:/var/lib/jetty/webapps/fedora.xml -d ghcr.io/samvera/fcrepo4:4.7.5
     - docker run --name redis --network test-network -d redis:5-alpine
-    - docker run --name morphosource --network test-network --env-file ./vendor/docker/docker-compose.env -e RAILS_ENV=test -e SOLR_TEST_URL=http://solr:8983/solr/hydra-test -e FCREPO_BASE_PATH=/test -e FIJI_SCRIPT_COMMAND= -e TEST_GROUP=2 gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA docker-test.sh
+    - docker run --name morphosource --network test-network -v fcrepo-data:/app/samvera/hyrax-webapp/file-storage --env-file ./vendor/docker/docker-compose.env -e RAILS_ENV=test -e SOLR_TEST_URL=http://solr:8983/solr/hydra-test -e FCREPO_BASE_PATH=/test -e FIJI_SCRIPT_COMMAND= -e TEST_GROUP=2 gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA docker-test.sh
   tags:
     - oit-shared
 
@@ -153,9 +153,9 @@ test_models:
     - docker network create test-network
     - docker run --name postgres --network test-network -e POSTGRES_USER=hydra -e POSTGRES_PASSWORD=hydra -e POSTGRES_DB=test -d postgres
     - docker run --name solr --network test-network -v $(pwd)/solr/conf:/core_config/conf -d solr:7.7.3 sh -c "solr-precreate hydra-test /core_config"
-    - docker run --name fcrepo --network test-network -v $(pwd)/vendor/docker/fcrepo/fedora.xml:/var/lib/jetty/webapps/fedora.xml -d ghcr.io/samvera/fcrepo4:4.7.5
+    - docker run --name fcrepo --network test-network -v fcrepo-data:/data -v $(pwd)/vendor/docker/fcrepo/fedora-entrypoint.sh:/fedora-entrypoint.sh -v $(pwd)/vendor/docker/fcrepo/fedora.xml:/var/lib/jetty/webapps/fedora.xml -d ghcr.io/samvera/fcrepo4:4.7.5
     - docker run --name redis --network test-network -d redis:5-alpine
-    - docker run --name morphosource --network test-network --env-file ./vendor/docker/docker-compose.env -e RAILS_ENV=test -e SOLR_TEST_URL=http://solr:8983/solr/hydra-test -e FCREPO_BASE_PATH=/test -e FIJI_SCRIPT_COMMAND= -e TEST_GROUP=3 gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA docker-test.sh
+    - docker run --name morphosource --network test-network -v fcrepo-data:/app/samvera/hyrax-webapp/file-storage --env-file ./vendor/docker/docker-compose.env -e RAILS_ENV=test -e SOLR_TEST_URL=http://solr:8983/solr/hydra-test -e FCREPO_BASE_PATH=/test -e FIJI_SCRIPT_COMMAND= -e TEST_GROUP=3 gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA docker-test.sh
   tags:
     - oit-shared
 
@@ -180,9 +180,9 @@ test_presenters_to_vocabularies:
     - docker network create test-network
     - docker run --name postgres --network test-network -e POSTGRES_USER=hydra -e POSTGRES_PASSWORD=hydra -e POSTGRES_DB=test -d postgres
     - docker run --name solr --network test-network -v $(pwd)/solr/conf:/core_config/conf -d solr:7.7.3 sh -c "solr-precreate hydra-test /core_config"
-    - docker run --name fcrepo --network test-network -v $(pwd)/vendor/docker/fcrepo/fedora.xml:/var/lib/jetty/webapps/fedora.xml -d ghcr.io/samvera/fcrepo4:4.7.5
+    - docker run --name fcrepo --network test-network -v fcrepo-data:/data -v $(pwd)/vendor/docker/fcrepo/fedora-entrypoint.sh:/fedora-entrypoint.sh -v $(pwd)/vendor/docker/fcrepo/fedora.xml:/var/lib/jetty/webapps/fedora.xml -d ghcr.io/samvera/fcrepo4:4.7.5
     - docker run --name redis --network test-network -d redis:5-alpine
-    - docker run --name morphosource --network test-network --env-file ./vendor/docker/docker-compose.env -e RAILS_ENV=test -e SOLR_TEST_URL=http://solr:8983/solr/hydra-test -e FCREPO_BASE_PATH=/test -e FIJI_SCRIPT_COMMAND= -e TEST_GROUP=4 gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA docker-test.sh
+    - docker run --name morphosource --network test-network -v fcrepo-data:/app/samvera/hyrax-webapp/file-storage --env-file ./vendor/docker/docker-compose.env -e RAILS_ENV=test -e SOLR_TEST_URL=http://solr:8983/solr/hydra-test -e FCREPO_BASE_PATH=/test -e FIJI_SCRIPT_COMMAND= -e TEST_GROUP=4 gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA docker-test.sh
   tags:
     - oit-shared
 

@@ -51,7 +51,7 @@ gem 'activejob-status'
 
 gem 'webpacker', '~> 4.x'
 
-gem 'puma', '~> 5.5.0'
+gem 'puma', '~> 5.6.9'
 gem 'puma_worker_killer'
 
 gem 'minitar'

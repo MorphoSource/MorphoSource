@@ -35,6 +35,11 @@ module Morphosource
           index_all(object.media)
         when DeviceResource
           index_all(object.media)
+        when ImagingEventResource
+          media = object.media
+          current_objects = object.objects
+          old_objects = find_old_imaging_event_objects(media, current_objects)
+          index_all(media + current_objects + old_objects)
         end
 
       end
@@ -42,12 +47,21 @@ module Morphosource
       private
 
       def log_non_resource(event)
+        payload = event.respond_to?(:payload) ? event.payload : {}
         Hyrax.logger.info('Skipping related work reindex because the object ' \
-                          "#{event[:object]} was not a Valkyrie::Resource.")
+                          "#{payload[:object]} was not a Valkyrie::Resource.")
       end
 
       def log_skip_reindex(event)
         Hyrax.logger.info('Skipping related work reindex because skip reindex flag was present.')
+      end
+
+      def find_old_imaging_event_objects(media, current_objects)
+        media_ids = media.map { |m| m.id.to_s }
+        return [] if media_ids.blank?
+
+        (BiologicalSpecimen.where(related_media_ids_ssim: media_ids) +
+         CulturalHeritageObject.where(related_media_ids_ssim: media_ids)) - current_objects
       end
 
       def index_all(works)
@@ -56,7 +70,7 @@ module Morphosource
         # collection causes argument error in test environment
         return if (works.first.collection? && Rails.env.test?)
 
-        UpdateRelatedWorksIndexJob.perform_later(works.compact.map { |w| w.id })
+        UpdateRelatedWorksIndexJob.perform_later(works.compact.map { |w| w.id.to_s })
       end
     end
   end

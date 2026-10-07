@@ -307,8 +307,8 @@ RSpec.describe SubmissionsController, type: :controller do
         { work: 'cultural_heritage_object', params:
           { cultural_heritage_object: { title: ['Test Title'] } }
         },
-        { work: 'imaging_event', params:
-          { imaging_event: { title: ['Test Title'] },
+        { work: 'imaging_event_resource', params:
+          { imaging_event_resource: { title: ['Test Title'] },
             submission: {
               biological_specimen_or_cultural_heritage_object: 'bso',
               biological_specimen_id: '012345678',
@@ -357,6 +357,201 @@ RSpec.describe SubmissionsController, type: :controller do
     it 'calls reindex_catalog_works' do
       expect(subject).to receive(:reindex_catalog_works)
       post :create, params: {}
+    end
+  end
+
+  describe '#finalize_model_params' do
+    before do
+      session[:submission] = {}
+      subject.instance_variable_set(:@submission, submission)
+    end
+
+    context 'imaging_event_resource with biological specimen' do
+      let(:submission) { Submission.new(
+        biological_specimen_or_cultural_heritage_object: 'bso',
+        biological_specimen_id: 'bso123',
+        device_id: 'dev456'
+      ) }
+
+      it 'merges physical_object_id from biological_specimen_id and device_id' do
+        result = subject.send(:finalize_model_params, 'imaging_event_resource', { title: ['Test'] })
+        expect(result[:physical_object_id]).to eq(['bso123'])
+        expect(result[:device_id]).to eq(['dev456'])
+      end
+    end
+
+    context 'imaging_event_resource with cultural heritage object' do
+      let(:submission) { Submission.new(
+        biological_specimen_or_cultural_heritage_object: 'cho',
+        cultural_heritage_object_id: 'cho789',
+        device_id: 'dev456'
+      ) }
+
+      it 'merges physical_object_id from cultural_heritage_object_id and device_id' do
+        result = subject.send(:finalize_model_params, 'imaging_event_resource', { title: ['Test'] })
+        expect(result[:physical_object_id]).to eq(['cho789'])
+        expect(result[:device_id]).to eq(['dev456'])
+      end
+    end
+
+    context 'imaging_event_resource missing biological_specimen_id' do
+      let(:submission) { Submission.new(
+        biological_specimen_or_cultural_heritage_object: 'bso',
+        biological_specimen_id: nil,
+        device_id: 'dev456'
+      ) }
+
+      it 'raises an error' do
+        expect {
+          subject.send(:finalize_model_params, 'imaging_event_resource', { title: ['Test'] })
+        }.to raise_error(StandardError, /no biological specimen id/)
+      end
+    end
+
+    context 'imaging_event_resource missing device_id' do
+      let(:submission) { Submission.new(
+        biological_specimen_or_cultural_heritage_object: 'bso',
+        biological_specimen_id: 'bso123',
+        device_id: nil
+      ) }
+
+      it 'raises an error' do
+        expect {
+          subject.send(:finalize_model_params, 'imaging_event_resource', { title: ['Test'] })
+        }.to raise_error(StandardError, /no device id/)
+      end
+    end
+
+    context 'processing_event with parent_media_not_in_ms and a Valkyrie ImagingEventResource parent' do
+      let(:submission) { Submission.new(
+        parent_media_not_in_ms: true,
+        imaging_event_id: 'ie-resource-id'
+      ) }
+
+      before do
+        allow(subject).to receive(:valkyrie_imaging_event?).with('ie-resource-id').and_return(true)
+      end
+
+      it 'sets imaging_event_id on the params' do
+        result = subject.send(:finalize_model_params, 'processing_event', { title: ['Test'] })
+        expect(result[:imaging_event_id]).to eq('ie-resource-id')
+      end
+
+      it 'does not call assign_model_params_parents' do
+        expect(subject).not_to receive(:assign_model_params_parents)
+        subject.send(:finalize_model_params, 'processing_event', { title: ['Test'] })
+      end
+    end
+
+    context 'processing_event with parent_media_not_in_ms and an AF ImagingEvent parent' do
+      let(:submission) { Submission.new(
+        parent_media_not_in_ms: true,
+        imaging_event_id: 'ie-af-id'
+      ) }
+
+      before do
+        allow(subject).to receive(:valkyrie_imaging_event?).with('ie-af-id').and_return(false)
+        allow(subject).to receive(:assign_model_params_parents).and_return({})
+      end
+
+      it 'calls assign_model_params_parents with the imaging_event_id' do
+        expect(subject).to receive(:assign_model_params_parents)
+          .with({ title: ['Test'] }, ['ie-af-id'])
+        subject.send(:finalize_model_params, 'processing_event', { title: ['Test'] })
+      end
+    end
+
+    context 'processing_event with parent_media_list' do
+      let(:submission) { Submission.new(
+        parent_media_not_in_ms: false,
+        parent_media_list: 'pe1,pe2'
+      ) }
+
+      before do
+        allow(subject).to receive(:assign_model_params_parents).and_return({})
+      end
+
+      it 'calls assign_model_params_parents with the parsed parent list' do
+        expect(subject).to receive(:assign_model_params_parents)
+          .with({ title: ['Test'] }, ['pe1', 'pe2'])
+        subject.send(:finalize_model_params, 'processing_event', { title: ['Test'] })
+      end
+    end
+
+    context 'processing_event with no parents' do
+      let(:submission) { Submission.new(
+        parent_media_not_in_ms: false,
+        parent_media_list: nil
+      ) }
+
+      it 'does not call assign_model_params_parents' do
+        expect(subject).not_to receive(:assign_model_params_parents)
+        subject.send(:finalize_model_params, 'processing_event', { title: ['Test'] })
+      end
+    end
+  end
+
+  describe '#valkyrie_imaging_event?' do
+    before { session[:submission] = {} }
+
+    context 'when id is blank' do
+      it 'returns false for nil' do
+        expect(subject.send(:valkyrie_imaging_event?, nil)).to be false
+      end
+
+      it 'returns false for empty string' do
+        expect(subject.send(:valkyrie_imaging_event?, '')).to be false
+      end
+    end
+
+    context 'when the query service returns an ImagingEventResource' do
+      let(:ie_resource) { ImagingEventResource.new }
+
+      before do
+        allow(Hyrax.query_service).to receive(:find_by)
+          .with(id: Valkyrie::ID.new('ie-resource-id'))
+          .and_return(ie_resource)
+      end
+
+      it 'returns true' do
+        expect(subject.send(:valkyrie_imaging_event?, 'ie-resource-id')).to be true
+      end
+    end
+
+    context 'when the query service returns a non-ImagingEventResource' do
+      let(:af_ie) { instance_double(ImagingEvent) }
+
+      before do
+        allow(Hyrax.query_service).to receive(:find_by)
+          .with(id: Valkyrie::ID.new('ie-af-id'))
+          .and_return(af_ie)
+      end
+
+      it 'returns false' do
+        expect(subject.send(:valkyrie_imaging_event?, 'ie-af-id')).to be false
+      end
+    end
+
+    context 'when the query service raises ObjectNotFoundError' do
+      before do
+        allow(Hyrax.query_service).to receive(:find_by)
+          .and_raise(Valkyrie::Persistence::ObjectNotFoundError)
+      end
+
+      it 'returns false' do
+        expect(subject.send(:valkyrie_imaging_event?, 'nonexistent-id')).to be false
+      end
+    end
+  end
+
+  describe '#to_id' do
+    it 'strips _resource suffix and appends _id' do
+      expect(subject.send(:to_id, 'imaging_event_resource')).to eq('imaging_event_id')
+    end
+
+    it 'appends _id for non-resource works' do
+      expect(subject.send(:to_id, 'media')).to eq('media_id')
+      expect(subject.send(:to_id, 'biological_specimen')).to eq('biological_specimen_id')
     end
   end
 

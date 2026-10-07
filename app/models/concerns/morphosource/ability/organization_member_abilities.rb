@@ -24,7 +24,8 @@ module Morphosource
           has_organizational_access_to_physical_object? obj
         end
 
-        can :read, [::ImagingEvent, ::ProcessingEvent] do |obj|
+        # TODO: Remove ::ImagingEvent from array when all ImagingEvents have been migrated to ImagingEventResource
+        can :read, [::ImagingEvent, ::ImagingEventResource, ::ProcessingEvent] do |obj|
           has_organizational_access_to_event? obj
         end
 
@@ -36,7 +37,8 @@ module Morphosource
             has_organizational_access_to_fileset? obj
           when 'BiologicalSpecimen', 'CulturalHeritageObject'
             has_organizational_access_to_physical_object? obj
-          when 'ImagingEvent', 'ProcessingEvent'
+          # TODO: Remove 'ImagingEvent' from when clause when all ImagingEvents have been migrated to ImagingEventResource
+          when 'ImagingEvent', 'ImagingEventResource', 'ProcessingEvent'
             has_organizational_access_to_event? obj
           else
             false
@@ -90,7 +92,8 @@ module Morphosource
           has_organizational_edit_access_to_physical_object? obj
         end
 
-        can [:edit, :update], [::ImagingEvent, ::ProcessingEvent] do |obj|
+        # TODO: Remove ::ImagingEvent from array when all ImagingEvents have been migrated to ImagingEventResource
+        can [:edit, :update], [::ImagingEvent, ::ImagingEventResource, ::ProcessingEvent] do |obj|
           has_organizational_edit_access_to_event? obj
         end
 
@@ -102,7 +105,8 @@ module Morphosource
             has_organizational_edit_access_to_fileset? obj
           when 'BiologicalSpecimen', 'CulturalHeritageObject'
             has_organizational_edit_access_to_physical_object? obj
-          when 'ImagingEvent', 'ProcessingEvent'
+          # TODO: Remove 'ImagingEvent' from when clause when all ImagingEvents have been migrated to ImagingEventResource
+          when 'ImagingEvent', 'ImagingEventResource', 'ProcessingEvent'
             has_organizational_edit_access_to_event? obj
           else
             false
@@ -151,6 +155,8 @@ module Morphosource
         case obj
         when Morphosource::Works::Base
           return SolrDocument.find(obj.id)
+        when Hyrax::Resource
+          return SolrDocument.find(obj.id.to_s)
         when SolrDocument
           return obj
         when String

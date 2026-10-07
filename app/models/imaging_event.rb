@@ -1,3 +1,4 @@
+# @deprecated Use ImagingEventResource instead.
 class ImagingEventParentDeviceModalityValidator < ActiveModel::Validator
 
   def validate(imaging_event)

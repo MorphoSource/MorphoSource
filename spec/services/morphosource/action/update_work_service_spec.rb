@@ -53,4 +53,79 @@ RSpec.describe Morphosource::Action::UpdateWorkService do
       expect(solr_doc['title_tesim']).to include('New title')
     end
   end
+
+  describe 'ImagingEventResource' do
+    let(:device) do
+      FactoryBot.valkyrie_create(:device_resource, with_index: false,
+        title: ['device'], modality: ['Photogrammetry'])
+    end
+    let(:ie) { FactoryBot.valkyrie_create(:imaging_event_resource, title: ['Test IE'], device: device, physical_object_id: ['000'], with_index: false) }
+    let(:form) { double('form', validate: true, errors: double(messages: {})) }
+
+    before do
+      allow(Hyrax::FormFactory).to receive_message_chain(:new, :build).and_return(form)
+    end
+
+    subject do
+      described_class.new(
+        work: ie,
+        params: { imaging_event_resource: { title: ['Updated IE'] } }
+      )
+    end
+
+    describe '#transaction_name' do
+      it 'uses imaging_event_change_set.update_work' do
+        expect(subject.send(:transaction_name)).to eq('imaging_event_change_set.update_work')
+      end
+    end
+
+    describe '#step_args' do
+      it 'includes save_acl' do
+        expect(subject.send(:step_args)).to have_key('work_resource.save_acl')
+      end
+
+      it 'does not include set_user_as_depositor' do
+        expect(subject.send(:step_args)).not_to have_key('change_set.set_user_as_depositor')
+      end
+    end
+
+    describe '#call' do
+      let(:transaction) { double('transaction') }
+
+      before do
+        allow(Hyrax::Transactions::Container).to receive(:[])
+          .with('imaging_event_change_set.update_work')
+          .and_return(transaction)
+        allow(transaction).to receive(:with_step_args).and_return(transaction)
+        allow(transaction).to receive(:call).and_return(Dry::Monads::Success(ie))
+      end
+
+      it 'dispatches to imaging_event_change_set.update_work' do
+        expect(transaction).to receive(:call).with(form)
+        subject.call
+      end
+
+      context 'when form validation fails' do
+        before { allow(form).to receive(:validate).and_return(false) }
+
+        it 'raises an error' do
+          expect { subject.call }.to raise_error(/Error updating/)
+        end
+      end
+    end
+  end
+
+  describe 'with an unpermitted work type' do
+    let(:media) { Media.new }
+
+    subject { described_class.new(work: media, params: {}) }
+
+    it 'raises on transaction_name' do
+      expect { subject.send(:transaction_name) }.to raise_error(/Unpermitted work type/)
+    end
+
+    it 'raises on step_args' do
+      expect { subject.send(:step_args) }.to raise_error(/Unpermitted work type/)
+    end
+  end
 end

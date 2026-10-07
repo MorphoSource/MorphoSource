@@ -168,6 +168,7 @@ RSpec.describe MediaIndexer do
       expect(subject['id']).to eq(media.id)
       expect(subject['identifier_tesim']).to match_array(media.identifier)
       expect(subject['imaging_event_id_tesim']).to match_array([imaging_event.id])
+      expect(subject['imaging_event_id_ssim']).to match_array([imaging_event.id])
       expect(subject['institution_code_ssim']).to match_array(specimen.institution_code)
       expect(subject['institution_code_tesim']).to match_array(specimen.institution_code)
       expect(subject['isPartOf_ssim']).to match_array([admin_set_id])

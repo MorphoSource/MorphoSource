@@ -79,6 +79,71 @@ RSpec.describe ProcessingEvent do
     end
   end
 
+  describe '#imaging_event' do
+    context 'when imaging_event_id is present' do
+      let(:ie_resource) { instance_double(ImagingEventResource) }
+      let(:pe) { ProcessingEvent.new(imaging_event_id: 'ie-resource-id') }
+
+      before do
+        allow(Hyrax.query_service).to receive(:find_by)
+          .with(id: Valkyrie::ID.new('ie-resource-id'))
+          .and_return(ie_resource)
+      end
+
+      it 'returns the ImagingEventResource' do
+        expect(pe.imaging_event).to eq(ie_resource)
+      end
+    end
+
+    context 'when imaging_event_id is present but the resource is not found' do
+      let(:pe) { ProcessingEvent.new(imaging_event_id: 'nonexistent-id') }
+
+      before do
+        allow(Hyrax.query_service).to receive(:find_by)
+          .and_raise(Valkyrie::Persistence::ObjectNotFoundError)
+      end
+
+      it 'returns nil' do
+        expect(pe.imaging_event).to be_nil
+      end
+    end
+
+    context 'when imaging_event_id is absent' do
+      let(:pe) { ProcessingEvent.new }
+      let(:af_imaging_event) { instance_double(ImagingEvent, imaging_event?: true) }
+
+      before do
+        allow(pe).to receive(:ancestors).and_return([af_imaging_event])
+      end
+
+      it 'falls back to AF ancestors' do
+        expect(pe.imaging_event).to eq(af_imaging_event)
+      end
+    end
+  end
+
+  describe '#objects via ImagingEventResource' do
+    let(:specimen) { BiologicalSpecimen.create(title: ['specimen'], vouchered: ['Yes']) }
+    let(:ie_resource) { instance_double(ImagingEventResource, objects: [specimen]) }
+    let(:pe) { ProcessingEvent.new }
+
+    before do
+      allow(pe).to receive(:imaging_event).and_return(ie_resource)
+    end
+
+    it 'returns objects from the ImagingEventResource' do
+      expect(pe.objects).to match_array([specimen])
+    end
+
+    context 'when there is no imaging event' do
+      before { allow(pe).to receive(:imaging_event).and_return(nil) }
+
+      it 'returns an empty array' do
+        expect(pe.objects).to eq([])
+      end
+    end
+  end
+
   describe 'description attachment methods' do
     let(:processing_event) { ProcessingEvent.create }
     let(:valid_file) { Rack::Test::UploadedFile.new('spec/fixtures/text/text.txt', 'text/plain') }

@@ -1,5 +1,6 @@
 # Generated via
 #  `rails generate hyrax:work ImagingEvent`
+# @deprecated Use Hyrax::ImagingEventResourcesController instead.
 module Hyrax
   # Generated controller for ImagingEvent
   class ImagingEventsController < ApplicationController

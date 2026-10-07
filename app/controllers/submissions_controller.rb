@@ -309,7 +309,7 @@ class SubmissionsController < ApplicationController
   private
 
   def works
-    ['taxonomy_resource', 'biological_specimen', 'cultural_heritage_object', 'imaging_event', 'processing_event', 'media']
+    ['taxonomy_resource', 'biological_specimen', 'cultural_heritage_object', 'imaging_event_resource', 'processing_event', 'media']
   end
 
   def create_work_if_needed(work, params)
@@ -317,7 +317,7 @@ class SubmissionsController < ApplicationController
       #puts("Creating #{work}")
       new_work_id, new_work = prepare_and_create_work(work, params)
       @submission.public_send(to_id(work) + '=', new_work_id)
-      create_attachment_if_needed(work, new_work_id, new_work) if ['imaging_event', 'processing_event', 'media'].include?(work)
+      create_attachment_if_needed(work, new_work_id, new_work) if ['imaging_event_resource', 'processing_event', 'media'].include?(work)
 
       if work == 'media'
         create_custom_thumbnail(new_work) if params[:media][:custom_thumbnail].present?
@@ -336,9 +336,13 @@ class SubmissionsController < ApplicationController
   def create_model_params(work, params)
     # Valkyrie or AF?
     if work.include?('_resource')
-      # WorkCreateService handles for Valkyrie what form.model_attributes(params) handled for AF
-      finalize_model_params(work, params[work])
+      # WorkCreateService handles for Valkyrie what form.model_attributes(params) handled for AF.
+      # Convert ActionController::Parameters to a plain hash so Reform's validate() doesn't choke.
+      work_params = params[work]
+      work_params = work_params.to_unsafe_h if work_params.respond_to?(:to_unsafe_h)
+      finalize_model_params(work, work_params)
     else
+      # TODO: Remove AF branch when all ImagingEvents have been migrated to ImagingEventResource
       # AF
       model_params = to_form(work).model_attributes(params[work])
       if work == 'media'
@@ -388,6 +392,7 @@ class SubmissionsController < ApplicationController
       end
       @device_create_params = model_params
 
+    # TODO: Remove 'imaging_event' case when all ImagingEvents have been migrated to ImagingEventResource
     when 'imaging_event'
 
       if @submission.biological_specimen_or_cultural_heritage_object == 'bso'
@@ -407,17 +412,40 @@ class SubmissionsController < ApplicationController
       model_params.merge!(addl_params)
       @imaging_event_create_params = model_params
 
+    when 'imaging_event_resource'
+      if @submission.biological_specimen_or_cultural_heritage_object == 'bso'
+        if !@submission.biological_specimen_id.present?
+          raise StandardError.new "Debug no biological specimen id #{@submission.biological_specimen_id}"
+        end
+        model_params.merge!(physical_object_id: [@submission.biological_specimen_id])
+      elsif @submission.biological_specimen_or_cultural_heritage_object == 'cho'
+        if !@submission.cultural_heritage_object_id.present?
+          raise StandardError.new "Debug no cho id #{@submission.cultural_heritage_object_id}"
+        end
+        model_params.merge!(physical_object_id: [@submission.cultural_heritage_object_id])
+      end
+      if !@submission.device_id.present?
+        raise StandardError.new "Debug no device id #{@submission.device_id}"
+      end
+      model_params.merge!(device_id: [@submission.device_id])
+      @imaging_event_create_params = model_params
+
     when 'processing_event'
-      parents = []
       if @submission.parent_media_not_in_ms.presence
-        # absentee parent media
-        parents = [@submission.imaging_event_id]
+        # absentee parent: may be an AF ImagingEvent or a Valkyrie ImagingEventResource
+        imaging_event_id = @submission.imaging_event_id
+        # TODO: Remove valkyrie_imaging_event? guard (always use imaging_event_id path) when all ImagingEvents have been migrated to ImagingEventResource
+        if valkyrie_imaging_event?(imaging_event_id)
+          model_params.merge!(imaging_event_id: imaging_event_id)
+        else
+          model_params = assign_model_params_parents(model_params, [imaging_event_id])
+        end
       else
         parents = @submission.parent_media_list&.split(',')
-      end
-      # in some cases, parents are provided through another route (ajax manually adds to params)
-      if parents.present?
-        model_params = assign_model_params_parents(model_params, parents)
+        # in some cases, parents are provided through another route (ajax manually adds to params)
+        if parents.present?
+          model_params = assign_model_params_parents(model_params, parents)
+        end
       end
       @processing_event_create_params = model_params
     when 'media'
@@ -524,7 +552,7 @@ class SubmissionsController < ApplicationController
 
   def attachment_fields
     {
-      'imaging_event' => ['ie_description', 'ie_reference'],
+      'imaging_event_resource' => ['ie_description', 'ie_reference'],
       'processing_event' => ['pe_description'],
       'media' => ['agreement']
     }
@@ -556,6 +584,16 @@ class SubmissionsController < ApplicationController
 
   def create_organization_transfer_request(work)
     TransferToOrganizationJob.perform_later(work.id)
+  end
+
+  # TODO: Remove this method when all ImagingEvents have been migrated to ImagingEventResource
+  # Returns true if the given ID belongs to a Valkyrie ImagingEventResource
+  # (Postgres-backed), as opposed to an AF ImagingEvent (Fedora-backed).
+  def valkyrie_imaging_event?(id)
+    return false unless id.present?
+    Hyrax.query_service.find_by(id: Valkyrie::ID.new(id)).is_a?(ImagingEventResource)
+  rescue Valkyrie::Persistence::ObjectNotFoundError
+    false
   end
 
   # Utility functions
@@ -684,6 +722,8 @@ class SubmissionsController < ApplicationController
     @biological_specimen_form = Hyrax::WorkFormService.build(BiologicalSpecimen.new, current_ability, self)
     @cho_form = Hyrax::WorkFormService.build(CulturalHeritageObject.new, current_ability, self)
     @imaging_event_form = Hyrax::WorkFormService.build(ImagingEvent.new, current_ability, self)
+    @device_form = Hyrax::WorkFormService.build(Device.new, current_ability, self)
+    @imaging_event_resource_form = Hyrax::FormFactory.new.build(ImagingEventResource.new, current_ability, self)
     @processing_event_form = Hyrax::WorkFormService.build(ProcessingEvent.new, current_ability, self)
     @organization_form = Hyrax::WorkFormService.build(Organization.new, current_ability, self)
     @media_form = Hyrax::WorkFormService.build(Media.new, current_ability, self)

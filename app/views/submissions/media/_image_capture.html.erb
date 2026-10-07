@@ -1,5 +1,6 @@
 <div id="submission_image_capture" class="submission_flow submission_section submission-v2 hide">
-  <%= simple_form_for @imaging_event_form, wrapper: :showcase_default do |f| %>
+
+  <%= simple_form_for @imaging_event_resource_form, html: { id: 'new_imaging_event_resource' }, wrapper: :showcase_default do |f| %>
     <% if Flipflop.proxy_deposit? && current_user.can_make_deposits_for.any? %>
       <div class="hide">
       <%= f.input :on_behalf_of,
@@ -43,7 +44,7 @@
       <div class="row justify-content-center mt-5">
         <%= f.submit t('morphosource.submission.continue'),
             class: "btn btn-primary btn-continue",
-            id: 'submission_create_imaging_event_submit'
+            id: 'submission_imaging_event_continue'
         %>
       </div>
     </div>

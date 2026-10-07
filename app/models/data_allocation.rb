@@ -7,6 +7,12 @@ class DataAllocation < ApplicationRecord
 
   after_initialize :set_storage_defaults, if: :new_record?
 
+  # Live SUM of sum_file_size across all FileSetSizeInfo rows for this allocation.
+  # Not cached — always reflects current state.
+  def current_storage
+    FileSetSizeInfo.where(data_allocation_id: id).sum(:sum_file_size)
+  end
+
   private
 
   def set_storage_defaults

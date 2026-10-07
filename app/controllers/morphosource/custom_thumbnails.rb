@@ -10,6 +10,7 @@ module Morphosource
       make_derivative_directory
       create_derivative
       update_thumbnail_id
+      sync_media_derivative_size
     end
 
     # called from media #update
@@ -25,6 +26,7 @@ module Morphosource
         media.thumbnail_id = nil
       end
       media.save
+      sync_media_derivative_size
     end
 
     def custom_thumbnail
@@ -86,6 +88,19 @@ module Morphosource
 
     def thumbnail_url
       "file://#{thumbnail_path(media)}"
+    end
+
+    private
+
+    # Re-globs media-level derivative files after each create/delete and persists
+    # the total in FileSetSizeInfo so sum_file_size stays accurate without disk
+    # reads at index or charge time.
+    def sync_media_derivative_size
+      size = Morphosource::DerivativePath.derivatives_for_reference(media.id)
+               .map { |p| File.size?(p) }.compact.sum
+      FileSetSizeInfo.update_media_derivatives(media.id, size)
+    rescue => e
+      Rails.logger.error "FileSetSizeInfo media derivative sync failed for #{media&.id}: #{e.message}"
     end
   end
 end

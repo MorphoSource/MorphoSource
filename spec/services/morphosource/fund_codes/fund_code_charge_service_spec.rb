@@ -109,26 +109,21 @@ RSpec.describe Morphosource::FundCodes::FundCodeChargeService do
       end
     end
 
-    context 'when all_files_file_size_lts is nil (triggers DB + filesystem fallback)' do
+    context 'when all_files_file_size_lts is nil (triggers FileSetSizeInfo fallback)' do
       let(:media_solr_docs) do
         [{ 'id' => media_id, 'file_set_ids_ssim' => [fileset_id], 'all_files_file_size_lts' => nil }]
       end
 
-      let(:mock_media)         { instance_double(Media, id: media_id) }
-      let(:mock_fileset)       { instance_double(FileSet, id: fileset_id) }
-      let(:mock_original_file) { double('original_file', size: 1_000_000) }
-
       before do
-        allow(Media).to receive(:find_by).with(id: media_id).and_return(mock_media)
-        allow(mock_media).to receive(:file_sets).and_return([mock_fileset])
-        allow(mock_fileset).to receive(:original_file).and_return(mock_original_file)
-        # Simulate one FileSet derivative on disk (e.g. GLB viewer file)
-        allow(Morphosource::DerivativePath).to receive(:derivatives_for_reference).with(fileset_id).and_return(['/derivatives/glb_file.glb'])
-        allow(File).to receive(:size?).with('/derivatives/glb_file.glb').and_return(200_000)
-        allow(Morphosource::DerivativePath).to receive(:derivatives_for_reference).with(media_id).and_return([])
+        # Use binary_file_size so compute_sum_file_size sets sum_file_size = 1_200_000
+        FileSetSizeInfo.create!(
+          file_set_id:      fileset_id,
+          media_id:         media_id,
+          binary_file_size: 1_200_000
+        )
       end
 
-      it 'falls back to binary + FileSet derivative sizes' do
+      it 'falls back to FileSetSizeInfo sum_file_size' do
         service.query_charge_information
         expect(service.query_bytes_consumed).to eq(1_200_000)
       end
@@ -136,25 +131,21 @@ RSpec.describe Morphosource::FundCodes::FundCodeChargeService do
   end
 
   describe '#query_media_filesize' do
-    let(:media_solr_docs)    { [] }
-    let(:mock_media)         { instance_double(Media, id: media_id) }
-    let(:mock_fileset)       { instance_double(FileSet, id: fileset_id) }
-    let(:mock_original_file) { double('original_file', size: 2_000_000) }
+    let(:media_solr_docs) { [] }
 
     before do
       service.query_media_fileset_ids
       service.instance_variable_set(:@media_sizes, { media_id => nil })
-      allow(Media).to receive(:find_by).with(id: media_id).and_return(mock_media)
-      allow(mock_media).to receive(:file_sets).and_return([mock_fileset])
-      allow(mock_fileset).to receive(:original_file).and_return(mock_original_file)
-      # Two FileSet derivatives: e.g. a GLB viewer file and a thumbnail
-      allow(Morphosource::DerivativePath).to receive(:derivatives_for_reference).with(fileset_id).and_return(['/derivatives/mesh.glb', '/derivatives/thumb.jpg'])
-      allow(File).to receive(:size?).with('/derivatives/mesh.glb').and_return(100_000)
-      allow(File).to receive(:size?).with('/derivatives/thumb.jpg').and_return(150_000)
-      allow(Morphosource::DerivativePath).to receive(:derivatives_for_reference).with(media_id).and_return([])
+      # Use binary + derivatives so compute_sum_file_size sets sum_file_size = 2_250_000
+      FileSetSizeInfo.create!(
+        file_set_id:                  fileset_id,
+        media_id:                     media_id,
+        binary_file_size:             2_000_000,
+        summed_derivatives_file_size: 250_000
+      )
     end
 
-    it 'returns binary + FileSet derivative sizes' do
+    it 'returns FileSetSizeInfo sum_file_size (binary + all derivatives)' do
       expect(service.query_media_filesize(media_id)).to eq(2_250_000)
     end
 
@@ -163,11 +154,22 @@ RSpec.describe Morphosource::FundCodes::FundCodeChargeService do
       expect(service.media_sizes[media_id]).to eq(2_250_000)
     end
 
-    context 'when the media record is not found in the database' do
-      before { allow(Media).to receive(:find_by).with(id: media_id).and_return(nil) }
+    context 'when FileSetSizeInfo has media-level derivatives tracked' do
+      before do
+        FileSetSizeInfo.find_by(file_set_id: fileset_id)
+          .update!(media_derivatives_file_size: 50_000)
+      end
 
-      it 'returns nil without raising' do
-        expect(service.query_media_filesize(media_id)).to be_nil
+      it 'includes media-level derivative sizes in the total' do
+        expect(service.query_media_filesize(media_id)).to eq(2_300_000)
+      end
+    end
+
+    context 'when no FileSetSizeInfo rows exist for the media' do
+      before { FileSetSizeInfo.where(media_id: media_id).destroy_all }
+
+      it 'returns 0' do
+        expect(service.query_media_filesize(media_id)).to eq(0)
       end
     end
   end

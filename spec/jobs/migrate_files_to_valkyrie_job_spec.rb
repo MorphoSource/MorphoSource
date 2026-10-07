@@ -76,6 +76,43 @@ RSpec.describe MigrateFilesToValkyrieJob do
     expect(File.exist?(original_path)).to be true
   end
 
+  def migrated_original_file
+    Hyrax.custom_queries.find_original_file(file_set: Hyrax.query_service.find_by(id: af_file_set.id))
+  end
+
+  context "when the AF file has been characterized" do
+    before do
+      proxy = af_file_set.characterization_proxy
+      proxy.crc32 = ['881730524']
+      proxy.bits_per_sample = ['8 8 8']
+      proxy.point_count = ['35947']
+      proxy.contents_accepted_file_count = ['518']
+      proxy.save!
+    end
+
+    it "carries its MorphoSource characterization fields over to the migrated file" do
+      migrate_file_set_metadata
+      run_enqueued_file_migration
+
+      file = migrated_original_file
+      expect(file.file_identifier.to_s).not_to start_with("fedora:")
+      expect(file.crc32.map(&:to_s)).to eq ['881730524']
+      expect(file.bits_per_sample).to eq ['8 8 8']
+      expect(file.point_count).to eq ['35947']
+      expect(file.contents_accepted_file_count).to eq ['518']
+      expect(ValkyrieCharacterizeCrc32Job).not_to have_been_enqueued
+    end
+  end
+
+  context "when the AF file has no CRC32" do
+    it "enqueues a CRC32 calculation for the migrated file" do
+      migrate_file_set_metadata
+      run_enqueued_file_migration
+
+      expect(ValkyrieCharacterizeCrc32Job).to have_been_enqueued.with(migrated_original_file.id.to_s)
+    end
+  end
+
   context "when Hyrax.config.working_path is a String (HYRAX_WORKING_PATH set, as on deployed envs)" do
     before { allow(Hyrax.config).to receive(:working_path).and_return(Rails.root.join('tmp', 'uploads').to_s) }
 

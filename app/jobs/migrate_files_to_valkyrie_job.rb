@@ -85,7 +85,10 @@ class MigrateFilesToValkyrieJob < Hyrax::ApplicationJob
             skip_derivatives: true
           )
           valkyrie_file = copy_attributes(valkyrie_file:, original_file: file)
-          Hyrax.persister.save(resource: valkyrie_file)
+          saved_file = Hyrax.persister.save(resource: valkyrie_file)
+          # skip_derivatives skips characterization, and CRC32 is required for download;
+          # calculate it if the AF file never had one
+          ValkyrieCharacterizeCrc32Job.perform_later(saved_file.id.to_s) if saved_file.crc32.blank?
         end
       rescue StandardError => e
         # Log errors specific to file migration
@@ -112,9 +115,23 @@ class MigrateFilesToValkyrieJob < Hyrax::ApplicationJob
     attribute_mapping.each do |k, v|
       valkyrie_file.set_value(k, original_file.send(v))
     end
+    # Also copy every other characterization field the AF file has, including MorphoSource's
+    # schemas (crc32, mesh, zip contents, DICOM, ...), which attribute_mapping doesn't list
+    (characterization_attributes - attribute_mapping.keys).each do |name|
+      value = original_file.public_send(name) if original_file.respond_to?(name)
+      valkyrie_file.set_value(name, value) if value.present?
+    end
     # Special case as this property isn't in the characterization proxy
     valkyrie_file.set_value('alternate_ids', original_file.alternate_ids)
     valkyrie_file
+  end
+
+  # Hyrax::FileMetadata attributes describing the file's content; excludes those that identify
+  # or locate the new Valkyrie file, which Hyrax::ValkyrieUpload sets
+  def characterization_attributes
+    @characterization_attributes ||= Hyrax::FileMetadata.schema.keys.map { |key| key.name.to_s } -
+                                     %w[id internal_resource created_at updated_at new_record alternate_ids
+                                        file_identifier file_set_id pcdm_use original_filename mime_type]
   end
 
   ##

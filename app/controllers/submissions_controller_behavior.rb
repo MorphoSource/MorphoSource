@@ -145,6 +145,10 @@ module SubmissionsControllerBehavior
     end
   end
 
+  def object_organization_mode_allowed?(organization)
+    organization.try(:reviews_object_media_downloads).present?
+  end
+
   def transfer_media_immediately?
     transfer = params.dig(:media, :transfer_management)
     visibility = params.dig(:batch_submission, :media, :visibility) || params.dig(:media, :visibility)

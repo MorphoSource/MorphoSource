@@ -4,10 +4,11 @@
 # Responsible for conditionally enqueuing the file and thumbnail migration
 # logic of an ActiveFedora object.
 class MigrateFilesToValkyrieJob < Hyrax::ApplicationJob
-  # Define a logger for this job
+  # Define a logger for this job. ActiveJob calls this when enqueuing, and working_path is a
+  # String (not a Pathname) when HYRAX_WORKING_PATH is set, so build the path with File.join.
   def logger
     FileUtils.mkdir_p(Hyrax.config.working_path)
-    @logger ||= Logger.new(Hyrax.config.working_path.join('migrate_files_to_valkyrie_job.log'))
+    @logger ||= Logger.new(File.join(Hyrax.config.working_path, 'migrate_files_to_valkyrie_job.log'))
   end
   ##
   #

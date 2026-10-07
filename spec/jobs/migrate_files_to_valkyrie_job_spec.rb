@@ -76,6 +76,19 @@ RSpec.describe MigrateFilesToValkyrieJob do
     expect(File.exist?(original_path)).to be true
   end
 
+  context "when Hyrax.config.working_path is a String (HYRAX_WORKING_PATH set, as on deployed envs)" do
+    before { allow(Hyrax.config).to receive(:working_path).and_return(Rails.root.join('tmp', 'uploads').to_s) }
+
+    it "can still be enqueued, so the file is migrated off Fedora" do
+      migrate_file_set_metadata
+      run_enqueued_file_migration
+
+      resource = Hyrax.query_service.find_by(id: af_file_set.id)
+      file_identifier = Hyrax.custom_queries.find_original_file(file_set: resource).file_identifier.to_s
+      expect(file_identifier).not_to start_with("fedora:")
+    end
+  end
+
   context "when a file fails to migrate" do
     before { allow(Hyrax::ValkyrieUpload).to receive(:file).and_raise(StandardError, "upload boom") }
 

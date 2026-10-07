@@ -22,10 +22,9 @@ module Morphosource
         lucky_day?(modal_form)
       end
 
-      # returns true if the sitewide modal should be shown
+      # returns true if the download modal should be shown
       def download_modal?
-        # uncomment the line below to enable download modal snooze functionality
-        # return false if cookies[:hide_download_modal]
+        return false if cookies[:hide_download_modal]
 
         modal_form = Morphosource::Forms::Admin::Modals::DownloadModal.new
         # returns true if a random float is less than the frequency setting
@@ -54,7 +53,7 @@ module Morphosource
       # uses a random number generator to determine if the modal should be shown
       # the frequency is a float between 0 and 1, where 1 means always show the modal
       def lucky_day?(modal_form)
-        rand < modal_form.sitewide_modal_frequency.to_f
+        rand < modal_form.modal_frequency.to_f
       end
 
   end

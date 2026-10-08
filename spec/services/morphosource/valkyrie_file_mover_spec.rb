@@ -33,5 +33,14 @@ RSpec.describe Morphosource::ValkyrieFileMover do
 
       expect(File.read(dest)).to eq 'hello world'
     end
+
+    it 'falls back to a real copy when linking is not permitted (EPERM, source owned by another user)' do
+      allow(File).to receive(:link).with(source, dest).and_raise(Errno::EPERM)
+
+      described_class.call(source, dest)
+
+      expect(File.read(dest)).to eq 'hello world'
+      expect(File.stat(dest).ino).not_to eq File.stat(source).ino
+    end
   end
 end

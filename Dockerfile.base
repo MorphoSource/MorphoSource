@@ -25,6 +25,19 @@ RUN apt update && \
   zip && \
   rm -rf /var/lib/apt/lists/*
 
+# Debian's ImageMagick ships a policy capping images at 16KP per side with a 128MP pixel cache
+# These limits can only be raised in policy.xml -- ImageMagick applies the policy after MAGICK_*_LIMIT env vars and the -limit flag, so both are ignored.
+RUN sed -ri \
+  -e 's|(name="width" value=)"16KP"|\1"128KP"|' \
+  -e 's|(name="height" value=)"16KP"|\1"128KP"|' \
+  -e 's|(name="area" value=)"128MP"|\1"2GP"|' \
+  -e 's|(name="memory" value=)"256MiB"|\1"1GiB"|' \
+  -e 's|(name="map" value=)"512MiB"|\1"2GiB"|' \
+  -e 's|(name="disk" value=)"1GiB"|\1"16GiB"|' \
+  /etc/ImageMagick-6/policy.xml && \
+  identify -list resource | grep -q "Width: 128KP" || \
+  (echo "ERROR: ImageMagick resource policy patch did not apply" && exit 1)
+
 # Update node/npm
 RUN curl -sL https://deb.nodesource.com/setup_18.x | bash - && \
   apt install -yq nodejs build-essential && \

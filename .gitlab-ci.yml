@@ -51,14 +51,6 @@ build_worker:
     - docker push "$WORKER_IMAGE"
     - docker push gitlab-registry.oit.duke.edu/morphosource/morphosource:worker-$CI_COMMIT_BRANCH
 
-# One-off job to build/push morphosource-worker-base:0.0.5 from a native amd64 runner (local buildx hit QEMU crashes) -- remove after a successful run.
-build_worker_base:
-  extends: .build
-  when: manual
-  script:
-    - docker build -f Dockerfile.base --target morphosource-worker-base --tag gitlab-registry.oit.duke.edu/morphosource/morphosource/morphosource-worker-base:0.0.5 .
-    - docker push gitlab-registry.oit.duke.edu/morphosource/morphosource/morphosource-worker-base:0.0.5
-
 test:
   stage: test
   variables:

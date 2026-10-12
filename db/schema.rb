@@ -228,6 +228,23 @@ ActiveRecord::Schema.define(version: 2026_08_07_235020) do
     t.index ["user_id"], name: "index_file_download_stats_on_user_id"
   end
 
+  create_table "file_set_size_infos", force: :cascade do |t|
+    t.string "file_set_id", null: false
+    t.string "media_id"
+    t.bigint "data_allocation_id"
+    t.bigint "sum_file_size", default: 0, null: false
+    t.string "binary_file_name"
+    t.bigint "binary_file_size", default: 0, null: false
+    t.bigint "summed_derivatives_file_size", default: 0, null: false
+    t.json "derivatives"
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+    t.bigint "media_derivatives_file_size", default: 0, null: false
+    t.index ["data_allocation_id"], name: "index_file_set_size_infos_on_data_allocation_id"
+    t.index ["file_set_id"], name: "index_file_set_size_infos_on_file_set_id", unique: true
+    t.index ["media_id"], name: "index_file_set_size_infos_on_media_id"
+  end
+
   create_table "file_view_stats", force: :cascade do |t|
     t.datetime "date"
     t.integer "views"
@@ -907,6 +924,7 @@ ActiveRecord::Schema.define(version: 2026_08_07_235020) do
   add_foreign_key "data_allocation_users", "data_allocations"
   add_foreign_key "data_allocation_users", "users"
   add_foreign_key "data_allocations", "fund_codes"
+  add_foreign_key "file_set_size_infos", "data_allocations"
   add_foreign_key "fund_code_media_associations", "fund_codes"
   add_foreign_key "fund_code_memberships", "fund_codes"
   add_foreign_key "fund_code_memberships", "users"

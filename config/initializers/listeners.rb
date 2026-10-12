@@ -33,6 +33,7 @@ Rails.application.config.to_prepare do
   morphosource_listeners = [
     Morphosource::Listeners::DeleteReservedArkListener,
     Morphosource::Listeners::DestroyProxyDepositRequestsListener,
+    Morphosource::Listeners::FileSetSizeInfoListener,
     Morphosource::Listeners::IndexRelatedWorksListener,
     Morphosource::Listeners::MintArkListener,
     Morphosource::Listeners::ReviewerUpdateListener,

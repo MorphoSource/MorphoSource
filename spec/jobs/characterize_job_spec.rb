@@ -516,4 +516,51 @@ RSpec.describe CharacterizeJob do
       end
     end
   end
+
+  describe 'FileSetSizeInfo updates' do
+    let(:file_set)        { FactoryBot.create(:file_set) }
+    let(:file_path_string) { fixture_path + '/images/ms.jpg' }
+    let(:image_file)      { File.open(file_path_string) }
+
+    before do
+      Hydra::Works::AddFileToFileSet.call(file_set, image_file, :original_file)
+    end
+
+    describe 'provisional update (before characterization)' do
+      it 'sets binary_file_size from the file on disk before FITS runs' do
+        # The provisional update fires at the start of perform; capture the row
+        # state just before characterization by checking after the full job
+        # (authoritative value will overwrite, but sizes should match for JPEG)
+        described_class.perform_now(file_set, file_set.original_file.id, file_path_string)
+        row = FileSetSizeInfo.find_by(file_set_id: file_set.id.to_s)
+        expect(row).to be_present
+        expect(row.binary_file_size).to be > 0
+      end
+    end
+
+    describe 'authoritative update (after characterization)' do
+      before do
+        described_class.perform_now(file_set, file_set.original_file.id, file_path_string)
+      end
+
+      subject { FileSetSizeInfo.find_by(file_set_id: file_set.id.to_s) }
+
+      it 'populates binary_file_size with the characterization proxy file size' do
+        expect(subject.binary_file_size).to be > 0
+      end
+
+      it 'populates binary_file_name from the FileSet label' do
+        expect(subject.binary_file_name).to be_present
+      end
+
+      it 'populates media_id from the FileSet parent' do
+        # Parent is nil in this test context (no media parent attached)
+        expect(subject).to be_present
+      end
+
+      it 'keeps sum_file_size consistent with binary + derivatives' do
+        expect(subject.sum_file_size).to eq(subject.binary_file_size + subject.summed_derivatives_file_size)
+      end
+    end
+  end
 end

@@ -5,7 +5,7 @@ RSpec.describe Morphosource::PhysicalObjectIndexer do
   let(:specimen)          { BiologicalSpecimen.create(title: ['Specimen'], vouchered: ['Yes'], organization_id: [organization.id], ark: ["ark:/12345/m4/678910"]) }
   let(:media)             { Media.create(title: ['title'], media_type: ['Image'], keyword: ['red', 'blue', 'yellow'], visibility: 'open') }
   let(:device)            { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
-  let(:imaging_event)     { ImagingEvent.create(title: ['title'], device_id: [device.id.to_s], physical_object_id: [specimen.id], ie_modality: device.modality) }
+  let(:imaging_event)     { FactoryBot.valkyrie_create(:imaging_event_resource, title: ['title'], device: device, ie_modality: device.modality, physical_object_id: [specimen.id], with_index: false) }
   let(:project)           { Collection.create(title: ['Project'], collection_type_gid: project_collection_type.to_global_id, depositor: 'msid', visibility: 'open') }
   let(:team)              { Collection.create(title: ['Team'], collection_type_gid: team_collection_type.to_global_id, depositor: 'msid', visibility: 'open') }
   let!(:works)            { [imaging_event, media] }
@@ -13,10 +13,12 @@ RSpec.describe Morphosource::PhysicalObjectIndexer do
   subject(:solr_document) { described_class.new(specimen).generate_solr_document }
 
   before do
-    imaging_event.ordered_members << media
+    # ImagingEventResource#member_ids stores Valkyrie::ID values, even when the child is still an AF work.
+    imaging_event.member_ids += [Valkyrie::ID.new(media.id)]
+    Hyrax.persister.save(resource: imaging_event)
     media.member_of_collections = [project,team]
-    works.each(&:save)
-    works.each(&:reload)
+    media.save
+    media.reload.update_index
   end
 
   describe 'custom fields' do

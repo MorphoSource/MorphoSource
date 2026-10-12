@@ -1,7 +1,8 @@
 var showFieldsByModality = function() {
   // hide modality specific fields, then show only specific fields based on the modality
   $('.ie_xray_ct, .ie_photogrammetry, .ie_photography, .ie_sequential_section_scan').addClass('hide').removeClass('show');
-  var selectedModality = $('select[name="imaging_event[ie_modality]"]').val();
+  var selectedModality = $('select[name="imaging_event_resource[ie_modality]"]').val() ||
+                         $('select[name="imaging_event[ie_modality]"]').val();
   //console.log('ICE: ' + selectedModality);
   switch(selectedModality) {
   case 'MicroNanoXRayComputedTomography':

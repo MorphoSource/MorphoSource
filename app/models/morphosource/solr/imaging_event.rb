@@ -44,8 +44,9 @@ module Morphosource
                                     description_attachment_url
                                     reference_attachment_url].freeze
 
+      # TODO: Remove 'ImagingEvent' from check when all ImagingEvents have been migrated to ImagingEventResource
       def imaging_event?
-        self['has_model_ssim'] == ['ImagingEvent']
+        (self['has_model_ssim'] & ['ImagingEvent', 'ImagingEventResource']).present?
       end
     end
   end

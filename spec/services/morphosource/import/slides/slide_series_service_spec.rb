@@ -287,13 +287,12 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
       allow_any_instance_of(described_class).to receive(:collection).and_return(collection)
       allow(slide).to receive(:validate_technical_metadata).and_return(true)
     end
-    it 'creates an imaging event' do
+    it 'creates an ImagingEventResource with the correct attributes' do
       event = subject.create_new_imaging_event
-      title = ["IE#{event.id}: #{device_name} SequentialSectionScan Imaging Event (2023-03-20)"]
+      expect(event).to be_a(ImagingEventResource)
       expect(event.depositor).to eq(manager.ms_id)
-      expect(event.edit_users).to match_array([manager.ms_id])
       expect(manager.can? :edit, event).to be(true)
-      expect(event.title).to eq(title)
+      expect(event.title.first).to match(/\AIE.+: #{device_name} SequentialSectionScan Imaging Event \(2023-03-20\)\z/)
     end
   end
 

@@ -25,6 +25,7 @@ PRIVATE_MEDIA_DOC_ATTRIBUTES = {
   hasRelatedMediaFragment_ssim: ["678912345"],
   identifier_tesim: ["Identifier"],
   imaging_event_id_tesim: ["234567891"],
+  imaging_event_id_ssim: ["234567891"],
   is_remote_backed_bsi: false,
   map_type_tesim: ["Color"],
   member_ids_ssim: ["678912345"],

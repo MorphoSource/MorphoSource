@@ -120,9 +120,8 @@ module Morphosource
         # create slide works
 
         def create_new_imaging_event
-          imaging_event = ImagingEvent.new
           attributes = { aperture_value: @slide.aperture_value,
-                         creator: @slide.creator,
+                         creator: @slide.creator.presence || [manager.user_key],
                          date_created: @slide.date_created,
                          depositor: manager.user_key,
                          device_id: [device.id.to_s],
@@ -135,8 +134,11 @@ module Morphosource
                          description: @slide.imaging_description,
                          title: ['new imaging event'] }
 
-          Hyrax::CurationConcern.actor.create(Hyrax::Actors::Environment.new(imaging_event, ::Ability.new(manager), attributes))
-          imaging_event
+          Morphosource::Action::CreateWorkService.new(
+            model: ImagingEventResource,
+            params: { imaging_event_resource: attributes },
+            user: manager
+          ).call.value!
         end
 
         # These are created using a combination of GBIF occurrence metadata, GBIF occurrence individual media metadata, IIIF metadata (including exif), and values from the provider profile.

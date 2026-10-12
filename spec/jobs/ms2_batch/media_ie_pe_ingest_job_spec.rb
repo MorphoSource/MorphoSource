@@ -95,4 +95,35 @@ RSpec.describe BatchSubmissionJobs::Ms2Batch::MediaIePeIngestJob do
       job.send(:transfer_media_to_organization, media, false)
     end
   end
+
+  describe '#imaging_event_exists?' do
+    it 'returns false when id is blank' do
+      expect(job.send(:imaging_event_exists?, nil)).to be false
+    end
+
+    it 'returns true when a Valkyrie ImagingEventResource exists' do
+      allow(ImagingEventResource).to receive(:exists?).with('resource-id').and_return(true)
+
+      expect(ImagingEvent).not_to receive(:exists?)
+      expect(job.send(:imaging_event_exists?, 'resource-id')).to be true
+    end
+
+    it 'uses ImagingEventResource lookup for legacy ImagingEvent ids' do
+      allow(ImagingEventResource).to receive(:exists?).with('legacy-id').and_return(true)
+
+      expect(job.send(:imaging_event_exists?, 'legacy-id')).to be true
+    end
+
+    it 'returns false when neither model exists' do
+      allow(ImagingEventResource).to receive(:exists?).with('missing-id').and_return(false)
+
+      expect(job.send(:imaging_event_exists?, 'missing-id')).to be false
+    end
+
+    it 'caches lookup results by id' do
+      allow(ImagingEventResource).to receive(:exists?).with('cached-id').once.and_return(true)
+
+      2.times { expect(job.send(:imaging_event_exists?, 'cached-id')).to be true }
+    end
+  end
 end

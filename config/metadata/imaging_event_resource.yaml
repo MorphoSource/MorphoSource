@@ -1,0 +1,536 @@
+# Simple yaml config-driven schema which is used to define model attributes,
+# index key names, and form properties.
+#
+# Attributes must have a type but all other configuration options are optional.
+# Please note: If using Valkyrie's Fedora Metadata Adapter, predicates for attributes
+# must be placed here.
+#
+# attributes:
+#   attribute_name:
+#     type: string
+#     multiple: false
+#     index_keys:
+#       - "attribute_name_sim"
+#     form:
+#       required: true
+#       primary: true
+#       multiple: false
+#
+# @see config/metadata/basic_metadata.yaml for an example configuration
+#
+# Generated via
+#  `rails generate hyrax:work_resource ImagingEventResource`
+
+---
+attributes:
+  acquisition_type:
+    type: string
+    multiple: true
+    index_keys:
+      - "acquisition_type_tesim"
+      - "acquisition_type_ssim"
+    form:
+      # display:
+      required: false
+      primary: true
+      # multiple:
+    predicate: http://purl.org/healthcarevocab/v1#AcquisitionType
+  amperage:
+    type: string
+    multiple: true
+    index_keys:
+      - "amperage_tesim"
+      - "amperage_ssim"
+    form:
+    #   display:
+      required: false
+      primary: true
+      multiple: false
+    predicate: http://purl.org/healthcarevocab/v1#XRayTubeCurrent
+  aperture_value:
+    type: string
+    multiple: true
+    index_keys:
+      - "aperture_value_tesim"
+      - "aperture_value_ssim"
+    form:
+      # display: false
+      required: false
+      primary: false
+      multiple: false
+    predicate: http://www.w3.org/2003/12/exif/ns#apertureValue
+  background_removal:
+    type: string
+    multiple: true
+    index_keys:
+      - "background_removal_tesim"
+      - "background_removal_ssim"
+    form:
+      # display:
+      required: false
+      primary: true
+      multiple: false
+    predicate: https://www.morphosource.org/terms/photogrammetryBackgroundRemoval
+  description_attachment_url:
+    type: string
+    multiple: true
+    index_keys:
+      - "description_attachment_url_tesim"
+    form:
+      # display:
+      required: false
+      primary: false
+      multiple: true
+    predicate: https://www.morphosource.org/terms/descriptionAttachmentUrl
+  detector_configuration:
+    type: string
+    multiple: true
+    index_keys:
+      - "detector_configuration_tesim"
+      - "detector_configuration_ssim"
+    form:
+      # display:
+      required: false
+      primary: true
+      multiple: false
+    predicate: https://www.morphosource.org/terms/detectorConfiguration
+  detector_pixel_size_x:
+    type: string
+    multiple: true
+    index_keys:
+      - "detector_pixel_size_x_tesim"
+      - "detector_pixel_size_x_ssim"
+    form:
+      # display:
+      required: false
+      primary: true
+      multiple: false
+    predicate: https://www.morphosource.org/terms/detectorPixelSizeX
+  detector_pixel_size_y:
+    type: string
+    multiple: true
+    index_keys:
+      - "detector_pixel_size_y_tesim"
+      - "detector_pixel_size_y_ssim"
+    form:
+      display:
+      required:
+      primary: true
+      multiple: false
+    predicate: https://www.morphosource.org/terms/detectorPixelSizeY
+  detector_pixels_x:
+    type: string
+    multiple: true
+    index_keys:
+      - "detector_pixels_x_tesim"
+      - "detector_pixels_x_ssim"
+    form:
+      display:
+      required: false
+      primary: true
+      multiple: false
+    predicate: https://www.morphosource.org/terms/detectorPixelsX
+  detector_pixels_y:
+    type: string
+    multiple: true
+    index_keys:
+      - "detector_pixels_y_tesim"
+      - "detector_pixels_y_ssim"
+    form:
+      display:
+      required: false
+      primary: true
+      multiple: false
+    predicate: https://www.morphosource.org/terms/detectorPixelsY
+  detector_type:
+    type: string
+    multiple: true
+    index_keys:
+      - "detector_type_tesim"
+      - "detector_type_ssim"
+    form:
+      # display:
+      required: false
+      primary: true
+      multiple: false
+    predicate: http://purl.org/healthcarevocab/v1#DetectorDescription
+  device_id:
+    type: string
+    multiple: true
+    index_keys:
+      - "device_id_tesim"
+    form:
+      display: false
+      required: true
+      primary: true
+      multiple: false
+    predicate: https://www.morphosource.org/terms/deviceID
+  exposure_time:
+    type: string
+    multiple: true
+    index_keys:
+      - "exposure_time_tesim"
+      - "exposure_time_ssim"
+    form:
+      display: false
+      required: false
+      primary: true
+      multiple: false
+    predicate: http://purl.org/healthcarevocab/v1#ExposureTime
+  flux_normalization:
+    type: string
+    multiple: true
+    index_keys:
+      - "flux_normalization_tesim"
+      - "flux_normalization_ssim"
+    form:
+      display: false
+      required: false
+      primary: true
+      multiple: false
+    predicate: https://www.morphosource.org/terms/fluxNormalization
+  focal_length:
+    type: string
+    multiple: true
+    index_keys:
+      - "focal_length_tesim"
+      - "focal_length_ssim"
+    form:
+      display: false
+      required: false
+      primary: false
+      multiple: false
+    predicate: https://www.morphosource.org/terms/focalLength
+  focal_length_type:
+    type: string
+    multiple: true
+    index_keys:
+      - "focal_length_type_tesim"
+      - "focal_length_type_ssim"
+    form:
+      display: false
+      required: false
+      primary: true
+      multiple: false
+    predicate: https://www.morphosource.org/terms/focalLengthType
+  frame_averaging:
+    type: string
+    multiple: true
+    index_keys:
+      - "frame_averaging_tesim"
+      - "frame_averaging_ssim"
+    form:
+      display: false
+      required: false
+      primary: true
+      multiple: false
+    predicate: http://purl.org/healthcarevocab/v1#ContrastFrameAveraging
+  ie_filter:
+    type: string
+    multiple: true
+    index_keys:
+      - "ie_filter_tesim"
+    form:
+      display:
+      required: false
+      primary: true
+      multiple: true
+    predicate: https://www.morphosource.org/terms/filter
+  ie_modality:
+    type: string
+    multiple: true
+    index_keys:
+      - "ie_modality_tesim"
+      - "ie_modality_ssim"
+    form:
+      display:
+      required: true
+      primary: true
+      multiple: false
+    predicate: http://rs.tdwg.org/ac/terms/captureDevice
+  iso_speed_ratings:
+    type: string
+    multiple: true
+    index_keys:
+      - "iso_speed_ratings_tesim"
+      - "iso_speed_ratings_ssim"
+    form:
+      display:
+      required: false
+      primary: false
+      multiple: false
+    predicate: http://www.w3.org/2003/12/exif/ns#isoSpeedRatings
+  lens_make:
+    type: string
+    multiple: true
+    index_keys:
+      - "lens_make_tesim"
+      - "lens_make_ssim"
+    form:
+      display:
+      required: false
+      primary: true
+      multiple: false
+    predicate: https://www.morphosource.org/terms/exifLensMake
+  lens_model:
+    type: string
+    multiple: true
+    index_keys:
+      - "lens_model_tesim"
+      - "lens_model_ssim"
+    form:
+      display:
+      required: false
+      primary: true
+      multiple: false
+    predicate: https://www.morphosource.org/terms/exifLensModel
+  light_source:
+    type: string
+    multiple: true
+    index_keys:
+      - "light_source_tesim"
+      - "light_source_ssim"
+    form:
+      display:
+      required: false
+      primary: true
+      multiple: false
+    predicate: http://www.w3.org/2003/12/exif/ns#lightSource
+  optical_magnification:
+    type: string
+    multiple: true
+    index_keys:
+      - "optical_magnification_tesim"
+      - "optical_magnification_ssim"
+    form:
+      display:
+      required:
+      primary: true
+      multiple: false
+    predicate: https://www.morphosource.org/terms/opticalMagnification
+  phase_contrast:
+    type: string
+    multiple: true
+    index_keys:
+      - "phase_contrast_tesim"
+      - "phase_contrast_ssim"
+    form:
+      display:
+      required: false
+      primary: true
+      multiple: false
+    predicate: https://www.morphosource.org/terms/phaseContrast
+  physical_object_id:
+    type: string
+    multiple: true
+    index_keys:
+      - "physical_object_id_tesim"
+    form:
+      display: false
+      required: false
+      primary: true
+      multiple: false
+    predicate: https://www.morphosource.org/terms/objectID
+  pixel_spacing_calibration:
+    type: string
+    multiple: true
+    index_keys:
+      - "pixel_spacing_calibration_tesim"
+      - "pixel_spacing_calibration_ssim"
+    form:
+      display:
+      required: false
+      primary: true
+      multiple: false
+    predicate: http://purl.org/healthcarevocab/v1#PixelSpacingCalibrationType
+  power:
+    type: string
+    multiple: true
+    index_keys:
+      - "power_tesim"
+      - "power_ssim"
+    form:
+      display:
+      required: false
+      primary: true
+      multiple: false
+    predicate: http://purl.org/healthcarevocab/v1#GeneratorPower
+  projections:
+    type: string
+    multiple: true
+    index_keys:
+      - "projections_tesim"
+      - "projections_ssim"
+    form:
+      display:
+      required: false
+      primary: true
+      multiple: false
+    predicate: http://purl.org/healthcarevocab/v1#ImagesInAcquisition
+  reference_attachment_url:
+    type: string
+    multiple: true
+    index_keys:
+      - "reference_attachment_url_tesim"
+    form:
+      display:
+      required: false
+      primary: false
+      multiple: true
+    predicate: https://www.morphosource.org/terms/referenceAttachmentUrl
+  rotation_number:
+    type: string
+    multiple: true
+    index_keys:
+      - "rotation_number_tesim"
+      - "rotation_number_ssim"
+    form:
+      display:
+      required: false
+      primary: true
+      multiple: false
+    predicate: http://purl.org/healthcarevocab/v1#SpiralPitchFactor
+  shading_correction:
+    type: string
+    multiple: true
+    index_keys:
+      - "shading_correction_tesim"
+      - "shading_correction_ssim"
+    form:
+      display:
+      required: false
+      primary: true
+      multiple: false
+    predicate: https://www.morphosource.org/terms/shadingCorrection
+  shutter_speed:
+    type: string
+    multiple: true
+    index_keys:
+      - "shutter_speed_tesim"
+      - "shutter_speed_sim"
+    form:
+      display:
+      required: false
+      primary: false
+      multiple:
+    predicate: http://www.w3.org/2003/12/exif/ns#shutterSpeedValue
+  slide_type:
+    type: string
+    multiple: true
+    index_keys:
+      - "slide_type_tesim"
+      - "slide_type_ssim"
+    form:
+      display:
+      required: false
+      primary: true
+      multiple: false
+    predicate: https://www.morphosource.org/terms/slideType
+  software:
+    type: string
+    multiple: true
+    index_keys:
+      - "software_tesim"
+      - "software_ssim"
+    form:
+      display:
+      required: false
+      primary: true
+      multiple: false
+    predicate: https://www.morphosource.org/terms/software
+  source_detector_distance:
+    type: string
+    multiple: true
+    index_keys:
+      - "source_detector_distance_tesim"
+      - "source_detector_distance_ssim"
+    form:
+      display:
+      required: false
+      primary: true
+      multiple: false
+    predicate: http://purl.org/healthcarevocab/v1#DistanceSourceToDetector
+  source_object_distance:
+    type: string
+    multiple: true
+    index_keys:
+      - "source_object_distance_tesim"
+      - "source_object_distance_ssim"
+    form:
+      display:
+      required: false
+      primary: true
+      multiple: false
+    predicate: http://purl.org/healthcarevocab/v1#DistanceSourceToPatient
+  surrounding_material:
+    type: string
+    multiple: true
+    index_keys:
+      - "surrounding_material_tesim"
+      - "surrounding_material_ssim"
+    form:
+      display:
+      required: false
+      primary: true
+      multiple: false
+    predicate: http://purl.org/healthcarevocab/v1#ContainerDescription
+  target_material:
+    type: string
+    multiple: true
+    index_keys:
+      - "target_material_tesim"
+      - "target_material_ssim"
+    form:
+      display:
+      required: false
+      primary: true
+      multiple: false
+    predicate: http://purl.org/healthcarevocab/v1#AnodeTargetMaterial
+  target_type:
+    type: string
+    multiple: true
+    index_keys:
+      - "target_type_tesim"
+      - "target_type_ssim"
+    form:
+      display:
+      required: false
+      primary: true
+      multiple: false
+    predicate: https://www.morphosource.org/terms/targetType
+  title:
+    type: string
+    multiple: true
+    index_keys:
+      - "title_sim"
+      - "title_tesim"
+    form:
+      display: false
+      required: false
+      primary: false
+      multiple: true
+    predicate: http://purl.org/dc/terms/title
+  voltage:
+    type: string
+    multiple: true
+    index_keys:
+      - "voltage_tesim"
+      - "voltage_ssim"
+    form:
+      display:
+      required: false
+      primary: true
+      multiple: false
+    predicate: http://purl.org/healthcarevocab/v1#KVP
+  xray_tube_type:
+    type: string
+    multiple: true
+    index_keys:
+      - "xray_tube_type_tesim"
+      - "xray_tube_type_ssim"
+    form:
+      display:
+      required: false
+      primary: true
+      multiple: false
+    predicate: http://purl.org/healthcarevocab/v1#GeneratorID

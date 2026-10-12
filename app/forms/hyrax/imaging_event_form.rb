@@ -1,5 +1,6 @@
 # Generated via
 #  `rails generate hyrax:work ImagingEvent`
+# @deprecated Use ImagingEventResourceForm instead.
 module Hyrax
   # Generated form for ImagingEvent
   class ImagingEventForm < Hyrax::Forms::WorkForm

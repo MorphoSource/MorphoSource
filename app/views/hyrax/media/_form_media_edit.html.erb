@@ -23,8 +23,11 @@
 
 <% if @presenter.imaging_event.present? %>
   <% if @presenter.imaging_event_editable? %>
+      <% ie_update_url = @imaging_event_form.model.is_a?(ImagingEventResource) ?
+           Rails.application.routes.url_helpers.media_owner_update_imaging_event_resource_path(id: @imaging_event_form.model.id.to_s) :
+           Rails.application.routes.url_helpers.media_owner_update_imaging_event_path(id: @imaging_event_form.model.id) %>
       <%= simple_form_for [main_app, @imaging_event_form],
-                          url: Rails.application.routes.url_helpers.media_owner_update_imaging_event_path(id: @imaging_event_form.model.id),
+                          url: ie_update_url,
                           wrapper: :showcase_default,
                           html: {
                             id: 'related_form_imaging_event',

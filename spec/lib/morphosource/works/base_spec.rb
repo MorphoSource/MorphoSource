@@ -20,6 +20,45 @@ RSpec.describe Morphosource::Works::Base do
   let(:works2)           { [media1, specimen1, imagingEvent, processingEvent] }
   let(:expected_date)  { ["2019-07-11"] }
 
+  describe '#ancestors' do
+    before { allow(Hyrax.publisher).to receive(:publish) }
+
+    context 'with a Valkyrie ImagingEventResource as direct parent of Media' do
+      let(:child_id) { SecureRandom.uuid }
+      let(:ie_resource) { FactoryBot.valkyrie_create(:imaging_event_resource, title: ['ie'], member_ids: [Valkyrie::ID.new(child_id)], with_index: false) }
+
+      before { ie_resource }
+
+      it 'finds the Valkyrie parent via Postgres member_ids inverse reference' do
+        media = Media.new(title: ['media'])
+        allow(media).to receive(:id).and_return(child_id)
+        allow(media).to receive(:member_of).and_return([])
+
+        expect(media.ancestors).to include(ie_resource)
+      end
+    end
+
+    context 'with a multi-level chain: ProcessingEvent (AF) -> Media (AF) -> ImagingEventResource (Valkyrie)' do
+      let(:media_id) { SecureRandom.uuid }
+      let(:ie_resource) { FactoryBot.valkyrie_create(:imaging_event_resource, title: ['ie'], member_ids: [Valkyrie::ID.new(media_id)], with_index: false) }
+
+      before { ie_resource }
+
+      it 'finds the Valkyrie ancestor through the full chain' do
+        media = Media.new(title: ['media'])
+        allow(media).to receive(:id).and_return(media_id)
+        allow(media).to receive(:member_of).and_return([])
+
+        pe = ProcessingEvent.new(title: ['pe'])
+        allow(pe).to receive(:id).and_return(SecureRandom.uuid)
+        allow(pe).to receive(:member_of).and_return([media])
+
+        expect(pe.ancestors).to include(media)
+        expect(pe.ancestors).to include(ie_resource)
+      end
+    end
+  end
+
   describe '#descendants' do
     let(:media1_desc)    { [file_set1, processingEvent, media2, file_set2] }
     let(:media3_desc)    { [file_set3] }

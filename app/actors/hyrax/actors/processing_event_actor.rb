@@ -21,12 +21,15 @@ module Hyrax
         work_parents = ''
         if attrs['work_parents_attributes'].present?
           attrs['work_parents_attributes'].each do |key, wp|
-            work_parent = Morphosource::Works::Base.find(wp['id'])
-            work_parent_string = case work_parent.class.to_s
-              when 'Media'
-                "M#{wp['id']}"
-              when 'ImagingEvent'
-                "IE#{wp['id']}"
+            work_parent = begin
+              Hyrax.query_service.find_by(id: Valkyrie::ID.new(wp['id']))
+            rescue Valkyrie::Persistence::ObjectNotFoundError
+              Morphosource::Works::Base.find(wp['id'])
+            end
+            work_parent_string = if work_parent.imaging_event?
+              "IE#{wp['id']}"
+            elsif work_parent.media?
+              "M#{wp['id']}"
             end
             work_parents += "#{work_parent_string} "
           end

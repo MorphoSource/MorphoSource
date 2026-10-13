@@ -96,7 +96,7 @@ module Morphosource
 
         # Media/FileSet editors may also destroy; kept separate from the
         # BiologicalSpecimen/CulturalHeritageObject/Event rule below since
-        # destroy is not granted for those types via organization membership.
+        # destroy stays admin-only for those types.
         can [:edit, :update, :destroy], ::SolrDocument do |obj|
           case obj.has_model&.first
           when 'Media'

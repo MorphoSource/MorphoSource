@@ -99,6 +99,19 @@ module TestHelpers
     user.can? :update, work_doc
   end
 
+  def can_destroy?(work, member = user)
+    user = User.find(member.id)
+    ability = Ability.new(user)
+    work_doc = SolrDocument.find(work.id)
+    return false unless ability.can? :destroy, work.id
+    return false unless ability.can? :destroy, work
+    return false unless ability.can? :destroy, work_doc
+    return false unless user.can? :destroy, work.id
+    return false unless user.can? :destroy, work
+
+    user.can? :destroy, work_doc
+  end
+
   def can_transfer?(work, member = user)
     user = User.find(member.id)
     ability = Ability.new(user)

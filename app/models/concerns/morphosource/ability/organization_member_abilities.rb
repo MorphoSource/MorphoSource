@@ -78,11 +78,11 @@ module Morphosource
 
         return unless contributor? || admin?
 
-        can [:edit, :update], ::Media do |obj|
+        can [:edit, :update, :destroy], ::Media do |obj|
           has_organizational_edit_access_to_media? obj
         end
 
-        can [:edit, :update], ::FileSet do |obj|
+        can [:edit, :update, :destroy], ::FileSet do |obj|
           has_organizational_edit_access_to_fileset? obj
         end
 
@@ -94,12 +94,22 @@ module Morphosource
           has_organizational_edit_access_to_event? obj
         end
 
-        can [:edit, :update], ::SolrDocument do |obj|
+        # Media/FileSet editors may also destroy; kept separate from the
+        # BiologicalSpecimen/CulturalHeritageObject/Event rule below since
+        # destroy is not granted for those types via organization membership.
+        can [:edit, :update, :destroy], ::SolrDocument do |obj|
           case obj.has_model&.first
           when 'Media'
             has_organizational_edit_access_to_media? obj
           when 'FileSet'
             has_organizational_edit_access_to_fileset? obj
+          else
+            false
+          end
+        end
+
+        can [:edit, :update], ::SolrDocument do |obj|
+          case obj.has_model&.first
           when 'BiologicalSpecimen', 'CulturalHeritageObject'
             has_organizational_edit_access_to_physical_object? obj
           when 'ImagingEvent', 'ProcessingEvent'
@@ -112,6 +122,13 @@ module Morphosource
         can [:edit, :update], String do |id|
           obj = SolrDocument.find(id)
           can? :edit, obj
+        rescue
+          false
+        end
+
+        can :destroy, String do |id|
+          obj = SolrDocument.find(id)
+          can? :destroy, obj
         rescue
           false
         end

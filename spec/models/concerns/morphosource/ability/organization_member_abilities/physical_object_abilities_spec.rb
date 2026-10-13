@@ -52,17 +52,19 @@ RSpec.describe 'Morphosource::Ability', type: :model do
 
             context 'the organization is not the data owner' do
               it 'returns the correct permissions for manager member' do
-                # manager can read, edit, and update
+                # manager can read, edit, and update, but not destroy (admin-only)
                 expect(can_read?(biological_specimen, org_manager)).to be(true)
                 expect(can_edit?(biological_specimen, org_manager)).to be(true)
                 expect(can_update?(biological_specimen, org_manager)).to be(true)
+                expect(can_destroy?(biological_specimen, org_manager)).to be(false)
               end
 
               it 'returns the correct permissions for editor member' do
-                # editor can read, edit, and update
+                # editor can read, edit, and update, but not destroy (admin-only)
                 expect(can_read?(biological_specimen, org_editor)).to be(true)
                 expect(can_edit?(biological_specimen, org_editor)).to be(true)
                 expect(can_update?(biological_specimen, org_editor)).to be(true)
+                expect(can_destroy?(biological_specimen, org_editor)).to be(false)
               end
 
               it 'returns the correct permissions for depositor' do
@@ -121,17 +123,19 @@ RSpec.describe 'Morphosource::Ability', type: :model do
 
             context 'the organization is not the data owner' do
               it 'returns the correct permissions for manager member' do
-                # manager can read, edit, update
+                # manager can read, edit, update, but not destroy (admin-only)
                 expect(can_read?(cho, org_manager)).to be(true)
                 expect(can_edit?(cho, org_manager)).to be(true)
                 expect(can_update?(cho, org_manager)).to be(true)
+                expect(can_destroy?(cho, org_manager)).to be(false)
               end
 
               it 'returns the correct permissions for editor member' do
-                # editor can read, edit, update
+                # editor can read, edit, update, but not destroy (admin-only)
                 expect(can_read?(cho, org_editor)).to be(true)
                 expect(can_edit?(cho, org_editor)).to be(true)
                 expect(can_update?(cho, org_editor)).to be(true)
+                expect(can_destroy?(cho, org_editor)).to be(false)
               end
 
               it 'returns the correct permissions for depositor' do

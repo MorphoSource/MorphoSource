@@ -129,10 +129,12 @@ RSpec.describe 'Morphosource::Ability', type: :model do
               expect(can_read?(imaging_event, org_manager)).to be(true)
               expect(can_edit?(imaging_event, org_manager)).to be(true)
               expect(can_update?(imaging_event, org_manager)).to be(true)
+              expect(can_destroy?(imaging_event, org_manager)).to be(false)
               # processing event
               expect(can_read?(processing_event, org_manager)).to be(true)
               expect(can_edit?(processing_event, org_manager)).to be(true)
               expect(can_update?(processing_event, org_manager)).to be(true)
+              expect(can_destroy?(processing_event, org_manager)).to be(false)
               # processing event 2
               expect(can_read?(processing_event2, org_manager)).to be(true)
               expect(can_edit?(processing_event2, org_manager)).to be(false)
@@ -146,10 +148,12 @@ RSpec.describe 'Morphosource::Ability', type: :model do
               expect(can_read?(imaging_event, org_editor)).to be(true)
               expect(can_edit?(imaging_event, org_editor)).to be(true)
               expect(can_update?(imaging_event, org_editor)).to be(true)
+              expect(can_destroy?(imaging_event, org_editor)).to be(false)
               # processing event
               expect(can_read?(processing_event, org_editor)).to be(true)
               expect(can_edit?(processing_event, org_editor)).to be(true)
               expect(can_update?(processing_event, org_editor)).to be(true)
+              expect(can_destroy?(processing_event, org_editor)).to be(false)
               # processing event 2
               expect(can_read?(processing_event2, org_editor)).to be(true)
               expect(can_edit?(processing_event2, org_editor)).to be(false)

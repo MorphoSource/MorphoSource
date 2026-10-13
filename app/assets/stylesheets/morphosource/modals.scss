@@ -30,6 +30,15 @@
       justify-content: center;
       align-items: center;
       gap: 30px;
+
+      .btn-link {
+        text-decoration: none;
+
+        &:hover, &:focus {
+          color: $link-hover-font-color;
+          text-decoration: underline;
+        }
+      }
     }
   }
 }

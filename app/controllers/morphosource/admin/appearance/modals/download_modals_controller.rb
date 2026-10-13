@@ -7,10 +7,6 @@ module Morphosource
 
           private
 
-          def snooze_cookie_key
-            :hide_download_modal
-          end
-
           def update_params
             params.require(:admin_download_modal).permit(form_params)
           end

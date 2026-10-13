@@ -42,15 +42,15 @@ module Morphosource
         end
 
         def snooze_week_path
-          send("admin_#{form_name}_snooze_week_path")
+          send("#{form_name}_snooze_week_path")
         end
 
         def snooze_day_path
-          send("admin_#{form_name}_snooze_day_path")
+          send("#{form_name}_snooze_day_path")
         end
 
         def snooze_hour_path
-          send("admin_#{form_name}_snooze_hour_path")
+          send("#{form_name}_snooze_hour_path")
         end
 
         # Used to differentiate this from from download modal form when present on the same view

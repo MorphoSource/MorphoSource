@@ -48,6 +48,10 @@ nav.navbar .container, nav.navbar .container-fluid {
 #sitewide-banner {
   background-color: $ms-orange;
   color: black;
+  padding: 4px 0;
+  .row {
+    padding: 0;
+  }
 }
 
 .banner-text {

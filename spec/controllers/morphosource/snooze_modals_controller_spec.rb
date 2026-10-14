@@ -11,6 +11,12 @@ RSpec.describe Morphosource::SnoozeModalsController, type: :controller do
             expect(response).to have_http_status(:ok)
             expect(cookies[cookie_key]).to be(true)
           end
+
+          it "sets the #{cookie_key} cookie as HttpOnly" do
+            post action, params: { modal: modal }
+
+            expect(Array(response.headers['Set-Cookie']).join("\n")).to match(/#{cookie_key}=.*; httponly/i)
+          end
         end
       end
     end

@@ -20,6 +20,7 @@ module Morphosource
         transfer_group_permissions
         transfer_proxy_rights
         transfer_cart_items
+        transfer_custom_download_reviewers
         # Last, so reviewer jobs never run against a half-merged account.
         publish_reviewer_events
       end
@@ -81,6 +82,16 @@ module Morphosource
         end
       end
 
+      # Publishes nothing itself: the save publishes when the organization is in custom mode.
+      def transfer_custom_download_reviewers
+        custom_reviewer_organizations.each do |organization|
+          organization.custom_download_reviewer_users = organization.custom_download_reviewer_users.map do |ms_id|
+            ms_id == @old_user.ms_id ? @new_user.ms_id : ms_id
+          end.uniq
+          organization.save!
+        end
+      end
+
       def publish_reviewer_events
         managed_organization_ids.each do |id|
           Hyrax.publisher.publish('organization.reviewers.updated', organization_id: id)
@@ -117,6 +128,14 @@ module Morphosource
 
       def collections
         ActiveFedora::Base.where("generic_type_sim:Collection AND depositor_ssim:#{@old_user.ms_id}")
+      end
+
+      def custom_reviewer_organizations
+        old_ms_id = Morphosource::SolrService.prepare_value(@old_user.ms_id)
+        ActiveFedora::SolrService.query('has_model_ssim:OrganizationCollection',
+                                        fq: ["custom_download_reviewer_users_ssim:#{old_ms_id}"],
+                                        fl: 'id', rows: 999999)
+                                 .map { |document| OrganizationCollection.find(document['id']) }
       end
 
       def proxy_rights

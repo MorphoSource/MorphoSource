@@ -21,6 +21,7 @@ RSpec.describe Morphosource::Users::AccountMergerService do
       expect_any_instance_of(described_class).to receive(:transfer_group_permissions)
       expect_any_instance_of(described_class).to receive(:transfer_proxy_rights)
       expect_any_instance_of(described_class).to receive(:transfer_cart_items)
+      expect_any_instance_of(described_class).to receive(:transfer_custom_download_reviewers)
       expect_any_instance_of(described_class).to receive(:publish_reviewer_events)
       subject
     end
@@ -222,6 +223,47 @@ RSpec.describe Morphosource::Users::AccountMergerService do
 
       expect(organization.managers).to contain_exactly(new_user)
       expect_reviewer_events(organization)
+    end
+  end
+
+  describe 'transfer_custom_download_reviewers' do
+    let(:other_user) { User.create(email: 'other@email.com', password: 'password') }
+
+    def create_organization(managers_are_download_reviewers:, custom_download_reviewer_users:)
+      FactoryBot.create(:organization_collection, managers_are_download_reviewers: managers_are_download_reviewers,
+                                                  custom_download_reviewer_users: custom_download_reviewer_users)
+    end
+
+    it 'replaces the old user in a custom-mode list and publishes one event' do
+      organization = create_organization(managers_are_download_reviewers: false,
+                                         custom_download_reviewer_users: [old_user.ms_id, other_user.ms_id])
+      allow(Hyrax.publisher).to receive(:publish)
+
+      subject
+
+      expect(organization.reload.custom_download_reviewer_users).to contain_exactly(new_user.ms_id, other_user.ms_id)
+      expect(Hyrax.publisher).to have_received(:publish)
+        .with('organization.reviewers.updated', organization_id: organization.id).once
+    end
+
+    it 'removes the old user without duplicating a new user already listed' do
+      organization = create_organization(managers_are_download_reviewers: false,
+                                         custom_download_reviewer_users: [old_user.ms_id, new_user.ms_id])
+
+      subject
+
+      expect(organization.reload.custom_download_reviewer_users.to_a).to eq([new_user.ms_id])
+    end
+
+    it 'rewrites a manager-mode list without publishing' do
+      organization = create_organization(managers_are_download_reviewers: true,
+                                         custom_download_reviewer_users: [old_user.ms_id])
+      allow(Hyrax.publisher).to receive(:publish)
+
+      subject
+
+      expect(organization.reload.custom_download_reviewer_users.to_a).to eq([new_user.ms_id])
+      expect(Hyrax.publisher).not_to have_received(:publish).with('organization.reviewers.updated', anything)
     end
   end
 

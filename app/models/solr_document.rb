@@ -103,6 +103,7 @@ class SolrDocument
   #   OrganizationCollection); Media indexed without download_reviewer_mode_ssi fall back to their owner
   def download_reviewers
     return self['download_reviewers_ssim'] if self['download_reviewers_ssim']
+    # Temporary owner fallback: remove once a full Media reindex leaves no document without download_reviewer_mode_ssi
     return [] if self['download_reviewer_mode_ssi'] || self['has_model_ssim'] != ['Media']
 
     owner_id = self['user_with_ownership_ssi']

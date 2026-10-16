@@ -6,9 +6,11 @@ module Morphosource
   #
   # @example
   #   resolver = Morphosource::DownloadReviewerResolver.new
+  #   resolver.reviewers_by_media_id(media_ids)
   #   media_docs.map { |doc| resolver.call(doc) }
   class DownloadReviewerResolver
     TOKEN_PREFIX = Morphosource::MediaMetadata::ORG_COLLECTION_TOKEN_PREFIX
+    MEDIA_FIELDS = %w[id has_model_ssim download_reviewers_ssim download_reviewer_mode_ssi user_with_ownership_ssi].freeze
 
     def initialize
       @organization_reviewers = {}
@@ -25,6 +27,16 @@ module Morphosource
       candidates = ms_ids + tokens.flat_map { |token| organization_reviewers(token.delete_prefix(TOKEN_PREFIX)) }
 
       existing_users(candidates.uniq).presence || [batch_user_ms_id]
+    end
+
+    # @param media_ids [Array<String>]
+    # @return [Hash{String => Array<String>}] reviewer ms_ids by Media id; Media missing from Solr are absent
+    def reviewers_by_media_id(media_ids)
+      return {} if media_ids.empty?
+
+      documents = ActiveFedora::SolrService.query('has_model_ssim:Media', fq: ["{!terms f=id}#{media_ids.join(',')}"],
+                                                  fl: MEDIA_FIELDS.join(','), rows: media_ids.size, method: :post)
+      documents.to_h { |document| [document['id'], call(::SolrDocument.new(document.to_h))] }
     end
 
     private

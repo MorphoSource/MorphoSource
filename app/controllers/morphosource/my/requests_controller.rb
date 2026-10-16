@@ -22,21 +22,23 @@ module Morphosource
 
       def request_item
         @items = undownloadable(@items)
-        re_request(inactive(@items)) unless inactive(@items).empty?
-        make_request(unrequested(@items)) unless unrequested(@items).empty?
-        send_request_messages(@items)
+        new_items = inactive(@items).empty? ? [] : re_request(inactive(@items))
+        unrequested_items = unrequested(@items)
+        make_request(unrequested_items) unless unrequested_items.empty?
+        send_request_messages(unrequested_items + new_items)
         flash[:notice] = item_count_text.concat(' Requested')
         redirect_back(fallback_location: my_requests_path)
       end
 
       def request_again
-        re_request(@items)
-        send_request_messages(@items)
+        send_request_messages(re_request(@items))
         flash[:notice] = item_count_text.concat(' Requested')
         redirect_back(fallback_location: my_requests_path)
       end
 
       def send_request_messages(items)
+        return if items.empty?
+
         begin
           requestor = current_user
           # get a list of reviewer id => item, e.g.
@@ -134,17 +136,19 @@ module Morphosource
             item = find_item_in_cart(work_id)
             if item.unrequested? || item.cleared?
               make_request(item)
+              items = [item]
             else
-              re_request(item)
+              items = re_request(item)
             end
           # if a cleared request has been removed from the cart
           elsif my_cleared_requests_work_ids.include?(work_id)
             make_request(item)
+            items = [item]
           else
-            item = create_new_requested_item(work_id)
+            items = [create_new_requested_item(work_id)]
           end
           begin
-            send_request_messages([item])
+            send_request_messages(items)
           rescue
             flash[:error] = I18n.t('morphosource.dashboard.my.requests.request_item.messages.error')
           end

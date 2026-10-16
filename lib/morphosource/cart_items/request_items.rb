@@ -23,13 +23,19 @@ module Morphosource
         return item
       end
 
+      # Re-resolves reviewers synchronously: callers notify item.reviewers immediately afterwards.
       def make_request(items)
         items = Array(items)
+        reviewers_by_work_id = resolve_reviewers(items)
         items.each do |item|
-          item.update(date_cleared: nil, date_requested: Time.now, use: @intended_use, download_request_terms_agreement: true)
+          attributes = { date_cleared: nil, date_requested: Time.now, use: @intended_use, download_request_terms_agreement: true }
+          reviewers = reviewers_by_work_id[item.work_id]
+          attributes[:reviewers] = reviewers unless reviewers.nil? || Array(item.reviewers).to_set == reviewers.to_set
+          item.update(attributes)
         end
       end
 
+      # @return [Array<CartItem>] the new requested items replacing the inactive ones
       def re_request(items)
         mark_as('in_cart',items,value: false)
         create_new_items(items)
@@ -47,6 +53,20 @@ module Morphosource
       # For restricted items, returns those w/ request_status ("Expired","Denied","Canceled")
       def inactive(items)
         items.select{|item| item.inactive_request? }
+      end
+
+      private
+
+      # @param items [Array<CartItem>]
+      # @return [Hash{String => Array<String>}] reviewer ms_ids by work id; Media missing from Solr are absent
+      def resolve_reviewers(items)
+        work_ids = items.map(&:work_id).uniq
+        return {} if work_ids.empty?
+
+        resolver = Morphosource::DownloadReviewerResolver.new
+        documents = ActiveFedora::SolrService.query('has_model_ssim:Media', fq: ["{!terms f=id}#{work_ids.join(',')}"],
+                                                    rows: work_ids.size, method: :post)
+        documents.to_h { |document| [document['id'], resolver.call(SolrDocument.new(document.to_h))] }
       end
 
     end

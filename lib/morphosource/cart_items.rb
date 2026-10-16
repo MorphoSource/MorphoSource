@@ -227,12 +227,10 @@ module Morphosource
     def create_new_items(old_items,requested='requested')
       works = get_media_by_items(old_items)
       create_instance_variables_for_flash
-      works.each_with_object([]) do |work, new_items|
+      new_items = []
+      works.each do |work|
         unless work_in_cart_or_requested?(work.id)
           item = create_cart_item(work.id)
-          if requested == 'requested'
-            make_request(item)
-          end
           new_items << item if item
           @count += 1
         else
@@ -243,6 +241,8 @@ module Morphosource
           end
         end
       end
+      make_request(new_items) if requested == 'requested'
+      new_items
     end
 
     def create_instance_variables_for_flash

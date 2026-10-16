@@ -271,6 +271,21 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
         end
       end
 
+      context 'notifications for a mix of unrequested and pending items' do
+        before do
+          cartItem5.update(in_cart: true)
+          request.env["HTTP_REFERER"] = "original_page"
+          allow(controller).to receive(:send_request_message_to_reviewer)
+          allow(controller).to receive(:send_request_message_to_requestor)
+          put :request_item, params: { batch_document_ids: [cartItem3.id, cartItem5.id], intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
+        end
+
+        it 'does not notify again about the pending item' do
+          expect(controller).to have_received(:send_request_message_to_requestor).with([cartItem3])
+          expect(controller).not_to have_received(:send_request_message_to_reviewer).with(anything, include(cartItem5))
+        end
+      end
+
       context 'one item in group has already been requested' do
         before do
           cartItem1.date_expired = Date.yesterday

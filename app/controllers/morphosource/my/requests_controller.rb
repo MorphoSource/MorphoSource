@@ -22,9 +22,9 @@ module Morphosource
 
       def request_item
         @items = undownloadable(@items)
-        new_items = inactive(@items).empty? ? [] : re_request(inactive(@items))
+        new_items = re_request(inactive(@items))
         unrequested_items = unrequested(@items)
-        make_request(unrequested_items) unless unrequested_items.empty?
+        make_request(unrequested_items)
         send_request_messages(unrequested_items + new_items)
         flash[:notice] = item_count_text.concat(' Requested')
         redirect_back(fallback_location: my_requests_path)

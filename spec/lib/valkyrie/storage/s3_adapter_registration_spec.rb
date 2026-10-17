@@ -20,11 +20,16 @@ RSpec.describe 'Valkyrie :s3 storage adapter registration' do
     expect(adapter.shrine.bucket.name).to eq(s3_config['bucket'])
   end
 
-  it 'does not change the default storage adapter or Hoard services' do
+  it 'is also Hoard\'s primary service, as the same instance (not a second connection)' do
     expect(Valkyrie.config.storage_adapter).to be_a(Valkyrie::Storage::Hoard)
 
     hoard = Valkyrie::StorageAdapter.find(:hoard)
-    expect(hoard.services.map(&:class)).to eq([Valkyrie::Storage::VersionedDisk, Valkyrie::Storage::ExternalUrl])
+    expect(hoard.services.map(&:class)).to eq([
+      Valkyrie::Storage::VersionedShrine,
+      Valkyrie::Storage::VersionedDisk,
+      Valkyrie::Storage::ExternalUrl
+    ])
+    expect(hoard.services.first).to equal(adapter)
   end
 
   describe 'CRUD against stubbed S3' do

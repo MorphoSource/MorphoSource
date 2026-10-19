@@ -21,6 +21,8 @@ RSpec.describe 'records/edit_fields reviewer inputs', type: :view do
       expect(mode['name']).to eq("#{name}[download_reviewer_mode]")
       expect(picker['name']).to eq("#{name}[record_download_reviewer_users][]")
       expect(JSON.parse(picker['data-reviewers']).first['user_key']).to eq(reviewer.ms_id)
+      expect(document.at_css('.media_record_download_reviewer_users .tooltip-icon')['title'])
+        .to eq(I18n.t('simple_form.hints.defaults.download_reviewers'))
       expect(document.css('[name$="[download_reviewer][]"]')).to be_empty
       expect(mode.at_css('option[value="object_organization"]')['disabled']).to be_present
     end

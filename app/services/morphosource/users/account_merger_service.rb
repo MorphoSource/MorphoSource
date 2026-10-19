@@ -20,8 +20,8 @@ module Morphosource
         transfer_group_permissions
         transfer_proxy_rights
         transfer_cart_items
+        # Both publish reviewer events, so they run last: jobs must never see a half-merged account.
         transfer_custom_download_reviewers
-        # Last, so reviewer jobs never run against a half-merged account.
         publish_reviewer_events
       end
 
@@ -152,7 +152,6 @@ module Morphosource
         @managed_organization_ids ||= []
       end
 
-      # organization_collection?, not organization?: the latter is false for every collection.
       def organization_manager_role?(group)
         return false unless group.end_with?('_managers')
 

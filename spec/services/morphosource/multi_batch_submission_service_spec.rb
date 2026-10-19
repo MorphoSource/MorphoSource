@@ -272,5 +272,55 @@ RSpec.describe Morphosource::MultiBatchSubmissionService do
       expect(fields['organization_transfer_on_publish']).to eq(true)
       expect(fields['preview_mode']).to eq('Interactive/Embeddable')
     end
+
+    context 'reviewer eligibility' do
+      def org_double(reviews:)
+        instance_double(
+          OrganizationCollection,
+          download_permission: nil, download_reviewer: nil, rights_holder: nil,
+          rights_statement: nil, license: nil, morphosource_use_agreement_type: nil,
+          permits_commercial_use: nil, permits_3d_use: nil,
+          required_archival_of_published_derivatives: nil, publisher: nil, preview_mode: nil,
+          agreement_uri: nil, member_of_collection_ids: nil, depositor: nil,
+          reviews_object_media_downloads: reviews
+        )
+      end
+
+      def fields_for(reviews:, from: service)
+        org = org_double(reviews: reviews)
+        allow(OrganizationCollection).to receive(:exists?).with('000200001').and_return(true)
+        allow(OrganizationCollection).to receive(:find).with('000200001').and_return(org)
+
+        from.send(:media_ownership_fields, '000200001')
+      end
+
+      def service_with(ownership_options)
+        described_class.new(xlsx_file_path: xlsx_path, user: user, options: { ownership_options: ownership_options })
+      end
+
+      it 'sets object_organization mode for an eligible organization' do
+        expect(fields_for(reviews: true)['download_reviewer_mode']).to eq('object_organization')
+      end
+
+      it 'sets no mode for an ineligible organization' do
+        expect(fields_for(reviews: false)).not_to have_key('download_reviewer_mode')
+      end
+
+      it 'sets no mode when the flag was never written' do
+        expect(fields_for(reviews: nil)).not_to have_key('download_reviewer_mode')
+      end
+
+      it 'ignores a mode forced through ownership_options for the organization' do
+        forcing = service_with('000200001' => { 'download_reviewer_mode' => 'object_organization' })
+
+        expect(fields_for(reviews: false, from: forcing)).not_to have_key('download_reviewer_mode')
+      end
+
+      it 'ignores a mode forced through ownership_options for all organizations' do
+        forcing = service_with(all: { download_reviewer_mode: 'object_organization' })
+
+        expect(fields_for(reviews: false, from: forcing)).not_to have_key('download_reviewer_mode')
+      end
+    end
   end
 end

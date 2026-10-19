@@ -47,6 +47,8 @@
 
       <%= render_edit_field_partial('download_reviewer', f: f) %>
 
+      <%= f.hidden_field :download_reviewer_mode %>
+
       <div id="media_transfer_management" class="form-group row select media_transfer_management hide">
         <div class="col-6 showcase-label">
           <label class="col-form-label select optional" for="media_transfer_management">

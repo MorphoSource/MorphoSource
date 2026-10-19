@@ -523,15 +523,15 @@ RSpec.describe Morphosource::OrganizationNormalizationJob do
       end
 
       ["open", "restricted_download", "private"].each do |status|
-        ["true", "false"].each do |remove|
-          it "resolves reviewers for #{status}, remove_previous_reviewers=#{remove}" do
+        ["true", "false", true, false].each do |remove|
+          it "resolves reviewers for #{status}, remove_previous_reviewers=#{remove.inspect}" do
             media.fileset_accessibility = [status]
             media.visibility = status == 'private' ? 'restricted' : 'open'
             subject.instance_variable_set(:@remove_previous_reviewers, remove)
             subject.update_download_reviewer
             subject.update_data_manager
             media.save!
-            expected = status == 'open' || remove == 'true' ? [] : [user.ms_id]
+            expected = status == 'open' || remove.to_s == 'true' ? [] : [user.ms_id]
             expect(media.record_download_reviewer_users).to eq(expected)
             expect(media.download_reviewer_mode).to eq('record_users')
             expect(Morphosource::DownloadReviewerResolver.new.call(media)).to eq(expected.presence || [manager.ms_id])

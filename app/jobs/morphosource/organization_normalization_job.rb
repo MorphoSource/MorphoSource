@@ -46,7 +46,7 @@ module Morphosource
     end
 
     def update_download_reviewer
-      @media.record_download_reviewer_users = [] if @media.open? || @remove_previous_reviewers == "true"
+      @media.record_download_reviewer_users = [] if @media.open? || ActiveModel::Type::Boolean.new.cast(@remove_previous_reviewers)
     end
 
     def update_media_publication_status

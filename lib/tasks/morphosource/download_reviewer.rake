@@ -3,6 +3,15 @@
 
 namespace :morphosource do
   namespace :download_reviewer do
+    desc 'Compare Media reviewer backfill fields and resolution against live legacy values ' \
+         '(read-only, before the download_reviewers read-path cutover)'
+    task verify_media: :environment do
+      verification = Morphosource::MediaReviewerVerification.new
+      verification.call
+      verification.summary_lines.each { |line| puts line }
+      abort('verify_media found differences requiring review') unless verification.verified?
+    end
+
     desc 'Snapshot current download reviewer values and resolution (read-only). ' \
          'Usage: rake "morphosource:download_reviewer:export[/path/to/export.csv,all]" ' \
          '-- scope is all, organizations, media or cart_items'

@@ -3,14 +3,20 @@ module Morphosource
     module ServicesSharedBehavior
 
       def update_download_reviewer(work)
-        if work.download_reviewer.include? @old_user.ms_id
-          reviewers = work.download_reviewer.each_with_object([]) { |r,reviewers| reviewers << r }
+        if work.record_download_reviewer_users.include? @old_user.ms_id
+          reviewers = work.record_download_reviewer_users.each_with_object([]) { |r,reviewers| reviewers << r }
           reviewers.delete @old_user.ms_id
           unless reviewers.include? @new_user.ms_id
             reviewers << @new_user.ms_id
           end
-          work.download_reviewer = reviewers
-          work.save!
+          work.record_download_reviewer_users = reviewers
+          previous_skip = work.skip_reviewer_event
+          begin
+            work.skip_reviewer_event = true if work.download_reviewer_mode == 'object_organization'
+            work.save!
+          ensure
+            work.skip_reviewer_event = previous_skip
+          end
         end
       end
 

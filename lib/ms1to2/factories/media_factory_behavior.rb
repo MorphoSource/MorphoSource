@@ -28,7 +28,6 @@ module Ms1to2
           :x_spacing => derive_x_spacing(mg),
           :y_spacing => derive_y_spacing(mg),
           :z_spacing => derive_z_spacing(mg),
-          :download_reviewer => derive_download_reviewer(mg),
           :modality => derive_modality(mf),
           :visibility => derive_visibility(mf, mg),
           :fileset_visibility => derive_fileset_visibility(mf, mg),
@@ -204,9 +203,6 @@ module Ms1to2
         end
       end
 
-      def derive_download_reviewer(mg)
-        mg[:reviewer_id]
-      end
     end
   end
 end

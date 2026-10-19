@@ -118,6 +118,7 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
   let(:slide) { subject.send(:slide_class).new(slide_json) }
 
   before do
+    sequential_section_list_collection_type
     allow_any_instance_of(described_class).to receive(:occurrence_json).and_return(occurrence_json) # response from GBIF
     allow_any_instance_of(described_class).to receive(:specimen_params_from_occurrence_id).and_return(specimen_params) # response from iDigBio
     allow_any_instance_of(described_class).to receive(:taxonomy_params_from_gbif).and_return(taxonomy_params) # response from GBIF
@@ -325,6 +326,7 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
 
       # media attributes
       expect(media.depositor).to eq(manager.ms_id)
+      expect(media.owner).to eq(manager.ms_id)
       expect(media.title).to match_array(['Mcz Sc 3793 Slide 1 [Image] [Section]'])
       expect(media.remote_manifest_url).to eq("#{base_uri}info.json")
       expect(media.remote_origin_url).to eq(import_url)
@@ -334,7 +336,7 @@ RSpec.describe Morphosource::Import::Slides::SlideSeriesService do
       expect(media.x_spacing).to match_array(['0.000025'])
       expect(media.y_spacing).to match_array(['0.000025'])
       expect(media.unit).to match_array(['Cm'])
-      expect(media.download_reviewer).to match_array([reviewer.ms_id])
+      expect(media.record_download_reviewer_users).to match_array([reviewer.ms_id])
       expect(media.agreement_uri).to match_array(provider['agreement_uri'])
       expect(media.morphosource_use_agreement_type).to match_array(provider['morphosource_use_agreement_type'])
       expect(media.required_archival_of_published_derivatives). to match_array(provider['required_archival_of_published_derivatives'])

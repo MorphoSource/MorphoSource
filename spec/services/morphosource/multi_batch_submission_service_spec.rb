@@ -321,6 +321,18 @@ RSpec.describe Morphosource::MultiBatchSubmissionService do
 
         expect(fields_for(reviews: false, from: forcing)).not_to have_key('download_reviewer_mode')
       end
+
+      it 'names the submitting User as record reviewer when the organization depositor owns the media' do
+        org = org_double(reviews: false)
+        allow(org).to receive(:depositor).and_return(['depositor-ms-id'])
+        allow(OrganizationCollection).to receive(:exists?).with('000200001').and_return(true)
+        allow(OrganizationCollection).to receive(:find).with('000200001').and_return(org)
+
+        fields = service.send(:media_ownership_fields, '000200001')
+
+        expect(fields['owner']).to eq('depositor-ms-id')
+        expect(fields['record_download_reviewer_users']).to eq([user.ms_id])
+      end
     end
   end
 end

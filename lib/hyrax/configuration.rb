@@ -867,6 +867,14 @@ module Hyrax
       @update_fast_queue_name ||= :update_fast
     end
 
+    # @!attribute [w] specimen_record_sources
+    #   Remote sources to import specimen metadata from, in priority order.
+    #   Keys must be registered in Morphosource::SpecimenSources::SOURCES.
+    attr_writer :specimen_record_sources
+    def specimen_record_sources
+      @specimen_record_sources ||= [:idigbio]
+    end
+
     # @!attribute [w] update_medium_queue_name
     #   ActiveJob queue to handle background work or collection update jobs that can be run with medium priority.
     attr_writer :update_medium_queue_name

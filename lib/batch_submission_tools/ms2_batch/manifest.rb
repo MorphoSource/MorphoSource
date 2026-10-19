@@ -330,7 +330,7 @@ module BatchSubmissionTools
 
           # construct taxonomies if necessary (i.e., if BSO is to be created)
           if bso.attrs.present?
-            # skip unless there are taxonomy attributes to use or we can get taxonomy from iDigBio
+            # skip unless there are taxonomy attributes to use or taxonomy was imported with the BSO
             next unless taxonomy_attrs.values.any? { |v| v.present? } || bso.work_imported
 
             bso_taxonomies = BatchSubmissionTools::Ms2Batch::Factory::TaxonomyManifests.call(
@@ -338,7 +338,7 @@ module BatchSubmissionTools
               admin_user: admin_user,
               depositor: depositor,
               on_behalf_of: on_behalf_of,
-              occurrence_id: bso.work_imported ? bso.occurrence_id : nil
+              imported_taxonomy_param_sets: bso.work_imported ? bso.imported_taxonomy_param_sets : nil
             )
 
             bso_taxonomies.each do |taxonomy|

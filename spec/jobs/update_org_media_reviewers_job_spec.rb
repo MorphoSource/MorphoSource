@@ -8,7 +8,6 @@ RSpec.describe UpdateOrgMediaReviewersJob do
   let(:other_organization)  { FactoryBot.create(:organization_collection, title: ['Org B']) }
   let(:batch_user_ms_id)    { User.batch_user.ms_id }
 
-  # Changes membership without reindexing, as CollectionRolesController does.
   def add_manager(organization, new_manager)
     organization.managers << new_manager
     organization.managers_group.save!
@@ -18,8 +17,6 @@ RSpec.describe UpdateOrgMediaReviewersJob do
     "org_collection:#{organization.id}"
   end
 
-  # Stubs the identity before saving so the indexer writes the tokens without building an
-  # Object Organization graph.
   def media_identified_by(*identities)
     media = FactoryBot.build(:media, owner: owner.ms_id)
     allow(media).to receive(:download_reviewers).and_return(identities)

@@ -1,5 +1,3 @@
-# Refreshes cart_items.reviewers for a batch of Media from their current Solr documents,
-# resolving each Media's whole Reviewer Identity with one resolver for the batch.
 class UpdateOrgMediaReviewersBatchJob < Hyrax::ApplicationJob
   queue_as Hyrax.config.update_slow_queue_name
 

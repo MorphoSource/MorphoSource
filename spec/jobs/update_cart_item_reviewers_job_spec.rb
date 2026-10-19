@@ -21,6 +21,14 @@ RSpec.describe UpdateCartItemReviewersJob do
     expect(later_item.reload.reviewers).to eq([reviewer.ms_id])
   end
 
+  it 'accepts a Media argument from jobs queued before the cutover' do
+    item = CartItem.create!(user_id: owner.ms_id, work_id: media.id, reviewers: [owner.ms_id])
+
+    described_class.perform_now(media)
+
+    expect(item.reload.reviewers).to eq([reviewer.ms_id])
+  end
+
   [ActiveFedora::ObjectNotFoundError, Ldp::Gone].each do |error|
     it "skips Media deleted before execution (#{error})" do
       allow(Media).to receive(:find).with('deleted-media').and_raise(error)

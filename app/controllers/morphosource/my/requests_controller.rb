@@ -158,7 +158,12 @@ module Morphosource
 
         # A user may only act on their own requests, not other users' by raw id.
         def restrict_items_to_current_user
-          @items = @items.where(user_id: current_user.ms_id)
+          mine = @items.where(user_id: current_user.ms_id)
+          if mine.count < @items.count
+            flash[:error] = "You are not authorized to act on one or more of these requests"
+            redirect_back(fallback_location: my_requests_path) && return
+          end
+          @items = mine
         end
 
         def check_blank_items

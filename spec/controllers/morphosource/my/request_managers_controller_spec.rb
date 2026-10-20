@@ -160,6 +160,10 @@ RSpec.describe Morphosource::My::RequestManagersController, :type => :controller
       it 'does not record the non-reviewer in action_by' do
         expect(cartItem5.action_by).not_to eq(current_user.ms_id)
       end
+      it 'redirects with an error' do
+        expect(response.flash[:error]).to be_present
+        expect(response).to redirect_to(request_manager_path)
+      end
     end
 
     context 'a non-reviewer tries to deny a request' do
@@ -169,6 +173,10 @@ RSpec.describe Morphosource::My::RequestManagersController, :type => :controller
       end
       it 'does not deny the request' do
         expect(cartItem5.date_denied).to be(nil)
+      end
+      it 'redirects with an error' do
+        expect(response.flash[:error]).to be_present
+        expect(response).to redirect_to(request_manager_path)
       end
     end
 
@@ -183,14 +191,35 @@ RSpec.describe Morphosource::My::RequestManagersController, :type => :controller
       it 'leaves the date requested intact' do
         expect(cartItem5.date_requested).not_to be(nil)
       end
+      it 'redirects with an error' do
+        expect(response.flash[:error]).to be_present
+        expect(response).to redirect_to(request_manager_path)
+      end
+    end
+
+    # The reviewer check is all-or-nothing: one unauthorized item in the batch
+    # blocks the whole action, so an authorized item in the same request is not approved.
+    context 'a batch mixes a reviewed and a non-reviewed item' do
+      before do
+        cartItem3.update(reviewers: [current_user.ms_id]) # reviewed by current_user
+        # cartItem5 keeps the default reviewers ([depositor.ms_id]) - not current_user
+        put :approve_download, params: { batch_document_ids: [cartItem3.id, cartItem5.id], expiration_date: expiration_date }
+        [cartItem3, cartItem5].each(&:reload)
+      end
+      it 'does not approve either item' do
+        expect(cartItem3.date_approved).to be(nil)
+        expect(cartItem5.date_approved).to be(nil)
+      end
+      it 'redirects with an error' do
+        expect(response.flash[:error]).to be_present
+        expect(response).to redirect_to(request_manager_path)
+      end
     end
   end
 
   describe 'PUT #clear_request' do
     before do
       cartItem5.update(reviewers: [current_user.ms_id])
-    end
-    before do
       put :clear_request, params: { item_id: cartItem5.id }
       cartItem5.reload
     end

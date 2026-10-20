@@ -83,6 +83,9 @@ RSpec.describe Morphosource::My::RequestManagersController, :type => :controller
 
   describe "PUT #approve_download" do
     let(:expiration_date) { "2020-10-20"}
+    before do
+      [cartItem1, cartItem5].each { |i| i.update(reviewers: [current_user.ms_id]) }
+    end
     context 'the data manager approves one request' do
       before do
         put :approve_download, params: { item_id: cartItem1.id, expiration_date: expiration_date }
@@ -139,7 +142,54 @@ RSpec.describe Morphosource::My::RequestManagersController, :type => :controller
     end
   end
 
+  # Reviewer/owner authorization on the state-changing actions. current_user is
+  # the requester on these items but not a reviewer (reviewers default to
+  # [depositor.ms_id] in the shared context), so these self-service PUTs must be
+  # rejected without touching the item's state.
+  describe 'reviewer authorization on state-changing actions' do
+    let(:expiration_date) { "2020-10-20" }
+
+    context 'a non-reviewer tries to approve their own request' do
+      before do
+        put :approve_download, params: { item_id: cartItem5.id, expiration_date: expiration_date }
+        cartItem5.reload
+      end
+      it 'does not approve the request' do
+        expect(cartItem5.date_approved).to be(nil)
+      end
+      it 'does not record the non-reviewer in action_by' do
+        expect(cartItem5.action_by).not_to eq(current_user.ms_id)
+      end
+    end
+
+    context 'a non-reviewer tries to deny a request' do
+      before do
+        put :deny_download, params: { item_id: cartItem5.id }
+        cartItem5.reload
+      end
+      it 'does not deny the request' do
+        expect(cartItem5.date_denied).to be(nil)
+      end
+    end
+
+    context 'a non-reviewer tries to clear a request' do
+      before do
+        put :clear_request, params: { item_id: cartItem5.id }
+        cartItem5.reload
+      end
+      it 'does not clear the request' do
+        expect(cartItem5.date_cleared).to be(nil)
+      end
+      it 'leaves the date requested intact' do
+        expect(cartItem5.date_requested).not_to be(nil)
+      end
+    end
+  end
+
   describe 'PUT #clear_request' do
+    before do
+      cartItem5.update(reviewers: [current_user.ms_id])
+    end
     before do
       put :clear_request, params: { item_id: cartItem5.id }
       cartItem5.reload
@@ -172,6 +222,9 @@ RSpec.describe Morphosource::My::RequestManagersController, :type => :controller
   end
 
   describe "PUT #deny_download" do
+    before do
+      cartItem5.update(reviewers: [current_user.ms_id])
+    end
     context 'it is successful' do
       before do
         put :deny_download, params: { item_id: cartItem5.id }

@@ -28,6 +28,10 @@ module Morphosource
 
       def gbif_taxonomy_params
         @gbif_taxonomy_params ||= source.gbif_taxonomy_params(self)
+      rescue StandardError => e
+        # Import without the GBIF taxonomy rather than fail the whole lookup or update job
+        Rails.logger.error "SpecimenSources::Record: GBIF taxonomy lookup failed for #{source_label} #{id}: #{e.message}"
+        @gbif_taxonomy_params = {}
       end
 
       # @return [Hash] { provider: {...}, gbif: {...} }

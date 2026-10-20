@@ -65,7 +65,7 @@ module Morphosource
         def lookup(source)
           yield
         rescue StandardError => e
-          Rails.logger.warn "SpecimenSources::Resolver: #{source.label} lookup failed: #{e.message}"
+          Rails.logger.error "SpecimenSources::Resolver: #{source.label} lookup failed: #{e.message}"
           nil
         end
 

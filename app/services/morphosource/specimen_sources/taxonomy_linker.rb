@@ -1,8 +1,6 @@
 module Morphosource
   module SpecimenSources
-    # Matches provider and GBIF taxonomy params from a remote record to
-    # existing MorphoSource taxonomies, or queues params for new ones.
-    # The provider taxonomy is canonical.
+    # Links a remote record's provider (canonical) and GBIF taxonomies to existing ones, or queues new ones.
     class TaxonomyLinker
       attr_reader :taxonomy_param_sets, :canonical_taxonomy_id, :taxonomy_id_array, :taxonomy_params_array
 

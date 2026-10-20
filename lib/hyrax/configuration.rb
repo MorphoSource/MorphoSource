@@ -869,7 +869,6 @@ module Hyrax
 
     # @!attribute [w] specimen_record_sources
     #   Remote sources to import specimen metadata from, in priority order.
-    #   Keys must be registered in Morphosource::SpecimenSources::SOURCES.
     attr_writer :specimen_record_sources
     def specimen_record_sources
       @specimen_record_sources ||= [:idigbio]

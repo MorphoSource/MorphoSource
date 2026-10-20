@@ -231,9 +231,8 @@ $( document ).ready(function() {
       $(labelClass + ' .taxonomy-subspecies').html(t.taxonomy_subspecies);
     }
 
-    // Looks up the best remote record for an occurrence ID (see SpecimenSources::Resolver)
-    // and shows the matching modal. Saves straight away if no usable record is found.
-    function lookupRemoteSpecimen(occurrenceId) {
+    // Looks up the best remote record for an occurrence ID and shows the matching modal.
+    function lookup_remote_specimen(occurrenceId) {
       const controller = new AbortController();
       const timer = setTimeout(() => controller.abort(), 12000);
       const body = new URLSearchParams({
@@ -254,7 +253,7 @@ $( document ).ready(function() {
           if (!response.ok) throw new Error('status ' + response.status);
           return response.json();
         })
-        .then(showRemoteSpecimenResult)
+        .then(show_remote_specimen_result)
         .catch((error) => {
           console.log('Remote specimen lookup failed (' + error.message + '), saving... ');
           saveSpecimen();
@@ -262,7 +261,7 @@ $( document ).ready(function() {
         .finally(() => clearTimeout(timer));
     }
 
-    function showRemoteSpecimenResult(result) {
+    function show_remote_specimen_result(result) {
       if (result.status === 'org_mismatch') {
         // Bootstrap 4 modals require jQuery
         $('#modal-idigbio-recordset-not-match').modal();
@@ -315,7 +314,7 @@ $( document ).ready(function() {
       // look up remote sources if occurrence_id has been changed
       const occurrenceId = document.getElementById('biological_specimen_occurrence_id').value;
       if (occurrenceId !== document.getElementById('existing_occurrence_id').value) {
-        lookupRemoteSpecimen(occurrenceId);
+        lookup_remote_specimen(occurrenceId);
       } else {
         $('form[data-param-key="biological_specimen"]').submit();
       }

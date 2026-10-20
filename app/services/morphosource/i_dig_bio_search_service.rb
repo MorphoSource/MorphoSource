@@ -1,7 +1,6 @@
 module Morphosource
   # Takes params in the same format as PhysicalObjectsSearchService
-  # and uses them to perform an IDigBio query (submission specimen search).
-  # Importing records by occurrence ID or UUID is done by SpecimenSources.
+  # and uses them to perform an IDigBio query
   class IDigBioSearchService
     attr_reader :params
 

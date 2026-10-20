@@ -1,7 +1,6 @@
 module Morphosource
   module SpecimenSources
-    # Interface for a remote specimen source. Subclasses map the source's
-    # records to Record objects with MorphoSource specimen/taxonomy params.
+    # Interface for a remote specimen source that maps its records to Record objects.
     class Base
       # @return [Symbol] key used in Hyrax.config.specimen_record_sources
       def key

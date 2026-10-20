@@ -1,7 +1,6 @@
 class Morphosource::IDigBioSearchController < ApplicationController
 
-  # Looks up the best remote record for an occurrence ID (see SpecimenSources::Resolver).
-  # Used by the specimen edit page before saving a changed occurrence ID.
+  # Looks up the best remote record for a changed occurrence ID on the specimen edit page.
   def search_idigbio_by_occurrence_id_ajax
     result = Morphosource::SpecimenSources::Resolver
       .new(organization_id: request.params["organization_id"])

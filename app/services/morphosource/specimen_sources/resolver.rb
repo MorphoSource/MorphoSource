@@ -1,12 +1,6 @@
 module Morphosource
   module SpecimenSources
-    # Finds the best remote record for a specimen by trying each configured
-    # source in priority order.
-    #
-    # For each source, hits whose dataset doesn't belong to the specimen's
-    # organization are skipped and the next source is tried. The org check is
-    # skipped when the organization has no dataset IDs for that source.
-    # If several hits remain, the first is used.
+    # Finds the best remote record for an occurrence ID, trying sources in priority order.
     class Resolver
       # status is one of :found, :not_found, :org_mismatch, :invalid_occurrence_id
       Result = Struct.new(:status, :record, :candidates, keyword_init: true) do

@@ -1,6 +1,5 @@
 module Morphosource
-  # Remote sources (e.g. iDigBio) that specimen metadata can be imported from.
-  # Sources are tried in the order given by Hyrax.config.specimen_record_sources.
+  # Remote sources specimen metadata is imported from, in Hyrax.config.specimen_record_sources order.
   module SpecimenSources
     # Raised by a source when its API returns an error or times out
     class SourceError < StandardError; end

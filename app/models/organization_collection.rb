@@ -118,6 +118,16 @@ class OrganizationCollection < Collection
     super(ActiveModel::Type::Boolean.new.cast(value))
   end
 
+  # return false for nil value
+  def reviews_object_media_downloads?
+    reviews_object_media_downloads ? true : false
+  end
+
+  # Normalized here, not in a callback, so re-posting the stored list is not a change.
+  def custom_download_reviewer_users=(value)
+    super(Array(value).flat_map { |v| v.to_s.split(',') }.map(&:strip).reject(&:blank?).uniq)
+  end
+
   # @return [Array<String>] User ms_ids
   def download_reviewers
     ms_ids = if managers_are_download_reviewers

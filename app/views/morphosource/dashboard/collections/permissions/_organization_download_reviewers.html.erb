@@ -1,0 +1,61 @@
+<% mode = @collection.managers_are_download_reviewers %>
+<% eligible = @collection.reviews_object_media_downloads? %>
+<% no_managers = @presenter.managers.empty? %>
+<div class="form-group block-fill block-padding" id="organization-download-reviewers">
+  <h3 class="mt-0"><%= t('morphosource.reviewers.organization.heading') %></h3>
+  <div class="<%= 'text-muted' unless eligible %>">
+    <%# A radio pair, not two boolean selects: exactly one choice is always set, so the "neither" state is unreachable. %>
+    <div class="form-group row">
+      <div class="col-6 showcase-label">
+        <label class="col-form-label"><%= t('morphosource.reviewers.organization.mode_label') %></label>
+      </div>
+      <div class="col-6 showcase-value">
+        <div class="form-check">
+          <%= f.radio_button :managers_are_download_reviewers, 'true', checked: mode == true, disabled: !eligible || no_managers, class: 'form-check-input' %>
+          <%= f.label :managers_are_download_reviewers, t('morphosource.reviewers.organization.managers'), value: 'true', class: 'form-check-label' %>
+        </div>
+        <div class="form-check">
+          <%= f.radio_button :managers_are_download_reviewers, 'false', checked: mode == false, disabled: !eligible, class: 'form-check-input' %>
+          <%= f.label :managers_are_download_reviewers, t('morphosource.reviewers.organization.custom'), value: 'false', class: 'form-check-label' %>
+        </div>
+        <% if no_managers %>
+          <p class="hint mb-0"><%= t('morphosource.reviewers.organization.no_managers_html', members_path: organization_members_path(@collection)) %></p>
+        <% end %>
+        <% if mode.nil? && eligible %>
+          <p class="hint mb-0"><%= t('morphosource.reviewers.organization.unset') %></p>
+        <% end %>
+      </div>
+    </div>
+
+    <div class="form-group row <%= 'd-none' unless mode == false %>" id="organization-custom-download-reviewers">
+      <div class="col-6 showcase-label">
+        <label class="col-form-label" for="organization_collection_custom_download_reviewer_users"><%= t('morphosource.reviewers.organization.custom_users_label') %></label>
+      </div>
+      <div class="col-6 showcase-value">
+        <%= f.text_field :custom_download_reviewer_users,
+          id: 'organization_collection_custom_download_reviewer_users',
+          name: "#{f.object_name}[custom_download_reviewer_users][]",
+          value: Array(@collection.custom_download_reviewer_users).join(','),
+          disabled: !eligible,
+          style: 'width: 100%',
+          'data-reviewers' => reviewer_data(f, field: :custom_download_reviewer_users),
+          class: 'form-control string optional multi-search-field'
+        %>
+        <p class="text-danger d-none mb-0" id="organization-custom-download-reviewers-error"><%= t('morphosource.reviewers.organization.empty_custom') %></p>
+      </div>
+    </div>
+
+    <%= @presenter.attribute_to_html(:download_reviewers,
+      label: t('morphosource.reviewers.organization.current_label'),
+      render_as: :showcase_user_link,
+      include_empty: true,
+      text_if_empty: t('morphosource.reviewers.organization.current_empty')) %>
+  </div>
+
+  <% unless eligible %>
+    <p class="hint mt-2 mb-0"><%= t('morphosource.reviewers.organization.not_eligible_html') %></p>
+  <% end %>
+  <% if eligible && @collection.permissions_enforcement_mode&.first == 'Require' %>
+    <p class="hint mt-2 mb-0"><%= t('morphosource.reviewers.organization.require') %></p>
+  <% end %>
+</div>

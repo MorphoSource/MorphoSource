@@ -403,6 +403,7 @@ en:
         download_reviewer: Users that receive and decide requests to download Media if published with Restricted Download, defaults to data manager if not specified
         license: Applicable Creative Commons license governing use and reuse
         media_ownership_transfer: Opt in to automated management transfer
+        reviews_object_media_downloads: Whether new media for this organization's objects may name the organization as download reviewer. Set by MorphoSource administrators.
         permissions_enforcement_mode: Whether organization default permission values are recommended or required to be used by new media contributors
         publisher: Entity responsible for making the resource available
         preview_annotations: Number of custom annotations set for the interactive preview
@@ -423,6 +424,7 @@ en:
         rights_statement: Copyright statement
         license: License
         media_ownership_transfer: Media ownership transfer
+        reviews_object_media_downloads: Organization reviews media downloads
         morphosource_use_agreement_type: MorphoSource use agreement type
         permits_commercial_use: Permits commercial use
         permits_3d_use: Permits 3D use

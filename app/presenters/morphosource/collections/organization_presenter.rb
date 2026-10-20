@@ -10,7 +10,7 @@ module Morphosource
                :contact_person,
                :country,
                :download_permission,
-               :download_reviewer,
+               :download_reviewers,
                :institution_code,
                :institution_name,
                :morphosource_use_agreement_type,

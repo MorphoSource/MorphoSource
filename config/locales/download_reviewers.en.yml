@@ -4,6 +4,19 @@ en:
       mode_label: "Download reviewers"
       record_users: "Specific users (media owner when blank)"
       object_organization: "Object organization"
+      organization:
+        heading: "Download review"
+        mode_label: "Who reviews downloads?"
+        managers: "All organization managers"
+        custom: "Specific users"
+        custom_users_label: "Reviewers"
+        current_label: "Current download reviewers"
+        current_empty: "MorphoSource staff — this organization has no one set to review downloads."
+        not_eligible_html: "MorphoSource administrators have not enabled download review for this organization, so these settings cannot be changed and have no effect. <a href=\"mailto:morphosource@duke.edu\">Contact us</a> to enable it."
+        no_managers_html: "This organization has no managers. <a href=\"%{members_path}\">Add a manager</a> before choosing all organization managers."
+        unset: "Not yet configured. Choose who reviews downloads."
+        empty_custom: "Name at least one user before you save."
+        require: "Permissions enforcement mode is Require: new media submitted for this organization's objects have this organization review their downloads."
   blacklight:
     search:
       fields:

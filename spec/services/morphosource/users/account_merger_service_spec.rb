@@ -224,6 +224,16 @@ RSpec.describe Morphosource::Users::AccountMergerService do
       expect(organization.managers).to contain_exactly(new_user)
       expect_reviewer_events(organization)
     end
+
+    it 'publishes manager events before a custom reviewer list save can fail' do
+      add_manager(organization, old_user)
+      FactoryBot.create(:organization_collection, managers_are_download_reviewers: false,
+                                                  custom_download_reviewer_users: [old_user.ms_id])
+      allow_any_instance_of(OrganizationCollection).to receive(:save!).and_raise(StandardError, 'save failed')
+
+      expect { subject }.to raise_error(StandardError, 'save failed')
+      expect_reviewer_events(organization)
+    end
   end
 
   describe 'transfer_custom_download_reviewers' do

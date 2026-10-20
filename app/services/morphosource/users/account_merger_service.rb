@@ -21,8 +21,9 @@ module Morphosource
         transfer_proxy_rights
         transfer_cart_items
         # Both publish reviewer events, so they run last: jobs must never see a half-merged account.
-        transfer_custom_download_reviewers
+        # Publish first: a failed save! below must not drop Manager events a rerun cannot repeat.
         publish_reviewer_events
+        transfer_custom_download_reviewers
       end
 
       def transfer_works

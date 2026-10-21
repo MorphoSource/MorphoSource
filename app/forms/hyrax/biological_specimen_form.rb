@@ -13,7 +13,7 @@ module Hyrax
                    :is_type_specimen,
                    :occurrence_id,
                    :organization_relationship,
-                   :record_source,
+                   :remote_source,
                    :sex,
                    :taxonomy_id,
                    :vouchered]
@@ -26,7 +26,7 @@ module Hyrax
                                   :is_type_specimen,
                                   :occurrence_id,
                                   :organization_relationship,
-                                  :record_source,
+                                  :remote_source,
                                   :sex]
 
     # These show above the fold

@@ -10,7 +10,7 @@ module Morphosource
                                           idigbio_uuid
                                           is_type_specimen
                                           occurrence_id
-                                          record_source
+                                          remote_source
                                           sex
                                           taxonomy_id].freeze
 

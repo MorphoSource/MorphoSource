@@ -18,7 +18,7 @@ module Morphosource
       "sex" => "sex_tesim",
       "latitude" => "latitude_tesim",
       "longitude" => "longitude_tesim",
-      "record_source" => "record_source_tesim",
+      "remote_source" => "remote_source_tesim",
       "gbif_occurrence_key" => "gbif_occurrence_key_tesim",
       "gbif_dataset_key" => "gbif_dataset_key_tesim"
     }

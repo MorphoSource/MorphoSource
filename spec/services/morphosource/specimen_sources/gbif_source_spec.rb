@@ -15,7 +15,7 @@ RSpec.describe Morphosource::SpecimenSources::GbifSource, :vcr do
       expect(record.specimen_params).to include(
         'gbif_occurrence_key' => record.id,
         'gbif_dataset_key' => 'e3b959d6-fcbe-4a28-a166-e4a807c340a0',
-        'record_source' => 'gbif',
+        'remote_source' => 'gbif',
         'vouchered' => 'Yes',
         'institution_code' => 'MVZ',
         'catalog_number' => 'MVZ:Bird:178506',

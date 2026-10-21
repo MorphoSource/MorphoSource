@@ -38,7 +38,7 @@ module Morphosource
       end
 
       # Remote source the metadata was last imported from, e.g. "gbif" or "idigbio"
-      property :record_source, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/recordSource") do |index|
+      property :remote_source, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/remoteSource") do |index|
         index.as :stored_searchable
       end
 

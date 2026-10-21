@@ -92,7 +92,7 @@ module Morphosource
           bso_params = {
             'idigbio_uuid' => idb['uuid'],
             'idigbio_recordset_id' => idb.dig('indexTerms', 'recordset'),
-            'record_source' => key.to_s,
+            'remote_source' => key.to_s,
             'vouchered' => 'Yes'
           }
           data = idb['data'] || {}

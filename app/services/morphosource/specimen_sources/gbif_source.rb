@@ -106,7 +106,7 @@ module Morphosource
           bso_params = {
             'gbif_occurrence_key' => occurrence['key'].to_s,
             'gbif_dataset_key' => occurrence['datasetKey'],
-            'record_source' => key.to_s,
+            'remote_source' => key.to_s,
             'vouchered' => 'Yes'
           }
           DATA_BSO_MAPPING.each do |term, field|

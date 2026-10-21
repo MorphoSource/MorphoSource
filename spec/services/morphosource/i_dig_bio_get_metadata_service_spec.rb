@@ -82,8 +82,8 @@ RSpec.describe Morphosource::IDigBioGetMetadataService do
     end
 
     it 'is true when the record comes from a different source' do
-      solr = solr_specimen.merge('record_source_tesim' => ['idigbio'])
-      params = { biospec_model_params: { 'record_source' => 'gbif' } }
+      solr = solr_specimen.merge('remote_source_tesim' => ['idigbio'])
+      params = { biospec_model_params: { 'remote_source' => 'gbif' } }
       expect(described_class.idigbio_record_different_from_specimen?(solr, params)).to eq(true)
     end
 

@@ -75,6 +75,18 @@ RSpec.describe Morphosource::IDigBioGetMetadataService do
       expect(described_class.idigbio_record_different_from_specimen?(solr_specimen, params)).to eq(true)
     end
 
+    it 'compares sex, latitude and longitude against their Solr fields' do
+      solr = solr_specimen.merge('sex_tesim' => ['Female'], 'latitude_tesim' => ['42.0673'], 'longitude_tesim' => ['-124.1661'])
+      params = { biospec_model_params: { 'sex' => 'female', 'latitude' => '42.0673', 'longitude' => '-124.1661' } }
+      expect(described_class.idigbio_record_different_from_specimen?(solr, params)).to eq(false)
+    end
+
+    it 'is true when the record comes from a different source' do
+      solr = solr_specimen.merge('record_source_tesim' => ['idigbio'])
+      params = { biospec_model_params: { 'record_source' => 'gbif' } }
+      expect(described_class.idigbio_record_different_from_specimen?(solr, params)).to eq(true)
+    end
+
     it 'is true when there are new taxonomies to create' do
       params = { taxonomy_params_array: [{ 'taxonomy_genus' => 'X' }], biospec_model_params: {} }
       expect(described_class.idigbio_record_different_from_specimen?(solr_specimen, params)).to eq(true)

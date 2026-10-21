@@ -15,6 +15,7 @@ RSpec.describe Morphosource::SpecimenSources::IDigBioSource, :vcr do
       expect(record.specimen_params['idigbio_uuid']).to eq(uuid)
       expect(record.specimen_params).to have_key('idigbio_recordset_id')
       expect(record.specimen_params['vouchered']).to eq('Yes')
+      expect(record.specimen_params['record_source']).to eq('idigbio')
       expect(record.taxonomy_param_sets).to include(:provider, :gbif)
     end
 

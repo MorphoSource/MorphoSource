@@ -19,9 +19,6 @@ module Morphosource
         'dwc:country' => 'original_location'
       }.freeze
 
-      # these BSO values expect an array (see: Hyrax::BiologicalSpecimenForm.build_permitted_params)
-      BSO_ARRAY_VALUES = ['creator', 'periodic_time', 'related_url'].freeze
-
       TAXONOMY_MAPPING = {
         'dwc:kingdom' => 'taxonomy_kingdom',
         'dwc:phylum' => 'taxonomy_phylum',
@@ -95,6 +92,7 @@ module Morphosource
           bso_params = {
             'idigbio_uuid' => idb['uuid'],
             'idigbio_recordset_id' => idb.dig('indexTerms', 'recordset'),
+            'record_source' => key.to_s,
             'vouchered' => 'Yes'
           }
           data = idb['data'] || {}

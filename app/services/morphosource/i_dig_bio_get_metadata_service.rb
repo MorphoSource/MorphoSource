@@ -14,7 +14,13 @@ module Morphosource
       "related_url" => "related_url_tesim", 
       "creator" => "creator_tesim", 
       "periodic_time" => "periodic_time_tesim", 
-      "original_location" => "original_location_tesim"
+      "original_location" => "original_location_tesim",
+      "sex" => "sex_tesim",
+      "latitude" => "latitude_tesim",
+      "longitude" => "longitude_tesim",
+      "record_source" => "record_source_tesim",
+      "gbif_occurrence_key" => "gbif_occurrence_key_tesim",
+      "gbif_dataset_key" => "gbif_dataset_key_tesim"
     }
 
     def self.call(solr_doc)

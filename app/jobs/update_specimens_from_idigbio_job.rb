@@ -21,7 +21,7 @@ class UpdateSpecimensFromIdigbioJob < Hyrax::ApplicationJob
 
   def specimen_result
     qry = "has_model_ssim:BiologicalSpecimen"
-    fields = "id, occurrence_id_tesim, organization_id_tesim, canonical_taxonomy_tesim, taxonomy_id_tesim, idigbio_uuid_tesim, idigbio_recordset_id_tesim, vouchered_tesim, institution_code_tesim, collection_code_tesim, catalog_number_tesim, related_url_tesim, creator_tesim, periodic_time_tesim, original_location_tesim" 
+    fields = "id, occurrence_id_tesim, organization_id_tesim, canonical_taxonomy_tesim, taxonomy_id_tesim, idigbio_uuid_tesim, idigbio_recordset_id_tesim, vouchered_tesim, institution_code_tesim, collection_code_tesim, catalog_number_tesim, related_url_tesim, creator_tesim, periodic_time_tesim, original_location_tesim, sex_tesim, latitude_tesim, longitude_tesim, record_source_tesim, gbif_occurrence_key_tesim, gbif_dataset_key_tesim" 
     ActiveFedora::SolrService.query(qry, rows: 999999, fl: fields)
   end
 

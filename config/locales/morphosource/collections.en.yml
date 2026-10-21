@@ -41,6 +41,7 @@ en:
             organization_name: Organization name
             organization_type: Organization type
             recordset_id: Recordset ID
+            gbif_dataset_key: GBIF dataset key
           downloads:
             header:
               title: Media Downloads

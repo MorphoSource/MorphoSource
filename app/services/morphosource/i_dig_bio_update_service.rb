@@ -78,7 +78,7 @@ module Morphosource
           Rails.logger.debug "IDigBioUpdateService: specimen #{specimen.id} : #{key} field will be updated to '#{value}'"
         end
       end
-      if specimen.idigbio_uuid_changed?
+      if specimen.idigbio_uuid_changed? || specimen.gbif_occurrence_key_changed?
         @specimen.idigbio_link_origin = system_update ? ["system_generated"] : ["user"]
       end
       @specimen.title = [generated_title]

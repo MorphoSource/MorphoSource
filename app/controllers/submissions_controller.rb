@@ -212,7 +212,11 @@ class SubmissionsController < ApplicationController
     @submission.taxonomy_gbif_key_array = @submission.taxonomy_gbif_key_array.present? ? @submission.taxonomy_gbif_key_array.split(',') : []
 
     if @submission.idigbio_id.present?
-      record = Morphosource::SpecimenSources::Resolver.new.find_by_id(:idigbio, @submission.idigbio_id)
+      # Prefer the best source for the selected iDigBio record's occurrence ID, falling back to that record
+      resolver = Morphosource::SpecimenSources::Resolver.new(organization_id: @submission.organization_id)
+      idigbio_record = resolver.find_by_id(:idigbio, @submission.idigbio_id)
+      result = resolver.find_by_occurrence_id(idigbio_record.occurrence_id) if idigbio_record&.occurrence_id.present?
+      record = result&.found? ? result.record : idigbio_record
 
       # What taxonomy does this specimen have? Do they exist in MS2 or create them?
       linker = Morphosource::SpecimenSources::TaxonomyLinker.call(record&.taxonomy_param_sets)

@@ -110,4 +110,31 @@ RSpec.describe BiologicalSpecimen do
     end
   end
 
+  describe '#clear_previous_idigbio_ids' do
+    let(:specimen) { described_class.new(idigbio_uuid: ['old-uuid'], idigbio_recordset_id: ['old-rs']) }
+    let(:params_for_update) { { biospec_model_params: { 'remote_source' => remote_source, 'catalog_number' => '1' } } }
+    let(:remote_source) { 'gbif' }
+
+    it 'clears iDigBio IDs when the occurrence ID changed to a GBIF record' do
+      allow(specimen).to receive(:occurrence_id_changed?).and_return(true)
+      specimen.clear_previous_idigbio_ids(params_for_update)
+      expect(params_for_update[:biospec_model_params]).to include('idigbio_uuid' => [], 'idigbio_recordset_id' => [], 'catalog_number' => '1')
+    end
+
+    it 'keeps them when the occurrence ID did not change' do
+      allow(specimen).to receive(:occurrence_id_changed?).and_return(false)
+      specimen.clear_previous_idigbio_ids(params_for_update)
+      expect(params_for_update[:biospec_model_params]).not_to have_key('idigbio_uuid')
+    end
+
+    context 'when the new record is from iDigBio' do
+      let(:remote_source) { 'idigbio' }
+
+      it 'leaves the IDs for the record to replace' do
+        allow(specimen).to receive(:occurrence_id_changed?).and_return(true)
+        specimen.clear_previous_idigbio_ids(params_for_update)
+        expect(params_for_update[:biospec_model_params]).not_to have_key('idigbio_uuid')
+      end
+    end
+  end
 end

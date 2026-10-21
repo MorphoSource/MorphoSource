@@ -41,11 +41,20 @@ class BiologicalSpecimen < Morphosource::Works::Base
   def update_from_idigbio
     if occurrence_id.present?
       if (params_for_update = Morphosource::IDigBioGetMetadataService.call(self.to_solr)).present?
+        clear_previous_idigbio_ids(params_for_update)
         if Morphosource::IDigBioGetMetadataService.idigbio_record_different_from_specimen?(self.to_solr, params_for_update)
           Morphosource::IDigBioUpdateService.call(id, save_work=true, system_update=false, params_for_update)
         end
       end
     end
+  end
+
+  # iDigBio IDs identify one occurrence, so they're stale once the occurrence ID changes to a record from another source
+  def clear_previous_idigbio_ids(params_for_update)
+    biospec_model_params = params_for_update[:biospec_model_params]
+    return unless occurrence_id_changed? && idigbio_uuid.present? && biospec_model_params['remote_source'] != 'idigbio'
+
+    params_for_update[:biospec_model_params] = biospec_model_params.merge('idigbio_uuid' => [], 'idigbio_recordset_id' => [])
   end
 
   def set_idigbio_link_origin_when_create

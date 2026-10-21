@@ -431,22 +431,60 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
         expect(response.flash[:error]).to eq(I18n.t('morphosource.dashboard.my.requests.request_item.messages.error'))
       end
     end
+
+    # A user cannot cancel another user's request by passing its id.
+    context 'the item belongs to another user' do
+      let(:other_user) { User.create(email: "other@test.com", password: "password") }
+      let(:other_item) { CartItem.create(user_id: other_user.ms_id, work_id: work3.id, in_cart: true, date_requested: Date.yesterday, reviewers: [depositor.ms_id]) }
+      before do
+        request.env["HTTP_REFERER"] = "original_page"
+        put :cancel_request, params: { item_id: other_item.id }
+        other_item.reload
+      end
+      it "does not cancel the other user's request" do
+        expect(other_item.date_canceled).to be(nil)
+      end
+      it "does not report a false success" do
+        expect(response.flash[:notice]).to be_nil
+        expect(response.flash[:error]).to be_present
+      end
+    end
   end
 
   describe "PUT #move_to_cart" do
-    before do
-      request.env["HTTP_REFERER"] = "original_page"
-      put :move_to_cart, params: { item_id: cartItem5.id }
+    context 'it is successful' do
+      before do
+        request.env["HTTP_REFERER"] = "original_page"
+        put :move_to_cart, params: { item_id: cartItem5.id }
+      end
+      it "marks the cart item as in_cart" do
+        cartItem5.reload
+        expect(cartItem5.in_cart).to be(true)
+      end
+      it 'creates a new flash message' do
+        expect(response.flash[:notice]).to eq("Item Moved to Cart")
+      end
+      it "reloads the page" do
+        expect(response).to redirect_to("original_page")
+      end
     end
-    it "marks the cart item as in_cart" do
-      cartItem5.reload
-      expect(cartItem5.in_cart).to be(true)
-    end
-    it 'creates a new flash message' do
-      expect(response.flash[:notice]).to eq("Item Moved to Cart")
-    end
-    it "reloads the page" do
-      expect(response).to redirect_to("original_page")
+
+    # A user cannot move another user's request to the cart by passing its id.
+    context 'the item belongs to another user' do
+      let(:other_user) { User.create(email: "other@test.com", password: "password") }
+      let(:other_item) { CartItem.create(user_id: other_user.ms_id, work_id: work3.id, in_cart: false, date_requested: Date.yesterday, reviewers: [depositor.ms_id]) }
+      before do
+        request.env["HTTP_REFERER"] = "original_page"
+        put :move_to_cart, params: { item_id: other_item.id }
+        other_item.reload
+      end
+      it "does not move the other user's item" do
+        expect(other_item.in_cart).to be(false)
+      end
+      it "does not report a false success" do
+        expect(response.flash[:notice]).to be_nil
+        expect(response.flash[:error]).to be_present
+      end
     end
   end
 

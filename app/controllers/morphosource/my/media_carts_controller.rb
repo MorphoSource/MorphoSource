@@ -40,6 +40,7 @@ module Morphosource
 
       def destroy
         get_items_by_id(id_params || item_ids_in_cart)
+        @items = @items.where(user_id: current_user.ms_id)
         flash[:notice] = destroy_flash
         remove_from_cart
         redirect_back(fallback_location: my_cart_path)

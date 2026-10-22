@@ -49,6 +49,16 @@ function initSitewideModals() {
     removeOverlayIfNoneOpen();
   }
 
+  // Dismiss via the modal's one-hour snooze button so the dismissal persists across pages
+  function snoozeModal(modal) {
+    const snoozeButton = modal?.querySelector(".snooze-form .maybe-later, .snooze-form .not-now");
+    if (snoozeButton) {
+      snoozeButton.click();
+    } else {
+      closeModal(modal);
+    }
+  }
+
   // force everything hidden
   [modal1, modal2, downloadModal, downloadModal2].forEach((m) => {
     if (!m) return;
@@ -68,33 +78,14 @@ function initSitewideModals() {
 
   // Attach click listeners to document (event delegation)
   document.body.addEventListener("click", function (e) {
-    const snoozeButton = e.target.closest(".configured-modal .maybe-later, .configured-modal .already-donated");
     const noThanksSite1 = e.target.closest("#sitewide-modal .no-thanks");
-    const notNowSite2 = e.target.closest("#sitewide-modal-2 .not-now");
-    const notNowSite1 = e.target.closest("#sitewide-modal .not-now");
-
     const noThanksDownload = e.target.closest("#download-modal .no-thanks");
     const noThanksDownload2 = e.target.closest("#download-modal-2 .no-thanks");
-    const notNowDownload = e.target.closest("#download-modal .not-now");
-    const notNowDownload2 = e.target.closest("#download-modal-2 .not-now");
 
-    // Snooze buttons submit remote forms, so their clicks must not be prevented
-    if (snoozeButton) {
-      closeModal(snoozeButton.closest(".configured-modal"));
-      return;
-    }
     if (noThanksSite1) {
       e.preventDefault();
       closeModal(modal1);
       openModal(modal2);
-      return;
-    }
-    if (notNowSite1) {
-      closeModal(modal1);
-      return;
-    }
-    if (notNowSite2) {
-      closeModal(modal2);
       return;
     }
     if (noThanksDownload) {
@@ -103,17 +94,9 @@ function initSitewideModals() {
       openModal(downloadModal2);
       return;
     }
-    if (notNowDownload) {
-      closeModal(downloadModal);
-      return;
-    }
     if (noThanksDownload2) {
       e.preventDefault();
-      closeModal(downloadModal2);
-      return;
-    }
-    if (notNowDownload2) {
-      closeModal(downloadModal2);
+      snoozeModal(downloadModal2);
       return;
     }
   });
@@ -128,25 +111,26 @@ function initSitewideModals() {
       return;
     }
     if (modal2?.getAttribute("aria-hidden") === "false") {
-      closeModal(modal2);
+      snoozeModal(modal2);
       return;
     }
     if (downloadModal?.getAttribute("aria-hidden") === "false") {
-      closeModal(downloadModal);
+      snoozeModal(downloadModal);
       return;
     }
     if (downloadModal2?.getAttribute("aria-hidden") === "false") {
-      closeModal(downloadModal2);
+      snoozeModal(downloadModal2);
       return;
     }
   });
 
   [modal2, downloadModal2].filter(Boolean).forEach((m) => {
     m.addEventListener("click", (e) => {
-      if (e.target === m) closeModal(m);
+      if (e.target === m) snoozeModal(m);
     });
   });
 
+  // Snooze forms close their modal only once the server has set the snooze cookie
   document.addEventListener("ajax:success", function (e) {
     const form = e.target.closest("form.snooze-form");
     if (!form) return;
@@ -155,6 +139,13 @@ function initSitewideModals() {
     if (!parentModal) return;
 
     closeModal(parentModal);
+  });
+
+  document.addEventListener("ajax:error", function (e) {
+    const form = e.target.closest("form.snooze-form");
+    if (!form) return;
+
+    form.closest(".configured-modal")?.querySelector(".snooze-error")?.removeAttribute("hidden");
   });
 
 }

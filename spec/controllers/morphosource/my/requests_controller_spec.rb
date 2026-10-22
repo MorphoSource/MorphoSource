@@ -282,6 +282,7 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
 
         it 'does not notify again about the pending item' do
           expect(controller).to have_received(:send_request_message_to_requestor).with([cartItem3])
+          expect(controller).to have_received(:send_request_message_to_reviewer).with(anything, [cartItem3])
           expect(controller).not_to have_received(:send_request_message_to_reviewer).with(anything, include(cartItem5))
         end
       end

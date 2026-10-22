@@ -72,7 +72,7 @@ RSpec.describe 'morphosource/dashboard/collections/permissions/_organization_dow
       expect(managers_radio['disabled']).to be_present
       expect(custom_radio['disabled']).to be_present
       expect(picker['disabled']).to be_present
-      expect(document.text).to include('MorphoSource administrators have not enabled download review')
+      expect(document.text).to include('Download review has not been enabled for this organization')
     end
   end
 
@@ -87,6 +87,22 @@ RSpec.describe 'morphosource/dashboard/collections/permissions/_organization_dow
 
     it 'names the staff fallback in the readout' do
       expect(document.text).to include(I18n.t('morphosource.reviewers.organization.current_empty'))
+    end
+  end
+
+  context 'with a Manager' do
+    let(:current_label) { I18n.t('morphosource.reviewers.organization.current_label') }
+
+    before do
+      organization.managers << manager
+      organization.managers_group.save!
+      organization.update_index
+    end
+
+    it 'names the resolved Manager in the readout' do
+      label = document.css('.showcase-label').find { |node| node.text.strip == current_label }
+
+      expect(label.next_element.text).to include(manager.name_or_email)
     end
   end
 

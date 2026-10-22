@@ -5,27 +5,27 @@
   <h3 class="mt-0"><%= t('morphosource.reviewers.organization.heading') %></h3>
   <div class="<%= 'text-muted' unless eligible %>">
     <%# A radio pair, not two boolean selects: exactly one choice is always set, so the "neither" state is unreachable. %>
-    <div class="form-group row">
-      <div class="col-6 showcase-label">
-        <label class="col-form-label"><%= t('morphosource.reviewers.organization.mode_label') %></label>
-      </div>
-      <div class="col-6 showcase-value">
-        <div class="form-check">
-          <%= f.radio_button :managers_are_download_reviewers, 'true', checked: mode == true, disabled: !eligible || no_managers, class: 'form-check-input' %>
-          <%= f.label :managers_are_download_reviewers, t('morphosource.reviewers.organization.managers'), value: 'true', class: 'form-check-label' %>
+    <fieldset class="form-group">
+      <div class="row">
+        <legend class="col-6 showcase-label col-form-label"><%= t('morphosource.reviewers.organization.mode_label') %></legend>
+        <div class="col-6 showcase-value">
+          <div class="form-check">
+            <%= f.radio_button :managers_are_download_reviewers, 'true', checked: mode == true, disabled: !eligible || no_managers, class: 'form-check-input' %>
+            <%= f.label :managers_are_download_reviewers, t('morphosource.reviewers.organization.managers'), value: 'true', class: 'form-check-label' %>
+          </div>
+          <div class="form-check">
+            <%= f.radio_button :managers_are_download_reviewers, 'false', checked: mode == false, disabled: !eligible, class: 'form-check-input' %>
+            <%= f.label :managers_are_download_reviewers, t('morphosource.reviewers.organization.custom'), value: 'false', class: 'form-check-label' %>
+          </div>
+          <% if no_managers %>
+            <p class="hint mb-0"><%= t('morphosource.reviewers.organization.no_managers_html', members_path: organization_members_path(@collection)) %></p>
+          <% end %>
+          <% if mode.nil? && eligible %>
+            <p class="hint mb-0"><%= t('morphosource.reviewers.organization.unset') %></p>
+          <% end %>
         </div>
-        <div class="form-check">
-          <%= f.radio_button :managers_are_download_reviewers, 'false', checked: mode == false, disabled: !eligible, class: 'form-check-input' %>
-          <%= f.label :managers_are_download_reviewers, t('morphosource.reviewers.organization.custom'), value: 'false', class: 'form-check-label' %>
-        </div>
-        <% if no_managers %>
-          <p class="hint mb-0"><%= t('morphosource.reviewers.organization.no_managers_html', members_path: organization_members_path(@collection)) %></p>
-        <% end %>
-        <% if mode.nil? && eligible %>
-          <p class="hint mb-0"><%= t('morphosource.reviewers.organization.unset') %></p>
-        <% end %>
       </div>
-    </div>
+    </fieldset>
 
     <div class="form-group row <%= 'd-none' unless mode == false %>" id="organization-custom-download-reviewers">
       <div class="col-6 showcase-label">

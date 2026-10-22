@@ -53,8 +53,9 @@ RSpec.describe 'Morphosource::Dashboard::Collections::OrganizationCollectionsCon
       end
 
       it 'drops the administrator-controlled eligibility flag' do
-        patch_organization(reviews_object_media_downloads: 'true')
+        patch_organization(managers_are_download_reviewers: 'false', reviews_object_media_downloads: 'true')
 
+        expect(organization.managers_are_download_reviewers).to be(false)
         expect(organization.reviews_object_media_downloads).to be_nil
       end
     end

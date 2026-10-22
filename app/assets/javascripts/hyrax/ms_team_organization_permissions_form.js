@@ -73,6 +73,9 @@ $( document ).ready(function() {
       if (picker.disabled) {
         $(picker).select2('enable', false);
       }
+      $(picker).on('change', function() {
+        pickerError.classList.add('d-none');
+      });
 
       reviewerBlock.querySelectorAll('input[type="radio"]').forEach(function(radio) {
         radio.addEventListener('change', function() {

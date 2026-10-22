@@ -130,7 +130,11 @@ function initSitewideModals() {
     });
   });
 
-  // Snooze forms close their modal only once the server has set the snooze cookie
+  // Snooze forms close their modal only once the server has set the snooze cookie.
+  // The cookie covers both modals in a pair, so close the partner too in case
+  // Escape or No Thanks opened it while the request was pending.
+  const modalPairs = [[modal1, modal2], [downloadModal, downloadModal2]];
+
   document.addEventListener("ajax:success", function (e) {
     const form = e.target.closest("form.snooze-form");
     if (!form) return;
@@ -138,7 +142,8 @@ function initSitewideModals() {
     const parentModal = form.closest(".configured-modal");
     if (!parentModal) return;
 
-    closeModal(parentModal);
+    const pair = modalPairs.find((p) => p.includes(parentModal)) || [parentModal];
+    pair.forEach((m) => closeModal(m));
   });
 
   document.addEventListener("ajax:error", function (e) {

@@ -475,6 +475,11 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
           expect(response).to redirect_to("original_page")
         end
 
+        it 'requests the new cart items in one batch' do
+          expect(controller).to receive(:make_request).once.with(satisfy { |items| items.size == 2 }).and_call_original
+          get :request_again, params: { batch_document_ids: [cartItem1.id,cartItem5.id], intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
+        end
+
         context 'messages fail to send' do
           before do
             allow(subject).to receive(:send_request_message_to_reviewer).with(any_args).and_raise(NoMethodError)

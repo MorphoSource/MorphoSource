@@ -66,10 +66,11 @@ RSpec.describe Morphosource::SpecimenSources::GbifSource, :vcr do
       expect(params['institution_code']).to eq('INT')
     end
 
-    it 'raises SourceError when the verbatim lookup fails' do
+    it 'falls back to interpreted values when the verbatim lookup fails' do
       allow(Morphosource::Gbif).to receive(:occurrence_verbatim).and_return(status: :error, message: 'boom')
-      expect { source.find_by_id('1') }
-        .to raise_error(Morphosource::SpecimenSources::SourceError, /verbatim lookup failed for 1: boom/)
+      params = source.find_by_id('1').specimen_params
+      expect(params['catalog_number']).to eq('interpreted-cat')
+      expect(params['sex']).to eq('MALE')
     end
   end
 

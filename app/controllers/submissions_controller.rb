@@ -231,7 +231,7 @@ class SubmissionsController < ApplicationController
       # Get specimen params from the remote record
       specimen_params = record&.specimen_params || {}
       # The selected iDigBio record is the same occurrence, so keep its IDs when another source supplied the metadata
-      if record && idigbio_record && record != idigbio_record
+      if record && idigbio_record && record.source_key != :idigbio
         specimen_params = specimen_params.merge(idigbio_record.specimen_params.slice('idigbio_uuid', 'idigbio_recordset_id'))
       end
       params[:biological_specimen] = ActionController::Parameters.new(specimen_params)

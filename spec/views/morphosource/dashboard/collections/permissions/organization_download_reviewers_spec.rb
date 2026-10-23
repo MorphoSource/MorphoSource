@@ -74,6 +74,15 @@ RSpec.describe 'morphosource/dashboard/collections/permissions/_organization_dow
       expect(picker['disabled']).to be_present
       expect(document.text).to include('Download review has not been enabled for this organization')
     end
+
+    context 'and no managers' do
+      let(:managers) { [] }
+
+      it 'does not ask for a manager' do
+        expect(managers_radio['disabled']).to be_present
+        expect(document.text).not_to include('This organization has no managers.')
+      end
+    end
   end
 
   context 'with no managers' do

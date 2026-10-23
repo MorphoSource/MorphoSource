@@ -73,6 +73,8 @@ $( document ).ready(function() {
       if (picker.disabled) {
         $(picker).select2('enable', false);
       }
+      pickerRow.classList.toggle('d-none', !customRadio.checked);
+      // jQuery on purpose: select2 3.x fires change through jQuery only.
       $(picker).on('change', function() {
         pickerError.classList.add('d-none');
       });

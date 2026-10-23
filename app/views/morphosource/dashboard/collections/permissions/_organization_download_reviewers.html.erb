@@ -17,7 +17,7 @@
             <%= f.radio_button :managers_are_download_reviewers, 'false', checked: mode == false, disabled: !eligible, class: 'form-check-input' %>
             <%= f.label :managers_are_download_reviewers, t('morphosource.reviewers.organization.custom'), value: 'false', class: 'form-check-label' %>
           </div>
-          <% if no_managers %>
+          <% if no_managers && eligible %>
             <p class="hint mb-0"><%= t('morphosource.reviewers.organization.no_managers_html', members_path: organization_members_path(@collection)) %></p>
           <% end %>
           <% if mode.nil? && eligible %>
@@ -41,7 +41,7 @@
           'data-reviewers' => reviewer_data(f, field: :custom_download_reviewer_users),
           class: 'form-control string optional multi-search-field'
         %>
-        <p class="text-danger d-none mb-0" id="organization-custom-download-reviewers-error"><%= t('morphosource.reviewers.organization.empty_custom') %></p>
+        <p class="text-danger d-none mb-0" id="organization-custom-download-reviewers-error" role="alert"><%= t('morphosource.reviewers.organization.empty_custom') %></p>
       </div>
     </div>
 

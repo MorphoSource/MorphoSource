@@ -12,7 +12,7 @@ function initSitewideModals() {
 
   // The snooze cookie covers both modals in a pair, so a snooze closes both
   const modalPairs = [[modal1, modal2], [downloadModal, downloadModal2]];
-  // Snooze forms submitted by Escape, backdrop click, or No Thanks; these close even if the snooze fails
+  // Snooze forms submitted by Escape, backdrop click, or No Thanks; their modal is already closed, so failures stay silent
   const dismissedForms = new WeakSet();
 
   function ensureOverlay() {
@@ -59,15 +59,14 @@ function initSitewideModals() {
     pair.forEach((m) => closeModal(m));
   }
 
-  // Dismiss via the modal's one-hour snooze button so the dismissal persists across pages
+  // Dismiss immediately while the one-hour snooze finishes in the background
   function snoozeModal(modal) {
     const snoozeButton = modal?.querySelector(".snooze-form .maybe-later, .snooze-form .not-now");
     if (snoozeButton) {
       dismissedForms.add(snoozeButton.form);
       snoozeButton.click();
-    } else {
-      closeModal(modal);
     }
+    closeModalPair(modal);
   }
 
   // force everything hidden
@@ -155,16 +154,9 @@ function initSitewideModals() {
 
   document.addEventListener("ajax:error", function (e) {
     const form = e.target.closest("form.snooze-form");
-    if (!form) return;
+    if (!form || dismissedForms.delete(form)) return;
 
-    const parentModal = form.closest(".configured-modal");
-    if (!parentModal) return;
-
-    if (dismissedForms.delete(form)) {
-      closeModalPair(parentModal);
-    } else {
-      parentModal.querySelector(".snooze-error")?.removeAttribute("hidden");
-    }
+    form.closest(".configured-modal")?.querySelector(".snooze-error")?.removeAttribute("hidden");
   });
 
 }

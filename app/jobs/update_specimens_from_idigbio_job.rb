@@ -4,7 +4,8 @@ class UpdateSpecimensFromIdigbioJob < Hyrax::ApplicationJob
 
   def perform(save_work=false, force_update=false)
     specimen_result.each do |hit|      
-      if (params_for_update = Morphosource::IDigBioGetMetadataService.call(hit)).present?
+      # A failed higher-priority source skips the specimen this week instead of switching it to a lower-priority source
+      if (params_for_update = Morphosource::IDigBioGetMetadataService.call(hit, skip_on_source_error: true)).present?
         if force_update || Morphosource::IDigBioGetMetadataService.idigbio_record_different_from_specimen?(hit, params_for_update)
           Rails.logger.debug "Specimen #{hit.id} will be updated as a result of " + (force_update ? "force update" : "idigbio record different from specimen")
           if save_work

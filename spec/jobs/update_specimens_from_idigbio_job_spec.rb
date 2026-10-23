@@ -66,4 +66,12 @@ RSpec.describe UpdateSpecimensFromIdigbioJob do
     end
   end
 
+  describe "#perform" do
+    it 'skips specimens when a higher-priority source failed' do
+      hit = SolrDocument.new('id' => bso.id)
+      allow(subject).to receive(:specimen_result).and_return([hit])
+      expect(Morphosource::IDigBioGetMetadataService).to receive(:call).with(hit, skip_on_source_error: true).and_return(nil)
+      subject.perform(true)
+    end
+  end
 end

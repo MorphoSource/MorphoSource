@@ -48,6 +48,23 @@ RSpec.describe Morphosource::IDigBioGetMetadataService do
       end
     end
 
+    context 'when a higher-priority source failed and a lower one found the record' do
+      before do
+        allow(resolver).to receive(:find_by_occurrence_id)
+          .and_return(Morphosource::SpecimenSources::Resolver::Result.new(status: :found, record: record, candidates: [record], source_errors: [:gbif]))
+        allow(record).to receive(:taxonomy_param_sets).and_return(provider: {}, gbif: {})
+        allow(Morphosource::SpecimenSources::TaxonomyLinker).to receive(:call).and_return(linker)
+      end
+
+      it 'uses the record by default' do
+        expect(described_class.call(specimen)).to be_present
+      end
+
+      it 'skips the specimen with skip_on_source_error' do
+        expect(described_class.call(specimen, skip_on_source_error: true)).to be_nil
+      end
+    end
+
     [:not_found, :org_mismatch, :invalid_occurrence_id].each do |status|
       context "when the resolver returns #{status}" do
         before do

@@ -75,6 +75,7 @@ RSpec.describe Morphosource::SpecimenSources::Resolver do
       result = resolver.find_by_occurrence_id(occurrence_id)
       expect(result.status).to eq(:not_found)
       expect(result.record).to be_nil
+      expect(result.source_errors).to eq([])
     end
 
     it 'uses the first source in priority order that has a record' do
@@ -88,6 +89,7 @@ RSpec.describe Morphosource::SpecimenSources::Resolver do
       second_source.with_records([second_source.build_record(id: 'b', dataset_id: nil)])
       result = described_class.new(sources: [failing, second_source]).find_by_occurrence_id(occurrence_id)
       expect(result.record.id).to eq('b')
+      expect(result.source_errors).to eq([:first])
     end
 
     it 'uses the first record when a source returns several' do

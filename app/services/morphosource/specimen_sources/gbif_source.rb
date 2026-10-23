@@ -88,12 +88,11 @@ module Morphosource
           )
         end
 
-        # Verbatim values keyed by DwC local name, or {} if the verbatim record can't be fetched
+        # Verbatim values keyed by DwC local name; a failed fetch is a source error since the provider taxonomy needs them
         def verbatim_terms(occurrence_key)
           result = Morphosource::Gbif.occurrence_verbatim(occurrence_key, timeout: LOOKUP_TIMEOUT)
           unless result[:status] == :success && result[:data].is_a?(Hash)
-            Rails.logger.error "SpecimenSources::GbifSource: verbatim lookup failed for #{occurrence_key}: #{error_message(result)}"
-            return {}
+            raise SourceError, "verbatim lookup failed for #{occurrence_key}: #{error_message(result)}"
           end
 
           result[:data].each_with_object({}) do |(term, value), terms|

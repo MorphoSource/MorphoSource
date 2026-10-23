@@ -212,7 +212,11 @@ class SubmissionsController < ApplicationController
     @submission.taxonomy_gbif_key_array = @submission.taxonomy_gbif_key_array.present? ? @submission.taxonomy_gbif_key_array.split(',') : []
 
     if @submission.idigbio_id.present?
-      record = Morphosource::SpecimenSources::Resolver.new.find_by_id(:idigbio, @submission.idigbio_id)
+      # Prefer the best source for the selected iDigBio record's occurrence ID, falling back to that record
+      resolver = Morphosource::SpecimenSources::Resolver.new(organization_id: @submission.organization_id)
+      idigbio_record = resolver.find_by_id(:idigbio, @submission.idigbio_id)
+      result = resolver.find_by_occurrence_id(idigbio_record.occurrence_id) if idigbio_record&.occurrence_id.present?
+      record = result&.found? ? result.record : idigbio_record
 
       # What taxonomy does this specimen have? Do they exist in MS2 or create them?
       linker = Morphosource::SpecimenSources::TaxonomyLinker.call(record&.taxonomy_param_sets)
@@ -225,7 +229,12 @@ class SubmissionsController < ApplicationController
       @submission.taxonomy_params_array.concat(linker.taxonomy_params_array)
 
       # Get specimen params from the remote record
-      params[:biological_specimen] = ActionController::Parameters.new(record&.specimen_params || {})
+      specimen_params = record&.specimen_params || {}
+      # The selected iDigBio record is the same occurrence, so keep its IDs when another source supplied the metadata
+      if record && idigbio_record && record.source_key != :idigbio
+        specimen_params = specimen_params.merge(idigbio_record.specimen_params.slice('idigbio_uuid', 'idigbio_recordset_id'))
+      end
+      params[:biological_specimen] = ActionController::Parameters.new(specimen_params)
     else
       # Manual physical object creation, may need to do extra steps
       if @submission.will_create_taxonomy

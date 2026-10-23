@@ -37,6 +37,19 @@ module Morphosource
         index.as :stored_searchable
       end
 
+      # Remote source the metadata was last imported from, e.g. "gbif" or "idigbio"
+      property :remote_source, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/remoteSource") do |index|
+        index.as :stored_searchable
+      end
+
+      property :gbif_occurrence_key, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/gbifOccurrenceKey") do |index|
+        index.as :stored_searchable
+      end
+
+      property :gbif_dataset_key, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/gbifDatasetKey") do |index|
+        index.as :stored_searchable
+      end
+
       property :ark, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/ark") do |index|
         index.as :stored_searchable
       end

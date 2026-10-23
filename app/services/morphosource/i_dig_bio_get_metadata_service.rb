@@ -14,16 +14,24 @@ module Morphosource
       "related_url" => "related_url_tesim", 
       "creator" => "creator_tesim", 
       "periodic_time" => "periodic_time_tesim", 
-      "original_location" => "original_location_tesim"
+      "original_location" => "original_location_tesim",
+      "sex" => "sex_tesim",
+      "latitude" => "latitude_tesim",
+      "longitude" => "longitude_tesim",
+      "remote_source" => "remote_source_tesim",
+      "gbif_occurrence_key" => "gbif_occurrence_key_tesim",
+      "gbif_dataset_key" => "gbif_dataset_key_tesim"
     }
 
-    def self.call(solr_doc)
-      new(solr_doc).call
+    # @param skip_on_source_error [Boolean] skip (return nil) when a higher-priority source failed, rather than fall back to a lower one
+    def self.call(solr_doc, skip_on_source_error: false)
+      new(solr_doc, skip_on_source_error: skip_on_source_error).call
     end
 
-    def initialize(solr_doc)
+    def initialize(solr_doc, skip_on_source_error: false)
       @specimen = solr_doc
       @occurrence_id = specimen["occurrence_id_tesim"]
+      @skip_on_source_error = skip_on_source_error
     end
 
     # Returns metadata from the best remote record (see SpecimenSources::Resolver), or nil if none is usable
@@ -34,6 +42,11 @@ module Morphosource
 
       unless result.found?
         Rails.logger.debug "Specimen #{specimen["id"]} not synced: #{result.status} for OID #{Array(occurrence_id).first}"
+        return nil
+      end
+
+      if @skip_on_source_error && result.source_errors.any?
+        Rails.logger.info "Specimen #{specimen["id"]} not synced: #{result.source_errors.join(', ')} lookup failed, so the #{result.record.source_label} result was not used"
         return nil
       end
 

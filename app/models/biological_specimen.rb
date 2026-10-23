@@ -41,11 +41,28 @@ class BiologicalSpecimen < Morphosource::Works::Base
   def update_from_idigbio
     if occurrence_id.present?
       if (params_for_update = Morphosource::IDigBioGetMetadataService.call(self.to_solr)).present?
+        clear_previous_remote_ids(params_for_update)
         if Morphosource::IDigBioGetMetadataService.idigbio_record_different_from_specimen?(self.to_solr, params_for_update)
           Morphosource::IDigBioUpdateService.call(id, save_work=true, system_update=false, params_for_update)
         end
       end
     end
+  end
+
+  # Remote record IDs for each source; they identify one occurrence
+  REMOTE_RECORD_ID_FIELDS = {
+    'idigbio' => ['idigbio_uuid', 'idigbio_recordset_id'],
+    'gbif' => ['gbif_occurrence_key', 'gbif_dataset_key']
+  }.freeze
+
+  # Other sources' IDs are stale once the occurrence ID changes, since they belong to the previous occurrence
+  def clear_previous_remote_ids(params_for_update)
+    return unless occurrence_id_changed?
+
+    biospec_model_params = params_for_update[:biospec_model_params]
+    stale_fields = REMOTE_RECORD_ID_FIELDS.except(biospec_model_params['remote_source']).values.flatten
+    stale_fields.select! { |field| send(field).present? }
+    params_for_update[:biospec_model_params] = biospec_model_params.merge(stale_fields.index_with { [] })
   end
 
   def set_idigbio_link_origin_when_create

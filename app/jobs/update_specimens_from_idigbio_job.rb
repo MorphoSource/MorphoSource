@@ -4,7 +4,8 @@ class UpdateSpecimensFromIdigbioJob < Hyrax::ApplicationJob
 
   def perform(save_work=false, force_update=false)
     specimen_result.each do |hit|      
-      if (params_for_update = Morphosource::IDigBioGetMetadataService.call(hit)).present?
+      # A failed higher-priority source skips the specimen this week instead of switching it to a lower-priority source
+      if (params_for_update = Morphosource::IDigBioGetMetadataService.call(hit, skip_on_source_error: true)).present?
         if force_update || Morphosource::IDigBioGetMetadataService.idigbio_record_different_from_specimen?(hit, params_for_update)
           Rails.logger.debug "Specimen #{hit.id} will be updated as a result of " + (force_update ? "force update" : "idigbio record different from specimen")
           if save_work
@@ -21,7 +22,7 @@ class UpdateSpecimensFromIdigbioJob < Hyrax::ApplicationJob
 
   def specimen_result
     qry = "has_model_ssim:BiologicalSpecimen"
-    fields = "id, occurrence_id_tesim, organization_id_tesim, canonical_taxonomy_tesim, taxonomy_id_tesim, idigbio_uuid_tesim, idigbio_recordset_id_tesim, vouchered_tesim, institution_code_tesim, collection_code_tesim, catalog_number_tesim, related_url_tesim, creator_tesim, periodic_time_tesim, original_location_tesim" 
+    fields = "id, occurrence_id_tesim, organization_id_tesim, canonical_taxonomy_tesim, taxonomy_id_tesim, idigbio_uuid_tesim, idigbio_recordset_id_tesim, vouchered_tesim, institution_code_tesim, collection_code_tesim, catalog_number_tesim, related_url_tesim, creator_tesim, periodic_time_tesim, original_location_tesim, sex_tesim, latitude_tesim, longitude_tesim, remote_source_tesim, gbif_occurrence_key_tesim, gbif_dataset_key_tesim" 
     ActiveFedora::SolrService.query(qry, rows: 999999, fl: fields)
   end
 

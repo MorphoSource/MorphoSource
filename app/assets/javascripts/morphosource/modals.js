@@ -50,6 +50,7 @@ function initSitewideModals() {
     if (!modal) return;
     modal.setAttribute("aria-hidden", "true");
     modal.style.display = "none";
+    modal.querySelector(".snooze-error")?.setAttribute("hidden", "");
     // Remove overlay only if no other configured modal is open
     removeOverlayIfNoneOpen();
   }

@@ -91,6 +91,23 @@ RSpec.describe UpdateSpecimensFromIdigbioJob do
       expect(Rails.logger).to have_received(:info).with(/1 checked/)
     end
 
+    context 'when the record would change fields' do
+      let(:record) { instance_double(Morphosource::SpecimenSources::Record, source_key: :gbif) }
+
+      before do
+        allow(service).to receive(:call).and_return(biospec_model_params: { 'sex' => 'Male' })
+        allow(service).to receive(:record).and_return(record)
+        allow(Morphosource::IDigBioGetMetadataService).to receive(:changed_fields)
+          .and_return(['sex', 'original_location'])
+      end
+
+      it 'tallies the chosen source and the changed fields' do
+        subject.perform(false)
+        expect(Rails.logger).to have_received(:info).with(/records by source: gbif=1/)
+        expect(Rails.logger).to have_received(:info).with(/fields that would change: sex=1, original_location=1/)
+      end
+    end
+
     it 'skips specimens when a higher-priority source failed' do
       expect(service).to receive(:call).and_return(nil)
       subject.perform(true)

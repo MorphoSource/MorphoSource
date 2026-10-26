@@ -7,14 +7,19 @@ class UpdateSpecimensFromIdigbioJob < Hyrax::ApplicationJob
   #   that predates this one.
   def perform(save_work=false, force_update=false, limit=nil)
     counts = Hash.new(0)
+    sources = Hash.new(0)
+    fields = Hash.new(0)
     started = Time.now
     specimen_result(limit.to_s[/\A[1-9]\d*\z/]&.to_i).each do |hit|      
       counts[:checked] += 1
       # A failed higher-priority source skips the specimen this week instead of switching it to a lower-priority source
       service = Morphosource::IDigBioGetMetadataService.new(hit, skip_on_source_error: true)
       if (params_for_update = service.call).present?
-        if force_update || Morphosource::IDigBioGetMetadataService.idigbio_record_different_from_specimen?(hit, params_for_update)
-          Rails.logger.debug "Specimen #{hit.id} will be updated as a result of " + (force_update ? "force update" : "idigbio record different from specimen")
+        sources[service.record.source_key] += 1
+        changed = Morphosource::IDigBioGetMetadataService.changed_fields(hit, params_for_update)
+        changed.each { |field| fields[field] += 1 }
+        if force_update || changed.any?
+          Rails.logger.debug "Specimen #{hit.id} will be updated as a result of " + (force_update ? "force update" : "changed fields: #{changed.join(', ')}")
           counts[:to_update] += 1
           if save_work
             # params_for_update can contain ActionController::Parameters, 
@@ -34,6 +39,8 @@ class UpdateSpecimensFromIdigbioJob < Hyrax::ApplicationJob
                       "#{counts[:enqueued]} enqueued, #{counts[:no_record]} with no usable record, " \
                       "#{counts[:source_error]} skipped after a source lookup failed, " \
                       "in #{(Time.now - started).round}s"
+    Rails.logger.info "UpdateSpecimensFromIdigbioJob records by source: #{tally_text(sources)}"
+    Rails.logger.info "UpdateSpecimensFromIdigbioJob fields that would change: #{tally_text(fields)}"
   end
 
   def specimen_result(limit = nil)
@@ -43,6 +50,12 @@ class UpdateSpecimensFromIdigbioJob < Hyrax::ApplicationJob
   end
 
   private
+
+  # "a=3, b=1" in descending count order
+  def tally_text(tally)
+    return 'none' if tally.empty?
+    tally.sort_by { |_, count| -count }.map { |name, count| "#{name}=#{count}" }.join(', ')
+  end
 
   # Recursively convert ActionController::Parameters to Hash
   def deep_normalize_for_job(obj)

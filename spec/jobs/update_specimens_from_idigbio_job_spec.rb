@@ -77,6 +77,20 @@ RSpec.describe UpdateSpecimensFromIdigbioJob do
       allow(Rails.logger).to receive(:info)
     end
 
+    it 'checks only the first N specimens when given a limit' do
+      allow(subject).to receive(:specimen_result).with(5).and_return([hit])
+      allow(service).to receive(:call).and_return(nil)
+      subject.perform(true, false, 5)
+      expect(Rails.logger).to have_received(:info).with(/1 checked/)
+    end
+
+    it 'checks every specimen when the limit is not a positive integer' do
+      allow(subject).to receive(:specimen_result).with(nil).and_return([hit])
+      allow(service).to receive(:call).and_return(nil)
+      subject.perform(true, false, 'true')
+      expect(Rails.logger).to have_received(:info).with(/1 checked/)
+    end
+
     it 'skips specimens when a higher-priority source failed' do
       expect(service).to receive(:call).and_return(nil)
       subject.perform(true)

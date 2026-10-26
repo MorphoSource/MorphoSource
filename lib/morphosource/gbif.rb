@@ -60,7 +60,11 @@ module Morphosource
                                     headers: { params: params },
                                     timeout: timeout)
       rescue RestClient::TooManyRequests
-        raise if retried
+        if retried
+          RestClient.log.error("GBIF rate limited #{request_url} again after #{RATE_LIMIT_RETRY_DELAY}s, giving up")
+          raise
+        end
+        RestClient.log.warn("GBIF rate limited #{request_url}, retrying in #{RATE_LIMIT_RETRY_DELAY}s")
         retried = true
         sleep RATE_LIMIT_RETRY_DELAY
         retry

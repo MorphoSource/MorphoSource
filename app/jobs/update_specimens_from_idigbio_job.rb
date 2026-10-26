@@ -2,9 +2,13 @@ class UpdateSpecimensFromIdigbioJob < Hyrax::ApplicationJob
 
   queue_as Hyrax.config.update_medium_queue_name
 
-  def perform(save_work=false, force_update=false)
+  # @param limit [Integer, String, nil] check only the first N specimens, for timing a run without the full corpus.
+  #   Anything that is not a positive integer checks every specimen, since the cron passes a second argument
+  #   that predates this one.
+  def perform(save_work=false, force_update=false, limit=nil)
     counts = Hash.new(0)
-    specimen_result.each do |hit|      
+    started = Time.now
+    specimen_result(limit.to_s[/\A[1-9]\d*\z/]&.to_i).each do |hit|      
       counts[:checked] += 1
       # A failed higher-priority source skips the specimen this week instead of switching it to a lower-priority source
       service = Morphosource::IDigBioGetMetadataService.new(hit, skip_on_source_error: true)
@@ -28,13 +32,14 @@ class UpdateSpecimensFromIdigbioJob < Hyrax::ApplicationJob
     end
     Rails.logger.info "UpdateSpecimensFromIdigbioJob: #{counts[:checked]} checked, #{counts[:to_update]} to update, " \
                       "#{counts[:enqueued]} enqueued, #{counts[:no_record]} with no usable record, " \
-                      "#{counts[:source_error]} skipped after a source lookup failed"
+                      "#{counts[:source_error]} skipped after a source lookup failed, " \
+                      "in #{(Time.now - started).round}s"
   end
 
-  def specimen_result
+  def specimen_result(limit = nil)
     qry = "has_model_ssim:BiologicalSpecimen"
     fields = "id, occurrence_id_tesim, organization_id_tesim, canonical_taxonomy_tesim, taxonomy_id_tesim, idigbio_uuid_tesim, idigbio_recordset_id_tesim, vouchered_tesim, institution_code_tesim, collection_code_tesim, catalog_number_tesim, related_url_tesim, creator_tesim, periodic_time_tesim, original_location_tesim, sex_tesim, latitude_tesim, longitude_tesim, remote_source_tesim, gbif_occurrence_key_tesim, gbif_dataset_key_tesim" 
-    ActiveFedora::SolrService.query(qry, rows: 999999, fl: fields)
+    ActiveFedora::SolrService.query(qry, rows: limit || 999999, fl: fields)
   end
 
   private

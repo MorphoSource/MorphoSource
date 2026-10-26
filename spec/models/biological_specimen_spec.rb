@@ -138,6 +138,23 @@ RSpec.describe BiologicalSpecimen do
       end
     end
 
+    context 'when the record supplied no source' do
+      let(:remote_source) { nil }
+
+      it 'keeps every ID rather than clearing them all' do
+        allow(specimen).to receive(:occurrence_id_changed?).and_return(true)
+        specimen.clear_previous_remote_ids(params_for_update)
+        expect(params_for_update[:biospec_model_params].keys).to eq(['remote_source', 'catalog_number'])
+      end
+    end
+
+    it 'keeps every ID when there are no model params' do
+      allow(specimen).to receive(:occurrence_id_changed?).and_return(true)
+      params_for_update = {}
+      specimen.clear_previous_remote_ids(params_for_update)
+      expect(params_for_update).to eq({})
+    end
+
     it 'keeps every ID when the occurrence ID did not change' do
       allow(specimen).to receive(:occurrence_id_changed?).and_return(false)
       specimen.clear_previous_remote_ids(params_for_update)

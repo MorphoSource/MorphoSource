@@ -60,6 +60,9 @@ class BiologicalSpecimen < Morphosource::Works::Base
     return unless occurrence_id_changed?
 
     biospec_model_params = params_for_update[:biospec_model_params]
+    # Without a source, except below would match nothing and clear the IDs the record just supplied
+    return if biospec_model_params.blank? || biospec_model_params['remote_source'].blank?
+
     stale_fields = REMOTE_RECORD_ID_FIELDS.except(biospec_model_params['remote_source']).values.flatten
     stale_fields.select! { |field| send(field).present? }
     params_for_update[:biospec_model_params] = biospec_model_params.merge(stale_fields.index_with { [] })

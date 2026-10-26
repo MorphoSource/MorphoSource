@@ -1,7 +1,8 @@
 module Morphosource
   class IDigBioGetMetadataService
 
-    attr_reader :specimen, :occurrence_id, :record, :canonical_taxonomy_id, :taxonomy_id_array, :taxonomy_params_array, :biospec_model_params
+    attr_reader :specimen, :occurrence_id, :record, :canonical_taxonomy_id, :taxonomy_id_array, :taxonomy_params_array, :biospec_model_params,
+                :source_errors
 
     SPECIMEN_SOLR_FIELDS = {
       "idigbio_uuid" => "idigbio_uuid_tesim", 
@@ -39,6 +40,8 @@ module Morphosource
       result = Morphosource::SpecimenSources::Resolver
         .new(organization_id: specimen["organization_id_tesim"])
         .find_by_occurrence_id(occurrence_id)
+
+      @source_errors = result.source_errors
 
       unless result.found?
         Rails.logger.debug "Specimen #{specimen["id"]} not synced: #{result.status} for OID #{Array(occurrence_id).first}"

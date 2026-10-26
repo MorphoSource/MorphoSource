@@ -67,11 +67,37 @@ RSpec.describe UpdateSpecimensFromIdigbioJob do
   end
 
   describe "#perform" do
-    it 'skips specimens when a higher-priority source failed' do
-      hit = SolrDocument.new('id' => bso.id)
+    let(:hit) { SolrDocument.new('id' => bso.id) }
+    let(:source_errors) { [] }
+    let(:service) { instance_double(Morphosource::IDigBioGetMetadataService, source_errors: source_errors) }
+
+    before do
       allow(subject).to receive(:specimen_result).and_return([hit])
-      expect(Morphosource::IDigBioGetMetadataService).to receive(:call).with(hit, skip_on_source_error: true).and_return(nil)
+      allow(Morphosource::IDigBioGetMetadataService).to receive(:new).with(hit, skip_on_source_error: true).and_return(service)
+      allow(Rails.logger).to receive(:info)
+    end
+
+    it 'skips specimens when a higher-priority source failed' do
+      expect(service).to receive(:call).and_return(nil)
       subject.perform(true)
+    end
+
+    context 'when a source lookup failed' do
+      let(:source_errors) { ['GBIF'] }
+
+      it 'counts the specimen as skipped rather than as having no record' do
+        allow(service).to receive(:call).and_return(nil)
+        subject.perform(true)
+        expect(Rails.logger).to have_received(:info)
+          .with(/1 checked, .*0 with no usable record, 1 skipped after a source lookup failed/)
+      end
+    end
+
+    it 'counts a specimen the source does not have as having no record' do
+      allow(service).to receive(:call).and_return(nil)
+      subject.perform(true)
+      expect(Rails.logger).to have_received(:info)
+        .with(/1 checked, .*1 with no usable record, 0 skipped after a source lookup failed/)
     end
   end
 end

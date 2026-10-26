@@ -3,21 +3,32 @@ class UpdateSpecimensFromIdigbioJob < Hyrax::ApplicationJob
   queue_as Hyrax.config.update_medium_queue_name
 
   def perform(save_work=false, force_update=false)
+    counts = Hash.new(0)
     specimen_result.each do |hit|      
+      counts[:checked] += 1
       # A failed higher-priority source skips the specimen this week instead of switching it to a lower-priority source
-      if (params_for_update = Morphosource::IDigBioGetMetadataService.call(hit, skip_on_source_error: true)).present?
+      service = Morphosource::IDigBioGetMetadataService.new(hit, skip_on_source_error: true)
+      if (params_for_update = service.call).present?
         if force_update || Morphosource::IDigBioGetMetadataService.idigbio_record_different_from_specimen?(hit, params_for_update)
           Rails.logger.debug "Specimen #{hit.id} will be updated as a result of " + (force_update ? "force update" : "idigbio record different from specimen")
+          counts[:to_update] += 1
           if save_work
             # params_for_update can contain ActionController::Parameters, 
             # which will raise UnfilteredParameters when passed to the job
             # Therefore, recursively convert any ActionController::Parameters to Hash first
             normalized_params = deep_normalize_for_job(params_for_update)
             UpdateSingleSpecimenFromIdigbioJob.perform_later(hit.id, system_update=true, normalized_params)
+            counts[:enqueued] += 1
           end
         end
+      else
+        # A whole run of source errors means the source was down, not that the specimens are unknown to it
+        counts[service.source_errors.any? ? :source_error : :no_record] += 1
       end
     end
+    Rails.logger.info "UpdateSpecimensFromIdigbioJob: #{counts[:checked]} checked, #{counts[:to_update]} to update, " \
+                      "#{counts[:enqueued]} enqueued, #{counts[:no_record]} with no usable record, " \
+                      "#{counts[:source_error]} skipped after a source lookup failed"
   end
 
   def specimen_result

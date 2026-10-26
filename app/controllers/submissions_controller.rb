@@ -215,7 +215,11 @@ class SubmissionsController < ApplicationController
       # Prefer the best source for the selected iDigBio record's occurrence ID, falling back to that record
       resolver = Morphosource::SpecimenSources::Resolver.new(organization_id: @submission.organization_id)
       idigbio_record = resolver.find_by_id(:idigbio, @submission.idigbio_id)
-      result = resolver.find_by_occurrence_id(idigbio_record.occurrence_id) if idigbio_record&.occurrence_id.present?
+      # With iDigBio the only source, resolving the occurrence ID would just fetch the same record again
+      other_sources = resolver.sources.reject { |source| source.key == :idigbio }
+      if other_sources.any? && idigbio_record&.occurrence_id.present?
+        result = resolver.find_by_occurrence_id(idigbio_record.occurrence_id)
+      end
       record = result&.found? ? result.record : idigbio_record
 
       # What taxonomy does this specimen have? Do they exist in MS2 or create them?

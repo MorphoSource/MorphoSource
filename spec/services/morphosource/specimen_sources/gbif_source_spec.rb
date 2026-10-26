@@ -74,6 +74,42 @@ RSpec.describe Morphosource::SpecimenSources::GbifSource, :vcr do
     end
   end
 
+  describe 'original_location precedence' do
+    # Pins the order of the three DATA_BSO_MAPPING terms that feed original_location
+    def original_location_for(verbatim: {}, interpreted: {})
+      occurrence = { 'key' => 1, 'datasetKey' => 'ds1', 'occurrenceID' => 'urn:catalog:X:Y:12345' }.merge(interpreted)
+      allow(Morphosource::Gbif).to receive(:occurrence).and_return(status: :success, data: occurrence)
+      allow(Morphosource::Gbif).to receive(:occurrence_verbatim).and_return(
+        status: :success, data: verbatim.transform_keys { |term| "http://rs.tdwg.org/dwc/terms/#{term}" }
+      )
+      source.find_by_id('1').specimen_params['original_location']
+    end
+
+    it 'prefers locality over verbatimLocality and country' do
+      expect(original_location_for(verbatim: { 'locality' => 'Ridge trail', 'verbatimLocality' => '1 mi N of Ridge trail',
+                                               'country' => 'United States' })).to eq('Ridge trail')
+    end
+
+    it 'uses verbatimLocality when locality is missing' do
+      expect(original_location_for(verbatim: { 'verbatimLocality' => '1 mi N of Ridge trail', 'country' => 'United States' }))
+        .to eq('1 mi N of Ridge trail')
+    end
+
+    it 'keeps a verbatim verbatimLocality ahead of an interpreted country' do
+      expect(original_location_for(verbatim: { 'verbatimLocality' => '1 mi N of Ridge trail' },
+                                   interpreted: { 'country' => 'United States of America' })).to eq('1 mi N of Ridge trail')
+    end
+
+    it 'falls back to country only when no locality is given' do
+      expect(original_location_for(verbatim: { 'country' => 'United States' })).to eq('United States')
+    end
+
+    it 'never uses the interpreted countryCode' do
+      expect(original_location_for(interpreted: { 'countryCode' => 'US', 'country' => 'United States of America' }))
+        .to eq('United States of America')
+    end
+  end
+
   describe '#gbif_taxonomy_params' do
     let(:record) do
       Morphosource::SpecimenSources::Record.new(

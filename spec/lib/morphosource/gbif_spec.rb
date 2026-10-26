@@ -177,4 +177,34 @@ RSpec.describe Morphosource::Gbif do
       end
     end
   end
+
+  describe 'rate limiting (HTTP 429)' do
+    let(:ok_response) { instance_double(RestClient::Response, code: 200, body: +'{"results": [{"key": 1}]}') }
+
+    before { allow(described_class).to receive(:sleep) }
+
+    it 'retries once and returns the second response' do
+      calls = 0
+      allow(RestClient::Request).to receive(:execute) do
+        calls += 1
+        calls == 1 ? raise(RestClient::TooManyRequests) : ok_response
+      end
+      results = described_class.occurrence_search({ occurrenceID: 'x' })
+      expect(results[:status]).to eq(:success)
+      expect(calls).to eq(2)
+    end
+
+    it 'returns an error after a second 429' do
+      allow(RestClient::Request).to receive(:execute).and_raise(RestClient::TooManyRequests)
+      expect(described_class.occurrence_search({ occurrenceID: 'x' })[:status]).to eq(:error)
+      expect(RestClient::Request).to have_received(:execute).twice
+    end
+  end
+
+  describe 'timeouts' do
+    it 'passes the per-call timeout to RestClient' do
+      expect(RestClient::Request).to receive(:execute).with(hash_including(timeout: 5)).and_raise(RestClient::Exceptions::Timeout)
+      described_class.occurrence('123', timeout: 5)
+    end
+  end
 end

@@ -21,6 +21,20 @@ RSpec.describe Morphosource::SpecimenSources::TaxonomyLinker do
     end
   end
 
+  context 'when the strict provider match also returns the GBIF taxonomy' do
+    before do
+      allow(Morphosource::TaxonomySearchService).to receive(:match_taxonomies_strict).and_return(
+        [SolrDocument.new('id' => 'gbif1', 'gbif_key_ssim' => ['2482592']), SolrDocument.new('id' => 'prov1')]
+      )
+      allow(Morphosource::TaxonomySearchService).to receive(:call).and_return([SolrDocument.new('id' => 'gbif1')])
+    end
+
+    it 'uses the non-GBIF taxonomy as canonical' do
+      expect(linker.canonical_taxonomy_id).to eq('prov1')
+      expect(linker.taxonomy_id_array).to eq(['prov1', 'gbif1'])
+    end
+  end
+
   context 'when no matching taxonomies exist' do
     before do
       allow(Morphosource::TaxonomySearchService).to receive(:match_taxonomies_strict).and_return([])

@@ -53,6 +53,9 @@ Hyrax.config do |config|
   # Headers for outbound remote file requests (e.g., IIIF downloads, URL imports for remote-back media)
   config.remote_request_headers = { "User-Agent" => "MorphoSource/5" }
 
+  # Remote sources to import specimen metadata from, in priority order (e.g. "gbif,idigbio")
+  config.specimen_record_sources = ENV.fetch('SPECIMEN_RECORD_SOURCES', 'idigbio').split(',').map(&:strip).reject(&:empty?).map(&:to_sym)
+
   # Title for UI header and front page tab title
   config.site_title = ENV['SITE_TITLE'].presence || 'MorphoSource'
 

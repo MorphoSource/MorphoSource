@@ -4,6 +4,8 @@ module Morphosource
     attr_reader :specimen, :occurrence_id, :record, :canonical_taxonomy_id, :taxonomy_id_array, :taxonomy_params_array, :biospec_model_params,
                 :source_errors
 
+    # Specimen fields compared against Solr to decide whether a remote record would change the specimen.
+    # remote_source is not compared: a source change already shows in gbif_occurrence_key / idigbio_uuid.
     SPECIMEN_SOLR_FIELDS = {
       "idigbio_uuid" => "idigbio_uuid_tesim", 
       "idigbio_recordset_id" => "idigbio_recordset_id_tesim", 
@@ -19,7 +21,6 @@ module Morphosource
       "sex" => "sex_tesim",
       "latitude" => "latitude_tesim",
       "longitude" => "longitude_tesim",
-      "remote_source" => "remote_source_tesim",
       "gbif_occurrence_key" => "gbif_occurrence_key_tesim",
       "gbif_dataset_key" => "gbif_dataset_key_tesim"
     }
@@ -91,6 +92,7 @@ module Morphosource
         Rails.logger.debug "is_diff Specimen #{specimen["id"]}: taxonomy_params_array #{taxonomy_params_array}"
       end
       biospec_model_params.each do |key, value|
+        next unless SPECIMEN_SOLR_FIELDS.key?(key)
         # case-insensitive comparison for cases like "male" vs. "Male"
         if Array(value).map(&:downcase).sort != specimen[SPECIMEN_SOLR_FIELDS[key]]&.map(&:downcase)&.sort
           changed << key

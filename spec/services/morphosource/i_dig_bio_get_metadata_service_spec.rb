@@ -87,6 +87,16 @@ RSpec.describe Morphosource::IDigBioGetMetadataService do
       expect(described_class.idigbio_record_different_from_specimen?(solr_specimen, params)).to eq(false)
     end
 
+    it 'ignores remote_source, so an already-linked specimen is not re-saved just to record its source' do
+      params = { biospec_model_params: { 'catalog_number' => '1234', 'occurrence_id' => 'oid', 'remote_source' => 'idigbio' } }
+      expect(described_class.idigbio_record_different_from_specimen?(solr_specimen, params)).to eq(false)
+    end
+
+    it 'ignores a param with no Solr field mapping' do
+      params = { biospec_model_params: { 'catalog_number' => '1234', 'occurrence_id' => 'oid', 'not_mapped' => 'x' } }
+      expect(described_class.idigbio_record_different_from_specimen?(solr_specimen, params)).to eq(false)
+    end
+
     it 'is true when a mapped field differs' do
       params = { biospec_model_params: { 'catalog_number' => '9999' } }
       expect(described_class.idigbio_record_different_from_specimen?(solr_specimen, params)).to eq(true)
@@ -98,9 +108,10 @@ RSpec.describe Morphosource::IDigBioGetMetadataService do
       expect(described_class.idigbio_record_different_from_specimen?(solr, params)).to eq(false)
     end
 
-    it 'is true when the record comes from a different source' do
-      solr = solr_specimen.merge('remote_source_tesim' => ['idigbio'])
-      params = { biospec_model_params: { 'remote_source' => 'gbif' } }
+    it 'is true when the record comes from a different source, caught by its ID fields' do
+      solr = solr_specimen.merge('idigbio_uuid_tesim' => ['uuid-1'])
+      params = { biospec_model_params: { 'catalog_number' => '1234', 'occurrence_id' => 'oid',
+                                         'remote_source' => 'gbif', 'gbif_occurrence_key' => '5146756742' } }
       expect(described_class.idigbio_record_different_from_specimen?(solr, params)).to eq(true)
     end
 

@@ -13,8 +13,9 @@ module Morphosource
 
     API_ENDPOINT = 'https://api.gbif.org/v1'
     DEFAULT_TIMEOUT = 15
-    # seconds to wait before the single retry after a 429 (GBIF rate limit)
-    RATE_LIMIT_RETRY_DELAY = 2
+    # seconds to wait before each retry after a 429 (GBIF rate limit); measured on dev, GBIF's throttle
+    # window needs roughly 14s to clear, so a single short retry never succeeds
+    RATE_LIMIT_RETRY_DELAYS = [2, 4, 8].freeze
     ::RestClient.log = Rails.logger
 
     def self.search(name, dataset_key, limit = 3)
@@ -53,20 +54,21 @@ module Morphosource
     end
 
     def self.execute_request(request_url, params, timeout = DEFAULT_TIMEOUT)
-      retried = false
+      attempt = 0
       begin
         RestClient::Request.execute(method: 'get',
                                     url: request_url,
                                     headers: { params: params },
                                     timeout: timeout)
       rescue RestClient::TooManyRequests
-        if retried
-          RestClient.log.error("GBIF rate limited #{request_url} again after #{RATE_LIMIT_RETRY_DELAY}s, giving up")
+        delay = RATE_LIMIT_RETRY_DELAYS[attempt]
+        if delay.nil?
+          RestClient.log.error("GBIF rate limited #{request_url} through #{RATE_LIMIT_RETRY_DELAYS.size} retries, giving up")
           raise
         end
-        RestClient.log.warn("GBIF rate limited #{request_url}, retrying in #{RATE_LIMIT_RETRY_DELAY}s")
-        retried = true
-        sleep RATE_LIMIT_RETRY_DELAY
+        RestClient.log.warn("GBIF rate limited #{request_url}, retrying in #{delay}s")
+        attempt += 1
+        sleep delay
         retry
       end
     end

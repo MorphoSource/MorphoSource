@@ -194,10 +194,22 @@ RSpec.describe Morphosource::Gbif do
       expect(calls).to eq(2)
     end
 
-    it 'returns an error after a second 429' do
+    it 'keeps retrying on the backoff schedule and returns a later response' do
+      calls = 0
+      allow(RestClient::Request).to receive(:execute) do
+        calls += 1
+        calls < 4 ? raise(RestClient::TooManyRequests) : ok_response
+      end
+      expect(described_class.occurrence_search({ occurrenceID: 'x' })[:status]).to eq(:success)
+      expect(described_class).to have_received(:sleep).with(2).ordered
+      expect(described_class).to have_received(:sleep).with(4).ordered
+    end
+
+    it 'returns an error once every retry is used' do
       allow(RestClient::Request).to receive(:execute).and_raise(RestClient::TooManyRequests)
       expect(described_class.occurrence_search({ occurrenceID: 'x' })[:status]).to eq(:error)
-      expect(RestClient::Request).to have_received(:execute).twice
+      expect(RestClient::Request).to have_received(:execute).exactly(4).times
+      expect(described_class).to have_received(:sleep).with(8)
     end
   end
 

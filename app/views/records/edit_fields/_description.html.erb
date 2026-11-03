@@ -1,4 +1,5 @@
 <% # app/views/records/edit_fields/_description.html.erb %>
+<% desc_value = [*f.object.description].first.to_s %>
 <%= f.input :description, as: :text,
-    input_html: { rows: '4' }
+    input_html: { rows: '4', value: desc_value }
 %>

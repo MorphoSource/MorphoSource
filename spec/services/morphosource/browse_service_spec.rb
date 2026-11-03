@@ -34,15 +34,16 @@ RSpec.describe Morphosource::BrowseService do
                   )
   }
   let!(:device)           { FactoryBot.valkyrie_create(:device_resource, title: ['device'], modality: ['Photogrammetry']) }
-  let!(:imagingEvent)     { ImagingEvent.create(title: ['imagingEvent'], depositor: user.ms_id, ie_modality: device.modality, device_id: [device.id.to_s], physical_object_id: [specimen.id]) }
+  let!(:imagingEvent)     { FactoryBot.valkyrie_create(:imaging_event_resource, title: ['imagingEvent'], depositor: user.ms_id, device: device, ie_modality: device.modality, physical_object_id: [specimen.id]) }
 
   before do
-    imagingEvent.ordered_members << media1
-    imagingEvent.save
+    imagingEvent.member_ids += [Valkyrie::ID.new(media1.id)]
+    Hyrax.persister.save(resource: imagingEvent)
     media1.member_of_collections << team1
     media1.save
     project1.member_of_collections << team1
     project1.save
+    media1.reload.update_index
   end
 
   describe 'total_media_and_po_by_org(org_id)' do

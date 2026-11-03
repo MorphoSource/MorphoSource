@@ -24,10 +24,29 @@ module Morphosource
       def update_parents
         parents.each do |work|
           if work.class == Media
-            imaging_event = ImagingEvent.where('member_ids_ssim' => work.id).first
+            imaging_event = find_imaging_event_for_media(work)
           end
           update_parent(work)
           update_imaging_event(imaging_event) if imaging_event.present?
+        end
+      end
+
+      def find_imaging_event_for_media(media_work)
+        # TODO: Remove ImagingEvent from Solr query and AF fallback when all ImagingEvents have been migrated to ImagingEventResource
+        ie_docs = Morphosource::SolrService.new.get_docs(
+          nil,
+          fq: ["member_ids_ssim:#{media_work.id}",
+               "has_model_ssim:(ImagingEvent ImagingEventResource)"]
+        )
+        return nil unless ie_docs.present?
+
+        ie_id = ie_docs.first['id']
+        begin
+          Hyrax.query_service.postgres_service.find_by(id: Valkyrie::ID.new(ie_id))
+        rescue Valkyrie::Persistence::ObjectNotFoundError
+          ImagingEvent.find(ie_id)
+        rescue ::ActiveFedora::ObjectNotFoundError, Ldp::Gone
+          nil
         end
       end
 
@@ -79,7 +98,8 @@ module Morphosource
             work.send(work_field.to_s + "=", transformed_value)
           end
         end
-        work.save!
+        # TODO: Remove AF branch (work.save!) when all ImagingEvents have been migrated to ImagingEventResource
+        work.is_a?(Hyrax::Resource) ? work.save : work.save!
       end
 
       def field_map_for_imaging_event

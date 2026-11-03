@@ -83,6 +83,23 @@ RSpec.describe ::SolrDocument, type: :model do
     end
   end
 
+  describe '#imaging_event?' do
+    it 'returns true when has_model is ImagingEvent' do
+      doc = described_class.new('has_model_ssim' => ['ImagingEvent'])
+      expect(doc.imaging_event?).to be true
+    end
+
+    it 'returns true when has_model is ImagingEventResource' do
+      doc = described_class.new('has_model_ssim' => ['ImagingEventResource'])
+      expect(doc.imaging_event?).to be true
+    end
+
+    it 'returns false for other models' do
+      doc = described_class.new('has_model_ssim' => ['Media'])
+      expect(doc.imaging_event?).to be false
+    end
+  end
+
   describe 'media download access fields' do
     let(:work)    { Media.create(title: ['media']) }
     subject       { SolrDocument.new(work.to_solr) }

@@ -97,12 +97,7 @@ module Hyrax
       build_form
       @presenter = show_presenter.new(search_result_document(id: params[:id]), current_ability, request)
       @member_of_collections_json = member_of_collections_json(@presenter.member_of_collection_presenters)
-      if (
-        @presenter.imaging_event.present? &&
-        (ie_work = ImagingEvent.find_by(id: @presenter.imaging_event.id)).present?
-      )
-        @imaging_event_form = Hyrax::WorkFormService.build(ie_work, current_ability, self)
-      end
+      @imaging_event_form = build_imaging_event_form(@presenter.imaging_event.id) if @presenter.imaging_event.present?
 
       if (
         @presenter.this_media_processing_event.present? &&
@@ -213,12 +208,7 @@ module Hyrax
             # todo: make sure to handle error when changing media type
             @presenter = show_presenter.new(search_result_document(id: params[:id]), current_ability, request)
 
-            if (
-              @presenter.imaging_event.present? &&
-              (ie_work = ImagingEvent.find_by(id: @presenter.imaging_event.id)).present?
-            )
-              @imaging_event_form = Hyrax::WorkFormService.build(ie_work, current_ability, self)
-            end
+            @imaging_event_form = build_imaging_event_form(@presenter.imaging_event.id) if @presenter.imaging_event.present?
 
             if (
               @presenter.this_media_processing_event.present? &&
@@ -241,7 +231,12 @@ module Hyrax
     def after_destroy(works_to_index, works_to_delete)
       UpdateRelatedWorksIndexJob.perform_later(works_to_index.compact.map { |w| w.id })
       works_to_delete&.each do |w|
-        w.delete if w.present?
+        next unless w.present?
+        if w.is_a?(Valkyrie::Resource)
+          Hyrax.persister.delete(resource: w)
+        else
+          w.delete
+        end
       end
       respond_to do |format|
         format.js {render :js => "location.reload()"}
@@ -267,15 +262,18 @@ module Hyrax
       # delete the PE parent of that media
       # If the media has a direct or indirect IE parent and that IE parent has no other children, it should also be deleted
       processing_event = curation_concern.parent_works.select { |w| w.class == ProcessingEvent }&.first
-      if processing_event.present?
-        imaging_event = processing_event.parent_works.select { |w| w.class == ImagingEvent }&.first
+      imaging_event = if processing_event.present?
+        processing_event.imaging_event
       else
-        imaging_event = curation_concern.parent_works.select { |w| w.class == ImagingEvent }&.first
+        curation_concern.imaging_event
       end
       if imaging_event.present?
-        if imaging_event.descendants.select { |d| d.class == Media && d.id != curation_concern.id}.present?
-          imaging_event = nil
+        other_media = if imaging_event.is_a?(Valkyrie::Resource)
+          imaging_event.media.select { |m| m.id.to_s != curation_concern.id }
+        else
+          imaging_event.descendants.select { |d| d.class == Media && d.id != curation_concern.id }
         end
+        imaging_event = nil if other_media.present?
       end
       works_to_delete = [processing_event, imaging_event].compact
       works_to_index = (curation_concern.related_media + curation_concern.physical_objects).compact
@@ -404,6 +402,20 @@ module Hyrax
       end
 
       # Checks that uploaded files are the correct format for selected media type.
+      def build_imaging_event_form(ie_id)
+        ie_work = begin
+          Hyrax.query_service.postgres_service.find_by(id: Valkyrie::ID.new(ie_id))
+        rescue Valkyrie::Persistence::ObjectNotFoundError
+          ImagingEvent.find_by(id: ie_id)
+        end
+        return nil unless ie_work.present?
+        if ie_work.is_a?(Hyrax::Resource)
+          Hyrax::FormFactory.new.build(ie_work, current_ability, self)
+        else
+          Hyrax::WorkFormService.build(ie_work, current_ability, self)
+        end
+      end
+
       def validate_file_formats
         files = []
         invalid_files = []

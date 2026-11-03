@@ -327,6 +327,66 @@ RSpec.describe Media do
       end
     end
 
+    describe '#imaging_event' do
+      context 'when an AF ImagingEvent ancestor exists' do
+        let(:af_ie) { instance_double(ImagingEvent, imaging_event?: true) }
+
+        before { allow(subject).to receive(:ancestors).and_return([af_ie]) }
+
+        it 'returns the AF imaging event' do
+          expect(subject.imaging_event).to eq(af_ie)
+        end
+      end
+
+      context 'when a Valkyrie ImagingEventResource is a direct ancestor' do
+        let(:ie_resource) { instance_double(ImagingEventResource, imaging_event?: true) }
+
+        before { allow(subject).to receive(:ancestors).and_return([ie_resource]) }
+
+        it 'returns the ImagingEventResource directly' do
+          expect(subject.imaging_event).to eq(ie_resource)
+        end
+      end
+
+      context 'when no AF ancestor imaging event exists but a parent ProcessingEvent has imaging_event_id' do
+        let(:ie_resource) { instance_double(ImagingEventResource) }
+        let(:pe) { ProcessingEvent.new(imaging_event_id: 'ie-resource-id') }
+
+        before do
+          allow(subject).to receive(:ancestors).and_return([pe])
+          allow(Hyrax.query_service).to receive(:find_by)
+            .with(id: Valkyrie::ID.new('ie-resource-id'))
+            .and_return(ie_resource)
+        end
+
+        it 'returns the Valkyrie ImagingEventResource' do
+          expect(subject.imaging_event).to eq(ie_resource)
+        end
+      end
+
+      context 'when the ImagingEventResource is not found' do
+        let(:pe) { ProcessingEvent.new(imaging_event_id: 'gone-id') }
+
+        before do
+          allow(subject).to receive(:ancestors).and_return([pe])
+          allow(Hyrax.query_service).to receive(:find_by)
+            .and_raise(Valkyrie::Persistence::ObjectNotFoundError)
+        end
+
+        it 'returns nil' do
+          expect(subject.imaging_event).to be_nil
+        end
+      end
+
+      context 'when there are no relevant ancestors' do
+        before { allow(subject).to receive(:ancestors).and_return([]) }
+
+        it 'returns nil' do
+          expect(subject.imaging_event).to be_nil
+        end
+      end
+    end
+
     describe 'ancestor physical objects' do
       let(:media)         { Media.create(title: ['title'], media_type: ['Image'])}
       let(:organization)  { Organization.create(title: ['organization'])}
@@ -371,6 +431,31 @@ RSpec.describe Media do
           expect(media.organization_titles).to match_array(organization.title)
         end
       end
+
+      context 'when the imaging event is a Valkyrie ImagingEventResource found via a PE ancestor' do
+        let(:specimen) { instance_double(BiologicalSpecimen, id: 'specimen-id') }
+        let(:ie_resource) { instance_double(ImagingEventResource, objects: [specimen]) }
+        let(:pe) { ProcessingEvent.new(imaging_event_id: 'ie-resource-id') }
+
+        before do
+          allow(subject).to receive(:ancestors).and_return([pe])
+          allow(Hyrax.query_service).to receive(:find_by)
+            .with(id: Valkyrie::ID.new('ie-resource-id'))
+            .and_return(ie_resource)
+        end
+
+        it 'returns physical objects from the ImagingEventResource' do
+          expect(subject.physical_objects).to match_array([specimen])
+        end
+      end
+
+      context 'when there is no imaging event' do
+        before { allow(subject).to receive(:ancestors).and_return([]) }
+
+        it 'returns an empty array' do
+          expect(subject.physical_objects).to eq([])
+        end
+      end
     end
 
     describe 'related media ids' do
@@ -403,6 +488,34 @@ RSpec.describe Media do
 
       it 'returns related media ids' do
         expect(media1.related_media_ids).to include(media2.id)
+      end
+
+      it 'queries both current and legacy imaging event id fields' do
+        service = instance_double(Morphosource::SolrService)
+
+        allow(media1).to receive(:imaging_event).and_return(double(id: 'ie-id'))
+        allow(Morphosource::SolrService).to receive(:new).and_return(service)
+        expect(service).to receive(:get_docs) do |query, options|
+          expect(query).to include('imaging_event_id_ssim:"ie-id"')
+          expect(query).to include('imaging_event_id_tesim:"ie-id"')
+          expect(options).to eq(args: { fl: 'id' })
+          []
+        end
+
+        media1.related_media_solr
+      end
+
+      context 'when media share a Valkyrie ImagingEventResource' do
+        let(:imaging_event_resource) { ImagingEventResource.new(title: ['ie']) }
+
+        before do
+          allow(media1).to receive(:imaging_event).and_return(imaging_event_resource)
+          allow(imaging_event_resource).to receive(:media).and_return([media1, media2])
+        end
+
+        it 'returns sibling media through the shared ImagingEventResource' do
+          expect(media1.related_media).to contain_exactly(media2)
+        end
       end
     end
 

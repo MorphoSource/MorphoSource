@@ -7,7 +7,7 @@ class ApplicationContainerOverrides
     ops.register 'assign_id' do
       Morphosource::Transactions::Taxonomy::Steps::AssignID.new
     end
-  
+
     ops.register 'set_uploaded_date_unless_present' do
       Morphosource::Transactions::Steps::SetUploadedDateUnlessPresent.new
     end
@@ -60,6 +60,28 @@ class ApplicationContainerOverrides
 
     ops.register 'update_work' do
       Morphosource::Transactions::Taxonomy::WorkUpdate.new
+    end
+  end
+
+  namespace 'imaging_event_change_set' do |ops|
+    ops.register 'create_work' do
+      Morphosource::Transactions::ImagingEvent::WorkCreate.new
+    end
+
+    ops.register 'update_work' do
+      Morphosource::Transactions::ImagingEvent::WorkUpdate.new
+    end
+
+    ops.register 'set_title' do
+      Morphosource::Transactions::ImagingEvent::Steps::SetTitle.new
+    end
+
+    ops.register 'apply_date_filter' do
+      Morphosource::Transactions::ImagingEvent::Steps::ApplyDateFilter.new
+    end
+
+    ops.register 'apply_controlled_values' do
+      Morphosource::Transactions::ImagingEvent::Steps::ApplyControlledValues.new
     end
   end
 end

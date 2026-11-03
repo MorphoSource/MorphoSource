@@ -6,10 +6,10 @@
 # @see https://github.com/samvera/hyrax/wiki/Hyrax-Valkyrie-Usage-Guide#forms
 # @see https://github.com/samvera/valkyrie/wiki/ChangeSets-and-Dirty-Tracking
 class DeviceResourceForm < Hyrax::Forms::PcdmObjectForm(DeviceResource)
-  include Morphosource::ValkyrieFormBehavior
   include Hyrax::FormFields(:basic_metadata)
   include Hyrax::FormFields(:device_resource)
   include Morphosource::FormMethods
+  include Morphosource::ValkyrieFormBehavior
   include SingleValuedResourceForm
 
   # Define custom form fields using the Valkyrie::ChangeSet interface

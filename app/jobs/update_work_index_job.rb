@@ -11,7 +11,7 @@ class UpdateWorkIndexJob < Hyrax::ApplicationJob
 
     # only use Valkyrie if work exists as resource, is persisted in postgres, and is not Hyrax::Work
     if valkyrie_work.present? && (valkyrie_work.model_name != "Hyrax::Work") && !valkyrie_work.wings?
-      Hyrax.index_adapter.save(resource: work)
+      Hyrax.index_adapter.save(resource: valkyrie_work)
     elsif ::ActiveFedora::Base.exists?(work_id)
       ::ActiveFedora::Base.find(work_id).update_index
     end

@@ -10,6 +10,11 @@ function initSitewideModals() {
   const downloadModal = document.getElementById("download-modal");
   const downloadModal2 = document.getElementById("download-modal-2");
 
+  // The snooze cookie covers both modals in a pair, so a snooze closes both
+  const modalPairs = [[modal1, modal2], [downloadModal, downloadModal2]];
+  // Snooze forms submitted by Escape, backdrop click, or No Thanks; their modal is already closed, so failures stay silent
+  const dismissedForms = new WeakSet();
+
   function ensureOverlay() {
     let overlay = document.getElementById("modal-overlay");
     if (!overlay) {
@@ -45,8 +50,24 @@ function initSitewideModals() {
     if (!modal) return;
     modal.setAttribute("aria-hidden", "true");
     modal.style.display = "none";
+    modal.querySelector(".snooze-error")?.setAttribute("hidden", "");
     // Remove overlay only if no other configured modal is open
     removeOverlayIfNoneOpen();
+  }
+
+  function closeModalPair(modal) {
+    const pair = modalPairs.find((p) => p.includes(modal)) || [modal];
+    pair.forEach((m) => closeModal(m));
+  }
+
+  // Dismiss immediately while the one-hour snooze finishes in the background
+  function snoozeModal(modal) {
+    const snoozeButton = modal?.querySelector(".snooze-form .maybe-later, .snooze-form .not-now");
+    if (snoozeButton) {
+      dismissedForms.add(snoozeButton.form);
+      snoozeButton.click();
+    }
+    closeModalPair(modal);
   }
 
   // force everything hidden
@@ -68,33 +89,14 @@ function initSitewideModals() {
 
   // Attach click listeners to document (event delegation)
   document.body.addEventListener("click", function (e) {
-    const snoozeButton = e.target.closest(".configured-modal .maybe-later, .configured-modal .already-donated");
     const noThanksSite1 = e.target.closest("#sitewide-modal .no-thanks");
-    const notNowSite2 = e.target.closest("#sitewide-modal-2 .not-now");
-    const notNowSite1 = e.target.closest("#sitewide-modal .not-now");
-
     const noThanksDownload = e.target.closest("#download-modal .no-thanks");
     const noThanksDownload2 = e.target.closest("#download-modal-2 .no-thanks");
-    const notNowDownload = e.target.closest("#download-modal .not-now");
-    const notNowDownload2 = e.target.closest("#download-modal-2 .not-now");
 
-    // Snooze buttons submit remote forms, so their clicks must not be prevented
-    if (snoozeButton) {
-      closeModal(snoozeButton.closest(".configured-modal"));
-      return;
-    }
     if (noThanksSite1) {
       e.preventDefault();
       closeModal(modal1);
       openModal(modal2);
-      return;
-    }
-    if (notNowSite1) {
-      closeModal(modal1);
-      return;
-    }
-    if (notNowSite2) {
-      closeModal(modal2);
       return;
     }
     if (noThanksDownload) {
@@ -103,17 +105,9 @@ function initSitewideModals() {
       openModal(downloadModal2);
       return;
     }
-    if (notNowDownload) {
-      closeModal(downloadModal);
-      return;
-    }
     if (noThanksDownload2) {
       e.preventDefault();
-      closeModal(downloadModal2);
-      return;
-    }
-    if (notNowDownload2) {
-      closeModal(downloadModal2);
+      snoozeModal(downloadModal2);
       return;
     }
   });
@@ -128,22 +122,23 @@ function initSitewideModals() {
       return;
     }
     if (modal2?.getAttribute("aria-hidden") === "false") {
-      closeModal(modal2);
+      snoozeModal(modal2);
       return;
     }
     if (downloadModal?.getAttribute("aria-hidden") === "false") {
       closeModal(downloadModal);
+      if (downloadModal2) openModal(downloadModal2);
       return;
     }
     if (downloadModal2?.getAttribute("aria-hidden") === "false") {
-      closeModal(downloadModal2);
+      snoozeModal(downloadModal2);
       return;
     }
   });
 
   [modal2, downloadModal2].filter(Boolean).forEach((m) => {
     m.addEventListener("click", (e) => {
-      if (e.target === m) closeModal(m);
+      if (e.target === m) snoozeModal(m);
     });
   });
 
@@ -151,10 +146,18 @@ function initSitewideModals() {
     const form = e.target.closest("form.snooze-form");
     if (!form) return;
 
+    dismissedForms.delete(form);
     const parentModal = form.closest(".configured-modal");
     if (!parentModal) return;
 
-    closeModal(parentModal);
+    closeModalPair(parentModal);
+  });
+
+  document.addEventListener("ajax:error", function (e) {
+    const form = e.target.closest("form.snooze-form");
+    if (!form || dismissedForms.delete(form)) return;
+
+    form.closest(".configured-modal")?.querySelector(".snooze-error")?.removeAttribute("hidden");
   });
 
 }

@@ -22,7 +22,7 @@ RSpec.describe Hyrax::MediaPresenter do
     context "for media" do
       attributes = [
         :access_control_id, :agreement_uri, :ark, :cite_as, :depositor, :description, :doi,
-        :download_reviewer, :fileset_accessibility, :fileset_visibility, :funding, :id, :identifier,
+        :download_reviewers, :fileset_accessibility, :fileset_visibility, :funding, :id, :identifier,
         :imaging_event_id, :is_remote_backed, :map_type, :media_organization_id, :media_type,
         :morphosource_use_agreement_type, :number_of_images_in_set, :organization_transfer_on_publish,
         :pending_org_transfer, :orientation, :part, :permits_3d_use, :permits_commercial_use, :physical_object_id,
@@ -36,6 +36,16 @@ RSpec.describe Hyrax::MediaPresenter do
         it "returns false or a truthy value for media document attribute #{attribute}" do
           expect(subject.send(attribute)).to eq(false).or be_present
         end
+      end
+
+      it 'renders the owner as reviewer for a document indexed before ticket 3' do
+        owner = FactoryBot.create(:contributor)
+        document = SolrDocument.new(media_document.to_h.except('download_reviewers_ssim', 'download_reviewer_mode_ssi')
+                                                        .merge('user_with_ownership_ssi' => owner.ms_id))
+        html = described_class.new(document, ability, request)
+                              .attribute_to_html(:download_reviewers, render_as: :showcase_user_link)
+
+        expect(html).to include("/users/#{owner.ms_id}")
       end
 
       it "returns an aup_path" do

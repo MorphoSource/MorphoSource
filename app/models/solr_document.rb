@@ -99,8 +99,18 @@ class SolrDocument
     self['title_tesim']
   end
 
+  # @return [Array<String>] User ms_ids or org_collection: tokens (resolved ms_ids on an
+  #   OrganizationCollection); Media indexed without download_reviewer_mode_ssi fall back to their owner
   def download_reviewers
-    self['download_reviewers_ssim'] || []
+    return self['download_reviewers_ssim'] if self['download_reviewers_ssim']
+    # Temporary owner fallback: remove once a full Media reindex leaves no document without download_reviewer_mode_ssi
+    return [] if self['download_reviewer_mode_ssi'] || self['has_model_ssim'] != ['Media']
+
+    owner_id = self['user_with_ownership_ssi']
+    return [] if owner_id.blank?
+    return ["#{::Morphosource::MediaMetadata::ORG_COLLECTION_TOKEN_PREFIX}#{owner_id}"] if ::OrganizationCollection.exists?(owner_id)
+
+    [owner_id]
   end
 
   def creator

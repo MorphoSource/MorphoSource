@@ -1,47 +1,32 @@
 module Morphosource
   class ReviewedMediaSearchService
-    include SolrHelper
-
-    def self.call(params={})
+    def self.call(params = {})
       new(params).call
     end
 
-    def initialize(params={})
-      @params = params
+    def initialize(params = {})
       @ms_id = params[:ms_id]
     end
 
+    # @return [Array<Hash>] Media documents the User reviews directly or through an organization.
     def call
-      find_media(@ms_id)
+      return [] if @ms_id.blank?
+
+      organization_ids = ActiveFedora::SolrService.query('has_model_ssim:OrganizationCollection',
+        fq: ["download_reviewers_ssim:#{Morphosource::SolrService.prepare_value(@ms_id)}"],
+        fl: 'id', rows: 999999, method: :post).map { |org| org['id'] }
+      identities = [@ms_id] + organization_ids.map { |id| "#{Morphosource::MediaMetadata::ORG_COLLECTION_TOKEN_PREFIX}#{id}" }
+      owners = [@ms_id] + organization_ids
+      ActiveFedora::SolrService.query('has_model_ssim:Media',
+        fq: ["#{any_of('download_reviewers_ssim', identities)} OR " \
+             "(#{any_of('user_with_ownership_ssi', owners)} AND -download_reviewer_mode_ssi:[* TO *])"],
+        rows: 999999, method: :post)
     end
 
     private
 
-      def find_media(ms_id)
-        qry = assemble_query({ 'depositor' => ms_id, 'owner' => ms_id, 'download_reviewer' => ms_id })
-        media = search_solr(qry)
-        media.select{ |m| m.reviewer.include?(ms_id) }
-      end
-
-      def assemble_query(specific_params)
-        query_clauses = param_clauses(specific_params)
-        query_clauses.join(' OR ')
-      end
-
-      def model_clause
-        "#{ActiveFedora.index_field_mapper.solr_name('has_model', :symbol)}:Media"
-      end
-
-      def param_clauses(specific_params)
-        clauses = []
-        specific_params.each do |k,v|
-          clauses << "#{ActiveFedora.index_field_mapper.solr_name(k, :symbol)}:#{prepare_value(v)}"
-        end
-        clauses
-      end
-
-      def search_solr(qry)
-        ActiveFedora::SolrService.query(qry, rows: 999999, method: :post)
+      def any_of(field, values)
+        "#{field}:(#{values.map { |value| Morphosource::SolrService.prepare_value(value) }.join(' OR ')})"
       end
   end
 end

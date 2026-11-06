@@ -1,5 +1,5 @@
 
-<%= render_edit_field_partial('download_reviewer', f: f) %>
+<%= render_edit_field_partial('record_download_reviewer_users', f: f) %>
 <%= render_edit_field_partial('rights_statement', f: f) %>
 <%= render_edit_field_partial('license', f: f) %>
 <%= render_edit_field_partial('morphosource_use_agreement_type', f: f) %>
@@ -33,8 +33,8 @@
   <% end %>
 
   // download reviewer
-  <% if default_present?(@media_form, 'download_reviewer') %>
-    $('#media_download_reviewer').one("select2-opening", function() {
+  <% if default_present?(@media_form, 'record_download_reviewer_users') %>
+    $('#media_record_download_reviewer_users').one("select2-opening", function() {
     alert( "<%= alert(@organization) %>" );});
   <% end %>
 

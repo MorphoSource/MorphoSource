@@ -8,6 +8,7 @@ module Morphosource
       with_themed_layout 'morphosource_dashboard'
 
       before_action :get_items_by_id, except: [:index]
+      before_action :restrict_items_to_current_user, only: [:request_item, :request_again, :cancel_request, :move_to_cart]
       before_action :get_intended_use, only: [:request_item, :request_again, :request_work]
       before_action :check_blank_items, only: [:request_item, :request_again]
       before_action :check_request_terms_agree, only: [:request_item, :request_work]
@@ -154,6 +155,16 @@ module Morphosource
       end
 
       private
+
+        # A user may only act on their own requests, not other users' by raw id.
+        def restrict_items_to_current_user
+          mine = @items.where(user_id: current_user.ms_id)
+          if mine.count < @items.count
+            flash[:error] = "You are not authorized to act on one or more of these requests"
+            redirect_back(fallback_location: my_requests_path) && return
+          end
+          @items = mine
+        end
 
         def check_blank_items
           if @items.blank?

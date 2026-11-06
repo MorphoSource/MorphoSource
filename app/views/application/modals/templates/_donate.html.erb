@@ -8,9 +8,10 @@
       <a href=<%= donate_link %> class="btn btn-primary mb-3">Donate Now</a>
       <div class="modal-dismiss-options">
         <%= button_to modal.snooze_week_path, remote: true, class: "already-donated btn btn-link p-0", form_class: "snooze-form" do %>Already Donated<% end %>
-        <%= button_to modal.snooze_day_path, remote: true, class: "maybe-later btn btn-link p-0", form_class: "snooze-form" do %>Maybe Later<% end %>
+        <%= button_to modal.snooze_hour_path, remote: true, class: "maybe-later btn btn-link p-0", form_class: "snooze-form" do %>Maybe Later<% end %>
         <button type="button" class="no-thanks btn btn-link p-0 text-danger">No Thanks</button>
       </div>
+      <p class="snooze-error text-danger small mt-2 mb-0" role="alert" hidden>We couldn't snooze this message. Please refresh the page and try again.</p>
     </div>
   </div>
 </div>

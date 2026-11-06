@@ -20,7 +20,12 @@ module Morphosource
     private
 
     def snooze(duration)
-      cookies[snooze_cookie_key] = { value: true, expires: duration.from_now }
+      cookies[snooze_cookie_key] = {
+        value: true,
+        expires: duration.from_now,
+        secure: Rails.env.production?,
+        httponly: true
+      }
       head :ok
     end
 

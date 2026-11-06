@@ -10,6 +10,7 @@ module Morphosource
       with_themed_layout 'morphosource_dashboard'
 
       before_action :get_items_by_id, only: [:clear_request, :approve_download, :deny_download, :edit_expiration]
+      before_action :require_reviewer, only: [:clear_request, :approve_download, :deny_download]
       before_action :get_expiration_date_for_approve, only: [:approve_download]
 
       PAGE_TITLE = I18n.t("morphosource.dashboard.my.request_manager.page_title")
@@ -97,6 +98,14 @@ module Morphosource
       end
 
       private
+
+        # Only a reviewer of every selected request may approve, deny, or clear it.
+        def require_reviewer
+          unless current_user && @items.present? && @items.all? { |i| i.reviewers.include?(current_user.ms_id) }
+            flash[:error] = "You are not authorized to manage one or more of these requests"
+            redirect_to main_app.request_manager_path and return
+          end
+        end
 
         def previous_requests?
           request.fullpath.include? 'previous_requests'

@@ -314,5 +314,20 @@ RSpec.describe Morphosource::My::MediaCartsController, :type => :controller  do
         expect(response).to redirect_to(my_cart_path)
       end
     end
+
+    # A user cannot remove another user's cart item by passing its id.
+    context "another user's item" do
+      let(:other_user) { User.create(email: "other@test.com", password: "password") }
+      let(:other_item) { CartItem.create(user_id: other_user.ms_id, work_id: work1.id, in_cart: true, date_downloaded: Date.yesterday, reviewers: [depositor.ms_id]) }
+      it "does not remove it from the cart" do
+        delete :destroy, params: { item_id: other_item.id }
+        other_item.reload
+        expect(other_item.in_cart).to be(true)
+      end
+      it "does not delete it" do
+        other_item
+        expect{ delete :destroy, params: { item_id: other_item.id } }.not_to change{ CartItem.count }
+      end
+    end
   end
 end

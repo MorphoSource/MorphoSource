@@ -1,36 +1,28 @@
 class Morphosource::IDigBioSearchController < ApplicationController
 
-	def search_idigbio_by_occurrence_id_ajax
-    if occurrence_id_valid? 
-    	result, idb_records = search_idigbio_by_occurrence_id(request.params["oid"])
-    else
-    	result = {}
-    	idb_records = []
+  # Looks up the best remote record for a changed occurrence ID on the specimen edit page.
+  def search_idigbio_by_occurrence_id_ajax
+    result = Morphosource::SpecimenSources::Resolver
+      .new(organization_id: request.params["organization_id"])
+      .find_by_occurrence_id(request.params["oid"])
+
+    response = { "status" => result.status.to_s, "candidate_count" => result.candidates.length }
+    if result.found?
+      record = result.record
+      response.merge!(record.specimen_params)
+      response.merge!(
+        "source" => record.source_key.to_s,
+        "source_label" => record.source_label,
+        "record_id" => record.id,
+        "record_url" => record.url,
+        "taxonomy" => record.taxonomy_param_sets
+      )
     end
-	  if result.present? && result["idigbio_uuid"].present?
-	  	result.merge!("taxonomy" => taxonomy_param_sets(result["idigbio_uuid"]))
-	  end
-	  result.merge!("idb_records" => idb_records)
-	  respond_to do |wants|
-	    wants.json { render json: result }
-	    wants.html { render json: result }
-	  end
-	end
 
-	def search_idigbio_by_occurrence_id(oid)
-	  result, idb_records = Morphosource::IDigBioSearchService.biological_specimen_params_from_occurrence_id(oid)
-		return result, idb_records
-	end
-
-	def taxonomy_param_sets(idigbio_uuid)
-		result = Morphosource::IDigBioSearchService.taxonomy_param_sets_from_idigbio(idigbio_uuid)
-	end
-
-  # valid if 8 characters minimum AND has both a letter and a number
-	def occurrence_id_valid? 
-    occurrence_id = request.params["oid"]
-    occurrence_id.present? && occurrence_id.length >= 8 && 
-      occurrence_id.count("0-9") > 0 && occurrence_id.count("a-zA-Z") > 0
-	end
+    respond_to do |wants|
+      wants.json { render json: response }
+      wants.html { render json: response }
+    end
+  end
 
 end

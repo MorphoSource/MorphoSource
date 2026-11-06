@@ -84,8 +84,10 @@ module Hyrax
       if params[:biological_specimen].present?
         if (param_occ_id = params[:biological_specimen][:occurrence_id]).present? &&
           (curation_concern.occurrence_id&.first != param_occ_id)
-          occurrence_id_results = Morphosource::IDigBio.search({'occurrenceid' => param_occ_id})
-          @idigbio_record_found = (occurrence_id_results[:status] == :success && occurrence_id_results[:data].length > 0)
+          @idigbio_record_found = Morphosource::SpecimenSources::Resolver
+            .new(organization_id: curation_concern.organization_id)
+            .find_by_occurrence_id(param_occ_id)
+            .found?
         end
       end
     end
@@ -127,10 +129,6 @@ module Hyrax
 
     def new_orgs
       ActiveFedora::Base.find(Array(@curation_concern.organization_id))
-    end
-
-    def occurrence_id_changed?
-      params[:existing_occurrence_id] != curation_concern.occurrence_id&.first
     end
 
   end

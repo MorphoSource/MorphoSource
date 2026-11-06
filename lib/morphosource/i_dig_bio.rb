@@ -6,11 +6,16 @@ module Morphosource
     extend ActiveSupport::Autoload
 
     API_ENDPOINT = 'https://search.idigbio.org/v2'
+    DEFAULT_TIMEOUT = 60
     ::RestClient.log = Rails.logger
 
-    def self.search(search_query, limit = 100, fields = nil)
+    def self.search(search_query, limit = 100, fields = nil, timeout: DEFAULT_TIMEOUT)
       begin
-        response = RestClient.post "#{API_ENDPOINT}/search/records/", {rq: search_query, limit: limit }.to_json, {content_type: :json, accept: :json}
+        response = RestClient::Request.execute(method: :post,
+                                               url: "#{API_ENDPOINT}/search/records/",
+                                               payload: { rq: search_query, limit: limit }.to_json,
+                                               headers: { content_type: :json, accept: :json },
+                                               timeout: timeout)
       rescue RestClient::Exception => exception
         {
           status: :error,
@@ -24,9 +29,9 @@ module Morphosource
       end
     end
 
-    def self.view(uuid)
+    def self.view(uuid, timeout: DEFAULT_TIMEOUT)
       begin
-        response = RestClient.get "#{API_ENDPOINT}/view/records/#{uuid}"
+        response = RestClient::Request.execute(method: :get, url: "#{API_ENDPOINT}/view/records/#{uuid}", timeout: timeout)
       rescue RestClient::Exception => exception
         {
           status: :error,

@@ -1,32 +1,33 @@
 module BatchSubmissionTools
   module Ms2Batch
     module Factory
-      # Create 1+ taxonomy params model instances from input attributes and optional iDigBio UUID
+      # Create 1+ taxonomy params model instances from input attributes and optional taxonomy imported with the BSO
       class TaxonomyManifests
-        attr_accessor :attrs, :admin_user, :depositor, :on_behalf_of, :occurrence_id
-        attr_accessor :ingests, :works_attrs
+        attr_accessor :attrs, :admin_user, :depositor, :on_behalf_of, :imported_taxonomy_param_sets
+        attr_accessor :ingests
 
-        def self.call(attrs:, admin_user:, depositor:, on_behalf_of: nil, occurrence_id: nil)
+        # @param imported_taxonomy_param_sets [Hash] { provider: {...}, gbif: {...} } from the BSO's remote record
+        def self.call(attrs:, admin_user:, depositor:, on_behalf_of: nil, imported_taxonomy_param_sets: nil)
           new(
             attrs: attrs, 
             admin_user: admin_user,
             depositor: depositor,
             on_behalf_of: on_behalf_of,
-            occurrence_id: occurrence_id
+            imported_taxonomy_param_sets: imported_taxonomy_param_sets
           ).call
         end
 
-        def initialize(attrs:, admin_user:, depositor:, on_behalf_of: nil, occurrence_id: nil)
+        def initialize(attrs:, admin_user:, depositor:, on_behalf_of: nil, imported_taxonomy_param_sets: nil)
           @attrs = attrs
           @admin_user = admin_user
           @depositor = depositor
           @on_behalf_of = on_behalf_of
-          @occurrence_id = occurrence_id
+          @imported_taxonomy_param_sets = imported_taxonomy_param_sets
           @ingests = [] 
         end
 
         def call
-          if occurrence_id.present?
+          if imported_taxonomy_param_sets.present?
             import_works_attrs
           else
             new_work_attrs
@@ -36,39 +37,24 @@ module BatchSubmissionTools
         end
 
         def import_works_attrs
-          # Import taxonomies from iDigBio
-          provider_attrs = works_attrs[:provider].transform_keys(&:to_sym)
-          gbif_attrs = works_attrs[:gbif].transform_keys(&:to_sym)
+          linker = Morphosource::SpecimenSources::TaxonomyLinker.call(imported_taxonomy_param_sets)
 
-          new_work_attrs if !provider_attrs.present? && !gbif_attrs.present?
-
-          if provider_attrs.present?
-            existing_provider_work = Morphosource::TaxonomySearchService.match_taxonomies_strict(provider_attrs)
-            if existing_provider_work&.first.present?
-              # Taxonomy matching provider taxon exists, create ingest as matching and canonical
-              new_ingest(ingest_attrs: { id: [existing_provider_work&.first.id] } , depositor: admin_user, canonical: true)
-            else
-              # No taxonomy matching provider taxon exists, create ingest as new canonical work to be created
-              new_ingest(ingest_attrs: provider_attrs, depositor: admin_user, canonical: true)
-            end
+          if linker.taxonomy_id_array.empty? && linker.taxonomy_params_array.empty?
+            new_work_attrs
+            return
           end
 
-          if gbif_attrs.present?
-            existing_gbif_work = Morphosource::TaxonomySearchService.call({ gbif_key: gbif_attrs[:gbif_key] })
-            if existing_gbif_work&.first.present?
-              # Taxonomy matching GBIF taxon exists, create ingest as matching
-              new_ingest(ingest_attrs: { id: [existing_gbif_work&.first.id] } , depositor: admin_user)
-            else
-              # No taxonomy matching GBIF taxon exists, create ingest as new work to be created
-              new_ingest(ingest_attrs: gbif_attrs, depositor: admin_user)
-
-            end
+          # Existing taxonomies, create ingests as matching
+          linker.taxonomy_id_array.each do |taxonomy_id|
+            new_ingest(ingest_attrs: { id: [taxonomy_id] }, depositor: admin_user, canonical: taxonomy_id == linker.canonical_taxonomy_id)
           end
-        end
 
-        def works_attrs
-          @works_attrs ||= 
-            Morphosource::IDigBioSearchService.taxonomy_param_sets_from_occurrence_id(occurrence_id)
+          # New taxonomies, create ingests as new works to be created
+          linker.taxonomy_params_array.each do |taxonomy_params|
+            ingest_attrs = taxonomy_params.to_unsafe_h.symbolize_keys
+            canonical = ingest_attrs.delete(:canonical).present?
+            new_ingest(ingest_attrs: ingest_attrs, depositor: admin_user, canonical: canonical)
+          end
         end
 
         def new_work_attrs

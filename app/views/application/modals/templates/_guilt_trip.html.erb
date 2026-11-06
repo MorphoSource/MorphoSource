@@ -7,7 +7,7 @@
       </div>
       <a href=<%= donate_link %> class="btn btn-primary mb-3">Donate Now</a>
       <div id="modal-donate-wrapper">
-        <%= button_to modal.snooze_hour_path, remote: true, class: "btn btn-secondary not-now", form_class: "snooze-form" do %>Not Now<% end %>
+        <%= modal_snooze_button "Not Now", modal.snooze_hour_path, "btn btn-secondary not-now", preview: local_assigns[:preview] %>
       </div>
       <p class="snooze-error text-danger small mt-2 mb-0" role="alert" hidden>We couldn't snooze this message. Please refresh the page and try again.</p>
     </div>

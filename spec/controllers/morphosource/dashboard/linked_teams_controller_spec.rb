@@ -177,6 +177,133 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
     end
   end
 
+  describe '#update_permissions on an OrganizationCollection' do
+    let(:reviewer)      { FactoryBot.create(:contributor) }
+    let(:reviewer2)     { FactoryBot.create(:contributor) }
+    let(:organization)  { FactoryBot.create(:organization_collection, depositor: admin.ms_id) }
+
+    def sign_in_as_site_admin
+      site_admin = FactoryBot.create(:admin)
+      allow(subject).to receive(:current_user).and_return(site_admin)
+      allow(site_admin).to receive(:can?).with(:edit, organization).and_return(true)
+    end
+
+    def patch_permissions(organization_params)
+      patch :update_permissions, params: { id: organization.id, organization: organization_params }
+      organization.reload
+    end
+
+    before do
+      request.env['HTTP_REFERER'] = 'original_page'
+      allow(subject).to receive(:current_user).and_return(admin)
+      allow(admin).to receive(:can?).with(:edit, organization).and_return(true)
+    end
+
+    it 'round-trips the two new Manager-editable fields' do
+      patch_permissions(
+        managers_are_download_reviewers: 'false',
+        custom_download_reviewer_users: [reviewer.ms_id, reviewer2.ms_id]
+      )
+
+      expect(organization.managers_are_download_reviewers).to be(false)
+      expect(organization.custom_download_reviewer_users).to match_array([reviewer.ms_id, reviewer2.ms_id])
+    end
+
+    it 'casts the posted string "false" to boolean false' do
+      patch_permissions(
+        managers_are_download_reviewers: 'false',
+        custom_download_reviewer_users: [reviewer.ms_id]
+      )
+
+      expect(organization.managers_are_download_reviewers).to be(false)
+      expect(organization.download_reviewers).to eq([reviewer.ms_id])
+    end
+
+    it 'casts the posted string "true" to boolean true' do
+      patch_permissions(managers_are_download_reviewers: 'true')
+
+      expect(organization.managers_are_download_reviewers).to be(true)
+    end
+
+    it 'never assigns an Array to either scalar boolean' do
+      sign_in_as_site_admin
+
+      expect { patch_permissions(reviews_object_media_downloads: 'true') }.not_to raise_error
+
+      expect(organization.reviews_object_media_downloads).to be(true)
+    end
+
+    describe 'administrator-controlled fields' do
+      let(:manager) { FactoryBot.create(:contributor) }
+
+      it 'drops them when the user is not an admin' do
+        allow(subject).to receive(:current_user).and_return(manager)
+        allow(manager).to receive(:can?).with(:edit, organization).and_return(true)
+
+        patch_permissions(reviews_object_media_downloads: 'true', media_ownership_transfer: 'true')
+
+        expect(organization.reviews_object_media_downloads).to be_nil
+        expect(organization.media_ownership_transfer).to be_falsey
+      end
+
+      it 'accepts them from an admin' do
+        sign_in_as_site_admin
+
+        patch_permissions(reviews_object_media_downloads: 'true')
+
+        expect(organization.reviews_object_media_downloads).to be(true)
+      end
+    end
+
+    describe 'a rejected save' do
+      before { allow_any_instance_of(OrganizationCollection).to receive(:update).and_return(false) }
+
+      it 'reports the failure instead of claiming success' do
+        patch_permissions(city: 'Durham')
+
+        expect(flash[:error]).to be_present
+        expect(flash[:notice]).to be_blank
+      end
+
+    end
+
+    describe 'the organization transfer job' do
+      let(:new_manager)     { FactoryBot.create(:contributor) }
+      let(:pending_request) { instance_double(ProxyDepositRequest) }
+
+      before do
+        allow(subject).to receive(:pending_transfer_requests)
+          .and_return([[pending_request], new_manager])
+      end
+
+      it 'enqueues after a successful save' do
+        expect(UpdateOrganizationTransferRequestsJob)
+          .to receive(:perform_later).with([pending_request], new_manager)
+
+        patch_permissions(city: 'Durham')
+      end
+
+      it 'enqueues nothing when the save is rejected' do
+        allow_any_instance_of(OrganizationCollection).to receive(:update).and_return(false)
+        expect(UpdateOrganizationTransferRequestsJob).not_to receive(:perform_later)
+
+        patch_permissions(city: 'Durham')
+      end
+    end
+
+    it 'still reports success when the save succeeds' do
+      patch_permissions(city: 'Durham')
+
+      expect(flash[:notice]).to eq('Permissions updated.')
+      expect(flash[:error]).to be_blank
+    end
+
+    it 'no longer accepts download_reviewer' do
+      expect(subject.send(:multi_value_fields)).not_to include(:download_reviewer)
+      expect(subject.send(:multi_value_fields)).to include(:custom_download_reviewer_users)
+    end
+  end
+
   describe '#update_permissions' do
     let(:download_permission)     { ['download_permission'] }
     let(:download_reviewer)       { [admin.ms_id] }
@@ -191,7 +318,6 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
                                     organization:
                                       {
                                         download_permission: download_permission.first,
-                                        download_reviewer: download_reviewer.first,
                                         license: license,
                                         rights_statement: rights_statement.first,
                                         agreement_uri: agreement_uri,
@@ -221,7 +347,6 @@ RSpec.describe Morphosource::Dashboard::LinkedTeamsController, type: :controller
       it 'updates the linked organization with the param values and redirects back' do
         org2.reload
         expect(org2.download_permission).to eq(download_permission)
-        expect(org2.download_reviewer).to eq(download_reviewer)
         expect(org2.license).to eq(license)
         expect(org2.rights_statement).to eq(rights_statement)
         expect(org2.agreement_uri).to eq(agreement_uri)

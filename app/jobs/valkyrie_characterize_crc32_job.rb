@@ -24,10 +24,20 @@ class ValkyrieCharacterizeCrc32Job < HeavyJob
   private
 
   def calculate_crc32(file)
-    # file is a Valkyrie::StorageAdapter::File; stream delegates to the underlying io.
-    # Both local (StreamFile) and remote (LazyHTTPFile) ios implement each.
+    # S3-backed Shrine::DelayedDownload doesn't implement #each like StreamFile/LazyHTTPFile do.
     crc32_calculator = ZipTricks::StreamCRC32.new
-    file.stream.each { |chunk| crc32_calculator << chunk }
+    stream = file.stream
+    if stream.respond_to?(:each)
+      stream.each { |chunk| crc32_calculator << chunk }
+    else
+      begin
+        while (chunk = stream.read(1024 * 1024))
+          crc32_calculator << chunk
+        end
+      ensure
+        stream.close if stream.respond_to?(:close)
+      end
+    end
     crc32_calculator.to_i
   end
 end

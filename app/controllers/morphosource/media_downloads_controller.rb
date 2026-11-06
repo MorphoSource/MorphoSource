@@ -109,7 +109,7 @@ module Morphosource
         interval_sequence << io.to_segment_and_clear
 
         # file data
-        if file[:file].is_a?(File) || file[:file].is_a?(Tempfile)
+        if file[:file].is_a?(File) || file[:file].is_a?(Tempfile) || file[:file].is_a?(Pathname)
           interval_sequence << IntervalResponse::LazyFile.new(file[:file])
         else # must be streamable
           interval_sequence << file[:file]
@@ -250,7 +250,14 @@ module Morphosource
               unavailable_media_ids << m.id
               next nil
             end
-            file_uri = file_set.original_file.uri
+            begin
+              disk_path = original_file_disk_path(original_file)
+            rescue Valkyrie::StorageAdapter::FileNotFound
+              # Metadata points at a versiondisk:// file that's missing/stale on disk.
+              unavailable_media_ids << m.id
+              next nil
+            end
+            file_uri = original_file_uri(original_file) unless disk_path
           end
 
           attrs = {
@@ -260,7 +267,7 @@ module Morphosource
             ),
             size: file_set.file_size&.first.to_i,
             crc32: file_set.crc32&.first.to_i,
-            file: RemoteInclusion.new(file_uri, file_set.file_size&.first.to_i)
+            file: disk_path || RemoteInclusion.new(file_uri, file_set.file_size&.first.to_i)
           }
 
           if attrs.values.all? { |v| v.present? }
@@ -277,8 +284,8 @@ module Morphosource
           (file_set = m.file_sets&.first).present? &&
           file_set.file_size&.first.present? &&
           file_set.crc32&.first.present? &&
-          file_set.original_file.uri.present? &&
-          file_set.original_file.original_name.present?
+          original_file_uri(file_set.original_file).present? &&
+          original_file_name(file_set.original_file).present?
         )
           return file_set
         else
@@ -292,12 +299,46 @@ module Morphosource
           (original_file = file_set.original_file).present? &&
           file_set.file_size&.first.present? &&
           file_set.crc32&.first.present? &&
-          original_file.original_name.present? &&
-          original_file.uri.present?
+          original_file_name(original_file).present? &&
+          original_file_uri(original_file).present?
         )
           return file_set, original_file
         else
           return nil, nil
+        end
+      end
+
+      # original_file's class depends on this FileSet's migration status.
+      def original_file_name(original_file)
+        original_file.respond_to?(:original_name) ? original_file.original_name : original_file.original_filename
+      end
+
+      # Non-nil only for a migrated FileSet whose bytes weren't also moved to S3.
+      def original_file_disk_path(original_file)
+        identifier = original_file.try(:file_identifier).to_s
+        return unless identifier.start_with?('versiondisk://')
+        Valkyrie::StorageAdapter.find_by(id: identifier).disk_path
+      end
+
+      def original_file_uri(original_file)
+        @original_file_uri_cache ||= {}
+        return @original_file_uri_cache[original_file.id] if @original_file_uri_cache.key?(original_file.id)
+
+        @original_file_uri_cache[original_file.id] = begin
+          if original_file.respond_to?(:uri)
+            original_file.uri
+          else
+            identifier = original_file.file_identifier.to_s
+            if identifier.start_with?('shrine://')
+              # find_by resolves the current version; the bare identifier's key doesn't exist in S3.
+              versioned_key = Valkyrie::StorageAdapter.find_by(id: identifier).io.id
+              Valkyrie::StorageAdapter.find(:s3).shrine.url(versioned_key)
+            else
+              identifier
+            end
+          end
+        rescue Valkyrie::StorageAdapter::FileNotFound
+          nil
         end
       end
 
@@ -582,7 +623,7 @@ module Morphosource
       end
 
       def output_filename(file_set, media_id)
-        file_name = file_set.original_file.original_name
+        file_name = original_file_name(file_set.original_file)
         if file_set.is_remote_backed? && !File.extname(file_name).present?
           file_name = file_set.label || ""
         end

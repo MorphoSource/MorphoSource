@@ -109,6 +109,7 @@ function initSitewideModals() {
       dismissFirstModal(modal1, modal2);
       return;
     }
+    // Reached when "donate" is chosen as the guilt trip template
     if (noThanksSite2) {
       e.preventDefault();
       snoozeModal(modal2);

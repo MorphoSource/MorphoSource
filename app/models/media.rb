@@ -11,6 +11,7 @@ class Media < Morphosource::Works::Base
   before_update :record_original_member_of_public_collection_ids, :record_original_related_media_ids, :controlled_value_filter, :date_filter
   before_validation :normalize_download_reviewer
   after_update :update_ark_status, :update_cartitem_reviewer, :check_for_organization_transfer
+  after_update :publish_reviewers_updated
   before_destroy :prevent_doi_deletion
   before_destroy :record_original_objects
   after_destroy :reindex_physical_objects, :publish_destroyed_event
@@ -29,6 +30,7 @@ class Media < Morphosource::Works::Base
   validates :title, presence: { message: 'Your work must have a title.' }
 
   attr_accessor :download_permission, :tags, :delete_thumbnail, :generated_thumbnail
+  attr_accessor :skip_reviewer_event
   after_destroy :delete_ark_if_reserved, :delete_fund_code_media_associations
 
   include Morphosource::MediaMetadata
@@ -37,6 +39,9 @@ class Media < Morphosource::Works::Base
   # This must be included at the end, because it finalizes the metadata
   # schema (by adding accepts_nested_attributes)
   include ::Hyrax::BasicMetadata
+
+  validates :download_reviewer_mode, inclusion: { in: DOWNLOAD_REVIEWER_MODES }
+  validate :object_organization_mode_is_eligible
 
   def self.parent_works(work)
     if work.in_works.empty?
@@ -97,6 +102,27 @@ class Media < Morphosource::Works::Base
 
   def normalize_download_reviewer
     self.download_reviewer = self.download_reviewer.map { |x| x.split(',') }.flatten
+  end
+
+  # _was also reports the default; use _changed? to detect a transition.
+  #
+  # @return [String] the persisted mode, or 'record_users' when nothing has been written
+  def download_reviewer_mode
+    super.presence || 'record_users'
+  end
+
+  # @param object_organizations [Array, nil] Object Organizations the caller already loaded
+  # @return [Array<String>] User ms_ids and/or "org_collection:<id>" tokens
+  def download_reviewers(object_organizations = nil)
+    if download_reviewer_mode == 'object_organization'
+      orgs = object_organizations || organizations
+      return orgs.map { |org| org_collection_token(org.id) }.uniq
+    end
+
+    record_users = Array(record_download_reviewer_users).reject(&:blank?)
+    return record_users.uniq if record_users.present?
+
+    owner_download_reviewers
   end
 
   # Generate a formatted Media work title from work attributes, using part, media_type, and modality
@@ -627,4 +653,42 @@ class Media < Morphosource::Works::Base
       }
     end
 
+    def owner_download_reviewers
+      owner_id = Array(user_with_ownership).first
+      return [] if owner_id.blank?
+      return [org_collection_token(owner_id)] if OrganizationCollection.exists?(owner_id)
+
+      [owner_id]
+    end
+
+    def org_collection_token(organization_id)
+      "#{Morphosource::MediaMetadata::ORG_COLLECTION_TOKEN_PREFIX}#{organization_id}"
+    end
+
+    # Passes vacuously at create: AddToWorkActor links parents after saving, so the
+    # submission paths gate creation instead.
+    def object_organization_mode_is_eligible
+      return unless download_reviewer_mode_changed?
+      return unless download_reviewer_mode == 'object_organization'
+
+      ineligible = organizations.reject { |org| org.try(:reviews_object_media_downloads) }
+      return if ineligible.empty?
+
+      names = ineligible.map { |org| org.title&.first }.compact
+      errors.add(:download_reviewer_mode,
+                 "cannot be set to the object organization: #{names.to_sentence} " \
+                 "#{ineligible.one? ? 'does' : 'do'} not review download requests for media of their objects")
+    end
+
+    # ActiveFedora saves publish no Hyrax events, so the model publishes its own.
+    def publish_reviewers_updated
+      return if skip_reviewer_event
+      return unless download_reviewer_mode_changed? || record_download_reviewer_users_changed?
+
+      Hyrax.publisher.publish('media.reviewers.updated', media_id: id)
+    rescue StandardError => e
+      Rails.logger.error("Media: failed to publish media.reviewers.updated for #{id}; " \
+                         "its cart items' cached reviewers are now stale. #{e.class}: #{e.message}")
+      Sentry.capture_exception(e, extra: { media_id: id })
+    end
 end

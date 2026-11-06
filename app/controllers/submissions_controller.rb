@@ -439,6 +439,7 @@ class SubmissionsController < ApplicationController
       if addl_params[:organization_transfer_on_publish].present?
         model_params.merge!({ organization_transfer_on_publish: addl_params[:organization_transfer_on_publish] })
       end
+      model_params = reject_ineligible_reviewer_mode(model_params)
       @media_create_params = model_params
 
     # the below cases are only required for temp show page instance object creation
@@ -811,10 +812,11 @@ class SubmissionsController < ApplicationController
   end
 
   def find_ancestor_organization
-    parent_list = params[:parent_media_list]
-    organization_id = params[:organization_id]
-    biological_specimen_id = params[:biological_specimen_id]
-    cultural_heritage_object_id = params[:cultural_heritage_object_id]
+    # Top-level params on the AJAX prefill; nested under :submission on create.
+    parent_list = params[:parent_media_list] || @submission&.parent_media_list&.split(',')&.first
+    organization_id = params[:organization_id] || @submission&.organization_id
+    biological_specimen_id = params[:biological_specimen_id] || @submission&.biological_specimen_id
+    cultural_heritage_object_id = params[:cultural_heritage_object_id] || @submission&.cultural_heritage_object_id
 
     organization = nil
 
@@ -845,7 +847,16 @@ class SubmissionsController < ApplicationController
       download_reviewer: format_reviewers_select2(organization.download_reviewer)
     ) if organization.download_reviewer.present?
 
+    fields[:download_reviewer_mode] = 'object_organization' if fields.delete(:reviews_object_media_downloads)
+
     fields
+  end
+
+  def reject_ineligible_reviewer_mode(model_params)
+    return model_params unless model_params['download_reviewer_mode'] == 'object_organization'
+    return model_params if object_organization_mode_allowed?(find_ancestor_organization)
+
+    model_params.except('download_reviewer_mode')
   end
 
   def format_reviewers_select2(reviewers)

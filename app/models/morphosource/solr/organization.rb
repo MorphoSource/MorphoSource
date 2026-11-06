@@ -4,6 +4,7 @@ module Morphosource
 
       ORGANIZATION_PROPERTIES = %w[contact_person
                                    download_permission
+                                   gbif_dataset_key
                                    institution_name
                                    license_blank
                                    organization_type

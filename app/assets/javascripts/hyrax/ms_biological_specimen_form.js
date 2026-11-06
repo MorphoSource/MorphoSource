@@ -234,7 +234,7 @@ $( document ).ready(function() {
     // Looks up the best remote record for an occurrence ID and shows the matching modal.
     function lookup_remote_specimen(occurrenceId) {
       const controller = new AbortController();
-      const timer = setTimeout(() => controller.abort(), 12000);
+      const timer = setTimeout(() => controller.abort(), 25000);
       const body = new URLSearchParams({
         oid: occurrenceId,
         organization_id: document.getElementById('organization-id-value')?.value || ''
@@ -261,6 +261,9 @@ $( document ).ready(function() {
         .finally(() => clearTimeout(timer));
     }
 
+    // hidden fields holding the specimen's current record ID for each source
+    const EXISTING_RECORD_ID_FIELDS = { idigbio: 'existing_idigbio_uuid', gbif: 'existing_gbif_occurrence_key' };
+
     function show_remote_specimen_result(result) {
       if (result.status === 'org_mismatch') {
         // Bootstrap 4 modals require jQuery
@@ -269,7 +272,7 @@ $( document ).ready(function() {
       } else if (result.status !== 'found') {
         console.log('No usable remote record (' + result.status + '), saving... ');
         saveSpecimen();
-      } else if (result.idigbio_uuid && result.idigbio_uuid === document.getElementById('existing_idigbio_uuid')?.value) {
+      } else if (result.record_id && result.record_id === document.getElementById(EXISTING_RECORD_ID_FIELDS[result.source])?.value) {
         console.log('Remote record is the same as existing, saving... ');
         saveSpecimen();
       } else {
@@ -279,6 +282,7 @@ $( document ).ready(function() {
         modal.querySelector('#collection-code').textContent = result.collection_code || '';
         modal.querySelector('#catalog-number').textContent = result.catalog_number || '';
         modal.querySelector('#idb-link').href = result.record_url;
+        modal.querySelectorAll('.remote-source-label').forEach((el) => { el.textContent = result.source_label; });
 
         if (result.taxonomy?.provider) {
           populate_taxonomy('Provider', result.taxonomy.provider);

@@ -39,8 +39,10 @@ module Morphosource
 
           existing = Morphosource::TaxonomySearchService.match_taxonomies_strict(provider_params)
           if existing.present?
-            @canonical_taxonomy_id = existing.first.id
-            @taxonomy_id_array << existing.first.id
+            # A GBIF taxonomy can have the same ranks as the provider one, so prefer a non-GBIF match
+            match = existing.find { |taxonomy| taxonomy['gbif_key_ssim'].blank? } || existing.first
+            @canonical_taxonomy_id = match.id
+            @taxonomy_id_array << match.id
           else
             # canonical flag is used after creation to set the canonical taxonomy ID
             @taxonomy_params_array << ActionController::Parameters.new(provider_params.merge('canonical' => true))

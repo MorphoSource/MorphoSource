@@ -84,17 +84,18 @@ module Hyrax
       if params[:biological_specimen].present?
         if (param_occ_id = params[:biological_specimen][:occurrence_id]).present? &&
           (curation_concern.occurrence_id&.first != param_occ_id)
-          @idigbio_record_found = Morphosource::SpecimenSources::Resolver
+          result = Morphosource::SpecimenSources::Resolver
             .new(organization_id: curation_concern.organization_id)
             .find_by_occurrence_id(param_occ_id)
-            .found?
+          @idigbio_record_found = result.found?
+          @remote_record_source_label = result.record&.source_label
         end
       end
     end
 
     def set_idigbio_update_notice
       if @idigbio_record_found
-        flash[:notice] = "The specimen has been updated to match the iDigBio record."
+        flash[:notice] = "The specimen has been updated to match the #{@remote_record_source_label} record."
       end
     end
 

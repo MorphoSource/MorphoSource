@@ -12,6 +12,7 @@ module Morphosource
                :download_permission,
                :download_reviewer,
                :institution_code,
+               :gbif_dataset_key,
                :institution_name,
                :morphosource_use_agreement_type,
                :organization_type,

@@ -44,6 +44,7 @@ en:
         organization_type: Organization Type
         postal_code: Postal Code
         recordset_id: Recordset ID
+        gbif_dataset_key: GBIF Dataset Key
         related_url: Related URL
         state_province: State/Province
         title: Organization Name
@@ -61,6 +62,7 @@ en:
         organization_type: Contact Morphosource admins at morphosource@duke.edu to change the organization type
         postal_code: The postal code of the organization
         recordset_id: Contact Morphosource admins at morphosource@duke.edu to change the recordset ID
+        gbif_dataset_key: Contact Morphosource admins at morphosource@duke.edu to change the GBIF dataset key
         related_url: The website(s) associated with the organization.
         state_province: The state or province where the organization is located
         title: Contact Morphosource admins at morphosource@duke.edu to change the organization name

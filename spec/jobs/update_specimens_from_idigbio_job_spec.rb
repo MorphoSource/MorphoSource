@@ -66,4 +66,69 @@ RSpec.describe UpdateSpecimensFromIdigbioJob do
     end
   end
 
+  describe "#perform" do
+    let(:hit) { SolrDocument.new('id' => bso.id) }
+    let(:source_errors) { [] }
+    let(:service) { instance_double(Morphosource::IDigBioGetMetadataService, source_errors: source_errors) }
+
+    before do
+      allow(subject).to receive(:specimen_result).and_return([hit])
+      allow(Morphosource::IDigBioGetMetadataService).to receive(:new).with(hit, skip_on_source_error: true).and_return(service)
+      allow(Rails.logger).to receive(:info)
+    end
+
+    it 'checks only the first N specimens when given a limit' do
+      allow(subject).to receive(:specimen_result).with(5).and_return([hit])
+      allow(service).to receive(:call).and_return(nil)
+      subject.perform(true, false, 5)
+      expect(Rails.logger).to have_received(:info).with(/1 checked/)
+    end
+
+    it 'checks every specimen when the limit is not a positive integer' do
+      allow(subject).to receive(:specimen_result).with(nil).and_return([hit])
+      allow(service).to receive(:call).and_return(nil)
+      subject.perform(true, false, 'true')
+      expect(Rails.logger).to have_received(:info).with(/1 checked/)
+    end
+
+    context 'when the record would change fields' do
+      let(:record) { instance_double(Morphosource::SpecimenSources::Record, source_key: :gbif) }
+
+      before do
+        allow(service).to receive(:call).and_return(biospec_model_params: { 'sex' => 'Male' })
+        allow(service).to receive(:record).and_return(record)
+        allow(Morphosource::IDigBioGetMetadataService).to receive(:changed_fields)
+          .and_return(['sex', 'original_location'])
+      end
+
+      it 'tallies the chosen source and the changed fields' do
+        subject.perform(false)
+        expect(Rails.logger).to have_received(:info).with(/records by source: gbif=1/)
+        expect(Rails.logger).to have_received(:info).with(/fields that would change: sex=1, original_location=1/)
+      end
+    end
+
+    it 'skips specimens when a higher-priority source failed' do
+      expect(service).to receive(:call).and_return(nil)
+      subject.perform(true)
+    end
+
+    context 'when a source lookup failed' do
+      let(:source_errors) { ['GBIF'] }
+
+      it 'counts the specimen as skipped rather than as having no record' do
+        allow(service).to receive(:call).and_return(nil)
+        subject.perform(true)
+        expect(Rails.logger).to have_received(:info)
+          .with(/1 checked, .*0 with no usable record, 1 skipped after a source lookup failed/)
+      end
+    end
+
+    it 'counts a specimen the source does not have as having no record' do
+      allow(service).to receive(:call).and_return(nil)
+      subject.perform(true)
+      expect(Rails.logger).to have_received(:info)
+        .with(/1 checked, .*1 with no usable record, 0 skipped after a source lookup failed/)
+    end
+  end
 end

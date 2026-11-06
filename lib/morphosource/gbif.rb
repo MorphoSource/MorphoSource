@@ -12,6 +12,10 @@ module Morphosource
     include Morphosource::Jsend
 
     API_ENDPOINT = 'https://api.gbif.org/v1'
+    DEFAULT_TIMEOUT = 15
+    # seconds to wait before each retry after a 429 (GBIF rate limit); measured on dev, GBIF's throttle
+    # window needs roughly 14s to clear, so a single short retry never succeeds
+    RATE_LIMIT_RETRY_DELAYS = [2, 4, 8].freeze
     ::RestClient.log = Rails.logger
 
     def self.search(name, dataset_key, limit = 3)
@@ -25,8 +29,21 @@ module Morphosource
       search_gbif(request_url)
     end
 
-    def self.search_gbif(request_url, params = {})
-      response = execute_request(request_url, params)
+    def self.occurrence_search(params, timeout: DEFAULT_TIMEOUT)
+      search_gbif("#{API_ENDPOINT}/occurrence/search", params, timeout: timeout)
+    end
+
+    def self.occurrence(key, timeout: DEFAULT_TIMEOUT)
+      search_gbif("#{API_ENDPOINT}/occurrence/#{key}", {}, timeout: timeout)
+    end
+
+    # Darwin Core values as published, keyed by term URI
+    def self.occurrence_verbatim(key, timeout: DEFAULT_TIMEOUT)
+      search_gbif("#{API_ENDPOINT}/occurrence/#{key}/verbatim", {}, timeout: timeout)
+    end
+
+    def self.search_gbif(request_url, params = {}, timeout: DEFAULT_TIMEOUT)
+      response = execute_request(request_url, params, timeout)
       process_response(response)
     rescue RestClient::BadRequest => e
       RestClient.log.error("GBIF returned #{e.message} for #{request_url}")
@@ -36,11 +53,24 @@ module Morphosource
       jsend_error(e)
     end
 
-    def self.execute_request(request_url, params)
-      RestClient::Request.execute(method: 'get',
-                                  url: request_url,
-                                  headers: { params: params },
-                                  timeout: 15)
+    def self.execute_request(request_url, params, timeout = DEFAULT_TIMEOUT)
+      attempt = 0
+      begin
+        RestClient::Request.execute(method: 'get',
+                                    url: request_url,
+                                    headers: { params: params },
+                                    timeout: timeout)
+      rescue RestClient::TooManyRequests
+        delay = RATE_LIMIT_RETRY_DELAYS[attempt]
+        if delay.nil?
+          RestClient.log.error("GBIF rate limited #{request_url} through #{RATE_LIMIT_RETRY_DELAYS.size} retries, giving up")
+          raise
+        end
+        RestClient.log.warn("GBIF rate limited #{request_url}, retrying in #{delay}s")
+        attempt += 1
+        sleep delay
+        retry
+      end
     end
 
     def self.process_response(response)

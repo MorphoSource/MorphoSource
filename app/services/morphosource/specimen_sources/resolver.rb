@@ -2,10 +2,14 @@ module Morphosource
   module SpecimenSources
     # Finds the best remote record for an occurrence ID, trying sources in priority order.
     class Resolver
-      # status is one of :found, :not_found, :org_mismatch, :invalid_occurrence_id
-      Result = Struct.new(:status, :record, :candidates, keyword_init: true) do
+      # status is one of :found, :not_found, :org_mismatch, :invalid_occurrence_id; source_errors lists sources whose lookup failed
+      Result = Struct.new(:status, :record, :candidates, :source_errors, keyword_init: true) do
         def found?
           status == :found
+        end
+
+        def source_errors
+          self[:source_errors] || []
         end
       end
 
@@ -36,8 +40,9 @@ module Morphosource
         end
 
         mismatched = []
+        source_errors = []
         sources.each do |source|
-          records = lookup(source) { source.find_by_occurrence_id(occurrence_id) } || []
+          records = lookup(source, source_errors) { source.find_by_occurrence_id(occurrence_id) } || []
           next if records.empty?
 
           matching = records.select { |record| org_matches?(source, record) }
@@ -47,10 +52,10 @@ module Morphosource
             next
           end
 
-          return Result.new(status: :found, record: matching.first, candidates: matching)
+          return Result.new(status: :found, record: matching.first, candidates: matching, source_errors: source_errors)
         end
 
-        Result.new(status: mismatched.any? ? :org_mismatch : :not_found, candidates: mismatched)
+        Result.new(status: mismatched.any? ? :org_mismatch : :not_found, candidates: mismatched, source_errors: source_errors)
       end
 
       # @param source_key [Symbol, String]
@@ -62,10 +67,11 @@ module Morphosource
 
       private
 
-        def lookup(source)
+        def lookup(source, source_errors = [])
           yield
         rescue StandardError => e
           Rails.logger.error "SpecimenSources::Resolver: #{source.label} lookup failed: #{e.message}"
+          source_errors << source.key
           nil
         end
 

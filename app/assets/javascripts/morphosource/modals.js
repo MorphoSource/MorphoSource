@@ -70,6 +70,16 @@ function initSitewideModals() {
     closeModalPair(modal);
   }
 
+  // Without a configured guilt trip modal, dismissing the first modal snoozes it
+  function dismissFirstModal(modal, guiltTripModal) {
+    if (guiltTripModal) {
+      closeModal(modal);
+      openModal(guiltTripModal);
+    } else {
+      snoozeModal(modal);
+    }
+  }
+
   // force everything hidden
   [modal1, modal2, downloadModal, downloadModal2].forEach((m) => {
     if (!m) return;
@@ -90,19 +100,24 @@ function initSitewideModals() {
   // Attach click listeners to document (event delegation)
   document.body.addEventListener("click", function (e) {
     const noThanksSite1 = e.target.closest("#sitewide-modal .no-thanks");
+    const noThanksSite2 = e.target.closest("#sitewide-modal-2 .no-thanks");
     const noThanksDownload = e.target.closest("#download-modal .no-thanks");
     const noThanksDownload2 = e.target.closest("#download-modal-2 .no-thanks");
 
     if (noThanksSite1) {
       e.preventDefault();
-      closeModal(modal1);
-      openModal(modal2);
+      dismissFirstModal(modal1, modal2);
+      return;
+    }
+    // Reached when "donate" is chosen as the guilt trip template
+    if (noThanksSite2) {
+      e.preventDefault();
+      snoozeModal(modal2);
       return;
     }
     if (noThanksDownload) {
       e.preventDefault();
-      closeModal(downloadModal);
-      openModal(downloadModal2);
+      dismissFirstModal(downloadModal, downloadModal2);
       return;
     }
     if (noThanksDownload2) {
@@ -117,8 +132,7 @@ function initSitewideModals() {
     if (e.key !== "Escape") return;
 
     if (modal1?.getAttribute("aria-hidden") === "false") {
-      closeModal(modal1);
-      if (modal2) openModal(modal2);
+      dismissFirstModal(modal1, modal2);
       return;
     }
     if (modal2?.getAttribute("aria-hidden") === "false") {
@@ -126,8 +140,7 @@ function initSitewideModals() {
       return;
     }
     if (downloadModal?.getAttribute("aria-hidden") === "false") {
-      closeModal(downloadModal);
-      if (downloadModal2) openModal(downloadModal2);
+      dismissFirstModal(downloadModal, downloadModal2);
       return;
     }
     if (downloadModal2?.getAttribute("aria-hidden") === "false") {

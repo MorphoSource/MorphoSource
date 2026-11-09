@@ -39,6 +39,13 @@ module Morphosource
         modal.guilt_trip_body&.body&.to_html
       end
 
+      # Admin previews get a plain button, since a button_to <form> nested in the settings form ends it early
+      def modal_snooze_button(label, path, css_class, preview: false)
+        return button_tag(label, type: 'button', class: css_class) if preview
+
+        button_to(path, remote: true, class: css_class, form_class: 'snooze-form') { label }
+      end
+
       # Displays the current title of the collection id being edited in the featured collections form
       def current_featured_collection_title(collection_id)
         return if collection_id.blank?

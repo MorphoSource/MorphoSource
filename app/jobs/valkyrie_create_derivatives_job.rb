@@ -20,10 +20,18 @@ class ValkyrieCreateDerivativesJob < HeavyJob
     return if file_set.has_remote_manifest?
 
     file = Hyrax.storage_adapter.find_by(id: file_metadata.file_identifier)
+    source_path = file.disk_path.to_s
+
+    # S3-backed files download to an extensionless tmp file; derivative tools need the real extension.
+    ext = ::File.extname(file_metadata.original_filename.to_s)
+    if file.is_a?(Valkyrie::StorageAdapter::StreamFile) && ::File.extname(source_path).empty? && ext.present?
+      ::File.rename(source_path, "#{source_path}#{ext}")
+      source_path = "#{source_path}#{ext}"
+    end
 
     Hyrax::DerivativeService
       .for(file_set)
-      .create_derivatives(file.disk_path)
+      .create_derivatives(source_path)
 
     file_set.set_final_attributes
 

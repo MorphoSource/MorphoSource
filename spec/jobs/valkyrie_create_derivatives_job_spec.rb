@@ -54,6 +54,41 @@ RSpec.describe ValkyrieCreateDerivativesJob do
     end
 
     # -----------------------------------------------------------------------
+    # S3-backed image: StreamFile#disk_path yields an extensionless tmp file,
+    # which breaks MiniMagick's layer + format handling unless the job restores
+    # the original extension.
+    # -----------------------------------------------------------------------
+    describe 'S3-backed image derivative creation' do
+      let(:file_set) do
+        FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file,
+                                   fixture_path: 'images/ms.jpg')
+      end
+      let(:file_metadata) { get_file_metadata(file_set) }
+      let(:thumbnail_path) do
+        Morphosource::DerivativePath.derivative_path_for_reference(file_set, 'thumbnail')
+      end
+      let(:stream_file) do
+        Valkyrie::StorageAdapter::StreamFile.new(
+          id: Valkyrie::ID.new("shrine://#{file_set.id}/#{SecureRandom.uuid}"),
+          io: File.open(Rails.root.join('spec', 'fixtures', 'images', 'ms.jpg'), 'rb')
+        )
+      end
+
+      before do
+        set_mime_type(file_metadata, 'image/jpeg')
+        allow(Hyrax.storage_adapter).to receive(:find_by).and_call_original
+        allow(Hyrax.storage_adapter).to receive(:find_by)
+          .with(id: file_metadata.file_identifier).and_return(stream_file)
+      end
+
+      it 'creates a thumbnail derivative from the extensionless tmp file' do
+        expect { described_class.perform_now(file_set.id.to_s, file_metadata.id.to_s) }.not_to raise_error
+        expect(File.exist?(thumbnail_path)).to be true
+        expect(File.size(thumbnail_path)).to be > 0
+      end
+    end
+
+    # -----------------------------------------------------------------------
     # Mesh (PLY) derivative creation
     # -----------------------------------------------------------------------
     describe 'mesh (PLY) derivative creation' do

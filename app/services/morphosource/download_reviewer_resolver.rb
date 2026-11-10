@@ -35,7 +35,7 @@ module Morphosource
       end
     end
 
-    # Covers organization reviewers too: their Solr document can name since-deleted Users.
+    # Includes organization reviewers: an organization's Solr document can name deleted Users.
     def existing_users(ms_ids)
       return [] if ms_ids.empty?
 

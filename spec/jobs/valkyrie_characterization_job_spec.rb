@@ -436,6 +436,47 @@ RSpec.describe ValkyrieCharacterizationJob do
       end
     end
 
+    # S3-backed files: StreamFile#disk_path is an extensionless tmp file, but the job picks the
+    # specialized step and the tools pick their importer from the extension.
+    context 'S3-backed file' do
+      let(:file_metadata) { get_file_metadata(file_set) }
+      let(:stream_file) do
+        Valkyrie::StorageAdapter::StreamFile.new(
+          id: Valkyrie::ID.new("shrine://#{file_set.id}/#{SecureRandom.uuid}"),
+          io: File.open(Rails.root.join('spec', 'fixtures', fixture_path), 'rb')
+        )
+      end
+
+      before do
+        allow_any_instance_of(Hyrax::FileMetadata).to receive(:file).and_return(stream_file)
+        described_class.perform_now(file_metadata.id.to_s)
+      end
+
+      subject { Hyrax.custom_queries.find_file_metadata_by(id: file_metadata.id) }
+
+      describe 'PLY characterization' do
+        let(:fixture_path) { 'bunny/bunny.ply' }
+        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file, fixture_path: fixture_path) }
+
+        it "runs mesh characterization and sets the mesh mime type" do
+          expect(subject.mime_type).to eq("application/ply")
+          expect(subject.point_count.first).to eq("35947")
+          expect(subject.face_count.first).to eq("69451")
+        end
+      end
+
+      describe 'DICOM (ZIP) characterization' do
+        let(:fixture_path) { 'dcm_stack/dcm_stack.zip' }
+        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file, fixture_path: fixture_path) }
+
+        it "runs archive contents characterization" do
+          expect(subject.mime_type).to eq("application/zip")
+          expect(subject.contents_mime_type).to eq(["application/dicom"])
+          expect(subject.contents_accepted_file_count).to eq([518])
+        end
+      end
+    end
+
     context 'skip_derivatives flag' do
       let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file, fixture_path: 'bunny/bunny.ply') }
       let(:file_metadata) { get_file_metadata(file_set) }

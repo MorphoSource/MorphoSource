@@ -37,10 +37,12 @@ class ValkyrieCharacterizationJob < HeavyJob
     # Calculate Crc32, needed for file download
     ValkyrieCharacterizeCrc32Job.perform_later(file_metadata.id.to_s)
 
+    source_path = Morphosource::Files::LocalSourceFile.path(file_metadata.file, file_metadata.original_filename)
+
     # Generic file characterization based on FITS applied to the upload's single file
     # Want to run this on all uploads, to get basic file info
     Rails.logger.debug "Running FITS characterization on #{file_metadata.id} (#{file_metadata.mime_type})"
-    file_metadata = run_characterization(file_metadata)
+    file_metadata = run_characterization(file_metadata, source_path)
 
     # Update parent Media and ImagingEvent with imaging metadata
     Morphosource::Characterization::Valkyrie::FileSetCharacterizationParentUpdateService.run(file_metadata)
@@ -48,18 +50,18 @@ class ValkyrieCharacterizationJob < HeavyJob
     # Specialized file characterization for meshes or to process representative file for archive
     # For mesh files, gltf-inspect/blender overwrites mime type output from FITS
 
-    ext = (File.extname(file_metadata.file_identifier.to_s) || "").downcase
+    ext = (File.extname(file_metadata.original_filename.to_s) || "").downcase
     if ext =~ /\.(glb|gltf)$/
       Rails.logger.debug "Running gltf-inspect characterization on #{file_metadata.id} (#{file_metadata.mime_type})"
-      file_metadata = run_characterization(file_metadata, gltf_inspect_options)
+      file_metadata = run_characterization(file_metadata, source_path, gltf_inspect_options)
     elsif ext =~ /\.(obj|ply|stl|wrl|x3d)$/
       Rails.logger.debug "Running Blender characterization on #{file_metadata.id} (#{file_metadata.mime_type})"
-      file_metadata = run_characterization(file_metadata, blender_options)
+      file_metadata = run_characterization(file_metadata, source_path, blender_options)
     elsif ext =~ /\.(zip|tar)$/
       Rails.logger.debug "Running archive contents characterization on #{file_metadata.id} (#{file_metadata.mime_type})"
       file_metadata = Morphosource::Characterization::Valkyrie::ArchiveContentsCharacterizationService.run(
         metadata: file_metadata,
-        file: file_metadata.file,
+        file: source_path,
         publish_characterized: false
       )
     end
@@ -76,10 +78,10 @@ class ValkyrieCharacterizationJob < HeavyJob
     )
   end
 
-  def run_characterization(file_metadata, extra_options = {})
+  def run_characterization(file_metadata, source_path, extra_options = {})
     characterization_service.run(
       metadata: file_metadata,
-      file: file_metadata.file,
+      file: source_path,
       publish_characterized: false,
       **characterization_options.merge(extra_options)
     )

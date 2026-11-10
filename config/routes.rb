@@ -741,16 +741,9 @@ Rails.application.routes.draw do
   # Returns organizations, contributors, and registered users
   get '/list-creators', to: 'morphosource/data_managers#index', as: 'list_creators', constraints: { format: 'json' }
 
-  ### DOCS ###
-  # Docs is deprecated, should use pages instead
-  get '/docs/about', to: redirect('/about', status: 301)
-  get '/docs/mission', to: redirect('/mission', status: 301)
-  get '/docs/survey', to: 'docs#survey', as: 'survey_docs'
-
   ### PAGES ###
 
   resources :pages, param: :slug, only: [ :new, :create, :show, :edit, :update, :destroy ]
-  get '/docs/:slug', to: 'pages#show', as: 'docs', defaults: { page_type: 'docs' }
 
   # special routes for vanity URLs, /terms overrides Hyrax::PagesController
   get '/about', to: 'pages#show', as: 'about', defaults: { slug: 'about-morphosource' }

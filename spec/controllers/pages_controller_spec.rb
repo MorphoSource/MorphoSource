@@ -1,8 +1,8 @@
 require 'rails_helper'
 
 RSpec.describe PagesController, type: :controller do
-  let(:valid_attributes) { { slug: 'valid-slug', title: 'Valid Title', page_type: 'pages', visibility: 'published' } }
-  let(:invalid_attributes) { { slug: '', title: '', page_type: 'pages', visibility: 'published' } }
+  let(:valid_attributes) { { slug: 'valid-slug', title: 'Valid Title', visibility: 'published' } }
+  let(:invalid_attributes) { { slug: '', title: '', visibility: 'published' } }
   let(:page) { Page.create!(valid_attributes) }
   let(:user) { create(:user) }
   let(:admin) { create(:admin) }
@@ -43,15 +43,6 @@ RSpec.describe PagesController, type: :controller do
           expect(response).to render_template(:show)
           expect(assigns(:page)).to eq(page)
         end
-      end
-    end
-
-    context 'when the page is a doc but the page_type param is missing' do
-      before { page.update!(page_type: 'docs') }
-
-      it 'redirects to the docs path' do
-        get :show, params: { slug: page.slug }
-        expect(response).to redirect_to(docs_path(page))
       end
     end
   end

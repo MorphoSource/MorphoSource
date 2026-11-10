@@ -7,10 +7,6 @@ class PagesController < ApplicationController
   def show
     @page = Page.find_by!(slug: params[:slug])
 
-    if @page.docs? && !(params[:page_type] == 'docs')
-      redirect_to docs_path(@page) and return
-    end
-
     authorize! :manage, @page if !@page.published?
     render layout: 'homepage'
   end
@@ -52,7 +48,7 @@ class PagesController < ApplicationController
   private
 
   def page_params
-    params.require(:page).permit(:page_type, :slug, :title, :visibility, :content)
+    params.require(:page).permit(:slug, :title, :visibility, :content)
   end
 
   def build_breadcrumbs

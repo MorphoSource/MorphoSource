@@ -71,9 +71,6 @@ Hyrax.config do |config|
   # ID of a media work to be used as the front page preview
   config.front_page_media = Rails.env.production? ? '000009951' : nil
 
-  # ID of a media work to be used as the end survey preview
-  config.survey_media = Rails.env.production? ? '000474136' : nil
-
   # Display site announcements? Requires github_access_token credential for GH discussions board
   config.site_announcements = ENV['GITHUB_ACCESS_TOKEN'].present?
 

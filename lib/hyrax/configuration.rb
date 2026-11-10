@@ -1083,11 +1083,6 @@ module Hyrax
       @front_page_media ||= nil
     end
 
-    attr_writer :survey_media
-    def survey_media
-      @survey_media ||= nil
-    end
-
     attr_writer :persistent_hostpath
     def persistent_hostpath
       @persistent_hostpath ||= "http://localhost/files/"

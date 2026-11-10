@@ -2,7 +2,7 @@ en:
   morphosource:
     media:
       help:
-        pixel_spacing: "Guidance for adding pixel spacing and slice thickness values can be found in the MorphoSource User Guide: <a href='/docs/guide/pixel_spacing' target='_blank'>Pixel Spacing for CT/MRI Image Stacks</a>"
+        pixel_spacing: "Guidance for adding pixel spacing and slice thickness values can be found in the MorphoSource User Guide: <a href='/docs/for-data-contributors/media/how-to-create-and-edit-media/modality-specific-instructions/ct-data/pixel-spacing-metadata' target='_blank'>Pixel Spacing for CT/MRI Image Stacks</a>"
       view:
         temporary_access: You are viewing this MorphoSource media record with a temporary access link. This grants you access to view this specific media record. This does not grant the ability to download file(s). You also may not view information relating to this media associated with other private records, like private project membership or private derivative(s) of this media, unless you independently have access to view those other records.
       edit:

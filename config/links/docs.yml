@@ -1,6 +1,6 @@
-# List of external document URLs for front page docs menu
+# List of document URLs for front page docs menu
 - label: hyrax.controls.links.docs.about
-  url: /docs/about
+  url: /about
   header: false
   footer: true
 - label: hyrax.controls.links.docs.all_docs

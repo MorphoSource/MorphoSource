@@ -20,8 +20,8 @@ module Morphosource
         transfer_group_permissions
         transfer_proxy_rights
         transfer_cart_items
-        # Both publish reviewer events, so they run last: jobs must never see a half-merged account.
-        # Publish first: a failed save! below must not drop Manager events a rerun cannot repeat.
+        # Last, so reviewer jobs never see a half-merged account. Publish before the saves: a rerun
+        # cannot rebuild Manager events because the old account's roles are already gone.
         publish_reviewer_events
         transfer_custom_download_reviewers
       end
@@ -83,7 +83,7 @@ module Morphosource
         end
       end
 
-      # Publishes nothing itself: the save publishes when the organization is in custom mode.
+      # No publish here: save! publishes when the organization is in custom mode.
       def transfer_custom_download_reviewers
         custom_reviewer_organizations.each do |organization|
           organization.custom_download_reviewer_users = organization.custom_download_reviewer_users.map do |ms_id|

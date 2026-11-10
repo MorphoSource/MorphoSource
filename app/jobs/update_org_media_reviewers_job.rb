@@ -21,7 +21,7 @@ class UpdateOrgMediaReviewersJob < Hyrax::ApplicationJob
     Rails.logger.info("[UpdateOrgMediaReviewersJob] organization #{organization_id} not found; not reindexed")
   end
 
-  # Owner clause: legacy Media without download_reviewer_mode_ssi; remove with SolrDocument#download_reviewers' fallback.
+  # The owner clause finds legacy Media covered by SolrDocument#download_reviewers' fallback; remove both together.
   def reviewed_media_filter(organization_id)
     token = Morphosource::SolrService.prepare_value(
       "#{Morphosource::MediaMetadata::ORG_COLLECTION_TOKEN_PREFIX}#{organization_id}"

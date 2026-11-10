@@ -101,7 +101,7 @@ class SolrDocument
 
   # @return [Array<String>] User ms_ids or org_collection: tokens (resolved ms_ids on an
   #   OrganizationCollection); Media indexed without download_reviewer_mode_ssi fall back to their owner
-  # @yieldparam owner_id [String] legacy owner to classify, optionally using a shared cache
+  # @yieldparam owner_id [String] legacy owner to classify; without a block, OrganizationCollection.exists?
   # @yieldreturn [Boolean] whether the owner is an OrganizationCollection
   def download_reviewers
     return self['download_reviewers_ssim'] if self['download_reviewers_ssim']

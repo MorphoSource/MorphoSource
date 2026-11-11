@@ -2,9 +2,10 @@
 
 module Morphosource
   module Riiif
-    # Riiif file resolver that handles Valkyrie FileSets (disk storage) as well as
-    # legacy AF FileSets (Fedora/HTTP storage). Valkyrie FileSets are identified by
-    # UUID-formatted IDs; everything else delegates to the fallback HTTP resolver.
+    # Riiif file resolver that handles Valkyrie files (storage adapter) as well as
+    # legacy AF files (Fedora/HTTP storage). A file is Valkyrie if its FileMetadata is in
+    # Postgres, whatever the FileSet id format (migrated FileSets keep 9-digit ids);
+    # everything else delegates to the fallback HTTP resolver.
     class ValkyrieFileResolver
       UUID_REGEX = /\A[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\z/i
 
@@ -13,18 +14,16 @@ module Morphosource
       end
 
       def find(id)
-        parts = CGI.unescape(id).split('/')
-        fs_id = parts[0]
-        file_metadata_id_str = parts[2]
-
-        return @fallback_resolver.find(id) unless uuid?(fs_id) && uuid?(file_metadata_id_str)
+        file_metadata_id_str = CGI.unescape(id).split('/')[2]
+        return @fallback_resolver.find(id) unless uuid?(file_metadata_id_str)
 
         begin
-          file_set = Hyrax.query_service.find_by(id: Valkyrie::ID.new(fs_id))
-          return @fallback_resolver.find(id) unless file_set.is_a?(::Hyrax::FileSet)
+          file_metadata = Hyrax.query_service.postgres_service.find_by(id: Valkyrie::ID.new(file_metadata_id_str))
+          return @fallback_resolver.find(id) unless file_metadata.is_a?(::Hyrax::FileMetadata)
 
-          file_metadata = Hyrax.query_service.find_by(id: Valkyrie::ID.new(file_metadata_id_str))
           file_identifier = file_metadata.file_identifier.to_s
+          # Half-migrated FileSets: metadata in Postgres, bytes still in Fedora
+          return @fallback_resolver.find(id) if file_identifier.start_with?('fedora:')
 
           if external_url_identifier?(file_identifier)
             return fetch_from_external_url(file_identifier)
@@ -33,7 +32,7 @@ module Morphosource
             return ::Riiif::File.new(disk_path) if disk_path
           end
         rescue Valkyrie::Persistence::ObjectNotFoundError
-          # Not a Valkyrie object — fall through
+          # Not a Valkyrie file — fall through
         end
 
         @fallback_resolver.find(id)

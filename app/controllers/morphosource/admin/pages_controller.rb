@@ -25,7 +25,7 @@ module Morphosource
       end
 
       def valid_sort_attributes
-        ['page_type', 'title', 'created_at', 'updated_at', 'visibility']
+        ['title', 'created_at', 'updated_at', 'visibility']
       end
 
       def default_sort_param

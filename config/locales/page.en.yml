@@ -12,8 +12,7 @@ en:
     hints:
       page:
         content: The formatted content of the page.
-        page_type: The type or grouping of the page. This will provide the base URL for the page, either /pages or /docs.
-        slug: The URL identifier and path used to access the page. If you enter a title, this will be automatically generated. If you enter a custom URL, it will be used instead. Custom slugs should be unique, lower case, and contain only letters and dashes. Slugs are appended to a URL path beginning with the page type. For example, if you enter 'my-page/2023' with type Pages, it will be accessible at /pages/my-page/2023. 
+        slug: The URL identifier and path used to access the page. If you enter a title, this will be automatically generated. If you enter a custom URL, it will be used instead. Custom slugs should be unique, lower case, and contain only letters, numbers, and dashes. Slugs are appended to /pages. For example, if you enter 'my-page-2023', it will be accessible at /pages/my-page-2023.
         title: The title of the page.
         visibility: Whether the page is visible to the public or not.
     placeholders:

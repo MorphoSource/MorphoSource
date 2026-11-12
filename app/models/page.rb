@@ -1,5 +1,4 @@
 class Page < ApplicationRecord
-  enum page_type: [ :pages, :docs ]
   enum visibility: [ :unpublished, :published ]
 
   has_rich_text :content

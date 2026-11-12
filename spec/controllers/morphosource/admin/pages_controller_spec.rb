@@ -3,8 +3,8 @@ require 'rails_helper'
 RSpec.describe Morphosource::Admin::PagesController, type: :controller do
   let(:admin) { create(:admin) }
   let(:user) { create(:user) }
-  let(:valid_attributes1) { { slug: 'valid-slug1', title: 'Valid Title1', page_type: 'pages', visibility: 'published' } }
-  let(:valid_attributes2) { { slug: 'valid-slug2', title: 'Valid Title2', page_type: 'pages', visibility: 'published' } }
+  let(:valid_attributes1) { { slug: 'valid-slug1', title: 'Valid Title1', visibility: 'published' } }
+  let(:valid_attributes2) { { slug: 'valid-slug2', title: 'Valid Title2', visibility: 'published' } }
   let!(:page1) { Page.create!(valid_attributes1) }
   let!(:page2) { Page.create!(valid_attributes2) }
 

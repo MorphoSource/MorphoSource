@@ -1,16 +1,29 @@
 # MorphoSource robots.txt
 # For the full automated-agent access policy, see /llms.txt.
 #
-# Web crawlers: only the public REST API (/api/) and IIIF Presentation
-# manifests (/manifests/) are available for programmatic access.
-# All other pages are blocked.
+# Web crawlers: the homepage, the public REST API (/api/) and IIIF
+# Presentation manifests (/manifests/) are available for programmatic access. Static assets are
+# allowed so search engines can render the homepage. All other pages are
+# blocked.
+#
+# "Allow: /$" matches only the homepage. Crawlers that follow RFC 9309
+# (Google, Bing) apply the longest matching rule, so it wins over
+# "Disallow: /".
 #
 # Note: /download, /downloads, /uv, and /uv.html are accessible to
 # end-user applications and browsers but are not intended for crawlers.
 
 User-agent: *
-Disallow: /
+Allow: /$
 Allow: /robots.txt
 Allow: /llms.txt
 Allow: /api/
 Allow: /manifests/
+Allow: /assets/
+Allow: /packs/
+Allow: /font/
+Allow: /favicon.ico
+Allow: /favicon-32x32.png
+Allow: /favicon-16x16.png
+Allow: /apple-touch-icon.png
+Disallow: /

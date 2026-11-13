@@ -1,10 +1,10 @@
 module BatchSubmissionTools
   module Ms2Batch
     module Models
-      # Takes initial biological specimen attrs and matches to existing, imports from iDigBio, or creates new attributes to work creation
+      # Takes initial biological specimen attrs and matches to existing, imports from a remote source, or creates new attributes to work creation
       class BiologicalSpecimenManifest
         attr_accessor :initial_attrs, :depositor, :on_behalf_of, :organization_id
-        attr_accessor :id, :work, :work_imported, :attrs
+        attr_accessor :id, :work, :work_imported, :attrs, :imported_taxonomy_param_sets
         attr_accessor :occurrence_id, :idigbio_uuid, :institution_code, :collection_code, :catalog_number
 
         def initialize(initial_attrs: {}, depositor: nil, on_behalf_of: nil, organization_id: nil, id: nil, attrs: {}, work_imported: false, **kwargs)
@@ -116,8 +116,13 @@ module BatchSubmissionTools
         end
 
         def import_work
-          result, idb_records = ::Morphosource::IDigBioSearchService.biological_specimen_params_from_occurrence_id(initial_attrs[:occurrence_id])
-          return result
+          result = ::Morphosource::SpecimenSources::Resolver
+            .new(organization_id: organization_id)
+            .find_by_occurrence_id(initial_attrs[:occurrence_id])
+          return {} unless result.found?
+
+          @imported_taxonomy_param_sets = result.record.taxonomy_param_sets
+          result.record.specimen_params
         end
 
         def create_new_attributes

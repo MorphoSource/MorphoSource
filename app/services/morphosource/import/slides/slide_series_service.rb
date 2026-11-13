@@ -330,7 +330,10 @@ module Morphosource
           end
 
           def specimen_params_from_occurrence_id
-            params = Morphosource::IDigBioSearchService.biological_specimen_params_from_occurrence_id(@occurrence_json['occurrenceID']).first
+            result = Morphosource::SpecimenSources::Resolver
+              .new(organization_id: organization&.id)
+              .find_by_occurrence_id(@occurrence_json['occurrenceID'])
+            params = result.found? ? result.record.specimen_params : {}
             params.symbolize_keys.transform_values { |v| Array(v).flatten }
           end
 

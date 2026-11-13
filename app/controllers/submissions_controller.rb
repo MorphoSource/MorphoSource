@@ -212,37 +212,20 @@ class SubmissionsController < ApplicationController
     @submission.taxonomy_gbif_key_array = @submission.taxonomy_gbif_key_array.present? ? @submission.taxonomy_gbif_key_array.split(',') : []
 
     if @submission.idigbio_id.present?
+      record = Morphosource::SpecimenSources::Resolver.new.find_by_id(:idigbio, @submission.idigbio_id)
+
       # What taxonomy does this specimen have? Do they exist in MS2 or create them?
-      idb_taxonomy_param_sets = Morphosource::IDigBioSearchService.taxonomy_param_sets_from_idigbio(@submission.idigbio_id)
-      provider_params = idb_taxonomy_param_sets[:provider]
-      gbif_params = idb_taxonomy_param_sets[:gbif]
-
-      if provider_params.present?
-        prov = Morphosource::TaxonomySearchService.match_taxonomies_strict(provider_params)
-        if prov.present?
-          # Exists, link as canonical
-          @submission.canonical_taxonomy_id = prov.first.id
-          @submission.taxonomy_id_array << prov.first.id unless @submission.taxonomy_id_array.include?(prov.first.id)
-        else
-          # Is new, must create
-          provider_params[:canonical] = true # to be hooked in later to set canonical taxonomy ID
-          @submission.taxonomy_params_array << ActionController::Parameters.new(provider_params)
-        end
+      linker = Morphosource::SpecimenSources::TaxonomyLinker.call(record&.taxonomy_param_sets)
+      if linker.canonical_taxonomy_id.present?
+        @submission.canonical_taxonomy_id = linker.canonical_taxonomy_id
       end
-
-      if gbif_params.present?
-        gbif = Morphosource::TaxonomySearchService.call({ gbif_key: gbif_params['gbif_key'] })
-        if gbif.present?
-          @submission.taxonomy_id_array << gbif.first.id unless @submission.taxonomy_id_array.include?(gbif.first.id)
-        else
-          @submission.taxonomy_params_array << ActionController::Parameters.new(gbif_params)
-        end
+      linker.taxonomy_id_array.each do |taxonomy_id|
+        @submission.taxonomy_id_array << taxonomy_id unless @submission.taxonomy_id_array.include?(taxonomy_id)
       end
+      @submission.taxonomy_params_array.concat(linker.taxonomy_params_array)
 
-      # Get specimen params from iDigBio
-      params[:biological_specimen] = ActionController::Parameters.new(
-        Morphosource::IDigBioSearchService.biological_specimen_params_from_idigbio(
-          @submission.idigbio_id))
+      # Get specimen params from the remote record
+      params[:biological_specimen] = ActionController::Parameters.new(record&.specimen_params || {})
     else
       # Manual physical object creation, may need to do extra steps
       if @submission.will_create_taxonomy

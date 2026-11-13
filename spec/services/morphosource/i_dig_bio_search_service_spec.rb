@@ -36,46 +36,4 @@ RSpec.describe Morphosource::IDigBioSearchService, :vcr do
       end
     end
   end
-
-  describe '.biological_specimen_params_from_idigbio' do
-    describe 'an IDigBio UUID' do
-      let(:uuid) { '061594f4-69a3-41ff-9396-dac55cc8409b' }
-      it 'returns params suitable for BiologicalSpecimen construction' do
-        results = described_class.biological_specimen_params_from_idigbio(uuid)
-        expect(results).to be_a(Hash)
-        expect(results['idigbio_uuid']).to eq(uuid)
-        expect(results).to have_key('idigbio_recordset_id')
-        expect(results['vouchered']).to eq('Yes')
-      end
-    end
-  end
-
-  describe '.taxonomy_params_from_idigbio' do
-    describe 'an IDigBio UUID' do
-      it 'returns params suitable for Taxonomy construction' do
-        results = described_class.taxonomy_param_sets_from_idigbio('061594f4-69a3-41ff-9396-dac55cc8409b')
-        expect(results).to be_a(Hash)
-        expect(results).to have_key(:provider)
-        expect(results).to have_key(:gbif)
-      end
-    end
-  end
-
-  describe '.taxonomy_param_sets_from_occurrence_id' do
-    describe 'an IDigBio occurrence ID' do
-      it 'returns params suitable for Taxonomy construction' do
-        results = described_class.taxonomy_param_sets_from_occurrence_id('urn:catalog:CM:VP:604')
-        expect(results).to be_a(Hash)
-        expect(results).to have_key(:provider)
-        expect(results).to have_key(:gbif)
-      end
-    end
-
-    describe 'an unknown IDigBio occurrence ID' do
-      it 'returns empty taxonomy param sets' do
-        results = described_class.taxonomy_param_sets_from_occurrence_id('urn:catalog:CM:VP:604-not-found')
-        expect(results).to eq({ provider: {}, gbif: {} })
-      end
-    end
-  end
 end

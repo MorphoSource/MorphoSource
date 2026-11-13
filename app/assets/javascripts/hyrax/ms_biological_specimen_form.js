@@ -231,74 +231,65 @@ $( document ).ready(function() {
       $(labelClass + ' .taxonomy-subspecies').html(t.taxonomy_subspecies);
     }
 
-    function search_idigbio(occurrence_id) {
-      $.ajax({
-        url: '/search_idigbio_by_occurrence_id_ajax',
-        type: 'POST',
-        data: {"oid": occurrence_id},
-        dataType: 'json',
-        timeout: 5000,
-        complete: function(xhr, status) {
-          if (status != "success") {
-            console.log(" status returned: " + status + ", saving... ");
-            saveSpecimen();
-          } else {
-            var results = $.parseJSON(xhr.responseText);
-            if (jQuery.isEmptyObject(results) || results.idb_records.length == 0) {
-              console.log(" no match from IDB, saving... ");
-              saveSpecimen();
-            } else if (results.idb_records.length > 1) {
-              idb_records = results.idb_records;
-              var li = "";
-              $(idb_records).each(function() {
-                li += '<li><a href="//www.idigbio.org/portal/records/' + $(this)[0].uuid + '" target="_blank" id="idb-link">iDigBio UUID ' + $(this)[0].uuid + '</a> <i class="fas fa-external-link-alt"></i></li>';
-              });
-              $('#idb-records').append(li);
-              $('#modal-idigbio-multi-result').modal();
-              enablePage();
-              $(document).on('click', '#modal-idigbio-multi-result #btn-save', function(){
-                $('#modal-idigbio-multi-result').modal('hide');
-                saveSpecimen();
-              });
-              $("#modal-idigbio-multi-result").on("hidden.bs.modal", function () {
-                $('#idb-records').html('');
-              });
-            } else if (results.idigbio_uuid == $('#existing_idigbio_uuid').val()) {
-              console.log(" idigbio_uuid is the same as existing, saving... ");
-              saveSpecimen();
-            } else if ( ($('#organization-recordset-id').val() != '') && (!$('#organization-recordset-id').val().includes(results.idigbio_recordset_id)) ) {
-              $('#modal-idigbio-recordset-not-match').modal();
-              enablePage();
-              $(document).on('click', '#modal-idigbio-recordset-not-match #btn-save', function(){
-                $('#modal-idigbio-recordset-not-match').modal('hide');
-                // revert the occurrence ID before saving
-                $('#biological_specimen_occurrence_id').val($('#existing_occurrence_id').val());
-                saveSpecimen();
-              });
-            } else {
-              console.log("Match from IDB: ", results);
-              $('#modal-idigbio-result #institution-code').html(results.institution_code);
-              $('#modal-idigbio-result #collection-code').html(results.collection_code);
-              $('#modal-idigbio-result #catalog-number').html(results.catalog_number);
-              $('#modal-idigbio-result #idb-link').attr("href", "//www.idigbio.org/portal/records/" + results.idigbio_uuid);
-
-              if (results.taxonomy.provider != null) {
-                populate_taxonomy('Provider', results.taxonomy.provider);
-              }
-              if (results.taxonomy.gbif != null) {
-                populate_taxonomy('GBIF', results.taxonomy.gbif);
-              }
-
-              $('#modal-idigbio-result').modal();
-              enablePage();
-              $(document).on('click', '#modal-idigbio-result #btn-save', function(){
-                $('#modal-idigbio-result').modal('hide');
-                saveSpecimen();
-              });
-            }
-          }
-        }
+    // Looks up the best remote record for an occurrence ID and shows the matching modal.
+    function lookup_remote_specimen(occurrenceId) {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 12000);
+      const body = new URLSearchParams({
+        oid: occurrenceId,
+        organization_id: document.getElementById('organization-id-value')?.value || ''
       });
+
+      fetch('/search_idigbio_by_occurrence_id_ajax', {
+        method: 'POST',
+        headers: {
+          'Accept': 'application/json',
+          'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]')?.content || ''
+        },
+        body: body,
+        signal: controller.signal
+      })
+        .then((response) => {
+          if (!response.ok) throw new Error('status ' + response.status);
+          return response.json();
+        })
+        .then(show_remote_specimen_result)
+        .catch((error) => {
+          console.log('Remote specimen lookup failed (' + error.message + '), saving... ');
+          saveSpecimen();
+        })
+        .finally(() => clearTimeout(timer));
+    }
+
+    function show_remote_specimen_result(result) {
+      if (result.status === 'org_mismatch') {
+        // Bootstrap 4 modals require jQuery
+        $('#modal-idigbio-recordset-not-match').modal();
+        enablePage();
+      } else if (result.status !== 'found') {
+        console.log('No usable remote record (' + result.status + '), saving... ');
+        saveSpecimen();
+      } else if (result.idigbio_uuid && result.idigbio_uuid === document.getElementById('existing_idigbio_uuid')?.value) {
+        console.log('Remote record is the same as existing, saving... ');
+        saveSpecimen();
+      } else {
+        console.log('Remote record found: ', result);
+        const modal = document.getElementById('modal-idigbio-result');
+        modal.querySelector('#institution-code').textContent = result.institution_code || '';
+        modal.querySelector('#collection-code').textContent = result.collection_code || '';
+        modal.querySelector('#catalog-number').textContent = result.catalog_number || '';
+        modal.querySelector('#idb-link').href = result.record_url;
+
+        if (result.taxonomy?.provider) {
+          populate_taxonomy('Provider', result.taxonomy.provider);
+        }
+        if (result.taxonomy?.gbif) {
+          populate_taxonomy('GBIF', result.taxonomy.gbif);
+        }
+
+        $(modal).modal();
+        enablePage();
+      }
     }
 
     function saveSpecimen() {
@@ -306,11 +297,24 @@ $( document ).ready(function() {
       $('form[data-param-key="biological_specimen"]').submit();
     }
 
+    document.querySelector('#modal-idigbio-result #btn-save')?.addEventListener('click', () => {
+      $('#modal-idigbio-result').modal('hide');
+      saveSpecimen();
+    });
+
+    document.querySelector('#modal-idigbio-recordset-not-match #btn-save')?.addEventListener('click', () => {
+      $('#modal-idigbio-recordset-not-match').modal('hide');
+      // revert the occurrence ID before saving
+      document.getElementById('biological_specimen_occurrence_id').value = document.getElementById('existing_occurrence_id').value;
+      saveSpecimen();
+    });
+
     $(document).on('click', '#btn-save-bso', function(){
 			disablePage();
-      // search iDigBio if occurrence_id has been changed
-      if ($('#biological_specimen_occurrence_id').val() != $('#existing_occurrence_id').val()) {
-        search_idigbio($('#biological_specimen_occurrence_id').val());
+      // look up remote sources if occurrence_id has been changed
+      const occurrenceId = document.getElementById('biological_specimen_occurrence_id').value;
+      if (occurrenceId !== document.getElementById('existing_occurrence_id').value) {
+        lookup_remote_specimen(occurrenceId);
       } else {
         $('form[data-param-key="biological_specimen"]').submit();
       }

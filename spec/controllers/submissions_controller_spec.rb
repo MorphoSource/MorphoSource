@@ -345,6 +345,53 @@ RSpec.describe SubmissionsController, type: :controller do
       end
     end
 
+    describe 'with a selected iDigBio record' do
+      let(:idigbio_record) do
+        Morphosource::SpecimenSources::Record.new(
+          source: Morphosource::SpecimenSources::IDigBioSource.new, id: 'uuid-1', dataset_id: 'rs-1',
+          occurrence_id: 'urn:catalog:X:Y:12345', specimen_params: { 'idigbio_uuid' => 'uuid-1' },
+          provider_taxonomy_params: {}, raw: {}
+        )
+      end
+      let(:linker) do
+        instance_double(Morphosource::SpecimenSources::TaxonomyLinker, canonical_taxonomy_id: nil,
+                                                                       taxonomy_id_array: [], taxonomy_params_array: [])
+      end
+      let(:resolver) { instance_double(Morphosource::SpecimenSources::Resolver, sources: sources, find_by_id: idigbio_record) }
+
+      let(:create_params) do
+        { biological_specimen: { title: ['Test Title'] }, submission: { idigbio_id: 'uuid-1' } }
+      end
+
+      before do
+        session[:submission] = {}
+        allow(Morphosource::SpecimenSources::Resolver).to receive(:new).and_return(resolver)
+        allow(Morphosource::SpecimenSources::TaxonomyLinker).to receive(:call).and_return(linker)
+        allow(subject).to receive(:create_work)
+      end
+
+      context 'when iDigBio is the only source' do
+        let(:sources) { [Morphosource::SpecimenSources::IDigBioSource.new] }
+
+        it 'uses the selected record without resolving its occurrence ID again' do
+          expect(resolver).not_to receive(:find_by_occurrence_id)
+          post :create, params: create_params
+        end
+      end
+
+      context 'when another source is configured' do
+        let(:sources) do
+          [Morphosource::SpecimenSources::GbifSource.new, Morphosource::SpecimenSources::IDigBioSource.new]
+        end
+
+        it 'resolves the occurrence ID to find the best source' do
+          expect(resolver).to receive(:find_by_occurrence_id).with('urn:catalog:X:Y:12345')
+            .and_return(Morphosource::SpecimenSources::Resolver::Result.new(status: :not_found, candidates: []))
+          post :create, params: create_params
+        end
+      end
+    end
+
     describe 'when not provided with correct params' do
       let(:form_params) { { } }
 

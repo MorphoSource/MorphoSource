@@ -5,6 +5,7 @@ module Morphosource
     class SourceError < StandardError; end
 
     SOURCES = {
+      gbif: 'Morphosource::SpecimenSources::GbifSource',
       idigbio: 'Morphosource::SpecimenSources::IDigBioSource'
     }.freeze
 

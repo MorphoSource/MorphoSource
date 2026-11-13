@@ -12,7 +12,8 @@ RSpec.describe Hyrax::BiologicalSpecimenForm do
       expect(described_class.terms).to include(:bibliographic_citation, :catalog_number, :collection_code, :institution_code, :latitude,
                                                :longitude, :numeric_time, :original_location, :periodic_time,
                                                :idigbio_recordset_id, :idigbio_uuid, :is_type_specimen,
-                                               :occurrence_id, :sex, :canonical_taxonomy)
+                                               :occurrence_id, :sex, :canonical_taxonomy,
+                                               :remote_source, :gbif_occurrence_key, :gbif_dataset_key)
 
       expect(described_class.terms).to_not include(:keyword, :license, :rights_statement, :subject, :title, :language,
                                                    :source, :resource_type)
@@ -36,6 +37,8 @@ RSpec.describe Hyrax::BiologicalSpecimenForm do
                                                                     :description,
                                                                     :dimensions,
                                                                     :formation,
+                                                                    :gbif_dataset_key,
+                                                                    :gbif_occurrence_key,
                                                                     :idigbio_recordset_id,
                                                                     :idigbio_uuid,
                                                                     :institution_code,
@@ -51,6 +54,7 @@ RSpec.describe Hyrax::BiologicalSpecimenForm do
                                                                     :provenance_location,
                                                                     :provenance_name,
                                                                     :publisher,
+                                                                    :remote_source,
                                                                     :sex,
                                                                     :state_province,
                                                                     :vouchered ])

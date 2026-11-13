@@ -48,6 +48,23 @@ RSpec.describe Morphosource::IDigBioGetMetadataService do
       end
     end
 
+    context 'when a higher-priority source failed and a lower one found the record' do
+      before do
+        allow(resolver).to receive(:find_by_occurrence_id)
+          .and_return(Morphosource::SpecimenSources::Resolver::Result.new(status: :found, record: record, candidates: [record], source_errors: [:gbif]))
+        allow(record).to receive(:taxonomy_param_sets).and_return(provider: {}, gbif: {})
+        allow(Morphosource::SpecimenSources::TaxonomyLinker).to receive(:call).and_return(linker)
+      end
+
+      it 'uses the record by default' do
+        expect(described_class.call(specimen)).to be_present
+      end
+
+      it 'skips the specimen with skip_on_source_error' do
+        expect(described_class.call(specimen, skip_on_source_error: true)).to be_nil
+      end
+    end
+
     [:not_found, :org_mismatch, :invalid_occurrence_id].each do |status|
       context "when the resolver returns #{status}" do
         before do
@@ -70,9 +87,32 @@ RSpec.describe Morphosource::IDigBioGetMetadataService do
       expect(described_class.idigbio_record_different_from_specimen?(solr_specimen, params)).to eq(false)
     end
 
+    it 'ignores remote_source, so an already-linked specimen is not re-saved just to record its source' do
+      params = { biospec_model_params: { 'catalog_number' => '1234', 'occurrence_id' => 'oid', 'remote_source' => 'idigbio' } }
+      expect(described_class.idigbio_record_different_from_specimen?(solr_specimen, params)).to eq(false)
+    end
+
+    it 'ignores a param with no Solr field mapping' do
+      params = { biospec_model_params: { 'catalog_number' => '1234', 'occurrence_id' => 'oid', 'not_mapped' => 'x' } }
+      expect(described_class.idigbio_record_different_from_specimen?(solr_specimen, params)).to eq(false)
+    end
+
     it 'is true when a mapped field differs' do
       params = { biospec_model_params: { 'catalog_number' => '9999' } }
       expect(described_class.idigbio_record_different_from_specimen?(solr_specimen, params)).to eq(true)
+    end
+
+    it 'compares sex, latitude and longitude against their Solr fields' do
+      solr = solr_specimen.merge('sex_tesim' => ['Female'], 'latitude_tesim' => ['42.0673'], 'longitude_tesim' => ['-124.1661'])
+      params = { biospec_model_params: { 'sex' => 'female', 'latitude' => '42.0673', 'longitude' => '-124.1661' } }
+      expect(described_class.idigbio_record_different_from_specimen?(solr, params)).to eq(false)
+    end
+
+    it 'is true when the record comes from a different source, caught by its ID fields' do
+      solr = solr_specimen.merge('idigbio_uuid_tesim' => ['uuid-1'])
+      params = { biospec_model_params: { 'catalog_number' => '1234', 'occurrence_id' => 'oid',
+                                         'remote_source' => 'gbif', 'gbif_occurrence_key' => '5146756742' } }
+      expect(described_class.idigbio_record_different_from_specimen?(solr, params)).to eq(true)
     end
 
     it 'is true when there are new taxonomies to create' do

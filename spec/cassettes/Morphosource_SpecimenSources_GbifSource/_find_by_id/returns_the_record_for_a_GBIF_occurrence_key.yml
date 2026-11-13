@@ -1,0 +1,258 @@
+---
+http_interactions:
+- request:
+    method: get
+    uri: https://api.gbif.org/v1/occurrence/5146756742
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - "*/*"
+      User-Agent:
+      - rest-client/2.1.0 (linux aarch64) ruby/3.3.6p108
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Host:
+      - api.gbif.org
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Vary:
+      - Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+      X-Content-Type-Options:
+      - nosniff
+      X-Xss-Protection:
+      - '0'
+      Pragma:
+      - no-cache
+      Expires:
+      - '0'
+      X-Frame-Options:
+      - DENY
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 21 Oct 2026 18:47:24 GMT
+      Cache-Control:
+      - public, max-age=3601
+      X-Varnish:
+      - '178041749809'
+      Age:
+      - '0'
+      Via:
+      - 1.1 prodapicache2-vh.gbif.org (Varnish/9.0)
+      Accept-Ranges:
+      - bytes
+      Content-Length:
+      - '10334'
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: '{"key":5146756742,"datasetKey":"e3b959d6-fcbe-4a28-a166-e4a807c340a0","publishingOrgKey":"8edbbde0-055e-11d8-b850-b8a03c50a862","networkKeys":["68e8e67a-43e6-44a3-8817-dc0e6b70f973","99d66b6c-9087-452f-a9d4-f15f2c2d0e7e","1f2c0cbe-40df-43f6-ba07-e76133e78c31"],"installationKey":"a957a663-2f17-415f-b1c8-5cf6398df8ed","hostingOrganizationKey":"2053a639-84c3-4be5-b8bc-96b6d88a976c","publishingCountry":"US","protocol":"EML","lastCrawled":"2026-09-28T00:36:03.514+00:00","lastParsed":"2026-09-28T00:41:28.224+00:00","crawlId":535,"extensions":{},"basisOfRecord":"PRESERVED_SPECIMEN","occurrenceStatus":"PRESENT","sex":"Female","classifications":{"7ddf754f-d193-4cc9-b351-99906754a03b":{"usage":{"key":"32NKJ","name":"Cyanocitta
+        stelleri (J. F. Gmelin, 1788)","rank":"SPECIES","code":"ZOOLOGICAL","authorship":"(J.
+        F. Gmelin, 1788)","genericName":"Cyanocitta","specificEpithet":"stelleri","formattedName":"<i>Cyanocitta</i>
+        <i>stelleri</i> (J. F. Gmelin, 1788)"},"acceptedUsage":{"key":"32NKJ","name":"Cyanocitta
+        stelleri (J. F. Gmelin, 1788)","rank":"SPECIES","code":"ZOOLOGICAL","authorship":"(J.
+        F. Gmelin, 1788)","genericName":"Cyanocitta","specificEpithet":"stelleri","formattedName":"<i>Cyanocitta</i>
+        <i>stelleri</i> (J. F. Gmelin, 1788)"},"taxonomicStatus":"ACCEPTED","classification":[{"key":"CS5HF","name":"Eukaryota","rank":"DOMAIN"},{"key":"N","name":"Animalia","rank":"KINGDOM"},{"key":"CH2","name":"Chordata","rank":"PHYLUM"},{"key":"8V4V3","name":"Vertebrata","rank":"SUBPHYLUM"},{"key":"8V4V5","name":"Gnathostomata","rank":"INFRAPHYLUM"},{"key":"8VVWB","name":"Osteichthyes","rank":"PARVPHYLUM"},{"key":"9CK8W","name":"Tetrapoda","rank":"MEGACLASS"},{"key":"V2","name":"Aves","rank":"CLASS"},{"key":"3RL","name":"Passeriformes","rank":"ORDER"},{"key":"8L6","name":"Corvidae","rank":"FAMILY"},{"key":"3XNL","name":"Cyanocitta","rank":"GENUS"},{"key":"32NKJ","name":"Cyanocitta
+        stelleri","rank":"SPECIES"}],"iucnRedListCategoryCode":"LC","issues":[]},"d7dddbf4-2cf0-4f39-9b2a-bb099caae36c":{"usage":{"key":"2482598","name":"Cyanocitta
+        stelleri (Gmelin, 1788)","rank":"SPECIES","code":"ZOOLOGICAL","authorship":"(Gmelin,
+        1788)","genericName":"Cyanocitta","specificEpithet":"stelleri","formattedName":"<i>Cyanocitta</i>
+        <i>stelleri</i> (Gmelin, 1788)"},"acceptedUsage":{"key":"2482598","name":"Cyanocitta
+        stelleri (Gmelin, 1788)","rank":"SPECIES","code":"ZOOLOGICAL","authorship":"(Gmelin,
+        1788)","genericName":"Cyanocitta","specificEpithet":"stelleri","formattedName":"<i>Cyanocitta</i>
+        <i>stelleri</i> (Gmelin, 1788)"},"taxonomicStatus":"ACCEPTED","classification":[{"key":"1","name":"Animalia","rank":"KINGDOM"},{"key":"44","name":"Chordata","rank":"PHYLUM"},{"key":"212","name":"Aves","rank":"CLASS"},{"key":"729","name":"Passeriformes","rank":"ORDER"},{"key":"5235","name":"Corvidae","rank":"FAMILY"},{"key":"2482592","name":"Cyanocitta","rank":"GENUS"},{"key":"2482598","name":"Cyanocitta
+        stelleri","rank":"SPECIES"}],"iucnRedListCategoryCode":"LC","issues":[]}},"taxonKey":2482598,"kingdomKey":1,"phylumKey":44,"classKey":212,"orderKey":729,"familyKey":5235,"genusKey":2482592,"speciesKey":2482598,"acceptedTaxonKey":2482598,"scientificName":"Cyanocitta
+        stelleri (Gmelin, 1788)","scientificNameAuthorship":"(Gmelin, 1788)","acceptedScientificName":"Cyanocitta
+        stelleri (Gmelin, 1788)","kingdom":"Animalia","phylum":"Chordata","order":"Passeriformes","family":"Corvidae","genus":"Cyanocitta","species":"Cyanocitta
+        stelleri","genericName":"Cyanocitta","specificEpithet":"stelleri","taxonRank":"SPECIES","taxonomicStatus":"ACCEPTED","iucnRedListCategory":"LC","decimalLatitude":42.0673,"decimalLongitude":-124.1661,"coordinateUncertaintyInMeters":4566.0,"elevation":305.0,"elevationAccuracy":0.0,"continent":"NORTH_AMERICA","stateProvince":"Oregon","gadm":{"level0":{"gid":"USA","name":"United
+        States"},"level1":{"gid":"USA.38_1","name":"Oregon"},"level2":{"gid":"USA.38.8_1","name":"Curry"}},"higherGeography":"United
+        States, Oregon, Curry County","georeferencedBy":"Gary W. Shugart","year":1998,"month":10,"day":19,"eventDate":"1998-10-19","startDayOfYear":292,"endDayOfYear":292,"typifiedName":"Cyanocitta
+        stelleri subsp. in","issues":["CONTINENT_DERIVED_FROM_COORDINATES","TYPE_STATUS_INVALID","INSTITUTION_MATCH_FUZZY","INSTITUTION_COLLECTION_MISMATCH"],"modified":"2025-10-11T00:52:00.013+00:00","lastInterpreted":"2026-09-28T00:41:28.224+00:00","license":"http://creativecommons.org/publicdomain/zero/1.0/legalcode","isSequenced":true,"associatedSequences":"http://www.ncbi.nlm.nih.gov/nuccore/OM689666","identifiers":[{"identifier":"https://arctos.database.museum/guid/MVZ:Bird:178506"}],"media":[],"facts":[],"relations":[],"institutionKey":"59175240-4500-42b9-9e98-42ae299a5e9b","isInCluster":true,"otherCatalogNumbers":"Carla
+        Cicero collector number 1452|NCBI Nucleotide - GenBank identifier http://www.ncbi.nlm.nih.gov/nuccore/OM689666","recordedBy":"Collector(s):
+        Carla Cicero","identifiedBy":"unknown","preparations":"skin, study; tissue
+        (frozen)","dnaSequenceID":[],"nucleotideSequence":[],"geodeticDatum":"WGS84","class":"Aves","countryCode":"US","recordedByIDs":[],"identifiedByIDs":[],"gbifRegion":"NORTH_AMERICA","country":"United
+        States of America","publishedByGbifRegion":"NORTH_AMERICA","institutionID":"MVZ","dynamicProperties":"[{\"attribute_date\":
+        \"2006-05-23\", \"attribute_type\": \"age\", \"attribute_units\": null, \"attribute_value\":
+        \"medium skull windows\", \"attribute_method\": null, \"attribute_remark\":
+        null, \"attribute_determiner\": {\"agentID\": \"https://arctos.database.museum/agent/10014238\",
+        \"agent_name\": \"Museum of Vertebrate Zoology\"}}, {\"attribute_date\": \"2005-11-01\",
+        \"attribute_type\": \"fat deposition\", \"attribute_units\": null, \"attribute_value\":
+        \"no fat\", \"attribute_method\": null, \"attribute_remark\": null, \"attribute_determiner\":
+        {\"agentID\": \"https://arctos.database.museum/agent/10014238\", \"agent_name\":
+        \"Museum of Vertebrate Zoology\"}}, {\"attribute_date\": \"2005-11-01\", \"attribute_type\":
+        \"molt condition\", \"attribute_units\": null, \"attribute_value\": \"trace
+        late post-juvenile molt\", \"attribute_method\": null, \"attribute_remark\":
+        null, \"attribute_determiner\": {\"agentID\": \"https://arctos.database.museum/agent/10014238\",
+        \"agent_name\": \"Museum of Vertebrate Zoology\"}}, {\"attribute_date\": \"2006-05-23\",
+        \"attribute_type\": \"reproductive data\", \"attribute_units\": null, \"attribute_value\":
+        \"ova minute\", \"attribute_method\": null, \"attribute_remark\": null, \"attribute_determiner\":
+        {\"agentID\": \"https://arctos.database.museum/agent/10014238\", \"agent_name\":
+        \"Museum of Vertebrate Zoology\"}}, {\"attribute_date\": \"2005-11-01\", \"attribute_type\":
+        \"sex\", \"attribute_units\": null, \"attribute_value\": \"female\", \"attribute_method\":
+        null, \"attribute_remark\": null, \"attribute_determiner\": {\"agentID\":
+        \"https://arctos.database.museum/agent/10014238\", \"agent_name\": \"Museum
+        of Vertebrate Zoology\"}}, {\"attribute_date\": \"2005-11-01\", \"attribute_type\":
+        \"weight\", \"attribute_units\": \"g\", \"attribute_value\": \"111.00\", \"attribute_method\":
+        null, \"attribute_remark\": null, \"attribute_determiner\": {\"agentID\":
+        \"https://arctos.database.museum/agent/10014238\", \"agent_name\": \"Museum
+        of Vertebrate Zoology\"}}]","county":"Curry County","language":"en","gbifID":"5146756742","type":"PhysicalObject","locationAccordingTo":"Gary
+        W. Shugart","catalogNumber":"MVZ:Bird:178506","institutionCode":"MVZ","eventTime":"1998-10-19","identificationRemarks":"Former
+        nature_of_id: field.","georeferencedDate":"2002-07-02 00:00:00","recordNumber":"Carla
+        Cicero 1452","identifier":"https://arctos.database.museum/guid/MVZ:Bird:178506","verbatimEventDate":"19
+        Oct 1998","http://unknown.org/crawl_attempt":"535","georeferenceProtocol":"MaNIS
+        georeferencing guidelines","locality":"U.S. Forest Service Rd. 1983, 1 mi
+        N and 6 mi E Brookings","verbatimCoordinateSystem":"decimal degrees","collectionCode":"Ornithology","verbatimLocality":"USFS
+        Rd. 1983, 1000 ft., 1 mi N and 6 mi E Brookings, SW Curry Co., Oregon","occurrenceID":"https://arctos.database.museum/guid/MVZ:Bird:178506","previousIdentifications":"[{\"made_date\":
+        null, \"taxa_formula\": \"A ssp.\", \"taxon_concept\": null, \"scientific_name\":
+        \"Cyanocitta stelleri ssp.\", \"identificationID\": \"https://arctos.database.museum/guid/MVZ:Bird:178506/IID10706439\",
+        \"sensu_publication\": null, \"identification_taxa\": [{\"taxon\": {\"ftn\":
+        \"Animalia, Chordata, Aves, Passeriformes, Corvidae, Cyanocitta, Cyanocitta
+        stelleri\", \"name\": \"Cyanocitta stelleri\", \"ctrms\": [{\"psn\": 1, \"typ\":
+        \"kingdom\", \"term\": \"Animalia\"}, {\"psn\": 2, \"typ\": \"phylum\", \"term\":
+        \"Chordata\"}, {\"psn\": 3, \"typ\": \"class\", \"term\": \"Aves\"}, {\"psn\":
+        4, \"typ\": \"order\", \"term\": \"Passeriformes\"}, {\"psn\": 5, \"typ\":
+        \"family\", \"term\": \"Corvidae\"}, {\"psn\": 6, \"typ\": \"genus\", \"term\":
+        \"Cyanocitta\"}, {\"psn\": 7, \"typ\": \"species\", \"term\": \"Cyanocitta
+        stelleri\"}], \"nctrms\": [{\"typ\": \"display_name\", \"term\": \"<i>Cyanocitta
+        stelleri</i>\"}, {\"typ\": \"nomenclatural_code\", \"term\": \"ICZN\"}, {\"typ\":
+        \"scientific_name\", \"term\": \"Cyanocitta stelleri\"}, {\"typ\": \"source_authority\",
+        \"term\": \"University of Alaska Museum\"}, {\"typ\": \"taxon_status\", \"term\":
+        \"valid\"}], \"source\": \"Arctos\", \"classification_id\": \"https://arctos.database.museum/name/Cyanocitta
+        stelleri#Arctos\"}, \"taxon_id\": \"https://arctos.database.museum/name/Cyanocitta
+        stelleri\", \"variable\": \"A\"}], \"identification_order\": 1, \"identification_agents\":
+        [{\"agentID\": \"https://arctos.database.museum/agent/0\", \"agent_name\":
+        \"unknown\"}], \"identification_remarks\": \"Former nature_of_id: field.\",
+        \"identification_attributes\": [{\"attribute_date\": null, \"attribute_type\":
+        \"nature of identification\", \"attribute_units\": null, \"attribute_value\":
+        \"features\", \"attribute_method\": null, \"attribute_remark\": null, \"attribute_determiner\":
+        null}]}]","accessRights":"http://mvz.berkeley.edu/mvzdata_terms","collectionID":"https://arctos.database.museum/collection/MVZ:Bird","higherClassification":"Animalia,
+        Chordata, Aves, Passeriformes, Corvidae, Cyanocitta, Cyanocitta stelleri","georeferenceSources":"GNIS
+        downloaded Feb 2002"}'
+  recorded_at: Wed, 21 Oct 2026 18:47:24 GMT
+- request:
+    method: get
+    uri: https://api.gbif.org/v1/occurrence/5146756742/verbatim
+    body:
+      encoding: US-ASCII
+      string: ''
+    headers:
+      Accept:
+      - "*/*"
+      User-Agent:
+      - rest-client/2.1.0 (linux aarch64) ruby/3.3.6p108
+      Accept-Encoding:
+      - gzip;q=1.0,deflate;q=0.6,identity;q=0.3
+      Host:
+      - api.gbif.org
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Vary:
+      - Origin, Access-Control-Request-Method, Access-Control-Request-Headers
+      X-Content-Type-Options:
+      - nosniff
+      X-Xss-Protection:
+      - '0'
+      Pragma:
+      - no-cache
+      Expires:
+      - '0'
+      X-Frame-Options:
+      - DENY
+      Content-Type:
+      - application/json
+      Date:
+      - Wed, 21 Oct 2026 18:46:15 GMT
+      Cache-Control:
+      - public, max-age=3601
+      X-Varnish:
+      - 178040635774 178011542457
+      Age:
+      - '68'
+      Via:
+      - 1.1 prodapicache2-vh.gbif.org (Varnish/9.0)
+      Accept-Ranges:
+      - bytes
+      Content-Length:
+      - '8658'
+      Connection:
+      - keep-alive
+    body:
+      encoding: UTF-8
+      string: '{"key":5146756742,"datasetKey":"e3b959d6-fcbe-4a28-a166-e4a807c340a0","publishingOrgKey":"8edbbde0-055e-11d8-b850-b8a03c50a862","networkKeys":["68e8e67a-43e6-44a3-8817-dc0e6b70f973","99d66b6c-9087-452f-a9d4-f15f2c2d0e7e","1f2c0cbe-40df-43f6-ba07-e76133e78c31"],"installationKey":"a957a663-2f17-415f-b1c8-5cf6398df8ed","publishingCountry":"US","protocol":"EML","lastCrawled":"2026-09-28T00:36:03.514+00:00","lastParsed":"2026-09-28T00:41:28.224+00:00","crawlId":535,"extensions":{},"publishedByGbifRegion":"NORTH_AMERICA","http://purl.org/dc/elements/1.1/language":"en","http://rs.tdwg.org/dwc/terms/maximumElevationInMeters":"305","http://rs.tdwg.org/dwc/terms/preparations":"skin,
+        study; tissue (frozen)","http://rs.tdwg.org/dwc/terms/verbatimEventDate":"19
+        Oct 1998","http://rs.tdwg.org/dwc/terms/country":"United States","http://rs.tdwg.org/dwc/terms/otherCatalogNumbers":"Carla
+        Cicero collector number 1452 | NCBI Nucleotide - GenBank identifier http://www.ncbi.nlm.nih.gov/nuccore/OM689666","http://rs.tdwg.org/dwc/terms/order":"Passeriformes","http://rs.tdwg.org/dwc/terms/verbatimLocality":"USFS
+        Rd. 1983, 1000 ft., 1 mi N and 6 mi E Brookings, SW Curry Co., Oregon","http://rs.tdwg.org/dwc/terms/taxonRank":"species","http://rs.tdwg.org/dwc/terms/minimumElevationInMeters":"305","http://rs.tdwg.org/dwc/terms/year":"1998","http://purl.org/dc/terms/accessRights":"http://mvz.berkeley.edu/mvzdata_terms","http://rs.tdwg.org/dwc/terms/locality":"U.S.
+        Forest Service Rd. 1983, 1 mi N and 6 mi E Brookings","http://rs.tdwg.org/dwc/terms/basisOfRecord":"PreservedSpecimen","http://rs.tdwg.org/dwc/terms/higherClassification":"Animalia,
+        Chordata, Aves, Passeriformes, Corvidae, Cyanocitta, Cyanocitta stelleri","http://rs.tdwg.org/dwc/terms/georeferencedDate":"2002-07-02
+        00:00:00","http://rs.tdwg.org/dwc/terms/typeStatus":"voucher of Cyanocitta
+        stelleri ssp. in <a href=\"http://arctos.database.museum/publication/10011758\">Cicero
+        et al. 2022</a>","http://rs.tdwg.org/dwc/terms/higherGeography":"United States,
+        Oregon, Curry County","http://rs.tdwg.org/dwc/terms/eventTime":"1998-10-19","http://rs.tdwg.org/dwc/terms/stateProvince":"Oregon","http://rs.tdwg.org/dwc/terms/scientificName":"Cyanocitta
+        stelleri ssp.","http://rs.tdwg.org/dwc/terms/institutionID":"MVZ","http://rs.tdwg.org/dwc/terms/day":"19","http://rs.gbif.org/terms/1.0/gbifID":"5146756742","http://rs.tdwg.org/dwc/terms/collectionID":"https://arctos.database.museum/collection/MVZ:Bird","http://rs.tdwg.org/dwc/terms/genus":"Cyanocitta","http://rs.tdwg.org/dwc/terms/occurrenceID":"https://arctos.database.museum/guid/MVZ:Bird:178506","http://rs.tdwg.org/dwc/terms/georeferenceSources":"GNIS
+        downloaded Feb 2002","http://rs.tdwg.org/dwc/terms/georeferencedBy":"Gary
+        W. Shugart","http://rs.tdwg.org/dwc/terms/decimalLongitude":"-124.1661","http://rs.tdwg.org/dwc/terms/associatedSequences":"http://www.ncbi.nlm.nih.gov/nuccore/OM689666","http://rs.tdwg.org/dwc/terms/verbatimCoordinates":"42.0673/-124.1661","http://rs.tdwg.org/dwc/terms/georeferenceProtocol":"MaNIS
+        georeferencing guidelines","http://rs.tdwg.org/dwc/terms/collectionCode":"Ornithology","http://rs.tdwg.org/dwc/terms/verbatimCoordinateSystem":"decimal
+        degrees","http://rs.tdwg.org/dwc/terms/recordNumber":"Carla Cicero 1452","http://rs.tdwg.org/dwc/terms/family":"Corvidae","http://rs.tdwg.org/dwc/terms/sex":"female","http://rs.tdwg.org/dwc/terms/month":"10","http://purl.org/dc/terms/modified":"2025-10-11
+        00:52:00.01391","http://rs.tdwg.org/dwc/terms/decimalLatitude":"42.0673","http://rs.tdwg.org/dwc/terms/recordedBy":"Collector(s):
+        Carla Cicero","http://rs.tdwg.org/dwc/terms/phylum":"Chordata","http://purl.org/dc/terms/license":"https://creativecommons.org/licenses/by/3.0","http://rs.tdwg.org/dwc/terms/previousIdentifications":"[{\"made_date\":
+        null, \"taxa_formula\": \"A ssp.\", \"taxon_concept\": null, \"scientific_name\":
+        \"Cyanocitta stelleri ssp.\", \"identificationID\": \"https://arctos.database.museum/guid/MVZ:Bird:178506/IID10706439\",
+        \"sensu_publication\": null, \"identification_taxa\": [{\"taxon\": {\"ftn\":
+        \"Animalia, Chordata, Aves, Passeriformes, Corvidae, Cyanocitta, Cyanocitta
+        stelleri\", \"name\": \"Cyanocitta stelleri\", \"ctrms\": [{\"psn\": 1, \"typ\":
+        \"kingdom\", \"term\": \"Animalia\"}, {\"psn\": 2, \"typ\": \"phylum\", \"term\":
+        \"Chordata\"}, {\"psn\": 3, \"typ\": \"class\", \"term\": \"Aves\"}, {\"psn\":
+        4, \"typ\": \"order\", \"term\": \"Passeriformes\"}, {\"psn\": 5, \"typ\":
+        \"family\", \"term\": \"Corvidae\"}, {\"psn\": 6, \"typ\": \"genus\", \"term\":
+        \"Cyanocitta\"}, {\"psn\": 7, \"typ\": \"species\", \"term\": \"Cyanocitta
+        stelleri\"}], \"nctrms\": [{\"typ\": \"display_name\", \"term\": \"<i>Cyanocitta
+        stelleri</i>\"}, {\"typ\": \"nomenclatural_code\", \"term\": \"ICZN\"}, {\"typ\":
+        \"scientific_name\", \"term\": \"Cyanocitta stelleri\"}, {\"typ\": \"source_authority\",
+        \"term\": \"University of Alaska Museum\"}, {\"typ\": \"taxon_status\", \"term\":
+        \"valid\"}], \"source\": \"Arctos\", \"classification_id\": \"https://arctos.database.museum/name/Cyanocitta
+        stelleri#Arctos\"}, \"taxon_id\": \"https://arctos.database.museum/name/Cyanocitta
+        stelleri\", \"variable\": \"A\"}], \"identification_order\": 1, \"identification_agents\":
+        [{\"agentID\": \"https://arctos.database.museum/agent/0\", \"agent_name\":
+        \"unknown\"}], \"identification_remarks\": \"Former nature_of_id: field.\",
+        \"identification_attributes\": [{\"attribute_date\": null, \"attribute_type\":
+        \"nature of identification\", \"attribute_units\": null, \"attribute_value\":
+        \"features\", \"attribute_method\": null, \"attribute_remark\": null, \"attribute_determiner\":
+        null}]}]","http://rs.tdwg.org/dwc/terms/locationAccordingTo":"Gary W. Shugart","http://rs.tdwg.org/dwc/terms/kingdom":"Animalia","http://rs.tdwg.org/dwc/terms/coordinateUncertaintyInMeters":"4566","http://purl.org/dc/terms/identifier":"https://arctos.database.museum/guid/MVZ:Bird:178506","http://unknown.org/crawl_attempt":"535","http://rs.tdwg.org/dwc/terms/county":"Curry
+        County","http://rs.tdwg.org/dwc/terms/class":"Aves","http://purl.org/dc/elements/1.1/type":"PhysicalObject","http://rs.tdwg.org/dwc/terms/dynamicProperties":"[{\"attribute_date\":
+        \"2006-05-23\", \"attribute_type\": \"age\", \"attribute_units\": null, \"attribute_value\":
+        \"medium skull windows\", \"attribute_method\": null, \"attribute_remark\":
+        null, \"attribute_determiner\": {\"agentID\": \"https://arctos.database.museum/agent/10014238\",
+        \"agent_name\": \"Museum of Vertebrate Zoology\"}}, {\"attribute_date\": \"2005-11-01\",
+        \"attribute_type\": \"fat deposition\", \"attribute_units\": null, \"attribute_value\":
+        \"no fat\", \"attribute_method\": null, \"attribute_remark\": null, \"attribute_determiner\":
+        {\"agentID\": \"https://arctos.database.museum/agent/10014238\", \"agent_name\":
+        \"Museum of Vertebrate Zoology\"}}, {\"attribute_date\": \"2005-11-01\", \"attribute_type\":
+        \"molt condition\", \"attribute_units\": null, \"attribute_value\": \"trace
+        late post-juvenile molt\", \"attribute_method\": null, \"attribute_remark\":
+        null, \"attribute_determiner\": {\"agentID\": \"https://arctos.database.museum/agent/10014238\",
+        \"agent_name\": \"Museum of Vertebrate Zoology\"}}, {\"attribute_date\": \"2006-05-23\",
+        \"attribute_type\": \"reproductive data\", \"attribute_units\": null, \"attribute_value\":
+        \"ova minute\", \"attribute_method\": null, \"attribute_remark\": null, \"attribute_determiner\":
+        {\"agentID\": \"https://arctos.database.museum/agent/10014238\", \"agent_name\":
+        \"Museum of Vertebrate Zoology\"}}, {\"attribute_date\": \"2005-11-01\", \"attribute_type\":
+        \"sex\", \"attribute_units\": null, \"attribute_value\": \"female\", \"attribute_method\":
+        null, \"attribute_remark\": null, \"attribute_determiner\": {\"agentID\":
+        \"https://arctos.database.museum/agent/10014238\", \"agent_name\": \"Museum
+        of Vertebrate Zoology\"}}, {\"attribute_date\": \"2005-11-01\", \"attribute_type\":
+        \"weight\", \"attribute_units\": \"g\", \"attribute_value\": \"111.00\", \"attribute_method\":
+        null, \"attribute_remark\": null, \"attribute_determiner\": {\"agentID\":
+        \"https://arctos.database.museum/agent/10014238\", \"agent_name\": \"Museum
+        of Vertebrate Zoology\"}}]","http://rs.tdwg.org/dwc/terms/identifiedBy":"unknown","http://rs.tdwg.org/dwc/terms/degreeOfEstablishment":"wild","http://rs.tdwg.org/dwc/terms/eventDate":"1998-10-19/1998-10-19","http://rs.tdwg.org/dwc/terms/catalogNumber":"MVZ:Bird:178506","http://rs.tdwg.org/dwc/terms/institutionCode":"MVZ","http://rs.tdwg.org/dwc/terms/geodeticDatum":"World
+        Geodetic System 1984","http://rs.tdwg.org/dwc/terms/identificationRemarks":"Former
+        nature_of_id: field."}'
+  recorded_at: Wed, 21 Oct 2026 18:47:24 GMT
+recorded_with: VCR 6.3.1

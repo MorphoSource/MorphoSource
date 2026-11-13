@@ -38,6 +38,7 @@ module Morphosource
                        :preview_mode,
                        :publisher,
                        :recordset_id,
+                       :gbif_dataset_key,
                        :required_archival_of_published_derivatives,
                        :resource_type,
                        :rights_holder,

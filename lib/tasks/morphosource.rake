@@ -835,7 +835,7 @@ namespace :morphosource do
   end
 
   desc "Update specimens from IDigbio"
-  task :update_specimens_from_idigbio, [:update] => :environment do |task, args|
+  task :update_specimens_from_idigbio, [:update, :limit] => :environment do |task, args|
     Rails.logger = Logger.new(STDOUT)
     Rails.logger.debug "update_specimens_from_idigbio started."
     if args[:update].present? && args[:update] == 'true'
@@ -843,7 +843,7 @@ namespace :morphosource do
     else
       update = false
     end
-    UpdateSpecimensFromIdigbioJob.perform_later(save_work=update, force_update=false)
+    UpdateSpecimensFromIdigbioJob.perform_later(save_work=update, force_update=false, limit=args[:limit])
   end
 
   # MCZ slide import

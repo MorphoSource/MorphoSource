@@ -13,6 +13,7 @@
               <%= render_edit_field_partial('institution_code', f: f) %>
               <%= render_edit_field_partial('collection_code', f: f) %>
               <%= render_edit_field_partial('recordset_id', f: f) %>
+              <%= render_edit_field_partial('gbif_dataset_key', f: f) %>
             <% else %>
               <div class="row">
                 <div class="col-6 showcase-label">
@@ -67,6 +68,15 @@
                   </i>
                 </div>
                 <div class="col-6 showcase-value "><%= @presenter.recordset_id&.join('; ') %></div>
+              </div>
+              <div class="row">
+                <div class="col-6 showcase-label">
+                  <%= t('simple_form.labels.organization_collection.gbif_dataset_key') %>
+                  <i class="material-icons tooltip-icon" data-original-title="" title="">
+                    <p class="hint hide"><%= t('simple_form.hints.organization_collection.gbif_dataset_key') %> </p>
+                  </i>
+                </div>
+                <div class="col-6 showcase-value "><%= @presenter.gbif_dataset_key&.join('; ') %></div>
               </div>
             <% end %>
             <%= render_edit_field_partial('identifier', f: f) %>

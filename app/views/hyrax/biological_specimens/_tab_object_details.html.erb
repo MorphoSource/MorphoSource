@@ -39,6 +39,7 @@
       <%= f.input :occurrence_id, label_wrapper_html: { class: 'recommended-flag' }  %>
       <%= hidden_field_tag "existing_occurrence_id", f.object.occurrence_id %>
       <%= hidden_field_tag "existing_idigbio_uuid", f.object.idigbio_uuid %>
+      <%= hidden_field_tag "existing_gbif_occurrence_key", f.object.gbif_occurrence_key %>
       <%= f.input :identifier, label: 'External Identifier', as: :multi_value %>
       <%= f.input :related_url, label: 'External URL', as: :multi_value %>
       <%#= f.input :idigbio_uuid %>

@@ -2,6 +2,9 @@ module Morphosource
   module SpecimenSources
     # Interface for a remote specimen source that maps its records to Record objects.
     class Base
+      # these BSO values expect an array (see: Hyrax::BiologicalSpecimenForm.build_permitted_params)
+      BSO_ARRAY_VALUES = ['creator', 'periodic_time', 'related_url'].freeze
+
       # @return [Symbol] key used in Hyrax.config.specimen_record_sources
       def key
         raise NotImplementedError

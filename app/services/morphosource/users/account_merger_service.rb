@@ -20,8 +20,8 @@ module Morphosource
         transfer_group_permissions
         transfer_proxy_rights
         transfer_cart_items
-        # Last, so reviewer jobs never see a half-merged account. Publish before the saves: a rerun
-        # cannot rebuild Manager events because the old account's roles are already gone.
+        # Last, so reviewer jobs never see a half-merged account. Publish before the custom-list saves: a
+        # rerun cannot rebuild Manager events because the old account's roles are already gone.
         publish_reviewer_events
         transfer_custom_download_reviewers
       end

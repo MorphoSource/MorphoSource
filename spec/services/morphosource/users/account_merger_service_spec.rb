@@ -275,6 +275,20 @@ RSpec.describe Morphosource::Users::AccountMergerService do
       expect(organization.reload.custom_download_reviewer_users.to_a).to eq([new_user.ms_id])
       expect(Hyrax.publisher).not_to have_received(:publish).with('organization.reviewers.updated', anything)
     end
+
+    it 'skips an organization deleted from Fedora but still in Solr' do
+      ActiveFedora::SolrService.add({ 'id' => 'deleted-organization',
+                                      'has_model_ssim' => ['OrganizationCollection'],
+                                      'custom_download_reviewer_users_ssim' => [old_user.ms_id] },
+                                    softCommit: true)
+      organization = create_organization(managers_are_download_reviewers: false,
+                                         custom_download_reviewer_users: [old_user.ms_id])
+      allow(OrganizationCollection).to receive(:find).with('deleted-organization')
+                                                     .and_raise(ActiveFedora::ObjectNotFoundError)
+
+      expect { subject }.not_to raise_error
+      expect(organization.reload.custom_download_reviewer_users.to_a).to eq([new_user.ms_id])
+    end
   end
 
   describe 'transfer_proxy_rights' do

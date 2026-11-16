@@ -133,10 +133,14 @@ module Morphosource
 
       def custom_reviewer_organizations
         old_ms_id = Morphosource::SolrService.prepare_value(@old_user.ms_id)
-        ActiveFedora::SolrService.query('has_model_ssim:OrganizationCollection',
-                                        fq: ["custom_download_reviewer_users_ssim:#{old_ms_id}"],
-                                        fl: 'id', rows: 999999)
-                                 .map { |document| OrganizationCollection.find(document['id']) }
+        documents = ActiveFedora::SolrService.query('has_model_ssim:OrganizationCollection',
+                                                    fq: ["custom_download_reviewer_users_ssim:#{old_ms_id}"],
+                                                    fl: 'id', rows: 999999)
+        documents.filter_map do |document|
+          OrganizationCollection.find(document['id'])
+        rescue ActiveFedora::ObjectNotFoundError, Ldp::Gone
+          nil
+        end
       end
 
       def proxy_rights

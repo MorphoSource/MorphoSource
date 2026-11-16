@@ -4,6 +4,8 @@
 class FileSetIndexer < Hyrax::Indexers::FileSetIndexer
    def to_solr
       super.tap do |solr_doc|
+        solr_doc['label_tesim'] = resource.label
+        solr_doc['label_ssi'] = resource.label
         solr_doc['mime_type_ssi'] = resource.is_remote_backed? ? resource.mime_type_of_remote : resource.mime_type
         solr_doc['remote_manifest_url_ssi'] = resource.remote_manifest_url
         solr_doc['download_access_group_ssim'] = resource.download_groups

@@ -12,6 +12,8 @@ module Morphosource
     TOKEN_PREFIX = Morphosource::MediaMetadata::ORG_COLLECTION_TOKEN_PREFIX
     MEDIA_FIELDS = %w[id has_model_ssim download_reviewers_ssim download_reviewer_mode_ssi user_with_ownership_ssi].freeze
 
+    Resolution = Struct.new(:ms_ids, :fallback, keyword_init: true)
+
     def initialize
       @organization_reviewers = {}
       @owner_organizations = {}
@@ -20,13 +22,20 @@ module Morphosource
     # @param media [Media, SolrDocument] anything answering #download_reviewers
     # @return [Array<String>] reviewer ms_ids; never empty, falling back to the batch User
     def call(media)
-      identities = media.download_reviewers { |owner_id| owner_organization?(owner_id) }
+      resolve(media.download_reviewers { |owner_id| owner_organization?(owner_id) }).ms_ids
+    end
+
+    # @param identities [Array<String>] User ms_ids and/or "org_collection:<id>" tokens
+    # @return [Resolution] live reviewer ms_ids, and whether they are the batch User fallback
+    def resolve(identities)
       tokens, ms_ids = Array(identities).reject(&:blank?).uniq
-                                      .partition { |identity| identity.start_with?(TOKEN_PREFIX) }
+                                        .partition { |identity| identity.start_with?(TOKEN_PREFIX) }
 
       candidates = ms_ids + tokens.flat_map { |token| organization_reviewers(token.delete_prefix(TOKEN_PREFIX)) }
+      reviewers = existing_users(candidates.uniq)
+      return Resolution.new(ms_ids: reviewers, fallback: false) if reviewers.present?
 
-      existing_users(candidates.uniq).presence || [batch_user_ms_id]
+      Resolution.new(ms_ids: [batch_user_ms_id], fallback: true)
     end
 
     # @param media_ids [Array<String>]

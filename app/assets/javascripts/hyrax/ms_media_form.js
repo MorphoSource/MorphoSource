@@ -25,7 +25,7 @@ $( document ).ready(function() {
     // visibility input enabled so the current value is still submitted.
     $('.tab-pane').not('#share, #preview-settings')
       .find('input, textarea, select')
-      .not('#media_download_permission, #media_record_download_reviewer_users, #media_download_reviewer_mode')
+      .not('#media_download_permission, #media-download-reviewers :input')
       .prop('disabled', true);
     $('.tab-pane').not('#share, #preview-settings').find('button').prop('disabled', true);
 

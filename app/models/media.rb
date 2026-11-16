@@ -118,15 +118,30 @@ class Media < Morphosource::Works::Base
   # @param object_organizations [Array, nil] Object Organizations the caller already loaded
   # @return [Array<String>] User ms_ids and/or "org_collection:<id>" tokens
   def download_reviewers(object_organizations = nil)
+    download_reviewer_route(object_organizations).last
+  end
+
+  # @param object_organizations [Array, nil] Object Organizations the caller already loaded
+  # @return [Array(Symbol, Array<String>)] the live source (:object_organizations, :record_users,
+  #   :owner_user or :owner_organization) and its reviewer identities
+  def download_reviewer_route(object_organizations = nil)
     if download_reviewer_mode == 'object_organization'
       orgs = object_organizations || organizations
-      return orgs.map { |org| org_collection_token(org.id) }.uniq
+      return [:object_organizations, orgs.map { |org| org_collection_token(org.id) }.uniq]
     end
 
     record_users = Array(record_download_reviewer_users).reject(&:blank?)
-    return record_users.uniq if record_users.present?
+    return [:record_users, record_users.uniq] if record_users.present?
 
-    owner_download_reviewers
+    owner = owner_download_reviewers
+    organization_owned = owner.first.to_s.start_with?(Morphosource::MediaMetadata::ORG_COLLECTION_TOKEN_PREFIX)
+    [organization_owned ? :owner_organization : :owner_user, owner]
+  end
+
+  # @param object_organizations [Array] Object Organizations to check
+  # @return [Array] the distinct organizations that do not accept new media for download review
+  def ineligible_object_organizations(object_organizations = organizations)
+    object_organizations.uniq(&:id).reject { |org| org.try(:reviews_object_media_downloads) }
   end
 
   # Generate a formatted Media work title from work attributes, using part, media_type, and modality
@@ -675,7 +690,7 @@ class Media < Morphosource::Works::Base
         return
       end
 
-      ineligible = object_organizations.reject { |org| org.try(:reviews_object_media_downloads) }
+      ineligible = ineligible_object_organizations(object_organizations)
       return if ineligible.empty?
 
       names = ineligible.map { |org| org.title&.first }.compact

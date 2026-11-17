@@ -47,12 +47,11 @@ class CartItem < ApplicationRecord
   end
 
   def work
-    @work ||= begin
-      begin
-        return SolrDocument.find(work_id)
-      rescue
-        return nil
-      end
+    return @work if defined?(@work)
+    @work = begin
+      SolrDocument.find(work_id)
+    rescue
+      nil
     end
   end
 

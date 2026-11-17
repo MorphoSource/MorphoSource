@@ -200,6 +200,21 @@ RSpec.describe CartItem, type: :model do
       expect(cartItem2.work.class).to be(SolrDocument)
       expect(cartItem2.work.id).to eq(cartItem2.work_id)
     end
+
+    it 'memoizes the solr document' do
+      expect(SolrDocument).to receive(:find).with(cartItem1.work_id).once.and_call_original
+      2.times { cartItem1.work }
+    end
+
+    context 'media does not exist' do
+      let(:missing_item) { CartItem.create(user: user, work_id: 'does-not-exist') }
+
+      it 'returns nil and memoizes the nil result' do
+        expect(SolrDocument).to receive(:find).with('does-not-exist').once.and_raise(Blacklight::Exceptions::RecordNotFound)
+        expect(missing_item.work).to be_nil
+        expect(missing_item.work).to be_nil
+      end
+    end
   end
 
   describe '#expired?' do

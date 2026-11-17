@@ -39,17 +39,29 @@ module Morphosource
           render_json_by_http_code(400, errors) if errors.present?
         end
 
+        # Unfiltered requests only evaluate access for the paged items (in
+        # #item_json). Filtered requests must evaluate every item in the cart,
+        # so results are cached for reuse in #item_json.
         def filtered_items
+          items = current_user.items_in_cart
           case params[:access]
-          when 'downloadable' then current_user.downloadable_items_in_cart
-          when 'restricted'   then current_user.restricted_items_in_cart
-          else current_user.items_in_cart
+          when 'downloadable' then items.select { |item| downloadable?(item) }
+          when 'restricted'   then items.reject { |item| downloadable?(item) }
+          else items
           end
+        end
+
+        # CartItem#downloadable? is expensive (Solr, User and ability lookups);
+        # compute it at most once per item per request.
+        def downloadable?(item)
+          @downloadable ||= {}
+          return @downloadable[item.id] if @downloadable.key?(item.id)
+          @downloadable[item.id] = item.downloadable?
         end
 
         def item_json(item)
           doc = item.work
-          downloadable = item.downloadable?
+          downloadable = downloadable?(item)
           {
             id: item.id,
             media_id: item.work_id,

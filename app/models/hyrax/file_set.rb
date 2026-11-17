@@ -194,6 +194,10 @@ module Hyrax
     def iiif_id
       orig_file = original_file
       return nil if orig_file.nil? || orig_file.file_identifier.blank?
+      # Valkyrie's Fedora adapter loads every version's full content into memory to list
+      # versions, so skip the version suffix while the file is still in Fedora (mid-migration)
+      return "#{id}/files/#{orig_file.id}" if orig_file.file_identifier.to_s.start_with?('fedora:')
+
       latest_file = Hyrax::VersioningService.latest_version_of(orig_file)
       version = latest_file&.version_id ? Digest::MD5.hexdigest(latest_file.version_id) : nil
       "#{id}/files/#{orig_file.id}#{'/' + version if version}"

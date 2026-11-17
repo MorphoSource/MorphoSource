@@ -215,6 +215,13 @@ RSpec.describe CartItem, type: :model do
         expect(missing_item.work).to be_nil
       end
     end
+
+    context 'Solr lookup fails for another reason' do
+      it 'raises instead of returning nil' do
+        allow(SolrDocument).to receive(:find).with(cartItem1.work_id).and_raise(Errno::ECONNREFUSED)
+        expect { cartItem1.work }.to raise_error(Errno::ECONNREFUSED)
+      end
+    end
   end
 
   describe '#expired?' do

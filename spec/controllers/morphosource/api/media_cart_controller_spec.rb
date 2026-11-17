@@ -121,16 +121,45 @@ RSpec.describe Morphosource::Api::MediaCartController, type: :controller do
 
       before do
         allow(SolrDocument).to receive(:find).with('deleted-media').and_raise(Blacklight::Exceptions::RecordNotFound)
-        get_with_key(current_user.token)
       end
 
-      it 'still returns the item, marked as unavailable' do
+      it 'still returns the item, marked as unavailable and neither downloadable nor restricted' do
+        get_with_key(current_user.token)
         item = returned_items.find { |i| i['id'] == orphan_item.id }
         expect(item['media_id']).to eq('deleted-media')
         expect(item['media_available']).to eq(false)
         expect(item['media_title']).to be_nil
         expect(item['media_url']).to be_nil
         expect(item['downloadable']).to eq(false)
+        expect(item['restricted']).to be_nil
+      end
+
+      it 'is excluded from access=downloadable' do
+        get_with_key(current_user.token, access: 'downloadable')
+        expect(returned_ids).not_to include(orphan_item.id)
+      end
+
+      it 'is excluded from access=restricted' do
+        get_with_key(current_user.token, access: 'restricted')
+        expect(returned_ids).to match_array([cartItem3.id])
+      end
+    end
+
+    context 'when Solr is unavailable' do
+      before do
+        allow(SolrDocument).to receive(:find).and_raise(Errno::ECONNREFUSED)
+      end
+
+      it 'raises rather than reporting items as unavailable' do
+        expect { get_with_key(current_user.token) }.to raise_error(Errno::ECONNREFUSED)
+      end
+
+      it 'raises rather than reporting items as restricted when filtering' do
+        expect { get_with_key(current_user.token, access: 'restricted') }.to raise_error(Errno::ECONNREFUSED)
+      end
+
+      it 'raises rather than returning an empty list when filtering for downloadable items' do
+        expect { get_with_key(current_user.token, access: 'downloadable') }.to raise_error(Errno::ECONNREFUSED)
       end
     end
 

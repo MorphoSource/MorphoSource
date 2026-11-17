@@ -41,22 +41,28 @@ module Morphosource
 
         # Unfiltered requests only evaluate access for the paged items (in
         # #item_json). Filtered requests must evaluate every item in the cart,
-        # so results are cached for reuse in #item_json.
+        # so results are cached for reuse in #item_json. Items whose media no
+        # longer exists are neither downloadable nor restricted, so they are
+        # excluded from both filters.
         def filtered_items
           items = current_user.items_in_cart
           case params[:access]
-          when 'downloadable' then items.select { |item| downloadable?(item) }
-          when 'restricted'   then items.reject { |item| downloadable?(item) }
+          when 'downloadable' then items.select { |item| downloadable?(item) == true }
+          when 'restricted'   then items.select { |item| downloadable?(item) == false }
           else items
           end
         end
 
-        # CartItem#downloadable? is expensive (Solr, User and ability lookups);
-        # compute it at most once per item per request.
+        # true/false, or nil when the media no longer exists. Computed at most
+        # once per item per request, since CartItem#downloadable? is expensive.
+        #
+        # item.work is checked here, outside CartItem#downloadable?'s blanket
+        # rescue, so a Solr failure raises instead of reporting the item as
+        # restricted.
         def downloadable?(item)
           @downloadable ||= {}
           return @downloadable[item.id] if @downloadable.key?(item.id)
-          @downloadable[item.id] = item.downloadable?
+          @downloadable[item.id] = item.work.present? ? item.downloadable? : nil
         end
 
         def item_json(item)
@@ -70,8 +76,8 @@ module Morphosource
             media_api_url: doc.present? ? main_app.api_media_show_url(item.work_id) : nil,
             media_available: doc.present?,
             physical_object: physical_object_json(doc),
-            downloadable: downloadable,
-            restricted: !downloadable,
+            downloadable: downloadable == true,
+            restricted: downloadable.nil? ? nil : !downloadable,
             request_status: item.request_status,
             date_added: format_date(item.created_at),
             date_requested: format_date(item.date_requested),

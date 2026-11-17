@@ -50,7 +50,7 @@ class CartItem < ApplicationRecord
     return @work if defined?(@work)
     @work = begin
       SolrDocument.find(work_id)
-    rescue
+    rescue Blacklight::Exceptions::RecordNotFound
       nil
     end
   end

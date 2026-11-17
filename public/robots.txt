@@ -20,6 +20,7 @@ Allow: /robots.txt
 Allow: /llms.txt
 Allow: /api/
 Allow: /manifests/
+Allow: /docs$
 Allow: /docs/
 Allow: /assets/
 Allow: /packs/

@@ -1,8 +1,9 @@
 # MorphoSource robots.txt
 # For the full automated-agent access policy, see /llms.txt.
 #
-# Web crawlers: the homepage, the public REST API (/api/) and IIIF
-# Presentation manifests (/manifests/) are available for programmatic access. Static assets are
+# Web crawlers: the homepage, the public REST API (/api/), IIIF
+# Presentation manifests (/manifests/), and documentation (/docs/) are
+# available for programmatic access. Static assets are
 # allowed so search engines can render the homepage. All other pages are
 # blocked.
 #
@@ -19,6 +20,7 @@ Allow: /robots.txt
 Allow: /llms.txt
 Allow: /api/
 Allow: /manifests/
+Allow: /docs/
 Allow: /assets/
 Allow: /packs/
 Allow: /font/

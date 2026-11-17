@@ -673,6 +673,9 @@ Rails.application.routes.draw do
     get 'media/:id/iiif/manifest/v3', to: 'morphosource/manifests#get_manifest_link', as: 'media_get_manifest_link_v3', defaults: { format: 'json', version: 'v3' }
     get 'media/:id/iiif/manifest/v4', to: 'morphosource/manifests#get_manifest_link', as: 'media_get_manifest_link_v4', defaults: { format: 'json', version: 'v4' }
 
+    # Media Cart contents for the API key's user
+    get 'media-cart', to: 'morphosource/api/media_cart#index', as: 'media_cart', defaults: { format: 'json' }
+
     # Generate media download link for API
     post 'download/:id', to: 'morphosource/media_api_downloads#api_generate_download', as: 'media_generate_download', defaults: { format: 'json' }
 

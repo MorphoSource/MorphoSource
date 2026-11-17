@@ -2,7 +2,7 @@ en:
   morphosource:
     media:
       help:
-        pixel_spacing: "Guidance for adding pixel spacing and slice thickness values can be found in the MorphoSource User Guide: <a href='/docs/for-data-contributors/media/how-to-create-and-edit-media/modality-specific-instructions/ct-data/pixel-spacing-metadata' target='_blank'>Pixel Spacing for CT/MRI Image Stacks</a>"
+        pixel_spacing: "Guidance for adding pixel spacing and slice thickness values can be found in the MorphoSource User Guide: <a href='https://www.morphosource.org/docs/for-data-contributors/media/how-to-create-and-edit-media/modality-specific-instructions/ct-data/pixel-spacing-metadata/' target='_blank'>Pixel Spacing for CT/MRI Image Stacks</a>"
       view:
         temporary_access: You are viewing this MorphoSource media record with a temporary access link. This grants you access to view this specific media record. This does not grant the ability to download file(s). You also may not view information relating to this media associated with other private records, like private project membership or private derivative(s) of this media, unless you independently have access to view those other records.
       edit:
@@ -21,7 +21,7 @@ en:
         doi_edit_warning: "This media has a DOI. Metadata fields are locked and can only be changed by an <a href='mailto:morphosource@duke.edu'>administrator</a>. You can still update sharing permissions in the Share tab."
         doi_edit_warning_private: "This media has a DOI and its metadata cannot be edited. You can change the visibility to publish the media. If you need to make changes, please <a href='mailto:morphosource@duke.edu'>ask MorphoSource administrators</a>."
       organization_transfer:
-        transfer_message: This is an organization media transfer from the original media contributor to the receiving organization data manager. For more details, see our <a href="https://duke.atlassian.net/wiki/spaces/MD/pages/35423461/Organization+Ownership+Transfers">documentation</a>.
+        transfer_message: This is an organization media transfer from the original media contributor to the receiving organization data manager. For more details, see our <a href="https://www.morphosource.org/docs/for-data-contributors/media/organization-ownership-transfers">documentation</a>.
       annotations:
         aleph_scene:
           invalid_json: The Aleph scene JSON is invalid. Please check the JSON format and try again.

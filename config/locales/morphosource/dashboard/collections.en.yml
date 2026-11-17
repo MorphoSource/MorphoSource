@@ -24,9 +24,9 @@ en:
         edit:
           header: Edit %{type_title}
         organization:
-          info: For more information on organizational teams, please read <a href="https://duke.atlassian.net/wiki/spaces/MD/pages/35422980/What+is+an+Organizational+Management+Team">What is an Organizational Management Team?</a>
+          info: For more information on organization management, please read <a href="https://www.morphosource.org/docs/for-staff-of-museums-and-facilities/organization-management/">Organization Management</a>
         permissions:
-          info: Use these fields to specify default recommended permissions settings for newly contributed media. For more details on these fields and how they should be used, consult our documentation on <a href="https://duke.atlassian.net/wiki/spaces/MD/pages/35422501/Media+Ownership+Management+and+Reuse+Permissions" target="_blank">Media Ownership, Management, and Reuse Permissions</a>.
+          info: Use these fields to specify default recommended permissions settings for newly contributed media. For more details on these fields and how they should be used, consult our documentation on <a href="https://www.morphosource.org/docs/for-data-contributors/media/media-ownership-management-and-reuse-permissions/" target="_blank">Media Ownership, Management, and Reuse Permissions</a>.
         media_lists:
           action:
             new:

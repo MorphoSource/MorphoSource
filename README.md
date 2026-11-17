@@ -10,7 +10,7 @@ The live repository at **[www.morphosource.org](https://www.morphosource.org)** 
 
 ## Documentation
 
-* [User Documentation](https://duke.atlassian.net/wiki/spaces/MD/overview): Our main documentation that explains how to use MorphoSource as a data contributor or user.
+* [User Documentation](https://www.morphosource.org/docs/): Our main documentation that explains how to use MorphoSource as a data contributor or user.
 * [REST API schema and documentation](https://morphosource.stoplight.io/docs/morphosource-api/rm6bqdolcidct-morpho-source-rest-api): Lists and examples of current query API routes, encoded in OpenAPI 3.1.0 and also [available on GitHub](https://github.com/MorphoSource/morphosource-api).
 
 ## Community

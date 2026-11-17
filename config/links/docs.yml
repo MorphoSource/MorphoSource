@@ -4,26 +4,26 @@
   header: false
   footer: true
 - label: hyrax.controls.links.docs.all_docs
-  url: https://duke.atlassian.net/wiki/spaces/MD/overview?homepageId=35422252
+  url: https://www.morphosource.org/docs/
   header: true
   footer: true
 - label: hyrax.controls.links.docs.contributors
-  url: https://duke.atlassian.net/wiki/spaces/MD/pages/35422310/Contributor+User+Docs
+  url: https://www.morphosource.org/docs/for-data-contributors/
   header: true
   footer: false
 - label: hyrax.controls.links.docs.deposit_costs
-  url: https://duke.atlassian.net/wiki/spaces/MD/pages/274268722/Data+Deposit+Costs
+  url: https://www.morphosource.org/docs/for-data-contributors/data-deposit-costs/
   header: true
   footer: false
 - label: hyrax.controls.links.docs.citation
-  url: https://duke.atlassian.net/wiki/spaces/MD/pages/35422721/Reference+and+Citation+of+Media+and+Projects
+  url: https://www.morphosource.org/docs/use-of-media-in-peer-reviewed-publications/reference-and-citation-of-media-and-collections-of-media/
   header: true
   footer: false
 - label: hyrax.controls.links.docs.faq
-  url: https://duke.atlassian.net/wiki/spaces/MD/pages/35422899/Frequently+Asked+Questions
+  url: https://www.morphosource.org/docs/for-data-contributors/frequently-asked-questions
   header: true
   footer: false
 - label: hyrax.controls.links.docs.deposit_structure
-  url: https://duke.atlassian.net/wiki/spaces/MD/pages/35423429/Specimens+per+scan+Scans+per+media+deposit
+  url: https://www.morphosource.org/docs/for-data-contributors/media/how-to-create-and-edit-media/critical-formatting-details/specimens-per-scan-scans-per-media-deposit
   header: false
   footer: false

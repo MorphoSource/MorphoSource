@@ -223,7 +223,7 @@ module Morphosource
       return solr_docs.map { |d| d['accessControl_ssim']&.first }.compact
     end
 
-    # @return [Array<CartItem>] the cart items created; works already in the cart or requested are skipped
+    # @return [Array<CartItem>] the cart items created; skips works already in the cart, already requested, or no longer downloadable
     def create_new_items(old_items,requested='requested')
       works = get_media_by_items(old_items)
       create_instance_variables_for_flash

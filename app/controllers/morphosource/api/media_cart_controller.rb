@@ -1,5 +1,5 @@
 module Morphosource
-  module Api
+  module API
     # Contents of the API key owner's Media Cart.
     #
     #   GET /api/media-cart

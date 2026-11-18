@@ -1,6 +1,6 @@
 require 'rails_helper'
 
-RSpec.describe Morphosource::Api::MediaCartController, type: :controller do
+RSpec.describe Morphosource::API::MediaCartController, type: :controller do
 
   # Provides current_user with cart items:
   #   in cart:     cartItem1 (approved request, downloadable), cartItem2 (open, downloadable),

@@ -1,5 +1,5 @@
 module Morphosource
-  module Api
+  module API
     # Base class for REST API endpoints that are not backed by a Blacklight
     # catalog controller. Most /api routes are served by catalog controllers
     # (MediaCatalogController, ObjectsCatalogController, etc.); custom JSON

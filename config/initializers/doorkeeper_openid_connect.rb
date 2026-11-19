@@ -5,8 +5,10 @@
 # raising MissingConfiguration if this block is skipped. Routes remain gated
 # by Hyrax.config.enable_identity_provider? in config/routes.rb.
 Doorkeeper::OpenidConnect.configure do
-  # OIDC spec requires a full HTTPS URL as the issuer, not just a hostname.
-  issuer (Rails.env.production? ? "https://#{Hyrax.config.host_name}" : "http://#{ENV.fetch('HOST_NAME', 'localhost')}:#{ENV.fetch('PORT', '3000')}")
+  # Initializer runs before Hyrax's initializer that would set Hyrax.config.host_name, so lazily instantiate issuer with a block
+  issuer do |*_args|
+    Rails.env.production? ? "https://#{Hyrax.config.host_name}" : "http://#{ENV.fetch('HOST_NAME', 'localhost')}:#{ENV.fetch('PORT', '3000')}"
+  end
 
   # The signing key for the JWT tokens.
   # In production, set OIDC_PRIVATE_KEY to a PEM-formatted RSA private key.

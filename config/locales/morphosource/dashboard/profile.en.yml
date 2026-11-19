@@ -41,5 +41,6 @@ en:
         communication_preference: Communication Preferences
         communication_preference_hint: Whether you prefer to receive all communications from MorphoSource (news, surveys, etc.) or only essential communications such as site notifications.
         generate_new_api_key: Generate a new user-specific API key. Your previous key will no longer be functional.
+        authorized_applications: See the outside applications you have allowed to access MorphoSource on your behalf, and revoke their access.
         save_settings: Save Settings
         view_api_key: "Display your user-specific API key, used to authenticate API requests as yourself. WARNING: This is SENSITIVE information, guard it like a password!"

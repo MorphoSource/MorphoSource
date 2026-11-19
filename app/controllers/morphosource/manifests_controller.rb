@@ -5,7 +5,8 @@ module Morphosource
     include Morphosource::RestApiBehavior
     include Morphosource::TemporaryAccess::TemporaryAccessControllerBehavior
 
-    before_action :authenticate_api_key_required, only: :get_manifest_link
+    api_auth :required, scope: 'api:read', only: :get_manifest_link
+    api_auth :optional, scope: 'api:read', only: :show
     before_action :set_access_control_headers
 
     class_attribute :iiif_manifest_builder

@@ -3,7 +3,9 @@ module Morphosource
     include Morphosource::RestApiBehavior
     include Morphosource::TemporaryAccess::TemporaryAccessControllerBehavior
 
-    before_action :load_file, :authenticate_api_key_optional, :authorize_download!
+    before_action :load_file
+    api_auth :optional, scope: 'api:download'
+    before_action :authorize_download!
 
     self.temporary_access_link_class = TemporaryMediaAccessLink
 

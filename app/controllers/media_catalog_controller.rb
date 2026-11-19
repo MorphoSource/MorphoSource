@@ -5,9 +5,9 @@ class MediaCatalogController < CatalogController
   include CatalogControllerRestApiBehavior
   include Morphosource::CatalogHelper
 
-  before_action :authenticate_api_key_optional, only: [:index, :index_for_object]
-  # This filter applies the hydra access controls to media file details API endpoint
-  before_action :authenticate_api_key_optional, :enforce_show_permissions, only: [:show, :show_file_metadata]
+  # index, show and show_file_metadata (with enforce_show_permissions) are covered by
+  # CatalogControllerRestApiBehavior.
+  api_auth :optional, scope: 'api:read', only: [:index_for_object]
 
   def catalog_search_form_action
     main_app.media_search_path

@@ -3,10 +3,12 @@ module Morphosource
     include Morphosource::RestApiBehavior
 
     skip_before_action :verify_authenticity_token, only: [:api_generate_download, :download]
+    # :optional so a missing credential still gets the JSON 401 from validate_when_download_from_api.
+    api_auth :optional, scope: 'api:download', only: [:download]
     before_action :validate_when_download_from_api, only: [:download]
     before_action :validate_download_hash, only: [:download]
 
-    before_action :authenticate_api_key_required, only: [:api_generate_download]
+    api_auth :required, scope: 'api:download', only: [:api_generate_download]
     before_action :validate_params_for_api_generate_download, only: [:api_generate_download]
 
     def download
@@ -114,9 +116,11 @@ module Morphosource
         end
       end
 
-      # Get user record from api key in header
+      # User from the API key or OAuth access token in the Authorization header. These
+      # endpoints require a header credential even when a session exists, so this does
+      # not fall back to the session user. api_auth has already checked OAuth scopes.
       def user_from_authorization_header
-        User.where(token: api_key).first if api_key.present?
+        api_credential.user
       end
 
       def user_from_token
@@ -126,10 +130,6 @@ module Morphosource
       def media_for_api
         return nil unless Media.exists? (params[:id])
         @media ||= Media.find(params[:id])
-      end
-
-      def api_key
-        @api_key ||= request.headers['Authorization']
       end
 
       def download_hash

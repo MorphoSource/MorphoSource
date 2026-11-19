@@ -4,7 +4,8 @@ module CatalogControllerRestApiBehavior
   include Morphosource::RestApiBehavior
 
   included do
-    before_action :authenticate_api_key_optional, only: :index
-    before_action :authenticate_api_key_optional, :enforce_show_permissions, only: [:show, :show_file_metadata]
+    api_auth :optional, scope: 'api:read', only: [:index, :show, :show_file_metadata]
+    # Redeclared after api_auth so it runs once the API user is known.
+    before_action :enforce_show_permissions, only: [:show, :show_file_metadata]
   end
 end

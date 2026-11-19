@@ -227,6 +227,35 @@ RSpec.describe User, type: :model do
     end
   end
 
+  describe '#make_inactive' do
+    let(:application) do
+      Doorkeeper::Application.create!(name: 'Partner app', redirect_uri: 'https://partner.example.org/callback')
+    end
+    let(:other_user) { User.create(email: "other@email.com", password: "password") }
+
+    def access_token(owner)
+      Doorkeeper::AccessToken.create!(application: application, resource_owner_id: owner.id,
+                                      scopes: 'openid api:read', expires_in: 2.hours, use_refresh_token: true)
+    end
+
+    it 'deactivates the user' do
+      user.make_inactive
+      expect(user.reload.active).to be false
+    end
+
+    it "revokes the user's OAuth tokens, including their refresh tokens" do
+      token = access_token(user)
+      user.make_inactive
+      expect(token.reload).to be_revoked
+    end
+
+    it "leaves other users' OAuth tokens alone" do
+      token = access_token(other_user)
+      user.make_inactive
+      expect(token.reload).not_to be_revoked
+    end
+  end
+
   describe '#registered?' do
     context 'when not registered' do
       before do

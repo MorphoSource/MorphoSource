@@ -7,6 +7,9 @@ en:
       address: 'View your physical address'
       phone: 'View your phone number'
       admin: 'Verify your MorphoSource user status'
+      'api:read': 'Search and view MorphoSource records on your behalf, including private records you have access to'
+      'api:download': 'Download media on your behalf, accepting download terms and recording usage under your account'
+      'api:reports': 'View exports and download and request reports for collections you manage'
     errors:
       messages:
         login_required: 'The authorization server requires end-user authentication'

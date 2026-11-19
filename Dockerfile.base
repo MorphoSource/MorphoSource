@@ -4,7 +4,7 @@
 
 ### MORPHOSOURCE-BASE STAGE ###
 
-ARG RUBY_VERSION=3.3.6
+ARG RUBY_VERSION=3.3.14
 FROM ruby:$RUBY_VERSION-bookworm AS morphosource-base
 
 ARG RAILS_ROOT=/app/samvera/hyrax-webapp

@@ -68,7 +68,7 @@ module Morphosource
     end
 
     def enforced_permissions_fields
-      permissions_fields.select { |k, v| is_intentionally_blank(k) || v&.first.present? }
+      permissions_fields.select { |k, v| is_intentionally_blank(k) || Array(v).first.present? }
     end
 
     def is_intentionally_blank(field)
@@ -91,6 +91,7 @@ module Morphosource
       {
         download_permission: download_permission,
         download_reviewer: download_reviewer,
+        reviews_object_media_downloads: try(:reviews_object_media_downloads),
         rights_holder: rights_holder,
         rights_statement: rights_statement,
         license: license,

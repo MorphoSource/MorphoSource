@@ -116,6 +116,9 @@ class MediaIndexer < Morphosource::WorkIndexer
         occurrence_id = nil
       end
 
+      # Pass the walked organizations: each walk loads them from Fedora.
+      solr_doc['download_reviewers_ssim'] = object.download_reviewers(@organizations)
+
       # add physical object facet
       solr_doc['media_physical_object_type_tesim'] = physical_object_type
       solr_doc['media_physical_object_type_ssim'] = physical_object_type
@@ -248,10 +251,7 @@ class MediaIndexer < Morphosource::WorkIndexer
   end
 
   def organizations
-    organizations = object.physical_objects.each_with_object([]) do |obj, orgs|
-      obj.organizations.each { |org| orgs << org }
-    end
-    organizations.uniq
+    object.organizations.uniq
   end
 
   def are_physical_objects(works)

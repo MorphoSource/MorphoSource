@@ -281,6 +281,118 @@ RSpec.describe SubmissionsController, type: :controller do
         )
       end
     end
+
+    context 'with an organization collection that reviews its objects\' media downloads' do
+      let(:user)        { FactoryBot.create(:contributor) }
+      let(:form_params) { { organization_id: organization.id } }
+      let(:organization) do
+        FactoryBot.create(:organization_collection,
+                          title: ['Reviewing Org'],
+                          depositor: user.ms_id,
+                          reviews_object_media_downloads: eligible)
+      end
+
+      before { allow(subject).to receive(:find_ancestor_organization).and_return(organization) }
+
+      context 'when the organization is eligible' do
+        let(:eligible) { true }
+
+        it 'defaults the new media to object_organization mode' do
+          post :organization_default_media_fields, params: form_params
+
+          default_fields = JSON.parse(response.body)['default_fields']
+          expect(default_fields['download_reviewer_mode']).to eq('object_organization')
+          expect(default_fields).not_to have_key('reviews_object_media_downloads')
+        end
+      end
+
+      context 'when the organization is not eligible' do
+        let(:eligible) { false }
+
+        it 'sets no mode, and does not raise on the scalar flag' do
+          post :organization_default_media_fields, params: form_params
+
+          default_fields = JSON.parse(response.body)['default_fields']
+          expect(default_fields).not_to have_key('download_reviewer_mode')
+          expect(default_fields).not_to have_key('reviews_object_media_downloads')
+        end
+      end
+
+      context 'when the flag has never been written' do
+        let(:eligible) { nil }
+
+        it 'sets no mode' do
+          post :organization_default_media_fields, params: form_params
+
+          expect(JSON.parse(response.body)['default_fields']).not_to have_key('download_reviewer_mode')
+        end
+      end
+    end
+  end
+
+  describe '#reject_ineligible_reviewer_mode' do
+    let(:posted)  { ActionController::Parameters.new('download_reviewer_mode' => 'object_organization') }
+    let(:eligible) { nil }
+    let(:organization) do
+      FactoryBot.create(:organization_collection,
+                        title: ['Posting Org'],
+                        depositor: user.ms_id,
+                        reviews_object_media_downloads: eligible)
+    end
+
+    before { allow(subject).to receive(:find_ancestor_organization).and_return(organization) }
+
+    context 'when the organization is eligible' do
+      let(:eligible) { true }
+
+      it 'keeps the posted mode' do
+        result = subject.send(:reject_ineligible_reviewer_mode, posted)
+
+        expect(result['download_reviewer_mode']).to eq('object_organization')
+      end
+    end
+
+    context 'when the organization is not eligible' do
+      let(:eligible) { false }
+
+      it 'drops the posted mode' do
+        result = subject.send(:reject_ineligible_reviewer_mode, posted)
+
+        expect(result).not_to have_key('download_reviewer_mode')
+      end
+    end
+
+    it 'drops the posted mode when no organization resolves' do
+      allow(subject).to receive(:find_ancestor_organization).and_return(nil)
+
+      expect(subject.send(:reject_ineligible_reviewer_mode, posted)).not_to have_key('download_reviewer_mode')
+    end
+
+    it 'leaves record_users alone without resolving an organization' do
+      expect(subject).not_to receive(:find_ancestor_organization)
+      params = ActionController::Parameters.new('download_reviewer_mode' => 'record_users')
+
+      expect(subject.send(:reject_ineligible_reviewer_mode, params)['download_reviewer_mode']).to eq('record_users')
+    end
+  end
+
+  describe '#find_ancestor_organization' do
+    let(:organization) { FactoryBot.create(:organization_collection, title: ['Parent Org']) }
+    let(:parent)       { instance_double(Media, organizations: [organization]) }
+
+    it 'resolves the first parent when the submission names several' do
+      subject.instance_variable_set(:@submission, Submission.new(parent_media_list: 'aaa,bbb'))
+      expect(Media).to receive(:find).with('aaa').and_return(parent)
+
+      expect(subject.send(:find_ancestor_organization)).to eq(organization)
+    end
+
+    it 'resolves a single parent unchanged' do
+      subject.instance_variable_set(:@submission, Submission.new(parent_media_list: 'aaa'))
+      expect(Media).to receive(:find).with('aaa').and_return(parent)
+
+      expect(subject.send(:find_ancestor_organization)).to eq(organization)
+    end
   end
 
   describe '#save_data' do

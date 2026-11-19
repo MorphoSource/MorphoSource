@@ -4,6 +4,9 @@ module Morphosource
   module MediaMetadata
     extend ActiveSupport::Concern
 
+    DOWNLOAD_REVIEWER_MODES = %w[record_users object_organization].freeze
+    ORG_COLLECTION_TOKEN_PREFIX = 'org_collection:'.freeze
+
     included do
       # -- Core metadata --
 
@@ -104,6 +107,17 @@ module Morphosource
       # Set when the transfer request is created; cleared when the request is accepted, rejected, or canceled.
       property :pending_org_transfer, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/pendingOrgTransfer"), multiple: false do |index|
         index.as :stored_sortable
+      end
+
+      # -- Download review --
+
+      # Must stay single-valued: multivalued AF properties report the new value from _was/_change.
+      property :download_reviewer_mode, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/downloadReviewerMode"), multiple: false do |index|
+        index.as :stored_sortable
+      end
+
+      property :record_download_reviewer_users, predicate: ::RDF::URI.new("https://www.morphosource.org/terms/recordDownloadReviewerUsers"), multiple: true do |index|
+        index.as :symbol
       end
 
       # -- Management of File Visibility/Download/View --

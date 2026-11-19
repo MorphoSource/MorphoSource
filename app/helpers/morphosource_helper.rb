@@ -117,7 +117,7 @@ module MorphosourceHelper
         ".m4v"
       when "video/x-ms-wmv"
         ".wmv"
-      when "application/x-tar"
+      when "application/x-tar", "application/x-gtar"
         ".tar"
       else
         @message = "Unknown content_type #{content_type}"

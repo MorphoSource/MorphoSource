@@ -104,6 +104,16 @@ RSpec.describe MorphosourceHelper, type: :helper do
       it { expect(subject.e_tag).to eq('abc123') }
     end
 
+    context 'when the remote serves a GNU tar' do
+      before do
+        response = build_response(200, 'Content-Type' => 'application/x-gtar')
+        allow_any_instance_of(MorphosourceHelper::RemoteFileInfo)
+          .to receive(:fetch_headers).with(url, method: :head).and_return(response)
+      end
+
+      it { expect(MorphosourceHelper::RemoteFileInfo.new(url).file_ext).to eq('.tar') }
+    end
+
     context 'ETag stripping' do
       {
         'W"abc123"'  => 'abc123',  # DeepBlue non-standard weak ETag (no slash)

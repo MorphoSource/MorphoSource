@@ -344,6 +344,24 @@ RSpec.describe CharacterizeJob do
         end
       end
 
+      describe 'DCM (GNU-format TAR) characterization' do
+        let(:file_path_string) {fixture_path + '/dcm_stack/dcm_stack_gnu.tar'}
+        let(:dcm_file) { File.open(file_path_string) }
+
+        before do
+          Hydra::Works::AddFileToFileSet.call(file_set, dcm_file, :original_file)
+          described_class.perform_now(file_set, file_set.original_file.id, file_path_string)
+        end
+
+        subject { SolrDocument.find(file_set.id) }
+
+        it "stores the GNU tar mime type as application/x-tar" do
+          expect(subject.mime_type).to eq("application/x-tar")
+          expect(subject.contents_mime_type.first).to eq("application/dicom")
+          expect(subject.contents_accepted_file_count.first).to eq("1")
+        end
+      end
+
       describe 'OBJ with textures (ZIP) characterization' do
         let(:file_path_string) {fixture_path + '/whale/whale-mpc-677-150k-4096-obj.zip'}
         let(:zip_file) { File.open(file_path_string) }

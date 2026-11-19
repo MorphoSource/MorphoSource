@@ -8,6 +8,7 @@
     <%= render_edit_field_partial('permissions_enforcement_mode', f: f) %>
     <% if @collection.organization_collection? %>
       <%= render_edit_field_partial('media_ownership_transfer', f: f) %>
+      <%= render_edit_field_partial('reviews_object_media_downloads', f: f) %>
     <% end %>
   </div>
 <% end %>

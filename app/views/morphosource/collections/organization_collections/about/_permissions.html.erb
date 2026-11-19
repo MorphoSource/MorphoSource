@@ -15,8 +15,10 @@
   <div class="col-6 showcase-label"><%= t('morphosource.collections.view.about.permissions.download_permission') %></div>
   <div class="col-6 showcase-value"><%= publication_status_label(@presenter.download_permission&.first) || '--' %></div>
 </div>
-<%# download reviewer %>
-<%= @presenter.attribute_to_html(:download_reviewer, label: t('morphosource.collections.view.about.permissions.download_reviewer'), render_as: :showcase_user_link, include_empty: true) %>
+<%# download reviewers %>
+<% if @presenter.reviews_object_media_downloads %>
+  <%= @presenter.attribute_to_html(:download_reviewers, label: t('morphosource.collections.view.about.permissions.download_reviewer'), render_as: :showcase_user_link, include_empty: true) %>
+<% end %>
 <%# agreement uri %>
 <%= @presenter.attribute_to_html(
   :agreement_attachment_url,
@@ -47,7 +49,7 @@
   :license,
   :rights_statement,
   :publication_status_label,
-  :download_reviewer,
+  (:download_reviewers if @presenter.reviews_object_media_downloads),
   :agreement_uri,
   :morphosource_use_agreement_type,
   :required_archival_of_published_derivatives,
@@ -55,5 +57,5 @@
   :permits_3d_use,
   :rights_holder,
   :preview_mode
-]%>
+].compact %>
 <%= render partial: 'morphosource/collections/organization_collections/about/modal_field_definitions', locals: { fields: fields, modal_id: 'modal-ownership-and-permissions-definitions' } %>

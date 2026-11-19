@@ -42,6 +42,10 @@
     <%= render_edit_field_partial('download_permission', f: f, org_permissions: true, placeholder: 'No preference') %>
   </div>
 
+  <% if @collection.organization_collection? %>
+    <%= render 'morphosource/dashboard/collections/permissions/organization_download_reviewers', f: f %>
+  <% end %>
+
   <div class="mb-2">
     <span id="placeholder-text" style="display: none;">No preference</span>
     <%= render_edit_field_partial('rights_holder_with_blank', f: f, placeholder: 'No preference') %>

@@ -140,6 +140,43 @@ RSpec.describe OrganizationCollection, type: :model do
         expect(organization.reload.custom_download_reviewer_users)
           .to match_array([reviewer.ms_id, other_reviewer.ms_id])
       end
+
+      it 'splits the picker\'s comma-joined value and drops blanks and duplicates' do
+        organization.custom_download_reviewer_users = ["#{reviewer.ms_id}, #{other_reviewer.ms_id}", '', reviewer.ms_id]
+
+        expect(organization.custom_download_reviewer_users).to eq([reviewer.ms_id, other_reviewer.ms_id])
+      end
+
+      it 'treats a nil value as an empty list' do
+        organization.custom_download_reviewer_users = nil
+
+        expect(organization.custom_download_reviewer_users).to eq([])
+      end
+
+      context 'when the stored list is posted back comma-joined' do
+        before do
+          organization.managers_are_download_reviewers = false
+          organization.custom_download_reviewer_users = [reviewer.ms_id, other_reviewer.ms_id]
+          organization.save!
+          organization.reload
+        end
+
+        it 'is not a change' do
+          organization.custom_download_reviewer_users = ["#{other_reviewer.ms_id},#{reviewer.ms_id}"]
+
+          expect(organization.custom_download_reviewer_users_changed?).to be(false)
+        end
+
+        it 'publishes no reviewer event on save' do
+          allow(Hyrax.publisher).to receive(:publish).and_call_original
+
+          organization.custom_download_reviewer_users = ["#{reviewer.ms_id},#{other_reviewer.ms_id}"]
+          organization.city = ['Durham']
+          organization.save!
+
+          expect(Hyrax.publisher).not_to have_received(:publish).with('organization.reviewers.updated', any_args)
+        end
+      end
     end
 
     describe '#reviews_object_media_downloads' do
@@ -148,6 +185,18 @@ RSpec.describe OrganizationCollection, type: :model do
         organization.save!
 
         expect(organization.reload.reviews_object_media_downloads).to be(true)
+      end
+    end
+
+    describe '#reviews_object_media_downloads?' do
+      it 'is false when the field was never written' do
+        expect(organization.reviews_object_media_downloads?).to be(false)
+      end
+
+      it 'is true when the field is true' do
+        organization.reviews_object_media_downloads = true
+
+        expect(organization.reviews_object_media_downloads?).to be(true)
       end
     end
 

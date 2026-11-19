@@ -60,7 +60,7 @@ en:
               text: Definitions of media management and use fields are listed below. The values in these fields are the organization's preferred values for media created by imaging objects managed by the organization.
             agreement_uri: Additional usage agreement
             download_permission: Publication status
-            download_reviewer: Download reviewer
+            download_reviewer: Download reviewers
             license: Creative Commons license
             media_ownership_transfer: Media ownership transfer
             morphosource_use_agreement_type: MorphoSource use agreement type

@@ -2,7 +2,7 @@
 <% eligible = @collection.reviews_object_media_downloads? %>
 <% no_managers = @presenter.managers.empty? %>
 <div class="form-group block-fill block-padding" id="organization-download-reviewers">
-  <h3 class="mt-0"><%= t('morphosource.reviewers.organization.heading') %></h3>
+  <h3 class="mt-0 showcase-label pl-0 ml-n2"><%= t('morphosource.reviewers.organization.heading') %></h3>
   <div class="<%= 'text-muted' unless eligible %>">
     <%# A radio pair, not two boolean selects: exactly one choice is always set, so the "neither" state is unreachable. %>
     <fieldset class="form-group">

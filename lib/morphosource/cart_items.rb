@@ -223,15 +223,15 @@ module Morphosource
       return solr_docs.map { |d| d['accessControl_ssim']&.first }.compact
     end
 
+    # @return [Array<CartItem>] the cart items created; skips works already in the cart, already requested, or no longer downloadable
     def create_new_items(old_items,requested='requested')
       works = get_media_by_items(old_items)
       create_instance_variables_for_flash
+      new_items = []
       works.each do |work|
         unless work_in_cart_or_requested?(work.id)
           item = create_cart_item(work.id)
-          if requested == 'requested'
-            make_request(item)
-          end
+          new_items << item if item
           @count += 1
         else
           if requested_work_not_in_cart?(work.id)
@@ -241,6 +241,8 @@ module Morphosource
           end
         end
       end
+      make_request(new_items) if requested == 'requested'
+      new_items
     end
 
     def create_instance_variables_for_flash

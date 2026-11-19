@@ -143,6 +143,37 @@ RSpec.describe Morphosource::DownloadReviewerResolver do
     end
   end
 
+  describe '#reviewers_by_media_id' do
+    it 'maps each Media id to its reviewers' do
+      media = FactoryBot.create(:media, record_download_reviewer_users: [reviewer.ms_id])
+      other_media = FactoryBot.create(:media, record_download_reviewer_users: [user.ms_id])
+
+      expect(resolver.reviewers_by_media_id([media.id, other_media.id]))
+        .to eq(media.id => [reviewer.ms_id], other_media.id => [user.ms_id])
+    end
+
+    it 'omits Media missing from Solr' do
+      media = FactoryBot.create(:media, record_download_reviewer_users: [reviewer.ms_id])
+
+      expect(resolver.reviewers_by_media_id([media.id, 'missing-media'])).to eq(media.id => [reviewer.ms_id])
+    end
+
+    it 'returns an empty hash for no ids without querying Solr' do
+      expect(ActiveFedora::SolrService).not_to receive(:query)
+
+      expect(resolver.reviewers_by_media_id([])).to eq({})
+    end
+
+    it 'fetches only the fields resolution reads' do
+      media = FactoryBot.create(:media, record_download_reviewer_users: [reviewer.ms_id])
+
+      expect(ActiveFedora::SolrService).to receive(:query)
+        .with('has_model_ssim:Media', hash_including(fl: described_class::MEDIA_FIELDS.join(','))).and_call_original
+
+      resolver.reviewers_by_media_id([media.id])
+    end
+  end
+
   describe 'a dangling token' do
     let(:dangling) { 'org_collection:no-such-organization' }
 

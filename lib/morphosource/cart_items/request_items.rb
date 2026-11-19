@@ -23,13 +23,19 @@ module Morphosource
         return item
       end
 
+      # Re-resolves reviewers synchronously: callers notify item.reviewers immediately afterwards.
       def make_request(items)
         items = Array(items)
+        reviewers_by_work_id = Morphosource::DownloadReviewerResolver.new.reviewers_by_media_id(items.map(&:work_id).uniq)
         items.each do |item|
-          item.update(date_cleared: nil, date_requested: Time.now, use: @intended_use, download_request_terms_agreement: true)
+          attributes = { date_cleared: nil, date_requested: Time.now, use: @intended_use, download_request_terms_agreement: true }
+          reviewers = reviewers_by_work_id[item.work_id]
+          attributes[:reviewers] = reviewers unless reviewers.nil? || Array(item.reviewers).to_set == reviewers.to_set
+          item.update(attributes)
         end
       end
 
+      # @return [Array<CartItem>] the new requested items replacing the inactive ones
       def re_request(items)
         mark_as('in_cart',items,value: false)
         create_new_items(items)

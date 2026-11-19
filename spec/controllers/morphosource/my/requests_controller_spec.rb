@@ -76,6 +76,23 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
         end
       end
 
+      context "the media's reviewers changed after it was added to the cart" do
+        let(:work3) { Media.create(id: "ccc", title: ["Test Media Work"], depositor: depositor.ms_id, visibility: 'open', fileset_accessibility: ['restricted_download'], record_download_reviewer_users: [reviewer.ms_id]) }
+
+        before do
+          request.env["HTTP_REFERER"] = "original_page"
+          allow(controller).to receive(:send_request_message_to_reviewer)
+          allow(controller).to receive(:send_request_message_to_requestor)
+          put :request_item, params: { item_id: cartItem3.id, intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
+        end
+
+        it 'notifies the current reviewer, not the one stored at cart-add' do
+          expect(controller).to have_received(:send_request_message_to_reviewer).with(reviewer.ms_id, anything)
+          expect(controller).not_to have_received(:send_request_message_to_reviewer).with(depositor.ms_id, anything)
+          expect(cartItem3.reload.reviewers).to eq([reviewer.ms_id])
+        end
+      end
+
       context 'the item has been requested before and cleared' do
         before do
           cartItem3.date_cleared = Date.yesterday
@@ -238,6 +255,42 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
         end
       end
 
+      context 'notifications for a mix of unrequested and inactive items' do
+        before do
+          cartItem1.update(date_expired: Date.yesterday)
+          request.env["HTTP_REFERER"] = "original_page"
+          allow(controller).to receive(:send_request_message_to_reviewer)
+          allow(controller).to receive(:send_request_message_to_requestor)
+          put :request_item, params: { batch_document_ids: [cartItem3.id, cartItem1.id], intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
+        end
+
+        it 'notifies about the unrequested item and the new item replacing the inactive one' do
+          new_item = CartItem.find_by(work_id: work1.id, date_expired: nil)
+          expect(controller).to have_received(:send_request_message_to_requestor).with(match_array([cartItem3, new_item]))
+          expect(controller).not_to have_received(:send_request_message_to_requestor).with(include(cartItem1))
+        end
+      end
+
+      context 'notifications for a mix of unrequested and pending items' do
+        before do
+          cartItem5.update(in_cart: true)
+          request.env["HTTP_REFERER"] = "original_page"
+          allow(controller).to receive(:send_request_message_to_reviewer)
+          allow(controller).to receive(:send_request_message_to_requestor)
+          put :request_item, params: { batch_document_ids: [cartItem3.id, cartItem5.id], intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
+        end
+
+        it 'does not notify again about the pending item' do
+          expect(controller).to have_received(:send_request_message_to_requestor).with([cartItem3])
+          expect(controller).to have_received(:send_request_message_to_reviewer).with(anything, [cartItem3])
+          expect(controller).not_to have_received(:send_request_message_to_reviewer).with(anything, include(cartItem5))
+        end
+
+        it 'tells the requestor the pending item was not requested again' do
+          expect(response.flash[:notice]).to eq("1 Item Requested; 1 Item Already Pending, Not Requested Again")
+        end
+      end
+
       context 'one item in group has already been requested' do
         before do
           cartItem1.date_expired = Date.yesterday
@@ -313,6 +366,42 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
           expect(response).to redirect_to("original_page")
         end
       end
+      context "the media's reviewers changed since the earlier request" do
+        let(:work1) { Media.create(id: "aaa", title: ["Test Media Work"], depositor: depositor.ms_id, visibility: 'open', fileset_accessibility: ['restricted_download'], record_download_reviewer_users: [reviewer.ms_id], morphosource_use_agreement_type: morphosource_use_agreement_type, required_archival_of_published_derivatives: required_archival_of_published_derivatives, permits_3d_use: permits_3d_use, permits_commercial_use: permits_commercial_use) }
+
+        before do
+          cartItem1.update(date_expired: Date.yesterday)
+          request.env["HTTP_REFERER"] = "original_page"
+          allow(controller).to receive(:send_request_message_to_reviewer)
+          allow(controller).to receive(:send_request_message_to_requestor)
+          get :request_again, params: { item_id: cartItem1.id, intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
+        end
+
+        it 'notifies the current reviewers about the new item' do
+          new_item = CartItem.find_by(work_id: work1.id, date_expired: nil)
+          expect(controller).to have_received(:send_request_message_to_reviewer).once.with(reviewer.ms_id, [new_item])
+          expect(controller).to have_received(:send_request_message_to_requestor).with([new_item])
+        end
+      end
+
+      context 'the media already has an active request' do
+        before do
+          cartItem1.update(date_expired: Date.yesterday)
+          CartItem.create(user_id: current_user.ms_id, work_id: work1.id, in_cart: false, date_requested: Date.yesterday, reviewers: [depositor.ms_id])
+          request.env["HTTP_REFERER"] = "original_page"
+          allow(controller).to receive(:send_request_message_to_reviewer)
+          allow(controller).to receive(:send_request_message_to_requestor)
+        end
+
+        it 'creates no request and sends no notification' do
+          expect {
+            get :request_again, params: { item_id: cartItem1.id, intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
+          }.not_to change(CartItem, :count)
+          expect(controller).not_to have_received(:send_request_message_to_reviewer)
+          expect(controller).not_to have_received(:send_request_message_to_requestor)
+        end
+      end
+
       context 'messages fail to send' do
         before do
           allow(subject).to receive(:send_request_message_to_reviewer).with(any_args).and_raise(NoMethodError)
@@ -388,6 +477,11 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
         it "reloads the page" do
           get :request_again, params: { batch_document_ids: [cartItem1.id,cartItem5.id], intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
           expect(response).to redirect_to("original_page")
+        end
+
+        it 'requests the new cart items in one batch' do
+          expect(controller).to receive(:make_request).once.with(satisfy { |items| items.size == 2 }).and_call_original
+          get :request_again, params: { batch_document_ids: [cartItem1.id,cartItem5.id], intended_use: ["Intended Use"], request_download_terms_agreed: 'on' }
         end
 
         context 'messages fail to send' do
@@ -567,6 +661,16 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
       it "reloads the page" do
         post :request_work, params: post_params
         expect(response).to redirect_to("original_page")
+      end
+
+      it 'notifies about the new item, not the inactive one' do
+        allow(controller).to receive(:send_request_message_to_reviewer)
+        allow(controller).to receive(:send_request_message_to_requestor)
+
+        post :request_work, params: post_params
+
+        new_item = CartItem.find_by(work_id: work1.id, date_expired: nil)
+        expect(controller).to have_received(:send_request_message_to_requestor).with([new_item])
       end
     end
 

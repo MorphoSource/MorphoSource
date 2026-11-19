@@ -2,13 +2,12 @@
 <% restricted = download_permission(f) == 'restricted_download' %>
 <% organization_titles = block.object_organization_titles %>
 <div class="form-group block-fill block-padding <%= 'text-muted' unless restricted %>" id="media-download-reviewers">
-  <h3 class="mt-0"><%= t('morphosource.reviewers.media.heading') %></h3>
   <%# A radio pair, not a select: exactly one choice is always set, matching the organization edit page. %>
   <fieldset class="form-group">
     <div class="row">
-      <legend class="col-6 showcase-label col-form-label"><%= t('morphosource.reviewers.media.legend') %></legend>
-      <div class="col-6 showcase-value">
-        <div class="form-check">
+      <legend class="col-6 showcase-label col-form-label align-items-start pt-1"><%= t('morphosource.reviewers.media.legend') %></legend>
+      <div class="col-6 showcase-value pt-0">
+        <div class="form-check mt-0">
           <%= f.radio_button :download_reviewer_mode, 'object_organization',
             checked: block.checked_mode == 'object_organization',
             disabled: !restricted || block.organization_radio_disabled?,

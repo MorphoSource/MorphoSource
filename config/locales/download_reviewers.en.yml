@@ -18,8 +18,7 @@ en:
         empty_custom: "Name at least one user before you save."
         require: "Permissions enforcement mode is Require: new media submitted for this organization's objects have this organization review their downloads."
       media:
-        heading: "Download review"
-        legend: "Who reviews download requests?"
+        legend: "Download reviewer"
         object_organizations: "Object organizations (%{organizations})"
         object_organization_none: "Object organizations (none linked)"
         own: "This record's own reviewers"

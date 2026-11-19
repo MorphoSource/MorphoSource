@@ -90,7 +90,6 @@ module Morphosource
     def permissions_fields
       {
         download_permission: download_permission,
-        download_reviewer: download_reviewer,
         reviews_object_media_downloads: try(:reviews_object_media_downloads),
         rights_holder: rights_holder,
         rights_statement: rights_statement,

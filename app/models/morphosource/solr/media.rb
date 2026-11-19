@@ -48,10 +48,6 @@ module Morphosource
         self['depositor_name_tesim']
       end
 
-      def download_reviewer
-        self['download_reviewer_ssim']
-      end
-
       def fileset_visibility
         self[ActiveFedora.index_field_mapper.solr_name('fileset_visibility', :stored_searchable)]
       end

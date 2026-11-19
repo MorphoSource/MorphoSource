@@ -12,7 +12,7 @@ RSpec.describe BatchSubmissionTools::Ms2Batch::Manifest do
   let(:organization)            { Organization.create(title: ['Organization'] ) }
   let(:owner)                   { FactoryBot.create(:organization_collection, depositor: depositor.ms_id).id }
   let(:media_ownership_fields)  { { "visibility"=>"restricted",
-                                    "download_reviewer"=>["e1eefa"],
+                                    "record_download_reviewer_users"=>["e1eefa"],
                                     "rights_holder"=>["org ip holder"],
                                     "rights_statement"=>"http://rightsstatements.org/vocab/InC-OW-EU/1.0/",
                                     "license"=>["https://creativecommons.org/licenses/by-sa/4.0/"],

@@ -134,6 +134,12 @@ input[type=checkbox].disabled {
     }
   }
 
+  // Full column width, matching the -15px gutter of the rows around it.
+  #media-download-reviewers {
+    margin-left: -15px;
+    margin-right: -15px;
+  }
+
   .controls-remove-text {
     display: none;
   }

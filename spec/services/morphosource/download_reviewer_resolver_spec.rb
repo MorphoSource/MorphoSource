@@ -174,6 +174,31 @@ RSpec.describe Morphosource::DownloadReviewerResolver do
     end
   end
 
+  describe '#resolve' do
+    it 'reports the fallback only when nothing resolves' do
+      resolution = resolver.resolve(['dead-ms-id'])
+
+      expect(resolution.ms_ids).to eq([User.batch_user.ms_id])
+      expect(resolution.fallback).to be true
+    end
+
+    it 'does not report the fallback when the batch User is itself a reviewer' do
+      resolution = resolver.resolve([User.batch_user.ms_id])
+
+      expect(resolution.ms_ids).to eq([User.batch_user.ms_id])
+      expect(resolution.fallback).to be false
+    end
+
+    it 'does not report the fallback beside a dangling token when an organization resolves' do
+      add_manager(organization, manager)
+
+      resolution = resolver.resolve([token_for(organization), 'org_collection:gone'])
+
+      expect(resolution.ms_ids).to eq([manager.ms_id])
+      expect(resolution.fallback).to be false
+    end
+  end
+
   describe 'a dangling token' do
     let(:dangling) { 'org_collection:no-such-organization' }
 

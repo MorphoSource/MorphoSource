@@ -793,6 +793,40 @@ describe 'description attachment methods' do
       end
     end
 
+    describe '#download_reviewer_route' do
+      it 'names the record list when it is populated' do
+        media.record_download_reviewer_users = [reviewer.ms_id]
+
+        expect(media.download_reviewer_route).to eq([:record_users, [reviewer.ms_id]])
+      end
+
+      it 'names a User owner when the record list is blank' do
+        expect(media.download_reviewer_route).to eq([:owner_user, [owner_user.ms_id]])
+      end
+
+      context 'with an OrganizationCollection owner' do
+        let(:media) { FactoryBot.create(:media, owner: organization.id, depositor: owner_user.ms_id) }
+
+        it 'names the Owner Organization' do
+          expect(media.download_reviewer_route).to eq([:owner_organization, [token_for(organization)]])
+        end
+      end
+
+      it 'names the Object Organizations in object_organization mode, using the organizations passed in' do
+        media.download_reviewer_mode = 'object_organization'
+        expect(media).not_to receive(:organizations)
+
+        expect(media.download_reviewer_route([organization, organization]))
+          .to eq([:object_organizations, [token_for(organization)]])
+      end
+
+      it 'agrees with #download_reviewers' do
+        media.record_download_reviewer_users = [reviewer.ms_id, other_reviewer.ms_id]
+
+        expect(media.download_reviewer_route.last).to eq(media.download_reviewers)
+      end
+    end
+
     describe 'object organization eligibility' do
       let(:ineligible_organization) do
         FactoryBot.create(:organization_collection, title: ['Ineligible Org'], depositor: owner_user.ms_id)
@@ -819,6 +853,31 @@ describe 'description attachment methods' do
         new_media.download_reviewer_mode = 'object_organization'
 
         expect(new_media).to be_valid
+      end
+
+      it 'names a repeated ineligible organization once' do
+        allow(media).to receive(:organizations).and_return([ineligible_organization, ineligible_organization])
+        media.download_reviewer_mode = 'object_organization'
+
+        expect(media).not_to be_valid
+        expect(media.errors[:download_reviewer_mode].join.scan('Ineligible Org').size).to eq(1)
+      end
+
+      describe '#ineligible_object_organizations' do
+        it 'returns each distinct organization that does not accept download review' do
+          expect(media.ineligible_object_organizations([organization, ineligible_organization, ineligible_organization]))
+            .to eq([ineligible_organization])
+        end
+
+        it 'is empty when every organization is eligible' do
+          expect(media.ineligible_object_organizations([organization])).to be_empty
+        end
+
+        it 'defaults to the Object Organizations' do
+          allow(media).to receive(:organizations).and_return([ineligible_organization])
+
+          expect(media.ineligible_object_organizations).to eq([ineligible_organization])
+        end
       end
 
       it 'refuses the transition on a saved record with no Object Organizations' do

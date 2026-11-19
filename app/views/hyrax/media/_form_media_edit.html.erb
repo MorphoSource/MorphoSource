@@ -10,7 +10,7 @@
   <% if f.object.errors.any? %>
     <div class="alert alert-danger alert-dismissable" role="alert">
       <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-      <%= f.object.errors.full_messages_for(:base).send(SimpleForm.error_method) %>
+      <%= f.object.errors.full_messages.send(SimpleForm.error_method) %>
     </div>
   <% end %>
 

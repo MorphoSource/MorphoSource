@@ -17,6 +17,32 @@ en:
         unset: "Not yet configured. Choose who reviews downloads."
         empty_custom: "Name at least one user before you save."
         require: "Permissions enforcement mode is Require: new media submitted for this organization's objects have this organization review their downloads."
+      media:
+        legend: "Download reviewer"
+        object_organizations: "Object organizations (%{organizations})"
+        object_organization_none: "Object organizations (none linked)"
+        own: "This record's own reviewers"
+        picker_label: "Reviewers"
+        owner_hint: "When this list is blank, the media owner, %{owner}, reviews download requests."
+        owner_organization_hint: "When this list is blank, the download reviewers of the Owner Organization, %{owner}, review download requests."
+        owner_hint_generic: "When this list is blank, the media owner reviews download requests."
+        current_label: "Current download reviewers"
+        via:
+          record_users: "Via this record's own reviewers."
+          owner_user: "Via the media owner, because this record names no reviewers of its own."
+          owner_organization: "Via the Owner Organization, %{organizations}, because this record names no reviewers of its own."
+          object_organizations: "Via the object organizations: %{organizations}."
+          staff: "MorphoSource staff review this media's download requests because no organization or user is available to review them."
+        not_restricted: "Download reviewers apply only when Download permission is Restricted Download."
+        unavailable_none: "This media has no object organizations, so object organizations cannot review its downloads."
+        unavailable:
+          one: "%{organizations} does not accept new media for download review, so object organizations cannot review this media's downloads."
+          other: "%{organizations} do not accept new media for download review, so object organizations cannot review this media's downloads."
+        every_eligible: "Every object organization of this media must accept download review."
+        grandfathered:
+          one: "%{organizations} no longer accepts new media for download review. This media keeps it because it was set before that changed; if you switch to this record's own reviewers and save, you cannot switch back unless %{organizations} accepts download review again."
+          other: "%{organizations} no longer accept new media for download review. This media keeps them because it was set before that changed; if you switch to this record's own reviewers and save, you cannot switch back unless every one of them accepts download review again."
+        grandfathered_none: "This media no longer has any object organizations. If you switch to this record's own reviewers and save, you cannot switch back until it is linked to an object organization that accepts download review."
   blacklight:
     search:
       fields:

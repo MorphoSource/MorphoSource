@@ -1,0 +1,90 @@
+<% block = Morphosource::MediaReviewerBlock.new(f.object.model) %>
+<% restricted = download_permission(f) == 'restricted_download' %>
+<% organization_titles = block.object_organization_titles %>
+<div class="form-group block-fill block-padding <%= 'text-muted' unless restricted %>" id="media-download-reviewers">
+  <%# A radio pair, not a select: exactly one choice is always set, matching the organization edit page. %>
+  <fieldset class="form-group">
+    <div class="row">
+      <legend class="col-6 showcase-label col-form-label align-items-start pt-1"><%= t('morphosource.reviewers.media.legend') %></legend>
+      <div class="col-6 showcase-value pt-0">
+        <div class="form-check mt-0">
+          <%= f.radio_button :download_reviewer_mode, 'object_organization',
+            checked: block.checked_mode == 'object_organization',
+            disabled: !restricted || block.organization_radio_disabled?,
+            data: { org_blocked: block.organization_radio_disabled? || nil },
+            class: 'form-check-input' %>
+          <%= f.label :download_reviewer_mode, value: 'object_organization', class: 'form-check-label' do %>
+            <% if organization_titles.any? %>
+              <%= t('morphosource.reviewers.media.object_organizations', organizations: organization_titles.to_sentence) %>
+            <% else %>
+              <%= t('morphosource.reviewers.media.object_organization_none') %>
+            <% end %>
+          <% end %>
+        </div>
+        <div class="form-check">
+          <%= f.radio_button :download_reviewer_mode, 'record_users',
+            checked: block.checked_mode == 'record_users',
+            disabled: !restricted,
+            class: 'form-check-input' %>
+          <%= f.label :download_reviewer_mode, t('morphosource.reviewers.media.own'), value: 'record_users', class: 'form-check-label' %>
+        </div>
+        <% if block.grandfathered? %>
+          <p class="hint text-warning mb-0" id="media-download-reviewers-grandfathered">
+            <% if block.blocked_organizations.any? %>
+              <%= t('morphosource.reviewers.media.grandfathered', count: block.blocked_organizations.size, organizations: block.blocked_organization_titles.to_sentence) %>
+            <% else %>
+              <%= t('morphosource.reviewers.media.grandfathered_none') %>
+            <% end %>
+          </p>
+        <% elsif block.organization_radio_disabled? %>
+          <p class="hint mb-0" id="media-download-reviewers-unavailable">
+            <% if block.blocked_organizations.any? %>
+              <%= t('morphosource.reviewers.media.unavailable', count: block.blocked_organizations.size, organizations: block.blocked_organization_titles.to_sentence) %>
+              <% if block.blocked_organizations.size < block.object_organizations.size %>
+                <%= t('morphosource.reviewers.media.every_eligible') %>
+              <% end %>
+            <% else %>
+              <%= t('morphosource.reviewers.media.unavailable_none') %>
+            <% end %>
+          </p>
+        <% end %>
+      </div>
+    </div>
+  </fieldset>
+
+  <div class="form-group row <%= 'd-none' unless block.checked_mode == 'record_users' %>" id="media-record-download-reviewers">
+    <div class="col-6 showcase-label">
+      <label class="col-form-label" for="media_record_download_reviewer_users"><%= t('morphosource.reviewers.media.picker_label') %></label>
+    </div>
+    <div class="col-6 showcase-value">
+      <%= f.text_field :record_download_reviewer_users,
+        id: 'media_record_download_reviewer_users',
+        name: "#{f.object_name}[record_download_reviewer_users][]",
+        value: Array(f.object.model.record_download_reviewer_users).join(','),
+        disabled: !restricted,
+        style: 'width: 100%',
+        'data-reviewers' => reviewer_data(f),
+        class: 'form-control string optional multi-search-field'
+      %>
+      <p class="hint mb-0">
+        <% if block.owner_label.nil? %>
+          <%= t('morphosource.reviewers.media.owner_hint_generic') %>
+        <% elsif block.owner_organization? %>
+          <%= t('morphosource.reviewers.media.owner_organization_hint', owner: block.owner_label) %>
+        <% else %>
+          <%= t('morphosource.reviewers.media.owner_hint', owner: block.owner_label) %>
+        <% end %>
+      </p>
+    </div>
+  </div>
+
+  <%= Hyrax::Renderers::ShowcaseUserLinkAttributeRenderer.new(:download_reviewers, block.reviewer_ms_ids,
+        label: t('morphosource.reviewers.media.current_label')).render %>
+  <div class="row">
+    <div class="col-6 offset-6 hint" id="media-download-reviewers-via">
+      <%= t("morphosource.reviewers.media.via.#{block.via_source}", organizations: block.source_organization_titles.to_sentence) %>
+    </div>
+  </div>
+
+  <p class="hint mt-2 mb-0 <%= 'd-none' if restricted %>" id="media-download-reviewers-not-restricted"><%= t('morphosource.reviewers.media.not_restricted') %></p>
+</div>

@@ -285,6 +285,10 @@ RSpec.describe Morphosource::My::RequestsController, :type => :controller  do
           expect(controller).to have_received(:send_request_message_to_reviewer).with(anything, [cartItem3])
           expect(controller).not_to have_received(:send_request_message_to_reviewer).with(anything, include(cartItem5))
         end
+
+        it 'tells the requestor the pending item was not requested again' do
+          expect(response.flash[:notice]).to eq("1 Item Requested; 1 Item Already Pending, Not Requested Again")
+        end
       end
 
       context 'one item in group has already been requested' do

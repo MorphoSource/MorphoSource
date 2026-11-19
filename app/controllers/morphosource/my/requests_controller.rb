@@ -22,11 +22,13 @@ module Morphosource
 
       def request_item
         @items = undownloadable(@items)
+        pending_items = requested(@items) - inactive(@items)
+        @items -= pending_items
         new_items = re_request(inactive(@items))
         unrequested_items = unrequested(@items)
         make_request(unrequested_items)
         send_request_messages(unrequested_items + new_items)
-        flash[:notice] = item_count_text.concat(' Requested')
+        flash[:notice] = item_count_text.concat(' Requested', pending_text(pending_items))
         redirect_back(fallback_location: my_requests_path)
       end
 
@@ -175,6 +177,12 @@ module Morphosource
             flash[:error] = t('morphosource.dashboard.my.requests.request_item.alert')
             redirect_back(fallback_location: my_requests_path) && return
           end
+        end
+
+        def pending_text(items)
+          return '' if items.empty?
+
+          "; #{count_text(items.count)} Already Pending, Not Requested Again"
         end
 
     end

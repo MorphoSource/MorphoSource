@@ -117,7 +117,7 @@ module Hydra::Works
       def append_property_value(property, value)
         if property == :mime_type
           # mime type special case: overwrites previous value as string
-          value = value
+          value = Morphosource::Works::MimeTypes.normalize_mime_type(value)
         elsif property == :height || property == :width
           # height and width special case: get max of multiple values as string
           value = (object.send(property) + Array(value)).map(&:to_i).max.to_s

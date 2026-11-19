@@ -321,6 +321,23 @@ RSpec.describe ValkyrieCharacterizationJob do
         end
       end
 
+      describe 'DICOM (GNU-format TAR) characterization' do
+        let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file, fixture_path: 'dcm_stack/dcm_stack_gnu.tar') }
+        let(:file_metadata) { get_file_metadata(file_set) }
+
+        before do
+          described_class.perform_now(file_metadata.id.to_s)
+        end
+
+        subject { Hyrax.custom_queries.find_file_metadata_by(id: file_metadata.id) }
+
+        it "stores the GNU tar mime type as application/x-tar" do
+          expect(subject.mime_type).to eq("application/x-tar")
+          expect(subject.contents_mime_type).to eq(["application/dicom"])
+          expect(subject.contents_accepted_file_count).to eq([1])
+        end
+      end
+
       describe 'OBJ with textures (ZIP) characterization' do
         let(:file_set) { FactoryBot.valkyrie_create(:valkyrie_file_set, :with_fixture_file, fixture_path: 'whale/whale-mpc-677-150k-4096-obj.zip') }
         let(:file_metadata) { get_file_metadata(file_set) }

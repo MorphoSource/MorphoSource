@@ -4,6 +4,13 @@ module Morphosource
       extend ActiveSupport::Concern
       include Hydra::Works::MimeTypes
 
+      # Characterization reports some formats under a subtype; store them as the parent type
+      MIME_TYPE_ALIASES = { 'application/x-gtar' => 'application/x-tar' }.freeze
+
+      def self.normalize_mime_type(mime_type)
+        MIME_TYPE_ALIASES.fetch(mime_type, mime_type)
+      end
+
       def archive?
         self.class.archive_mime_types.include? mime_type
       end
@@ -34,11 +41,11 @@ module Morphosource
         end
 
         def archive_mime_types
-          ['application/zip', 'application/x-tar']
+          ['application/zip', 'application/x-tar', 'application/x-gtar']
         end
 
         def volume_mime_types
-          ['application/zip', 'application/x-tar']
+          ['application/zip', 'application/x-tar', 'application/x-gtar']
         end
       end
     end

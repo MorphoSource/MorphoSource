@@ -2,6 +2,17 @@ class CartItem < ApplicationRecord
 
   belongs_to :user, foreign_key: :user_id, primary_key: :ms_id
 
+  # @param reviewers_by_work_id [Hash{String => Array<String>}] resolved reviewer ms_ids per work id
+  def self.refresh_reviewers(reviewers_by_work_id)
+    where(work_id: reviewers_by_work_id.keys).find_each do |item|
+      reviewers = reviewers_by_work_id.fetch(item.work_id)
+      next if Array(item.reviewers).to_set == reviewers.to_set
+
+      # Deleted requestors leave CartItems whose required User association no longer validates.
+      item.update_columns(reviewers: reviewers, updated_at: Time.current)
+    end
+  end
+
   def active_request?
     statuses = ["Approved","Requested","Cleared"]
     statuses.include?(request_status)

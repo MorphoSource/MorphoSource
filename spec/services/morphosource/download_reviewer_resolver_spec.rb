@@ -66,6 +66,14 @@ RSpec.describe Morphosource::DownloadReviewerResolver do
         .to match_array([reviewer.ms_id, manager.ms_id])
     end
 
+    it "drops an organization reviewer whose User was deleted after the organization was indexed" do
+      add_manager(organization, manager)
+      add_manager(organization, other_manager)
+      other_manager.delete
+
+      expect(resolver.call(identity(token_for(organization)))).to eq([manager.ms_id])
+    end
+
     it 'de-duplicates a user reachable both directly and through an organization' do
       add_manager(organization, manager)
 
@@ -81,6 +89,57 @@ RSpec.describe Morphosource::DownloadReviewerResolver do
       expect(ActiveFedora::SolrService).to receive(:query).once.and_call_original
 
       expect(media.map { |m| resolver.call(m) }).to all(eq([manager.ms_id]))
+    end
+
+    def legacy_documents(owner_id)
+      Array.new(5) do
+        SolrDocument.new('has_model_ssim' => ['Media'], 'user_with_ownership_ssi' => owner_id)
+      end
+    end
+
+    it 'classifies and resolves a shared legacy organization owner once' do
+      add_manager(organization, manager)
+      documents = legacy_documents(organization.id)
+
+      expect(OrganizationCollection).to receive(:exists?).with(organization.id).once.and_call_original
+      expect(ActiveFedora::SolrService).to receive(:query).twice.and_call_original
+
+      expect(documents.map { |document| resolver.call(document) }).to all(eq([manager.ms_id]))
+    end
+
+    it 'caches the non-organization classification of a User owner' do
+      documents = legacy_documents(user.ms_id)
+
+      expect(ActiveFedora::SolrService).to receive(:query).once.and_call_original
+
+      expect(documents.map { |document| resolver.call(document) }).to all(eq([user.ms_id]))
+    end
+
+    it 'caches a missing owner while retaining the batch User fallback' do
+      documents = legacy_documents('missing-owner')
+      batch_user_ms_id = User.batch_user.ms_id
+
+      expect(ActiveFedora::SolrService).to receive(:query).once.and_call_original
+
+      expect(documents.map { |document| resolver.call(document) }).to all(eq([batch_user_ms_id]))
+    end
+
+    it 'keeps a zero-manager organization as an organization with the batch User fallback' do
+      documents = legacy_documents(organization.id)
+      batch_user_ms_id = User.batch_user.ms_id
+
+      expect(ActiveFedora::SolrService).to receive(:query).twice.and_call_original
+
+      expect(documents.map { |document| resolver.call(document) }).to all(eq([batch_user_ms_id]))
+    end
+
+    it 'classifies the owner again in a new resolver operation' do
+      document = legacy_documents(user.ms_id).first
+
+      expect(OrganizationCollection).to receive(:exists?).with(user.ms_id).twice.and_call_original
+
+      expect(resolver.call(document)).to eq([user.ms_id])
+      expect(described_class.new.call(document)).to eq([user.ms_id])
     end
   end
 
@@ -111,6 +170,13 @@ RSpec.describe Morphosource::DownloadReviewerResolver do
 
     it 'applies when no stored ms_id names a live User' do
       expect(resolver.call(identity('dead-ms-id', 'another-dead-ms-id'))).to eq([batch_user_ms_id])
+    end
+
+    it "applies when an organization's indexed reviewers have all been deleted" do
+      add_manager(organization, manager)
+      manager.delete
+
+      expect(resolver.call(identity(token_for(organization)))).to eq([batch_user_ms_id])
     end
 
     it 'applies when every token is dangling' do

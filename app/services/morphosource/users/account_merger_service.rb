@@ -20,6 +20,10 @@ module Morphosource
         transfer_group_permissions
         transfer_proxy_rights
         transfer_cart_items
+        # Last, so reviewer jobs never see a half-merged account. Publish before the custom-list saves: a
+        # rerun cannot rebuild Manager events because the old account's roles are already gone.
+        publish_reviewer_events
+        transfer_custom_download_reviewers
       end
 
       def transfer_works
@@ -67,12 +71,31 @@ module Morphosource
       end
 
       def transfer_group_permissions
+        new_user_groups = @new_user.groups
         @old_user.groups.each do |group|
-          next if @new_user.groups.include? group
           role = Role.find_by(name: group)
-          role.users += [@new_user]
+          next unless role
+
+          role.users += [@new_user] unless new_user_groups.include?(group)
           role.users -= [@old_user]
           role.save!
+          managed_organization_ids << group.chomp('_managers') if organization_manager_role?(group)
+        end
+      end
+
+      # No publish here: save! publishes when the organization is in custom mode.
+      def transfer_custom_download_reviewers
+        custom_reviewer_organizations.each do |organization|
+          organization.custom_download_reviewer_users = organization.custom_download_reviewer_users.map do |ms_id|
+            ms_id == @old_user.ms_id ? @new_user.ms_id : ms_id
+          end.uniq
+          organization.save!
+        end
+      end
+
+      def publish_reviewer_events
+        managed_organization_ids.each do |id|
+          Hyrax.publisher.publish('organization.reviewers.updated', organization_id: id)
         end
       end
 
@@ -108,12 +131,38 @@ module Morphosource
         ActiveFedora::Base.where("generic_type_sim:Collection AND depositor_ssim:#{@old_user.ms_id}")
       end
 
+      def custom_reviewer_organizations
+        old_ms_id = Morphosource::SolrService.prepare_value(@old_user.ms_id)
+        documents = ActiveFedora::SolrService.query('has_model_ssim:OrganizationCollection',
+                                                    fq: ["custom_download_reviewer_users_ssim:#{old_ms_id}"],
+                                                    fl: 'id', rows: 999999)
+        documents.filter_map do |document|
+          OrganizationCollection.find(document['id'])
+        rescue ActiveFedora::ObjectNotFoundError, Ldp::Gone
+          nil
+        end
+      end
+
       def proxy_rights
         ProxyDepositRights.where(grantor_id: @old_user.id).or(ProxyDepositRights.where(grantee_id: @old_user.id))
       end
 
       def cart_items
         CartItem.where(user_id: @old_user.ms_id).or(CartItem.where(action_by: @old_user.ms_id))
+      end
+
+      private
+
+      def managed_organization_ids
+        @managed_organization_ids ||= []
+      end
+
+      def organization_manager_role?(group)
+        return false unless group.end_with?('_managers')
+
+        Collection.find(group.chomp('_managers')).organization_collection?
+      rescue ActiveFedora::ObjectNotFoundError, Ldp::Gone
+        false
       end
 
     end

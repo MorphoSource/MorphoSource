@@ -20,6 +20,9 @@ RSpec.describe Morphosource::Users::AccountMergerService do
       expect_any_instance_of(described_class).to receive(:transfer_collections)
       expect_any_instance_of(described_class).to receive(:transfer_group_permissions)
       expect_any_instance_of(described_class).to receive(:transfer_proxy_rights)
+      expect_any_instance_of(described_class).to receive(:transfer_cart_items)
+      expect_any_instance_of(described_class).to receive(:transfer_custom_download_reviewers)
+      expect_any_instance_of(described_class).to receive(:publish_reviewer_events)
       subject
     end
   end
@@ -161,6 +164,130 @@ RSpec.describe Morphosource::Users::AccountMergerService do
     it 'transfers role memberships to the new user' do
       expect(old_user.groups).not_to include('role1','role2','role3')
       expect(new_user.groups).to include('role1','role2','role3')
+    end
+  end
+
+  describe 'manager roles and reviewer events' do
+    let(:organization)        { FactoryBot.create(:organization_collection) }
+    let(:other_organization)  { FactoryBot.create(:organization_collection) }
+    let(:team)                { FactoryBot.create(:team) }
+    let(:project)             { FactoryBot.create(:project) }
+
+    def add_manager(collection, user)
+      Role.find_or_create_by!(name: "#{collection.id}_managers").users << user
+    end
+
+    def expect_reviewer_events(*organizations)
+      organizations.each do |organization|
+        expect(Hyrax.publisher).to have_received(:publish)
+          .with('organization.reviewers.updated', organization_id: organization.id).once
+      end
+      expect(Hyrax.publisher).to have_received(:publish)
+        .with('organization.reviewers.updated', anything).exactly(organizations.size).times
+    end
+
+    before { allow(Hyrax.publisher).to receive(:publish) }
+
+    it 'publishes one event for a managed organization' do
+      add_manager(organization, old_user)
+
+      subject
+
+      expect_reviewer_events(organization)
+    end
+
+    it 'publishes one event per managed organization' do
+      add_manager(organization, old_user)
+      add_manager(other_organization, old_user)
+
+      subject
+
+      expect_reviewer_events(organization, other_organization)
+    end
+
+    it 'publishes nothing for Team and Project managers or other roles' do
+      add_manager(team, old_user)
+      add_manager(project, old_user)
+      Role.find_or_create_by!(name: 'contributor').users << old_user
+
+      subject
+
+      expect_reviewer_events
+    end
+
+    it 'removes the old user from a manager role the new user already holds, and publishes' do
+      add_manager(organization, new_user)
+      add_manager(organization, old_user)
+
+      subject
+
+      expect(organization.managers).to contain_exactly(new_user)
+      expect_reviewer_events(organization)
+    end
+
+    it 'publishes manager events before a custom reviewer list save can fail' do
+      add_manager(organization, old_user)
+      FactoryBot.create(:organization_collection, managers_are_download_reviewers: false,
+                                                  custom_download_reviewer_users: [old_user.ms_id])
+      allow_any_instance_of(OrganizationCollection).to receive(:save!).and_raise(StandardError, 'save failed')
+
+      expect { subject }.to raise_error(StandardError, 'save failed')
+      expect_reviewer_events(organization)
+    end
+  end
+
+  describe 'transfer_custom_download_reviewers' do
+    let(:other_user) { User.create(email: 'other@email.com', password: 'password') }
+
+    def create_organization(managers_are_download_reviewers:, custom_download_reviewer_users:)
+      FactoryBot.create(:organization_collection, managers_are_download_reviewers: managers_are_download_reviewers,
+                                                  custom_download_reviewer_users: custom_download_reviewer_users)
+    end
+
+    it 'replaces the old user in a custom-mode list and publishes one event' do
+      organization = create_organization(managers_are_download_reviewers: false,
+                                         custom_download_reviewer_users: [old_user.ms_id, other_user.ms_id])
+      allow(Hyrax.publisher).to receive(:publish)
+
+      subject
+
+      expect(organization.reload.custom_download_reviewer_users).to contain_exactly(new_user.ms_id, other_user.ms_id)
+      expect(Hyrax.publisher).to have_received(:publish)
+        .with('organization.reviewers.updated', organization_id: organization.id).once
+    end
+
+    it 'removes the old user without duplicating a new user already listed' do
+      organization = create_organization(managers_are_download_reviewers: false,
+                                         custom_download_reviewer_users: [old_user.ms_id, new_user.ms_id])
+
+      subject
+
+      expect(organization.reload.custom_download_reviewer_users.to_a).to eq([new_user.ms_id])
+    end
+
+    it 'rewrites a manager-mode list without publishing' do
+      organization = create_organization(managers_are_download_reviewers: true,
+                                         custom_download_reviewer_users: [old_user.ms_id])
+      allow(Hyrax.publisher).to receive(:publish)
+
+      subject
+
+      expect(organization.reload.custom_download_reviewer_users.to_a).to eq([new_user.ms_id])
+      expect(Hyrax.publisher).not_to have_received(:publish).with('organization.reviewers.updated', anything)
+    end
+
+    it 'skips an organization deleted from Fedora but still in Solr' do
+      ActiveFedora::SolrService.add({ 'id' => 'deleted-organization',
+                                      'has_model_ssim' => ['OrganizationCollection'],
+                                      'custom_download_reviewer_users_ssim' => [old_user.ms_id] },
+                                    softCommit: true)
+      organization = create_organization(managers_are_download_reviewers: false,
+                                         custom_download_reviewer_users: [old_user.ms_id])
+      allow(OrganizationCollection).to receive(:find).with('deleted-organization')
+                                                     .and_raise(ActiveFedora::ObjectNotFoundError)
+
+      expect { subject }.not_to raise_error
+      expect(organization.reload.custom_download_reviewer_users.to_a).to eq([new_user.ms_id])
     end
   end
 

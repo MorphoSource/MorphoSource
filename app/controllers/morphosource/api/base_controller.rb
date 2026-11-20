@@ -5,17 +5,15 @@ module Morphosource
     # (MediaCatalogController, ObjectsCatalogController, etc.); custom JSON
     # endpoints should subclass this instead.
     #
-    # Requires an API key by default. A subclass whose endpoint allows
-    # anonymous access can swap this out with:
-    #   skip_before_action :authenticate_api_key_required
-    #   before_action :authenticate_api_key_optional
+    # Each subclass declares its authentication with api_auth (see
+    # Morphosource::RestApiBehavior), e.g.
+    #   api_auth :required, scope: 'api:read'
+    # and must be listed in spec/controllers/api_scopes_spec.rb.
     class BaseController < ApplicationController
       include Morphosource::RestApiBehavior
 
       DEFAULT_PER_PAGE = 10
       MAX_PER_PAGE = 1000
-
-      before_action :authenticate_api_key_required
 
       private
 

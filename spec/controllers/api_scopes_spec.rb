@@ -27,6 +27,7 @@ RSpec.describe 'REST API OAuth scopes' do
         [:optional, 'api:download', %i[download]],
         [:required, 'api:download', %i[api_generate_download]]
       ],
+      'Morphosource::API::MediaCartController' => [[:required, 'api:read', []]],
       'Morphosource::Collections::TeamsController' => [export_rule, [:optional, 'api:reports', %i[media_projects]]],
       'Hyrax::UsersController' => [[:optional, nil, %i[index show]]]
     }

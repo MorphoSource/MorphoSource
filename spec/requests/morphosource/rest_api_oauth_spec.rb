@@ -63,6 +63,24 @@ RSpec.describe 'REST API authentication with OAuth access tokens', type: :reques
     end
   end
 
+  describe 'GET /api/media-cart' do
+    it 'returns 401 without credentials' do
+      get api_media_cart_path
+      expect(response).to have_http_status(:unauthorized)
+    end
+
+    it "returns the token owner's cart with an OAuth token with api:read" do
+      get api_media_cart_path, headers: { 'Authorization' => "Bearer #{bearer_token(scopes: 'openid api:read')}" }
+      expect(response).to have_http_status(:ok)
+      expect(json.dig('response', 'media_cart')).to eq([])
+    end
+
+    it 'returns 403 for an OAuth token without api:read' do
+      get api_media_cart_path, headers: { 'Authorization' => "Bearer #{bearer_token(scopes: 'openid api:download')}" }
+      expect(response).to have_http_status(:forbidden)
+    end
+  end
+
   # The IIIF manifest URL returned by GET /api/media/:id/iiif/manifest accepts the credential
   # directly (api_auth :optional, scope: 'api:read'), without relying on a session cookie.
   describe 'GET /manifests/v3/:access_control_id for private media' do

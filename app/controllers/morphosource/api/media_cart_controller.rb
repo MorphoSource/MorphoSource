@@ -14,6 +14,7 @@ module Morphosource
     class MediaCartController < BaseController
       ACCESS_FILTERS = %w[downloadable restricted].freeze
 
+      api_auth :required, scope: 'api:read'
       before_action :validate_params
 
       def index

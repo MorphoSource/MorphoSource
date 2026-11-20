@@ -294,7 +294,10 @@ class User < ApplicationRecord
   end
 
   def make_inactive
-    update(active: false)
+    return false unless update(active: false)
+
+    Doorkeeper::AccessToken.where(resource_owner_id: id, revoked_at: nil).update_all(revoked_at: Time.current)
+    true
   end
 
   # true if user has download access or an approved cart item

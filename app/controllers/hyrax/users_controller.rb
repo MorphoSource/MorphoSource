@@ -4,7 +4,7 @@ module Hyrax
     include Morphosource::RestApiBehavior
 
     prepend_before_action :find_user, only: [:show, :make_user_active, :make_user_inactive, :become]
-    before_action :authenticate_api_key_optional, only: [:index, :show]
+    api_auth :optional, scope: nil, only: [:index, :show] # API-key-only, no oAuth tokens allowed
     before_action :require_authentication, only: [:index, :show]
     helper Hyrax::TrophyHelper
 
@@ -56,8 +56,7 @@ module Hyrax
 
     private
 
-      # After authenticate_api_key_optional runs, current_user is set for both session
-      # and API key users. Enforce that one of those succeeded before reaching the action.
+      # After api_auth runs, current_user is set for session and API key users. Enforce that one of those succeeded before reaching the action.
       def require_authentication
         return deny_access_unauthorized if current_user.nil? && request.format == :json
         authenticate_user!

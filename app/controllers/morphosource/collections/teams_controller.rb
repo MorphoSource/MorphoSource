@@ -8,7 +8,7 @@ module Morphosource
         :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet
       ], instance_name: :collection
 
-      before_action :authenticate_api_key_optional, only: :media_projects
+      api_auth :optional, scope: 'api:reports', only: :media_projects
       before_action :load_organization, only: [:show, :facet, :about,
         :media_projects, :media_organization_transfer_status,
         :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet]

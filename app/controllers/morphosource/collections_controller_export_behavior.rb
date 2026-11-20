@@ -5,7 +5,7 @@ module Morphosource
     include Morphosource::RestApiBehavior
 
     included do
-      before_action :authenticate_api_key_optional, only: [
+      api_auth :optional, scope: 'api:reports', only: [
         :media_export, :objects_export, :media_download_counts, :media_downloads, :media_requests
       ]
       before_action :remove_page_param, only: [:media_downloads, :media_requests, :media_export_with_intersections_facet, :media_download_counts_with_intersections_facet, :objects_export, :media_export, :media_download_counts]

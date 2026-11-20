@@ -2,7 +2,7 @@
 class ObjectsCatalogController < CatalogController
   include CatalogControllerRestApiBehavior
 
-  before_action :authenticate_api_key_optional, only: [:show_by_occurrence_id]
+  api_auth :optional, scope: 'api:read', only: [:show_by_occurrence_id]
 
   def catalog_search_form_action
     main_app.object_search_path
